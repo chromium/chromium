@@ -91,6 +91,9 @@ class MultiDeviceSetupClient {
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupClient);
 };
 
+std::string FeatureStatesMapToString(
+    const MultiDeviceSetupClient::FeatureStatesMap& map);
+
 }  // namespace multidevice_setup
 
 }  // namespace chromeos

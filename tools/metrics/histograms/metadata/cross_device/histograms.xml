@@ -1574,6 +1574,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="MultiDevice.BetterTogetherSuite.DoesMultiDeviceSetupClientExist"
+    enum="BooleanSuccess" expires_after="2022-02-13">
+  <owner>julietlevesque@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the MultiDeviceSetupClient exists when passed into
+    the MultideviceHandler constructor. We expect the client to always exist if
+    the MultiDevice suite is allowed by policy. Recorded twice after sign-in,
+    during the creation of the MultiDevice (a.k.a. Connected Devices) settings
+    page UI handler, and during the creation of the chrome:://settings page UI
+    handler. Only recorded if the MultiDevice suite is allowed by policy.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState"
     enum="MultiDevice_FeatureState" expires_after="2022-02-13">
   <owner>danlee@google.com</owner>

@@ -65,6 +65,16 @@ void MultiDeviceSetupClient::NotifyFeatureStateChanged(
     observer.OnFeatureStatesChanged(feature_states_map);
 }
 
+std::string FeatureStatesMapToString(
+    const MultiDeviceSetupClient::FeatureStatesMap& map) {
+  std::ostringstream stream;
+  stream << "{" << std::endl;
+  for (const auto& item : map)
+    stream << "  " << item.first << ": " << item.second << "," << std::endl;
+  stream << "}";
+  return stream.str();
+}
+
 }  // namespace multidevice_setup
 
 }  // namespace chromeos

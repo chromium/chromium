@@ -18,7 +18,9 @@
 #include "chromeos/components/phonehub/fake_notification_access_manager.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_android_sms_pairing_state_tracker.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -198,6 +200,10 @@ class MultideviceHandlerTest : public testing::Test {
     prefs_->SetBoolean(::prefs::kNearbySharingEnabledPrefName, true);
     NearbySharingServiceFactory::
         SetIsNearbyShareSupportedForBrowserContextForTesting(true);
+
+    prefs_->registry()->RegisterBooleanPref(
+        multidevice_setup::kInstantTetheringAllowedPrefName,
+        /*default_value=*/true);
 
     handler_ = std::make_unique<TestMultideviceHandler>(
         prefs_.get(), fake_multidevice_setup_client_.get(),

@@ -238,9 +238,9 @@ void DeviceSyncClientImpl::OnGetSyncedDevicesCompleted(
     const absl::optional<std::vector<multidevice::RemoteDevice>>&
         remote_devices) {
   if (!remote_devices) {
-    PA_LOG(VERBOSE) << "Tried to fetch synced devices before service was fully "
-                       "initialized; waiting for sync to complete before "
-                       "continuing.";
+    PA_LOG(INFO) << "Tried to fetch synced devices before service was fully "
+                    "initialized; waiting for sync to complete before "
+                    "continuing.";
     return;
   }
 
@@ -255,8 +255,11 @@ void DeviceSyncClientImpl::OnGetSyncedDevicesCompleted(
   // Don't yet notify observers that new devices have synced until the client
   // is ready.
   if (is_ready()) {
+    PA_LOG(INFO) << "Client is ready. Notifying new devices have synced.";
     NotifyNewDevicesSynced();
   } else {
+    PA_LOG(INFO)
+        << "Client is NOT ready. Waiting to notify new devices have synced.";
     pending_notify_new_synced_devices_ = true;
     AttemptToBecomeReady();
   }
@@ -265,9 +268,9 @@ void DeviceSyncClientImpl::OnGetSyncedDevicesCompleted(
 void DeviceSyncClientImpl::OnGetLocalDeviceMetadataCompleted(
     const absl::optional<multidevice::RemoteDevice>& local_device_metadata) {
   if (!local_device_metadata) {
-    PA_LOG(VERBOSE) << "Tried to get local device metadata before service was "
-                       "fully initialized; waiting for enrollment to complete "
-                       "before continuing.";
+    PA_LOG(INFO) << "Tried to get local device metadata before service was "
+                    "fully initialized; waiting for enrollment to complete "
+                    "before continuing.";
     return;
   }
 
@@ -302,8 +305,11 @@ void DeviceSyncClientImpl::OnGetLocalDeviceMetadataCompleted(
   // Don't yet notify observers that enrollment has finished until the client
   // is ready.
   if (is_ready()) {
+    PA_LOG(INFO) << "Client is ready. Notifying enrollment finished.";
     NotifyEnrollmentFinished();
   } else {
+    PA_LOG(INFO)
+        << "Client is NOT ready. Waiting to notify enrollment finished.";
     pending_notify_enrollment_finished_ = true;
     AttemptToBecomeReady();
   }

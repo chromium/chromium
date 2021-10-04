@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
@@ -79,15 +80,22 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
 // static
 MultiDeviceSetupService* MultiDeviceSetupServiceFactory::GetForProfile(
     Profile* profile) {
-  if (!profile)
+  if (!profile) {
+    PA_LOG(WARNING) << "Missing profile. Unable to return "
+                       "MultiDeviceSetupService, returning nullptr instead";
     return nullptr;
+  }
 
   MultiDeviceSetupServiceHolder* holder =
       static_cast<MultiDeviceSetupServiceHolder*>(
           MultiDeviceSetupServiceFactory::GetInstance()
               ->GetServiceForBrowserContext(profile, true));
-  if (!holder)
+  if (!holder) {
+    PA_LOG(WARNING)
+        << "Missing MultiDeviceSetupServiceHolder. Unable to return "
+           "MultiDeviceSetupService, returning nullptr instead.";
     return nullptr;
+  }
 
   return holder->multidevice_setup_service();
 }
@@ -114,6 +122,9 @@ KeyedService* MultiDeviceSetupServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   if (!multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
           Profile::FromBrowserContext(context)->GetPrefs())) {
+    PA_LOG(WARNING)
+        << "No Multidevice Features allowed. Unable to return "
+           "MultiDeviceSetupServiceHolder, returning nullptr instead.";
     return nullptr;
   }
 

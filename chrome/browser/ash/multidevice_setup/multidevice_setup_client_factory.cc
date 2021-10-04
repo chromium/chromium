@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client_impl.h"
@@ -93,15 +94,24 @@ MultiDeviceSetupClientFactory::~MultiDeviceSetupClientFactory() = default;
 // static
 MultiDeviceSetupClient* MultiDeviceSetupClientFactory::GetForProfile(
     Profile* profile) {
-  if (!profile)
+  if (!profile) {
+    PA_LOG(WARNING) << "Missing Profile. Unable to return "
+                       "MultiDeviceSetupClient, returning nullptr instead.";
     return nullptr;
+  }
 
   MultiDeviceSetupClientHolder* holder =
       static_cast<MultiDeviceSetupClientHolder*>(
           MultiDeviceSetupClientFactory::GetInstance()
               ->GetServiceForBrowserContext(profile, true));
 
-  return holder ? holder->multidevice_setup_client() : nullptr;
+  if (!holder) {
+    PA_LOG(WARNING) << "Missing MultiDeviceSetupClientHolder. Unable to return "
+                       "MultiDeviceSetupClient, returning nullptr instead.";
+    return nullptr;
+  }
+
+  return holder->multidevice_setup_client();
 }
 
 // static
@@ -111,9 +121,14 @@ MultiDeviceSetupClientFactory* MultiDeviceSetupClientFactory::GetInstance() {
 
 KeyedService* MultiDeviceSetupClientFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (IsAllowedByPolicy(context))
+  if (IsAllowedByPolicy(context)) {
+    PA_LOG(INFO)
+        << "Allowed by policy. Returning new MultiDeviceSetupClientHolder";
     return new MultiDeviceSetupClientHolder(context);
+  }
 
+  PA_LOG(INFO) << "NOT allowed by policy. Unable to return "
+                  "MultiDeviceSetupClientHolder, returning nullptr instead.";
   return nullptr;
 }
 

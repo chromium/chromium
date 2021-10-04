@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/android_sms/android_sms_pairing_state_tracker_impl.h"
 #include "chrome/browser/ash/android_sms/android_sms_urls.h"
@@ -66,6 +67,19 @@ void OnRetrySetHostNowResult(bool success) {
                   << "host device failed.";
 }
 
+void RecordDoesMultideviceSetupClientExist(
+    PrefService* prefs,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client) {
+  // Only log if MultiDeviceFeatures are allowed because if the MultiDevice
+  // suite is prohibited, we expect the client to be null. We expect this metric
+  // to always emit true.
+  if (multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(prefs)) {
+    base::UmaHistogramBoolean(
+        "MultiDevice.BetterTogetherSuite.DoesMultiDeviceSetupClientExist",
+        multidevice_setup_client != nullptr);
+  }
+}
+
 }  // namespace
 
 MultideviceHandler::MultideviceHandler(
@@ -81,6 +95,7 @@ MultideviceHandler::MultideviceHandler(
       android_sms_pairing_state_tracker_(android_sms_pairing_state_tracker),
       android_sms_app_manager_(android_sms_app_manager) {
   pref_change_registrar_.Init(prefs_);
+  RecordDoesMultideviceSetupClientExist(prefs_, multidevice_setup_client_);
 }
 
 MultideviceHandler::~MultideviceHandler() {}
@@ -213,6 +228,9 @@ void MultideviceHandler::OnHostStatusChanged(
 void MultideviceHandler::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_states_map) {
+  PA_LOG(INFO) << "Feature states have changed: "
+               << multidevice_setup::FeatureStatesMapToString(
+                      feature_states_map);
   UpdatePageContent();
   NotifyAndroidSmsInfoChange();
 }
@@ -239,8 +257,8 @@ void MultideviceHandler::UpdatePageContent() {
   std::unique_ptr<base::DictionaryValue> page_content_dictionary =
       GeneratePageContentDataDictionary();
   DCHECK(page_content_dictionary);
-  PA_LOG(VERBOSE) << "Updating MultiDevice settings page content with: "
-                  << *page_content_dictionary << ".";
+  PA_LOG(INFO) << "Updating MultiDevice settings page content with: "
+               << *page_content_dictionary << ".";
   FireWebUIListener("settings.updateMultidevicePageContentData",
                     *page_content_dictionary);
 }
@@ -268,8 +286,8 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue* args) {
   std::unique_ptr<base::DictionaryValue> page_content_dictionary =
       GeneratePageContentDataDictionary();
   DCHECK(page_content_dictionary);
-  PA_LOG(VERBOSE) << "Responding to getPageContentData() request with: "
-                  << *page_content_dictionary << ".";
+  PA_LOG(INFO) << "Responding to getPageContentData() request with: "
+               << *page_content_dictionary << ".";
 
   ResolveJavascriptCallback(base::Value(callback_id), *page_content_dictionary);
 }
@@ -564,6 +582,9 @@ MultideviceHandler::GetFeatureStatesMap() {
   if (multidevice_setup_client_)
     return multidevice_setup_client_->GetFeatureStates();
 
+  PA_LOG(WARNING)
+      << "MultiDevice setup client missing. Responding to "
+         "GetFeatureStatesMap() request by generating default feature map.";
   return multidevice_setup::MultiDeviceSetupClient::
       GenerateDefaultFeatureStatesMap();
 }
