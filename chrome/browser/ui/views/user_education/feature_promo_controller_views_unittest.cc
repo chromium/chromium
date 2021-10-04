@@ -29,6 +29,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -143,6 +144,64 @@ TEST_F(FeaturePromoControllerViewsTest, ShowsBubble) {
       kTestIPHFeature, DefaultBubbleParams(), GetAnchorView()));
   EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
   EXPECT_TRUE(FeaturePromoBubbleOwnerImpl::GetInstance()->bubble_for_testing());
+}
+
+TEST_F(FeaturePromoControllerViewsTest,
+       DismissNonCriticalBubbleInRegion_RegionDoesNotOverlap) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(controller_->MaybeShowPromoWithParams(
+      kTestIPHFeature, DefaultBubbleParams(), GetAnchorView()));
+
+  const gfx::Rect bounds = FeaturePromoBubbleOwnerImpl::GetInstance()
+                               ->bubble_for_testing()
+                               ->GetWidget()
+                               ->GetWindowBoundsInScreen();
+  EXPECT_FALSE(bounds.IsEmpty());
+  gfx::Rect non_overlapping_region(bounds.right() + 1, bounds.bottom() + 1, 10,
+                                   10);
+  const bool result =
+      controller_->DismissNonCriticalBubbleInRegion(non_overlapping_region);
+  EXPECT_FALSE(result);
+  EXPECT_TRUE(controller_->BubbleIsShowing(kTestIPHFeature));
+}
+
+TEST_F(FeaturePromoControllerViewsTest,
+       DismissNonCriticalBubbleInRegion_RegionOverlaps) {
+  EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
+      .Times(1)
+      .WillOnce(Return(true));
+  EXPECT_TRUE(controller_->MaybeShowPromoWithParams(
+      kTestIPHFeature, DefaultBubbleParams(), GetAnchorView()));
+
+  const gfx::Rect bounds = FeaturePromoBubbleOwnerImpl::GetInstance()
+                               ->bubble_for_testing()
+                               ->GetWidget()
+                               ->GetWindowBoundsInScreen();
+  EXPECT_FALSE(bounds.IsEmpty());
+  gfx::Rect overlapping_region(bounds.x() + 1, bounds.y() + 1, 10, 10);
+  const bool result =
+      controller_->DismissNonCriticalBubbleInRegion(overlapping_region);
+  EXPECT_TRUE(result);
+  EXPECT_FALSE(controller_->BubbleIsShowing(kTestIPHFeature));
+}
+
+TEST_F(FeaturePromoControllerViewsTest,
+       DismissNonCriticalBubbleInRegion_CriticalPromo) {
+  const auto token =
+      controller_->ShowCriticalPromo(DefaultBubbleParams(), GetAnchorView());
+  ASSERT_TRUE(token.has_value());
+  const gfx::Rect bounds = FeaturePromoBubbleOwnerImpl::GetInstance()
+                               ->bubble_for_testing()
+                               ->GetWidget()
+                               ->GetWindowBoundsInScreen();
+  EXPECT_FALSE(bounds.IsEmpty());
+  gfx::Rect overlapping_region(bounds.x() + 1, bounds.y() + 1, 10, 10);
+  const bool result =
+      controller_->DismissNonCriticalBubbleInRegion(overlapping_region);
+  EXPECT_FALSE(result);
+  EXPECT_TRUE(controller_->CriticalPromoIsShowing(token.value()));
 }
 
 TEST_F(FeaturePromoControllerViewsTest, SnoozeServiceBlocksPromo) {

@@ -80,6 +80,12 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // Returns whether a critical promo is showing for the given `Token`.
   bool CriticalPromoIsShowing(const base::Token& critical_promo_id) const;
 
+  // For systems where there are rendering issues of e.g. displaying the
+  // omnibox and a bubble in the same region on the screen, dismisses a non-
+  // critical promo bubble which overlaps a given screen region. Returns true
+  // if a bubble is closed as a result.
+  bool DismissNonCriticalBubbleInRegion(const gfx::Rect& screen_bounds);
+
   // FeaturePromoController:
   bool MaybeShowPromo(
       const base::Feature& iph_feature,

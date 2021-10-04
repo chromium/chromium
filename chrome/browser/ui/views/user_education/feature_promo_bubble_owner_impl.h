@@ -31,10 +31,11 @@ class FeaturePromoBubbleOwnerImpl : public FeaturePromoBubbleOwner,
   absl::optional<base::Token> ShowBubble(
       FeaturePromoBubbleView::CreateParams params,
       base::OnceClosure close_callback) override;
-  bool BubbleIsShowing(base::Token bubble_id) override;
-  bool AnyBubbleIsShowing() override;
+  bool BubbleIsShowing(base::Token bubble_id) const override;
+  bool AnyBubbleIsShowing() const override;
   void CloseBubble(base::Token bubble_id) override;
   void NotifyAnchorBoundsChanged() override;
+  gfx::Rect GetBubbleBoundsInScreen(base::Token bubble_id) const override;
 
   // views::WidgetObserver:
   void OnWidgetClosing(views::Widget* widget) override;

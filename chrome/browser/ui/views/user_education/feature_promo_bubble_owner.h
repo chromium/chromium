@@ -9,6 +9,7 @@
 #include "base/token.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 // Manages display of a user education bubble. Notifies a client when the bubble
 // is closed. Ensures only one bubble shows per instance. This is an interface
@@ -31,16 +32,19 @@ class FeaturePromoBubbleOwner {
       base::OnceClosure close_callback) = 0;
 
   // Returns whether the bubble identified by `bubble_id` is still showing.
-  virtual bool BubbleIsShowing(base::Token bubble_id) = 0;
+  virtual bool BubbleIsShowing(base::Token bubble_id) const = 0;
 
   // Returns whether any bubble is currently showing.
-  virtual bool AnyBubbleIsShowing() = 0;
+  virtual bool AnyBubbleIsShowing() const = 0;
 
   // Close the identified bubble, if one is showing.
   virtual void CloseBubble(base::Token bubble_id) = 0;
 
   // If a bubble is showing, updates its anchor position.
   virtual void NotifyAnchorBoundsChanged() = 0;
+
+  // Gets the screen bounds of the given bubble, which must be showing.
+  virtual gfx::Rect GetBubbleBoundsInScreen(base::Token bubble_id) const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_BUBBLE_OWNER_H_

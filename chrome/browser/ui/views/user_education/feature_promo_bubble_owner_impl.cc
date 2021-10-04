@@ -44,12 +44,12 @@ absl::optional<base::Token> FeaturePromoBubbleOwnerImpl::ShowBubble(
   return bubble_id_;
 }
 
-bool FeaturePromoBubbleOwnerImpl::BubbleIsShowing(base::Token bubble_id) {
+bool FeaturePromoBubbleOwnerImpl::BubbleIsShowing(base::Token bubble_id) const {
   DCHECK_EQ((bubble_ != nullptr), bubble_id_.has_value());
   return bubble_id_ == bubble_id;
 }
 
-bool FeaturePromoBubbleOwnerImpl::AnyBubbleIsShowing() {
+bool FeaturePromoBubbleOwnerImpl::AnyBubbleIsShowing() const {
   DCHECK_EQ((bubble_ != nullptr), bubble_id_.has_value());
   return bubble_;
 }
@@ -64,6 +64,13 @@ void FeaturePromoBubbleOwnerImpl::CloseBubble(base::Token bubble_id) {
 void FeaturePromoBubbleOwnerImpl::NotifyAnchorBoundsChanged() {
   if (bubble_)
     bubble_->OnAnchorBoundsChanged();
+}
+
+gfx::Rect FeaturePromoBubbleOwnerImpl::GetBubbleBoundsInScreen(
+    base::Token bubble_id) const {
+  DCHECK(bubble_id_ == bubble_id);
+  return bubble_ ? bubble_->GetWidget()->GetWindowBoundsInScreen()
+                 : gfx::Rect();
 }
 
 void FeaturePromoBubbleOwnerImpl::OnWidgetClosing(views::Widget* widget) {

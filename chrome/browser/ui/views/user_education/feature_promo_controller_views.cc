@@ -152,6 +152,22 @@ bool FeaturePromoControllerViews::CriticalPromoIsShowing(
   return bubble_id_ && (current_critical_promo_ == critical_promo_id);
 }
 
+bool FeaturePromoControllerViews::DismissNonCriticalBubbleInRegion(
+    const gfx::Rect& screen_bounds) {
+  if (!bubble_id_ || current_critical_promo_ ||
+      !bubble_owner_->BubbleIsShowing(bubble_id_.value())) {
+    return false;
+  }
+
+  if (!screen_bounds.Intersects(
+          bubble_owner_->GetBubbleBoundsInScreen(bubble_id_.value()))) {
+    return false;
+  }
+
+  bubble_owner_->CloseBubble(bubble_id_.value());
+  return true;
+}
+
 bool FeaturePromoControllerViews::MaybeShowPromo(
     const base::Feature& iph_feature,
     BubbleCloseCallback close_callback) {
