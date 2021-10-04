@@ -17,7 +17,7 @@ import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../prefs/prefs_types.js';
 
 import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
@@ -53,7 +53,6 @@ const kTranslateLanguageSynonyms: {[key: string]: string} = {
 const kArcImeLanguage: string = '_arc_ime_language_';
 
 type ModelArgs = {
-  initialized: boolean,
   supportedLanguages: Array<chrome.languageSettingsPrivate.Language>,
   translateTarget: string,
   alwaysTranslateCodes: Array<string>,
@@ -68,8 +67,7 @@ type ModelArgs = {
  * updates it whenever Chrome's pref store and other settings change.
  */
 
-const SettingsLanguagesElementBase = PrefsMixin(PolymerElement) as unknown as
-    {new (): PolymerElement & PrefsMixinInterface};
+const SettingsLanguagesElementBase = PrefsMixin(PolymerElement);
 
 class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     LanguageHelper {
@@ -189,14 +187,13 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   connectedCallback() {
     super.connectedCallback();
 
-    const promises = [];
+    const promises: Array<Promise<any>> = [];
 
     /**
      * An object passed into createModel to keep track of platform-specific
      * arguments, populated by the "promises" array.
      */
     const args: ModelArgs = {
-      initialized: false,
       supportedLanguages: [],
       translateTarget: '',
       alwaysTranslateCodes: [],
@@ -210,8 +207,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
 
     // Wait until prefs are initialized before creating the model, so we can
     // include information about enabled languages.
-    promises.push(
-        CrSettingsPrefs.initialized.then(result => args.initialized = result));
+    promises.push(CrSettingsPrefs.initialized);
 
     // Get the language list.
     promises.push(

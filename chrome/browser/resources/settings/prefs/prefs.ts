@@ -20,11 +20,11 @@ import {CrSettingsPrefs} from './prefs_types.js';
 /**
  * Checks whether two values are recursively equal. Only compares serializable
  * data (primitives, serializable arrays and serializable objects).
- * @param {*} val1 Value to compare.
- * @param {*} val2 Value to compare with val1.
- * @return {boolean} True if the values are recursively equal.
+ * @param val1 Value to compare.
+ * @param val2 Value to compare with val1.
+ * @return Whether the values are recursively equal.
  */
-function deepEqual(val1, val2) {
+function deepEqual(val1: any, val2: any): boolean {
   if (val1 === val2) {
     return true;
   }
@@ -33,9 +33,7 @@ function deepEqual(val1, val2) {
     if (!Array.isArray(val1) || !Array.isArray(val2)) {
       return false;
     }
-    return arraysEqual(
-        /** @type {!Array} */ (val1),
-        /** @type {!Array} */ (val2));
+    return arraysEqual(val1, val2);
   }
 
   if (val1 instanceof Object && val2 instanceof Object) {
@@ -46,11 +44,9 @@ function deepEqual(val1, val2) {
 }
 
 /**
- * @param {!Array} arr1
- * @param {!Array} arr2
- * @return {boolean} True if the arrays are recursively equal.
+ * @return Whether the arrays are recursively equal.
  */
-function arraysEqual(arr1, arr2) {
+function arraysEqual(arr1: Array<any>, arr2: Array<any>): boolean {
   if (arr1.length !== arr2.length) {
     return false;
   }
@@ -65,11 +61,10 @@ function arraysEqual(arr1, arr2) {
 }
 
 /**
- * @param {!Object} obj1
- * @param {!Object} obj2
- * @return {boolean} True if the objects are recursively equal.
+ * @return Whether the objects are recursively equal.
  */
-function objectsEqual(obj1, obj2) {
+function objectsEqual(
+    obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
   if (keys1.length !== keys2.length) {
@@ -88,24 +83,22 @@ function objectsEqual(obj1, obj2) {
 
 /**
  * Returns a recursive copy of the value.
- * @param {*} val Value to copy. Should be a primitive or only contain
+ * @param val Value to copy. Should be a primitive or only contain
  *     serializable data (primitives, serializable arrays and
  *     serializable objects).
- * @return {*} A deep copy of the value.
+ * @return A deep copy of the value.
  */
-function deepCopy(val) {
+function deepCopy(val: any): any {
   if (!(val instanceof Object)) {
     return val;
   }
-  return Array.isArray(val) ? deepCopyArray(/** @type {!Array} */ (val)) :
-                              deepCopyObject(val);
+  return Array.isArray(val) ? deepCopyArray(val) : deepCopyObject(val);
 }
 
 /**
- * @param {!Array} arr
- * @return {!Array} Deep copy of the array.
+ * @return Deep copy of the array.
  */
-function deepCopyArray(arr) {
+function deepCopyArray(arr: Array<any>): Array<any> {
   const copy = [];
   for (let i = 0; i < arr.length; i++) {
     copy.push(deepCopy(arr[i]));
@@ -114,11 +107,10 @@ function deepCopyArray(arr) {
 }
 
 /**
- * @param {!Object} obj
- * @return {!Object} Deep copy of the object.
+ * @return Deep copy of the object.
  */
-function deepCopyObject(obj) {
-  const copy = {};
+function deepCopyObject(obj: {[key: string]: any}): {[key: string]: any} {
+  const copy: {[key: string]: any} = {};
   const keys = Object.keys(obj);
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
@@ -128,7 +120,6 @@ function deepCopyObject(obj) {
 }
 
 
-/** @polymer */
 export class SettingsPrefsElement extends PolymerElement {
   static get is() {
     return 'settings-prefs';
@@ -138,7 +129,6 @@ export class SettingsPrefsElement extends PolymerElement {
     return {
       /**
        * Object containing all preferences, for use by Polymer controls.
-       * @type {Object|undefined}
        */
       prefs: {
         type: Object,
@@ -148,8 +138,6 @@ export class SettingsPrefsElement extends PolymerElement {
       /**
        * Map of pref keys to values representing the state of the Chrome
        * pref store as of the last update from the API.
-       * @type {Object<*>}
-       * @private
        */
       lastPrefValues_: {
         type: Object,
@@ -166,21 +154,21 @@ export class SettingsPrefsElement extends PolymerElement {
     ];
   }
 
+  prefs: {[key: string]: any}|undefined;
+  private lastPrefValues_: {[key: string]: any};
+  private settingsApi_: typeof chrome.settingsPrivate = chrome.settingsPrivate;
+  private initialized_: boolean = false;
+  private boundPrefsChanged_:
+      (prefs: Array<chrome.settingsPrivate.PrefObject>) => void;
+
   constructor() {
     super();
-
-    /** @private {SettingsPrivate} */
-    this.settingsApi_ = /** @type {SettingsPrivate} */ (chrome.settingsPrivate);
-
-    /** @private {boolean} */
-    this.initialized_ = false;
 
     if (!CrSettingsPrefs.deferInitialization) {
       this.initialize();
     }
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -188,10 +176,10 @@ export class SettingsPrefsElement extends PolymerElement {
   }
 
   /**
-   * @param {SettingsPrivate=} opt_settingsApi SettingsPrivate implementation
-   *     to use (chrome.settingsPrivate by default).
+   * @param opt_settingsApi SettingsPrivate implementation to use
+   *     (chrome.settingsPrivate by default).
    */
-  initialize(opt_settingsApi) {
+  initialize(opt_settingsApi?: typeof chrome.settingsPrivate) {
     // Only initialize once (or after resetForTesting() is called).
     if (this.initialized_) {
       return;
@@ -202,18 +190,13 @@ export class SettingsPrefsElement extends PolymerElement {
       this.settingsApi_ = opt_settingsApi;
     }
 
-    /** @private {function(!Array<!chrome.settingsPrivate.PrefObject>)} */
     this.boundPrefsChanged_ = this.onSettingsPrivatePrefsChanged_.bind(this);
     this.settingsApi_.onPrefsChanged.addListener(this.boundPrefsChanged_);
     this.settingsApi_.getAllPrefs(
         this.onSettingsPrivatePrefsFetched_.bind(this));
   }
 
-  /**
-   * @param {!{path: string}} e
-   * @private
-   */
-  prefsChanged_(e) {
+  private prefsChanged_(e: {path: string}) {
     // |prefs| can be directly set or unset in tests.
     if (!CrSettingsPrefs.isInitialized || e.path === 'prefs') {
       return;
@@ -222,8 +205,7 @@ export class SettingsPrefsElement extends PolymerElement {
     const key = this.getPrefKeyFromPath_(e.path);
     const prefStoreValue = this.lastPrefValues_[key];
 
-    const prefObj = /** @type {chrome.settingsPrivate.PrefObject} */ (
-        this.get(key, this.prefs));
+    const prefObj = this.get(key, this.prefs);
 
     // If settingsPrivate already has this value, ignore it. (Otherwise,
     // a change event from settingsPrivate could make us call
@@ -246,11 +228,9 @@ export class SettingsPrefsElement extends PolymerElement {
 
   /**
    * Called when prefs in the underlying Chrome pref store are changed.
-   * @param {!Array<!chrome.settingsPrivate.PrefObject>} prefs
-   *     The prefs that changed.
-   * @private
    */
-  onSettingsPrivatePrefsChanged_(prefs) {
+  private onSettingsPrivatePrefsChanged_(
+      prefs: Array<chrome.settingsPrivate.PrefObject>) {
     if (CrSettingsPrefs.isInitialized) {
       this.updatePrefs_(prefs);
     }
@@ -258,21 +238,19 @@ export class SettingsPrefsElement extends PolymerElement {
 
   /**
    * Called when prefs are fetched from settingsPrivate.
-   * @param {!Array<!chrome.settingsPrivate.PrefObject>} prefs
-   * @private
    */
-  onSettingsPrivatePrefsFetched_(prefs) {
+  private onSettingsPrivatePrefsFetched_(
+      prefs: Array<chrome.settingsPrivate.PrefObject>) {
     this.updatePrefs_(prefs);
     CrSettingsPrefs.setInitialized();
   }
 
   /**
    * Checks the result of calling settingsPrivate.setPref.
-   * @param {string} key The key used in the call to setPref.
-   * @param {boolean} success True if setting the pref succeeded.
-   * @private
+   * @param key The key used in the call to setPref.
+   * @param success True if setting the pref succeeded.
    */
-  setPrefCallback_(key, success) {
+  private setPrefCallback_(key: string, success: boolean) {
     if (!success) {
       this.refresh(key);
     }
@@ -281,9 +259,8 @@ export class SettingsPrefsElement extends PolymerElement {
   /**
    * Get the current pref value from chrome.settingsPrivate to ensure the UI
    * stays up to date.
-   * @param {string} key
    */
-  refresh(key) {
+  refresh(key: string) {
     this.settingsApi_.getPref(key, pref => {
       this.updatePrefs_([pref]);
     });
@@ -293,12 +270,12 @@ export class SettingsPrefsElement extends PolymerElement {
    * Builds an object structure for the provided |path| within |prefsObject|,
    * ensuring that names that already exist are not overwritten. For example:
    * "a.b.c" -> a = {};a.b={};a.b.c={};
-   * @param {string} path Path to the new pref value.
-   * @param {*} value The value to expose at the end of the path.
-   * @param {Object} prefsObject The prefs object to add the path to.
-   * @private
+   * @param path Path to the new pref value.
+   * @param value The value to expose at the end of the path.
+   * @param prefsObject The prefs object to add the path to.
    */
-  updatePrefPath_(path, value, prefsObject) {
+  private updatePrefPath_(
+      path: string, value: any, prefsObject: {[key: string]: any}) {
     const parts = path.split('.');
     let cur = prefsObject;
 
@@ -316,13 +293,11 @@ export class SettingsPrefsElement extends PolymerElement {
 
   /**
    * Updates the prefs model with the given prefs.
-   * @param {!Array<!chrome.settingsPrivate.PrefObject>} newPrefs
-   * @private
    */
-  updatePrefs_(newPrefs) {
+  private updatePrefs_(newPrefs: Array<chrome.settingsPrivate.PrefObject>) {
     // Use the existing prefs object or create it.
     const prefs = this.prefs || {};
-    newPrefs.forEach(function(newPrefObj) {
+    newPrefs.forEach((newPrefObj) => {
       // Use the PrefObject from settingsPrivate to create a copy in
       // lastPrefValues_ at the pref's key.
       this.lastPrefValues_[newPrefObj.key] = deepCopy(newPrefObj.value);
@@ -335,7 +310,7 @@ export class SettingsPrefsElement extends PolymerElement {
           this.notifyPath('prefs.' + newPrefObj.key, newPrefObj);
         }
       }
-    }, this);
+    });
     if (!this.prefs) {
       this.prefs = prefs;
     }
@@ -346,11 +321,8 @@ export class SettingsPrefsElement extends PolymerElement {
    * path refers to. E.g., if the path of the changed property is
    * 'prefs.search.suggest_enabled.value', the key of the pref that changed is
    * 'search.suggest_enabled'.
-   * @param {string} path
-   * @return {string}
-   * @private
    */
-  getPrefKeyFromPath_(path) {
+  private getPrefKeyFromPath_(path: string): string {
     // Skip the first token, which refers to the member variable (this.prefs).
     const parts = path.split('.');
     assert(parts.shift() === 'prefs', 'Path doesn\'t begin with \'prefs\'');
@@ -377,8 +349,7 @@ export class SettingsPrefsElement extends PolymerElement {
     this.initialized_ = false;
     // Remove the listener added in initialize().
     this.settingsApi_.onPrefsChanged.removeListener(this.boundPrefsChanged_);
-    this.settingsApi_ =
-        /** @type {SettingsPrivate} */ (chrome.settingsPrivate);
+    this.settingsApi_ = chrome.settingsPrivate;
   }
 }
 

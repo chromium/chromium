@@ -8,11 +8,10 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 
 /**
  * Converts a string value to a type corresponding to the given preference.
- * @param {string} value
- * @param {!chrome.settingsPrivate.PrefObject} pref
- * @return {boolean|number|string|undefined}
  */
-export function stringToPrefValue(value, pref) {
+export function stringToPrefValue(
+    value: string, pref: chrome.settingsPrivate.PrefObject):
+    (boolean|number|string|undefined) {
   switch (pref.type) {
     case chrome.settingsPrivate.PrefType.BOOLEAN:
       return value === 'true';
@@ -30,15 +29,14 @@ export function stringToPrefValue(value, pref) {
       return value;
     default:
       assertNotReached('No conversion from string to ' + pref.type + ' pref');
+      return undefined;
   }
 }
 
-  /**
-   * Returns the value of the pref as a string.
-   * @param {!chrome.settingsPrivate.PrefObject} pref
-   * @return {string}
-   */
-export function prefToString(pref) {
+/**
+ * Returns the value of the pref as a string.
+ */
+export function prefToString(pref: chrome.settingsPrivate.PrefObject): string {
   switch (pref.type) {
     case chrome.settingsPrivate.PrefType.BOOLEAN:
     case chrome.settingsPrivate.PrefType.NUMBER:
@@ -48,5 +46,6 @@ export function prefToString(pref) {
       return /** @type {string} */ (pref.value);
     default:
       assertNotReached('No conversion from ' + pref.type + ' pref to string');
+      return '';
   }
 }

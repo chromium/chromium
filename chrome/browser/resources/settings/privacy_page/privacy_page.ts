@@ -53,7 +53,7 @@ interface SiteDataDetailsSubpageElement extends HTMLElement {
 const SettingsPrivacyPageElementBase =
     mixinBehaviors(
         [I18nBehavior, WebUIListenerBehavior],
-        PrefsMixin(RouteObserverMixin(PolymerElement))) as {
+        RouteObserverMixin(PrefsMixin(PolymerElement))) as {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
       PrefsMixinInterface & RouteObserverMixinInterface
     };

@@ -9,23 +9,19 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 class CrSettingsPrefsInternal {
-  constructor() {
-    /** @type {boolean} */
-    this.isInitialized = false;
+  isInitialized: boolean = false;
+  deferInitialization: boolean;
+  initializedResolver_: PromiseResolver<void> = new PromiseResolver();
 
+  constructor() {
     /**
      * Whether to defer initialization. Used in testing to prevent premature
      * initialization when intending to fake the settings API.
-     * @type {boolean}
      */
     this.deferInitialization = false;
-
-    /** @private {!PromiseResolver} */
-    this.initializedResolver_ = new PromiseResolver();
   }
 
-  /** @return {!Promise} */
-  get initialized() {
+  get initialized(): Promise<void> {
     return this.initializedResolver_.promise;
   }
 
@@ -42,5 +38,5 @@ class CrSettingsPrefsInternal {
   }
 }
 
-/** @type {!CrSettingsPrefsInternal} */
-export const CrSettingsPrefs = new CrSettingsPrefsInternal();
+export const CrSettingsPrefs: CrSettingsPrefsInternal =
+    new CrSettingsPrefsInternal();

@@ -284,9 +284,6 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",
     "chromeos/ambient_mode_page/constants.js",
     "people_page/sync_browser_proxy.js",
-    "prefs/prefs.js",
-    "prefs/prefs_types.js",
-    "prefs/pref_util.js",
     "router.js",
   ]
 }
@@ -320,7 +317,10 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "i18n_setup.js",
     "icons.js",
     "lifetime_browser_proxy.js",
+    "prefs/prefs.js",
     "prefs/prefs_mixin.js",
+    "prefs/prefs_types.js",
+    "prefs/pref_util.js",
     "privacy_page/personalization_options.js",
     "privacy_page/privacy_page_browser_proxy.js",
     "privacy_page/secure_dns_input.js",

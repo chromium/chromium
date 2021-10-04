@@ -58,7 +58,7 @@ interface SettingsPasswordCheckElement {
 const SettingsPasswordCheckElementBase =
     mixinBehaviors(
         [I18nBehavior, WebUIListenerBehavior],
-        PrefsMixin(RouteObserverMixin(PasswordCheckMixin((PolymerElement))))) as
+        RouteObserverMixin(PrefsMixin(PasswordCheckMixin((PolymerElement))))) as
     {
       new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
       PrefsMixinInterface & PasswordCheckMixinInterface &

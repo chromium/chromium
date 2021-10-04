@@ -56,7 +56,6 @@ js_type_check("closure_compile") {
     #":ensure_lazy_loaded",
     #":extension_controlled_indicator_tests",
     ":fake_input_method_private",
-    ":fake_settings_private",
 
     #":help_page_v3_test",
     #":idle_load_tests",
@@ -148,13 +147,6 @@ js_type_check("closure_compile") {
 }
 
 js_library("fake_input_method_private") {
-}
-
-js_library("fake_settings_private") {
-  deps = [
-    "..:chai_assert",
-    "..:fake_chrome_event.m",
-  ]
 }
 
 js_library("search_page_test") {

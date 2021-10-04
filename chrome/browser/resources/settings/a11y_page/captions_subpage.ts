@@ -19,10 +19,9 @@ import {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '../appearance
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
-const SettingsCaptionsElementBase = PrefsMixin(PolymerElement) as unknown as
-    {new (): PolymerElement & PrefsMixinInterface};
+const SettingsCaptionsElementBase = PrefsMixin(PolymerElement);
 
 class SettingsCaptionsElement extends SettingsCaptionsElementBase {
   static get is() {

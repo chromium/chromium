@@ -5,48 +5,63 @@
 /** @fileoverview Definitions for chrome.settingsPrivate API */
 // TODO(crbug.com/1203307): Auto-generate this file.
 
-declare namespace chrome {
-  export namespace settingsPrivate {
-    export enum PrefType {
-      BOOLEAN = 'BOOLEAN',
-      NUMBER = 'NUMBER',
-      STRING = 'STRING',
-      URL = 'URL',
-      LIST = 'LIST',
-      DICTIONARY = 'DICTIONARY',
-    }
+import {ChromeEvent} from './chrome_event.js';
 
-    export enum ControlledBy {
-      DEVICE_POLICY = 'DEVICE_POLICY',
-      USER_POLICY = 'USER_POLICY',
-      OWNER = 'OWNER',
-      PRIMARY_USER = 'PRIMARY_USER',
-      EXTENSION = 'EXTENSION',
-      PARENT = 'PARENT',
-      CHILD_RESTRICTION = 'CHILD_RESTRICTION',
-    }
+declare global {
+  export namespace chrome {
+    export namespace settingsPrivate {
+      export enum PrefType {
+        BOOLEAN = 'BOOLEAN',
+        NUMBER = 'NUMBER',
+        STRING = 'STRING',
+        URL = 'URL',
+        LIST = 'LIST',
+        DICTIONARY = 'DICTIONARY',
+      }
 
-    export enum Enforcement {
-      ENFORCED = 'ENFORCED',
-      RECOMMENDED = 'RECOMMENDED',
-      PARENT_SUPERVISED = 'PARENT_SUPERVISED',
-    }
+      export enum ControlledBy {
+        DEVICE_POLICY = 'DEVICE_POLICY',
+        USER_POLICY = 'USER_POLICY',
+        OWNER = 'OWNER',
+        PRIMARY_USER = 'PRIMARY_USER',
+        EXTENSION = 'EXTENSION',
+        PARENT = 'PARENT',
+        CHILD_RESTRICTION = 'CHILD_RESTRICTION',
+      }
 
-    export interface PrefObject {
-      key: string;
-      type: PrefType;
-      value: any;
-      controlledBy?: ControlledBy;
-      controlledByName?: string;
-      enforcement?: Enforcement;
-      recommendedValue?: any;
-      userSelectableValues?: Array<any>;
-      userControlDisabled?: boolean;
-      extensionId?: string;
-      extensionCanBeDisabled?: boolean;
-    }
+      export enum Enforcement {
+        ENFORCED = 'ENFORCED',
+        RECOMMENDED = 'RECOMMENDED',
+        PARENT_SUPERVISED = 'PARENT_SUPERVISED',
+      }
 
-    export function getDefaultZoom(callback: (zoom: number) => void): void;
-    export function setDefaultZoom(zoom: number): void;
+      export interface PrefObject {
+        key: string;
+        type: PrefType;
+        value: any;
+        controlledBy?: ControlledBy;
+        controlledByName?: string;
+        enforcement?: Enforcement;
+        recommendedValue?: any;
+        userSelectableValues?: Array<any>;
+        userControlDisabled?: boolean;
+        extensionId?: string;
+        extensionCanBeDisabled?: boolean;
+      }
+
+      type PrefsCallback = (prefs: Array<PrefObject>) => void;
+
+      export function getAllPrefs(callback: PrefsCallback): void;
+      export function getPref(
+          name: string, callback: (pref: PrefObject) => void): void;
+      export function setPref(
+          name: string, value: any, pageId?: string,
+          callback?: (success: boolean) => void): void;
+
+      export function getDefaultZoom(callback: (zoom: number) => void): void;
+      export function setDefaultZoom(zoom: number): void;
+
+      export const onPrefsChanged: ChromeEvent<PrefsCallback>;
+    }
   }
 }

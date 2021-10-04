@@ -22,12 +22,11 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
+import {PasswordCheckMixin} from './password_check_mixin.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 const SettingsAutofillPageElementBase =
-    PrefsMixin(PasswordCheckMixin(BaseMixin(PolymerElement))) as unknown as
-    {new (): PolymerElement & PasswordCheckMixinInterface};
+    PrefsMixin(PasswordCheckMixin(BaseMixin(PolymerElement)));
 
 class SettingsAutofillPageElement extends SettingsAutofillPageElementBase {
   static get is() {
