@@ -4,11 +4,55 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 
+#include <cstdint>
+#include <memory>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/flat_map.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
+namespace {
+
+using chromeos::bluetooth_config::mojom::BatteryProperties;
+using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
+using chromeos::bluetooth_config::mojom::BluetoothDevicePropertiesPtr;
+using chromeos::bluetooth_config::mojom::DeviceBatteryInfo;
+using chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr;
+using chromeos::bluetooth_config::mojom::DeviceConnectionState;
+using chromeos::bluetooth_config::mojom::DeviceType;
+using chromeos::bluetooth_config::mojom::PairedBluetoothDeviceProperties;
+using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
+
+const char kDeviceId[] = "/device/id";
+const std::string kDeviceNickname = "clicky keys";
+const std::u16string kDevicePublicName = u"Mechanical Keyboard";
+
+PairedBluetoothDevicePropertiesPtr CreatePairedDeviceProperties() {
+  PairedBluetoothDevicePropertiesPtr paired_device_properties =
+      PairedBluetoothDeviceProperties::New();
+  paired_device_properties->device_properties =
+      BluetoothDeviceProperties::New();
+  paired_device_properties->device_properties->id = kDeviceId;
+  paired_device_properties->device_properties->public_name = kDevicePublicName;
+  return paired_device_properties;
+}
+
+}  // namespace
 
 class BluetoothDeviceListItemViewTest : public AshTestBase {
  public:
@@ -16,17 +60,132 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
     AshTestBase::SetUp();
 
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
+
+    fake_bluetooth_detailed_view_ =
+        std::make_unique<tray::FakeBluetoothDetailedView>(/*delegate=*/nullptr);
+    std::unique_ptr<BluetoothDeviceListItemView> bluetooth_device_list_item =
+        std::make_unique<BluetoothDeviceListItemView>(
+            fake_bluetooth_detailed_view_.get());
+    bluetooth_device_list_item_ = bluetooth_device_list_item.get();
+
+    bluetooth_device_list_item_->UpdateDeviceProperties(
+        CreatePairedDeviceProperties());
+
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+    widget_->SetContentsView(bluetooth_device_list_item.release());
+
+    base::RunLoop().RunUntilIdle();
   }
 
-  void TearDown() override { AshTestBase::TearDown(); }
+  void TearDown() override {
+    widget_.reset();
+
+    AshTestBase::TearDown();
+  }
+
+  BluetoothDeviceListItemView* bluetooth_device_list_item() {
+    return bluetooth_device_list_item_;
+  }
+
+  const BluetoothDeviceListItemView* last_clicked_device_list_item() {
+    return fake_bluetooth_detailed_view_->last_clicked_device_list_item();
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<tray::FakeBluetoothDetailedView>
+      fake_bluetooth_detailed_view_;
+  BluetoothDeviceListItemView* bluetooth_device_list_item_;
 };
 
-TEST_F(BluetoothDeviceListItemViewTest, CanConstruct) {
-  BluetoothDeviceListItemView bluetooth_device_list_item_view(
-      /*listener=*/nullptr);
+TEST_F(BluetoothDeviceListItemViewTest, HasCorrectLabel) {
+  PairedBluetoothDevicePropertiesPtr paired_device_properties =
+      CreatePairedDeviceProperties();
+
+  ASSERT_TRUE(bluetooth_device_list_item()->text_label());
+
+  EXPECT_EQ(kDevicePublicName,
+            bluetooth_device_list_item()->text_label()->GetText());
+
+  paired_device_properties->nickname = kDeviceNickname;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  EXPECT_EQ(base::ASCIIToUTF16(kDeviceNickname),
+            bluetooth_device_list_item()->text_label()->GetText());
+}
+
+TEST_F(BluetoothDeviceListItemViewTest, HasCorrectSubLabel) {
+  PairedBluetoothDevicePropertiesPtr paired_device_properties =
+      CreatePairedDeviceProperties();
+
+  EXPECT_FALSE(bluetooth_device_list_item()->sub_text_label());
+
+  paired_device_properties->device_properties->connection_state =
+      DeviceConnectionState::kConnecting;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  ASSERT_TRUE(bluetooth_device_list_item()->sub_text_label());
+
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTING),
+      bluetooth_device_list_item()->sub_text_label()->GetText());
+
+  paired_device_properties->device_properties->connection_state =
+      DeviceConnectionState::kConnected;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  // There should not be a sub-label unless battery information is available.
+  EXPECT_FALSE(bluetooth_device_list_item()->sub_text_label());
+}
+
+// The icon of a Bluetooth device is rendered using a ImageSkia. We can verify
+// that the correct icon is used by the device view by comparing a generated
+// ImageSkia to the image used by the view. For more information on why this
+// works, please see ImageSkia::BackedBySameObjectAs().
+TEST_F(BluetoothDeviceListItemViewTest, HasCorrectIcon) {
+  const base::flat_map<DeviceType, const gfx::VectorIcon*>
+      device_type_to_icon_map = {{
+          {DeviceType::kComputer, &ash::kSystemMenuComputerIcon},
+          {DeviceType::kPhone, &ash::kSystemMenuPhoneIcon},
+          {DeviceType::kHeadset, &ash::kSystemMenuHeadsetIcon},
+          {DeviceType::kVideoCamera, &ash::kSystemMenuVideocamIcon},
+          {DeviceType::kGameController, &ash::kSystemMenuGamepadIcon},
+          {DeviceType::kKeyboard, &ash::kSystemMenuKeyboardIcon},
+          {DeviceType::kMouse, &ash::kSystemMenuMouseIcon},
+          {DeviceType::kTablet, &ash::kSystemMenuTabletIcon},
+      }};
+  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+
+  for (const auto& it : device_type_to_icon_map) {
+    PairedBluetoothDevicePropertiesPtr paired_device_properties =
+        CreatePairedDeviceProperties();
+    paired_device_properties->device_properties->device_type = it.first;
+    bluetooth_device_list_item()->UpdateDeviceProperties(
+        paired_device_properties);
+
+    // This generated icon should be backed by the same object as the icon of
+    // the device view since they were both created from the same VectorIcon
+    // using the same color.
+    const gfx::ImageSkia generated_icon =
+        gfx::CreateVectorIcon(*it.second, icon_color);
+
+    EXPECT_TRUE(bluetooth_device_list_item()
+                    ->left_icon()
+                    ->GetImage()
+                    .BackedBySameObjectAs(generated_icon));
+  }
+}
+
+TEST_F(BluetoothDeviceListItemViewTest, NotifiesListenerWhenClicked) {
+  EXPECT_FALSE(last_clicked_device_list_item());
+  SimulateMouseClickAt(GetEventGenerator(), bluetooth_device_list_item());
+  EXPECT_EQ(last_clicked_device_list_item(), bluetooth_device_list_item());
 }
 
 }  // namespace ash

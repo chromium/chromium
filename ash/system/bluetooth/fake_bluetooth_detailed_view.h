@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
+#include "ash/system/tray/view_click_listener.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -24,7 +25,8 @@ class TriView;
 namespace tray {
 
 // Fake BluetoothDetailedView implementation.
-class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView {
+class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView,
+                                             public ViewClickListener {
  public:
   explicit FakeBluetoothDetailedView(Delegate* delegate);
   FakeBluetoothDetailedView(const FakeBluetoothDetailedView&) = delete;
@@ -40,6 +42,10 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView {
     return last_bluetooth_enabled_state_;
   }
 
+  const BluetoothDeviceListItemView* last_clicked_device_list_item() const {
+    return last_clicked_device_list_item_;
+  }
+
  private:
   // BluetoothDetailedView:
   views::View* GetAsView() override;
@@ -50,9 +56,13 @@ class ASH_EXPORT FakeBluetoothDetailedView : public BluetoothDetailedView {
   void NotifyDeviceListChanged() override;
   views::View* device_list() override;
 
+  // ViewClickListener:
+  void OnViewClicked(views::View* view) override;
+
   size_t notify_device_list_changed_call_count_ = 0;
   absl::optional<bool> last_bluetooth_enabled_state_;
   std::unique_ptr<views::View> device_list_;
+  BluetoothDeviceListItemView* last_clicked_device_list_item_ = nullptr;
 };
 
 }  // namespace tray
