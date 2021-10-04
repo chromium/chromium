@@ -821,6 +821,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.Manifest.ChromeHeader" enum="BooleanPresent"
     expires_after="M82">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>pwnall@chromium.org</owner>
   <owner>mek@chromium.org</owner>
   <summary>
@@ -831,6 +834,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.Manifest.DangerousMode" enum="BooleanPresent"
     expires_after="M82">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>pwnall@chromium.org</owner>
   <owner>mek@chromium.org</owner>
   <summary>
@@ -841,6 +847,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.Manifest.InterceptUsage"
     enum="AppCacheManifestInterceptUsage" expires_after="M82">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>pwnall@chromium.org</owner>
   <owner>mek@chromium.org</owner>
   <summary>
@@ -850,6 +859,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.ReinitAttempt" units="units" expires_after="M85">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>mek@chromium.org</owner>
   <summary>
     Tracks the number of times the appcache reinit process occurs. The boolean
@@ -860,6 +872,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.Canceled" enum="BooleanCanceled"
     expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>Tracks whether the update job was canceled.</summary>
@@ -867,6 +882,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingCorruptionFixedInUpdate"
     units="resources" expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -880,6 +898,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingResourceCheck" units="units"
     expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -890,6 +911,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingResourceCorrupt" units="units"
     expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -903,6 +927,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingResourceCorruptionRecovery"
     units="units" expires_after="2022-01-30">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -921,6 +948,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingResourceNotCorrupt"
     units="resources" expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -934,6 +964,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingResourceOnlyCorrupt"
     units="resources" expires_after="2022-02-13">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>enne@chromium.org</owner>
   <summary>
@@ -949,6 +982,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingResourceOnlyNotCorrupt"
     units="resources" expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>enne@chromium.org</owner>
   <summary>
@@ -964,6 +1000,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ExistingResourceReused" units="units"
     expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -974,6 +1013,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.FinalInternalState"
     enum="AppCacheUpdateJobInternalState" expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>Tracks the final internal state for the update job.</summary>
@@ -981,6 +1023,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="appcache.UpdateJob.ResourceFreshness" units="days"
     expires_after="2021-10-05">
+  <obsolete>
+    Removed in M96. Appcache was disabled in M95.
+  </obsolete>
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
