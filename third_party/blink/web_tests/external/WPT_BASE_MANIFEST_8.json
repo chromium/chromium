@@ -1210,7 +1210,7 @@
        ]
       ],
       "white-space-pre-wrap-chash.html": [
-       "3c239fb737757e92d3eb0d62689b06c0be38f090",
+       "c34b2d0b3d578571cace8ac46e3b284368c162b2",
        [
         null,
         {}
@@ -285207,14 +285207,6 @@
      []
     ]
    },
-   "inert": {
-    "frame": {
-     "button.html": [
-      "5867c758142c6652362a23f19533a8d86fe29648",
-      []
-     ]
-    }
-   },
    "infrastructure": {
     "DIR_METADATA": [
      "b19504342dfe64050a6372808f15f3e792a79218",
@@ -297522,6 +297514,14 @@
       ],
       "utils.js": [
        "1c1cdb2fbf08dcadd7502d9299077d1a298a0e0b",
+       []
+      ],
+      "window-open-during-prerendering.html": [
+       "3a6ece5fe898f0f95e82af3665a596f7ef5ed805",
+       []
+      ],
+      "window-open-in-prerenderingchange.html": [
+       "485b878f16b1e90c604877c464e8edeba373551b",
        []
       ]
      }
@@ -384303,6 +384303,15 @@
       }
      ]
     ],
+    "click-interactionid.html": [
+     "93ea0006193c149f6dda99207af4c608650c860d",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "click-timing.html": [
      "84943f9590a9f2df83ee841503878f1e455107aa",
      [
@@ -443313,24 +443322,6 @@
       null,
       {}
      ]
-    ],
-    "inert-retargeting-iframe.tentative.html": [
-     "579fc57be258a709a9d22cb263a6422d9bdb7953",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "inert-retargeting.tentative.html": [
-     "2280cf5a5d1fb16ef192310e4fb4f7d22b3702b3",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
     ]
    },
    "infrastructure": {
@@ -480116,6 +480107,15 @@
    },
    "speculation-rules": {
     "prerender": {
+     "restriction-window-open.html": [
+      "33ec5b1530de8159c6ee5e2db06ac8b7df984bdf",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "state-and-event.html": [
       "b8252121b1569dad90098636e86b8ad930cf5c70",
       [
@@ -488775,13 +488775,6 @@
       {}
      ]
     ],
-    "Document-execCommand.tentative.html": [
-     "0fd7e644b9ee019d5efcb86dc50ea14de02aa3cf",
-     [
-      null,
-      {}
-     ]
-    ],
     "Document-write.tentative.html": [
      "87e9e724699efc3f0edde3afade4cf53ec2c9c3e",
      [
@@ -489010,13 +489003,6 @@
     ],
     "WorkerGlobalScope-importScripts.html": [
      "9853b1bc44845155ef889b7b5ee93c877844e019",
-     [
-      null,
-      {}
-     ]
-    ],
-    "block-Document-execCommand.tentative.html": [
-     "e25b7dd28a2f646293d1abe879d525259db7d187",
      [
       null,
       {}

@@ -3023,7 +3023,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webauthn/createcredential-extensions.h
 crbug.com/626703 external/wpt/css/css-grid/alignment/grid-content-alignment-overflow-002.html [ Failure ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/FileAPI/file/send-file-formdata-controls.any.worker.html [ Failure Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/inert/inert-retargeting-iframe.tentative.html [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/url/url-setters.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac ] external/wpt/url/url-setters.any.worker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/scrolling/scrollend-event-fired-after-snap.html [ Timeout ]
