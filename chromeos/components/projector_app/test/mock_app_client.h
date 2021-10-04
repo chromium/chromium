@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "chromeos/components/projector_app/projector_app_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace signin {
 class IdentityManager;
@@ -26,6 +27,8 @@ class MockAppClient : public ProjectorAppClient {
 
   // ProjectorAppClient:
   signin::IdentityManager* GetIdentityManager() override;
+  MOCK_METHOD1(AddObserver, void(Observer*));
+  MOCK_METHOD1(RemoveObserver, void(Observer*));
 
   void SetAutomaticIssueOfAccessTokens(bool success);
   void WaitForAccessRequest(const std::string& account_email);

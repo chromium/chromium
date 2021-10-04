@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "chromeos/components/projector_app/projector_app_client.h"
 #include "chromeos/components/projector_app/projector_oauth_token_fetcher.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -25,7 +26,8 @@ enum class ProjectorError {
 };
 
 // Handles messages from the Projector WebUIs (i.e. chrome://projector).
-class ProjectorMessageHandler : public content::WebUIMessageHandler {
+class ProjectorMessageHandler : public content::WebUIMessageHandler,
+                                public ProjectorAppClient::Observer {
  public:
   ProjectorMessageHandler();
   ProjectorMessageHandler(const ProjectorMessageHandler&) = delete;
@@ -40,6 +42,13 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
+  // ProjectorAppClient::Observer:
+  // Notifies the Projector SWA the pending screencasts' state change and
+  // updates the pending list in Projector SWA.
+  // TODO(b/201468756): Add a list of PendingScreencast as argument. Implement
+  // this method.
+  void OnScreencastsStateChange() override;
+
   // Requested by the Projector SWA to list the available accounts (primary and
   // secondary accounts) in the current session. The list of accounts will be
   // used in the account picker in the SWA.

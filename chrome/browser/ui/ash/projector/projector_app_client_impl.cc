@@ -18,3 +18,11 @@ signin::IdentityManager* ProjectorAppClientImpl::GetIdentityManager() {
   DCHECK(chromeos::ProfileHelper::IsPrimaryProfile(profile));
   return IdentityManagerFactory::GetForProfile(profile);
 }
+
+void ProjectorAppClientImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ProjectorAppClientImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}

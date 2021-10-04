@@ -51,9 +51,13 @@ std::string ProjectorErrorToString(ProjectorError mode) {
 }  // namespace
 
 ProjectorMessageHandler::ProjectorMessageHandler()
-    : content::WebUIMessageHandler() {}
+    : content::WebUIMessageHandler() {
+  ProjectorAppClient::Get()->AddObserver(this);
+}
 
-ProjectorMessageHandler::~ProjectorMessageHandler() = default;
+ProjectorMessageHandler::~ProjectorMessageHandler() {
+  ProjectorAppClient::Get()->RemoveObserver(this);
+}
 
 base::WeakPtr<ProjectorMessageHandler> ProjectorMessageHandler::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -83,6 +87,8 @@ void ProjectorMessageHandler::RegisterMessages() {
       "onError", base::BindRepeating(&ProjectorMessageHandler::OnError,
                                      base::Unretained(this)));
 }
+
+void ProjectorMessageHandler::OnScreencastsStateChange() {}
 
 void ProjectorMessageHandler::GetAccounts(const base::ListValue* args) {
   AllowJavascript();
