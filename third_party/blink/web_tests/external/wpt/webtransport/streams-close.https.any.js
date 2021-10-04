@@ -62,6 +62,82 @@ promise_test(async t => {
 }, 'Abort server-initiated bidirectional stream');
 
 promise_test(async t => {
+  const id = token();
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const writable = await wt.createUnidirectionalStream();
+
+  const WT_CODE = 95;
+  const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
+  await writable.abort(
+      new WebTransportError({streamErrorCode: WT_CODE}));
+
+  await wait(10);
+  const data = await query(id);
+
+  // Check that stream is aborted with RESET_STREAM with the code and reason
+  assert_own_property(data, 'stream-close-info');
+  const info = data['stream-close-info'];
+
+  assert_equals(info.source, 'reset', 'reset_stream');
+  assert_equals(info.code, HTTP_CODE, 'code');
+}, 'Abort unidirectional stream with WebTransportError');
+
+promise_test(async t => {
+  const id = token();
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const writable = await wt.createUnidirectionalStream();
+  const writer = writable.getWriter();
+
+  const WT_CODE = 134;
+  const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
+
+  // Write a chunk, close the stream, and then abort the stream immediately to
+  // abort the closing operation.
+  writer.write(new Uint8Array([32]));
+  writer.close();
+  await writer.abort(
+      new WebTransportError({streamErrorCode: WT_CODE}));
+
+  writer.releaseLock();
+
+  await wait(10);
+  const data = await query(id);
+
+  // Check that stream is aborted with RESET_STREAM with the code and reason
+  assert_own_property(data, 'stream-close-info');
+  const info = data['stream-close-info'];
+
+  assert_equals(info.source, 'reset', 'reset_stream');
+  assert_equals(info.code, HTTP_CODE, 'code');
+}, 'Close and abort unidirectional stream');
+
+promise_test(async t => {
+  const id = token();
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const writable = await wt.createUnidirectionalStream();
+  await writable.abort();
+
+  await wait(10);
+  const data = await query(id);
+
+  // Check that stream is aborted with RESET_STREAM with the code and reason
+  assert_own_property(data, 'stream-close-info');
+  const info = data['stream-close-info'];
+
+  assert_equals(info.source, 'reset', 'reset_stream');
+  assert_equals(info.code, webtransport_code_to_http_code(0), 'code');
+}, 'Abort unidirectional stream with default error code');
+
+promise_test(async t => {
   const WT_CODE = 240;
   const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
   const wt = new WebTransport(
