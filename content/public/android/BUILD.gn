@@ -38,7 +38,7 @@ android_resources("content_java_resources") {
     "java/res/drawable-xxhdpi/ic_search.png",
     "java/res/drawable-xxxhdpi/ic_menu_share_holo_light.png",
     "java/res/drawable-xxxhdpi/ic_search.png",
-    "java/res/drawable/floating_popup_background_light.xml",
+    "java/res/drawable/floating_popup_background.xml",
     "java/res/layout-land/date_time_picker_dialog.xml",
     "java/res/layout/date_time_picker_dialog.xml",
     "java/res/layout/date_time_suggestion.xml",
