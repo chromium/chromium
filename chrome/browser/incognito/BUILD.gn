@@ -7,11 +7,11 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoCctProfileManager.java",
-    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoReauthManager.java",
-    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoReauthSettingSwitchPreference.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoStartup.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoTabPersistence.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthManager.java",
+    "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingSwitchPreference.java",
   ]
   deps = [
     "//base:base_java",
@@ -45,8 +45,8 @@ android_library("incognito_java_tests") {
   testonly = true
 
   sources = [
-    "android/javatests/src/org/chromium/chrome/browser/incognito/IncognitoReauthSettingSwitchPreferenceTest.java",
-    "android/javatests/src/org/chromium/chrome/browser/incognito/IncognitoReauthSettingTest.java",
+    "android/javatests/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingSwitchPreferenceTest.java",
+    "android/javatests/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthSettingTest.java",
   ]
 
   deps = [

@@ -24,7 +24,7 @@
         android:key="https_first_mode"
         android:title="@string/settings_https_first_mode_title"
         android:summary="@string/settings_https_first_mode_summary"/>
-     <org.chromium.chrome.browser.incognito.IncognitoReauthSettingSwitchPreference
+     <org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitchPreference
         android:key="incognito_lock"
         android:title="@string/settings_incognito_tab_lock_title"
         android:summary="@string/settings_incognito_tab_lock_summary_android_setting_off"
