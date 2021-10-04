@@ -11,18 +11,16 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './certificate_entry.js';
 import './certificate_shared_css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertNotReached} from '../../js/assert.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CertificateAction, CertificateActionEvent, CertificateActionEventDetail} from './certificate_manager_types.js';
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesError, CertificatesImportError, CertificatesOrgGroup, CertificateType, NewCertificateSubNode} from './certificates_browser_proxy.js';
 
-const CertificateListElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const CertificateListElementBase = I18nMixin(PolymerElement);
 
 export class CertificateListElement extends CertificateListElementBase {
   static get is() {

@@ -10,11 +10,11 @@ import '../../cr_elements/cr_button/cr_button.m.js';
 import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import './certificate_shared_css.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrDialogElement} from '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertNotReached} from '../../js/assert.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nMixin} from '../../js/i18n_mixin.js';
 import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificateSubnode, CertificateType} from './certificates_browser_proxy.js';
@@ -26,8 +26,7 @@ export interface CertificateDeleteConfirmationDialogElement {
 }
 
 const CertificateDeleteConfirmationDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+    I18nMixin(PolymerElement);
 
 export class CertificateDeleteConfirmationDialogElement extends
     CertificateDeleteConfirmationDialogElementBase {

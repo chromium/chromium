@@ -11,16 +11,14 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import './certificate_shared_css.js';
 import './certificate_subentry.js';
 
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyIndicatorType} from '../../cr_elements/policy/cr_policy_indicator_behavior.m.js';
-import {I18nBehavior} from '../../js/i18n_behavior.m.js';
+import {I18nMixin} from '../../js/i18n_mixin.js';
 
 import {CertificatesOrgGroup, CertificateType} from './certificates_browser_proxy.js';
 
-const CertificateEntryElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const CertificateEntryElementBase = I18nMixin(PolymerElement);
 
 class CertificateEntryElement extends CertificateEntryElementBase {
   static get is() {
