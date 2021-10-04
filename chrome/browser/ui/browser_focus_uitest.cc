@@ -740,7 +740,13 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, NoFocusForBackgroundNTP) {
 
 // Tests that the location bar is focusable when showing, which is the case in
 // popup windows.
-IN_PROC_BROWSER_TEST_F(BrowserFocusTest, PopupLocationBar) {
+// TODO(crbug.com/1255472): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_PopupLocationBar DISABLED_PopupLocationBar
+#else
+#define MAYBE_PopupLocationBar PopupLocationBar
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserFocusTest, MAYBE_PopupLocationBar) {
   Browser* popup_browser = CreateBrowserForPopup(browser()->profile());
 
   // Make sure the popup is in the front. Otherwise the test is flaky.
