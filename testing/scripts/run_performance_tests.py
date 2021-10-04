@@ -776,8 +776,7 @@ def _run_benchmarks_on_shardmap(
       'with it.')
   if 'benchmarks' in shard_configuration:
     benchmarks_and_configs = shard_configuration['benchmarks']
-    for (benchmark, story_selection_config
-         ) in benchmarks_and_configs.iteritems():
+    for (benchmark, story_selection_config) in benchmarks_and_configs.items():
       # Need to run the benchmark on both latest browser and reference
       # build.
       output_paths = OutputFilePaths(isolated_out_dir, benchmark).SetUp()
@@ -806,8 +805,7 @@ def _run_benchmarks_on_shardmap(
             options.xvfb)
   if 'executables' in shard_configuration:
     names_and_configs = shard_configuration['executables']
-    for (name, configuration
-         ) in names_and_configs.iteritems():
+    for (name, configuration) in names_and_configs.items():
       additional_flags = []
       if 'arguments' in configuration:
         additional_flags = configuration['arguments']
