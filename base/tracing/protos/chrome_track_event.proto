@@ -325,9 +325,23 @@ message AndroidViewDump {
   repeated AndroidActivity activity = 1;
 }
 
+message ParkableStringCompressInBackground {
+  // The size of the string that is being compressed, in bytes.
+  optional int32 size_bytes = 1;
+}
+
+message ParkableStringUnpark {
+  // The size of the string that is being unparked, in bytes.
+  optional int32 size_bytes = 1;
+
+  // The elapsed time since the string was written to disk (in seconds), or -1
+  // if it hadn't yet been written to disk.
+  optional int32 time_since_last_disk_write_sec = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1023
+  // Next ID: 1025
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -376,5 +390,9 @@ message ChromeTrackEvent {
     optional RenderFrameProxyHost render_frame_proxy_host = 1021;
 
     optional AndroidViewDump android_view_dump = 1022;
+
+    optional ParkableStringCompressInBackground
+        parkable_string_compress_in_background = 1023;
+    optional ParkableStringUnpark parkable_string_unpark = 1024;
   }
 }

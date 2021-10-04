@@ -15,10 +15,11 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/memory.h"
 #include "base/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -526,13 +527,20 @@ void ParkableStringImpl::Unpark() {
   if (metadata_->state_ == State::kUnparked)
     return;
 
-  TRACE_EVENT2(
-      "blink", "ParkableStringImpl::Unpark", "size", CharactersSizeInBytes(),
-      "time_since_last_disk_write_s",
-      metadata_->last_disk_parking_time_.is_null()
-          ? -1
-          : (base::TimeTicks::Now() - metadata_->last_disk_parking_time_)
-                .InSeconds());
+  TRACE_EVENT(
+      "blink", "ParkableStringImpl::Unpark", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_parkable_string_unpark();
+        data->set_size_bytes(
+            base::saturated_cast<int32_t>(CharactersSizeInBytes()));
+        int32_t write_time = base::saturated_cast<int32_t>(
+            metadata_->last_disk_parking_time_.is_null()
+                ? -1
+                : (base::TimeTicks::Now() - metadata_->last_disk_parking_time_)
+                      .InSeconds());
+        data->set_time_since_last_disk_write_sec(write_time);
+      });
+
   DCHECK(metadata_->compressed_ || metadata_->on_disk_metadata_);
   string_ = UnparkInternal();
   metadata_->state_ = State::kUnparked;
@@ -631,8 +639,13 @@ void ParkableStringImpl::PostBackgroundCompressionTask() {
 // static
 void ParkableStringImpl::CompressInBackground(
     std::unique_ptr<BackgroundTaskParams> params) {
-  TRACE_EVENT1("blink", "ParkableStringImpl::CompressInBackground", "size",
-               params->size);
+  TRACE_EVENT(
+      "blink", "ParkableStringImpl::CompressInBackground",
+      [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_parkable_string_compress_in_background();
+        data->set_size_bytes(base::saturated_cast<int32_t>(params->size));
+      });
 
   base::ElapsedTimer timer;
 #if defined(ADDRESS_SANITIZER)
