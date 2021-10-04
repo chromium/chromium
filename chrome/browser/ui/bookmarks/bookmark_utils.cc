@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/search/search.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
@@ -33,6 +34,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 
 #if defined(TOOLKIT_VIEWS)
@@ -108,6 +110,11 @@ bool GetURLAndTitleToBookmark(content::WebContents* web_contents,
   } else {
     *title = web_contents->GetTitle();
   }
+
+  // Use "New tab" as title if the current page is NTP even in incognito mode.
+  if (u == GURL(chrome::kChromeUINewTabURL))
+    *title = l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE);
+
   return true;
 }
 
