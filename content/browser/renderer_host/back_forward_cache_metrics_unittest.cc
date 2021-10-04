@@ -178,7 +178,8 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
               testing::ElementsAre(UkmEntry{id3, {{time_away, 0b1000}}}));
 }
 
-TEST_F(BackForwardCacheMetricsTest, TimeRecordedWhenRendererIsKilled) {
+// TODO(crbug.com/1255492): Flaky under TSan.
+TEST_F(BackForwardCacheMetricsTest, DISABLED_TimeRecordedWhenRendererIsKilled) {
   // Need to enable back-forward cache to make sure a page is put into the
   // cache.
   base::test::ScopedFeatureList scoped_feature_list;
