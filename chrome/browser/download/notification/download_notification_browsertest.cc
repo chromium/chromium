@@ -779,7 +779,9 @@ IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadRemoved) {
   EXPECT_EQ(0u, downloads.size());
 }
 
-IN_PROC_BROWSER_TEST_P(DownloadNotificationTest, DownloadMultipleFiles) {
+// Test is flaky: https://crbug.com/1252430
+IN_PROC_BROWSER_TEST_P(DownloadNotificationTest,
+                       DISABLED_DownloadMultipleFiles) {
   GURL url1(SlowDownloadInterceptor::kUnknownSizeUrl);
   GURL url2(SlowDownloadInterceptor::kKnownSizeUrl);
 
