@@ -185,12 +185,12 @@ void FrameAutoAttacher::UpdatePortals() {
 
 void FrameAutoAttacher::UpdateAutoAttach(base::OnceClosure callback) {
   if (auto_attach()) {
+    UpdateFrames();
     if (render_frame_host_ && !render_frame_host_->GetParent() &&
         !observing_service_workers_) {
       observing_service_workers_ = true;
       ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
       ReattachServiceWorkers();
-      UpdateFrames();
       UpdatePortals();
     }
   } else if (observing_service_workers_) {

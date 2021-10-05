@@ -1,0 +1,5 @@
+Tests that setAutoAttach properly attaches OOPIF subframes 2 levels deep.
+Attached to target 
+Detached from target
+Attached to target http://devtools.oopif-b.test:8080/inspector-protocol/resources/iframe.html
+

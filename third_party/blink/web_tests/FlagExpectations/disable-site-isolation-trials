@@ -32,6 +32,8 @@ virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-ke
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
 http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-iframe.js [ Skip ]
+virtual/not-plz-service-worker/http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
+http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
 
 # Fix to unblock wpt-importer
 crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
