@@ -718,9 +718,9 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       }
 #endif
 
-      // Get supported extensions
-      dawn_info_list->push_back("[Supported Extensions]");
-      for (const char* name : adapter.GetSupportedExtensions()) {
+      // Get supported features
+      dawn_info_list->push_back("[Supported Features]");
+      for (const char* name : adapter.GetSupportedFeatures()) {
         dawn_info_list->push_back(name);
       }
     }
