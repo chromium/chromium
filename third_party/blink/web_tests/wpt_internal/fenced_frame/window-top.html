@@ -10,21 +10,33 @@
 <script>
 promise_test(async () => {
   const window_top_key = KEYS["window.top"];
-  const navigate_key = KEYS["navigate"];
+  const window_top_ack_key = KEYS["window.top ACK"];
 
   attachFencedFrame("resources/window-top-inner.html");
 
-  const actual_result = await nextValueFromServer(window_top_key);
-  assert_equals(actual_result, "pass",
-                "The fenced frame has the right value for `window.top`");
+  // Get the result for the top-level fenced frame.
+  const fenced_frame_result = await nextValueFromServer(window_top_key);
+  assert_equals(fenced_frame_result, "pass: fenced frame", "The top-level " +
+                                     "fenced frame has the right value for " +
+                                     "`window.top`");
 
-  writeValueToServer(navigate_key, "navigate");
+  // Write an ACK, so that the fenced frame knows it can send message over the
+  // `window_top_key` channel again.
+  writeValueToServer(window_top_ack_key, "ACK");
 
-  const next_actual_result  = await nextValueFromServer(window_top_key);
-  assert_equals(next_actual_result, "pass",
-                "The fenced frame has the right value for `window.top` upon " +
-                "subsequent navigations");
+  // Get the result for the iframe inside the fenced frame.
+  const iframe_in_fenced_frame_result = await nextValueFromServer(window_top_key);
+  assert_equals(iframe_in_fenced_frame_result, "pass: fenced frame > iframe",
+                "The iframe inside the top-level fenced frame has the right " +
+                "value for `window.top`");
 
+  writeValueToServer(window_top_ack_key, "ACK");
+
+  // Get the result for the nested fenced frame.
+  const nested_fenced_frame_result = await nextValueFromServer(window_top_key);
+  assert_equals(nested_fenced_frame_result, "pass: fenced frame > fenced frame",
+                "The nested fenced frame inside the top-level fenced frame " +
+                "has the right value for `window.top`");
 }, "window.top");
 </script>
 
