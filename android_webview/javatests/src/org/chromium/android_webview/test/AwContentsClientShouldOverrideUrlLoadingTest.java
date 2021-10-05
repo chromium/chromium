@@ -1024,6 +1024,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1255944")
     public void testNullContentsClientOpenLink() throws Throwable {
         try {
             // The test will fire real intents through the test activity.
