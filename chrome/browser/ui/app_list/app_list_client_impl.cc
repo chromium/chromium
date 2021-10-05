@@ -442,10 +442,6 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 void AppListClientImpl::SetUpSearchUI() {
   search_controller_ = app_list::CreateSearchController(
       profile_, current_model_updater_, this, GetNotifier());
-
-  // Refresh the results used for the suggestion chips with empty query.
-  // This fixes crbug.com/999287.
-  StartSearch(std::u16string());
 }
 
 app_list::SearchController* AppListClientImpl::search_controller() {
