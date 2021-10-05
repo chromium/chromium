@@ -58,6 +58,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.externalauth.ExternalAuthUtils;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -1023,6 +1024,16 @@ class LocationBarMediator
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
             return (mUrlHasFocus || mIsUrlFocusChangeInProgress) && isLensOnOmniboxEnabled();
         }
+
+        // Never show Lens in the old search widget page context.
+        // This widget must guarantee consistent feature set regardless of search engine choice or
+        // other aspects that may not be met by Lens.
+        LocationBarDataProvider dataProvider = getLocationBarDataProvider();
+        if (dataProvider.getPageClassification(dataProvider.isIncognito())
+                == PageClassification.ANDROID_SEARCH_WIDGET_VALUE) {
+            return false;
+        }
+
         return !shouldShowDeleteButton()
                 && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
                         || mShouldShowLensButtonWhenUnfocused)
