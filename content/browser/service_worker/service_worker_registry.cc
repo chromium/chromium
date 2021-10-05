@@ -12,6 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -169,6 +172,30 @@ void ServiceWorkerRegistry::CreateNewRegistration(
     const blink::StorageKey& key,
     NewRegistrationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (quota_manager_proxy_) {
+    // Can be nullptr in tests.
+    quota_manager_proxy_->GetOrCreateBucket(
+        key, storage::kDefaultBucketName, base::ThreadTaskRunnerHandle::Get(),
+        base::BindOnce(
+            &ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo,
+            weak_factory_.GetWeakPtr(), std::move(options), key,
+            std::move(callback)));
+  } else {
+    CreateInvokerAndStartRemoteCall(
+        &storage::mojom::ServiceWorkerStorageControl::GetNewRegistrationId,
+        base::BindOnce(&ServiceWorkerRegistry::DidGetNewRegistrationId,
+                       weak_factory_.GetWeakPtr(), std::move(options), key,
+                       std::move(callback)));
+  }
+}
+
+void ServiceWorkerRegistry::CreateNewRegistrationWithBucketInfo(
+    blink::mojom::ServiceWorkerRegistrationOptions options,
+    const blink::StorageKey& key,
+    NewRegistrationCallback callback,
+    storage::QuotaErrorOr<storage::BucketInfo> result) {
+  DCHECK(result.ok());
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetNewRegistrationId,
       base::BindOnce(&ServiceWorkerRegistry::DidGetNewRegistrationId,
