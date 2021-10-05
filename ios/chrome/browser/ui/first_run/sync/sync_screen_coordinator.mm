@@ -243,8 +243,8 @@
 - (void)startSyncWithAdvancedSettings:(BOOL)advancedSettings {
   self.advancedSettingsRequested = advancedSettings;
   int confirmationID = advancedSettings
-                           ? IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS
-                           : IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION;
+                           ? self.viewController.openSettingsStringID
+                           : self.viewController.activateSyncButtonID;
 
   ChromeIdentity* identity =
       AuthenticationServiceFactory::GetForBrowserState(

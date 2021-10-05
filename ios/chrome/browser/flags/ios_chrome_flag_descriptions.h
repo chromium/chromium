@@ -295,6 +295,11 @@ extern const char kMobileGoogleSRPDescription[];
 extern const char kModernTabStripName[];
 extern const char kModernTabStripDescription[];
 
+// Title and description for the flag to use the previous sync screen in the new
+// FRE.
+extern const char kOldSyncStringFREName[];
+extern const char kOldSyncStringFREDescription[];
+
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];

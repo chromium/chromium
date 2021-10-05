@@ -100,6 +100,7 @@ GREYLayoutConstraint* BelowConstraint() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(kLocationPermissionsPrompt);
+  config.features_disabled.push_back(kOldSyncStringFRE);
 
   config.features_enabled.push_back(kEnableFREUIModuleIOS);
 

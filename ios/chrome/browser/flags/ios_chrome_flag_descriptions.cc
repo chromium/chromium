@@ -340,6 +340,11 @@ const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
 
+const char kOldSyncStringFREName[] = "Use previous sync screen strings";
+const char kOldSyncStringFREDescription[] =
+    "When enabled, the strings of the previous sync screen are used in the "
+    "new FRE.";
+
 const char kOmniboxUIMaxAutocompleteMatchesName[] =
     "Omnibox UI Max Autocomplete Matches";
 const char kOmniboxUIMaxAutocompleteMatchesDescription[] =

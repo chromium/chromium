@@ -791,6 +791,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfManageDevicesLinkDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfManageDevicesLink)},
+    {"old-sync-string-fre", flag_descriptions::kOldSyncStringFREName,
+     flag_descriptions::kOldSyncStringFREDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kOldSyncStringFRE)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -6,10 +6,14 @@
 
 #import "ios/chrome/browser/ui/elements/activity_overlay_view.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,9 +21,16 @@
 
 namespace {
 constexpr CGFloat kMarginBetweenContents = 12;
+
+// URL for the Settings link.
+const char* const kSettingsSyncURL = "internal://settings-sync";
+
+NSString* const kLearnMoreTextViewAccessibilityIdentifier =
+    @"kLearnMoreTextViewAccessibilityIdentifier";
+
 }  // namespace
 
-@interface SyncScreenViewController ()
+@interface SyncScreenViewController () <UITextViewDelegate>
 
 // Scrim displayed above the view when the UI is disabled.
 @property(nonatomic, strong) ActivityOverlayView* overlay;
@@ -35,10 +46,27 @@ constexpr CGFloat kMarginBetweenContents = 12;
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunSyncScreenAccessibilityIdentifier;
-  self.titleText =
-      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE];
-  self.subtitleText =
-      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE];
+  if (base::FeatureList::IsEnabled(kOldSyncStringFRE)) {
+    self.titleText =
+        [self contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE];
+    self.subtitleText = [self
+        contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_TITLE];
+    self.secondaryActionString =
+        [self contentTextWithStringID:
+                  IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON];
+    self.activateSyncButtonID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON;
+  } else {
+    self.titleText =
+        [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_TITLE];
+    self.subtitleText =
+        [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SUBTITLE];
+    self.secondaryActionString = [self
+        contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION];
+    self.activateSyncButtonID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION;
+  }
+
+  self.primaryActionString =
+      [self contentTextWithStringID:self.activateSyncButtonID];
 
   self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
   self.isTallBanner = NO;
@@ -48,13 +76,15 @@ constexpr CGFloat kMarginBetweenContents = 12;
   UILabel* contentText = [self createContentText];
   [self.specificContentView addSubview:contentText];
 
-  UIButton* advanceSyncSettingsButton = [self createAdvanceSyncSettingsButton];
+  UIView* advanceSyncSettingsButton;
+  if (base::FeatureList::IsEnabled(kOldSyncStringFRE)) {
+    advanceSyncSettingsButton = [self createAdvanceSyncTextField];
+  } else {
+    advanceSyncSettingsButton = [self createAdvanceSyncSettingsButton];
+  }
+
   [self.specificContentView addSubview:advanceSyncSettingsButton];
 
-  self.primaryActionString = [self
-      contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION];
-  self.secondaryActionString = [self
-      contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION];
 
   // Sync screen-specific constraints.
   [NSLayoutConstraint activateConstraints:@[
@@ -118,25 +148,34 @@ constexpr CGFloat kMarginBetweenContents = 12;
   UILabel* label = [[UILabel alloc] init];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   label.numberOfLines = 0;
-  label.textColor = [UIColor colorNamed:kGrey600Color];
   label.textAlignment = NSTextAlignmentCenter;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.adjustsFontForContentSizeCategory = YES;
-  label.text =
-      [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT];
+  if (base::FeatureList::IsEnabled(kOldSyncStringFRE)) {
+    label.text = [self
+        contentTextWithStringID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_SUBTITLE];
+    label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  } else {
+    label.text =
+        [self contentTextWithStringID:IDS_IOS_FIRST_RUN_SYNC_SCREEN_CONTENT];
+    label.textColor = [UIColor colorNamed:kGrey600Color];
+    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  }
   return label;
 }
 
-// Creates and configures the sync settings button
+// Creates and configures the sync settings button.
 - (UIButton*)createAdvanceSyncSettingsButton {
+  DCHECK(!base::FeatureList::IsEnabled(kOldSyncStringFRE));
   UIButton* button = [[UIButton alloc] init];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.titleLabel.numberOfLines = 0;
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
   [button.titleLabel
       setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]];
-  [button setTitle:[self contentTextWithStringID:
-                             IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS]
+  self.openSettingsStringID = IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS;
+  [button setTitle:[self contentTextWithStringID:self.openSettingsStringID]
           forState:UIControlStateNormal];
   [button setTitleColor:[UIColor colorNamed:kBlueColor]
                forState:UIControlStateNormal];
@@ -145,6 +184,45 @@ constexpr CGFloat kMarginBetweenContents = 12;
                 action:@selector(showAdvanceSyncSettings)
       forControlEvents:UIControlEventTouchUpInside];
   return button;
+}
+
+// Creates and configures the text field having a link to the settings.
+- (UIView*)createAdvanceSyncTextField {
+  DCHECK(base::FeatureList::IsEnabled(kOldSyncStringFRE));
+  UITextView* syncSettingsTextView = [[UITextView alloc] init];
+  syncSettingsTextView.scrollEnabled = NO;
+  syncSettingsTextView.editable = NO;
+  syncSettingsTextView.delegate = self;
+  syncSettingsTextView.backgroundColor = UIColor.clearColor;
+  syncSettingsTextView.adjustsFontForContentSizeCategory = YES;
+  syncSettingsTextView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  self.openSettingsStringID = IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SETTINGS;
+  NSString* text = [self contentTextWithStringID:self.openSettingsStringID];
+
+  NSMutableParagraphStyle* paragraphStyle =
+      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
+
+  NSDictionary* textAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    NSParagraphStyleAttributeName : paragraphStyle
+  };
+
+  NSURL* URL = net::NSURLWithGURL(GURL(kSettingsSyncURL));
+  NSDictionary* linkAttributes = @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline],
+    NSLinkAttributeName : URL,
+  };
+
+  syncSettingsTextView.attributedText =
+      AttributedStringFromStringWithLink(text, textAttributes, linkAttributes);
+
+  return syncSettingsTextView;
 }
 
 // Push the string id to |_contentStringIds| and returns NSString.
@@ -156,6 +234,24 @@ constexpr CGFloat kMarginBetweenContents = 12;
 // Called when the sync settings button is tapped
 - (void)showAdvanceSyncSettings {
   [self.delegate showSyncSettings];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  [self showAdvanceSyncSettings];
+  // The handler is already handling the tap.
+  return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the |selectedTextRange| to |nil| to prevent users from
+  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // since it makes links inside the text view untappable.
+  textView.selectedTextRange = nil;
 }
 
 @end
