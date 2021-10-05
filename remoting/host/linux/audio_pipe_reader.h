@@ -51,6 +51,9 @@ class AudioPipeReader
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::FilePath& pipe_path);
 
+  AudioPipeReader(const AudioPipeReader&) = delete;
+  AudioPipeReader& operator=(const AudioPipeReader&) = delete;
+
   // Register or unregister an observer. Each observer receives data on the
   // thread on which it was registered and guaranteed not to be called after
   // RemoveObserver().
@@ -103,8 +106,6 @@ class AudioPipeReader
 
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
       pipe_watch_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPipeReader);
 };
 
 // Destroys |audio_pipe_reader| on the audio thread.

@@ -147,6 +147,9 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
   explicit DaemonController(std::unique_ptr<Delegate> delegate);
 
+  DaemonController(const DaemonController&) = delete;
+  DaemonController& operator=(const DaemonController&) = delete;
+
   // Return the "installed/running" state of the daemon process.
   //
   // TODO(sergeyu): This method is called synchronously from the
@@ -240,8 +243,6 @@ class DaemonController : public base::RefCountedThreadSafe<DaemonController> {
 
   bool servicing_request_ = false;
   base::queue<base::OnceClosure> pending_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(DaemonController);
 };
 
 }  // namespace remoting

@@ -51,6 +51,9 @@ class CyclicFrameGenerator : public protocol::InputEventTimestampsSource {
   explicit CyclicFrameGenerator(
       std::vector<std::unique_ptr<webrtc::DesktopFrame>> reference_frames);
 
+  CyclicFrameGenerator(const CyclicFrameGenerator&) = delete;
+  CyclicFrameGenerator& operator=(const CyclicFrameGenerator&) = delete;
+
   void set_frame_cycle_period(base::TimeDelta frame_cycle_period) {
     frame_cycle_period_ = frame_cycle_period;
   }
@@ -101,8 +104,6 @@ class CyclicFrameGenerator : public protocol::InputEventTimestampsSource {
 
   // frame_id of the frame passed to the last GetChangeList() call.
   int last_identifier_frame_ = -1;
-
-  DISALLOW_COPY_AND_ASSIGN(CyclicFrameGenerator);
 };
 
 }  // namespace test

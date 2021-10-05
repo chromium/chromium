@@ -139,6 +139,9 @@ class LocalMouseInputMonitorMac::Core : public base::RefCountedThreadSafe<Core>,
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
        LocalInputMonitor::PointerMoveCallback on_mouse_move);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void Start();
   void Stop();
 
@@ -164,8 +167,6 @@ class LocalMouseInputMonitorMac::Core : public base::RefCountedThreadSafe<Core>,
   LocalInputMonitor::PointerMoveCallback on_mouse_move_;
 
   webrtc::DesktopVector mouse_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 LocalMouseInputMonitorMac::LocalMouseInputMonitorMac(

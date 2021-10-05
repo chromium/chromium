@@ -37,11 +37,12 @@ const base::TimeDelta kTestOverridePollingInterval = base::Milliseconds(1);
 class ClientClipboard : public protocol::ClipboardStub {
  public:
   ClientClipboard();
+
+  ClientClipboard(const ClientClipboard&) = delete;
+  ClientClipboard& operator=(const ClientClipboard&) = delete;
+
   MOCK_METHOD1(InjectClipboardEvent,
                void(const protocol::ClipboardEvent& event));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientClipboard);
 };
 
 ClientClipboard::ClientClipboard() = default;

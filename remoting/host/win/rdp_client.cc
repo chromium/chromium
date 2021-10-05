@@ -44,6 +44,9 @@ class RdpClient::Core
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       RdpClient::EventHandler* event_handler);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Initiates a loopback RDP connection.
   void Connect(const ScreenResolution& resolution,
                const std::string& terminal_id,
@@ -86,8 +89,6 @@ class RdpClient::Core
 
   // A self-reference to keep the object alive during connection shutdown.
   scoped_refptr<Core> self_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 RdpClient::RdpClient(

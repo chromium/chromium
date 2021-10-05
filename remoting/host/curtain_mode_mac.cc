@@ -80,6 +80,9 @@ class SessionWatcher : public base::RefCountedThreadSafe<SessionWatcher> {
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control);
 
+  SessionWatcher(const SessionWatcher&) = delete;
+  SessionWatcher& operator=(const SessionWatcher&) = delete;
+
   void Start();
   void Stop();
 
@@ -115,8 +118,6 @@ class SessionWatcher : public base::RefCountedThreadSafe<SessionWatcher> {
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
   EventHandlerRef event_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionWatcher);
 };
 
 SessionWatcher::SessionWatcher(

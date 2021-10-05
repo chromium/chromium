@@ -43,6 +43,8 @@ class ConfigFileWatcherImpl
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const base::FilePath& config_path);
 
+  ConfigFileWatcherImpl(const ConfigFileWatcherImpl&) = delete;
+  ConfigFileWatcherImpl& operator=(const ConfigFileWatcherImpl&) = delete;
 
   // Notify |delegate| of config changes.
   void Watch(ConfigWatcher::Delegate* delegate);
@@ -85,8 +87,6 @@ class ConfigFileWatcherImpl
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   base::WeakPtrFactory<ConfigFileWatcherImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigFileWatcherImpl);
 };
 
 ConfigFileWatcher::ConfigFileWatcher(

@@ -139,6 +139,9 @@ class InputInjectorMac : public InputInjector {
         scoped_refptr<base::SingleThreadTaskRunner> input_thread_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     // Mirrors the ClipboardStub interface.
     void InjectClipboardEvent(const ClipboardEvent& event);
 
@@ -166,8 +169,6 @@ class InputInjectorMac : public InputInjector {
     uint64_t left_modifiers_;
     uint64_t right_modifiers_;
     base::TimeTicks last_time_display_woken_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;

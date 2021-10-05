@@ -220,6 +220,9 @@ class InputInjectorWin : public InputInjector {
     Core(scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
          scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     // Mirrors the ClipboardStub interface.
     void InjectClipboardEvent(const ClipboardEvent& event);
 
@@ -247,8 +250,6 @@ class InputInjectorWin : public InputInjector {
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
     std::unique_ptr<Clipboard> clipboard_;
     std::unique_ptr<TouchInjectorWin> touch_injector_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;

@@ -115,6 +115,9 @@ class MockIt2MeHost : public It2MeHost {
  public:
   MockIt2MeHost() = default;
 
+  MockIt2MeHost(const MockIt2MeHost&) = delete;
+  MockIt2MeHost& operator=(const MockIt2MeHost&) = delete;
+
   // It2MeHost overrides
   void Connect(std::unique_ptr<ChromotingHostContext> context,
                std::unique_ptr<base::DictionaryValue> policies,
@@ -132,8 +135,6 @@ class MockIt2MeHost : public It2MeHost {
       CreateDeferredConnectContext create_connection_context);
 
   void RunSetState(It2MeHostState state);
-
-  DISALLOW_COPY_AND_ASSIGN(MockIt2MeHost);
 };
 
 void MockIt2MeHost::Connect(

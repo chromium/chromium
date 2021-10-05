@@ -26,6 +26,9 @@ class StreamChannelFactory {
 
   StreamChannelFactory() {}
 
+  StreamChannelFactory(const StreamChannelFactory&) = delete;
+  StreamChannelFactory& operator=(const StreamChannelFactory&) = delete;
+
   // Creates new channels and calls the |callback| when then new channel is
   // created and connected. The |callback| is called with nullptr if connection
   // failed for any reason. Callback may be called synchronously, before the
@@ -43,9 +46,6 @@ class StreamChannelFactory {
   virtual ~StreamChannelFactory() {}
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StreamChannelFactory);
 };
 
 }  // namespace protocol

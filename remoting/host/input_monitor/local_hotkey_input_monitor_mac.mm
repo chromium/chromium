@@ -131,6 +131,9 @@ class LocalHotkeyInputMonitorMac::Core
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
        base::OnceClosure disconnect_callback);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void Start();
   void Stop();
 
@@ -155,8 +158,6 @@ class LocalHotkeyInputMonitorMac::Core
   // Invoked in the |caller_task_runner_| thread to report session disconnect
   // requests.
   base::OnceClosure disconnect_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 LocalHotkeyInputMonitorMac::LocalHotkeyInputMonitorMac(

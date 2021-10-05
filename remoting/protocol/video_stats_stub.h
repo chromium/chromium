@@ -17,15 +17,15 @@ struct HostFrameStats;
 // Interface used to send video frame stats from host to client.
 class VideoStatsStub {
  public:
+  VideoStatsStub(const VideoStatsStub&) = delete;
+  VideoStatsStub& operator=(const VideoStatsStub&) = delete;
+
   virtual void OnVideoFrameStats(uint32_t frame_id,
                                  const HostFrameStats& frame_stats) = 0;
 
  protected:
   VideoStatsStub() {}
   virtual ~VideoStatsStub() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoStatsStub);
 };
 
 }  // namespace protocol

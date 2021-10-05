@@ -184,6 +184,9 @@ class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
       const SendMessageCallback& send_message_callback)
       : send_message_callback_(send_message_callback) {}
 
+  SharedMemoryFactoryImpl(const SharedMemoryFactoryImpl&) = delete;
+  SharedMemoryFactoryImpl& operator=(const SharedMemoryFactoryImpl&) = delete;
+
   std::unique_ptr<webrtc::SharedMemory> CreateSharedMemory(
       size_t size) override {
     base::OnceClosure release_buffer_callback = base::BindOnce(
@@ -214,8 +217,6 @@ class SharedMemoryFactoryImpl : public webrtc::SharedMemoryFactory {
  private:
   int next_shared_buffer_id_ = 1;
   SendMessageCallback send_message_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryFactoryImpl);
 };
 
 }  // namespace

@@ -53,6 +53,9 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
          scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
          LocalInputMonitor::PointerMoveCallback on_mouse_move);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     void Start();
     void Stop();
 
@@ -79,8 +82,6 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
     LocalInputMonitor::PointerMoveCallback on_mouse_move_;
 
     x11::Connection* connection_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;

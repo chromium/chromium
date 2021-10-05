@@ -62,6 +62,9 @@ class WtsSessionProcessDelegate::Core
        bool launch_elevated,
        const std::string& channel_security);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Initializes the object returning true on success.
   bool Initialize(uint32_t session_id);
 
@@ -162,8 +165,6 @@ class WtsSessionProcessDelegate::Core
 
   // The pending process connection for the process being launched.
   mojo::OutgoingInvitation mojo_invitation_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 WtsSessionProcessDelegate::Core::Core(

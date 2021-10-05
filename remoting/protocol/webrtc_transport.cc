@@ -163,6 +163,11 @@ class CreateSessionDescriptionObserver
         std::move(result_callback));
   }
 
+  CreateSessionDescriptionObserver(const CreateSessionDescriptionObserver&) =
+      delete;
+  CreateSessionDescriptionObserver& operator=(
+      const CreateSessionDescriptionObserver&) = delete;
+
   void OnSuccess(webrtc::SessionDescriptionInterface* desc) override {
     std::move(result_callback_).Run(base::WrapUnique(desc), std::string());
   }
@@ -178,8 +183,6 @@ class CreateSessionDescriptionObserver
 
  private:
   ResultCallback result_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreateSessionDescriptionObserver);
 };
 
 // A webrtc::SetSessionDescriptionObserver implementation used to receive the
@@ -194,6 +197,10 @@ class SetSessionDescriptionObserver
     return new rtc::RefCountedObject<SetSessionDescriptionObserver>(
         std::move(result_callback));
   }
+
+  SetSessionDescriptionObserver(const SetSessionDescriptionObserver&) = delete;
+  SetSessionDescriptionObserver& operator=(
+      const SetSessionDescriptionObserver&) = delete;
 
   void OnSuccess() override {
     std::move(result_callback_).Run(true, std::string());
@@ -210,8 +217,6 @@ class SetSessionDescriptionObserver
 
  private:
   ResultCallback result_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SetSessionDescriptionObserver);
 };
 
 class RtcEventLogOutput : public webrtc::RtcEventLogOutput {

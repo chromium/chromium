@@ -50,6 +50,9 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
          scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
          base::OnceClosure disconnect_callback);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     void Start();
     void Stop();
 
@@ -79,8 +82,6 @@ class LocalHotkeyInputMonitorX11 : public LocalHotkeyInputMonitor {
     bool ctrl_pressed_ = false;
 
     x11::Connection* connection_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;

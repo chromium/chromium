@@ -27,6 +27,10 @@ const char* kTestConfig =
 }  // namespace
 
 class HostConfigTest : public testing::Test {
+ public:
+  HostConfigTest(const HostConfigTest&) = delete;
+  HostConfigTest& operator=(const HostConfigTest&) = delete;
+
  protected:
   HostConfigTest() = default;
 
@@ -36,9 +40,6 @@ class HostConfigTest : public testing::Test {
 
   // The temporary directory used to contain the test operations.
   base::ScopedTempDir test_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostConfigTest);
 };
 
 TEST_F(HostConfigTest, InvalidFile) {

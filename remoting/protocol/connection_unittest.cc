@@ -272,6 +272,9 @@ class ConnectionTest : public testing::Test,
     audio_decode_thread_.Start();
   }
 
+  ConnectionTest(const ConnectionTest&) = delete;
+  ConnectionTest& operator=(const ConnectionTest&) = delete;
+
   void DestroyHost() {
     host_connection_.reset();
     run_loop_->Quit();
@@ -462,9 +465,6 @@ class ConnectionTest : public testing::Test,
   base::Thread video_encode_thread_;
   base::Thread audio_encode_thread_;
   base::Thread audio_decode_thread_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(Ice, ConnectionTest, ::testing::Values(false));

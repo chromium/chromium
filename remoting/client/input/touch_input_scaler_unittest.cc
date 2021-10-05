@@ -50,6 +50,10 @@ const PointInfo kDefaultPointInfo = {kDefaultXCoord, kDefaultYCoord,
 }  // namespace
 
 class TouchInputScalerTest : public ::testing::Test {
+ public:
+  TouchInputScalerTest(const TouchInputScalerTest&) = delete;
+  TouchInputScalerTest& operator=(const TouchInputScalerTest&) = delete;
+
  protected:
   TouchInputScalerTest() : touch_input_scaler_(&mock_stub_) {}
 
@@ -89,8 +93,6 @@ class TouchInputScalerTest : public ::testing::Test {
 
  private:
   std::vector<PointInfo> point_infos_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchInputScalerTest);
 };
 
 // TouchInputFilter require both input and output dimensions.

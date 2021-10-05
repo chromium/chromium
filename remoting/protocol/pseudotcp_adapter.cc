@@ -36,6 +36,9 @@ class PseudoTcpAdapter::Core : public cricket::IPseudoTcpNotify,
  public:
   explicit Core(std::unique_ptr<P2PDatagramSocket> socket);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Functions used to implement net::StreamSocket.
   int Read(const scoped_refptr<net::IOBuffer>& buffer,
            int buffer_size,
@@ -116,8 +119,6 @@ class PseudoTcpAdapter::Core : public cricket::IPseudoTcpNotify,
   scoped_refptr<net::IOBuffer> socket_read_buffer_;
 
   base::OneShotTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 PseudoTcpAdapter::Core::Core(std::unique_ptr<P2PDatagramSocket> socket)

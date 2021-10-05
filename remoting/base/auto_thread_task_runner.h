@@ -22,6 +22,9 @@ class AutoThreadTaskRunner : public base::SingleThreadTaskRunner {
   AutoThreadTaskRunner(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                        base::OnceClosure stop_task);
 
+  AutoThreadTaskRunner(const AutoThreadTaskRunner&) = delete;
+  AutoThreadTaskRunner& operator=(const AutoThreadTaskRunner&) = delete;
+
   // SingleThreadTaskRunner implementation
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -43,8 +46,6 @@ class AutoThreadTaskRunner : public base::SingleThreadTaskRunner {
 
   // The wrapped task runner.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoThreadTaskRunner);
 };
 
 }  // namespace remoting

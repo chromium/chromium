@@ -64,6 +64,9 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
  public:
   AudioPumpTest() = default;
 
+  AudioPumpTest(const AudioPumpTest&) = delete;
+  AudioPumpTest& operator=(const AudioPumpTest&) = delete;
+
   void SetUp() override;
   void TearDown() override;
 
@@ -82,9 +85,6 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
 
   std::vector<std::unique_ptr<AudioPacket>> sent_packets_;
   std::vector<base::OnceClosure> done_closures_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioPumpTest);
 };
 
 void AudioPumpTest::SetUp() {

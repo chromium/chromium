@@ -47,6 +47,9 @@ class MockPolicyCallback {
  public:
   MockPolicyCallback() = default;
 
+  MockPolicyCallback(const MockPolicyCallback&) = delete;
+  MockPolicyCallback& operator=(const MockPolicyCallback&) = delete;
+
   // TODO(lukasza): gmock cannot mock a method taking std::unique_ptr<T>...
   MOCK_METHOD1(OnPolicyUpdatePtr, void(const base::DictionaryValue* policies));
   void OnPolicyUpdate(std::unique_ptr<base::DictionaryValue> policies) {
@@ -54,9 +57,6 @@ class MockPolicyCallback {
   }
 
   MOCK_METHOD0(OnPolicyError, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPolicyCallback);
 };
 
 class PolicyWatcherTest : public testing::Test {

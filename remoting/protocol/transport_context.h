@@ -50,6 +50,9 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
       const NetworkSettings& network_settings,
       TransportRole role);
 
+  TransportContext(const TransportContext&) = delete;
+  TransportContext& operator=(const TransportContext&) = delete;
+
   void set_turn_ice_config(const IceConfig& ice_config) {
     DCHECK(!ice_config.is_null());
     // If an external entity provides a valid ICE Config, then disable the local
@@ -112,8 +115,6 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
 
   // Called once |ice_config_request_| completes.
   std::list<GetIceConfigCallback> pending_ice_config_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportContext);
 };
 
 }  // namespace protocol

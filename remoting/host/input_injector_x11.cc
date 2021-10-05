@@ -113,6 +113,9 @@ class InputInjectorX11 : public InputInjector {
    public:
     explicit Core(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     void Init();
 
     // Mirrors the ClipboardStub interface.
@@ -188,8 +191,6 @@ class InputInjectorX11 : public InputInjector {
     std::unique_ptr<X11CharacterInjector> character_injector_;
 
     bool saved_auto_repeat_enabled_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;

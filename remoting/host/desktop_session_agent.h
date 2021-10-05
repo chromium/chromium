@@ -104,6 +104,9 @@ class DesktopSessionAgent
       scoped_refptr<AutoThreadTaskRunner> input_task_runner,
       scoped_refptr<AutoThreadTaskRunner> io_task_runner);
 
+  DesktopSessionAgent(const DesktopSessionAgent&) = delete;
+  DesktopSessionAgent& operator=(const DesktopSessionAgent&) = delete;
+
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelConnected(int32_t peer_pid) override;
@@ -286,8 +289,6 @@ class DesktopSessionAgent
 
   // Used to disable callbacks to |this|.
   base::WeakPtrFactory<DesktopSessionAgent> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionAgent);
 };
 
 }  // namespace remoting

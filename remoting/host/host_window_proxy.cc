@@ -28,6 +28,9 @@ class HostWindowProxy::Core
        scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
        std::unique_ptr<HostWindow> host_window);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Starts |host_window_| on the |ui_task_runner_| thread.
   void Start(const base::WeakPtr<ClientSessionControl>& client_session_control);
 
@@ -70,8 +73,6 @@ class HostWindowProxy::Core
 
   // Used to create the control pointer passed to |host_window_|.
   base::WeakPtrFactory<ClientSessionControl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 HostWindowProxy::HostWindowProxy(

@@ -65,6 +65,9 @@ class VideoDecoderTester {
         frame_(new BasicDesktopFrame(screen_size)),
         expected_frame_(nullptr) {}
 
+  VideoDecoderTester(const VideoDecoderTester&) = delete;
+  VideoDecoderTester& operator=(const VideoDecoderTester&) = delete;
+
   void Reset() {
     frame_ = std::make_unique<BasicDesktopFrame>(frame_->size());
     expected_region_.Clear();
@@ -167,8 +170,6 @@ class VideoDecoderTester {
   VideoDecoder* decoder_;
   std::unique_ptr<DesktopFrame> frame_;
   DesktopFrame* expected_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderTester);
 };
 
 // The VideoEncoderTester provides a hook for retrieving the data, and passing

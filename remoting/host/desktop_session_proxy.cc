@@ -66,6 +66,9 @@ class DesktopSessionProxy::IpcSharedBufferCore
     // After being mapped, |region| is no longer needed and can be discarded.
   }
 
+  IpcSharedBufferCore(const IpcSharedBufferCore&) = delete;
+  IpcSharedBufferCore& operator=(const IpcSharedBufferCore&) = delete;
+
   int id() const { return id_; }
   size_t size() const { return mapping_.size(); }
   const void* memory() const { return mapping_.memory(); }
@@ -76,8 +79,6 @@ class DesktopSessionProxy::IpcSharedBufferCore
 
   int id_;
   base::ReadOnlySharedMemoryMapping mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcSharedBufferCore);
 };
 
 class DesktopSessionProxy::IpcSharedBuffer : public webrtc::SharedMemory {
@@ -91,10 +92,11 @@ class DesktopSessionProxy::IpcSharedBuffer : public webrtc::SharedMemory {
                      core->id()),
         core_(core) {}
 
+  IpcSharedBuffer(const IpcSharedBuffer&) = delete;
+  IpcSharedBuffer& operator=(const IpcSharedBuffer&) = delete;
+
  private:
   scoped_refptr<IpcSharedBufferCore> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcSharedBuffer);
 };
 
 DesktopSessionProxy::DesktopSessionProxy(

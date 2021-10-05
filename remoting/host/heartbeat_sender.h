@@ -88,6 +88,10 @@ class HeartbeatSender final : public SignalStrategy::Listener {
       Observer* observer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       bool is_googler);
+
+  HeartbeatSender(const HeartbeatSender&) = delete;
+  HeartbeatSender& operator=(const HeartbeatSender&) = delete;
+
   ~HeartbeatSender() override;
 
   // Sets host offline reason for future heartbeat, and initiates sending a
@@ -158,8 +162,6 @@ class HeartbeatSender final : public SignalStrategy::Listener {
   base::OneShotTimer host_offline_reason_timeout_timer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HeartbeatSender);
 };
 
 }  // namespace remoting

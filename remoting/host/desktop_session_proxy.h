@@ -93,6 +93,9 @@ class DesktopSessionProxy
       base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
       const DesktopEnvironmentOptions& options);
 
+  DesktopSessionProxy(const DesktopSessionProxy&) = delete;
+  DesktopSessionProxy& operator=(const DesktopSessionProxy&) = delete;
+
   // Mirrors DesktopEnvironment.
   std::unique_ptr<ActionExecutor> CreateActionExecutor();
   std::unique_ptr<AudioCapturer> CreateAudioCapturer();
@@ -304,8 +307,6 @@ class DesktopSessionProxy
       set_up_url_forwarder_callback_;
   mojom::UrlForwarderState current_url_forwarder_state_ =
       mojom::UrlForwarderState::kUnknown;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopSessionProxy);
 };
 
 // Destroys |DesktopSessionProxy| instances on the caller's thread.

@@ -218,6 +218,9 @@ class HostProcess : public ConfigWatcher::Delegate,
               int* exit_code_out,
               ShutdownWatchdog* shutdown_watchdog);
 
+  HostProcess(const HostProcess&) = delete;
+  HostProcess& operator=(const HostProcess&) = delete;
+
   // ConfigWatcher::Delegate interface.
   void OnConfigUpdated(const std::string& serialized_config) override;
   void OnConfigWatcherError() override;
@@ -458,8 +461,6 @@ class HostProcess : public ConfigWatcher::Delegate,
   bool checking_permission_state_ = false;
   bool permission_granted_ = false;
 #endif  // defined(OS_APPLE)
-
-  DISALLOW_COPY_AND_ASSIGN(HostProcess);
 };
 
 HostProcess::HostProcess(std::unique_ptr<ChromotingHostContext> context,

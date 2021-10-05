@@ -18,11 +18,11 @@ class CurtainModeWin : public CurtainMode {
  public:
   CurtainModeWin();
 
+  CurtainModeWin(const CurtainModeWin&) = delete;
+  CurtainModeWin& operator=(const CurtainModeWin&) = delete;
+
   // Overriden from CurtainMode.
   bool Activate() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CurtainModeWin);
 };
 
 CurtainModeWin::CurtainModeWin() {

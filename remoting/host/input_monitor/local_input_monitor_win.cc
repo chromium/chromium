@@ -41,6 +41,9 @@ class LocalInputMonitorWinImpl : public LocalInputMonitorWin {
          scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
          std::unique_ptr<RawInputHandler> raw_input_handler);
 
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     void Start();
     void Stop();
 
@@ -70,8 +73,6 @@ class LocalInputMonitorWinImpl : public LocalInputMonitorWin {
     std::unique_ptr<base::win::MessageWindow> window_;
 
     std::unique_ptr<RawInputHandler> raw_input_handler_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   scoped_refptr<Core> core_;
