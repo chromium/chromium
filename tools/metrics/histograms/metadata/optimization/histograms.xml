@@ -635,12 +635,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OptimizationGuide.PredictionManager.IsDownloadUrlValid"
     units="BooleanValid" expires_after="M106">
+  <obsolete>
+    Replaced by
+    OptimizationGuide.PredictionManager.IsDownloadUrlValid.{OptimizationTarget}
+    in M96.
+  </obsolete>
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
     Records whether the download URL received from the remote Optimization Guide
     server is valid.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionManager.IsDownloadUrlValid.{OptimizationTarget}"
+    units="BooleanValid" expires_after="M106">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records whether the download URL for {OptimizationTarget} received from the
+    remote Optimization Guide server is valid.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram base="true"
@@ -680,6 +697,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError"
     enum="PlatformFileError" expires_after="M106">
+  <obsolete>
+    Replaced by
+    OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError.{OptimizationTarget}
+    in M96.
+  </obsolete>
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -688,6 +710,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded every time a model file is downloaded and being processed for
     storage.
   </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError.{OptimizationTarget}"
+    enum="PlatformFileError" expires_after="M106">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the exact error whenever writing a model file fails at the step
+    where the model is moved from the scratch directory to its final location.
+    Recorded every time a {OptimizationTarget} model file is downloaded and
+    being processed for storage.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
 
 <histogram base="true"

@@ -404,7 +404,9 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
     // ReplaceFile failed, log the error code and attempt to utilize base::Move
     // instead as the file could be on a different storage partition.
     UMA_HISTOGRAM_ENUMERATION(
-        "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError",
+        "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError." +
+            GetStringNameForOptimizationTarget(
+                model_info.optimization_target()),
         -file_error, -base::File::FILE_ERROR_MAX);
     if (base::Move(move_file.first, move_file.second)) {
       continue;

@@ -773,7 +773,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
       "OptimizationGuide.PredictionModelDownloadManager.DownloadStatus",
       PredictionModelDownloadStatus::kFailedModelFileOtherError, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError",
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError."
+      "PainfulPageLoad",
       std::abs(base::File::Error::FILE_ERROR_NOT_FOUND), 1);
 
   histogram_tester.ExpectTotalCount(

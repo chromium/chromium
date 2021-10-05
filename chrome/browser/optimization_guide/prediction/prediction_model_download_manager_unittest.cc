@@ -530,7 +530,9 @@ TEST_F(PredictionModelDownloadManagerTest,
   // The error code for ReplaceFile varies by platform for this test, only
   // care that the error code is recorded.
   histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 1);
+      "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError."
+      "PainfulPageLoad",
+      1);
 }
 
 TEST_F(
