@@ -109,8 +109,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
+#include "chrome/browser/ui/ash/window_pin_util.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -505,8 +504,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
     EXPECT_TRUE(menu->IsCommandIdEnabled(entry));
 
   // Set locked fullscreen state.
-  browser()->window()->GetNativeWindow()->SetProperty(
-      chromeos::kWindowPinTypeKey, chromeos::WindowPinType::kTrustedPinned);
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
 
   // All entries are disabled in locked fullscreen (testing only a subset here).
   for (auto entry : entries_to_test)
