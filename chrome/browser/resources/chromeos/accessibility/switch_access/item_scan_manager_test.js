@@ -395,16 +395,26 @@ TEST_F(
     });
 
 TEST_F('SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard', function() {
-  const website = `<input type="text" id="input"></input><button>ok</button>`;
+  const website =
+      `<input type="text" id="testinput"></input><button>ok</button>`;
   this.runWithLoadedTree(website, async (rootWebArea) => {
-    // SA initially focuses this node; wait for it first.
-    await this.untilFocusIs({className: 'BrowserNonClientFrameViewChromeOS'});
+    // SA initially focuses this node in Ash Chrome; wait for it first.
+    await new Promise(resolve => {
+      chrome.commandLinePrivate.hasSwitch(
+          'lacros-chrome-path', async hasLacrosChromePath => {
+            if (!hasLacrosChromePath) {
+              await this.untilFocusIs(
+                  {className: 'BrowserNonClientFrameViewChromeOS'});
+            }
+            resolve();
+          });
+    });
 
     // Move to the text field.
-    Navigator.byItem.moveTo_(this.findNodeById('input'));
+    Navigator.byItem.moveTo_(this.findNodeById('testinput'));
     const input = Navigator.byItem.node_;
     assertEquals(
-        'input', input.automationNode.htmlAttributes.id,
+        'testinput', input.automationNode.htmlAttributes.id,
         'Current node is not input');
     input.performAction(SwitchAccessMenuAction.KEYBOARD);
 
@@ -451,9 +461,17 @@ TEST_F(
     <button>done</button>
   `;
       this.runWithLoadedTree(website, async (rootWebArea) => {
-        // SA initially focuses this node; wait for it first.
-        await this.untilFocusIs(
-            {className: 'BrowserNonClientFrameViewChromeOS'});
+        // SA initially focuses this node in Ash Chrome; wait for it first.
+        await new Promise(resolve => {
+          chrome.commandLinePrivate.hasSwitch(
+              'lacros-chrome-path', async hasLacrosChromePath => {
+                if (!hasLacrosChromePath) {
+                  await this.untilFocusIs(
+                      {className: 'BrowserNonClientFrameViewChromeOS'});
+                }
+                resolve();
+              });
+        });
 
         // Move to the slider.
         Navigator.byItem.moveTo_(this.findNodeById('slider'));
