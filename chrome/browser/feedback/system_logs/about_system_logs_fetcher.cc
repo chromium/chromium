@@ -40,8 +40,10 @@ SystemLogsFetcher* BuildAboutSystemLogsFetcher() {
   fetcher->AddSource(std::make_unique<CommandLineLogSource>());
   fetcher->AddSource(std::make_unique<DBusLogSource>());
   fetcher->AddSource(std::make_unique<DeviceEventLogSource>());
+#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
   if (base::FeatureList::IsEnabled(ash::features::kRevenLogSource))
     fetcher->AddSource(std::make_unique<RevenLogSource>());
+#endif
 
   fetcher->AddSource(std::make_unique<TouchLogSource>());
 

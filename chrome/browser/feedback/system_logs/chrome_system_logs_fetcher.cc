@@ -65,8 +65,10 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(bool scrub_data) {
   // Data sources that directly scrub itentifiable information.
   fetcher->AddSource(std::make_unique<DebugDaemonLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<NetworkHealthSource>(scrub_data));
+#if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
   if (base::FeatureList::IsEnabled(ash::features::kRevenLogSource))
     fetcher->AddSource(std::make_unique<RevenLogSource>());
+#endif
 
   fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));

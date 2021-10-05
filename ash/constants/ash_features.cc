@@ -929,7 +929,7 @@ const base::Feature kReleaseNotesSuggestionChip{
 // Enables or disables Reven Log Source on Chrome OS. This adds hardware
 // information to Feedback reports and chrome://system on CloudReady systems.
 const base::Feature kRevenLogSource{"RevenLogSource",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, the overivew and desk reverse scrolling behaviors are changed
 // and if the user performs the old gestures, a notification or toast will show
