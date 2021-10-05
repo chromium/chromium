@@ -31,6 +31,28 @@
             ]
         }
     ],
+    "AccuracyTips": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_210920",
+                    "params": {
+                        "DisableUI": "true",
+                        "TimeBetweenPrompts": "1d"
+                    },
+                    "enable_features": [
+                        "AccuracyTips"
+                    ]
+                }
+            ]
+        }
+    ],
     "AddToHomescreenIPH": [
         {
             "platforms": [
