@@ -3198,13 +3198,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableSuggestedFiles",
-                        "LauncherItemSuggest"
-                    ]
-                },
-                {
                     "name": "Quick_Access",
                     "params": {
                         "model_name": "quick_access"
