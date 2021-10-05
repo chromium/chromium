@@ -2657,6 +2657,7 @@
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [
+                "android",
                 "linux",
                 "mac"
             ],
