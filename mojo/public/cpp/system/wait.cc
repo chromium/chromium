@@ -22,6 +22,9 @@ class TriggerContext : public base::RefCountedThreadSafe<TriggerContext> {
       : event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
+  TriggerContext(const TriggerContext&) = delete;
+  TriggerContext& operator=(const TriggerContext&) = delete;
+
   base::WaitableEvent& event() { return event_; }
   MojoResult wait_result() const { return wait_result_; }
   MojoHandleSignalsState wait_state() const { return wait_state_; }
@@ -58,8 +61,6 @@ class TriggerContext : public base::RefCountedThreadSafe<TriggerContext> {
   // apart from waiting on |event()|.
   MojoResult wait_result_ = MOJO_RESULT_UNKNOWN;
   MojoHandleSignalsState wait_state_ = {0, 0};
-
-  DISALLOW_COPY_AND_ASSIGN(TriggerContext);
 };
 
 }  // namespace

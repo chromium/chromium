@@ -53,6 +53,10 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
 
   // |core| owns and out-lives us.
   NodeController();
+
+  NodeController(const NodeController&) = delete;
+  NodeController& operator=(const NodeController&) = delete;
+
   ~NodeController() override;
 
   const ports::NodeName& name() const { return name_; }
@@ -336,8 +340,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeController : public ports::NodeDelegate,
   // Broker for sync shared buffer creation on behalf of broker clients.
   std::unique_ptr<Broker> broker_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(NodeController);
 };
 
 }  // namespace core

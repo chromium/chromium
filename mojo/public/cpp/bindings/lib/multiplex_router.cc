@@ -45,6 +45,9 @@ class MultiplexRouter::InterfaceEndpoint
         handle_created_(false),
         client_(nullptr) {}
 
+  InterfaceEndpoint(const InterfaceEndpoint&) = delete;
+  InterfaceEndpoint& operator=(const InterfaceEndpoint&) = delete;
+
   // ---------------------------------------------------------------------------
   // The following public methods are safe to call from any sequence without
   // locking.
@@ -247,8 +250,6 @@ class MultiplexRouter::InterfaceEndpoint
   // Guarded by the router's lock. Used to synchronously wait on replies.
   std::unique_ptr<SequenceLocalSyncEventWatcher> sync_watcher_;
   base::flat_set<uint64_t> requests_with_external_sync_waiter_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceEndpoint);
 };
 
 // MessageWrapper objects are always destroyed under the router's lock. On

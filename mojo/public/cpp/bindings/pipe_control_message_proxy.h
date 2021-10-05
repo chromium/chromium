@@ -27,6 +27,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageProxy {
   // be used from multiple sequences, |receiver| must be thread-safe.
   explicit PipeControlMessageProxy(MessageReceiver* receiver);
 
+  PipeControlMessageProxy(const PipeControlMessageProxy&) = delete;
+  PipeControlMessageProxy& operator=(const PipeControlMessageProxy&) = delete;
+
   void NotifyPeerEndpointClosed(InterfaceId id,
                                 const absl::optional<DisconnectReason>& reason);
   void PausePeerUntilFlushCompletes(PendingFlush flush);
@@ -39,8 +42,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) PipeControlMessageProxy {
  private:
   // Not owned.
   MessageReceiver* receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipeControlMessageProxy);
 };
 
 }  // namespace mojo

@@ -110,6 +110,9 @@ class SharedRemoteBase
           remote_(std::move(remote), task_runner_),
           associated_group_(*remote_.internal_state()->associated_group()) {}
 
+    RemoteWrapper(const RemoteWrapper&) = delete;
+    RemoteWrapper& operator=(const RemoteWrapper&) = delete;
+
     std::unique_ptr<ThreadSafeForwarder<InterfaceType>> CreateForwarder() {
       return std::make_unique<ThreadSafeForwarder<InterfaceType>>(
           remote_.internal_state()->CreateThreadSafeProxy(
@@ -191,8 +194,6 @@ class SharedRemoteBase
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     RemoteType remote_;
     AssociatedGroup associated_group_;
-
-    DISALLOW_COPY_AND_ASSIGN(RemoteWrapper);
   };
 
   struct RemoteWrapperDeleter {

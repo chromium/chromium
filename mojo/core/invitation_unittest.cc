@@ -406,6 +406,9 @@ void InvitationTest::SendInvitationToClient(
 
 class TestClientBase : public InvitationTest {
  public:
+  TestClientBase(const TestClientBase&) = delete;
+  TestClientBase& operator=(const TestClientBase&) = delete;
+
   static MojoHandle AcceptInvitation(MojoAcceptInvitationFlags flags,
                                      base::StringPiece switch_name = {}) {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
@@ -441,9 +444,6 @@ class TestClientBase : public InvitationTest {
              MojoAcceptInvitation(&transport_endpoint, &options, &invitation));
     return invitation;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestClientBase);
 };
 
 #define DEFINE_TEST_CLIENT(name)             \

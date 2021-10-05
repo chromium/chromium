@@ -50,11 +50,15 @@ class RunResponseForwardToCallback : public MessageReceiver {
  public:
   explicit RunResponseForwardToCallback(RunCallback callback)
       : callback_(std::move(callback)) {}
+
+  RunResponseForwardToCallback(const RunResponseForwardToCallback&) = delete;
+  RunResponseForwardToCallback& operator=(const RunResponseForwardToCallback&) =
+      delete;
+
   bool Accept(Message* message) override;
 
  private:
   RunCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(RunResponseForwardToCallback);
 };
 
 bool RunResponseForwardToCallback::Accept(Message* message) {

@@ -46,6 +46,9 @@ class MessagePipeDispatcher::PortObserverThunk
   explicit PortObserverThunk(scoped_refptr<MessagePipeDispatcher> dispatcher)
       : dispatcher_(dispatcher) {}
 
+  PortObserverThunk(const PortObserverThunk&) = delete;
+  PortObserverThunk& operator=(const PortObserverThunk&) = delete;
+
  private:
   ~PortObserverThunk() override = default;
 
@@ -53,8 +56,6 @@ class MessagePipeDispatcher::PortObserverThunk
   void OnPortStatusChanged() override { dispatcher_->OnPortStatusChanged(); }
 
   scoped_refptr<MessagePipeDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortObserverThunk);
 };
 
 #if DCHECK_IS_ON()

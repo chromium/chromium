@@ -49,16 +49,18 @@ class WatcherSet {
 
   struct Entry {
     Entry(const scoped_refptr<WatcherDispatcher>& dispatcher);
+
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
+
     Entry(Entry&& other);
+
     ~Entry();
 
     Entry& operator=(Entry&& other);
 
     scoped_refptr<WatcherDispatcher> dispatcher;
     ContextSet contexts;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
   Dispatcher* const owner_;

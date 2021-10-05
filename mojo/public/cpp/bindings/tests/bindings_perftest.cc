@@ -49,6 +49,9 @@ class PingPongTest {
   explicit PingPongTest(PendingRemote<test::PingService> remote)
       : remote_(std::move(remote)) {}
 
+  PingPongTest(const PingPongTest&) = delete;
+  PingPongTest& operator=(const PingPongTest&) = delete;
+
   void Run(unsigned int iterations) {
     iterations_to_run_ = iterations;
     current_iterations_ = 0;
@@ -77,8 +80,6 @@ class PingPongTest {
   unsigned int current_iterations_;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingPongTest);
 };
 
 struct BoundPingService {

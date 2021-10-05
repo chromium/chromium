@@ -281,6 +281,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
       HandlePolicy handle_policy,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
+  Channel(const Channel&) = delete;
+  Channel& operator=(const Channel&) = delete;
+
 #if defined(OS_POSIX) && !defined(OS_NACL) && !defined(OS_MAC)
   // At this point only ChannelPosix needs InitFeatures.
   static void set_posix_use_writev(bool use_writev);
@@ -427,8 +430,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   // Handle to the process on the other end of this Channel, iff known.
   base::Process remote_process_;
-
-  DISALLOW_COPY_AND_ASSIGN(Channel);
 };
 
 }  // namespace core

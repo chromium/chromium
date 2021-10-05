@@ -22,10 +22,11 @@ class ConnectionGroupTest : public testing::Test {
  public:
   ConnectionGroupTest() = default;
 
+  ConnectionGroupTest(const ConnectionGroupTest&) = delete;
+  ConnectionGroupTest& operator=(const ConnectionGroupTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionGroupTest);
 };
 
 using ConnectionGroupBindingsTest = BindingsTestBase;

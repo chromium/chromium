@@ -102,6 +102,9 @@ class ChannelWin : public Channel,
     CHECK(handle_.IsValid());
   }
 
+  ChannelWin(const ChannelWin&) = delete;
+  ChannelWin& operator=(const ChannelWin&) = delete;
+
   void Start() override {
     io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ChannelWin::StartOnIOThread, this));
@@ -420,8 +423,6 @@ class ChannelWin : public Channel,
   bool is_write_pending_ = false;
 
   bool leak_handle_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelWin);
 };
 
 }  // namespace

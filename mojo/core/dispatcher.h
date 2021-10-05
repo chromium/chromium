@@ -74,6 +74,9 @@ class MOJO_SYSTEM_IMPL_EXPORT Dispatcher
     PLATFORM_HANDLE = -1,
   };
 
+  Dispatcher(const Dispatcher&) = delete;
+  Dispatcher& operator=(const Dispatcher&) = delete;
+
   // TODO(crbug.com/1229671): Remove these and all callers.
   //
   // The assert is invoked at various points of handle deserialization failure.
@@ -297,8 +300,6 @@ class MOJO_SYSTEM_IMPL_EXPORT Dispatcher
 
   Dispatcher();
   virtual ~Dispatcher();
-
-  DISALLOW_COPY_AND_ASSIGN(Dispatcher);
 };
 
 // So logging macros and |DCHECK_EQ()|, etc. work.

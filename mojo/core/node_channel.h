@@ -90,6 +90,9 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       const ProcessErrorCallback& process_error_callback);
 
+  NodeChannel(const NodeChannel&) = delete;
+  NodeChannel& operator=(const NodeChannel&) = delete;
+
   static Channel::MessagePtr CreateEventMessage(size_t capacity,
                                                 size_t payload_size,
                                                 void** payload,
@@ -219,8 +222,6 @@ class MOJO_SYSTEM_IMPL_EXPORT NodeChannel
 
   base::Lock remote_process_handle_lock_;
   base::Process remote_process_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(NodeChannel);
 };
 
 }  // namespace core

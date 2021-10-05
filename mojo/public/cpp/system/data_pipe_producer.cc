@@ -50,6 +50,9 @@ class DataPipeProducer::SequenceState
         producer_handle_(std::move(producer_handle)),
         callback_(std::move(callback)) {}
 
+  SequenceState(const SequenceState&) = delete;
+  SequenceState& operator=(const SequenceState&) = delete;
+
   void Cancel() {
     base::AutoLock lock(lock_);
     is_cancelled_ = true;
@@ -171,8 +174,6 @@ class DataPipeProducer::SequenceState
 
   base::Lock lock_;
   bool is_cancelled_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceState);
 };
 
 DataPipeProducer::DataPipeProducer(ScopedDataPipeProducerHandle producer)

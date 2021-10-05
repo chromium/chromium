@@ -67,6 +67,10 @@ class ScopedAllowSyncCallForTesting;
 // the current sequence during its lifetime.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
  public:
+  SyncCallRestrictions() = delete;
+  SyncCallRestrictions(const SyncCallRestrictions&) = delete;
+  SyncCallRestrictions& operator=(const SyncCallRestrictions&) = delete;
+
 #if ENABLE_SYNC_CALL_RESTRICTIONS
   // Checks whether the current sequence is allowed to make sync calls, and
   // causes a DCHECK if not.
@@ -145,8 +149,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait_;
 #endif
   };
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SyncCallRestrictions);
 };
 
 class ScopedAllowSyncCallForTesting {

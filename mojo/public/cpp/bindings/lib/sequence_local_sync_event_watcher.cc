@@ -36,14 +36,15 @@ using WatcherStateMap =
 struct WatcherState : public base::RefCounted<WatcherState> {
   WatcherState() = default;
 
+  WatcherState(const WatcherState&) = delete;
+  WatcherState& operator=(const WatcherState&) = delete;
+
   bool watcher_was_destroyed = false;
 
  private:
   friend class base::RefCounted<WatcherState>;
 
   ~WatcherState() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherState);
 };
 
 }  // namespace

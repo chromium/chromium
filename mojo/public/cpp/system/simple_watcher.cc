@@ -54,6 +54,9 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
     return context;
   }
 
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+
   static void CallNotify(const MojoTrapEvent* event) {
     auto* context = reinterpret_cast<Context*>(event->trigger_context);
     context->Notify(event->result, event->signals_state, event->flags);
@@ -107,8 +110,6 @@ class SimpleWatcher::Context : public base::RefCountedThreadSafe<Context> {
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const int watch_id_;
   const char* handler_tag_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 SimpleWatcher::SimpleWatcher(const base::Location& from_here,

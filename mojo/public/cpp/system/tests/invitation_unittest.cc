@@ -183,6 +183,9 @@ class InvitationCppTest : public testing::Test,
 
 class TestClientBase : public InvitationCppTest {
  public:
+  TestClientBase(const TestClientBase&) = delete;
+  TestClientBase& operator=(const TestClientBase&) = delete;
+
   static PlatformChannelEndpoint RecoverEndpointFromCommandLine() {
     const auto& command_line = *base::CommandLine::ForCurrentProcess();
 #if !defined(OS_FUCHSIA)
@@ -203,9 +206,6 @@ class TestClientBase : public InvitationCppTest {
   static ScopedMessagePipeHandle AcceptIsolatedInvitation() {
     return IncomingInvitation::AcceptIsolated(RecoverEndpointFromCommandLine());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestClientBase);
 };
 
 #define DEFINE_TEST_CLIENT(name)             \

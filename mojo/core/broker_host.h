@@ -32,6 +32,9 @@ class BrokerHost : public Channel::Delegate,
              ConnectionParams connection_params,
              const ProcessErrorCallback& process_error_callback);
 
+  BrokerHost(const BrokerHost&) = delete;
+  BrokerHost& operator=(const BrokerHost&) = delete;
+
   // Send |handle| to the client, to be used to establish a NodeChannel to us.
   bool SendChannel(PlatformHandle handle);
 
@@ -64,8 +67,6 @@ class BrokerHost : public Channel::Delegate,
 #endif
 
   scoped_refptr<Channel> channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrokerHost);
 };
 
 }  // namespace core

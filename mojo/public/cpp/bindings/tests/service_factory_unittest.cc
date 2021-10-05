@@ -26,10 +26,11 @@ class ServiceFactoryTest : public testing::Test {
  public:
   ServiceFactoryTest() = default;
 
+  ServiceFactoryTest(const ServiceFactoryTest&) = delete;
+  ServiceFactoryTest& operator=(const ServiceFactoryTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceFactoryTest);
 };
 
 class TestService1Impl : public mojom::TestService1 {

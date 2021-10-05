@@ -43,6 +43,9 @@ class InterfaceRequest {
   explicit InterfaceRequest(ScopedMessagePipeHandle handle)
       : state_(std::move(handle)) {}
 
+  InterfaceRequest(const InterfaceRequest&) = delete;
+  InterfaceRequest& operator=(const InterfaceRequest&) = delete;
+
   // Takes the message pipe from another InterfaceRequest.
   InterfaceRequest(InterfaceRequest&& other) = default;
 
@@ -108,8 +111,6 @@ class InterfaceRequest {
 
  private:
   internal::PendingReceiverState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterfaceRequest);
 };
 
 // Creates a new message pipe over which Interface is to be served. Binds the

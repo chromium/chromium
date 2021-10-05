@@ -35,6 +35,9 @@ class TestTaskRunner : public base::SequencedTaskRunner {
         task_ready_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                     base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
+  TestTaskRunner(const TestTaskRunner&) = delete;
+  TestTaskRunner& operator=(const TestTaskRunner&) = delete;
+
   bool PostNonNestableDelayedTask(const base::Location& from_here,
                                   base::OnceClosure task,
                                   base::TimeDelta delay) override {
@@ -117,8 +120,6 @@ class TestTaskRunner : public base::SequencedTaskRunner {
   // Protect |tasks_|.
   base::Lock lock_;
   base::queue<base::OnceClosure> tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTaskRunner);
 };
 
 template <typename ReceiverType, typename PendingReceiverType>

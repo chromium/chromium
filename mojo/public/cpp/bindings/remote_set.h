@@ -88,6 +88,10 @@ class RemoteSetImpl {
   };
 
   RemoteSetImpl() = default;
+
+  RemoteSetImpl(const RemoteSetImpl&) = delete;
+  RemoteSetImpl& operator=(const RemoteSetImpl&) = delete;
+
   ~RemoteSetImpl() = default;
 
   // Adds a new remote to this set and returns a unique ID that can be used to
@@ -166,8 +170,6 @@ class RemoteSetImpl {
   RemoteSetElementId::Generator remote_set_element_id_generator_;
   Storage storage_;
   DisconnectHandler disconnect_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSetImpl);
 };
 
 template <typename Interface>

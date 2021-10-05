@@ -293,6 +293,9 @@ class RejectHandlesDelegate : public Channel::Delegate {
  public:
   RejectHandlesDelegate() = default;
 
+  RejectHandlesDelegate(const RejectHandlesDelegate&) = delete;
+  RejectHandlesDelegate& operator=(const RejectHandlesDelegate&) = delete;
+
   size_t num_messages() const { return num_messages_; }
 
   // Channel::Delegate:
@@ -315,8 +318,6 @@ class RejectHandlesDelegate : public Channel::Delegate {
  private:
   size_t num_messages_ = 0;
   absl::optional<base::RunLoop> wait_for_error_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RejectHandlesDelegate);
 };
 
 TEST(ChannelTest, RejectHandles) {
@@ -529,6 +530,9 @@ class CallbackChannelDelegate : public Channel::Delegate {
  public:
   CallbackChannelDelegate() = default;
 
+  CallbackChannelDelegate(const CallbackChannelDelegate&) = delete;
+  CallbackChannelDelegate& operator=(const CallbackChannelDelegate&) = delete;
+
   void OnChannelMessage(const void* payload,
                         size_t payload_size,
                         std::vector<PlatformHandle> handles) override {
@@ -552,7 +556,6 @@ class CallbackChannelDelegate : public Channel::Delegate {
  private:
   base::OnceClosure on_message_;
   base::OnceClosure on_error_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackChannelDelegate);
 };
 
 TEST(ChannelTest, MessageSizeTest) {

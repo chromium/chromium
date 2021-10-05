@@ -122,6 +122,10 @@ class ThreadDestructionObserver
     }
   }
 
+  ThreadDestructionObserver(const ThreadDestructionObserver&) = delete;
+  ThreadDestructionObserver& operator=(const ThreadDestructionObserver&) =
+      delete;
+
  private:
   explicit ThreadDestructionObserver(base::OnceClosure callback)
       : callback_(std::move(callback)) {
@@ -139,8 +143,6 @@ class ThreadDestructionObserver
   }
 
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadDestructionObserver);
 };
 
 }  // namespace

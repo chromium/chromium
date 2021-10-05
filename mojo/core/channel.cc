@@ -84,6 +84,10 @@ struct ComplexMessage : public Channel::Message {
                  size_t max_handles,
                  size_t payload_size,
                  MessageType message_type);
+
+  ComplexMessage(const ComplexMessage&) = delete;
+  ComplexMessage& operator=(const ComplexMessage&) = delete;
+
   ~ComplexMessage() override = default;
 
   // Message impl:
@@ -120,10 +124,12 @@ struct ComplexMessage : public Channel::Message {
   // On OSX, handles are serialised into the extra header section.
   MachPortsExtraHeader* mach_ports_header_ = nullptr;
 #endif
-  DISALLOW_COPY_AND_ASSIGN(ComplexMessage);
 };
 
 struct TrivialMessage : public Channel::Message {
+  TrivialMessage(const TrivialMessage&) = delete;
+  TrivialMessage& operator=(const TrivialMessage&) = delete;
+
   ~TrivialMessage() override = default;
 
   // TryConstruct should be used to build a TrivialMessage.
@@ -153,7 +159,6 @@ struct TrivialMessage : public Channel::Message {
   alignas(sizeof(void*)) uint8_t data_[256 - sizeof(Channel::Message)];
 
   static constexpr size_t kInternalCapacity = sizeof(data_);
-  DISALLOW_COPY_AND_ASSIGN(TrivialMessage);
 };
 
 static_assert(sizeof(TrivialMessage) == 256,

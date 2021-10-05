@@ -162,6 +162,9 @@ class ChannelFuchsia : public Channel,
     CHECK(handle_.is_valid());
   }
 
+  ChannelFuchsia(const ChannelFuchsia&) = delete;
+  ChannelFuchsia& operator=(const ChannelFuchsia&) = delete;
+
   void Start() override {
     if (io_task_runner_->RunsTasksInCurrentSequence()) {
       StartOnIOThread();
@@ -401,8 +404,6 @@ class ChannelFuchsia : public Channel,
 
   base::Lock write_lock_;
   bool reject_writes_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelFuchsia);
 };
 
 }  // namespace

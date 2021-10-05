@@ -183,6 +183,9 @@ class ServiceImplWithReceiver : public ServiceImpl {
         &ServiceImplWithReceiver::OnDisconnect, base::Unretained(this)));
   }
 
+  ServiceImplWithReceiver(const ServiceImplWithReceiver&) = delete;
+  ServiceImplWithReceiver& operator=(const ServiceImplWithReceiver&) = delete;
+
  private:
   ~ServiceImplWithReceiver() override { std::move(closure_).Run(); }
 
@@ -190,8 +193,6 @@ class ServiceImplWithReceiver : public ServiceImpl {
 
   Receiver<sample::Service> receiver_;
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceImplWithReceiver);
 };
 
 // Tests that the receiver may be deleted in its disconnect handler.

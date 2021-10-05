@@ -58,6 +58,9 @@ class DataPipeProducerDispatcher::PortObserverThunk
       scoped_refptr<DataPipeProducerDispatcher> dispatcher)
       : dispatcher_(dispatcher) {}
 
+  PortObserverThunk(const PortObserverThunk&) = delete;
+  PortObserverThunk& operator=(const PortObserverThunk&) = delete;
+
  private:
   ~PortObserverThunk() override = default;
 
@@ -65,8 +68,6 @@ class DataPipeProducerDispatcher::PortObserverThunk
   void OnPortStatusChanged() override { dispatcher_->OnPortStatusChanged(); }
 
   scoped_refptr<DataPipeProducerDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortObserverThunk);
 };
 
 // static

@@ -153,6 +153,9 @@ class TestObserver : public FilteredDataSource::Filter {
   explicit TestObserver(DataPipeObserverData* observer_data)
       : observer_data_(observer_data) {}
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   // FilteredDataSource::Filter:
   void OnRead(base::span<char> buffer,
               FilteredDataSource::ReadResult* result) override {
@@ -172,8 +175,6 @@ class TestObserver : public FilteredDataSource::Filter {
   DataPipeObserverData* observer_data_;
   // Observer may be called on any sequence.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 TEST_F(DataPipeProducerTest, WriteFromFile) {

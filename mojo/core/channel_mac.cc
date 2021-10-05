@@ -69,6 +69,9 @@ class ChannelMac : public Channel,
     }
   }
 
+  ChannelMac(const ChannelMac&) = delete;
+  ChannelMac& operator=(const ChannelMac&) = delete;
+
   void Start() override {
     io_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ChannelMac::StartOnIOThread, this));
@@ -708,8 +711,6 @@ class ChannelMac : public Channel,
   // When |handshake_done_| is false or |send_buffer_contains_message_| is true,
   // calls to Write() will enqueue messages here.
   base::circular_deque<MessagePtr> pending_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelMac);
 };
 
 }  // namespace

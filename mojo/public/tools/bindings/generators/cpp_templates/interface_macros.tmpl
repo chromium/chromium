@@ -122,6 +122,10 @@ class {{message_typename}}
       , param_{{param.name}}_(std::move(param_{{param.name}}))
 {%-       endif %}
 {%-     endfor -%} {}
+
+  {{message_typename}}(const {{message_typename}}&) = delete;
+  {{message_typename}}& operator=(const {{message_typename}}&) = delete;
+
   ~{{message_typename}}() override = default;
 
   static mojo::Message Build(
@@ -251,8 +255,6 @@ class {{message_typename}}
 {%-     for param in parameters %}
   {{param.kind|cpp_wrapper_type}} param_{{param.name}}_;
 {%-     endfor %}
-
-  DISALLOW_COPY_AND_ASSIGN({{message_typename}});
 };
 
 const mojo::internal::UnserializedMessageContext::Tag

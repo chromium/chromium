@@ -73,13 +73,16 @@ class {{class_name}}_{{method.name}}_HandleSyncResponse
 {%-       endfor %} {
     DCHECK(!*result_);
   }
+
+  {{class_name}}_{{method.name}}_HandleSyncResponse(const {{class_name}}_{{method.name}}_HandleSyncResponse&) = delete;
+  {{class_name}}_{{method.name}}_HandleSyncResponse& operator=(const {{class_name}}_{{method.name}}_HandleSyncResponse&) = delete;
+
   bool Accept(mojo::Message* message) override;
  private:
   bool* result_;
 {%-       for param in method.response_parameters %}
   {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}_;
 {%-       endfor -%}
-  DISALLOW_COPY_AND_ASSIGN({{class_name}}_{{method.name}}_HandleSyncResponse);
 };
 {%-     endif %}
 
@@ -90,10 +93,13 @@ class {{class_name}}_{{method.name}}_ForwardToCallback
       {{class_name}}::{{method.name}}Callback callback
       ) : callback_(std::move(callback)) {
   }
+
+  {{class_name}}_{{method.name}}_ForwardToCallback(const {{class_name}}_{{method.name}}_ForwardToCallback&) = delete;
+  {{class_name}}_{{method.name}}_ForwardToCallback& operator=(const {{class_name}}_{{method.name}}_ForwardToCallback&) = delete;
+
   bool Accept(mojo::Message* message) override;
  private:
   {{class_name}}::{{method.name}}Callback callback_;
-  DISALLOW_COPY_AND_ASSIGN({{class_name}}_{{method.name}}_ForwardToCallback);
 };
 {%-   endif %}
 {%- endfor %}
@@ -247,6 +253,9 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
                           std::move(proxy));
   }
 
+  {{class_name}}_{{method.name}}_ProxyToResponder(const {{class_name}}_{{method.name}}_ProxyToResponder&) = delete;
+  {{class_name}}_{{method.name}}_ProxyToResponder& operator=(const {{class_name}}_{{method.name}}_ProxyToResponder&) = delete;
+
   ~{{class_name}}_{{method.name}}_ProxyToResponder() {
 #if DCHECK_IS_ON()
     if (responder_) {
@@ -288,8 +297,6 @@ class {{class_name}}_{{method.name}}_ProxyToResponder {
   uint64_t request_id_;
   bool is_sync_;
   std::unique_ptr<mojo::MessageReceiverWithStatus> responder_;
-
-  DISALLOW_COPY_AND_ASSIGN({{class_name}}_{{method.name}}_ProxyToResponder);
 };
 
 {%-     if method|method_supports_lazy_serialization %}
