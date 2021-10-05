@@ -4097,6 +4097,7 @@ source_set("unit_tests") {
     "../ash/login/ui/oobe_dialog_size_utils_unittest.cc",
     "../ash/login/user_online_signin_notifier_unittest.cc",
     "../ash/login/users/affiliation_unittest.cc",
+    "../ash/login/users/default_user_image/default_user_images_unittest.cc",
     "../ash/login/users/multi_profile_user_controller_unittest.cc",
     "../ash/login/users/user_manager_unittest.cc",
     "../ash/login/version_updater/update_time_estimator_unittest.cc",

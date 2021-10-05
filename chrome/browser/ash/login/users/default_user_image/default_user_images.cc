@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
@@ -39,8 +41,9 @@ struct DefaultImageInfo {
 // Info of default user images. When adding new entries to this list,
 // please also update the enum ChromeOSUserImageId2 in
 // tools/metrics/histograms/enums.xml
+// When deprecating images, please also update kCurrentImageIndexes accordingly.
 // clang-format off
-const DefaultImageInfo kDefaultImageInfo[] = {
+constexpr DefaultImageInfo kDefaultImageInfo[] = {
     // No description for deprecated user image 0-18.
     {IDR_LOGIN_DEFAULT_USER, 0, Eligibility::kDeprecated},
     // Original set of images.
@@ -146,6 +149,83 @@ const DefaultImageInfo kDefaultImageInfo[] = {
     {IDR_LOGIN_DEFAULT_USER_97, IDS_LOGIN_DEFAULT_USER_DESC_97, Eligibility::kEligible},
 };
 // clang-format on
+
+// Indexes of the current set of default images in the order that will display
+// in the personalization settings page. This list should contain all the
+// indexes of egligible default images listed above.
+// clang-format off
+constexpr int kCurrentImageIndexes[] = {
+    // Material design avatars.
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    92,
+    93,
+    94,
+    95,
+    96,
+    97,
+    // Third set of images.
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60,
+    61,
+    62,
+    63,
+    64,
+    65,
+    71,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    80,
+    81,
+    82,
+};
+// clang-format on
+
+// Compile time check that make sure the current default images are the set of
+// all the eligible default images.
+constexpr bool ValidateCurrentImageIndexes() {
+  int num_eligible_images = 0;
+  for (const auto info : kDefaultImageInfo) {
+    if (info.eligibility == Eligibility::kEligible)
+      num_eligible_images++;
+  }
+  if (num_eligible_images != base::size(kCurrentImageIndexes))
+    return false;
+
+  for (const int index : kCurrentImageIndexes) {
+    if (kDefaultImageInfo[index].eligibility != Eligibility::kEligible)
+      return false;
+  }
+  return true;
+}
+
+static_assert(ValidateCurrentImageIndexes(),
+              "kCurrentImageIndexes should contain all the indexes of "
+              "egligible default images listed in kDefaultImageInfo.");
 
 // Source info of (deprecated) default user images.
 const DefaultImageSourceInfo kDefaultImageSourceInfo[] = {
@@ -276,14 +356,13 @@ bool IsInCurrentImageSet(int index) {
 
 std::unique_ptr<base::ListValue> GetCurrentImageSet() {
   auto image_urls = std::make_unique<base::ListValue>();
-  for (int i = kFirstDefaultImageIndex; i < kDefaultImagesCount; ++i) {
-    if (kDefaultImageInfo[i].eligibility == Eligibility::kDeprecated)
-      continue;
-
+  for (int i = 0; i < base::size(kCurrentImageIndexes); ++i) {
     auto image_data = std::make_unique<base::DictionaryValue>();
-    image_data->SetString("url", default_user_image::GetDefaultImageUrl(i));
-    image_data->SetInteger("index", i);
-    int string_id = kDefaultImageInfo[i].description_message_id;
+    int index = kCurrentImageIndexes[i];
+    int string_id = kDefaultImageInfo[index].description_message_id;
+
+    image_data->SetString("url", default_user_image::GetDefaultImageUrl(index));
+    image_data->SetInteger("index", index);
     image_data->SetString("title", string_id
                                        ? l10n_util::GetStringUTF16(string_id)
                                        : std::u16string());
