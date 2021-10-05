@@ -40,6 +40,25 @@ class LibInputEventConverter : public EventConverterEvdev {
     libinput_event* event_;
   };
 
+  // This class wraps the libinput_device struct from libinput library.
+  class LibInputDevice {
+   public:
+    explicit LibInputDevice(libinput_device* const device);
+    LibInputDevice(LibInputDevice&& other);
+    LibInputDevice(const LibInputDevice& other) = delete;
+    LibInputDevice& operator=(const LibInputDevice& other) = delete;
+    ~LibInputDevice();
+
+    void ApplySettings(const InputDeviceSettingsEvdev& settings) const;
+
+   private:
+    void SetNaturalScrollEnabled(const bool enabled) const;
+    void SetSensitivity(const int sensitivity) const;
+    void SetTapToClickEnabled(const bool enabled) const;
+
+    libinput_device* device_;
+  };
+
   // This class wraps the libinput struct from libinput library. Any operations
   // that uses libinput struct are implemented here.
   class LibInputContext {
@@ -50,6 +69,8 @@ class LibInputEventConverter : public EventConverterEvdev {
     LibInputContext& operator=(const LibInputContext& other) = delete;
     ~LibInputContext();
 
+    absl::optional<LibInputEventConverter::LibInputDevice> AddDevice(
+        const base::FilePath& path) const;
     bool Dispatch() const;
     int Fd();
     absl::optional<LibInputEventConverter::LibInputEvent> NextEvent() const;
@@ -115,6 +136,7 @@ class LibInputEventConverter : public EventConverterEvdev {
   const bool has_touchscreen_;
 
   const LibInputContext context_;
+  const absl::optional<LibInputDevice> device_;
 };
 
 }  // namespace ui

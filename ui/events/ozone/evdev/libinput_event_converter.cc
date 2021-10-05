@@ -14,6 +14,7 @@
 #include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
+#include "ui/events/ozone/evdev/input_device_settings_evdev.h"
 
 namespace ui {
 
@@ -62,6 +63,56 @@ libinput_event_type LibInputEventConverter::LibInputEvent::Type() const {
   return libinput_event_get_type(event_);
 }
 
+LibInputEventConverter::LibInputDevice::LibInputDevice(
+    libinput_device* const device)
+    : device_(device) {
+  DCHECK(device);
+
+  // |libinput_path_add_device| returns a device pointer that is is
+  // derefed at the next call to |libinput_dispatch|. Add a ref here
+  // so that we can keep using the pointer.
+  libinput_device_ref(device);
+}
+
+LibInputEventConverter::LibInputDevice::LibInputDevice(LibInputDevice&& other)
+    : device_(other.device_) {
+  other.device_ = nullptr;
+}
+
+LibInputEventConverter::LibInputDevice::~LibInputDevice() {
+  if (device_) {
+    libinput_device_unref(device_);
+  }
+}
+
+void LibInputEventConverter::LibInputDevice::ApplySettings(
+    const InputDeviceSettingsEvdev& settings) const {
+  SetNaturalScrollEnabled(settings.natural_scroll_enabled);
+  SetSensitivity(settings.touchpad_sensitivity);
+  SetTapToClickEnabled(settings.tap_to_click_enabled);
+}
+
+void LibInputEventConverter::LibInputDevice::SetNaturalScrollEnabled(
+    const bool enabled) const {
+  libinput_device_config_scroll_set_natural_scroll_enabled(device_, enabled);
+}
+
+void LibInputEventConverter::LibInputDevice::SetSensitivity(
+    const int sensitivity) const {
+  // The range of |sensitivity| is [1..5] according to comments in
+  // libgestures. Rescale to floating point [-1, 1].
+  const double speed = (sensitivity - 3.0) / 2.0;
+  libinput_device_config_accel_set_speed(device_, speed);
+}
+
+void LibInputEventConverter::LibInputDevice::SetTapToClickEnabled(
+    const bool enabled) const {
+  const auto arg =
+      (enabled ? LIBINPUT_CONFIG_TAP_ENABLED : LIBINPUT_CONFIG_TAP_DISABLED);
+
+  libinput_device_config_tap_set_enabled(device_, arg);
+}
+
 LibInputEventConverter::LibInputContext::LibInputContext(
     LibInputContext&& other)
     : li_(other.li_) {
@@ -90,6 +141,18 @@ LibInputEventConverter::LibInputContext::Create() {
   }
 
   return absl::make_optional(LibInputEventConverter::LibInputContext(li));
+}
+
+absl::optional<LibInputEventConverter::LibInputDevice>
+LibInputEventConverter::LibInputContext::AddDevice(
+    const base::FilePath& path) const {
+  auto* const dev = libinput_path_add_device(li_, path.value().c_str());
+  if (!dev) {
+    LOG(ERROR) << "libinput_path_add_device failed with device: " << path;
+    return absl::nullopt;
+  }
+
+  return absl::make_optional(LibInputDevice(dev));
 }
 
 bool LibInputEventConverter::LibInputContext::Dispatch() const {
@@ -188,12 +251,20 @@ LibInputEventConverter::LibInputEventConverter(
       has_mouse_(devinfo.HasMouse()),
       has_touchpad_(devinfo.HasTouchpad()),
       has_touchscreen_(devinfo.HasTouchscreen()),
-      context_(std::move(ctx)) {}
+      context_(std::move(ctx)),
+      device_(context_.AddDevice(path)) {}
 
 LibInputEventConverter::~LibInputEventConverter() {}
 
 void LibInputEventConverter::ApplyDeviceSettings(
-    const InputDeviceSettingsEvdev& settings) {}
+    const InputDeviceSettingsEvdev& settings) {
+  if (device_) {
+    device_->ApplySettings(settings);
+  } else {
+    LOG(ERROR)
+        << "Unable to apply settings due to libinput_path_add_device failure";
+  }
+}
 
 bool LibInputEventConverter::HasKeyboard() const {
   return has_keyboard_;
