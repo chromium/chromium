@@ -173,7 +173,9 @@ SideSearchBrowserController::SideSearchBrowserController(
           browser_view_->GetProfile(),
           base::BindRepeating(
               &SideSearchBrowserController::SidePanelCloseButtonPressed,
-              base::Unretained(this)))) {
+              base::Unretained(this)))),
+      focus_tracker_(side_panel_, browser_view_->GetFocusManager()) {
+  browser_view_observation_.Observe(browser_view_);
   UpdateSidePanelForContents(browser_view_->GetActiveWebContents(), nullptr);
 }
 
@@ -206,10 +208,31 @@ void SideSearchBrowserController::DidFinishNavigation(
     return;
   }
 
+  // The toggled state of the side panel for this tab contents should be reset
+  // when landing on a page that should not show the side panel in the
+  // state-per-tab mode (e.g. NTP, Google home page etc). This will prevent the
+  // side panel from reopening automatically after the tab next encounters a
+  // page where the side panel can be shown.
+  if (base::FeatureList::IsEnabled(features::kSideSearchStatePerTab)) {
+    auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+        navigation_handle->GetWebContents());
+    if (GetSidePanelToggledOpen() &&
+        !tab_contents_helper->CanShowSidePanelForCommittedNavigation()) {
+      CloseSidePanel();
+      return;
+    }
+  }
+
   // We need to update the side panel state in response to navigations to catch
   // cases where the user navigates to a page that should have the side panel
   // hidden (e.g. the Google home page).
   UpdateSidePanel();
+}
+
+void SideSearchBrowserController::OnViewAddedToWidget(
+    views::View* observed_view) {
+  DCHECK_EQ(browser_view_, observed_view);
+  focus_tracker_.SetFocusManager(browser_view_->GetFocusManager());
 }
 
 void SideSearchBrowserController::UpdateSidePanelForContents(
@@ -283,12 +306,22 @@ void SideSearchBrowserController::OpenSidePanel() {
   RecordSideSearchOpenAction(
       SideSearchOpenActionType::kTapOnSideSearchToolbarButton);
   SetSidePanelToggledOpen(true);
+  UpdateSidePanel();
+
+  // After showing the side panel have the side contents request focus.
+  DCHECK(side_panel_->GetVisible());
+  web_view_->web_contents()->Focus();
 }
 
 void SideSearchBrowserController::CloseSidePanel(
-    SideSearchCloseActionType action) {
-  RecordSideSearchCloseAction(action);
+    absl::optional<SideSearchCloseActionType> action) {
+  if (action)
+    RecordSideSearchCloseAction(action.value());
+
+  focus_tracker_.FocusLastFocusedExternalView();
   SetSidePanelToggledOpen(false);
+  UpdateSidePanel();
+
   if (base::FeatureList::IsEnabled(features::kSideSearchClearCacheWhenClosed)) {
     // If per tab state is enabled only clear the side contents for the
     // currently active tab.
@@ -328,7 +361,6 @@ void SideSearchBrowserController::SetSidePanelToggledOpen(bool toggled_open) {
   } else {
     toggled_open_ = toggled_open;
   }
-  UpdateSidePanel();
 }
 
 void SideSearchBrowserController::UpdateSidePanel() {
@@ -363,10 +395,6 @@ void SideSearchBrowserController::UpdateSidePanel() {
                                 ? tab_contents_helper->GetSidePanelContents()
                                 : nullptr);
   side_panel_->SetVisible(will_show_side_panel);
-
-  // Auto focus on the side panel when it is open.
-  if (will_show_side_panel)
-    web_view_->RequestFocus();
 
   // The toolbar button should remain visible in the toolbar as a side panel can
   // be shown for the active tab.

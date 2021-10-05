@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 
+#include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "content/public/browser/browser_context.h"
@@ -130,6 +132,9 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
   side_panel_contents_ =
       content::WebContents::Create(content::WebContents::CreateParams(
           web_contents()->GetBrowserContext(), nullptr));
+  task_manager::WebContentsTags::CreateForTabContents(
+      side_panel_contents_.get());
+  PrefsTabHelper::CreateForWebContents(side_panel_contents_.get());
   SideSearchSideContentsHelper::CreateForWebContents(
       side_panel_contents_.get());
   GetSideContentsHelper()->SetDelegate(this);

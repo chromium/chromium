@@ -6,10 +6,14 @@
 #define CHROME_BROWSER_UI_VIEWS_SIDE_SEARCH_SIDE_SEARCH_BROWSER_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/side_search/side_search_metrics.h"
 #include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/focus/external_focus_tracker.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace views {
 class WebView;
@@ -23,7 +27,8 @@ class ToolbarButton;
 // for Side Search in addition to managing the state of the side panel itself.
 class SideSearchBrowserController
     : public SideSearchTabContentsHelper::Delegate,
-      public content::WebContentsObserver {
+      public content::WebContentsObserver,
+      public views::ViewObserver {
  public:
   enum SideSearchViewID {
     VIEW_ID_NONE = 0,
@@ -49,6 +54,9 @@ class SideSearchBrowserController
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
+  // views::ViewObserver:
+  void OnViewAddedToWidget(views::View* observed_view) override;
+
   void UpdateSidePanelForContents(content::WebContents* new_contents,
                                   content::WebContents* old_contents);
 
@@ -71,7 +79,8 @@ class SideSearchBrowserController
 
   void OpenSidePanel();
 
-  void CloseSidePanel(SideSearchCloseActionType action);
+  void CloseSidePanel(
+      absl::optional<SideSearchCloseActionType> action = absl::nullopt);
 
   // Called when the side panel is toggled into the closed state. Clears the
   // side panel contents for all tabs belonging to the side panel's browser
@@ -94,6 +103,15 @@ class SideSearchBrowserController
   SidePanel* const side_panel_;
   BrowserView* const browser_view_;
   views::WebView* const web_view_;
+
+  // Tracks and stores the last focused view which is not the
+  // `side_panel_` or any of its children. Used to restore focus once
+  // the `side_panel_` is hidden.
+  views::ExternalFocusTracker focus_tracker_;
+
+  // Observation on `browser_view_` used to track focus manager changes.
+  base::ScopedObservation<views::View, views::ViewObserver>
+      browser_view_observation_{this};
 
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.

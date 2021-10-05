@@ -212,9 +212,9 @@ TEST_F(SideSearchTabContentsHelperTest, IndicatesWhenSidePanelShouldBeShown) {
 }
 
 TEST_F(SideSearchTabContentsHelperTest, ClearsSidePanelContentsWhenAsked) {
-  DCHECK_NE(nullptr, helper()->side_panel_contents_for_testing());
+  EXPECT_NE(nullptr, helper()->side_panel_contents_for_testing());
   helper()->ClearSidePanelContents();
-  DCHECK_EQ(nullptr, helper()->side_panel_contents_for_testing());
+  EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
 }
 
 }  // namespace test

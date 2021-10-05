@@ -336,6 +336,36 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       OpeningAndClosingTheSidePanelHandlesFocusCorrectly) {
+  // Navigate to a Google SRP and then a non-Google page. The side panel will be
+  // available but closed.
+  NavigateToSRPAndNonGoogleUrl(browser());
+
+  auto* browser_view = BrowserViewFor(browser());
+  auto* side_panel = GetSidePanelFor(browser());
+  auto* contents_view = browser_view->contents_web_view();
+  auto* focus_manager = browser_view->GetFocusManager();
+  ASSERT_NE(nullptr, focus_manager);
+
+  // Set focus to the contents view.
+  contents_view->RequestFocus();
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_TRUE(contents_view->HasFocus());
+
+  // Open the side panel. The side panel should receive focus.
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_FALSE(contents_view->HasFocus());
+  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+
+  // Close the side panel. The contents view should have its focus restored.
+  NotifyButtonClick(browser());
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_TRUE(contents_view->HasFocus());
+  EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
+}
+
 class SideSearchStatePerTabBrowserControllerTest
     : public SideSearchBrowserControllerTest {
  public:
@@ -421,4 +451,61 @@ IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
   ActivateTabAt(browser(), 0);
   EXPECT_TRUE(GetSidePanelButtonFor(browser())->GetVisible());
   EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
+                       SwitchingTabsHandlesFocusCorrectly) {
+  auto* browser_view = BrowserViewFor(browser());
+  auto* side_panel = GetSidePanelFor(browser());
+  auto* contents_view = browser_view->contents_web_view();
+  auto* focus_manager = browser_view->GetFocusManager();
+  ASSERT_NE(nullptr, focus_manager);
+
+  // The side panel should currently have focus as it was opened via the toolbar
+  // button.
+  NavigateToSRPAndOpenSidePanel(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(contents_view->HasFocus());
+
+  // Switch to another tab and open the side panel. The side panel should still
+  // have focus as it was opened via the toolbar button.
+  AppendTab(browser(), kNonGoogleURL);
+  ActivateTabAt(browser(), 1);
+  NavigateToSRPAndOpenSidePanel(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(contents_view->HasFocus());
+
+  // Set focus to the contents view and switch to the first tab (which also has
+  // its side panel toggled open). In this switch the focus should return to the
+  // side panel as the BrowserView will update focus on a tab switch.
+  contents_view->RequestFocus();
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_TRUE(contents_view->HasFocus());
+
+  ActivateTabAt(browser(), 0);
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_TRUE(side_panel->Contains(focus_manager->GetFocusedView()));
+  EXPECT_FALSE(contents_view->HasFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
+                       SidePanelTogglesClosedCorrectlyDuringNavigation) {
+  // Navigate to a Google SRP and then a non-Google page. The side panel will be
+  // available and open.
+  NavigateToSRPAndOpenSidePanel(browser());
+  auto* side_panel = GetSidePanelFor(browser());
+
+  // Navigating to a Google SRP URL should automatically hide the side panel as
+  // it should not be available.
+  EXPECT_TRUE(side_panel->GetVisible());
+  NavigateActiveTab(browser(), kGoogleSearchURL);
+  EXPECT_FALSE(side_panel->GetVisible());
+
+  // When navigating again to a non-Google / non-NTP page the side panel will
+  // become available again but should not automatically reopen.
+  NavigateActiveTab(browser(), kGoogleSearchURL);
+  EXPECT_FALSE(side_panel->GetVisible());
 }
