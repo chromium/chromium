@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
-    enum="LinkGenerationSharedStatus" expires_after="2021-11-12">
+    enum="LinkGenerationSharedStatus" expires_after="2021-12-01">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -111,7 +111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.AsyncTask.Iterations" units="iterations"
-    expires_after="2021-12-31">
+    expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -122,7 +122,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.AsyncTask.SearchDuration" units="ms"
-    expires_after="2021-12-31">
+    expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -133,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.Desktop.CopiedLinkType"
-    enum="LinkGenerationCopiedLinkType" expires_after="2021-11-12">
+    enum="LinkGenerationCopiedLinkType" expires_after="2021-12-01">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error"
-    enum="LinkGenerationError" expires_after="2021-12-31">
+    enum="LinkGenerationError" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Iterations"
-    units="iterations" expires_after="2021-12-31">
+    units="iterations" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -163,7 +163,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2021-12-31">
+    enum="LinkGenerationError" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -173,7 +173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
-    units="ms" expires_after="2021-12-31">
+    units="ms" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -183,7 +183,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Iterations" units="iterations"
-    expires_after="2021-12-31">
+    expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
-    expires_after="2021-12-31">
+    expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -205,7 +205,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.SelectionLength"
-    units="characters" expires_after="2021-12-31">
+    units="characters" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -215,7 +215,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.SelectorParameters"
-    enum="TextFragmentAnchorParameters" expires_after="2021-12-31">
+    enum="TextFragmentAnchorParameters" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -225,7 +225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
-    enum="LinkGenerationState" expires_after="2021-11-12">
+    enum="LinkGenerationState" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -235,7 +235,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.TimeToGenerate" units="ms"
-    expires_after="2021-12-31">
+    expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -245,7 +245,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated{Requested}"
-    units="BooleanSuccess" expires_after="2021-12-31">
+    units="BooleanSuccess" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -262,7 +262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkToTextDiagnoseStatus"
-    enum="LinkToTextDiagnoseStatus" expires_after="2021-11-12">
+    enum="LinkToTextDiagnoseStatus" expires_after="2021-12-01">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
