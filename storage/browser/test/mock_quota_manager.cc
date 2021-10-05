@@ -53,6 +53,32 @@ MockQuotaManager::MockQuotaManager(
   QuotaManagerImpl::SetEvictionDisabledForTesting(false);
 }
 
+void MockQuotaManager::GetOrCreateBucket(
+    const blink::StorageKey& storage_key,
+    const std::string& bucket_name,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  QuotaErrorOr<BucketInfo> bucketOr = FindBucket(
+      storage_key, bucket_name, blink::mojom::StorageType::kTemporary);
+  if (bucketOr.ok()) {
+    std::move(callback).Run(std::move(bucketOr));
+    return;
+  }
+  BucketInfo bucket = CreateBucket(storage_key, bucket_name,
+                                   blink::mojom::StorageType::kTemporary);
+  buckets_.emplace_back(
+      BucketData(bucket, storage::AllQuotaClientTypes(), base::Time::Now()));
+  std::move(callback).Run(std::move(bucket));
+}
+
+void MockQuotaManager::GetBucket(
+    const blink::StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType type,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  QuotaErrorOr<BucketInfo> bucket = FindBucket(storage_key, bucket_name, type);
+  std::move(callback).Run(std::move(bucket));
+}
+
 void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
                                         StorageType type,
                                         UsageAndQuotaCallback callback) {
@@ -154,10 +180,33 @@ void MockQuotaManager::NotifyWriteFailed(const StorageKey& storage_key) {
 
 MockQuotaManager::~MockQuotaManager() = default;
 
+QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
+    const blink::StorageKey& storage_key,
+    const std::string& bucket_name,
+    blink::mojom::StorageType type) {
+  auto it = std::find_if(
+      buckets_.begin(), buckets_.end(),
+      [storage_key, bucket_name, type](const BucketData& bucket_data) {
+        return bucket_data.bucket.storage_key == storage_key &&
+               bucket_data.bucket.name == bucket_name &&
+               bucket_data.bucket.type == type;
+      });
+  if (it != buckets_.end()) {
+    return it->bucket;
+  }
+  return QuotaError::kNotFound;
+}
+
 void MockQuotaManager::UpdateUsage(const StorageKey& storage_key,
                                    StorageType type,
                                    int64_t delta) {
   usage_and_quota_map_[std::make_pair(storage_key, type)].usage += delta;
+}
+
+void MockQuotaManager::DidGetBucket(
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+    QuotaErrorOr<BucketInfo> result) {
+  std::move(callback).Run(std::move(result));
 }
 
 void MockQuotaManager::DidGetModifiedInTimeRange(

@@ -174,9 +174,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // kTemporary and returns the BucketInfo. If one doesn't exist, it creates
   // a new bucket with the specified policies. Returns a QuotaError if the
   // operation has failed.
-  void GetOrCreateBucket(const blink::StorageKey& storage_key,
-                         const std::string& bucket_name,
-                         base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
+  // This method is declared as virtual to allow test code to override it.
+  virtual void GetOrCreateBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
   // Creates a bucket for `origin` with `bucket_name` and returns BucketInfo
   // to the callback. Will return a QuotaError to the callback on operation
@@ -193,10 +195,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Retrieves the BucketInfo of the bucket with `bucket_name` for `storage_key`
   // and returns it to the callback. Will return a QuotaError if the bucket does
   // not exist or on operation failure.
-  void GetBucket(const blink::StorageKey& storage_key,
-                 const std::string& bucket_name,
-                 blink::mojom::StorageType type,
-                 base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
+  // This method is declared as virtual to allow test code to override it.
+  virtual void GetBucket(const blink::StorageKey& storage_key,
+                         const std::string& bucket_name,
+                         blink::mojom::StorageType type,
+                         base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
   // Retrieves all storage keys for `type` that are in the buckets table.
   // Used for listing storage keys when showing storage key quota usage.

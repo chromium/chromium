@@ -41,6 +41,20 @@ class MockQuotaManager : public QuotaManager {
                    scoped_refptr<base::SingleThreadTaskRunner> io_thread,
                    scoped_refptr<SpecialStoragePolicy> special_storage_policy);
 
+  // Overrides QuotaManager's implementation that maintains an internal
+  // container of created buckets and avoids going to the DB.
+  void GetOrCreateBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
+  // Overrides QuotaManager's implementation to fetch from an internal
+  // container populated by calls to GetOrCreateBucket.
+  void GetBucket(const blink::StorageKey& storage_key,
+                 const std::string& bucket_name,
+                 blink::mojom::StorageType type,
+                 base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+
   // Overrides QuotaManager's implementation. The internal usage data is
   // updated when MockQuotaManagerProxy::NotifyStorageModified() is
   // called.  The internal quota value can be updated by calling
@@ -146,10 +160,17 @@ class MockQuotaManager : public QuotaManager {
     blink::mojom::UsageBreakdownPtr usage_breakdown;
   };
 
+  QuotaErrorOr<BucketInfo> FindBucket(const blink::StorageKey& storage_key,
+                                      const std::string& bucket_name,
+                                      blink::mojom::StorageType type);
+
   // This must be called via MockQuotaManagerProxy.
   void UpdateUsage(const blink::StorageKey& storage_key,
                    blink::mojom::StorageType type,
                    int64_t delta);
+
+  void DidGetBucket(base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
+                    QuotaErrorOr<BucketInfo> result);
   void DidGetModifiedInTimeRange(GetBucketsCallback callback,
                                  std::unique_ptr<std::set<BucketInfo>> buckets,
                                  blink::mojom::StorageType storage_type);

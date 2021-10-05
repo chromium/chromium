@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -51,6 +52,36 @@ class MockQuotaManagerTest : public testing::Test {
     // Make sure the quota manager cleans up correctly.
     manager_ = nullptr;
     base::RunLoop().RunUntilIdle();
+  }
+
+  QuotaErrorOr<BucketInfo> GetOrCreateBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name) {
+    QuotaErrorOr<BucketInfo> result;
+    base::RunLoop run_loop;
+    manager_->GetOrCreateBucket(
+        storage_key, bucket_name,
+        base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
+          result = std::move(bucket);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
+  QuotaErrorOr<BucketInfo> GetBucket(const blink::StorageKey& storage_key,
+                                     const std::string& bucket_name,
+                                     blink::mojom::StorageType type) {
+    QuotaErrorOr<BucketInfo> result;
+    base::RunLoop run_loop;
+    manager_->GetBucket(
+        storage_key, bucket_name, type,
+        base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
+          result = std::move(bucket);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
   }
 
   void GetModifiedBuckets(StorageType type, base::Time begin, base::Time end) {
@@ -116,6 +147,87 @@ class MockQuotaManagerTest : public testing::Test {
 
   DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerTest);
 };
+
+TEST_F(MockQuotaManagerTest, GetOrCreateBucket) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
+
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
+
+  QuotaErrorOr<BucketInfo> bucket1 =
+      GetOrCreateBucket(kStorageKey1, kBucketName);
+  EXPECT_TRUE(bucket1.ok());
+  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1->name, kBucketName);
+  EXPECT_EQ(bucket1->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+
+  QuotaErrorOr<BucketInfo> bucket2 =
+      GetOrCreateBucket(kStorageKey2, kBucketName);
+  EXPECT_TRUE(bucket2.ok());
+  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2->name, kBucketName);
+  EXPECT_EQ(bucket2->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+
+  QuotaErrorOr<BucketInfo> dupe_bucket =
+      GetOrCreateBucket(kStorageKey1, kBucketName);
+  EXPECT_TRUE(dupe_bucket.ok());
+  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+
+  // GetOrCreateBucket actually creates buckets associated with all quota client
+  // types, so check them all.
+  for (auto client_type : AllQuotaClientTypes()) {
+    EXPECT_EQ(manager()->BucketDataCount(client_type), 2);
+    EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), client_type));
+  }
+}
+
+TEST_F(MockQuotaManagerTest, GetBucket) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
+
+  {
+    QuotaErrorOr<BucketInfo> created =
+        GetOrCreateBucket(kStorageKey1, kBucketName);
+    EXPECT_TRUE(created.ok());
+    QuotaErrorOr<BucketInfo> fetched =
+        GetBucket(kStorageKey1, kBucketName, kTemporary);
+    EXPECT_TRUE(fetched.ok());
+    EXPECT_EQ(fetched.value(), created.value());
+    EXPECT_EQ(fetched->storage_key, kStorageKey1);
+    EXPECT_EQ(fetched->name, kBucketName);
+    EXPECT_EQ(fetched->type, kTemporary);
+  }
+
+  {
+    QuotaErrorOr<BucketInfo> created =
+        GetOrCreateBucket(kStorageKey2, kBucketName);
+    EXPECT_TRUE(created.ok());
+    QuotaErrorOr<BucketInfo> fetched =
+        GetBucket(kStorageKey2, kBucketName, kTemporary);
+    EXPECT_TRUE(fetched.ok());
+    EXPECT_EQ(fetched.value(), created.value());
+    EXPECT_EQ(fetched->storage_key, kStorageKey2);
+    EXPECT_EQ(fetched->name, kBucketName);
+    EXPECT_EQ(fetched->type, kTemporary);
+  }
+
+  QuotaErrorOr<BucketInfo> not_found =
+      GetBucket(kStorageKey1, kBucketName, kPersistent);
+  EXPECT_FALSE(not_found.ok());
+}
 
 TEST_F(MockQuotaManagerTest, BasicBucketManipulation) {
   const StorageKey kStorageKey1 =
