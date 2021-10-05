@@ -32,7 +32,7 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
       scaled_rect_(scaled_rect),
       open_folder_(open_folder),
       item_in_folder_icon_(item_in_folder_icon) {
-  icon_size_ = grid->GetAppListConfig().grid_icon_size();
+  icon_size_ = grid->app_list_config()->grid_icon_size();
   DCHECK(!icon.isNull());
   gfx::ImageSkia resized(gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_size_));
@@ -44,9 +44,9 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   title_label->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label->SetAutoColorReadabilityEnabled(false);
   title_label->SetHandlesTooltips(false);
-  title_label->SetFontList(grid_->GetAppListConfig().app_title_font());
+  title_label->SetFontList(grid_->app_list_config()->app_title_font());
   title_label->SetLineHeight(
-      grid_->GetAppListConfig().app_title_max_line_height());
+      grid_->app_list_config()->app_title_max_line_height());
   title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title_label->SetEnabledColor(
       AppListColorProvider::Get()->GetAppListItemTextColor(
@@ -121,8 +121,8 @@ const char* TopIconAnimationView::GetClassName() const {
 }
 
 gfx::Size TopIconAnimationView::CalculatePreferredSize() const {
-  return gfx::Size(grid_->GetAppListConfig().grid_tile_width(),
-                   grid_->GetAppListConfig().grid_tile_height());
+  return gfx::Size(grid_->app_list_config()->grid_tile_width(),
+                   grid_->app_list_config()->grid_tile_height());
 }
 
 void TopIconAnimationView::Layout() {
@@ -132,10 +132,10 @@ void TopIconAnimationView::Layout() {
     return;
 
   icon_->SetBoundsRect(AppListItemView::GetIconBoundsForTargetViewBounds(
-      grid_->GetAppListConfig(), rect, icon_->GetImage().size(),
+      grid_->app_list_config(), rect, icon_->GetImage().size(),
       /*icon_scale=*/1.0f));
   title_->SetBoundsRect(AppListItemView::GetTitleBoundsForTargetViewBounds(
-      grid_->GetAppListConfig(), rect, title_->GetPreferredSize(),
+      grid_->app_list_config(), rect, title_->GetPreferredSize(),
       /*icon_scale=*/1.0f));
 }
 

@@ -15,8 +15,11 @@
 
 namespace ash {
 
+class AppListModel;
+class AppListConfig;
 class AppListItemView;
 class AppListViewDelegate;
+class SearchModel;
 
 // The recent apps row in the "Continue" section of the bubble launcher. Shows
 // a list of app icons.
@@ -42,6 +45,15 @@ class ASH_EXPORT RecentAppsView : public views::View {
   RecentAppsView& operator=(const RecentAppsView&) = delete;
   ~RecentAppsView() override;
 
+  // Sets the `AppListConfig` that should be used to configure layout of
+  // `AppListItemViews` shown within this view.
+  void UpdateAppListConfig(const AppListConfig* app_list_config);
+
+  // Updates the recent apps view contents to show results provided by the
+  // search model. Should be called at least once, otherwise the recent apps
+  // view will not display any results.
+  void ShowResults(SearchModel* search_model, AppListModel* model);
+
   // Returns the number of AppListItemView children.
   int GetItemViewCount() const;
 
@@ -66,6 +78,7 @@ class ASH_EXPORT RecentAppsView : public views::View {
 
   Delegate* const delegate_;
   AppListViewDelegate* const view_delegate_;
+  const AppListConfig* app_list_config_ = nullptr;
 
   // The grid delegate for each AppListItemView.
   class GridDelegateImpl;

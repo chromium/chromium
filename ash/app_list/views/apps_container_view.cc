@@ -92,6 +92,10 @@ constexpr int kNonAppsStateVerticalOffset = 24;
 // The opacity the apps container UI should have when shown on non apps page UI.
 constexpr float kNonAppsStateOpacity = 0.1;
 
+// The ratio of allowed bounds for apps grid view to its maximum margin.
+constexpr int kAppsGridMarginRatio = 16;
+constexpr int kAppsGridMarginRatioForSmallWidth = 12;
+
 // The margins within the apps container for app list folder view.
 constexpr int kFolderMargin = 8;
 
@@ -103,6 +107,9 @@ constexpr int kSuggestionChipContainerTopMargin = 16;
 
 // The horizontal margin between the apps grid view and the page switcher.
 constexpr int kGridToPageSwitcherMargin = 8;
+
+// Minimal horizontal distance from the page switcher to apps container bounds.
+constexpr int kPageSwitcherEndMargin = 16;
 
 // The apps grid view's fadeout zone height, that contains a fadeout mask, and
 // which is used as a margin for the `AppsGridView` contents.
@@ -296,21 +303,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
                                           /*folder_controller=*/this,
                                           /*container_delegate=*/this),
       0);
-
-  const int preferred_rows = kPreferredGridRows;
-  if (features::IsProductivityLauncherEnabled()) {
-    apps_grid_view_->SetMaxColumns(
-        kPreferredGridColumnsForProductivityLauncher);
-    apps_grid_view_->SetMaxRows(
-        /*max_rows_in_first_page=*/preferred_rows - 1,
-        /*max_row=*/preferred_rows);
-  } else {
-    apps_grid_view_->SetMaxColumns(kPreferredGridColumns);
-    apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/preferred_rows,
-                                /*max_row=*/preferred_rows);
-  }
-
   apps_grid_view_->Init();
+
   if (features::IsProductivityLauncherEnabled())
     apps_grid_view_->pagination_model()->AddObserver(this);
 
@@ -335,9 +329,12 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
         AddChildView(std::make_unique<SortButtonContainer>(view_delegate));
   }
 
-  apps_grid_view_->SetModel(model);
-  apps_grid_view_->SetItemList(model->top_level_item_list());
-  SetShowState(SHOW_APPS, false);
+  // NOTE: At this point, the apps grid folder and recent apps grids are not
+  // fully initialized - they require an `app_list_config_` instance (because
+  // they contain AppListItemView), which in turn requires widget, and the
+  // view's contents bounds to be correctly calculated. The initialization
+  // will be completed in `OnBoundsChanged()` when the apps container bounds are
+  // first set.
 }
 
 AppsContainerView::~AppsContainerView() {
@@ -353,6 +350,65 @@ AppsContainerView::~AppsContainerView() {
   // `app_list_folder_view_` explicitly to ensure it's deleted before
   // `apps_grid_view_`.
   delete app_list_folder_view_;
+}
+
+void AppsContainerView::UpdateTopLevelGridDimensions(
+    const GridLayout& grid_layout) {
+  apps_grid_view_->SetMaxColumns(grid_layout.columns);
+
+  if (features::IsProductivityLauncherEnabled()) {
+    apps_grid_view_->SetMaxRows(
+        /*max_rows_on_first_page=*/grid_layout.rows - 1,
+        /*max_rows=*/grid_layout.rows);
+  } else {
+    apps_grid_view_->SetMaxRows(/*max_rows_on_first_page=*/grid_layout.rows,
+                                /*max_rows=*/grid_layout.rows);
+  }
+}
+
+void AppsContainerView::UpdateAppListConfig(const gfx::Rect& contents_bounds,
+                                            const GridLayout& grid_layout) {
+  gfx::Rect available_bounds = contents_bounds;
+  // Reserve horizontal margins to accommodate page switcher.
+  available_bounds.Inset(GetMinHorizontalMarginForAppsGrid(), 0);
+  // Reserve vertical space for search box and suggestion chips.
+  available_bounds.Inset(
+      0,
+      GetMinTopMarginForAppsGrid(
+          contents_view_->GetSearchBoxSize(AppListState::kStateApps)),
+      0, 0);
+  // Subtracts apps grid view insets from space available for apps grid.
+  available_bounds.Inset(0, kGridFadeoutZoneHeight);
+
+  std::unique_ptr<AppListConfig> new_config =
+      AppListConfigProvider::Get().CreateForFullscreenAppList(
+          display::Screen::GetScreen()
+              ->GetDisplayNearestView(GetWidget()->GetNativeView())
+              .work_area()
+              .size(),
+          grid_layout.rows, grid_layout.columns, available_bounds.size(),
+          app_list_config_.get());
+
+  // `CreateForFullscreenAppList()` will create a new config only if it differs
+  // from the current `app_list_config_`. Nothing to do if the old
+  // `AppListConfig` can be used for the updated apps container bounds.
+  if (!new_config)
+    return;
+
+  // Keep old config around until child views have been updated to use the new
+  // config.
+  auto old_config = std::move(app_list_config_);
+  app_list_config_ = std::move(new_config);
+
+  // Invalidate the cached container margins - app list config change generally
+  // changes preferred apps grid margins, which can influence the container
+  // margins.
+  cached_container_margins_ = CachedContainerMargins();
+
+  apps_grid_view()->UpdateAppListConfig(app_list_config_.get());
+  app_list_folder_view()->UpdateAppListConfig(app_list_config_.get());
+  if (recent_apps_)
+    recent_apps_->UpdateAppListConfig(app_list_config_.get());
 }
 
 void AppsContainerView::ShowFolderForItemView(
@@ -402,6 +458,7 @@ void AppsContainerView::ShowApps(AppListItemView* folder_item_view,
 
 void AppsContainerView::ResetForShowApps() {
   UpdateSuggestionChips();
+  UpdateRecentApps();
   SetShowState(SHOW_APPS, false);
   DisableFocusForShowingActiveFolder(false);
 }
@@ -623,8 +680,7 @@ void AppsContainerView::Layout() {
 
   if (suggestion_chip_container_view_) {
     chip_container_rect.set_height(kSuggestionChipContainerHeight);
-    chip_container_rect.Inset(GetAppListConfig().GetIdealHorizontalMargin(rect),
-                              0);
+    chip_container_rect.Inset(GetIdealHorizontalMargin(), 0);
     suggestion_chip_container_view_->SetBoundsRect(chip_container_rect);
   } else {
     chip_container_rect.set_height(0);
@@ -645,15 +701,7 @@ void AppsContainerView::Layout() {
                   GetExpectedSuggestionChipY(kAppListFullscreenProgressValue) -
                   chip_container_rect.height());
 
-  // If productivity launcher is enabled, the grid configuration does not change
-  // depending on the display/available space, so it's OK to keep using
-  // configuration set up when the apps grid view is first initialized.
-  if (!features::IsProductivityLauncherEnabled()) {
-    const GridLayout grid_layout = CalculateGridLayout();
-    apps_grid_view_->SetMaxColumns(grid_layout.columns);
-    apps_grid_view_->SetMaxRows(/*max_rows_in_first_page=*/grid_layout.rows,
-                                /*max_rows=*/grid_layout.rows);
-  }
+  UpdateTopLevelGridDimensions(CalculateGridLayout());
 
   // Layout apps grid.
   const gfx::Insets grid_insets = apps_grid_view_->GetInsets();
@@ -717,9 +765,8 @@ void AppsContainerView::Layout() {
       break;
     }
     case SHOW_ITEM_REPARENT:
+    case SHOW_NONE:
       break;
-    default:
-      NOTREACHED();
   }
 }
 
@@ -732,6 +779,33 @@ bool AppsContainerView::OnKeyPressed(const ui::KeyEvent& event) {
 
 const char* AppsContainerView::GetClassName() const {
   return "AppsContainerView";
+}
+
+void AppsContainerView::OnBoundsChanged(const gfx::Rect& old_bounds) {
+  const bool creating_initial_config = !app_list_config_;
+
+  // The size and layout of apps grid items depend on the dimensions of the
+  // display on which the apps container is shown. Given that the apps container
+  // is shown in fullscreen app list view (and covers complete app list view
+  // bounds), changes in the `AppsContainerView` bounds can be used a a proxy to
+  // detect display size changes.
+  const GridLayout grid_layout = CalculateGridLayout();
+  UpdateAppListConfig(GetContentsBounds(), grid_layout);
+  DCHECK(app_list_config_);
+
+  // Finish initialization of views that require app list config.
+  if (creating_initial_config) {
+    UpdateTopLevelGridDimensions(grid_layout);
+
+    AppListViewDelegate* view_delegate =
+        contents_view_->GetAppListMainView()->view_delegate();
+
+    apps_grid_view_->SetModel(view_delegate->GetModel());
+    apps_grid_view_->SetItemList(
+        view_delegate->GetModel()->top_level_item_list());
+    UpdateRecentApps();
+    SetShowState(SHOW_APPS, false);
+  }
 }
 
 void AppsContainerView::OnGestureEvent(ui::GestureEvent* event) {
@@ -864,6 +938,36 @@ gfx::Rect AppsContainerView::GetPageBoundsForState(
   return bounds;
 }
 
+int AppsContainerView::GetMinHorizontalMarginForAppsGrid() const {
+  return kPageSwitcherEndMargin + kGridToPageSwitcherMargin +
+         page_switcher_->GetPreferredSize().width();
+}
+
+int AppsContainerView::GetMinTopMarginForAppsGrid(
+    const gfx::Size& search_box_size) const {
+  const int suggestion_chip_container_size =
+      features::IsProductivityLauncherEnabled()
+          ? 0
+          : kSuggestionChipContainerHeight;
+  // NOTE: Use the fadeout zone height as min top margin to match the apps grid
+  // view's bottom margin.
+  return search_box_size.height() + kGridFadeoutZoneHeight +
+         kSuggestionChipContainerTopMargin + suggestion_chip_container_size;
+}
+
+int AppsContainerView::GetIdealHorizontalMargin() const {
+  const int available_width = GetContentsBounds().width();
+  if (available_width >=
+      kAppsGridMarginRatio * GetMinHorizontalMarginForAppsGrid()) {
+    return available_width / kAppsGridMarginRatio;
+  }
+  return available_width / kAppsGridMarginRatioForSmallWidth;
+}
+
+int AppsContainerView::GetIdealVerticalMargin() const {
+  return GetContentsBounds().height() / kAppsGridMarginRatio;
+}
+
 const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
     const gfx::Rect& available_bounds,
     const gfx::Size& search_box_size) {
@@ -883,9 +987,7 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
   // search box and apps grid) to non apps grid size.
   // NOTE: Not removing bottom apps grid inset because they are included into
   // the total margin values.
-  available_height -= search_box_size.height() + kGridFadeoutZoneHeight +
-                      kSuggestionChipContainerHeight +
-                      kSuggestionChipContainerTopMargin;
+  available_height -= GetMinTopMarginForAppsGrid(search_box_size);
 
   // Calculates margin value to ensure the apps grid size is within required
   // bounds.
@@ -907,20 +1009,17 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
     return ideal_margin;
   };
 
-  const int ideal_vertical_margin =
-      GetAppListConfig().GetIdealVerticalMargin(available_bounds);
+  const int ideal_vertical_margin = GetIdealVerticalMargin();
   const int vertical_margin =
       calculate_margin(ideal_vertical_margin, available_height,
                        min_grid_size.height(), max_grid_size.height());
 
-  const int ideal_horizontal_margin =
-      GetAppListConfig().GetIdealHorizontalMargin(available_bounds);
+  const int ideal_horizontal_margin = GetIdealHorizontalMargin();
   const int horizontal_margin =
       calculate_margin(ideal_horizontal_margin, available_bounds.width(),
                        min_grid_size.width(), max_grid_size.width());
 
-  const int min_horizontal_margin =
-      GetAppListConfig().GetMinGridHorizontalPadding();
+  const int min_horizontal_margin = GetMinHorizontalMarginForAppsGrid();
 
   cached_container_margins_.margins =
       gfx::Insets(std::max(vertical_margin, kGridFadeoutZoneHeight),
@@ -933,14 +1032,14 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
   return cached_container_margins_.margins;
 }
 
-void AppsContainerView::OnAppListConfigUpdated() {
-  // Invalidate the cached container margins - app list config change generally
-  // changes preferred apps grid margins, which can influence the container
-  // margins.
-  cached_container_margins_ = CachedContainerMargins();
+void AppsContainerView::UpdateRecentApps() {
+  if (!recent_apps_ || !app_list_config_)
+    return;
 
-  apps_grid_view()->OnAppListConfigUpdated();
-  app_list_folder_view()->items_grid_view()->OnAppListConfigUpdated();
+  AppListViewDelegate* view_delegate =
+      contents_view_->GetAppListMainView()->view_delegate();
+  recent_apps_->ShowResults(view_delegate->GetSearchModel(),
+                            view_delegate->GetModel());
 }
 
 void AppsContainerView::UpdateSuggestionChips() {
@@ -966,10 +1065,6 @@ base::ScopedClosureRunner AppsContainerView::DisableSuggestionChipsBlur() {
   return base::ScopedClosureRunner(
       base::BindOnce(&AppsContainerView::OnSuggestionChipsBlurDisablerReleased,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-const AppListConfig& AppsContainerView::GetAppListConfig() const {
-  return contents_view_->app_list_view()->GetAppListConfig();
 }
 
 void AppsContainerView::SetShowState(ShowState show_state,
@@ -1092,7 +1187,9 @@ int AppsContainerView::GetExpectedSuggestionChipY(float progress) {
 }
 
 AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
-  // Adapt columns and rows based on the work area size.
+  DCHECK(GetWidget());
+
+  // Adapt columns and rows based on the display/root window size.
   const gfx::Size size =
       display::Screen::GetScreen()
           ->GetDisplayNearestView(GetWidget()->GetNativeView())
@@ -1102,10 +1199,14 @@ AppsContainerView::GridLayout AppsContainerView::CalculateGridLayout() const {
   GridLayout result;
   // Switch columns and rows for portrait mode.
   if (size.width() < size.height()) {
-    result.columns = kPreferredGridRows;
+    result.columns = features::IsProductivityLauncherEnabled()
+                         ? kPreferredGridColumnsForProductivityLauncher
+                         : kPreferredGridRows;
     result.rows = kPreferredGridColumns;
   } else {
-    result.columns = kPreferredGridColumns;
+    result.columns = features::IsProductivityLauncherEnabled()
+                         ? kPreferredGridColumnsForProductivityLauncher
+                         : kPreferredGridColumns;
     result.rows = kPreferredGridRows;
   }
   return result;

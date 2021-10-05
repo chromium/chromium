@@ -110,6 +110,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // constructor.
   void Init();
 
+  // Sets the `AppListConfig` that should be used to configure app list item
+  // size within the grid. This will cause all items views to be updated to
+  // adhere to new tile and icon dimensions, so it should be used sparingly.
+  void UpdateAppListConfig(const AppListConfig* app_list_config);
+
   // Sets the max number of columns that the grid can have.
   // For root apps grid view, the grid size depends on the space available to
   // apps grid view only, and `cols()` will match `max_columns`. I.e. if the
@@ -179,6 +184,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Return true if the |bounds_animator_| is animating |view|.
   bool IsAnimatingView(AppListItemView* view);
+
+  const AppListConfig* app_list_config() const { return app_list_config_; }
 
   bool has_selected_view() const { return selected_view_ != nullptr; }
   AppListItemView* selected_view() const { return selected_view_; }
@@ -263,20 +270,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // AshTestBase.
   bool IsTabletMode() const;
 
-  // Should be called by AppListView if the app list config it uses changes.
-  // This will update all app list items (as the icon sizes and bounds might
-  // need updating), so it should be used sparingly.
-  void OnAppListConfigUpdated();
-
   // Returns the expected bounds rect in grid coordinates for the item with the
   // provided id, if the item is in the first page.
   // If the item is not in the current page (or cannot be found), this will
   // return 1x1 rectangle in the apps grid center.
   gfx::Rect GetExpectedItemBoundsInFirstPage(const std::string& id) const;
-
-  // Helper for getting current app list config from the parents in the app list
-  // view hierarchy.
-  const AppListConfig& GetAppListConfig() const override;
 
   // Passes scroll information from AppListView, so that subclasses may scroll
   // or switch pages.
@@ -795,6 +793,10 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Keeps the individual AppListItemView. Owned by views hierarchy.
   views::View* items_container_ = nullptr;
+
+  // The `AppListConfig` currently used for sizing app list item views within
+  // the grid.
+  const AppListConfig* app_list_config_ = nullptr;
 
   // The max number of columns the grid can have.
   int max_cols_ = 0;

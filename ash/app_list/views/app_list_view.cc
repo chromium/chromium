@@ -24,8 +24,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
-#include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -702,7 +700,6 @@ void AppListView::SetSkipPageResetTimerForTesting(bool enabled) {
 void AppListView::InitView(gfx::NativeView parent) {
   base::AutoReset<bool> auto_reset(&is_building_, true);
   time_shown_ = base::Time::Now();
-  UpdateAppListConfig(parent);
   InitContents();
   InitWidget(parent);
   InitChildWidget();
@@ -950,10 +947,6 @@ void AppListView::OnThemeChanged() {
   SetBackgroundShieldColor();
 }
 
-const AppListConfig& AppListView::GetAppListConfig() const {
-  return *app_list_config_;
-}
-
 views::View* AppListView::GetAppListBackgroundShieldForTest() {
   return app_list_background_shield_;
 }
@@ -993,32 +986,6 @@ gfx::Insets AppListView::GetMainViewInsetsForShelf() const {
     return gfx::Insets(0, delegate_->GetShelfSize());
   }
   return gfx::Insets(0, 0, delegate_->GetShelfSize(), 0);
-}
-
-void AppListView::UpdateAppListConfig(aura::Window* parent_window) {
-  // Create the app list configuration override if it's needed for the current
-  // display bounds and the available apps grid size.
-  std::unique_ptr<AppListConfig> new_config =
-      AppListConfigProvider::Get().CreateForAppListWidget(
-          display::Screen::GetScreen()
-              ->GetDisplayNearestView(parent_window)
-              .work_area()
-              .size(),
-          GetMainViewInsetsForShelf(), app_list_config_.get());
-
-  if (!new_config)
-    return;
-
-  const bool is_initial_config = !app_list_config_.get();
-  app_list_config_ = std::move(new_config);
-
-  // Initial config should be set before the app list main view is initialized.
-  DCHECK(!is_initial_config || !app_list_main_view_);
-
-  // If the config changed, notify apps container the config has changed, so
-  // root and folder apps grids are updated for the new config.
-  if (!is_initial_config)
-    GetAppsContainerView()->OnAppListConfigUpdated();
 }
 
 void AppListView::UpdateWidget() {
@@ -1321,12 +1288,6 @@ void AppListView::EnsureWidgetBoundsMatchCurrentState() {
   aura::Window* window = GetWidget()->GetNativeView();
   if (new_target_bounds == window->GetTargetBounds())
     return;
-
-  // Update the app list config to match the new window bounds - do this before
-  // updating the bounds, so app list config is updated before apps container is
-  // laid out (to avoid separate layouts for window bounds change and app list
-  // config change).
-  UpdateAppListConfig(GetWidget()->GetNativeView());
 
   // Set the widget size to fit the new display metrics.
   GetWidget()->GetNativeView()->SetBounds(new_target_bounds);
@@ -2249,8 +2210,6 @@ void AppListView::OnWindowBoundsChanged(aura::Window* window,
                                         const gfx::Rect& new_bounds,
                                         ui::PropertyChangeReason reason) {
   DCHECK_EQ(GetWidget()->GetNativeView(), window);
-
-  UpdateAppListConfig(window);
 
   gfx::Transform transform;
   if (ShouldHideRoundedCorners(target_app_list_state_, new_bounds))

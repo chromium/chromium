@@ -90,8 +90,8 @@ void ScrollableAppsGridView::Layout() {
 }
 
 gfx::Size ScrollableAppsGridView::GetTileViewSize() const {
-  const AppListConfig& config = GetAppListConfig();
-  return gfx::Size(config.grid_tile_width(), config.grid_tile_height());
+  const AppListConfig* config = app_list_config();
+  return gfx::Size(config->grid_tile_width(), config->grid_tile_height());
 }
 
 gfx::Insets ScrollableAppsGridView::GetTilePadding() const {
@@ -99,7 +99,7 @@ gfx::Insets ScrollableAppsGridView::GetTilePadding() const {
     return gfx::Insets(-vertical_tile_padding_, -horizontal_tile_padding_);
 
   int content_width = GetContentsBounds().width();
-  int tile_width = GetAppListConfig().grid_tile_width();
+  int tile_width = app_list_config()->grid_tile_width();
   int width_to_distribute = content_width - cols() * tile_width;
 
   // While calculating tile padding, assume no padding between a tile and a

@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/image_view.h"
 
@@ -18,7 +17,8 @@ class Point;
 
 namespace ash {
 
-class AppListItemView;
+class AppListConfig;
+class AppListItem;
 
 // An ImageView of the ghosting icon to show where a dragged app or folder
 // will drop on the app list. This view is owned by the client and not the
@@ -26,7 +26,7 @@ class AppListItemView;
 class GhostImageView : public views::ImageView,
                        public ui::ImplicitAnimationObserver {
  public:
-  GhostImageView(bool is_folder, bool is_in_folder, int page);
+  GhostImageView(AppListItem* item, bool is_in_folder);
 
   GhostImageView(const GhostImageView&) = delete;
   GhostImageView& operator=(const GhostImageView&) = delete;
@@ -34,7 +34,9 @@ class GhostImageView : public views::ImageView,
   ~GhostImageView() override;
 
   // Initialize the GhostImageView.
-  void Init(AppListItemView* drag_view, const gfx::Rect& drop_target_bounds);
+  void Init(const AppListConfig* app_list_config,
+            const gfx::Rect& icon_bounds,
+            const gfx::Rect& drop_target_bounds);
 
   // Begins the fade out animation.
   void FadeOut();
@@ -44,9 +46,6 @@ class GhostImageView : public views::ImageView,
 
   // Set the offset used for page transitions.
   void SetTransitionOffset(const gfx::Vector2d& bounds_rect);
-
-  // Returns the page number which this view belongs to.
-  int page() const { return page_; }
 
   // views::View:
   const char* GetClassName() const override;
@@ -70,9 +69,6 @@ class GhostImageView : public views::ImageView,
   // Whether the view is the ghost of a folder.
   bool is_folder_;
 
-  // Page this this view belongs to, used to calculate transition offset.
-  int page_;
-
   // The radius used for drawing the icons shown inside the folder ghost image.
   int inner_icon_radius_;
 
@@ -80,7 +76,7 @@ class GhostImageView : public views::ImageView,
   gfx::Rect icon_bounds_;
 
   // The number of items within the GhostImageView folder.
-  absl::optional<size_t> num_items_;
+  const size_t num_items_;
 
   // The origins of the top icons within a folder icon. Used for the folder
   // ghost image.

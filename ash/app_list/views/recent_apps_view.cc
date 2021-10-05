@@ -142,11 +142,6 @@ class RecentAppsView::GridDelegateImpl : public AppListItemView::GridDelegate {
         id, event.flags(), AppListLaunchedFrom::kLaunchedFromSuggestionChip);
     // `this` may be deleted.
   }
-  const AppListConfig& GetAppListConfig() const override {
-    // TODO(crbug.com/1211592): Eliminate this method and use the real config.
-    return *AppListConfigProvider::Get().GetConfigForType(
-        AppListConfigType::kMedium, /*can_create=*/true);
-  }
 
  private:
   AppListViewDelegate* const view_delegate_;
@@ -162,21 +157,37 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
   DCHECK(view_delegate_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal);
+}
+
+RecentAppsView::~RecentAppsView() = default;
+
+void RecentAppsView::UpdateAppListConfig(const AppListConfig* app_list_config) {
+  app_list_config_ = app_list_config;
+
+  for (auto* item_view : item_views_)
+    item_view->UpdateAppListConfig(app_list_config);
+}
+
+void RecentAppsView::ShowResults(SearchModel* search_model,
+                                 AppListModel* model) {
+  DCHECK(app_list_config_);
+  item_views_.clear();
+  RemoveAllChildViews();
 
   std::vector<std::string> app_ids =
-      GetRecentAppIdsFromSuggestionChips(view_delegate_->GetSearchModel());
+      GetRecentAppIdsFromSuggestionChips(search_model);
 
-  AppListModel* model = view_delegate_->GetModel();
   for (const std::string& app_id : app_ids) {
     std::string item_id = ItemIdFromAppId(app_id);
     AppListItem* item = model->FindItem(item_id);
     if (item) {
       auto* item_view = AddChildView(std::make_unique<AppListItemView>(
-          grid_delegate_.get(), item, view_delegate_));
+          app_list_config_, grid_delegate_.get(), item, view_delegate_));
       item_view->SetProperty(
           views::kFlexBehaviorKey,
           views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                    views::MaximumFlexSizeRule::kPreferred));
+      item_view->UpdateAppListConfig(app_list_config_);
       item_views_.push_back(item_view);
 
       // Add a empty-space view used to evenly distribute app list item views
@@ -194,8 +205,6 @@ RecentAppsView::RecentAppsView(Delegate* delegate,
     }
   }
 }
-
-RecentAppsView::~RecentAppsView() = default;
 
 int RecentAppsView::GetItemViewCount() const {
   return item_views_.size();

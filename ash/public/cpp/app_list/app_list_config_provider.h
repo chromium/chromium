@@ -15,7 +15,6 @@
 #include "base/observer_list_types.h"
 
 namespace gfx {
-class Insets;
 class Size;
 }
 
@@ -59,15 +58,19 @@ class ASH_PUBLIC_EXPORT AppListConfigProvider {
 
   // Returns the app list config that should be used by an app list instance
   // based on the app list display, and available size for the apps grid.
-  // Returns nullptr if the new app list config is the same as |current_config|.
-  // |work_area_size|: The work area size of the display showing the app list.
-  // |shelf_insets|: The insets added to app list content to accommodate the
-  // shelf.
-  // |current_config|: If not null, the app list config currently used by the
+  // Returns nullptr if the new app list config is the same as `current_config`.
+  // `work_area_size`: The work area size of the display showing the app list.
+  // `grid_rows`: The number of rows the root apps grid has.
+  // `grid_columns`: The number of columns the root apps grid has.
+  // `available_size`: The size of the space available for the root apps grid
+  // layout.
+  // `current_config`: If not null, the app list config currently used by the
   //     app list.
-  std::unique_ptr<AppListConfig> CreateForAppListWidget(
+  std::unique_ptr<AppListConfig> CreateForFullscreenAppList(
       const gfx::Size& display_work_area_size,
-      const gfx::Insets& shelf_insets,
+      int grid_rows,
+      int grid_columns,
+      const gfx::Size& available_size,
       const AppListConfig* current_config);
 
   // Returns all app list config types for which an AppListConfig instance has

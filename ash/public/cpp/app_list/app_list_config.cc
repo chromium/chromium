@@ -16,13 +16,6 @@ namespace ash {
 
 namespace {
 
-// The ratio of allowed bounds for apps grid view to its maximum margin.
-constexpr int kAppsGridMarginRatio = 16;
-constexpr int kAppsGridMarginRatioForSmallWidth = 12;
-
-// The expected page switcher width.
-constexpr int kPageSwitcherWidth = 32;
-
 // Scales |value| using the smaller one of |scale_1| and |scale_2|.
 int MinScale(int value, float scale_1, float scale_2) {
   return std::round(value * std::min(scale_1, scale_2));
@@ -323,23 +316,5 @@ AppListConfig::AppListConfig(const AppListConfig& base_config,
                    inner_tile_scale_y)) {}
 
 AppListConfig::~AppListConfig() = default;
-
-int AppListConfig::GetMinGridHorizontalPadding() const {
-  return 16 /*page switcher end margin*/ + 8 /*grid to page switcher margin*/ +
-         kPageSwitcherWidth;
-}
-
-int AppListConfig::GetIdealHorizontalMargin(
-    const gfx::Rect& available_bounds) const {
-  const int available_width = available_bounds.width();
-  if (available_width >= kAppsGridMarginRatio * GetMinGridHorizontalPadding())
-    return available_width / kAppsGridMarginRatio;
-  return available_width / kAppsGridMarginRatioForSmallWidth;
-}
-
-int AppListConfig::GetIdealVerticalMargin(
-    const gfx::Rect& available_bounds) const {
-  return available_bounds.height() / kAppsGridMarginRatio;
-}
 
 }  // namespace ash

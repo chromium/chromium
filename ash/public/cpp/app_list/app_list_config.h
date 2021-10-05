@@ -308,14 +308,6 @@ class ASH_PUBLIC_EXPORT AppListConfig {
                      item_icon_in_folder_icon_dimension_);
   }
 
-  // The minimal horizontal padding for the apps grid.
-  int GetMinGridHorizontalPadding() const;
-
-  // Returns the ideal apps container margins for the bounds available for app
-  // list content.
-  int GetIdealHorizontalMargin(const gfx::Rect& abailable_bounds) const;
-  int GetIdealVerticalMargin(const gfx::Rect& abailable_bounds) const;
-
  private:
   const AppListConfigType type_;
 

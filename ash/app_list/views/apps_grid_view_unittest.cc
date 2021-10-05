@@ -70,7 +70,8 @@ namespace {
 constexpr int kNumOfSuggestedApps = 3;
 
 constexpr size_t kMaxItemsPerFolderPage =
-    AppListFolderView::kMaxFolderColumns * AppListFolderView::kMaxFolderColumns;
+    AppListFolderView::kMaxFolderColumns *
+    AppListFolderView::kMaxPagedFolderRows;
 constexpr size_t kMaxItemsInFolder = 48;
 
 class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
@@ -333,8 +334,8 @@ class AppsGridViewTest : public AshTestBase {
            apps_grid_view->pagination_model()->has_transition();
   }
 
-  const AppListConfig& GetAppListConfig() const {
-    return apps_grid_view_->GetAppListConfig();
+  const AppListConfig* GetAppListConfig() const {
+    return apps_grid_view_->app_list_config();
   }
 
   AppListItemView* GetItemViewInAppsGridAt(int index,
@@ -1715,7 +1716,7 @@ TEST_P(AppsGridViewDragTest, MouseDragItemReorderAfterFolderDropPoint) {
                         2;
   gfx::Vector2d drag_vector(
       -2 * half_tile_width -
-          GetAppListConfig().folder_dropping_circle_radius() - 4,
+          GetAppListConfig()->folder_dropping_circle_radius() - 4,
       0);
   // Flip drag vector in rtl.
   if (is_rtl_)
@@ -2479,8 +2480,8 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   }
   // The drag is centered relative to the app item icon bounds, not the whole
   // app item view.
-  gfx::Vector2d icon_offset(
-      0, apps_grid_view_->GetAppListConfig().grid_icon_bottom_padding() / 2);
+  gfx::Vector2d icon_offset(0,
+                            GetAppListConfig()->grid_icon_bottom_padding() / 2);
   EXPECT_EQ(apps_grid_bottom_center - icon_offset, GetDragIconCenter());
 
   // End the drag to satisfy checks in AppsGridView destructor.
@@ -2513,9 +2514,8 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
   EXPECT_EQ(0, GetPaginationModel()->selected_page());
   // The drag is centered relative to the app item icon bounds, not the whole
   // app item view.
-  gfx::Vector2d icon_offset(
-      0,
-      paged_apps_grid_view_->GetAppListConfig().grid_icon_bottom_padding() / 2);
+  gfx::Vector2d icon_offset(0,
+                            GetAppListConfig()->grid_icon_bottom_padding() / 2);
   EXPECT_EQ(apps_grid_top_center - icon_offset, GetDragIconCenter());
 
   // End the drag to satisfy checks in AppsGridView destructor.

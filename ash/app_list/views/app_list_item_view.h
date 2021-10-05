@@ -98,24 +98,24 @@ class ASH_EXPORT AppListItemView : public views::Button,
     // press/click/return key.
     virtual void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
                                             const ui::Event& event) = 0;
-
-    // TODO(crbug.com/1211592): Eliminate this method.
-    virtual const AppListConfig& GetAppListConfig() const = 0;
   };
 
-  AppListItemView(GridDelegate* grid_delegate,
+  AppListItemView(const AppListConfig* app_list_config,
+                  GridDelegate* grid_delegate,
                   AppListItem* item,
                   AppListViewDelegate* view_delegate);
   AppListItemView(const AppListItemView&) = delete;
   AppListItemView& operator=(const AppListItemView&) = delete;
   ~AppListItemView() override;
 
+  // Sets the app list config that should be used to size the app list icon, and
+  // margins within the app list item view. The owner should ensure the
+  // `AppListItemView` does not outlive the object referenced by
+  // `app_list_config_`.
+  void UpdateAppListConfig(const AppListConfig* app_list_config);
+
   // Sets the icon of this image.
   void SetIcon(const gfx::ImageSkia& icon);
-
-  // Updates the current item icon to match the current model and app list
-  // config state.
-  void RefreshIcon();
 
   void SetItemName(const std::u16string& display_name,
                    const std::u16string& full_name);
@@ -130,10 +130,6 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Sets focus without a11y announcements or focus ring.
   void SilentlyRequestFocus();
-
-  // Helper for getting current app list config from the parents in the app list
-  // view hierarchy.
-  const AppListConfig& GetAppListConfig() const;
 
   AppListItem* item() const { return item_weak_; }
 
@@ -163,7 +159,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // and given |icon_size| and the |icon_scale| if the icon was scaled from the
   // original display size.
   static gfx::Rect GetIconBoundsForTargetViewBounds(
-      const AppListConfig& config,
+      const AppListConfig* config,
       const gfx::Rect& target_bounds,
       const gfx::Size& icon_size,
       float icon_scale);
@@ -172,7 +168,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // view and given |title_size| and the |icon_scale| if the icon was scaled
   // from the original display size.
   static gfx::Rect GetTitleBoundsForTargetViewBounds(
-      const AppListConfig& config,
+      const AppListConfig* config,
       const gfx::Rect& target_bounds,
       const gfx::Size& title_size,
       float icon_scale);
@@ -334,6 +330,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Calculates the transform between the icon scaled by |icon_scale| and the
   // normal size icon.
   gfx::Transform GetScaleTransform(float icon_scale);
+
+  // The app list config used to layout this view. The initial values is set
+  // during view construction, but can be changed by calling
+  // `UpdateAppListConfig()`.
+  const AppListConfig* app_list_config_;
 
   const bool is_folder_;
 

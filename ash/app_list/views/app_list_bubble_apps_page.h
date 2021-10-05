@@ -13,6 +13,7 @@
 
 namespace ash {
 
+class AppListConfig;
 class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListFolderController;
@@ -34,6 +35,7 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
 
   AppListBubbleAppsPage(AppListViewDelegate* view_delegate,
                         ApplicationDragAndDropHost* drag_and_drop_host,
+                        AppListConfig* app_list_config,
                         AppListA11yAnnouncer* a11y_announcer,
                         AppListFolderController* folder_controller);
   AppListBubbleAppsPage(const AppListBubbleAppsPage&) = delete;

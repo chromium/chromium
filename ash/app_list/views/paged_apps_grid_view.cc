@@ -525,9 +525,9 @@ void PagedAppsGridView::Layout() {
 // AppsGridView:
 
 gfx::Size PagedAppsGridView::GetTileViewSize() const {
-  const AppListConfig& config = GetAppListConfig();
+  const AppListConfig* config = app_list_config();
   return gfx::ScaleToRoundedSize(
-      gfx::Size(config.grid_tile_width(), config.grid_tile_height()),
+      gfx::Size(config->grid_tile_width(), config->grid_tile_height()),
       (cardified_state_ ? kCardifiedScale : 1.0f));
 }
 

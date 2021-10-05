@@ -284,15 +284,10 @@ int ContentsView::NumLauncherPages() const {
   return pagination_model_.total_pages();
 }
 
-const AppListConfig& ContentsView::GetAppListConfig() const {
-  return app_list_view_->GetAppListConfig();
-}
-
 gfx::Size ContentsView::AdjustSearchBoxSizeToFitMargins(
     const gfx::Size& preferred_size) const {
-  const int padded_width =
-      GetContentsBounds().width() -
-      2 * GetAppListConfig().GetIdealHorizontalMargin(GetContentsBounds());
+  const int padded_width = GetContentsBounds().width() -
+                           2 * apps_container_view_->GetIdealHorizontalMargin();
   return gfx::Size(
       base::clamp(padded_width, kSearchBarMinWidth, preferred_size.width()),
       preferred_size.height());

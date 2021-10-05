@@ -47,9 +47,12 @@ class ASH_EXPORT AppListFolderView
  public:
   METADATA_HEADER(AppListFolderView);
 
-  // The maximum number of columns a folder can have. When using paged folder
-  // item grid, the value also indicates the maximum allowed number of rows.
+  // The maximum number of columns a folder can have.
   static constexpr int kMaxFolderColumns = 4;
+
+  // When using paged folder item grid, the maximum number of rows a folder
+  // items grid can have.
+  static constexpr int kMaxPagedFolderRows = 4;
 
   AppListFolderView(AppListFolderController* folder_controller,
                     AppsGridView* root_apps_grid_view,
@@ -71,6 +74,10 @@ class ASH_EXPORT AppListFolderView
     virtual void ScheduleAnimation(base::OnceClosure completion_callback) = 0;
     virtual bool IsAnimationRunning() = 0;
   };
+
+  // Sets the `AppListConfig` that should be used to configure app list item
+  // size within the folder items grid.
+  void UpdateAppListConfig(const AppListConfig* config);
 
   // Configures AppListFolderView to show the contents for the folder item
   // associated with `folder_item_view`. The folder view will be anchored at
@@ -170,18 +177,31 @@ class ASH_EXPORT AppListFolderView
   bool IsPointWithinBottomDragBuffer(const gfx::Point& point,
                                      int page_flip_zone_size) const override;
 
-  const AppListConfig& GetAppListConfig() const;
+  const AppListConfig* GetAppListConfig() const;
 
  private:
   // Creates an apps grid view with fixed-size pages.
-  void InitWithPagedAppsGrid(ContentsView* contents_view);
+  void CreatePagedAppsGrid(ContentsView* contents_view);
 
   // Creates a vertically scrollable apps grid view.
-  void InitWithScrollableAppsGrid();
+  void CreateScrollableAppsGrid();
 
   // Returns the compositor associated to the widget containing this view.
   // Returns nullptr if there isn't one associated with this widget.
   ui::Compositor* GetCompositor();
+
+  // Calculates whether the folder would fit in the bounding box if it had the
+  // max allowed number of rows, and condenses the margins between grid items if
+  // this is not the case. The goal is to prevent a portion of folder UI from
+  // getting laid out outside the bounding box. Tile size scaling done for the
+  // top level apps grid should ensure the folder UI reasonably fits within the
+  // bounding box with no item margins. At certain screen sizes, this approach
+  // also fails, but at that point the top level apps grid doesn't work too well
+  // either.
+  // No-op if the productivity launcher is enabled, in which case folder grid is
+  // scrollable, and should handle the case where grid bounds overflow bounding
+  // box size gracefully.
+  void ShrinkGridTileMarginsWhenNeeded();
 
   // Resets the folder view state. Called when the folder view gets hidden (and
   // hide animations finish) to disassociate the folder view with the current

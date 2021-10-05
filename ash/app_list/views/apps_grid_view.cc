@@ -289,10 +289,23 @@ AppsGridView::AppsGridView(ContentsView* contents_view,
   // Top-level grids must have a folder controller.
   if (!folder_delegate_)
     DCHECK(folder_controller_);
+
+  // Clip any icons that are outside the grid view's bounds. These icons would
+  // otherwise be visible to the user when the grid view is off screen.
+  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
+  layer()->SetMasksToBounds(true);
+
+  items_container_ = AddChildView(std::make_unique<views::View>());
+  items_container_->SetPaintToLayer();
+  items_container_->layer()->SetFillsBoundsOpaquely(false);
+  bounds_animator_ = std::make_unique<views::BoundsAnimator>(
+      items_container_, /*use_transforms=*/true);
+  bounds_animator_->AddObserver(this);
 }
 
 AppsGridView::~AppsGridView() {
   bounds_animator_->RemoveObserver(this);
+
   // Coming here |drag_view_| should already be canceled since otherwise the
   // drag would disappear after the app list got animated away and closed,
   // which would look odd.
@@ -318,20 +331,19 @@ AppsGridView::~AppsGridView() {
 }
 
 void AppsGridView::Init() {
-  DCHECK_GT(cols_, 0);
-  SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  // Clip any icons that are outside the grid view's bounds. These icons would
-  // otherwise be visible to the user when the grid view is off screen.
-  layer()->SetMasksToBounds(true);
-
-  items_container_ = AddChildView(std::make_unique<views::View>());
-  items_container_->SetPaintToLayer();
-  items_container_->layer()->SetFillsBoundsOpaquely(false);
-  bounds_animator_ = std::make_unique<views::BoundsAnimator>(
-      items_container_, /*use_transforms=*/true);
-  bounds_animator_->AddObserver(this);
-
   UpdateBorder();
+}
+
+void AppsGridView::UpdateAppListConfig(const AppListConfig* app_list_config) {
+  app_list_config_ = app_list_config;
+
+  // The app list item view icon sizes depend on the app list config, so they
+  // have to be refreshed.
+  for (int i = 0; i < view_model_.view_size(); ++i)
+    view_model_.view_at(i)->UpdateAppListConfig(app_list_config);
+
+  if (current_ghost_view_)
+    CreateGhostImageView();
 }
 
 void AppsGridView::SetMaxColumns(int max_cols) {
@@ -385,12 +397,14 @@ void AppsGridView::ResetForShowApps() {
   SetVisible(true);
 
   // The number of non-page-break-items should be the same as item views.
-  int item_count = 0;
-  for (size_t i = 0; i < item_list_->item_count(); ++i) {
-    if (!item_list_->item_at(i)->is_page_break())
-      ++item_count;
+  if (item_list_) {
+    int item_count = 0;
+    for (size_t i = 0; i < item_list_->item_count(); ++i) {
+      if (!item_list_->item_at(i)->is_page_break())
+        ++item_count;
+    }
+    CHECK_EQ(item_count, view_model_.view_size());
   }
-  CHECK_EQ(item_count, view_model_.view_size());
 }
 
 void AppsGridView::DisableFocusForShowingActiveFolder(bool disabled) {
@@ -414,6 +428,9 @@ void AppsGridView::SetModel(AppListModel* model) {
 }
 
 void AppsGridView::SetItemList(AppListItemList* item_list) {
+  DCHECK_GT(cols_, 0);
+  DCHECK(app_list_config_);
+
   if (item_list_)
     item_list_->RemoveObserver(this);
   item_list_ = item_list;
@@ -939,8 +956,9 @@ std::unique_ptr<AppListItemView> AppsGridView::CreateViewForItemAtIndex(
   // The |drag_view_| might be pending for deletion, therefore |view_model_|
   // may have one more item than |item_list_|.
   DCHECK_LE(index, item_list_->item_count());
-  auto view = std::make_unique<AppListItemView>(
-      this, item_list_->item_at(index), app_list_view_delegate_);
+  auto view = std::make_unique<AppListItemView>(app_list_config_, this,
+                                                item_list_->item_at(index),
+                                                app_list_view_delegate_);
   if (items_need_layer_for_drag_)
     view->EnsureLayer();
   if (cardified_state_)
@@ -1196,7 +1214,7 @@ bool AppsGridView::DragPointIsOverItem(const gfx::Point& point) {
       (point - GetExpectedTileBounds(nearest_tile_index).CenterPoint())
           .Length();
   if (distance_to_tile_center >
-      (GetAppListConfig().folder_dropping_circle_radius() *
+      (app_list_config_->folder_dropping_circle_radius() *
        (cardified_state_ ? kCardifiedScale : 1.0f))) {
     return false;
   }
@@ -1295,7 +1313,7 @@ void AppsGridView::UpdateDropTargetForReorder(const gfx::Point& point) {
   // between apps.
   int x_offset =
       x_offset_direction * (total_tile_size.width() / 2 -
-                            GetAppListConfig().folder_dropping_circle_radius() *
+                            app_list_config_->folder_dropping_circle_radius() *
                                 (cardified_state_ ? kCardifiedScale : 1.0f));
   const int selected_page = GetSelectedPage();
   int col = (point.x() - bounds.x() + x_offset -
@@ -1330,10 +1348,10 @@ bool AppsGridView::DragIsCloseToItem(const gfx::Point& point) {
   // apart, using |double_icon_radius| will prevent us from juding an overly
   // large region as 'nearby'
   const int forty_percent_icon_spacing =
-      (GetAppListConfig().grid_tile_width() + horizontal_tile_padding_ * 2) *
+      (app_list_config_->grid_tile_width() + horizontal_tile_padding_ * 2) *
       0.4 * (cardified_state_ ? kCardifiedScale : 1.0f);
   const int double_icon_radius =
-      GetAppListConfig().folder_dropping_circle_radius() * 2 *
+      app_list_config_->folder_dropping_circle_radius() * 2 *
       (cardified_state_ ? kCardifiedScale : 1.0f);
   const int minimum_drag_distance_for_reorder =
       std::min(forty_percent_icon_spacing, double_icon_radius);
@@ -1408,12 +1426,12 @@ gfx::Rect AppsGridView::GetTargetIconRectInFolder(
       view_model_.ideal_bounds(view_model_.GetIndexOfView(folder_item_view));
   const gfx::Rect icon_ideal_bounds =
       folder_item_view->GetIconBoundsForTargetViewBounds(
-          GetAppListConfig(), view_ideal_bounds,
+          app_list_config_, view_ideal_bounds,
           folder_item_view->GetIconImage().size(), /*icon_scale=*/1.0f);
   AppListFolderItem* folder_item =
       static_cast<AppListFolderItem*>(folder_item_view->item());
   return folder_item->GetTargetIconRectInFolderForItem(
-      GetAppListConfig(), drag_item, icon_ideal_bounds);
+      *app_list_config_, drag_item, icon_ideal_bounds);
 }
 
 bool AppsGridView::IsUnderOEMFolder() {
@@ -1676,25 +1694,6 @@ void AppsGridView::UpdatePagedViewStructure() {
 
 bool AppsGridView::IsTabletMode() const {
   return app_list_view_delegate_->IsInTabletMode();
-}
-
-void AppsGridView::OnAppListConfigUpdated() {
-  for (int i = 0; i < view_model_.view_size(); ++i)
-    view_model_.view_at(i)->RefreshIcon();
-
-  InvalidateLayout();
-}
-
-const AppListConfig& AppsGridView::GetAppListConfig() const {
-  // TODO(crbug.com/1211608): Get the real config. This method cannot be pure
-  // virtual and implemented in subclasses because AppListItemView may call
-  // GetAppListConfig() during this object's destruction.
-  if (!contents_view_) {
-    AppListConfig* config = AppListConfigProvider::Get().GetConfigForType(
-        AppListConfigType::kMedium, /*can_create=*/true);
-    return *config;
-  }
-  return contents_view_->app_list_view()->GetAppListConfig();
 }
 
 bool AppsGridView::IsAnimationRunningForTest() {
@@ -2483,7 +2482,7 @@ void AppsGridView::AnnounceReorder(const GridIndex& target_index) {
 void AppsGridView::CreateGhostImageView() {
   if (!app_list_features::IsAppGridGhostEnabled())
     return;
-  if (!drag_view_)
+  if (!drag_item_)
     return;
 
   // OnReorderTimer() can trigger this function even when the
@@ -2509,13 +2508,17 @@ void AppsGridView::CreateGhostImageView() {
   // GhostImageView that will fade in.
   last_ghost_view_ = current_ghost_view_;
 
-  auto current_ghost_view = std::make_unique<GhostImageView>(
-      IsFolderItem(drag_view_->item()) /* is_folder */, folder_delegate_,
-      reorder_placeholder_.page);
+  auto current_ghost_view =
+      std::make_unique<GhostImageView>(drag_item_, folder_delegate_);
   gfx::Rect ghost_view_bounds = GetExpectedTileBounds(reorder_placeholder_);
   ghost_view_bounds.Offset(
       CalculateTransitionOffset(reorder_placeholder_.page));
-  current_ghost_view->Init(drag_view_, ghost_view_bounds);
+  current_ghost_view->Init(
+      app_list_config_,
+      AppListItemView::GetIconBoundsForTargetViewBounds(
+          app_list_config_, gfx::Rect(ghost_view_bounds.size()),
+          app_list_config_->grid_icon_size(), kCardifiedScale),
+      ghost_view_bounds);
   current_ghost_view_ =
       items_container_->AddChildView(std::move(current_ghost_view));
   current_ghost_view_->FadeIn();

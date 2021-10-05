@@ -57,6 +57,7 @@ constexpr gfx::Insets kSeparatorInsets(0, 12);
 AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListViewDelegate* view_delegate,
     ApplicationDragAndDropHost* drag_and_drop_host,
+    AppListConfig* app_list_config,
     AppListA11yAnnouncer* a11y_announcer,
     AppListFolderController* folder_controller) {
   DCHECK(view_delegate);
@@ -99,6 +100,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   // Recent apps row.
   recent_apps_ = scroll_contents->AddChildView(
       std::make_unique<RecentAppsView>(this, view_delegate));
+  recent_apps_->UpdateAppListConfig(app_list_config);
+  recent_apps_->ShowResults(view_delegate->GetSearchModel(),
+                            view_delegate->GetModel());
 
   // Horizontal separator.
   auto* separator =
@@ -115,8 +119,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
           /*focus_delegate=*/this));
   scrollable_apps_grid_view_->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
-  scrollable_apps_grid_view_->SetMaxColumns(5);
   scrollable_apps_grid_view_->Init();
+  scrollable_apps_grid_view_->UpdateAppListConfig(app_list_config);
+  scrollable_apps_grid_view_->SetMaxColumns(5);
   AppListModel* model = view_delegate->GetModel();
   scrollable_apps_grid_view_->SetModel(model);
   scrollable_apps_grid_view_->SetItemList(model->top_level_item_list());

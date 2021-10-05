@@ -79,8 +79,8 @@ namespace {
 
 constexpr int kInitialItems = 34;
 
-constexpr int kMaxItemsPerFolderPage =
-    AppListFolderView::kMaxFolderColumns * AppListFolderView::kMaxFolderColumns;
+constexpr int kMaxItemsPerFolderPage = AppListFolderView::kMaxFolderColumns *
+                                       AppListFolderView::kMaxPagedFolderRows;
 
 // Constants used for for testing app list layout in fullscreen state:
 
@@ -3022,7 +3022,7 @@ TEST_F(AppListViewScalableLayoutTest, VerticalAppsGridItemSpacingIsBounded) {
 // apps grid fadeout area.
 TEST_F(AppListViewScalableLayoutTest,
        VerticalAppsContainerMarginFitFadeoutArea) {
-  const gfx::Size window_size = gfx::Size(650, 500);
+  const gfx::Size window_size(650, 536);
   gfx::NativeView parent = GetContext();
   parent->SetBounds(gfx::Rect(window_size));
 

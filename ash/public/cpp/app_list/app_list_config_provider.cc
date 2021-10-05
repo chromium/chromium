@@ -78,9 +78,12 @@ AppListConfig* AppListConfigProvider::GetConfigForType(AppListConfigType type,
   return result;
 }
 
-std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
+std::unique_ptr<AppListConfig>
+AppListConfigProvider::CreateForFullscreenAppList(
     const gfx::Size& display_work_area_size,
-    const gfx::Insets& shelf_insets,
+    int grid_rows,
+    int grid_columns,
+    const gfx::Size& available_size,
     const AppListConfig* current_config) {
   const AppListConfig& base_config =
       GetBaseConfigForDisplaySize(display_work_area_size);
@@ -92,35 +95,14 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
   const float min_config_scale =
       kMinimumTileHeightAfterConfigScale / base_config.grid_tile_height();
 
-  const int min_grid_height =
-      (display_work_area_size.width() < display_work_area_size.height()
-           ? 5 /*preferred columns*/
-           : 4 /*preferred rows*/) *
-      base_config.grid_tile_height();
-  const int min_grid_width =
-      (display_work_area_size.width() < display_work_area_size.height()
-           ? 4 /*preferred rows*/
-           : 5 /*preferred columns*/) *
-      base_config.grid_tile_width();
+  const int min_grid_height = grid_rows * base_config.grid_tile_height();
+  const int min_grid_width = grid_columns * base_config.grid_tile_width();
 
-  // Note that minimum top margin matches the grid fadeout zone height.
-  int non_grid_height = 24 /*grid fadeout zone height*/ +
-                        16 /*suggestion chip container top margin*/ +
-                        32 /*suggestion chip container height*/;
-  // Add search box height.
-  non_grid_height +=
-      display_work_area_size.height() - shelf_insets.height() >= 600
-          ? 48 /*search box height*/
-          : 40 /*search box height for dense layout()*/;
+  if (available_size.height() < min_grid_height) {
+    scale_y =
+        std::max(min_config_scale,
+                 static_cast<float>(available_size.height()) / min_grid_height);
 
-  const int available_grid_height =
-      display_work_area_size.height() - shelf_insets.height() - non_grid_height;
-
-  if (available_grid_height < min_grid_height) {
-    scale_y = std::max(min_config_scale,
-                       static_cast<float>(available_grid_height -
-                                          2 * 24 /*grid fadeout zone height*/) /
-                           min_grid_height);
     // Adjust scale to reflect the fact the app list item title height does not
     // get scaled. The adjustment is derived from:
     // s * x + c = S * (x + c) and t = x + c
@@ -136,13 +118,10 @@ std::unique_ptr<AppListConfig> AppListConfigProvider::CreateForAppListWidget(
         total_title_padding;
   }
 
-  const int available_grid_width =
-      display_work_area_size.width() - shelf_insets.width() -
-      2 * base_config.GetMinGridHorizontalPadding();
-  if (available_grid_width < min_grid_width) {
+  if (available_size.width() < min_grid_width) {
     scale_x =
         std::max(min_config_scale,
-                 static_cast<float>(available_grid_width) / min_grid_width);
+                 static_cast<float>(available_size.width()) / min_grid_width);
   }
 
   if (current_config && current_config->type() == base_config.type() &&

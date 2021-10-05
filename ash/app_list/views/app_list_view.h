@@ -43,7 +43,6 @@ class AppListA11yAnnouncer;
 class AppsContainerView;
 class ApplicationDragAndDropHost;
 class AppListBackgroundShieldView;
-class AppListConfig;
 class AppListMainView;
 class AppListModel;
 class AppsGridView;
@@ -410,10 +409,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   views::View* GetAppListBackgroundShieldForTest();
 
-  // Gets the current app list configuration. Should not be used before the app
-  // list content has been initialized.
-  const AppListConfig& GetAppListConfig() const;
-
   SkColor GetAppListBackgroundShieldColorForTest();
 
   // Returns true if the Embedded Assistant UI is currently being shown.
@@ -442,11 +437,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Returns insets that should be added to app list content to avoid overlap
   // with the shelf.
   gfx::Insets GetMainViewInsetsForShelf() const;
-
-  // Updates the app list configuration that should be used by this app list
-  // view.
-  // |parent_window|: The window that contains the app list widget.
-  void UpdateAppListConfig(aura::Window* parent_window);
 
   // Updates the widget to be shown.
   void UpdateWidget();
@@ -642,10 +632,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
 
   // Records the presentation time for app launcher dragging.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
-
-  // If set, the app list config that should be used within the app list view
-  // instead of the default instance.
-  std::unique_ptr<AppListConfig> app_list_config_;
 
   // A timer which will reset the app list to the initial page. This timer only
   // goes off when the app list is not visible after a set amount of time.

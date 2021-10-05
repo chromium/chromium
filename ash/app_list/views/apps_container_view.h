@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_page.h"
@@ -68,6 +70,24 @@ class ASH_EXPORT AppsContainerView
   // Called when tablet mode starts and ends.
   void OnTabletModeChanged(bool started);
 
+  // Minimal margin for apps grid within the apps container. Set to ensure there
+  // is enough space to fit page switcher next to the apps grid.
+  int GetMinHorizontalMarginForAppsGrid() const;
+
+  // The minimal top margin for the apps grids (measured from the top of the
+  // apps container). Set to accommodate min apps container margins, search box
+  // and suggestion chips.
+  // For productivity launcher UI, this will not include space for continue
+  // section and recent apps.
+  int GetMinTopMarginForAppsGrid(const gfx::Size& search_box_size) const;
+
+  // Returns the ideal margins for content within the apps container. The actual
+  // margins may differ depending on available screen real-estate. For example,
+  // margins may be smaller if the apps grid contents would not fit within the
+  // ideal margins.
+  int GetIdealHorizontalMargin() const;
+  int GetIdealVerticalMargin() const;
+
   // Calculates the apps container or apps grid margin depending on the
   // available content bounds, and search box size.
   // |available_bounds| - The bounds available to lay out either full apps
@@ -91,6 +111,7 @@ class ASH_EXPORT AppsContainerView
   const char* GetClassName() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
+  void OnBoundsChanged(const gfx::Rect& old_bounds) override;
 
   // AppListPage overrides:
   void OnShown() override;
@@ -151,9 +172,8 @@ class ASH_EXPORT AppsContainerView
     return suggestion_chip_container_view_;
   }
 
-  // Called by app list view when the app list config changes.
-  void OnAppListConfigUpdated();
-
+  // Updates recent apps from app list model.
+  void UpdateRecentApps();
   // Updates suggestion chips from app list model.
   void UpdateSuggestionChips();
 
@@ -168,10 +188,6 @@ class ASH_EXPORT AppsContainerView
     SHOW_ACTIVE_FOLDER,
     SHOW_ITEM_REPARENT,
   };
-
-  // Returns the AppListConfig for the app list view this AppsContainerView
-  // belongs to.
-  const AppListConfig& GetAppListConfig() const;
 
   void SetShowState(ShowState show_state, bool show_apps_with_animation);
 
@@ -206,10 +222,24 @@ class ASH_EXPORT AppsContainerView
   // depending on the current display work area size.
   GridLayout CalculateGridLayout() const;
 
+  // Depending on the provided grid layout, updates the number of rows and
+  // columns in the top level apps grid.
+  void UpdateTopLevelGridDimensions(const GridLayout& grid_layout);
+
+  // Depending on the provided apps container contents bounds and grid layout,
+  // updates `app_list_config_` to be used within the apps container, and passes
+  // it on to child views that require it.
+  void UpdateAppListConfig(const gfx::Rect& contents_bounds,
+                           const GridLayout& grid_layout);
+
   // Callback returned by DisableBlur().
   void OnSuggestionChipsBlurDisablerReleased();
 
-  ContentsView* contents_view_;  // Not owned.
+  ContentsView* const contents_view_;
+
+  // The app list config used to configure sizing and layout of apps grid items
+  // within the apps container.
+  std::unique_ptr<AppListConfig> app_list_config_;
 
   // The number of active requests to disable blur.
   size_t suggestion_chips_blur_disabler_count_ = 0;

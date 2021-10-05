@@ -7,9 +7,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/app_list/model/app_list_folder_item.h"
-#include "ash/app_list/model/app_list_item_list.h"
-#include "ash/app_list/views/app_list_item_view.h"
+#include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/folder_image.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -30,39 +29,37 @@ constexpr gfx::Tween::Type kGhostTween = gfx::Tween::FAST_OUT_SLOW_IN;
 
 }  // namespace
 
-GhostImageView::GhostImageView(bool is_folder, bool is_in_folder, int page)
+GhostImageView::GhostImageView(AppListItem* item, bool is_in_folder)
     : is_hiding_(false),
       is_in_folder_(is_in_folder),
-      is_folder_(is_folder),
-      page_(page) {}
+      is_folder_(item->is_folder()),
+      num_items_(
+          std::min(FolderImage::kNumFolderTopItems, item->ChildItemCount())) {}
 
 GhostImageView::~GhostImageView() {
   StopObservingImplicitAnimations();
 }
 
-void GhostImageView::Init(AppListItemView* drag_view,
+void GhostImageView::Init(const AppListConfig* app_list_config,
+                          const gfx::Rect& icon_bounds,
                           const gfx::Rect& drop_target_bounds) {
+  DCHECK(app_list_config);
+
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetOpacity(0.0f);
   SetBoundsRect(drop_target_bounds);
-  icon_bounds_ = drag_view->GetIconBounds();
+  icon_bounds_ = icon_bounds;
 
   if (is_folder_) {
     inner_icon_radius_ =
-        drag_view->GetAppListConfig().item_icon_in_folder_icon_size().width() /
-        2;
-
-    AppListFolderItem* folder_item =
-        static_cast<AppListFolderItem*>(drag_view->item());
-    num_items_ = std::min(FolderImage::kNumFolderTopItems,
-                          folder_item->item_list()->item_count());
+        app_list_config->item_icon_in_folder_icon_size().width() / 2;
 
     std::vector<gfx::Rect> top_icon_bounds = FolderImage::GetTopIconsBounds(
-        drag_view->GetAppListConfig(), icon_bounds_, num_items_.value());
+        *app_list_config, icon_bounds_, num_items_);
 
     // Push back the position for each app to be shown within the folder icon.
-    for (size_t i = 0; i < num_items_.value(); i++) {
+    for (size_t i = 0; i < num_items_; i++) {
       inner_folder_icon_origins_.push_back(top_icon_bounds[i].CenterPoint());
     }
   }
@@ -128,7 +125,7 @@ void GhostImageView::OnPaint(gfx::Canvas* canvas) {
     canvas->ClipPath(outer_circle_mask, true);
 
     // Draw ghost items within the ghost folder circle.
-    for (size_t i = 0; i < num_items_.value(); i++) {
+    for (size_t i = 0; i < num_items_; i++) {
       canvas->DrawCircle(inner_folder_icon_origins_[i], inner_icon_radius_,
                          circle_flags);
     }

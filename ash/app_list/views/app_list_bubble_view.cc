@@ -20,6 +20,7 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/search_box/search_box_constants.h"
@@ -49,6 +50,11 @@ namespace {
 
 // Folder view inset from the edge of the bubble.
 constexpr int kFolderViewInset = 16;
+
+AppListConfig* GetAppListConfig() {
+  return AppListConfigProvider::Get().GetConfigForType(
+      AppListConfigType::kMedium, /*can_create=*/true);
+}
 
 // A simplified horizontal separator that uses a solid color layer for painting.
 // This is more efficient than using a views::Separator, which would require
@@ -139,7 +145,8 @@ void AppListBubbleView::InitContentsView(
   // that the `apps_page_` will not get reused for showing the app list in
   // another root window.
   apps_page_ = contents->AddChildView(std::make_unique<AppListBubbleAppsPage>(
-      view_delegate_, drag_and_drop_host, a11y_announcer_.get(),
+      view_delegate_, drag_and_drop_host, GetAppListConfig(),
+      a11y_announcer_.get(),
       /*folder_controller=*/this));
 
   search_page_ =
@@ -160,6 +167,7 @@ void AppListBubbleView::InitFolderView(
       /*contents_view=*/nullptr, a11y_announcer_.get(), view_delegate_);
   folder_view->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
       drag_and_drop_host);
+  folder_view->UpdateAppListConfig(GetAppListConfig());
   folder_background_view_ =
       AddChildView(std::make_unique<FolderBackgroundView>(folder_view.get()));
   folder_background_view_->SetVisible(false);

@@ -106,9 +106,9 @@ class BackgroundAnimation : public AppListFolderView::Animation,
 
     // Calculate the source and target states.
     const int icon_radius =
-        folder_view_->GetAppListConfig().folder_icon_radius();
+        folder_view_->GetAppListConfig()->folder_icon_radius();
     const int folder_radius =
-        folder_view_->GetAppListConfig().folder_background_radius();
+        folder_view_->GetAppListConfig()->folder_background_radius();
     const int from_radius = show_ ? icon_radius : folder_radius;
     const int to_radius = show_ ? folder_radius : icon_radius;
     gfx::Rect from_rect = show_ ? folder_view_->folder_item_icon_bounds()
@@ -279,10 +279,12 @@ class TopIconAnimation : public AppListFolderView::Animation,
 
     top_icon_views_.clear();
 
+    const AppListConfigType app_list_config_type =
+        folder_view_->GetAppListConfig()->type();
     for (size_t i = 0; i < first_page_item_views_bounds.size(); ++i) {
       const AppListItem* top_item =
           folder_view_->folder_item()->item_list()->item_at(i);
-      if (top_item->GetIcon(folder_view_->GetAppListConfig().type()).isNull() ||
+      if (top_item->GetIcon(app_list_config_type).isNull() ||
           top_item == folder_view_->items_grid_view()->drag_item()) {
         // The item being dragged should be excluded.
         continue;
@@ -295,7 +297,7 @@ class TopIconAnimation : public AppListFolderView::Animation,
 
       auto icon_view = std::make_unique<TopIconAnimationView>(
           folder_view_->items_grid_view(),
-          top_item->GetIcon(folder_view_->GetAppListConfig().type()),
+          top_item->GetIcon(app_list_config_type),
           base::UTF8ToUTF16(top_item->GetDisplayName()), scaled_rect, show_,
           item_in_folder_icon);
       auto* icon_view_ptr = icon_view.get();
@@ -341,18 +343,17 @@ class TopIconAnimation : public AppListFolderView::Animation,
 
  private:
   std::vector<gfx::Rect> GetTopItemViewsBoundsInFolderIcon() {
+    const AppListConfig* const app_list_config =
+        folder_view_->GetAppListConfig();
     std::vector<gfx::Rect> top_icons_bounds = FolderImage::GetTopIconsBounds(
-        folder_view_->GetAppListConfig(),
-        folder_view_->folder_item_icon_bounds(),
+        *app_list_config, folder_view_->folder_item_icon_bounds(),
         std::min(folder_view_->folder_item()->ChildItemCount(),
                  FolderImage::kNumFolderTopItems));
     std::vector<gfx::Rect> top_item_views_bounds;
-    const int icon_dimension =
-        folder_view_->GetAppListConfig().grid_icon_dimension();
-    const int icon_bottom_padding =
-        folder_view_->GetAppListConfig().grid_icon_bottom_padding();
-    const int tile_width = folder_view_->GetAppListConfig().grid_tile_width();
-    const int tile_height = folder_view_->GetAppListConfig().grid_tile_height();
+    const int icon_dimension = app_list_config->grid_icon_dimension();
+    const int icon_bottom_padding = app_list_config->grid_icon_bottom_padding();
+    const int tile_width = app_list_config->grid_tile_width();
+    const int tile_height = app_list_config->grid_tile_height();
     for (gfx::Rect bounds : top_icons_bounds) {
       // Calculate the item view's bounds based on the icon bounds.
       gfx::Rect item_bounds(
@@ -544,14 +545,14 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
   contents_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
   if (features::IsProductivityLauncherEnabled())
-    InitWithScrollableAppsGrid();
+    CreateScrollableAppsGrid();
   else
-    InitWithPagedAppsGrid(contents_view);
+    CreatePagedAppsGrid(contents_view);
 
   model_->AddObserver(this);
 }
 
-void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
+void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   DCHECK(contents_view);
   // Cache typed apps grid view pointer to perform setup specific to
   // PagedAppsGridView (e.g. `SetMaxRows()`) without requiring static cast.
@@ -561,13 +562,12 @@ void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
           /*container_delegate=*/this));
   items_grid_view_ = items_grid_view;
 
+  items_grid_view_->Init();
   items_grid_view->SetMaxColumns(kMaxFolderColumns);
-  items_grid_view->SetMaxRows(/*max_rows_in_first_page=*/kMaxFolderColumns,
-                              /*max_rows=*/kMaxFolderColumns);
+  items_grid_view->SetMaxRows(/*max_rows_in_first_page=*/kMaxPagedFolderRows,
+                              /*max_rows=*/kMaxPagedFolderRows);
   items_grid_view->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                        kTileSpacingInFolder / 2);
-  items_grid_view->Init();
-  items_grid_view->SetModel(model_);
 
   folder_header_view_ = contents_container_->AddChildView(
       std::make_unique<FolderHeaderView>(this));
@@ -587,7 +587,7 @@ void AppListFolderView::InitWithPagedAppsGrid(ContentsView* contents_view) {
       .SetChildViewIgnoredByLayout(page_switcher_, true);
 }
 
-void AppListFolderView::InitWithScrollableAppsGrid() {
+void AppListFolderView::CreateScrollableAppsGrid() {
   // The top part of the folder contents is a scrollable apps grid.
   scroll_view_ =
       contents_container_->AddChildView(std::make_unique<views::ScrollView>(
@@ -619,11 +619,10 @@ void AppListFolderView::InitWithScrollableAppsGrid() {
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer_, view_delegate_, this, scroll_view_,
           /*folder_controller=*/nullptr, /*focus_delegate=*/nullptr));
+  items_grid_view_->Init();
   items_grid_view_->SetMaxColumns(kMaxFolderColumns);
   items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                         kTileSpacingInFolder / 2);
-  items_grid_view_->Init();
-  items_grid_view_->SetModel(model_);
   scroll_view_->SetContents(std::move(scroll_contents));
 
   // The scroll view consumes all available vertical space in its parent. This
@@ -657,10 +656,16 @@ AppListFolderView::~AppListFolderView() {
   delete page_switcher_;
 }
 
+void AppListFolderView::UpdateAppListConfig(const AppListConfig* config) {
+  items_grid_view_->UpdateAppListConfig(config);
+  ShrinkGridTileMarginsWhenNeeded();
+}
+
 void AppListFolderView::ConfigureForFolderItemView(
     AppListItemView* folder_item_view) {
   DCHECK(folder_item_view->is_folder());
   DCHECK(folder_item_view->item());
+  DCHECK(items_grid_view_->app_list_config());
 
   // Clear any remaining state from the last time the folder was shown. E.g.
   // cancel any pending hide animations.
@@ -671,6 +676,7 @@ void AppListFolderView::ConfigureForFolderItemView(
 
   folder_item_ = static_cast<AppListFolderItem*>(folder_item_view->item());
 
+  items_grid_view_->SetModel(model_);
   items_grid_view_->SetItemList(folder_item_->item_list());
   folder_header_view_->SetFolderItem(folder_item_);
 
@@ -809,6 +815,7 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   if (folder_item_) {
     items_grid_view_->ClearSelectedView();
     items_grid_view_->SetItemList(nullptr);
+    items_grid_view_->SetModel(nullptr);
     folder_header_view_->SetFolderItem(nullptr);
     folder_item_ = nullptr;
   }
@@ -906,6 +913,7 @@ bool AppListFolderView::IsAnimationRunning() const {
 
 void AppListFolderView::SetBoundingBox(const gfx::Rect& bounding_box) {
   bounding_box_ = bounding_box;
+  ShrinkGridTileMarginsWhenNeeded();
 }
 
 void AppListFolderView::RecordAnimationSmoothness() {
@@ -1055,12 +1063,35 @@ void AppListFolderView::SetItemName(AppListFolderItem* item,
   model_->SetItemName(item, name);
 }
 
-const AppListConfig& AppListFolderView::GetAppListConfig() const {
-  return items_grid_view_->GetAppListConfig();
+const AppListConfig* AppListFolderView::GetAppListConfig() const {
+  return items_grid_view_->app_list_config();
 }
 
 ui::Compositor* AppListFolderView::GetCompositor() {
   return GetWidget()->GetCompositor();
+}
+
+void AppListFolderView::ShrinkGridTileMarginsWhenNeeded() {
+  // Productivity launcher uses scrollable grid for folders, which handles the
+  // case where the items grid does not fit into bounds provided by the folder
+  // bounding box.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
+  if (bounding_box_.IsEmpty() || !GetAppListConfig())
+    return;
+
+  // Calculate the expected folder height when it has the max possible number of
+  // rows. The margins should be shrunk if this height does not fit within
+  // the bounding box.
+  const int max_folder_height =
+      folder_header_view_->GetPreferredSize().height() + kFolderHeaderPadding +
+      GetAppListConfig()->grid_tile_height() * kMaxPagedFolderRows +
+      (kMaxPagedFolderRows - 1) * kTileSpacingInFolder;
+  const bool shrink_margins = max_folder_height > bounding_box_.height();
+  items_grid_view_->SetFixedTilePadding(
+      (shrink_margins ? 0 : kTileSpacingInFolder) / 2,
+      (shrink_margins ? 0 : kTileSpacingInFolder) / 2);
 }
 
 BEGIN_METADATA(AppListFolderView, views::View)

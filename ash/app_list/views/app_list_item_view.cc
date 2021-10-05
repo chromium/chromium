@@ -203,7 +203,7 @@ class AppListItemView::IconImageView : public views::ImageView {
   // Update the rounded corner and insets with animation. |extended| is true
   // when the target rounded corner radius and insets are for showing the
   // indicator circle.
-  void SetExtendedState(const AppListConfig& config,
+  void SetExtendedState(const AppListConfig* config,
                         bool extended,
                         bool animate) {
     absl::optional<ui::ScopedLayerAnimationSettings> settings;
@@ -216,9 +216,9 @@ class AppListItemView::IconImageView : public views::ImageView {
     extended_ = extended;
 
     SetRoundedCornerAndInsets(
-        extended ? config.folder_unclipped_icon_dimension() / 2
-                 : config.folder_icon_dimension() / 2,
-        extended ? gfx::Insets() : gfx::Insets(config.folder_icon_insets()));
+        extended ? config->folder_unclipped_icon_dimension() / 2
+                 : config->folder_icon_dimension() / 2,
+        extended ? gfx::Insets() : gfx::Insets(config->folder_icon_insets()));
   }
 
   // Ensure that the view has a layer.
@@ -261,17 +261,20 @@ class AppListItemView::IconImageView : public views::ImageView {
   gfx::Insets insets_;
 };
 
-AppListItemView::AppListItemView(GridDelegate* grid_delegate,
+AppListItemView::AppListItemView(const AppListConfig* app_list_config,
+                                 GridDelegate* grid_delegate,
                                  AppListItem* item,
                                  AppListViewDelegate* view_delegate)
     : views::Button(
           base::BindRepeating(&GridDelegate::OnAppListItemViewActivated,
                               base::Unretained(grid_delegate),
                               base::Unretained(this))),
+      app_list_config_(app_list_config),
       is_folder_(item->GetItemType() == AppListFolderItem::kItemType),
       item_weak_(item),
       grid_delegate_(grid_delegate),
       view_delegate_(view_delegate) {
+  DCHECK(app_list_config_);
   // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
   // able to submit accessibility checks. This crashes if fetching a11y node
   // data during paint because message_view_ is null.
@@ -284,7 +287,7 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
   auto title = std::make_unique<views::Label>();
   title->SetBackgroundColor(SK_ColorTRANSPARENT);
   title->SetHandlesTooltips(false);
-  title->SetFontList(GetAppListConfig().app_title_font());
+  title->SetFontList(app_list_config_->app_title_font());
   title->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title->SetEnabledColor(AppListColorProvider::Get()->GetAppListItemTextColor(
       grid_delegate_->IsInFolder()));
@@ -297,7 +300,7 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
     // smoothness.
     if (view_delegate_->IsInTabletMode())
       SetBackgroundBlurEnabled(true);
-    icon_->SetExtendedState(GetAppListConfig(), false /*extended*/,
+    icon_->SetExtendedState(app_list_config_, icon_->extended(),
                             false /*animate*/);
   }
 
@@ -312,7 +315,7 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
 
   title_ = AddChildView(std::move(title));
 
-  SetIcon(item->GetIcon(GetAppListConfig().type()));
+  SetIcon(item_weak_->GetIcon(app_list_config_->type()));
   SetItemName(base::UTF8ToUTF16(item->GetDisplayName()),
               base::UTF8ToUTF16(item->name()));
   item->AddObserver(this);
@@ -354,8 +357,8 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   icon_image_ = icon;
 
   gfx::Size icon_bounds = is_folder_
-                              ? GetAppListConfig().folder_unclipped_icon_size()
-                              : GetAppListConfig().grid_icon_size();
+                              ? app_list_config_->folder_unclipped_icon_size()
+                              : app_list_config_->grid_icon_size();
 
   icon_bounds = gfx::ScaleToRoundedSize(icon_bounds, icon_scale_);
 
@@ -366,17 +369,24 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   Layout();
 }
 
-void AppListItemView::RefreshIcon() {
+void AppListItemView::UpdateAppListConfig(
+    const AppListConfig* app_list_config) {
+  app_list_config_ = app_list_config;
+
+  DCHECK(app_list_config_);
+
   if (!item_weak_) {
     SetIcon(gfx::ImageSkia());
     return;
   }
 
-  SetIcon(item_weak_->GetIcon(GetAppListConfig().type()));
+  title()->SetFontList(app_list_config_->app_title_font());
+  SetIcon(item_weak_->GetIcon(app_list_config_->type()));
   if (is_folder_) {
-    icon_->SetExtendedState(GetAppListConfig(), icon_->extended(),
+    icon_->SetExtendedState(app_list_config_, icon_->extended(),
                             false /*animate*/);
   }
+  SchedulePaint();
 }
 
 void AppListItemView::ScaleIconImmediatly(float scale_factor) {
@@ -557,10 +567,6 @@ void AppListItemView::SilentlyRequestFocus() {
   RequestFocus();
 }
 
-const AppListConfig& AppListItemView::GetAppListConfig() const {
-  return grid_delegate_->GetAppListConfig();
-}
-
 void AppListItemView::SetItemName(const std::u16string& display_name,
                                   const std::u16string& full_name) {
   const std::u16string folder_name_placeholder =
@@ -710,7 +716,7 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
     gfx::Rect selection_highlight_bounds = GetContentsBounds();
     AdaptBoundsForSelectionHighlight(&selection_highlight_bounds);
     canvas->DrawRoundRect(gfx::RectF(selection_highlight_bounds),
-                          GetAppListConfig().grid_focus_corner_radius(), flags);
+                          app_list_config_->grid_focus_corner_radius(), flags);
   }
 
   const int preview_circle_radius = GetPreviewCircleRadius();
@@ -747,11 +753,11 @@ void AppListItemView::Layout() {
     return;
 
   const gfx::Rect icon_bounds = GetIconBoundsForTargetViewBounds(
-      GetAppListConfig(), rect, icon_->GetImageBounds().size(), icon_scale_);
+      app_list_config_, rect, icon_->GetImageBounds().size(), icon_scale_);
   icon_->SetBoundsRect(icon_bounds);
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
-      GetAppListConfig(), rect, title_->GetPreferredSize(), icon_scale_);
+      app_list_config_, rect, title_->GetPreferredSize(), icon_scale_);
   if (!grid_delegate_->IsInFolder())
     title_bounds.Inset(title_shadow_margins_);
   title_->SetBoundsRect(title_bounds);
@@ -761,8 +767,8 @@ void AppListItemView::Layout() {
 }
 
 gfx::Size AppListItemView::CalculatePreferredSize() const {
-  return gfx::Size(GetAppListConfig().grid_tile_width(),
-                   GetAppListConfig().grid_tile_height());
+  return gfx::Size(app_list_config_->grid_tile_width(),
+                   app_list_config_->grid_tile_height());
 }
 
 bool AppListItemView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -915,7 +921,7 @@ std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
 
 void AppListItemView::OnDraggedViewEnter() {
   if (is_folder_) {
-    icon_->SetExtendedState(GetAppListConfig(), true /*extended*/,
+    icon_->SetExtendedState(app_list_config_, true /*extended*/,
                             true /*animate*/);
     return;
   }
@@ -925,7 +931,7 @@ void AppListItemView::OnDraggedViewEnter() {
 
 void AppListItemView::OnDraggedViewExit() {
   if (is_folder_) {
-    icon_->SetExtendedState(GetAppListConfig(), false /*extended*/,
+    icon_->SetExtendedState(app_list_config_, false /*extended*/,
                             true /*animate*/);
     return;
   }
@@ -978,7 +984,7 @@ void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {
 
   preview_circle_radius_ = gfx::Tween::IntValueBetween(
       animation->GetCurrentValue(), 0,
-      GetAppListConfig().folder_dropping_circle_radius() * icon_scale_);
+      app_list_config_->folder_dropping_circle_radius() * icon_scale_);
   SchedulePaint();
 }
 
@@ -1010,7 +1016,7 @@ gfx::Rect AppListItemView::GetIconBounds() const {
     // The folder icon is in unclipped size, so clip it before return.
     gfx::Rect folder_icon_bounds = icon_->bounds();
     folder_icon_bounds.ClampToCenteredSize(
-        GetAppListConfig().folder_icon_size());
+        app_list_config_->folder_icon_size());
     return folder_icon_bounds;
   }
   return icon_->bounds();
@@ -1027,7 +1033,7 @@ gfx::ImageSkia AppListItemView::GetIconImage() const {
     return icon_->GetImage();
 
   return gfx::CanvasImageSource::MakeImageSkia<ClippedFolderIconImageSource>(
-      GetAppListConfig().folder_icon_size(), icon_->GetImage());
+      app_list_config_->folder_icon_size(), icon_->GetImage());
 }
 
 void AppListItemView::SetIconVisible(bool visible) {
@@ -1036,41 +1042,41 @@ void AppListItemView::SetIconVisible(bool visible) {
 
 void AppListItemView::EnterCardifyState() {
   in_cardified_grid_ = true;
-  gfx::FontList font_size = GetAppListConfig().app_title_font();
+  gfx::FontList font_size = app_list_config_->app_title_font();
   const int size_delta = font_size.GetFontSize() * (1 - kCardifyIconScale);
   title_->SetFontList(font_size.DeriveWithSizeDelta(-size_delta));
   ScaleIconImmediatly(kCardifyIconScale);
 }
 
 void AppListItemView::ExitCardifyState() {
-  title_->SetFontList(GetAppListConfig().app_title_font());
+  title_->SetFontList(app_list_config_->app_title_font());
   ScaleIconImmediatly(1.0f);
   in_cardified_grid_ = false;
 }
 
 // static
 gfx::Rect AppListItemView::GetIconBoundsForTargetViewBounds(
-    const AppListConfig& config,
+    const AppListConfig* config,
     const gfx::Rect& target_bounds,
     const gfx::Size& icon_size,
     const float icon_scale) {
   gfx::Rect rect(target_bounds);
-  rect.Inset(0, 0, 0, config.grid_icon_bottom_padding() * icon_scale);
+  rect.Inset(0, 0, 0, config->grid_icon_bottom_padding() * icon_scale);
   rect.ClampToCenteredSize(icon_size);
   return rect;
 }
 
 // static
 gfx::Rect AppListItemView::GetTitleBoundsForTargetViewBounds(
-    const AppListConfig& config,
+    const AppListConfig* config,
     const gfx::Rect& target_bounds,
     const gfx::Size& title_size,
     float icon_scale) {
   gfx::Rect rect(target_bounds);
-  rect.Inset(config.grid_title_horizontal_padding() * icon_scale,
-             config.grid_title_top_padding() * icon_scale,
-             config.grid_title_horizontal_padding() * icon_scale,
-             config.grid_title_bottom_padding() * icon_scale);
+  rect.Inset(config->grid_title_horizontal_padding() * icon_scale,
+             config->grid_title_top_padding() * icon_scale,
+             config->grid_title_horizontal_padding() * icon_scale,
+             config->grid_title_bottom_padding() * icon_scale);
   rect.ClampToCenteredSize(title_size);
   // Respect the title preferred height, to ensure the text does not get clipped
   // due to padding if the item view gets too small.
@@ -1082,11 +1088,11 @@ gfx::Rect AppListItemView::GetTitleBoundsForTargetViewBounds(
 }
 
 void AppListItemView::ItemIconChanged(AppListConfigType config_type) {
-  if (config_type != GetAppListConfig().type())
+  if (config_type != app_list_config_->type())
     return;
 
   DCHECK(item_weak_);
-  SetIcon(item_weak_->GetIcon(GetAppListConfig().type()));
+  SetIcon(item_weak_->GetIcon(app_list_config_->type()));
 }
 
 void AppListItemView::ItemNameChanged() {
@@ -1130,8 +1136,8 @@ void AppListItemView::CreateDraggedViewHoverAnimation() {
 }
 
 void AppListItemView::AdaptBoundsForSelectionHighlight(gfx::Rect* bounds) {
-  bounds->Inset(0, 0, 0, GetAppListConfig().grid_icon_bottom_padding());
-  bounds->ClampToCenteredSize(GetAppListConfig().grid_focus_size());
+  bounds->Inset(0, 0, 0, app_list_config_->grid_icon_bottom_padding());
+  bounds->ClampToCenteredSize(app_list_config_->grid_focus_size());
   // Update the bounds to account for the focus ring width - by default, the
   // focus ring is painted so the highlight bounds are centered within the
   // focus ring stroke - this should be overridden so the outer stroke bounds
