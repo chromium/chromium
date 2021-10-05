@@ -45,7 +45,7 @@ suite(system_dialog_browsertest.suiteName, function() {
     nativeLayer.setLocalDestinations(
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.setInstance(pluginProxy);
+    PluginProxyImpl.instance_ = pluginProxy;
 
     const page = document.createElement('print-preview-app');
     document.body.appendChild(page);

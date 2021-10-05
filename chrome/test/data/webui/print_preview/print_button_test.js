@@ -53,7 +53,7 @@ suite(print_button_test.suiteName, function() {
 
     const pluginProxy = new TestPluginProxy();
     pluginProxy.setPluginCompatible(true);
-    PluginProxyImpl.setInstance(pluginProxy);
+    PluginProxyImpl.instance_ = pluginProxy;
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);

@@ -57,7 +57,7 @@ suite(key_event_test.suiteName, function() {
     setNativeLayerCrosInstance();
     // </if>
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.setInstance(pluginProxy);
+    PluginProxyImpl.instance_ = pluginProxy;
 
     document.body.innerHTML = '';
     page = /** @type {!PrintPreviewAppElement} */ (

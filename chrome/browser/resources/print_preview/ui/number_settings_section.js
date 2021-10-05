@@ -10,16 +10,16 @@ import './settings_section.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {InputMixin, InputMixinInterface} from './input_mixin.js';
+import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {InputMixinInterface}
+ * @implements {InputBehaviorInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewNumberSettingsSectionElementBase =
-    mixinBehaviors([WebUIListenerBehavior], InputMixin(PolymerElement));
+    mixinBehaviors([InputBehavior, WebUIListenerBehavior], PolymerElement);
 
 /** @polymer */
 export class PrintPreviewNumberSettingsSectionElement extends

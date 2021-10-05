@@ -65,7 +65,7 @@ export {PrintPreviewNumberSettingsSectionElement} from './ui/number_settings_sec
 export {PrintPreviewOtherOptionsSettingsElement} from './ui/other_options_settings.js';
 export {PrintPreviewPagesPerSheetSettingsElement} from './ui/pages_per_sheet_settings.js';
 export {PrintPreviewPagesSettingsElement} from './ui/pages_settings.js';
-export {PluginProxyImpl} from './ui/plugin_proxy.js';
+export {PDFPlugin, PluginProxy, PluginProxyImpl} from './ui/plugin_proxy.js';
 export {PreviewAreaState, PrintPreviewPreviewAreaElement} from './ui/preview_area.js';
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';

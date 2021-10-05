@@ -14,20 +14,20 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {State} from '../data/state.js';
 
-import {InputBehaviorInterface, InputMixin} from './input_mixin.js';
+import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
 import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
- * @implements {InputMixinInterface}
+ * @implements {InputBehaviorInterface}
  * @implements {SettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewPinSettingsElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior],
-    InputMixin(SettingsMixin(PolymerElement)));
+    [InputBehavior, I18nBehavior, WebUIListenerBehavior],
+    SettingsMixin(PolymerElement));
 
 /** @polymer */
 class PrintPreviewPinSettingsElement extends
@@ -92,7 +92,7 @@ class PrintPreviewPinSettingsElement extends
         e => this.onInputChange_(/** @type {!CustomEvent<string>} */ (e)));
   }
 
-  /** @return {!CrInputElement} The cr-input field element for InputMixin. */
+  /** @return {!CrInputElement} The cr-input field element for InputBehavior. */
   getInput() {
     return /** @type {!CrInputElement} */ (this.$.pinValue);
   }

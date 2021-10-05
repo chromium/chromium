@@ -7,8 +7,8 @@ import 'chrome://resources/cr_elements/cr_input/cr_input_style_css.m.js';
 import '../strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
@@ -17,27 +17,25 @@ import {MeasurementSystem} from '../data/measurement_system.js';
 import {Size} from '../data/size.js';
 import {observerDepsDefined} from '../print_preview_utils.js';
 
-import {InputMixin, InputMixinInterface} from './input_mixin.js';
+import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
 
 /**
  * Radius of the margin control in pixels. Padding of control + 1 for border.
+ * @type {number}
  */
-const RADIUS_PX: number = 9;
+const RADIUS_PX = 9;
 
-export interface PrintPreviewMarginControlElement {
-  $: {
-    input: HTMLInputElement; lineContainer: HTMLDivElement;
-    line: HTMLDivElement;
-  };
-}
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {InputBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const PrintPreviewMarginControlElementBase = mixinBehaviors(
+    [InputBehavior, I18nBehavior, WebUIListenerBehavior], PolymerElement);
 
-const PrintPreviewMarginControlElementBase =
-    mixinBehaviors(
-        [I18nBehavior, WebUIListenerBehavior], InputMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
-      InputMixinInterface
-    };
-
+/** @polymer */
 export class PrintPreviewMarginControlElement extends
     PrintPreviewMarginControlElementBase {
   static get is() {
@@ -72,35 +70,42 @@ export class PrintPreviewMarginControlElement extends
         observer: 'onClipSizeChange_',
       },
 
+      /** @type {?MeasurementSystem} */
       measurementSystem: Object,
 
+      /** @private {boolean} */
       focused_: {
         type: Boolean,
         reflectToAttribute: true,
         value: false,
       },
 
+      /** @private {number} */
       positionInPts_: {
         type: Number,
         notify: true,
         value: 0,
       },
 
+      /** @type {number} */
       scaleTransform: {
         type: Number,
         notify: true,
       },
 
+      /** @type {!Coordinate2d} */
       translateTransform: {
         type: Object,
         notify: true,
       },
 
+      /** @type {!Size} */
       pageSize: {
         type: Object,
         notify: true,
       },
 
+      /** @type {?Size} */
       clipSize: {
         type: Object,
         notify: true,
@@ -108,19 +113,6 @@ export class PrintPreviewMarginControlElement extends
       },
     };
   }
-
-  disabled: boolean;
-  side: CustomMarginsOrientation;
-  invalid: boolean;
-  invisible: boolean;
-  measurementSystem: MeasurementSystem|null;
-  scaleTransform: number;
-  translateTransform: Coordinate2d;
-  pageSize: Size;
-  clipSize: Size|null;
-
-  private focused_: boolean;
-  private positionInPts_: number;
 
   static get observers() {
     return [
@@ -132,18 +124,22 @@ export class PrintPreviewMarginControlElement extends
   ready() {
     super.ready();
 
-    this.addEventListener('input-change', e => this.onInputChange_(e));
+    this.addEventListener(
+        'input-change',
+        e => this.onInputChange_(
+            /** @type {!CustomEvent<string|undefined>} */ (e)));
   }
 
-  /** @return The input element for InputBehavior. */
-  getInput(): HTMLInputElement {
-    return this.$.input;
+  /** @return {!HTMLInputElement} The input element for InputBehavior. */
+  getInput() {
+    return /** @type {!HTMLInputElement} */ (this.$.input);
   }
 
   /**
-   * @param valueInPts New value of the margin control's textbox in pts.
+   * @param {number} valueInPts New value of the margin control's textbox in
+   *     pts.
    */
-  setTextboxValue(valueInPts: number) {
+  setTextboxValue(valueInPts) {
     const textbox = this.$.input;
     const pts = textbox.value ? this.parseValueToPts_(textbox.value) : null;
     if (pts !== null && valueInPts === Math.round(pts)) {
@@ -157,30 +153,31 @@ export class PrintPreviewMarginControlElement extends
     this.resetString();
   }
 
-  /** @return The current position of the margin control. */
-  getPositionInPts(): number {
+  /** @return {number} The current position of the margin control. */
+  getPositionInPts() {
     return this.positionInPts_;
   }
 
-  /** @param position The new position for the margin control. */
-  setPositionInPts(position: number) {
+  /** @param {number} position The new position for the margin control. */
+  setPositionInPts(position) {
     this.positionInPts_ = position;
   }
 
   /**
-   * @return 'true' or 'false', indicating whether the input should be
+   * @return {string} 'true' or 'false', indicating whether the input should be
    *     aria-hidden.
+   * @private
    */
-  private getAriaHidden_(): string {
+  getAriaHidden_() {
     return this.invisible.toString();
   }
 
   /**
    * Converts a value in pixels to points.
-   * @param pixels Pixel value to convert.
-   * @return Given value expressed in points.
+   * @param {number} pixels Pixel value to convert.
+   * @return {number} Given value expressed in points.
    */
-  convertPixelsToPts(pixels: number): number {
+  convertPixelsToPts(pixels) {
     let pts;
     const Orientation = CustomMarginsOrientation;
     if (this.side === Orientation.TOP) {
@@ -203,33 +200,35 @@ export class PrintPreviewMarginControlElement extends
   }
 
   /**
-   * @param event A pointerdown event triggered by this element.
-   * @return Whether the margin should start being dragged.
+   * @param {!PointerEvent} event A pointerdown event triggered by this element.
+   * @return {boolean} Whether the margin should start being dragged.
    */
-  shouldDrag(event: PointerEvent): boolean {
+  shouldDrag(event) {
     return !this.disabled && event.button === 0 &&
-        (event.composedPath()[0] === this.$.lineContainer ||
-         event.composedPath()[0] === this.$.line);
+        (event.path[0] === this.$.lineContainer ||
+         event.path[0] === this.$.line);
   }
 
-  private onDisabledChange_() {
+  /** @private */
+  onDisabledChange_() {
     if (this.disabled) {
       this.focused_ = false;
     }
   }
 
   /**
-   * @param value Value to parse to points. E.g. '3.40' or '200'.
-   * @return Value in points represented by the input value.
+   * @param {string} value Value to parse to points. E.g. '3.40' or '200'.
+   * @return {?number} Value in points represented by the input value.
+   * @private
    */
-  private parseValueToPts_(value: string): number|null {
+  parseValueToPts_(value) {
     value = value.trim();
     if (value.length === 0) {
       return null;
     }
     assert(this.measurementSystem);
-    const decimal = this.measurementSystem!.decimalDelimiter;
-    const thousands = this.measurementSystem!.thousandsDelimiter;
+    const decimal = this.measurementSystem.decimalDelimiter;
+    const thousands = this.measurementSystem.thousandsDelimiter;
     const whole = `(?:0|[1-9]\\d*|[1-9]\\d{0,2}(?:[${thousands}]\\d{3})*)`;
     const fractional = `(?:[${decimal}]\\d+)`;
     const wholeDecimal = `(?:${whole}[${decimal}])`;
@@ -240,33 +239,42 @@ export class PrintPreviewMarginControlElement extends
       // the dot symbol in order to use parseFloat() properly.
       value = value.replace(new RegExp(`\\${thousands}`, 'g'), '')
                   .replace(decimal, '.');
-      return this.measurementSystem!.convertToPoints(parseFloat(value));
+      return this.measurementSystem.convertToPoints(parseFloat(value));
     }
     return null;
   }
 
   /**
-   * @param value Value in points to serialize.
-   * @return String representation of the value in the system's local units.
+   * @param {number} value Value in points to serialize.
+   * @return {string} String representation of the value in the system's local
+   *     units.
+   * @private
    */
-  private serializeValueFromPts_(value: number): string {
+  serializeValueFromPts_(value) {
     assert(this.measurementSystem);
-    value = this.measurementSystem!.convertFromPoints(value);
-    value = this.measurementSystem!.roundValue(value);
+    value = this.measurementSystem.convertFromPoints(value);
+    value = this.measurementSystem.roundValue(value);
     // Convert the dot symbol to the decimal delimiter for the locale.
     return value.toString().replace(
-        '.', this.measurementSystem!.decimalDelimiter);
+        '.', this.measurementSystem.decimalDelimiter);
   }
 
-  private fire_(eventName: string, detail?: any) {
+  /**
+   * @param {string} eventName
+   * @param {*=} detail
+   * @private
+   */
+  fire_(eventName, detail) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   /**
-   * @param e Contains the new value of the input.
+   * @param {!CustomEvent<string|undefined>} e Contains the new value of the
+   *     input.
+   * @private
    */
-  private onInputChange_(e: CustomEvent<string|undefined>) {
+  onInputChange_(e) {
     if (e.detail === '' || e.detail === undefined) {
       return;
     }
@@ -280,18 +288,21 @@ export class PrintPreviewMarginControlElement extends
     this.fire_('text-change', value);
   }
 
-  private onBlur_() {
+  /** @private */
+  onBlur_() {
     this.focused_ = false;
     this.resetAndUpdate();
     this.fire_('text-blur', this.invalid || !this.$.input.value);
   }
 
-  private onFocus_() {
+  /** @private */
+  onFocus_() {
     this.focused_ = true;
     this.fire_('text-focus');
   }
 
-  private updatePosition_() {
+  /** @private */
+  updatePosition_() {
     if (!observerDepsDefined(Array.from(arguments))) {
       return;
     }
@@ -299,8 +310,8 @@ export class PrintPreviewMarginControlElement extends
     const Orientation = CustomMarginsOrientation;
     let x = this.translateTransform.x;
     let y = this.translateTransform.y;
-    let width: number|null = null;
-    let height: number|null = null;
+    let width = null;
+    let height = null;
     if (this.side === Orientation.TOP) {
       y = this.scaleTransform * this.positionInPts_ +
           this.translateTransform.y - RADIUS_PX;
@@ -331,7 +342,8 @@ export class PrintPreviewMarginControlElement extends
     this.onClipSizeChange_();
   }
 
-  private onClipSizeChange_() {
+  /** @private */
+  onClipSizeChange_() {
     if (!this.clipSize) {
       return;
     }
@@ -339,15 +351,9 @@ export class PrintPreviewMarginControlElement extends
       const offsetLeft = this.offsetLeft;
       const offsetTop = this.offsetTop;
       this.style.clip = 'rect(' + (-offsetTop) + 'px, ' +
-          (this.clipSize!.width - offsetLeft) + 'px, ' +
-          (this.clipSize!.height - offsetTop) + 'px, ' + (-offsetLeft) + 'px)';
+          (this.clipSize.width - offsetLeft) + 'px, ' +
+          (this.clipSize.height - offsetTop) + 'px, ' + (-offsetLeft) + 'px)';
     });
-  }
-}
-
-declare global {
-  interface HTMLElementTagNameMap {
-    'print-preview-margin-control': PrintPreviewMarginControlElement;
   }
 }
 

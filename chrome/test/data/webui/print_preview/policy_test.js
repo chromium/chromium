@@ -74,7 +74,7 @@ suite(policy_tests.suiteName, function() {
     setNativeLayerCrosInstance();
     // </if>
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.setInstance(pluginProxy);
+    PluginProxyImpl.instance_ = pluginProxy;
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);

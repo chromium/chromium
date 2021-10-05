@@ -32,7 +32,7 @@ suite(preview_area_test.suiteName, function() {
     NativeLayerImpl.setInstance(nativeLayer);
     nativeLayer.setPageCount(3);
     pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.setInstance(pluginProxy);
+    PluginProxyImpl.instance_ = pluginProxy;
 
     document.body.innerHTML = '';
     const model = document.createElement('print-preview-model');
