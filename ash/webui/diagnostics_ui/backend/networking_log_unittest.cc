@@ -53,14 +53,27 @@ mojom::NetworkPtr CreateEthernetNetworkPtr(
                              mojom::IPConfigProperties::New());
 }
 
-// TODO(michaelcheco): Add missing Cellular type properties.
-mojom::NetworkPtr CreateCellularNetworkPtr(const std::string& guid,
-                                           const std::string& name,
-                                           const std::string& mac_address) {
+mojom::NetworkPtr CreateCellularNetworkPtr(
+    const std::string& guid,
+    const std::string& name,
+    const std::string& mac_address,
+    const std::string& iccid,
+    const std::string& eid,
+    const std::string& network_technology,
+    bool roaming,
+    mojom::RoamingState roaming_state,
+    const uint32_t signal_strength,
+    bool sim_locked,
+    mojom::LockType lock_type) {
+  auto type_props = mojom::NetworkTypeProperties::New();
+  auto cellular_props = mojom::CellularStateProperties::New(
+      iccid, eid, network_technology, roaming, roaming_state, signal_strength,
+      sim_locked, lock_type);
+  type_props->set_cellular(std::move(cellular_props));
   return mojom::Network::New(mojom::NetworkState::kOnline,
                              mojom::NetworkType::kCellular,
-                             mojom::NetworkTypeProperties::New(), guid, name,
-                             mac_address, mojom::IPConfigProperties::New());
+                             std::move(type_props), guid, name, mac_address,
+                             mojom::IPConfigProperties::New());
 }
 
 // Splits `line` on '-' ignoring the first part which is the date, and verifies
@@ -192,13 +205,24 @@ TEST_F(NetworkingLogTest, DetailedLogContentsEthernet) {
   ExpectCorrectLogLine(expected_line, events_lines[1]);
 }
 
-// TODO(michaelcheco): Update test when Cellular type properties are added.
 TEST_F(NetworkingLogTest, DetailedLogContentsCellular) {
   const std::string expected_guid = "guid";
   const std::string expected_name = "name";
   const std::string expected_mac_address = "84:C5:A6:30:3F:31";
+  const std::string expected_iccid = "83948080007483825411";
+  const std::string expected_eid = "82099038007008862600508229159883";
+  const std::string expected_network_technology = "LTE";
+  const std::string expected_roaming = "False";
+  const std::string expected_roaming_state = "None";
+  const uint32_t expected_signal_strength = 89;
+  const std::string expected_sim_locked = "True";
+  const std::string expected_lock_type = "sim-pin";
+
   mojom::NetworkPtr test_info = CreateCellularNetworkPtr(
-      expected_guid, expected_name, expected_mac_address);
+      expected_guid, expected_name, expected_mac_address, expected_iccid,
+      expected_eid, expected_network_technology, false,
+      mojom::RoamingState::kNone, expected_signal_strength, true,
+      mojom::LockType::kSimPin);
 
   NetworkingLog log(temp_dir_.GetPath());
 
@@ -209,14 +233,24 @@ TEST_F(NetworkingLogTest, DetailedLogContentsCellular) {
   const std::string log_as_string = log.GetNetworkInfo();
   const std::vector<std::string> log_lines = GetLogLines(log_as_string);
 
-  // Expect one title line and 9 content lines.
-  EXPECT_EQ(10u, log_lines.size());
+  // Expect one title line and 17 content lines.
+  EXPECT_EQ(18u, log_lines.size());
   EXPECT_EQ("--- Network Info ---", log_lines[0]);
   EXPECT_EQ("Name: " + expected_name, log_lines[1]);
   EXPECT_EQ("Type: Cellular", log_lines[2]);
   EXPECT_EQ("State: Online", log_lines[3]);
   EXPECT_EQ("Active: True", log_lines[4]);
   EXPECT_EQ("MAC Address: " + expected_mac_address, log_lines[5]);
+  EXPECT_EQ("ICCID: " + expected_iccid, log_lines[6]);
+  EXPECT_EQ("EID: " + expected_eid, log_lines[7]);
+  EXPECT_EQ("Technology: " + expected_network_technology, log_lines[8]);
+  EXPECT_EQ("Roaming: " + expected_roaming, log_lines[9]);
+  EXPECT_EQ("Roaming State: " + expected_roaming_state, log_lines[10]);
+  EXPECT_EQ(
+      "Signal Strength: " + base::NumberToString(expected_signal_strength),
+      log_lines[11]);
+  EXPECT_EQ("SIM Locked: " + expected_sim_locked, log_lines[12]);
+  EXPECT_EQ("SIM Lock Type: " + expected_lock_type, log_lines[13]);
 
   // Expect one title and one event for adding the network.
   const std::string events_log = log.GetNetworkEvents();

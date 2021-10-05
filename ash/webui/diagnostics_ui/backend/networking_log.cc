@@ -32,6 +32,16 @@ const char kNetworkStateTitle[] = "State: ";
 const char kActiveTitle[] = "Active: ";
 const char kMacAddressTitle[] = "MAC Address: ";
 
+// CellularStateProperties constants:
+const char kCellularIccidTitle[] = "ICCID: ";
+const char kCellularEidTitle[] = "EID: ";
+const char kCellularNetworkTechnologyTitle[] = "Technology: ";
+const char kCellularRoamingTitle[] = "Roaming: ";
+const char kCellularRoamingStateTitle[] = "Roaming State: ";
+const char kCellularSignalStrengthTitle[] = "Signal Strength: ";
+const char kCellularSimLockedTitle[] = "SIM Locked: ";
+const char kCellularLockTypeTitle[] = "SIM Lock Type: ";
+
 // EthernetStateProperties constants:
 const char kEthernetAuthenticationTitle[] = "Authentication: ";
 
@@ -128,9 +138,49 @@ void AddWifiInfoToLog(const mojom::NetworkTypeProperties& type_props,
          << GetSecurityType(type_props.get_wifi()->security) << kNewline;
 }
 
+std::string GetBoolAsString(bool value) {
+  return value ? "True" : "False";
+}
+
+std::string GetCellularRoamingState(mojom::RoamingState state) {
+  switch (state) {
+    case mojom::RoamingState::kNone:
+      return "None";
+    case mojom::RoamingState::kHome:
+      return "Home";
+    case mojom::RoamingState::kRoaming:
+      return "Roaming";
+  }
+}
+
+std::string GetCellularLockType(mojom::LockType lock_type) {
+  switch (lock_type) {
+    case mojom::LockType::kNone:
+      return "None";
+    case mojom::LockType::kSimPin:
+      return "sim-pin";
+    case mojom::LockType::kSimPuk:
+      return "sim-puk";
+  }
+}
+
 void AddCellularInfoToLog(const mojom::NetworkTypeProperties& type_props,
                           std::stringstream& output) {
-  // TODO(michaelcheco): Add Cellular type properties to log.
+  output << kCellularIccidTitle << type_props.get_cellular()->iccid << kNewline
+         << kCellularEidTitle << type_props.get_cellular()->eid << kNewline
+         << kCellularNetworkTechnologyTitle
+         << type_props.get_cellular()->network_technology << kNewline
+         << kCellularRoamingTitle
+         << GetBoolAsString(type_props.get_cellular()->roaming) << kNewline
+         << kCellularRoamingStateTitle
+         << GetCellularRoamingState(type_props.get_cellular()->roaming_state)
+         << kNewline << kCellularSignalStrengthTitle
+         << type_props.get_cellular()->signal_strength << kNewline
+         << kCellularSimLockedTitle
+         << GetBoolAsString(type_props.get_cellular()->sim_locked) << kNewline
+         << kCellularLockTypeTitle
+         << GetCellularLockType(type_props.get_cellular()->lock_type)
+         << kNewline;
 }
 
 std::string GetEthernetAuthenticationType(mojom::AuthenticationType type) {
