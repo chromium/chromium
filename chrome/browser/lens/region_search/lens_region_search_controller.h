@@ -40,6 +40,7 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // The closed reason for this method is defaulted to the close button being
   // clicked.
   void Close();
+  void Escape();
 
   // Closes the UI overlay and user education bubble if shown with the specified
   // closed reason.
@@ -72,6 +73,8 @@ class LensRegionSearchController : public content::WebContentsObserver {
                                       gfx::Size region_size);
 
   gfx::Image ResizeImageIfNecessary(const gfx::Image& image);
+
+  bool in_capture_mode_ = false;
 
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
 
