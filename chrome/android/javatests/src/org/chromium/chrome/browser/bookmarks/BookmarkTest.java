@@ -491,6 +491,12 @@ public class BookmarkTest {
                 toolbar.getNavigationButtonForTests());
         Assert.assertTrue(toolbar.getMenu().findItem(R.id.edit_menu_id).isVisible());
 
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkModel.setBookmarkTitle(testFolder, TEST_FOLDER_TITLE2));
+
+        // Check that the test folder reflects name changes.
+        Assert.assertEquals(TEST_FOLDER_TITLE2, toolbar.getTitle());
+
         // Call BookmarkActionBar#onClick() to activate the navigation button.
         TestThreadUtils.runOnUiThreadBlocking(() -> toolbar.onClick(toolbar));
 
