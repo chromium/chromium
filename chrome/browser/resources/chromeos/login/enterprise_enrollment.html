@@ -68,6 +68,12 @@
       <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
     </oobe-loading-dialog>
 
+    <oobe-loading-dialog id="step-tpm-checking" for-step="tpm-checking"
+        title-key="TPMCheckTitle" subtitle-key="TPMCheckSubtitle"
+        can-cancel on-cancel-loading="onTPMCheckCanceled_">
+      <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+    </oobe-loading-dialog>
+
     <offline-ad-login-element id="step-ad-join" is-domain-join
         for-step="ad-join"
         class="fit"

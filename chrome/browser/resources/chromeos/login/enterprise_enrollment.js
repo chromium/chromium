@@ -31,6 +31,7 @@ var ENROLLMENT_STEP = {
   ERROR: 'error',
   SUCCESS: 'success',
   CHECKING: 'checking',
+  TPM_CHECKING: 'tpm-checking',
 
   /* TODO(dzhioev): define this step on C++ side.
    */
@@ -373,7 +374,8 @@ Polymer({
     this.isCancelDisabled =
         (step === ENROLLMENT_STEP.SIGNIN && !this.isManualEnrollment_) ||
         step === ENROLLMENT_STEP.AD_JOIN || step === ENROLLMENT_STEP.WORKING ||
-        step === ENROLLMENT_STEP.CHECKING || step === ENROLLMENT_STEP.SUCCESS;
+        step === ENROLLMENT_STEP.CHECKING || step === ENROLLMENT_STEP.SUCCESS ||
+        step == ENROLLMENT_STEP.TPM_CHECKING;
     if (this.isCancelDisabled) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.ENROLLMENT);
     } else {
@@ -578,6 +580,13 @@ Polymer({
    */
   isSaml_(authFlow) {
     return authFlow === cr.login.Authenticator.AuthFlow.SAML;
+  },
+
+  /*
+   * Called when we cancel TPM check early.
+   */
+  onTPMCheckCanceled_() {
+    this.userActed('cancel-tpm-check');
   },
 });
 })();

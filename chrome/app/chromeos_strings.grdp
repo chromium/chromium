@@ -2193,6 +2193,17 @@
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT" desc="Suggestion to restart device in case of the TPM error.">
     Please restart your device to fix this error.
   </message>
+  <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_TITLE" desc="Title of the screen notifying user about TPM error.">
+    Trusted Platform Module (TPM) detected
+  </message>
+  <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_SUBTITLE" desc="Subtitile of the screen notifying user about TPM ownership error.">
+    CloudReady 2.0 detected an active TPM which can store your data more securely.
+  </message>
+  <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT" desc="Steps that can help users to properly setup TPM manually.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before enrolling you need to clear the TPM so CloudReady 2.0 can take ownership of the device.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the CloudReady 2.0 documentation on a separate device before you reboot: [URL link]<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+  </message>
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT_BUTTON" desc="Label on button that restarts device.">
     Restart
   </message>
@@ -2925,6 +2936,13 @@
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_LOCATION_LABEL" desc="Label for location tex box on the device naming screen in the enterprise enrollment dialog.">
     Device Location
+  </message>
+  <!-- Pre-enrollment TPM check. -->
+  <message name="IDS_TPM_CHECK_TITLE" desc="The title of loading dialog shown during TPM status check.">
+    Device enrollment
+  </message>
+  <message name="IDS_TPM_CHECK_SUBTITLE" desc="The subtitle of loading dialog shown during TPM status check.">
+    Checking TPM status...
   </message>
   <!-- Administrator facing strings for Active Directory screens. -->
   <message name="IDS_AD_DEVICE_NAME_INPUT_LABEL" desc="Admin-facing. Label for device name input field on the Active Directory domain join screen. User should tell us the name of their device.">

@@ -805,6 +805,9 @@ const char kTimeBeforeOnboardingSurveyInSecondsForTesting[] =
 const char kTouchscreenUsableWhileScreenOff[] =
     "touchscreen-usable-while-screen-off";
 
+// Enables TPM selection in runtime.
+const char kTpmIsDynamic[] = "tpm-is-dynamic";
+
 // Shows all Bluetooth devices in UI (System Tray/Settings Page.)
 const char kUnfilteredBluetoothDevices[] = "unfiltered-bluetooth-devices";
 
@@ -874,6 +877,10 @@ bool IsGaiaServicesDisabled() {
 bool IsArcCpuRestrictionDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableArcCpuRestriction);
+}
+
+bool IsTpmDynamic() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kTpmIsDynamic);
 }
 
 bool IsUnfilteredBluetoothDevicesEnabled() {

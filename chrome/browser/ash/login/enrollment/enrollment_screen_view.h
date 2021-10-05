@@ -19,6 +19,7 @@ class EnrollmentStatus;
 }  // namespace policy
 
 namespace ash {
+class EnrollmentScreen;
 
 // Interface class for the enterprise enrollment screen view.
 class EnrollmentScreenView {
@@ -70,6 +71,12 @@ class EnrollmentScreenView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
+  // Binds |screen| to the view.
+  virtual void Bind(ash::EnrollmentScreen* screen) = 0;
+
+  // Unbinds the screen from the view.
+  virtual void Unbind() = 0;
+
   // Shows the signin screen.
   virtual void ShowSigninScreen() = 0;
 
@@ -93,8 +100,11 @@ class EnrollmentScreenView {
   // Shows the success screen
   virtual void ShowEnrollmentSuccessScreen() = 0;
 
-  // Shows the spinner screen for enrollment.
-  virtual void ShowEnrollmentSpinnerScreen() = 0;
+  // Shows the working spinner screen for enrollment.
+  virtual void ShowEnrollmentWorkingScreen() = 0;
+
+  // Shows the TPM checking spinner screen for enrollment.
+  virtual void ShowEnrollmentTPMCheckingScreen() = 0;
 
   // Show an authentication error.
   virtual void ShowAuthError(const GoogleServiceAuthError& error) = 0;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/eula_screen.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -171,8 +172,12 @@ void EulaScreen::OnViewDestroyed(EulaView* view) {
 
 void EulaScreen::ShowImpl() {
   // Command to own the TPM.
-  TpmManagerClient::Get()->TakeOwnership(::tpm_manager::TakeOwnershipRequest(),
-                                         base::DoNothing());
+  // When --tpm-is-dynamic switch is set pre-enrollment TPM check relies on the
+  // TPM being un-owned until enrollment. b/187429309
+  if (!switches::IsTpmDynamic()) {
+    TpmManagerClient::Get()->TakeOwnership(
+        ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
+  }
   if (WizardController::UsingHandsOffEnrollment())
     OnUserAction(kUserActionAcceptButtonClicked);
   else if (view_)

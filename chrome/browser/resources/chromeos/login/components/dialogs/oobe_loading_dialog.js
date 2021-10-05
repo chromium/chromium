@@ -16,6 +16,14 @@ Polymer({
       type: String,
       value: '',
     },
+
+    /*
+     * If true loading step can be canceled by pressing a cancel button.
+     */
+    canCancel: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   onBeforeShow() {
@@ -34,5 +42,10 @@ Polymer({
    */
   localizeSubtitle_(locale, messageId) {
     return messageId ? this.i18nDynamic(locale, messageId) : '';
+  },
+
+  cancel() {
+    assert(this.canCancel);
+    this.fire('cancel-loading');
   },
 });

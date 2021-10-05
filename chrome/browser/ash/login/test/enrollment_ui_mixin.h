@@ -21,6 +21,7 @@ namespace ui {
 
 extern const char kEnrollmentStepSignin[];
 extern const char kEnrollmentStepWorking[];
+extern const char kEnrollmentStepTPMChecking[];
 extern const char kEnrollmentStepLicenses[];
 extern const char kEnrollmentStepDeviceAttributes[];
 extern const char kEnrollmentStepSuccess[];

@@ -66,6 +66,11 @@ class WizardContext {
   // terms of service screen to managed users before entering the session.
   bool end_onboarding_after_tos = false;
 
+  // When --tpm-is-dynamic switch is set TPM ownership check is happening
+  // right before enrollment. If TPM is owned TpmErrorScreen occurs and this
+  // flag helps to set right error message.
+  bool tpm_owned_error = false;
+
   // Authorization data that is required by PinSetup screen to add PIN as
   // another possible auth factor. Can be empty (if PIN is not supported).
   // In future will be replaced by AuthSession.

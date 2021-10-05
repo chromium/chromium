@@ -81,6 +81,8 @@ class EnrollmentScreenHandler
   void SetFlowType(FlowType flow_type) override;
   void Show() override;
   void Hide() override;
+  void Bind(ash::EnrollmentScreen* screen) override;
+  void Unbind() override;
   void ShowSigninScreen() override;
   void ShowUserError(UserErrorType error_type,
                      const std::string& email) override;
@@ -92,7 +94,8 @@ class EnrollmentScreenHandler
   void ShowAttributePromptScreen(const std::string& asset_id,
                                  const std::string& location) override;
   void ShowEnrollmentSuccessScreen() override;
-  void ShowEnrollmentSpinnerScreen() override;
+  void ShowEnrollmentWorkingScreen() override;
+  void ShowEnrollmentTPMCheckingScreen() override;
   void ShowAuthError(const GoogleServiceAuthError& error) override;
   void ShowEnrollmentStatus(policy::EnrollmentStatus status) override;
   void ShowOtherError(
@@ -202,6 +205,7 @@ class EnrollmentScreenHandler
   scoped_refptr<NetworkStateInformer> network_state_informer_;
 
   ErrorScreen* error_screen_ = nullptr;
+  ash::EnrollmentScreen* screen_ = nullptr;
 
   std::string signin_partition_name_;
 

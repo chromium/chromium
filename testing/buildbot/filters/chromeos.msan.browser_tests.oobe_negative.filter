@@ -5,6 +5,7 @@
 -ActiveDirectoryLoginAutocompleteTest.*
 -ActiveDirectoryLoginTest.*
 -All/PinSetupScreenTest.*
+-All/EnrollmentScreenDynamicTPMTest.*
 -All/EphemeralUserOobeTest.*
 -All/GestureNavigationScreenTest.*
 -All/MergeSessionTest.*

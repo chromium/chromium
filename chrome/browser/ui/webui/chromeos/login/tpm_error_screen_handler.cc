@@ -12,6 +12,10 @@
 #include "components/login/localized_values_builder.h"
 
 namespace chromeos {
+namespace {
+const char kTPMErrorDefaultStep[] = "default";
+const char kTPMErrorOwnedStep[] = "tpm-owned";
+}  // namespace
 
 constexpr StaticOobeScreenId TpmErrorView::kScreenId;
 
@@ -32,6 +36,13 @@ void TpmErrorScreenHandler::DeclareLocalizedValues(
   builder->Add("errorTpmFailureReboot", IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT);
   builder->Add("errorTpmFailureRebootButton",
                IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT_BUTTON);
+
+  builder->Add("errorTPMOwnedTitle",
+               IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_TITLE);
+  builder->Add("errorTPMOwnedSubtitle",
+               IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_SUBTITLE);
+  builder->Add("errorTPMOwnedContent",
+               IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT);
 }
 
 void TpmErrorScreenHandler::Initialize() {
@@ -47,6 +58,12 @@ void TpmErrorScreenHandler::Show() {
     return;
   }
   ShowScreen(kScreenId);
+}
+
+void TpmErrorScreenHandler::SetTPMOwnedErrorStep(bool show_tpm_owned_step) {
+  CallJS("login.TPMErrorMessageScreen.setStep",
+         show_tpm_owned_step ? std::string(kTPMErrorOwnedStep)
+                             : std::string(kTPMErrorDefaultStep));
 }
 
 void TpmErrorScreenHandler::Bind(TpmErrorScreen* screen) {

@@ -1419,6 +1419,11 @@ void WizardController::OnEnrollmentScreenExit(EnrollmentScreen::Result result) {
       retry_auto_enrollment_check_ = true;
       ShowAutoEnrollmentCheckScreen();
       break;
+    case EnrollmentScreen::Result::TPM_ERROR:
+      DCHECK(switches::IsTpmDynamic());
+      wizard_context_->tpm_owned_error = true;
+      AdvanceToScreen(TpmErrorView::kScreenId);
+      break;
   }
 }
 

@@ -33,8 +33,10 @@ void TpmErrorScreen::OnViewDestroyed(TpmErrorView* view) {
 }
 
 void TpmErrorScreen::ShowImpl() {
-  if (view_)
-    view_->Show();
+  if (!view_)
+    return;
+  view_->SetTPMOwnedErrorStep(context()->tpm_owned_error);
+  view_->Show();
 }
 
 void TpmErrorScreen::HideImpl() {}

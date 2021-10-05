@@ -9,13 +9,23 @@
 /* #js_imports_placeholder */
 
 /**
+ * UI state for the dialog.
+ * @enum {string}
+ */
+const tpmUIState = {
+  DEFAULT: 'default',
+  TPM_OWNED: 'tpm-owned',
+};
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
  * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
  */
 const TPMErrorMessageElementBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    [OobeI18nBehavior, MultiStepBehavior, LoginScreenBehavior],
     Polymer.Element);
 
 class TPMErrorMessage extends TPMErrorMessageElementBase {
@@ -42,7 +52,34 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /** @override */
   get EXTERNAL_API() {
-    return [];
+    return ['setStep'];
+  }
+
+  static get UI_STEPS() {
+    return tpmUIState;
+  }
+
+  /**
+   * @return {string}
+   */
+  defaultUIStep() {
+    return tpmUIState.DEFAULT;
+  }
+
+  /**
+   * @param {string} step
+   */
+  setStep(step) {
+    this.setUIStep(step);
+  }
+
+  /**
+   * @param {string} locale
+   * @return {string}
+   * @private
+   */
+  getTPMOwnedFailureContent_(locale) {
+    return this.i18nAdvanced('errorTPMOwnedContent');
   }
 
   onRestartTap_() {

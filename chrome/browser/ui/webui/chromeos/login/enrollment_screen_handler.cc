@@ -61,6 +61,7 @@ const char kEnrollmentStepSignin[] = "signin";
 const char kEnrollmentStepAdJoin[] = "ad-join";
 const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepWorking[] = "working";
+const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 
 // Enrollment mode constants used in the UI. This needs to be kept in sync with
 // oobe_screen_oauth_enrollment.js.
@@ -196,15 +197,19 @@ EnrollmentScreenHandler::EnrollmentScreenHandler(
   DCHECK(network_state_informer_.get());
   DCHECK(error_screen_);
   network_state_informer_->AddObserver(this);
+  set_user_acted_method_path("login.OAuthEnrollmentScreen.userActed");
 }
 
 EnrollmentScreenHandler::~EnrollmentScreenHandler() {
   network_state_informer_->RemoveObserver(this);
+  if (screen_)
+    screen_->OnViewDestroyed(this);
 }
 
 // EnrollmentScreenHandler, WebUIMessageHandler implementation --
 
 void EnrollmentScreenHandler::RegisterMessages() {
+  BaseScreenHandler::RegisterMessages();
   AddCallback("toggleFakeEnrollment",
               &EnrollmentScreenHandler::HandleToggleFakeEnrollment);
   AddCallback("oauthEnrollClose", &EnrollmentScreenHandler::HandleClose);
@@ -246,6 +251,16 @@ void EnrollmentScreenHandler::Show() {
 }
 
 void EnrollmentScreenHandler::Hide() {}
+
+void EnrollmentScreenHandler::Bind(ash::EnrollmentScreen* screen) {
+  screen_ = screen;
+  BaseScreenHandler::SetBaseScreen(screen_);
+}
+
+void EnrollmentScreenHandler::Unbind() {
+  screen_ = nullptr;
+  BaseScreenHandler::SetBaseScreen(nullptr);
+}
 
 void EnrollmentScreenHandler::ShowSigninScreen() {
   observe_network_failure_ = true;
@@ -383,8 +398,13 @@ void EnrollmentScreenHandler::ShowAttributePromptScreen(
          location);
 }
 
-void EnrollmentScreenHandler::ShowEnrollmentSpinnerScreen() {
+void EnrollmentScreenHandler::ShowEnrollmentWorkingScreen() {
   ShowStep(kEnrollmentStepWorking);
+}
+
+void EnrollmentScreenHandler::ShowEnrollmentTPMCheckingScreen() {
+  ShowScreen(EnrollmentScreenView::kScreenId);
+  ShowStep(kEnrollmentStepTPMChecking);
 }
 
 void EnrollmentScreenHandler::SetEnterpriseDomainInfo(
@@ -646,6 +666,11 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   // Do not use AddF for this string as it will be rendered by the JS code.
   builder->Add("oauthEnrollAbeSuccessDomain",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_DOMAIN);
+
+  // TPM checking spinner strings.
+  builder->Add("TPMCheckTitle", IDS_TPM_CHECK_TITLE);
+  builder->Add("TPMCheckSubtitle", IDS_TPM_CHECK_SUBTITLE);
+  builder->Add("cancelButton", IDS_CANCEL);
 
   /* Active Directory strings */
   builder->Add("oauthEnrollAdMachineNameInput", IDS_AD_DEVICE_NAME_INPUT_LABEL);

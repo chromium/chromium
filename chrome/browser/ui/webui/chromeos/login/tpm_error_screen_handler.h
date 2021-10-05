@@ -29,6 +29,9 @@ class TpmErrorView {
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
+
+  // Sets corresponding error message when tpm is owned.
+  virtual void SetTPMOwnedErrorStep(bool show_tpm_owned_step) = 0;
 };
 
 class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
@@ -44,6 +47,7 @@ class TpmErrorScreenHandler : public TpmErrorView, public BaseScreenHandler {
   void Show() override;
   void Bind(ash::TpmErrorScreen* screen) override;
   void Unbind() override;
+  void SetTPMOwnedErrorStep(bool show_tpm_owned_step) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

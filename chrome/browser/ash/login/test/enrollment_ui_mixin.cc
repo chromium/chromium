@@ -16,6 +16,7 @@ namespace ui {
 
 const char kEnrollmentStepSignin[] = "signin";
 const char kEnrollmentStepWorking[] = "working";
+const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepDeviceAttributes[] = "attribute-prompt";
 const char kEnrollmentStepADJoin[] = "ad-join";
@@ -37,9 +38,10 @@ namespace {
 const char kEnrollmentUI[] = "enterprise-enrollment";
 
 const char* const kAllSteps[] = {
-    ui::kEnrollmentStepSignin,           ui::kEnrollmentStepWorking,
-    ui::kEnrollmentStepDeviceAttributes, ui::kEnrollmentStepSuccess,
-    ui::kEnrollmentStepADJoin,           ui::kEnrollmentStepError};
+    ui::kEnrollmentStepSignin,      ui::kEnrollmentStepWorking,
+    ui::kEnrollmentStepTPMChecking, ui::kEnrollmentStepDeviceAttributes,
+    ui::kEnrollmentStepSuccess,     ui::kEnrollmentStepADJoin,
+    ui::kEnrollmentStepError};
 
 std::string StepElementID(const std::string& step) {
   return "step-" + step;
@@ -54,7 +56,6 @@ const UIPath kEnrollmentAttributeErrorButtonPath = {kEnrollmentUI,
 const UIPath kEnrollmentAssetId = {kEnrollmentUI, "assetId"};
 const UIPath kEnrollmentLocation = {kEnrollmentUI, "location"};
 const UIPath kEnrollmentAttributesSubmit = {kEnrollmentUI, "attributesSubmit"};
-
 }  // namespace
 
 EnrollmentUIMixin::EnrollmentUIMixin(InProcessBrowserTestMixinHost* host)
