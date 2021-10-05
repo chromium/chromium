@@ -2026,15 +2026,15 @@ void SafeBrowsingUIHandler::OnJavascriptDisallowed() {
 
 void SafeBrowsingUIHandler::GetExperiments(const base::ListValue* args) {
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), GetFeatureStatusList());
 }
 
 void SafeBrowsingUIHandler::GetPrefs(const base::ListValue* args) {
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             safe_browsing::GetSafeBrowsingPreferencesList(
                                 user_prefs::UserPrefs::Get(browser_context_)));
@@ -2042,16 +2042,16 @@ void SafeBrowsingUIHandler::GetPrefs(const base::ListValue* args) {
 
 void SafeBrowsingUIHandler::GetPolicies(const base::ListValue* args) {
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             safe_browsing::GetSafeBrowsingPoliciesList(
                                 user_prefs::UserPrefs::Get(browser_context_)));
 }
 
 void SafeBrowsingUIHandler::GetCookie(const base::ListValue* args) {
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
 
   cookie_manager_remote_ =
       WebUIInfoSingleton::GetInstance()->GetCookieManager(browser_context_);
@@ -2093,8 +2093,8 @@ void SafeBrowsingUIHandler::GetSavedPasswords(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), saved_passwords);
 }
 
@@ -2127,8 +2127,8 @@ void SafeBrowsingUIHandler::GetDatabaseManagerInfo(
 #endif
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
 
   ResolveJavascriptCallback(base::Value(callback_id), database_manager_info);
 }
@@ -2213,8 +2213,8 @@ void SafeBrowsingUIHandler::GetDownloadUrlsChecked(
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), urls_checked_value);
 }
 
@@ -2230,8 +2230,8 @@ void SafeBrowsingUIHandler::GetSentClientDownloadRequests(
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), cdrs_sent);
 }
 
@@ -2247,8 +2247,8 @@ void SafeBrowsingUIHandler::GetReceivedClientDownloadResponses(
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), cdrs_received);
 }
 
@@ -2264,8 +2264,8 @@ void SafeBrowsingUIHandler::GetSentClientPhishingRequests(
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), cprs_sent);
 }
 
@@ -2281,8 +2281,8 @@ void SafeBrowsingUIHandler::GetReceivedClientPhishingResponses(
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), cprs_received);
 }
 
@@ -2297,8 +2297,8 @@ void SafeBrowsingUIHandler::GetSentCSBRRs(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), sent_reports);
 }
 
@@ -2312,8 +2312,8 @@ void SafeBrowsingUIHandler::GetPGEvents(const base::ListValue* args) {
     events_sent.Append(SerializePGEvent(event));
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), events_sent);
 }
 
@@ -2327,8 +2327,8 @@ void SafeBrowsingUIHandler::GetSecurityEvents(const base::ListValue* args) {
     events_sent.Append(SerializeSecurityEvent(event));
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), events_sent);
 }
 
@@ -2346,8 +2346,8 @@ void SafeBrowsingUIHandler::GetPGPings(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
 
@@ -2365,8 +2365,8 @@ void SafeBrowsingUIHandler::GetPGResponses(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), responses_sent);
 }
 
@@ -2385,8 +2385,8 @@ void SafeBrowsingUIHandler::GetRTLookupPings(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
 
@@ -2404,21 +2404,20 @@ void SafeBrowsingUIHandler::GetRTLookupResponses(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), responses_sent);
 }
 
 void SafeBrowsingUIHandler::GetReferrerChain(const base::ListValue* args) {
-  std::string url_string;
-  args->GetString(1, &url_string);
+  DCHECK_GE(args->GetList().size(), 2U);
+  std::string url_string = args->GetList()[1].GetString();
 
   ReferrerChainProvider* provider =
       WebUIInfoSingleton::GetInstance()->GetReferrerChainProvider(
           browser_context_);
 
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  std::string callback_id = args->GetList()[0].GetString();
 
   if (!provider) {
     AllowJavascript();
@@ -2459,8 +2458,8 @@ void SafeBrowsingUIHandler::GetReferringAppInfo(const base::ListValue* args) {
   serializer.Serialize(referring_app_value);
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(referring_app_serialized));
 }
@@ -2473,8 +2472,8 @@ void SafeBrowsingUIHandler::GetReportingEvents(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), reporting_events);
 }
 
@@ -2489,8 +2488,8 @@ void SafeBrowsingUIHandler::GetLogMessages(const base::ListValue* args) {
   }
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), messages_received);
 }
 
@@ -2505,8 +2504,8 @@ void SafeBrowsingUIHandler::GetDeepScans(const base::ListValue* args) {
 #endif
 
   AllowJavascript();
-  std::string callback_id;
-  args->GetString(0, &callback_id);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
   ResolveJavascriptCallback(base::Value(callback_id), pings_sent);
 }
 
