@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1001033507375626788">Zurekin partekatuta dago sarea</translation>
-<translation id="1001307489511021749">Aplikazioak, ezarpenak eta pertsonalizatzeko beste aukera batzuk sinkronizatu egingo dira Chrome OS darabilten eta Google-ko kontuan saioa hasita daukaten gailu guztien artean.</translation>
+<translation id="1001307489511021749">Aplikazioak, ezarpenak eta pertsonalizatzeko beste aukera batzuk sinkronizatu egingo dira Chrome OS-eko eta Google-ko kontuan saioa hasita daukaten gailu guztien artean.</translation>
 <translation id="1003088604756913841">Ireki esteka <ph name="APP" /> aplikazioaren beste leiho batean</translation>
 <translation id="100323615638474026">USB bidezko gailua (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Webgunerako sarbidea</translation>
@@ -614,7 +614,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1637350598157233081">Pasahitza gailu honetan gorde da</translation>
 <translation id="1637765355341780467">Arazoren bat izan da profila irekitzean. Baliteke eginbide batzuk erabilgarri ez egotea.</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
-<translation id="163993578339087550">Chrome OS gailu egoki bat erabiltzen ari zarela egiaztatu nahi du <ph name="SERVICE_NAME" /> zerbitzuak.</translation>
+<translation id="163993578339087550"><ph name="SERVICE_NAME" /> zerbitzuak Chrome OS-eko gailu egoki bat erabiltzen ari zarela egiaztatu nahi du.</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ezin da erabili Linux-erako aplikazioetan oraindik</translation>
 <translation id="1640283014264083726">PKCS #1 MD4, RSA enkriptatzearekin</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
@@ -2390,7 +2390,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3498215018399854026">Ezin izan gara jarri harremanetan zure arduradunarekin. Saiatu berriro.</translation>
 <translation id="3500417806337761827">Errore bat gertatu da fitxategiak partekatzeko biltegia muntatzean. SMBko fitxategiak partekatzeko biltegi gehiegi daude jada muntatuta.</translation>
 <translation id="3503995387997205657">Aurretik zenituen aplikazioak lehenera ditzakezu</translation>
-<translation id="3505030558724226696">Baliogabetu gailurako sarbidea</translation>
+<translation id="3505030558724226696">Kendu gailurako sarbidea</translation>
 <translation id="3505100368357440862">erosketei buruzko iradokizunak</translation>
 <translation id="3507132249039706973">Babes estandarra aktibatuta dago</translation>
 <translation id="3507421388498836150">"<ph name="EXTENSION_NAME" />" luzapenak dituen baimenak</translation>
@@ -3735,7 +3735,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="496446150016900060">Sinkronizatu wifi-sareak telefonoarekin</translation>
 <translation id="4965808351167763748">Ziur gailu hau Hangouts Meet zerbitzuarekin erabiltzeko konfiguratu nahi duzula?</translation>
 <translation id="4966972803217407697">Ezkutuko moduan zaude</translation>
-<translation id="496888482094675990">Fitxategiak aplikazioarekin, azkar atzituko dituzu Google Drive-n, kanpoko memorian edo Chrome OS gailuan gordeta dituzun fitxategiak.</translation>
+<translation id="496888482094675990">Fitxategiak aplikazioarekin, azkar atzituko dituzu Google Drive-n, kanpoko memorian edo Chrome OS-eko gailuan gordeta dituzun fitxategiak.</translation>
 <translation id="4971412780836297815">Ireki amaitzean</translation>
 <translation id="4971735654804503942">Babes bizkorrago eta proaktiboa webgune, deskarga eta luzapen kaltegarrien aurka. Pasahitzen segurtasuna urratu dela abisatzen dizu. Google-ri arakatze-datuak bidali behar zaizkio.</translation>
 <translation id="4972129977812092092">Editatu inprimagailua</translation>
@@ -4177,7 +4177,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5473156705047072749">{NUM_CHARACTERS,plural, =1{PIN kodeak karaktere bat izan behar du gutxienez}other{PIN kodeak # karaktere izan behar ditu gutxienez}}</translation>
 <translation id="5481273127572794904">Ezin dituzte hainbat fitxategi deskargatu automatikoki</translation>
 <translation id="5481941284378890518">Gehitu inguruko inprimagailuak</translation>
-<translation id="5483785310822538350">Baliogabetu fitxategietarako eta gailurako sarbidea</translation>
+<translation id="5483785310822538350">Kendu fitxategietarako eta gailurako sarbidea</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{Gaur datuen babeskopiak egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="MANAGER" /> domeinuak. <ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}other{{NUM_DAYS} eguneko epean datuen babeskopia egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="MANAGER" /> domeinuak. <ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}}</translation>
 <translation id="5485080380723335835">Segurtasuna bermatzeko, blokeatuta dago <ph name="DEVICE_TYPE" /> gailua. Aurrera egiteko, idatzi pasahitza eskuz.</translation>
 <translation id="5485102783864353244">Gehitu aplikazioa</translation>
@@ -5045,7 +5045,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6429384232893414837">Errore bat gertatu da eguneratzean</translation>
 <translation id="6430814529589430811">Base64 bidez kodetutako ASCII, ziurtagiri bakarra</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> programak eguneratze automatikoak ezarriko ditu ordenagailuaren erabiltzaile guztientzat.</translation>
-<translation id="6434104957329207050">Puntu bidezko bilaketaren abiadura</translation>
+<translation id="6434104957329207050">Puntukako mugimenduaren abiadura</translation>
 <translation id="6434309073475700221">Baztertu</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> erabiltzeko, gailua eguneratu behar duzu.</translation>
 <translation id="6436164536244065364">Ikusi Web Store dendan</translation>
@@ -5481,7 +5481,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="6902837902700739466">Gehitu gailua domeinuan</translation>
 <translation id="6903590427234129279">Ireki guztiak (<ph name="URL_COUNT" />)</translation>
 <translation id="6903907808598579934">Aktibatu sinkronizazioa</translation>
-<translation id="6904344821472985372">Baliogabetu fitxategirako sarbidea</translation>
+<translation id="6904344821472985372">Kendu fitxategirako sarbidea</translation>
 <translation id="6904655473976120856">Irteteko, sakatu aplikazioaren botoia</translation>
 <translation id="6909422577741440844">Gailu honetatik jaso nahi duzu fitxategia?</translation>
 <translation id="6910211073230771657">Ezabatu egin da</translation>
@@ -6001,7 +6001,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7477748600276493962">Sortu orri honen QR kodea</translation>
 <translation id="7477793887173910789">Kontrolatu musika, bideoak eta beste</translation>
 <translation id="7478485216301680444">Ezin izan da instalatu aplikazio espezializatua.</translation>
-<translation id="7478623944308207463">Aplikazioak eta ezarpenak Chrome OS darabilten gailu guztietan sinkronizatuko dira, Google-ko kontuarekin saioa hasita badaukazu haietan. Arakatzailea sinkronizatzeko aukerak ikusteko, joan <ph name="LINK_BEGIN" />Chrome-ren ezarpenetara<ph name="LINK_END" />.</translation>
+<translation id="7478623944308207463">Aplikazioak eta ezarpenak Chrome OS-eko gailu guztietan sinkronizatuko dira, Google-ko kontuarekin saioa hasita badaukazu haietan. Arakatzailea sinkronizatzeko aukerak ikusteko, joan <ph name="LINK_BEGIN" />Chrome-ren ezarpenetara<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Ez eman serieko ataketara konektatzeko baimena webguneei</translation>
 <translation id="7479221278376295180">Memoriaren erabilerari buruzko informazio orokorra</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> eta <ph name="SECOND_DEVICE" /> izeneko Bluetooth bidezko gailuetara konektatuta</translation>
@@ -6352,7 +6352,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea eginbid
 <translation id="7826254698725248775">Gailu-identifikatzailea gatazkatsua da.</translation>
 <translation id="7826790948326204519"><ph name="BEGIN_H3" />Arazketa-eginbideak<ph name="END_H3" />
     <ph name="BR" />
-    Chrome OS gailuan arazketa-eginbideak gai ditzakezu, gailuan kode pertsonalizatuak instalatzeko eta probatzeko. Horri esker, honako hauek egin ahalko dituzu:<ph name="BR" />
+    Chrome OS-eko gailuan arazketa-eginbideak gai ditzakezu, gailuan kode pertsonalizatuak instalatzeko eta probatzeko. Horri esker, honako hauek egin ahalko dituzu:<ph name="BR" />
     <ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />Roofts egiaztapena kendu, sistema eragilearen fitxategiak aldatu ahal izateko.
       <ph name="LIST_ITEM" />Gailurako SSH sarbidea gaitu, probako gako estandarrak erabilita, gailua atzitzeko tresnak (adibidez, <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" />) erabili ahal izateko.
@@ -7636,7 +7636,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
       <ph name="LIST_ITEM" />Chrome-ren Konexioen diagnostikoak exekutatu.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantaila txiki gainjarria</translation>
-<translation id="9166813363879986425">Gordetako hobespenak eta jarduerak prest egongo dira Chrome OS darabilten gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
+<translation id="9166813363879986425">Gordetako hobespenak eta jarduerak prest egongo dira Chrome OS-eko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
 <translation id="9167063903968449027">Erakutsi irakurketa-zerrenda</translation>
 <translation id="9167450455589251456">Ez da onartzen profila</translation>
 <translation id="9168436347345867845">Geroago</translation>

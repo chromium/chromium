@@ -95,7 +95,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
 <translation id="1655967159878494613"><ph name="QUERY_TEXT" />, <ph name="RESULT_TEXT" />, Drücken Sie zum Anzeigen des Ergebnisses in Assistant die Suchtaste + Leertaste.</translation>
 <translation id="1667964833127753507">Der neutrale Farbmodus verwendet keine aus dem Hintergrund extrahierten Farben, sondern ersetzt sie durch neutrale helle und dunkle Farbtöne.</translation>
-<translation id="1677472565718498478">Verbleibende Zeit: <ph name="TIME" /> h</translation>
+<translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
 <translation id="1677507110654891115">"<ph name="FEATURE_NAME" />" ist nicht verbunden.</translation>
 <translation id="1698080062160024910">Timer: <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
 <translation id="1698760176351776263">IPv6-Adresse: <ph name="ADDRESS" /></translation>

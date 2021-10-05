@@ -645,7 +645,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1673137583248014546"><ph name="URL" /> möchte den Hersteller und das Modell Ihres Sicherheitsschlüssels aufrufen</translation>
 <translation id="1674073353928166410">Alle (<ph name="URL_COUNT" />) in Inkognitofenster öffnen</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> kann nicht hinzugefügt werden</translation>
-<translation id="1677472565718498478">Verbleibende Zeit: <ph name="TIME" /> h</translation>
+<translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
 <translation id="1679068421605151609">Entwicklertools</translation>
 <translation id="1679810534535368772">Möchten Sie den Bildschirm wirklich schließen?</translation>
 <translation id="167983332380191032">Der Verwaltungsdienst hat einen HTTP-Fehler gemeldet.</translation>

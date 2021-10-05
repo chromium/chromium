@@ -352,7 +352,7 @@
 <translation id="1380028686461971526">नेटवर्कशी आपोआप कनेक्ट करा</translation>
 <translation id="1383597849754832576">स्पीच फाइल डाउनलोड करू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="1383861834909034572">पूर्ण झाल्यानंतर उघडेल</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">शोधा</translation>
 <translation id="1384849755549338773">इतर भाषांमधील वेबसाइटसाठी Google Translate ची सुविधा द्या</translation>
 <translation id="138784436342154190">डीफॉल्ट स्टार्टअप पेज रिस्टोअर करायचे?</translation>
 <translation id="1388253969141979417">तुमचा मायक्रोफोन वापरण्याची अनुमती आहे</translation>
@@ -7678,7 +7678,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9188732951356337132">वापर आणि निदान डेटा पाठवा. हे डिव्हाइस सध्या Google ला आपोआप निदान, डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवत आहे. हे तुमच्या लहान मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्ट्म आणि अ‍ॅप स्थिरता आणि इतर सुधारणा करण्यात मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर सारख्या भागीदारांनादेखील मदत करेल. तुमच्या लहान मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सुरू केलेली असल्यास, ही माहिती त्याच्या Google खात्यामध्ये स्टोअर केली जाऊ शकते. <ph name="BEGIN_LINK2" />अधिक जाणून घ्या<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">सिक्युरिटी की म्हणून तुमचा Android फोन वापरा</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल संपादित करता येतील</translation>
-<translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> शोध</translation>
+<translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="9201023452444595544">कोणताही ऑफलाइन डेटा साफ केला जाईल</translation>
 <translation id="9201220332032049474">स्क्रीन लॉक पर्याय</translation>
 <translation id="9201842707396338580">काहीतरी चूक झाली. कृपया तुमच्या डिव्हाइसच्या मालकाशी किंवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
