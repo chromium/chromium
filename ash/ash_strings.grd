@@ -4000,6 +4000,14 @@ Here are some things you can try to get started.
       <message name="IDS_FINGERPRINT_LABEL_NOT_AUTHENTICATED" desc="Label for the Fingerprint icon on user's lock screen after too many failed attempts to authenticate a fingerprint.">
         Too many fingerprint attempts
       </message>
+
+      <!-- Continue Section strings -->
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_OPEN" desc="Context menu option title to open a suggestion for a task in the launcher. Tasks display in the continue section located above the app list.">
+        Open
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE" desc="Context menu option title to remove a suggestion for a task in the launcher. Tasks display in the continue section located above the app list.">
+        Remove Suggestion
+      </message>
     </messages>
   </release>
 </grit>

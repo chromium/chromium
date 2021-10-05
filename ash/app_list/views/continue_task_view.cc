@@ -5,7 +5,6 @@
 #include "ash/app_list/views/continue_task_view.h"
 
 #include <algorithm>
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -15,9 +14,14 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
 #include "base/strings/string_util.h"
 #include "extensions/common/constants.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -26,8 +30,10 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/vector_icons.h"
 
 namespace ash {
 namespace {
@@ -105,6 +111,8 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate)
       std::make_unique<views::Label>(std::u16string()));
   subtitle_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   UpdateResult();
+
+  set_context_menu_controller(this);
 }
 ContinueTaskView::~ContinueTaskView() {}
 
@@ -115,12 +123,7 @@ void ContinueTaskView::OnThemeChanged() {
 }
 
 void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
-  DCHECK(result());
-  view_delegate_->OpenSearchResult(
-      result()->id(), result()->result_type(), event.flags(),
-      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
-      AppListLaunchType::kAppSearchResult, index_in_container_.value(),
-      false /* launch_as_default */);
+  OpenResult(event.flags());
 }
 
 void ContinueTaskView::SetIcon(const gfx::ImageSkia& icon) {
@@ -146,6 +149,7 @@ void ContinueTaskView::UpdateResult() {
     title_->SetText(std::u16string());
     subtitle_->SetText(std::u16string());
     GetViewAccessibility().OverrideName(std::u16string());
+    CloseContextMenu();
     return;
   }
 
@@ -169,6 +173,75 @@ void ContinueTaskView::SetResult(SearchResult* result) {
     search_result_observation_.Observe(result_);
 
   UpdateResult();
+}
+
+void ContinueTaskView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
+  if (!result())
+    return;
+
+  int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                  views::MenuRunner::CONTEXT_MENU |
+                  views::MenuRunner::FIXED_ANCHOR;
+
+  context_menu_runner_ =
+      std::make_unique<views::MenuRunner>(BuildMenuModel(), run_types);
+
+  context_menu_runner_->RunMenuAt(
+      source->GetWidget(), nullptr /*button_controller*/,
+      source->GetBoundsInScreen(), views::MenuAnchorPosition::kBubbleTopRight,
+      source_type);
+}
+
+void ContinueTaskView::ExecuteCommand(int command_id, int event_flags) {
+  switch (command_id) {
+    case ContinueTaskCommandId::kOpenResult:
+      OpenResult(event_flags);
+      break;
+    case ContinueTaskCommandId::kRemoveResult:
+      // TODO(anasalar): Implement Remove Suggestion.
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+ui::SimpleMenuModel* ContinueTaskView::BuildMenuModel() {
+  context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+  context_menu_model_->AddItemWithIcon(
+      ContinueTaskCommandId::kOpenResult,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_OPEN),
+      ui::ImageModel::FromVectorIcon(kLaunchIcon));
+
+  context_menu_model_->AddItemWithIcon(
+      ContinueTaskCommandId::kRemoveResult,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE),
+      ui::ImageModel::FromVectorIcon(kRemoveOutlineIcon));
+
+  return context_menu_model_.get();
+}
+
+void ContinueTaskView::OpenResult(int event_flags) {
+  DCHECK(result());
+  view_delegate_->OpenSearchResult(
+      result()->id(), result()->result_type(), event_flags,
+      AppListLaunchedFrom::kLaunchedFromSuggestionChip,
+      AppListLaunchType::kAppSearchResult, index_in_container(),
+      false /* launch_as_default */);
+}
+
+bool ContinueTaskView::IsMenuShowing() const {
+  return context_menu_runner_ && context_menu_runner_->IsRunning();
+}
+
+void ContinueTaskView::CloseContextMenu() {
+  if (!IsMenuShowing())
+    return;
+  context_menu_runner_->Cancel();
 }
 
 BEGIN_METADATA(ContinueTaskView, views::View)

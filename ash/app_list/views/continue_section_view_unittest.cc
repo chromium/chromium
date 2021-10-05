@@ -15,12 +15,15 @@
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/continue_task_view.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
 namespace {
@@ -36,6 +39,11 @@ void AddSearchResult(const std::string& id, AppListSearchResultType type) {
   result->set_display_type(SearchResultDisplayType::kChip);
   Shell::Get()->app_list_controller()->GetSearchModel()->results()->Add(
       std::move(result));
+}
+
+void RemoveSearchResultAt(size_t index) {
+  Shell::Get()->app_list_controller()->GetSearchModel()->results()->RemoveAt(
+      index);
 }
 
 void ShowAppList() {
@@ -58,6 +66,10 @@ class ContinueSectionViewTest : public AshTestBase {
 
   SearchModel::SearchResults* GetResults() {
     return Shell::Get()->app_list_controller()->GetSearchModel()->results();
+  }
+
+  SearchBoxView* GetSearchBoxView() {
+    return GetAppListTestHelper()->GetBubbleSearchBoxView();
   }
 
   ContinueTaskView* GetResultViewAt(int index) {
@@ -107,6 +119,7 @@ TEST_F(ContinueSectionViewTest, VerifyAddedViewsOrder) {
   AddSearchResult("id3", AppListSearchResultType::kDriveChip);
 
   ShowAppList();
+  VerifyResultViewsUpdated();
 
   ContinueSectionView* view = GetContinueSectionView();
   ASSERT_EQ(view->GetTasksSuggestionsCount(), 3u);
@@ -137,6 +150,35 @@ TEST_F(ContinueSectionViewTest, ModelObservers) {
   VerifyResultViewsUpdated();
 }
 
+TEST_F(ContinueSectionViewTest, HideContinueSectionWhenResultRemoved) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+  VerifyResultViewsUpdated();
+  EXPECT_TRUE(GetContinueSectionView()->GetVisible());
+
+  RemoveSearchResultAt(2);
+  VerifyResultViewsUpdated();
+
+  EXPECT_FALSE(GetContinueSectionView()->GetVisible());
+}
+
+TEST_F(ContinueSectionViewTest, ShowContinueSectionWhenResultAdded) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+  VerifyResultViewsUpdated();
+  EXPECT_FALSE(GetContinueSectionView()->GetVisible());
+
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  VerifyResultViewsUpdated();
+
+  EXPECT_TRUE(GetContinueSectionView()->GetVisible());
+}
+
 TEST_F(ContinueSectionViewTest, ClickOpensSearchResult) {
   AddSearchResult("id1", AppListSearchResultType::kFileChip);
   AddSearchResult("id2", AppListSearchResultType::kDriveChip);
@@ -157,6 +199,117 @@ TEST_F(ContinueSectionViewTest, ClickOpensSearchResult) {
   // The item was activated.
   TestAppListClient* client = GetAppListTestHelper()->app_list_client();
   EXPECT_EQ("id1", client->last_opened_search_result());
+}
+
+TEST_F(ContinueSectionViewTest, TapOpensSearchResult) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetEventGenerator()->GestureTapAt(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+
+  // The item was activated.
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ("id1", client->last_opened_search_result());
+}
+
+TEST_F(ContinueSectionViewTest, PressEnterOpensSearchResult) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  EXPECT_TRUE(continue_task_view->HasFocus());
+
+  PressAndReleaseKey(ui::VKEY_RETURN);
+
+  // The item was activated.
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ("id1", client->last_opened_search_result());
+}
+
+TEST_F(ContinueSectionViewTest, RightClickOpensContextMenu) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetEventGenerator()->MoveMouseTo(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickRightButton();
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
+}
+
+TEST_F(ContinueSectionViewTest, OpenWithContextMenuOption) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+
+  ShowAppList();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(0);
+  EXPECT_EQ(continue_task_view->result()->id(), "id1");
+
+  GetEventGenerator()->MoveMouseTo(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickRightButton();
+  continue_task_view->ExecuteCommand(ContinueTaskCommandId::kOpenResult,
+                                     ui::EventFlags::EF_NONE);
+
+  // The item was activated.
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ("id1", client->last_opened_search_result());
+}
+
+TEST_F(ContinueSectionViewTest, ResultRemovedContextMenuCloses) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id4", AppListSearchResultType::kFileChip);
+
+  ShowAppList();
+
+  VerifyResultViewsUpdated();
+
+  ContinueTaskView* continue_task_view = GetResultViewAt(3);
+  EXPECT_EQ(continue_task_view->result()->id(), "id4");
+
+  GetEventGenerator()->MoveMouseTo(
+      continue_task_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickRightButton();
+  EXPECT_TRUE(continue_task_view->IsMenuShowing());
+
+  RemoveSearchResultAt(3);
+  VerifyResultViewsUpdated();
+
+  EXPECT_FALSE(continue_task_view->IsMenuShowing());
 }
 
 }  // namespace
