@@ -78111,6 +78111,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Response allowed after sniffing"/>
 </enum>
 
+<enum name="SiteLayout">
+  <summary>See Android.RequestDesktopSite.Changed</summary>
+  <int value="0" label="Mobile"/>
+  <int value="1" label="Desktop"/>
+</enum>
+
 <enum name="SkiaFilterQuality">
   <int value="0" label="None"/>
   <int value="1" label="Low"/>

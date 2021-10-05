@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.Preference;
@@ -35,6 +36,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
@@ -54,6 +56,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -144,6 +148,15 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
     @Nullable
     private Set<String> mSelectedDomains;
+
+    // Note: these values must match the SiteLayout enum in enums.xml.
+    @IntDef({SiteLayout.MOBILE, SiteLayout.DESKTOP})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface SiteLayout {
+        int MOBILE = 0;
+        int DESKTOP = 1;
+        int NUM_ENTRIES = 2;
+    }
 
     // Keys for common ContentSetting toggle for categories. These three toggles are mutually
     // exclusive: a category should only show one of them, at most.
@@ -471,6 +484,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                     updateNotificationsSecondaryControls();
                 } else if (type == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
                     sAutoDarkSiteSettingsObserver.onDefaultValueChanged((boolean) newValue);
+                } else if (type == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
+                    recordSiteLayoutChanged((boolean) newValue);
                 }
                 break;
             }
@@ -1136,5 +1151,16 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                             getInfoForOrigins();
                             dialog.dismiss();
                         });
+    }
+
+    /**
+     * Records the changes of request desktop site content settings.
+     * @param enabled Whether request desktop site is enabled after the change.
+     */
+    private void recordSiteLayoutChanged(boolean enabled) {
+        @SiteLayout
+        int layout = enabled ? SiteLayout.DESKTOP : SiteLayout.MOBILE;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.RequestDesktopSite.Changed", layout, SiteLayout.NUM_ENTRIES);
     }
 }

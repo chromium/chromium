@@ -294,6 +294,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The default popups setting at profile open.</summary>
 </histogram>
 
+<histogram name="ContentSettings.DefaultRequestDesktopSiteSetting"
+    enum="ContentSetting" expires_after="2022-04-01">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    The request desktop site content setting at profile open. Recorded for
+    Android only.
+  </summary>
+</histogram>
+
 <histogram name="ContentSettings.DefaultSoundSetting" enum="ContentSetting"
     expires_after="2022-06-19">
   <owner>engedy@chromium.org</owner>

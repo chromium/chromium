@@ -2649,6 +2649,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.RequestDesktopSite.Changed" enum="SiteLayout"
+    expires_after="2022-04-01">
+  <owner>shuyng@google.com</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the changes of request desktop site content settings. This is
+    recorded when a user manually switches the global setting between
+    mobile/desktop.
+  </summary>
+</histogram>
+
 <histogram name="Android.RequestDesktopSite.TabletEligible" enum="Boolean"
     expires_after="M96">
   <owner>gangwu@chromium.org</owner>

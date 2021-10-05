@@ -217,6 +217,11 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
                             IntToContentSetting(prefs_->GetInteger(GetPrefName(
                                 ContentSettingsType::AUTO_DARK_WEB_CONTENT))),
                             CONTENT_SETTING_NUM_SETTINGS);
+
+  UMA_HISTOGRAM_ENUMERATION("ContentSettings.DefaultRequestDesktopSiteSetting",
+                            IntToContentSetting(prefs_->GetInteger(GetPrefName(
+                                ContentSettingsType::REQUEST_DESKTOP_SITE))),
+                            CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
   pref_change_registrar_.Init(prefs_);
