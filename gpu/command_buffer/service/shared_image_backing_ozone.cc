@@ -199,7 +199,6 @@ SharedImageBackingOzone::ProduceOverlay(SharedImageManager* manager,
   gfx::BufferFormat buffer_format = viz::BufferFormat(format());
   auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(
       pixmap_->GetBufferSize(), buffer_format);
-  image->Initialize(std::move(pixmap_));
   return std::make_unique<SharedImageRepresentationOverlayOzone>(
       manager, this, tracker, image);
 }
