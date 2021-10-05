@@ -1107,7 +1107,9 @@ bool IsAXSetter(SEL selector) {
   ui::AXActionData data;
   data.action = ax::mojom::Action::kSetSelection;
   data.anchor_offset = range.location;
+  data.anchor_node_id = _node->GetData().id;
   data.focus_offset = NSMaxRange(range);
+  data.focus_node_id = _node->GetData().id;
   _node->GetDelegate()->AccessibilityPerformAction(data);
 }
 
