@@ -28,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -38,7 +37,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -236,13 +234,6 @@ testing::AssertionResult ToolbarActionsModelUnitTest::AddExtension(
     return testing::AssertionFailure()
            << "Failed to install extension: " << extension->name();
   }
-  // Make sure RegisterClient calls for storage are finished to avoid flaky
-  // crashes in QuotaManagerImpl::RegisterClient.
-  // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
-  extensions::util::GetStoragePartitionForExtensionId(extension->id(),
-                                                      profile());
-  task_environment()->RunUntilIdle();
-
   return testing::AssertionSuccess();
 }
 
