@@ -214,6 +214,10 @@ class CONTENT_EXPORT RenderFrameHostManager
   // if this WebContents isn't part of inner/outer relationship.
   RenderFrameProxyHost* GetProxyToOuterDelegate();
 
+  // If this is a main frame for an inner delegate, return the
+  // GetProxyToOuterDelegate, otherwise return GetProxyToParent.
+  RenderFrameProxyHost* GetProxyToParentOrOuterDelegate();
+
   // If this is a RenderFrameHostManager for a main frame, removes the
   // FrameTreeNode in the outer WebContents that represents this FrameTreeNode.
   // TODO(lazyboy): This does not belong to RenderFrameHostManager, move it to
@@ -456,8 +460,8 @@ class CONTENT_EXPORT RenderFrameHostManager
                               RenderFrameProxyHost* proxy);
 
   // Sets the child RenderWidgetHostView for this frame, which must be part of
-  // an inner WebContents.
-  void SetRWHViewForInnerContents(RenderWidgetHostViewChildFrame* child_rwhv);
+  // an inner FrameTree.
+  void SetRWHViewForInnerFrameTree(RenderWidgetHostViewChildFrame* child_rwhv);
 
   // Returns the number of RenderFrameProxyHosts for this frame.
   size_t GetProxyCount();

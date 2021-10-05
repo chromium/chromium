@@ -65,8 +65,10 @@ LocalFrameView* RemoteFrameView::ParentLocalRootFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner && owner->OwnerType() == FrameOwnerElementType::kPortal)
+  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
+                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
     return owner->GetDocument().GetFrame()->LocalFrameRoot().View();
+  }
 
   // |is_attached_| is only set from AttachToLayout(), which ensures that the
   // parent is a local frame.

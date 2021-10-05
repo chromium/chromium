@@ -80,6 +80,8 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
@@ -344,6 +346,13 @@ void LocalFrameView::ForAllChildViewsAndPlugins(const Function& function) {
       if (Frame* frame = portal->GetFrame())
         function(*frame->View());
     }
+    if (features::IsFencedFramesMPArchBased()) {
+      for (HTMLFencedFrameElement* fenced_frame :
+           DocumentFencedFrames::From(*document).GetFencedFrames()) {
+        if (Frame* frame = fenced_frame->ContentFrame())
+          function(*frame->View());
+      }
+    }
   }
 }
 
@@ -414,6 +423,14 @@ void LocalFrameView::ForAllRemoteFrameViews(const Function& function) {
     for (PortalContents* portal :
          DocumentPortals::From(*document).GetPortals()) {
       if (RemoteFrame* frame = portal->GetFrame()) {
+        if (RemoteFrameView* view = frame->View())
+          function(*view);
+      }
+    }
+    if (features::IsFencedFramesMPArchBased()) {
+      for (HTMLFencedFrameElement* fenced_frame :
+           DocumentFencedFrames::From(*document).GetFencedFrames()) {
+        RemoteFrame* frame = To<RemoteFrame>(fenced_frame->ContentFrame());
         if (RemoteFrameView* view = frame->View())
           function(*view);
       }
@@ -4422,6 +4439,16 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     }
   }
 
+  if (features::IsFencedFramesMPArchBased()) {
+    for (HTMLFencedFrameElement* fenced_frame :
+         DocumentFencedFrames::From(*frame_->GetDocument()).GetFencedFrames()) {
+      if (Frame* frame = fenced_frame->ContentFrame()) {
+        needs_occlusion_tracking |=
+            frame->View()->UpdateViewportIntersectionsForSubtree(
+                flags, monotonic_time);
+      }
+    }
+  }
   return needs_occlusion_tracking;
 }
 

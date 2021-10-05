@@ -84,6 +84,8 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/battery_savings.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
+#include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/portal/document_portals.h"
@@ -195,13 +197,20 @@ void ForEachRemoteFrameChildrenControlledByWidget(
     }
   }
 
-  // Iterate on any portals owned by a local frame.
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     if (Document* document = local_frame->GetDocument()) {
+      // Iterate on any portals owned by a local frame.
       for (PortalContents* portal :
            DocumentPortals::From(*document).GetPortals()) {
         if (RemoteFrame* remote_frame = portal->GetFrame())
           callback.Run(remote_frame);
+      }
+      // Iterate on any fenced frames owned by a local frame.
+      if (features::IsFencedFramesMPArchBased()) {
+        for (HTMLFencedFrameElement* fenced_frame :
+             DocumentFencedFrames::From(*document).GetFencedFrames()) {
+          callback.Run(To<RemoteFrame>(fenced_frame->ContentFrame()));
+        }
       }
     }
   }

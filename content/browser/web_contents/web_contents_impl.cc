@@ -2477,7 +2477,7 @@ void WebContentsImpl::ReattachToOuterWebContentsFrame() {
   auto* child_rwhv = render_manager->GetRenderWidgetHostView();
   DCHECK(child_rwhv);
   DCHECK(child_rwhv->IsRenderWidgetHostViewChildFrame());
-  render_manager->SetRWHViewForInnerContents(
+  render_manager->SetRWHViewForInnerFrameTree(
       static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
 
   RecursivelyRegisterFrameSinkIds();
@@ -7808,10 +7808,19 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
   OPTIONAL_TRACE_EVENT1(
       "content", "WebContentsImpl::CreateRenderWidgetHostViewForRenderManager",
       "render_view_host", render_view_host);
-  RenderWidgetHostViewBase* rwh_view =
-      view_->CreateViewForWidget(render_view_host->GetWidget());
-  view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-  rwh_view->SetSize(GetSizeForMainFrame());
+  // TODO(crbug.com/1254770): Fix this for portals.
+  bool is_inner_frame_tree = static_cast<RenderViewHostImpl*>(render_view_host)
+                                 ->frame_tree()
+                                 ->type() == FrameTree::Type::kFencedFrame;
+  if (is_inner_frame_tree) {
+    WebContentsViewChildFrame::CreateRenderWidgetHostViewForInnerFrameTree(
+        this, render_view_host->GetWidget());
+  } else {
+    RenderWidgetHostViewBase* rwh_view =
+        view_->CreateViewForWidget(render_view_host->GetWidget());
+    view_->SetOverscrollControllerEnabled(CanOverscrollContent());
+    rwh_view->SetSize(GetSizeForMainFrame());
+  }
 }
 
 void WebContentsImpl::ReattachOuterDelegateIfNeeded() {

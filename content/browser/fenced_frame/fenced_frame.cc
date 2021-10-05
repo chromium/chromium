@@ -5,6 +5,8 @@
 #include "content/browser/fenced_frame/fenced_frame.h"
 
 #include "base/notreached.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
+#include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "url/gurl.h"
@@ -145,6 +147,28 @@ void FencedFrame::CreateProxyAndAttachToOuterFrameTree() {
           owner_render_frame_host_->GetSiteInstance());
 
   inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
+
+  RenderFrameHostManager* inner_render_manager = inner_root->render_manager();
+
+  // For the newly minted FrameTree (in the constructor) we will have a new
+  // RenderViewHost that does not yet have a RenderWidgetHostView for it.
+  // Create a RenderWidgetHostViewChildFrame as this won't be a top-level
+  // view. Set the associated view for the inner frame tree after it has
+  // been created.
+  RenderViewHost* rvh =
+      inner_render_manager->current_frame_host()->GetRenderViewHost();
+  if (!inner_render_manager->InitRenderView(
+          inner_render_manager->current_frame_host()->GetSiteInstance(),
+          static_cast<RenderViewHostImpl*>(rvh), nullptr)) {
+    return;
+  }
+
+  RenderWidgetHostViewBase* child_rwhv =
+      inner_render_manager->GetRenderWidgetHostView();
+  CHECK(child_rwhv);
+  CHECK(child_rwhv->IsRenderWidgetHostViewChildFrame());
+  inner_render_manager->SetRWHViewForInnerFrameTree(
+      static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
 }
 
 const base::UnguessableToken& FencedFrame::GetDevToolsFrameToken() const {

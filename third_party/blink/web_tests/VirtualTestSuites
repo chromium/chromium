@@ -1123,7 +1123,7 @@
   },
   {
     "prefix": "fenced-frame-mparch",
-    "bases": ["wpt_internal/fenced_frame"],
+    "bases": ["fenced_frame", "wpt_internal/fenced_frame"],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch"]
   }
 ]

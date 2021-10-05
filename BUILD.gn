@@ -1281,6 +1281,7 @@ if (!is_ios) {
       "//third_party/blink/web_tests/editing/",
       "//third_party/blink/web_tests/external/",
       "//third_party/blink/web_tests/fast/",
+      "//third_party/blink/web_tests/fenced_frame/",
       "//third_party/blink/web_tests/fonts/",
       "//third_party/blink/web_tests/fragmentation/",
       "//third_party/blink/web_tests/fullscreen/",

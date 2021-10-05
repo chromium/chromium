@@ -6,12 +6,14 @@
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
 
 namespace content {
 
 class RenderWidgetHostImpl;
+class RenderWidgetHostViewChildFrame;
 class WebContentsImpl;
 class WebContentsViewDelegate;
 
@@ -66,6 +68,11 @@ class WebContentsViewChildFrame : public WebContentsView,
   void UpdateDragCursor(ui::mojom::DragOperation operation) override;
   void GotFocus(RenderWidgetHostImpl* render_widget_host) override;
   void TakeFocus(bool reverse) override;
+
+  static RenderWidgetHostViewChildFrame*
+  CreateRenderWidgetHostViewForInnerFrameTree(
+      WebContentsImpl* web_contents,
+      RenderWidgetHost* render_widget_host);
 
  private:
   WebContentsView* GetOuterView();

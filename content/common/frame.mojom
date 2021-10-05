@@ -71,7 +71,9 @@ enum ViewWidgetType {
   // A GuestView used to render contents inside a <webview> element.
   kGuestView,
   // A view used to render contents inside a <portal> element.
-  kPortal
+  kPortal,
+  // A view used to render contents inside a <fencedframe> element.
+  kFencedFrame
 };
 
 // The type of the frame owner element for a child frame. In cross-process

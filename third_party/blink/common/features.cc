@@ -236,6 +236,11 @@ bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
 }
 
+bool IsFencedFramesMPArchBased() {
+  return blink::features::kFencedFramesImplementationTypeParam.Get() ==
+         blink::features::FencedFramesImplementationType::kMPArch;
+}
+
 // Enable limiting previews loading hints to specific resource types.
 const base::Feature kPreviewsResourceLoadingHintsSpecificResourceTypes{
     "PreviewsResourceLoadingHintsSpecificResourceTypes",

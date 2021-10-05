@@ -89,6 +89,7 @@ BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
 
 // Fenced Frames:
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
+BLINK_COMMON_EXPORT bool IsFencedFramesMPArchBased();
 
 BLINK_COMMON_EXPORT extern const base::Feature
     kPreviewsResourceLoadingHintsSpecificResourceTypes;

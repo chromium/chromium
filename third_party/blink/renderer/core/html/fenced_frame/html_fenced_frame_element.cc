@@ -111,9 +111,7 @@ void HTMLFencedFrameElement::Navigate() {
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
   HTMLFrameOwnerElement::AttachLayoutTree(context);
-
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
-      features::FencedFramesImplementationType::kMPArch) {
+  if (features::IsFencedFramesMPArchBased()) {
     if (GetLayoutEmbeddedContent() && ContentFrame()) {
       SetEmbeddedContentView(ContentFrame()->View());
     }
@@ -123,8 +121,7 @@ void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
 LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy_layout) {
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
-      features::FencedFramesImplementationType::kMPArch) {
+  if (features::IsFencedFramesMPArchBased()) {
     return MakeGarbageCollected<LayoutIFrame>(this);
   }
 

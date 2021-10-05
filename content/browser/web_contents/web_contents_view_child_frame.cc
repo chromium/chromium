@@ -79,16 +79,8 @@ void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForWidget(
     RenderWidgetHost* render_widget_host) {
-  display::ScreenInfos screen_infos;
-  if (auto* view = web_contents_->GetRenderWidgetHostView()) {
-    screen_infos = view->GetScreenInfos();
-  } else {
-    display::ScreenInfo screen_info;
-    display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
-    screen_infos = display::ScreenInfos(screen_info);
-  }
-  return RenderWidgetHostViewChildFrame::Create(render_widget_host,
-                                                screen_infos);
+  return CreateRenderWidgetHostViewForInnerFrameTree(web_contents_,
+                                                     render_widget_host);
 }
 
 RenderWidgetHostViewBase* WebContentsViewChildFrame::CreateViewForChildWidget(
@@ -181,6 +173,22 @@ void WebContentsViewChildFrame::StartDragging(
   } else {
     web_contents_->GetOuterWebContents()->SystemDragEnded(source_rwh);
   }
+}
+
+RenderWidgetHostViewChildFrame*
+WebContentsViewChildFrame::CreateRenderWidgetHostViewForInnerFrameTree(
+    WebContentsImpl* web_contents,
+    RenderWidgetHost* render_widget_host) {
+  display::ScreenInfos screen_infos;
+  if (auto* view = web_contents->GetRenderWidgetHostView()) {
+    screen_infos = view->GetScreenInfos();
+  } else {
+    display::ScreenInfo screen_info;
+    display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
+    screen_infos = display::ScreenInfos(screen_info);
+  }
+  return RenderWidgetHostViewChildFrame::Create(render_widget_host,
+                                                screen_infos);
 }
 
 }  // namespace content

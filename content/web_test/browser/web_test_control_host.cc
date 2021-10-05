@@ -33,6 +33,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -458,12 +459,11 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     // If the WebContents was already set up before given to the Shell, it may
     // have a set of RenderFrames already, and we need to notify about them
     // here.
-    if (web_contents->GetMainFrame()->IsRenderFrameLive()) {
-      for (RenderFrameHost* frame : web_contents->GetAllFrames()) {
-        if (frame->IsRenderFrameLive())
-          RenderFrameCreated(frame);
-      }
-    }
+    web_contents->ForEachRenderFrameHost(
+        base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+          if (render_frame_host->IsRenderFrameLive())
+            RenderFrameCreated(render_frame_host);
+        }));
   }
 
  private:
@@ -795,15 +795,18 @@ void WebTestControlHost::InitiateCaptureDump(
   if (!renderer_dump_result_->layout) {
     DCHECK_EQ(0, waiting_for_layout_dumps_);
 
-    for (RenderFrameHost* rfh : main_window_->web_contents()->GetAllFrames()) {
-      if (!rfh->IsRenderFrameLive())
-        continue;
+    main_window_->web_contents()->ForEachRenderFrameHost(
+        base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+          if (!render_frame_host->IsRenderFrameLive())
+            return;
 
-      ++waiting_for_layout_dumps_;
-      GetWebTestRenderFrameRemote(rfh)->DumpFrameLayout(base::BindOnce(
-          &WebTestControlHost::OnDumpFrameLayoutResponse,
-          weak_factory_.GetWeakPtr(), rfh->GetFrameTreeNodeId()));
-    }
+          ++waiting_for_layout_dumps_;
+          GetWebTestRenderFrameRemote(render_frame_host)
+              ->DumpFrameLayout(
+                  base::BindOnce(&WebTestControlHost::OnDumpFrameLayoutResponse,
+                                 weak_factory_.GetWeakPtr(),
+                                 render_frame_host->GetFrameTreeNodeId()));
+        }));
   }
 
   if (capture_pixels) {
@@ -930,58 +933,38 @@ WebTestControlHost::Node* WebTestControlHost::BuildFrameTree(
     return it == composite_all_frames_node_storage_.end() ? nullptr : it->get();
   };
 
-  Node* outer_root = nullptr;
-  std::vector<WebContents*> all_web_contents(1, web_contents);
-  for (unsigned i = 0; i < all_web_contents.size(); i++) {
-    WebContents* contents = all_web_contents[i];
+  //  Collect all live frames in web_contents.
+  std::vector<RenderFrameHost*> frames;
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive())
+          frames.push_back(render_frame_host);
+      }));
 
-    //  Collect all live frames in contents.
-    std::vector<RenderFrameHost*> frames;
-    for (auto* frame : contents->GetAllFrames()) {
-      if (frame->IsRenderFrameLive())
-        frames.push_back(frame);
-    }
-
-    // Add all of the frames to storage.
-    for (auto* frame : frames) {
-      DCHECK(!node_for_frame(frame)) << "Frame seen multiple times.";
-      composite_all_frames_node_storage_.emplace_back(
-          std::make_unique<Node>(frame));
-    }
-
-    // Construct a tree rooted at |root|.
-    Node* root = nullptr;
-    for (auto* frame : frames) {
-      Node* node = node_for_frame(frame);
-      DCHECK(node);
-      if (!frame->GetParent()) {
-        DCHECK(!root) << "Multiple roots found.";
-        root = node;
-      } else {
-        Node* parent = node_for_frame(frame->GetParent());
-        DCHECK(parent);
-        parent->children.push_back(node);
-      }
-    }
-    DCHECK(root) << "No root found.";
-
-    // Connect the inner root to the outer node.
-    if (auto* outer_frame = contents->GetOuterWebContentsFrame()) {
-      Node* parent = node_for_frame(outer_frame);
-      DCHECK(parent);
-      parent->children.push_back(root);
-    } else {
-      DCHECK(!outer_root) << "Multiple outer roots found.";
-      outer_root = root;
-    }
-
-    // Traverse all inner contents.
-    for (auto* inner_contents : contents->GetInnerWebContents())
-      all_web_contents.push_back(inner_contents);
+  // Add all of the frames to storage.
+  for (auto* frame : frames) {
+    DCHECK(!node_for_frame(frame)) << "Frame seen multiple times.";
+    composite_all_frames_node_storage_.emplace_back(
+        std::make_unique<Node>(frame));
   }
-  DCHECK(outer_root) << "No outer root found";
 
-  return outer_root;
+  // Construct a tree rooted at |root|.
+  Node* root = nullptr;
+  for (auto* frame : frames) {
+    Node* node = node_for_frame(frame);
+    DCHECK(node);
+    if (!frame->GetParentOrOuterDocument()) {
+      DCHECK(!root) << "Multiple roots found.";
+      root = node;
+    } else {
+      Node* parent = node_for_frame(frame->GetParentOrOuterDocument());
+      DCHECK(parent);
+      parent->children.push_back(node);
+    }
+  }
+  DCHECK(root) << "No root found.";
+
+  return root;
 }
 
 bool WebTestControlHost::IsMainWindow(WebContents* web_contents) const {
@@ -1278,13 +1261,14 @@ void WebTestControlHost::OnDumpFrameLayoutResponse(int frame_tree_node_id,
 
   // Stitch the frame-specific results in the right order.
   std::string stitched_layout_dump;
-  for (auto* render_frame_host : web_contents()->GetAllFrames()) {
-    auto it =
-        frame_to_layout_dump_map_.find(render_frame_host->GetFrameTreeNodeId());
-    if (it != frame_to_layout_dump_map_.end()) {
-      stitched_layout_dump.append(it->second);
-    }
-  }
+  web_contents()->GetMainFrame()->ForEachRenderFrameHost(
+      base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
+        auto it = frame_to_layout_dump_map_.find(
+            render_frame_host->GetFrameTreeNodeId());
+        if (it != frame_to_layout_dump_map_.end()) {
+          stitched_layout_dump.append(it->second);
+        }
+      }));
 
   layout_dump_.emplace(std::move(stitched_layout_dump));
   ReportResults();

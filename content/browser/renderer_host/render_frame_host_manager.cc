@@ -383,6 +383,12 @@ RenderFrameProxyHost* RenderFrameHostManager::GetProxyToOuterDelegate() {
       outer_contents_frame_tree_node->parent()->GetSiteInstance());
 }
 
+RenderFrameProxyHost*
+RenderFrameHostManager::GetProxyToParentOrOuterDelegate() {
+  return IsMainFrameForInnerDelegate() ? GetProxyToOuterDelegate()
+                                       : GetProxyToParent();
+}
+
 void RenderFrameHostManager::RemoveOuterDelegateFrame() {
   // Removing the outer delegate frame will destroy the inner WebContents. This
   // should only be called on the main frame.
@@ -2948,7 +2954,7 @@ void RenderFrameHostManager::SwapOuterDelegateFrame(
   proxy->SetRenderFrameProxyCreated(true);
 }
 
-void RenderFrameHostManager::SetRWHViewForInnerContents(
+void RenderFrameHostManager::SetRWHViewForInnerFrameTree(
     RenderWidgetHostViewChildFrame* child_rwhv) {
   DCHECK(IsMainFrameForInnerDelegate());
   DCHECK(GetProxyToOuterDelegate());
@@ -3474,16 +3480,17 @@ void RenderFrameHostManager::CommitPending(
       DeleteRenderFrameProxyHost(proxy->GetSiteInstance());
   }
 
-  // If this is a subframe, it should have a CrossProcessFrameConnector
-  // created already.  Use it to link the new RFH's view to the proxy that
-  // belongs to the parent frame's SiteInstance. If this navigation causes
-  // an out-of-process frame to return to the same process as its parent, the
-  // proxy would have been removed from proxy_hosts_ above.
+  // If this is a subframe or inner frame tree, it should have a
+  // CrossProcessFrameConnector created already.  Use it to link the new RFH's
+  // view to the proxy that belongs to the parent frame's SiteInstance. If this
+  // navigation causes an out-of-process frame to return to the same process as
+  // its parent, the proxy would have been removed from proxy_hosts_ above.
   // Note: We do this after unloading the old RFH because that may create
   // the proxy we're looking for.
-  RenderFrameProxyHost* proxy_to_parent = GetProxyToParent();
-  if (proxy_to_parent) {
-    proxy_to_parent->SetChildRWHView(
+  RenderFrameProxyHost* proxy_to_parent_or_outer_delegate =
+      GetProxyToParentOrOuterDelegate();
+  if (proxy_to_parent_or_outer_delegate) {
+    proxy_to_parent_or_outer_delegate->SetChildRWHView(
         static_cast<RenderWidgetHostViewChildFrame*>(new_view),
         old_size ? &*old_size : nullptr);
   }
