@@ -376,7 +376,7 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   if (max_content_block_size != LayoutUnit::Max() &&
       (!result || result->Status() == NGLayoutResult::kSuccess)) {
     DCHECK_EQ(adjusted_padding_box_size.block_size, kIndefiniteSize);
-    max_content_block_size -= BorderPadding().BlockSum();
+    max_content_block_size -= borders_.BlockSum();
 
     if (result) {
       const auto& fragment = result->PhysicalFragment();

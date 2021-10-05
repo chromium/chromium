@@ -8,7 +8,7 @@ fieldset, legend {
   padding: 0;
   background: lime
 }
-fieldset {
+#f1 {
   overflow: auto;
   height: 2em;
 }
@@ -21,12 +21,24 @@ div {
   height: 2em;
 }
 
+#f2 {
+  border: none;
+  padding: 50px;
+  max-height: 50px;
+  overflow: scroll;
+}
+
 </style>
 <p>There should be no red.</p>
-<fieldset>
+<fieldset id="f1">
  <legend></legend>
  <div></div>
  <div id=last></div>
+</fieldset>
+
+<!-- crbug.com/1247733 -->
+<fieldset id="f2">
+  <div style="height:200px; background:blue"></div>
 </fieldset>
 <script>
  document.getElementById('last').scrollIntoView();
