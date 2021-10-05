@@ -197,6 +197,7 @@ public class ExternalNavigationHandlerTest {
 
         mContext = new TestContext(InstrumentationRegistry.getTargetContext(), mDelegate);
         ContextUtils.initApplicationContextForTests(mContext);
+        mDelegate.setContext(mContext);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
@@ -2285,9 +2286,13 @@ public class ExternalNavigationHandlerTest {
 
         String intent = "intent://example.com#Intent;scheme=https;package=com.other.browser;end";
 
+        // This is a limitation of this testing harness, which doesn't get past
+        // startActivityIfNeeded as that requires an Activity context. This functionality is
+        // tested in ExternalNavigationDelegateImplTest.
         checkUrl(intent)
                 .withPageTransition(PageTransition.LINK)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_CLOBBERING_TAB, IGNORE);
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
     }
 
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
@@ -2375,7 +2380,7 @@ public class ExternalNavigationHandlerTest {
         @Override
         protected AlertDialog showLeavingIncognitoAlert(Context context,
                 ExternalNavigationParams params, Intent intent, GURL fallbackUrl, boolean proxy) {
-            if (context == null) return mAlertDialog;
+            if (context instanceof TestContext) return mAlertDialog;
             mShownIncognitoAlertDialog =
                     super.showLeavingIncognitoAlert(context, params, intent, fallbackUrl, proxy);
             return mShownIncognitoAlertDialog;
@@ -2459,6 +2464,11 @@ public class ExternalNavigationHandlerTest {
                 list.add(newResolveInfo("package"));
             }
             return list;
+        }
+
+        public ResolveInfo resolveActivity(Intent intent) {
+            List<ResolveInfo> list = queryIntentActivities(intent);
+            return list.size() > 0 ? list.get(0) : null;
         }
 
         @Override
@@ -2897,6 +2907,11 @@ public class ExternalNavigationHandlerTest {
         public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
             return mDelegate.queryIntentActivities(intent);
         }
+
+        @Override
+        public ResolveInfo resolveActivity(Intent intent, int flags) {
+            return mDelegate.resolveActivity(intent);
+        }
     }
 
     private static class TestContext extends ContextWrapper {
@@ -2928,8 +2943,7 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public void startActivity(Intent intent) {
-        }
+        public void startActivity(Intent intent) {}
 
         @Override
         public void startActivity(Intent intent, Bundle options) {

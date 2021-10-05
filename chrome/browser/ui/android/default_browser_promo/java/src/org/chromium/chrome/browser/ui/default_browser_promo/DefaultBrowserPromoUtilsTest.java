@@ -81,14 +81,12 @@ public class DefaultBrowserPromoUtilsTest {
 
         DefaultBrowserPromoDeps deps = DefaultBrowserPromoDeps.getInstance();
         infoList.add(createResolveInfo(DefaultBrowserPromoDeps.CHROME_STABLE_PACKAGE_NAME, 1));
-        packageManager.addResolveInfoForIntent(
-                PackageManagerUtils.getQueryInstalledBrowsersIntent(), infoList);
+        packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, infoList);
         Assert.assertFalse("Chrome stable should not be counted as a pre-stable channel",
                 deps.isChromePreStableInstalled());
 
         infoList.add(createResolveInfo("com.android.chrome.123", 1));
-        packageManager.addResolveInfoForIntent(
-                PackageManagerUtils.getQueryInstalledBrowsersIntent(), infoList);
+        packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, infoList);
         Assert.assertFalse("A random package should not be counted as a pre-stable channel",
                 deps.isChromePreStableInstalled());
 
@@ -96,8 +94,7 @@ public class DefaultBrowserPromoUtilsTest {
             if (name.equals(DefaultBrowserPromoDeps.CHROME_STABLE_PACKAGE_NAME)) continue;
             List<ResolveInfo> list = new ArrayList<>(infoList);
             list.add(createResolveInfo(name, 1));
-            packageManager.addResolveInfoForIntent(
-                    PackageManagerUtils.getQueryInstalledBrowsersIntent(), list);
+            packageManager.addResolveInfoForIntent(PackageManagerUtils.BROWSER_INTENT, list);
             Assert.assertTrue(name + " should be considered as a pre-stable channel",
                     deps.isChromePreStableInstalled());
         }

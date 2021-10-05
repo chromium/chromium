@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.IntentUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
@@ -125,39 +124,25 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             // instead.
             boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(intent.toUri(0));
             boolean hasDefaultHandler = hasDefaultHandler(intent);
-            try {
-                // For a URL chrome can handle and there is no default set, handle it ourselves.
-                if (!hasDefaultHandler) {
-                    if (!TextUtils.isEmpty(mClientPackageName)
-                            && isPackageSpecializedHandler(mClientPackageName, intent)) {
-                        intent.setPackage(mClientPackageName);
-                    } else if (!isExternalProtocol) {
-                        return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
-                    }
+            // For a URL chrome can handle and there is no default set, handle it ourselves.
+            if (!hasDefaultHandler) {
+                if (!TextUtils.isEmpty(mClientPackageName)
+                        && isPackageSpecializedHandler(mClientPackageName, intent)) {
+                    // Package and Selector cannot be set at the same time.
+                    intent.setSelector(null);
+                    intent.setPackage(mClientPackageName);
+                } else if (!isExternalProtocol) {
+                    return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
                 }
+            }
 
-                if (proxy) {
-                    dispatchAuthenticatedIntent(intent);
-                    mHasActivityStarted = true;
-                    return StartActivityIfNeededResult.HANDLED_WITH_ACTIVITY_START;
-                } else {
-                    // If android fails to find a handler, handle it ourselves.
-                    Context context = getAvailableContext();
-                    if (context instanceof Activity
-                            && ((Activity) context).startActivityIfNeeded(intent, -1)) {
-                        mHasActivityStarted = true;
-                        return StartActivityIfNeededResult.HANDLED_WITH_ACTIVITY_START;
-                    }
-                }
-                return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
-            } catch (SecurityException e) {
-                // https://crbug.com/808494: Handle the URL in Chrome if dispatching to another
-                // application fails with a SecurityException. This happens due to malformed
-                // manifests in another app.
-                return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
-            } catch (RuntimeException e) {
-                IntentUtils.logTransactionTooLargeOrRethrow(e, intent);
-                return StartActivityIfNeededResult.HANDLED_WITHOUT_ACTIVITY_START;
+            if (proxy) {
+                dispatchAuthenticatedIntent(intent);
+                mHasActivityStarted = true;
+                return StartActivityIfNeededResult.HANDLED_WITH_ACTIVITY_START;
+            } else {
+                // Defer to ExternalNavigationHandler to call startActivityIfNeeded.
+                return StartActivityIfNeededResult.DID_NOT_HANDLE;
             }
         }
 
