@@ -284,6 +284,20 @@ cipd_test_archive("tests") {
 
   test_sets = [
     {
+      manifest_path = "${target_gen_dir}/test_manifest.json"
+      far_sources = [
+        "${root_gen_dir}/base/base_unittests/base_unittests.far",
+        "${root_gen_dir}/fuchsia/engine/web_engine_integration_tests/web_engine_integration_tests.far",
+        "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
+        "${root_gen_dir}/fuchsia/runners/web_runner_integration_tests/web_runner_integration_tests.far",
+        "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
+        "${root_gen_dir}/media/media_unittests/media_unittests.far",
+        "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
+        "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
+        "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
+      ]
+    },
+    {
       manifest_path = "${target_gen_dir}/common_tests_manifest.json"
       far_sources = [
         "${root_gen_dir}/base/base_unittests/base_unittests.far",
