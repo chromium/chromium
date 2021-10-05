@@ -7,9 +7,15 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -40,7 +46,10 @@ constexpr char kScanningStickySettingsPref[] =
 }  // namespace
 
 ChromeScanningAppDelegate::ChromeScanningAppDelegate(content::WebUI* web_ui)
-    : web_ui_(web_ui) {
+    : web_ui_(web_ui),
+      task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   const base::FilePath my_files_path =
       file_manager::util::GetMyFilesFolderForProfile(
           Profile::FromWebUI(web_ui));
@@ -105,15 +114,32 @@ void ChromeScanningAppDelegate::SaveScanSettingsToPrefs(
   GetPrefs()->SetString(kScanningStickySettingsPref, scan_settings);
 }
 
-bool ChromeScanningAppDelegate::ShowFileInFilesApp(
-    const base::FilePath& path_to_file) {
-  const bool can_show_file_picker =
-      IsFilePathSupported(path_to_file) && base::PathExists(path_to_file);
-  if (!can_show_file_picker)
-    return false;
+void ChromeScanningAppDelegate::ShowFileInFilesApp(
+    const base::FilePath& path_to_file,
+    base::OnceCallback<void(bool)> callback) {
+  if (!IsFilePathSupported(path_to_file)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, path_to_file),
+      base::BindOnce(&ChromeScanningAppDelegate::OnPathExists,
+                     base::Unretained(this), path_to_file,
+                     std::move(callback)));
+}
+
+void ChromeScanningAppDelegate::OnPathExists(
+    const base::FilePath& path_to_file,
+    base::OnceCallback<void(bool)> callback,
+    bool file_path_exists) {
+  if (!file_path_exists) {
+    std::move(callback).Run(false);
+    return;
+  }
 
   platform_util::ShowItemInFolder(Profile::FromWebUI(web_ui_), path_to_file);
-  return true;
+  std::move(callback).Run(true);
 }
 
 // static

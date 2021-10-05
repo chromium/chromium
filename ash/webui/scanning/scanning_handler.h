@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -72,6 +73,9 @@ class ScanningHandler : public content::WebUIMessageHandler,
   // Opens the Files app to the show the saved scan file.
   void HandleShowFileInLocation(const base::ListValue* args);
 
+  // Callback for HandleShowFileInLocation().
+  void OnShowFileInLocation(const std::string& callback, bool files_app_opened);
+
   // Returns a localized, pluralized string.
   void HandleGetPluralString(const base::ListValue* args);
 
@@ -104,6 +108,8 @@ class ScanningHandler : public content::WebUIMessageHandler,
 
   // Task runner for the I/O function base::FilePath().
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<ScanningHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

@@ -4,6 +4,8 @@
 
 #include "ash/webui/scanning/scanning_handler.h"
 
+#include <utility>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/scanning/scanning_app_delegate.h"
 #include "base/bind.h"
@@ -172,8 +174,14 @@ void ScanningHandler::HandleShowFileInLocation(const base::ListValue* args) {
   CHECK_EQ(2U, args->GetList().size());
   const std::string callback = args->GetList()[0].GetString();
   const base::FilePath file_location(args->GetList()[1].GetString());
-  const bool files_app_opened =
-      scanning_app_delegate_->ShowFileInFilesApp(file_location);
+  scanning_app_delegate_->ShowFileInFilesApp(
+      file_location,
+      base::BindOnce(&ScanningHandler::OnShowFileInLocation,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ScanningHandler::OnShowFileInLocation(const std::string& callback,
+                                           const bool files_app_opened) {
   ResolveJavascriptCallback(base::Value(callback),
                             base::Value(files_app_opened));
 }
