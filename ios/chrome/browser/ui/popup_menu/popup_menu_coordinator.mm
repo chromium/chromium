@@ -274,7 +274,10 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
   if (IsNewOverflowMenuEnabled()) {
     if (@available(iOS 15, *)) {
-      UIViewController* menu = [OverflowMenuViewProvider makeViewController];
+      OverflowMenuModel* model =
+          [[OverflowMenuModel alloc] initWithDestinations:@[] actions:@[]];
+      UIViewController* menu =
+          [OverflowMenuViewProvider makeViewControllerWithModel:model];
       UISheetPresentationController* sheetPC = menu.sheetPresentationController;
       if (sheetPC) {
         sheetPC.detents = @[
