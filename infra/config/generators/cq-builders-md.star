@@ -24,7 +24,7 @@ using common assumptions about how builders are configured.
 
 _REQUIRED_HEADER = """\
 These builders must pass before a CL may land that affects files outside of
-//infra/config.
+//docs and //infra/config.
 """
 
 _OPTIONAL_HEADER = """\

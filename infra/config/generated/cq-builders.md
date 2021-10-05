@@ -15,7 +15,7 @@ using common assumptions about how builders are configured.
 
 ## Required builders
 These builders must pass before a CL may land that affects files outside of
-//infra/config.
+//docs and //infra/config.
 
 * [android-binary-size](https://ci.chromium.org/p/chromium/builders/try/android-binary-size) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+android-binary-size)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+android-binary-size))
 
