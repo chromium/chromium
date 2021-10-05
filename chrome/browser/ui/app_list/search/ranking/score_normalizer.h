@@ -16,8 +16,12 @@ namespace app_list {
 // stream of numbers drawn from a fixed distribution into a uniform
 // distribution.
 //
-// TODO(crbug.com/1199206): Add more description once the algorithm is
-// finalized.
+// For more information on the algorithm, see score_normalizer.md.
+//
+// The class is intended to learn and normalize many distributions at once.
+// Each distribution is denoted by a |name| passed to the public methods of
+// this class. Distributions are learned independently, and are only bundled
+// into one object for convenience and to avoid writing too many files to disk.
 class ScoreNormalizer {
  public:
   // All user-settable parameters of the score normalizer. The struct has some
@@ -28,10 +32,11 @@ class ScoreNormalizer {
     // on-disk state is cleared.
     int32_t version = 1;
 
+    // The maximum number of bins to discretize each distribution into.
+    int32_t max_bins = 5;
+
     // How long to wait until writing any updates to disk.
     base::TimeDelta write_delay = base::Seconds(30);
-
-    // TODO(crbug.com/1199206): Add model parameters.
   };
 
   ScoreNormalizer(const base::FilePath& filepath, const Params& params);
@@ -40,7 +45,8 @@ class ScoreNormalizer {
   ScoreNormalizer(const ScoreNormalizer&) = delete;
   ScoreNormalizer& operator=(const ScoreNormalizer&) = delete;
 
-  // TODO(crbug.com/1199206): Add API methods.
+  double Normalize(const std::string& name, double score) const;
+  void Update(const std::string& name, double score);
 
  private:
   friend class ScoreNormalizerTest;

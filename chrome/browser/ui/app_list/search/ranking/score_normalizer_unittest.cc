@@ -11,6 +11,31 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace app_list {
+namespace {
+
+void ExpectBinsEqual(const ScoreNormalizerProto* proto,
+                     const std::vector<double>& dividers,
+                     const std::vector<double>& counts) {
+  const auto& it = proto->normalizers().find("testing");
+  if (it == proto->normalizers().end())
+    FAIL();
+  const auto& normalizer = it->second;
+
+  ASSERT_EQ(dividers.size() + 1, counts.size());
+  ASSERT_EQ(normalizer.bins_size(), counts.size());
+
+  double total = 0.0;
+  for (size_t i = 0; i < counts.size(); ++i) {
+    const auto& bin = normalizer.bins().at(i);
+    EXPECT_EQ(bin.count(), counts[i]);
+    // The bottom bin has an automatically-created lower_divider of -infinity.
+    EXPECT_EQ(bin.lower_divider(), i == 0 ? -INFINITY : dividers[i - 1]);
+    total += counts[i];
+  }
+  EXPECT_EQ(normalizer.total(), total);
+}
+
+}  // namespace
 
 class ScoreNormalizerTest : public testing::Test {
  public:
@@ -20,7 +45,8 @@ class ScoreNormalizerTest : public testing::Test {
 
   ScoreNormalizer::Params TestingParams() {
     ScoreNormalizer::Params params;
-    params.version = 4;
+    params.version = 3;
+    params.max_bins = 4;
     params.write_delay = base::Seconds(0);
     return params;
   }
@@ -31,6 +57,28 @@ class ScoreNormalizerTest : public testing::Test {
     ScoreNormalizerProto proto;
     CHECK(proto.ParseFromString(proto_str));
     return proto;
+  }
+
+  void WriteToDisk(const std::vector<double>& dividers,
+                   const std::vector<double>& counts) {
+    ASSERT_EQ(dividers.size() + 1, counts.size());
+
+    ScoreNormalizerProto proto;
+    proto.set_model_version(1);
+    proto.set_parameter_version(TestingParams().version);
+
+    auto& normalizer = (*proto.mutable_normalizers())["testing"];
+    double total = 0.0;
+    for (size_t i = 0; i < counts.size(); ++i) {
+      auto& bin = *normalizer.add_bins();
+      // The bottom bin has an automatically-created lower_divider of -infinity.
+      bin.set_lower_divider(i == 0 ? -INFINITY : dividers[i - 1]);
+      bin.set_count(counts[i]);
+      total += counts[i];
+    }
+    normalizer.set_total(total);
+
+    WriteToDisk(proto);
   }
 
   void WriteToDisk(const ScoreNormalizerProto& proto) {
@@ -68,10 +116,151 @@ TEST_F(ScoreNormalizerTest, StateClearedOnVersionChange) {
   {
     ScoreNormalizer normalizer(GetPath(), TestingParams());
     Wait();
-    EXPECT_EQ(get_proto(normalizer)->parameter_version(), 4);
+    EXPECT_EQ(get_proto(normalizer)->parameter_version(), 3);
     // TODO(crbug.com/1199206): Check that state is reset once it's added to the
     // proto.
   }
+}
+
+// The first N scores don't do any bin merging/splitting logic, they just fill
+// out the bins. Check we do this correctly.
+TEST_F(ScoreNormalizerTest, PopulateBins) {
+  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  Wait();
+  normalizer.Update("testing", 1);
+  normalizer.Update("testing", 2);
+  normalizer.Update("testing", 3);
+
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {0, 1, 1, 1});
+}
+
+// Updates to the bins should end up on disk.
+TEST_F(ScoreNormalizerTest, BinUpdatesWrittenToDisk) {
+  {
+    ScoreNormalizer normalizer(GetPath(), TestingParams());
+    Wait();
+    normalizer.Update("testing", 1);
+    normalizer.Update("testing", 2);
+    normalizer.Update("testing", 3);
+    Wait();
+  }
+
+  auto proto = ReadFromDisk();
+  ExpectBinsEqual(&proto, {1, 2, 3}, {0, 1, 1, 1});
+}
+
+// Add scores in such a way that bins should never split.
+TEST_F(ScoreNormalizerTest, AddScoresWithoutSplitting) {
+  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  Wait();
+  normalizer.Update("testing", 1);
+  normalizer.Update("testing", 2);
+  normalizer.Update("testing", 3);
+
+  // Max entropy.
+  normalizer.Update("testing", 0);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {1, 1, 1, 1});
+
+  // These three are balanced, we can achieve equal entropy by doing a
+  // split/merge, but not improve it. This shouldn't happen.
+  normalizer.Update("testing", -100);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {2, 1, 1, 1});
+  normalizer.Update("testing", 1.2);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {2, 2, 1, 1});
+  normalizer.Update("testing", 2.3);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {2, 2, 2, 1});
+
+  // Back to max entropy.
+  normalizer.Update("testing", 400);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {2, 2, 2, 2});
+
+  // Any split is lower entropy.
+  normalizer.Update("testing", 2.5);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {2, 2, 3, 2});
+
+  // Back to balance.
+  normalizer.Update("testing", 2.1);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {2, 2, 4, 2});
+}
+
+// Add scores to cause one split/merge, where the split index is to the left of
+// the merge index. In this case the split and merge and directly next to each
+// other.
+TEST_F(ScoreNormalizerTest, SmallLefthandedSplitMerge) {
+  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  Wait();
+
+  // Set up some bins.
+  for (const auto& score : {1, 2, 3, 0, 1})
+    normalizer.Update("testing", score);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {1, 2, 1, 1});
+
+  // This should split/merge into:
+  //     1     1     2
+  // 1.0 | 1.5 | 1.5 | 2.0
+  normalizer.Update("testing", 1);
+  ExpectBinsEqual(get_proto(normalizer), {1, 1, 2}, {1.0, 1.5, 1.5, 2.0});
+}
+
+// Add scores to cause one split/merge, where the split index is to the left of
+// the merge index. In this case there's a gap between the split and merge.
+TEST_F(ScoreNormalizerTest, LargeLefthandedSplitMerge) {
+  auto params = TestingParams();
+  params.max_bins = 5;
+  ScoreNormalizer normalizer(GetPath(), params);
+  Wait();
+
+  // Set up some bins.
+  for (const auto& score : {1, 2, 3, 4, 0, 0, 1, 2, 3})
+    normalizer.Update("testing", score);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3, 4}, {2, 2, 2, 2, 1});
+
+  // This should split/merge into:
+  //     0     1     2     3
+  // 1.5 | 1.5 | 2.0 | 2.0 | 3.0
+  normalizer.Update("testing", 0);
+  ExpectBinsEqual(get_proto(normalizer), {0, 1, 2, 3},
+                  {1.5, 1.5, 2.0, 2.0, 3.0});
+}
+
+// Add scores to cause one split/merge, where the split index is to the right of
+// the merge index. In this case the split and merge and directly next to each
+// other.
+TEST_F(ScoreNormalizerTest, SmallRighthandedSplitMerge) {
+  ScoreNormalizer normalizer(GetPath(), TestingParams());
+  Wait();
+
+  // Set up some bins.
+  for (const auto& score : {1, 2, 3, 0, 2})
+    normalizer.Update("testing", score);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3}, {1, 1, 2, 1});
+
+  // This should split/merge into:
+  //     2     3     3
+  // 1.0 | 1.5 | 1.5 | 2.0
+  normalizer.Update("testing", 2);
+  ExpectBinsEqual(get_proto(normalizer), {2, 2, 3}, {2.0, 1.5, 1.5, 1.0});
+}
+
+// Add scores to cause one split/merge, where the split index is to the right of
+// the merge index. In this case there's a gap between the split and merge.
+TEST_F(ScoreNormalizerTest, LargeRighthandedSplitMerge) {
+  auto params = TestingParams();
+  params.max_bins = 5;
+  ScoreNormalizer normalizer(GetPath(), params);
+  Wait();
+
+  // Set up some bins.
+  for (const auto& score : {1, 2, 3, 4, 0, 1, 2, 3, 4})
+    normalizer.Update("testing", score);
+  ExpectBinsEqual(get_proto(normalizer), {1, 2, 3, 4}, {1, 2, 2, 2, 2});
+
+  // This should split/merge into:
+  //     2     3     4     5
+  // 3.0 | 2.0 | 2.0 | 1.5 | 1.5
+  normalizer.Update("testing", 5);
+  ExpectBinsEqual(get_proto(normalizer), {2, 3, 4, 5},
+                  {3.0, 2.0, 2.0, 1.5, 1.5});
 }
 
 }  // namespace app_list

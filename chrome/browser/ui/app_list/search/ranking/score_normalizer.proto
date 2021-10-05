@@ -22,5 +22,28 @@ message ScoreNormalizerProto {
   // match, the on-disk state is wiped.
   optional int32 parameter_version = 2;
 
-  // TODO(crbug.com/1199206): Add model state.
+  // A bin is a portion of the real line which stores how many scores have been
+  // seen within its limits. |lower_divider| represents the left side of the
+  // bin, and the right side is implicitly defined by the lower_divider of the
+  // next bin. The top bin covers to infinity.
+  message Bin {
+    // The lower bound on this bin - all scores considered part of this bin
+    // will be >= lower_divider.
+    optional double lower_divider = 1;
+    // How many scores we've seen in this bin. It may be non-integral due to
+    // bin-splits.
+    optional double count = 2;
+  };
+
+  // A normalizer is a collection of bins that together partition [-infinity,
+  // infinity].
+  message Normalizer {
+    repeated Bin bins = 1;
+    optional double total = 2;
+  }
+
+  // A normalizer for each |name| passed to ScoreNormalizer::Update. The
+  // intention is that one ScoreNormalizer instance, backed by one
+  // ScoreNormalizerProto, can learn many distributions at once.
+  map<string, Normalizer> normalizers = 3;
 }

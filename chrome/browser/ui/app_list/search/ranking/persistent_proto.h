@@ -135,6 +135,11 @@ class PersistentProto {
     return proto_.get();
   }
 
+  const T* operator->() const {
+    CHECK(proto_);
+    return proto_.get();
+  }
+
   T operator*() {
     CHECK(proto_);
     return *proto_;
