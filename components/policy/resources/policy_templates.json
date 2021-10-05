@@ -4280,7 +4280,9 @@
 
       If you set the policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the cache size you provide—whether or not users specify the --disk-cache-size flag. (Values below a few megabytes are rounded up.)
 
-      If not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the default size. Users can change that setting using the --disk-cache-size flag.''',
+      If not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the default size. Users can change that setting using the --disk-cache-size flag.
+
+      Note: The value specified in this policy is used as a hint to various cache subsystems in the browser. Therefore the actual total disk consumption of all caches will be higher but within the same order of magnitude as the value specified.''',
       'label': '''Set disk cache size''',
     },
     {
