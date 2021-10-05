@@ -3294,7 +3294,8 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 // These tests currently fail on linux due to http://crbug.com/1196493.
 // In order to keep the coverage from the rest of the test, the checks that
 // fail on linux are explicitly disabled.
-#if defined(OS_MAC)
+// Flaky on Lacros https://crbug.com/1256498 
+#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_RestoreMaximizedApp DISABLED_RestoreMaximizedApp
 #else
 #define MAYBE_RestoreMaximizedApp RestoreMaximizedApp
