@@ -14,6 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 namespace quick_pair {
 
@@ -48,6 +50,8 @@ class Mediator final : public FeatureStatusTracker::Observer,
   Mediator(const Mediator&) = delete;
   Mediator& operator=(const Mediator&) = delete;
   ~Mediator() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // QuickPairFeatureStatusTracker::Observer
   void OnFastPairEnabledChanged(bool is_enabled) override;

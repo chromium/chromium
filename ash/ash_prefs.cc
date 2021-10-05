@@ -22,7 +22,7 @@
 #include "ash/login/ui/login_expanded_public_account_view.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
-#include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
+#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/session/fullscreen_controller.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/shelf_controller.h"
@@ -88,7 +88,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   PciePeripheralNotificationController::RegisterProfilePrefs(registry);
   PersistentDesksBarController::RegisterProfilePrefs(registry);
   PrivacyScreenController::RegisterProfilePrefs(registry);
-  quick_pair::SavedDeviceRegistry::RegisterProfilePrefs(registry);
+  quick_pair::Mediator::RegisterProfilePrefs(registry);
   ShelfController::RegisterProfilePrefs(registry);
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   tray::VPNListView::RegisterProfilePrefs(registry);

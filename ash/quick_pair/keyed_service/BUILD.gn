@@ -27,6 +27,7 @@ static_library("keyed_service") {
     "//ash/services/quick_pair",
     "//base",
     "//components/keyed_service/core",
+    "//components/prefs",
     "//components/user_manager",
   ]
 }

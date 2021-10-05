@@ -12,12 +12,14 @@
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
+#include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 #include "ash/quick_pair/scanning/scanner_broker_impl.h"
 #include "ash/quick_pair/ui/actions.h"
 #include "ash/quick_pair/ui/ui_broker_impl.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
 namespace quick_pair {
@@ -75,6 +77,11 @@ Mediator::~Mediator() {
   // The metrics logger must be deleted first because it depends on other
   // members.
   metrics_logger_.reset();
+}
+
+// static
+void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  SavedDeviceRegistry::RegisterProfilePrefs(registry);
 }
 
 void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
