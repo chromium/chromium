@@ -1239,7 +1239,20 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
 
 #if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
+    // Prefer the idiomatic icon for each platform. This icon selection
+    // logic follows that of the sharing hub.
+    // See: chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.cc
+    // Note: When pedals are implemented on Android, we may want to
+    // consider using omnibox::kShareIcon (three dots with lines).
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return omnibox::kShareIcon;
+#elif defined(OS_MAC)
+    return omnibox::kShareMacIcon;
+#elif defined(OS_WIN)
+    return omnibox::kShareWinIcon;
+#else
     return omnibox::kSendIcon;
+#endif
   }
 #endif
 
