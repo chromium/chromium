@@ -400,6 +400,8 @@ function remoteObjectToProtocolValue(obj) {
       const object = remoteObjectToProtocolId(obj);
       return { object };
     }
+    case "symbol":
+      return { symbol: obj.description };
     default:
       return { unavailable: true };
   }
@@ -426,7 +428,7 @@ function protocolIdToScope(scopeId) {
 
 function createProtocolObject(objectId, level) {
   const obj = protocolIdToRemoteObject(objectId);
-  const className = obj.className || "Function";
+  const className = obj.subtype == "proxy" ? "Proxy" : (obj.className || "Function");
 
   let preview;
   if (level != "none") {
@@ -659,7 +661,7 @@ const CustomPreviewers = {
 };
 
 function createProtocolPropertyDescriptor(desc) {
-  const { name, value, writable, get, set, configurable, enumerable } = desc;
+  const { name, value, writable, get, set, configurable, enumerable, symbol } = desc;
 
   const rv = value ? remoteObjectToProtocolValue(value) : {};
   rv.name = name;
@@ -683,6 +685,10 @@ function createProtocolPropertyDescriptor(desc) {
   }
   if (set && set.objectId) {
     rv.set = remoteObjectToProtocolId(set);
+  }
+
+  if (symbol) {
+    rv.isSymbol = true;
   }
 
   return rv;
