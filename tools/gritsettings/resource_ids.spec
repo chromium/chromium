@@ -641,11 +641,26 @@
     "META": {"join": 2},
     "messages": [800],
   },
+  # END ios/ section.
+
+  # START ios_internal/ section.
   "ios/chrome/widget_kit_extension/strings/ios_widget_kit_extension_strings.grd": {
     "messages": [820],
   },
-
-  # END ios/ section.
+  "ios_internal/chrome/app/ios_internal_strings.grd": {
+    "messages": [840],
+  },
+  "ios_internal/chrome/app/theme/mobile_theme_resources.grd": {
+    "structures": [860],
+  },
+  "ios_internal/chrome/app/ios_internal_chromium_strings.grd": {
+    "META": {"join": 2},
+    "messages": [3740],
+  },
+  "ios_internal/chrome/app/ios_internal_google_chrome_strings.grd": {
+    "messages": [3740],
+  },
+  # END ios_internal/ section.
 
   # START content/ section.
   # content/ and ios/web/ must start at the same id.
@@ -874,6 +889,4 @@
 
   # Thinking about appending to the end?
   # Please read the header and find the right section above instead.
-
-  # Resource ids starting at 31000 are reserved for projects built on Chromium.
 }
