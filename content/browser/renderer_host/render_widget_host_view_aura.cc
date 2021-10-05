@@ -2269,11 +2269,26 @@ void RenderWidgetHostViewAura::NotifyVirtualKeyboardOverlayRect(
   // geometrychange event can only be fired on main frame and not focused frame
   // which could be an iframe.
   RenderFrameHostImpl* frame = host()->frame_tree()->GetMainFrame();
-  if (!frame)
+  if (!frame || !frame->ShouldVirtualKeyboardOverlayContent())
     return;
-  if (ShouldVirtualKeyboardOverlayContent()) {
-    frame->NotifyVirtualKeyboardOverlayRect(keyboard_rect);
+  gfx::Rect keyboard_root_relative_rect = keyboard_rect;
+  if (!keyboard_root_relative_rect.IsEmpty()) {
+    // If the rect is non-empty, we need to transform it to be widget-relative
+    // window (DIP coordinates). The input is client coordinates for the root
+    // window.
+    // Transform the widget rect origin to root relative coords.
+    gfx::PointF root_widget_origin(0.f, 0.f);
+    TransformPointToRootSurface(&root_widget_origin);
+    gfx::Rect root_widget_rect =
+        gfx::Rect(root_widget_origin.x(), root_widget_origin.y(),
+                  GetViewBounds().width(), GetViewBounds().height());
+    // Intersect the keyboard rect with the root widget bounds and transform
+    // back to widget-relative coordinates, which will be sent to the renderer.
+    keyboard_root_relative_rect.Intersect(root_widget_rect);
+    keyboard_root_relative_rect.Offset(-root_widget_origin.x(),
+                                       -root_widget_origin.y());
   }
+  frame->NotifyVirtualKeyboardOverlayRect(keyboard_root_relative_rect);
 }
 
 bool RenderWidgetHostViewAura::FocusedFrameHasStickyActivation() const {

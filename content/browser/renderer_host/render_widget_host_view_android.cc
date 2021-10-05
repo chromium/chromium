@@ -341,11 +341,17 @@ void RenderWidgetHostViewAndroid::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   RenderFrameHostImpl* frame_host =
       RenderViewHostImpl::From(host())->GetMainRenderFrameHost();
-  if (frame_host && frame_host->ShouldVirtualKeyboardOverlayContent()) {
+  if (!frame_host || !frame_host->ShouldVirtualKeyboardOverlayContent())
+    return;
+  gfx::Rect keyboard_rect_with_scale;
+  if (!keyboard_rect.IsEmpty()) {
     float scale = IsUseZoomForDSFEnabled() ? 1 / view_.GetDipScale() : 1.f;
-    frame_host->NotifyVirtualKeyboardOverlayRect(
-        ScaleToEnclosedRect(keyboard_rect, scale));
+    keyboard_rect_with_scale = ScaleToEnclosedRect(keyboard_rect, scale);
+    // Intersect the keyboard rect with the `this` bounds which will be sent
+    // to the renderer.
+    keyboard_rect_with_scale.Intersect(GetViewBounds());
   }
+  frame_host->NotifyVirtualKeyboardOverlayRect(keyboard_rect_with_scale);
 }
 
 bool RenderWidgetHostViewAndroid::ShouldVirtualKeyboardOverlayContent() {
