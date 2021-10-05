@@ -5,6 +5,7 @@
 #include "ash/shelf/launcher_nudge_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -100,9 +101,12 @@ TEST_F(LauncherNudgeControllerTest, BasicTest) {
   EXPECT_FALSE(nudge_controller_->IsRecheckTimerRunningForTesting());
 }
 
-// TODO(crbug.com/1226093) Test is flaky under MSan.
-TEST_F(LauncherNudgeControllerTest,
-       DISABLED_StopShowingNudgeAfterLauncherIsOpened) {
+TEST_F(LauncherNudgeControllerTest, StopShowingNudgeAfterLauncherIsOpened) {
+  // Running the ExpandArrowView animation with the clock advanced will cause
+  // the msan crash. As a workaround, set the `short_animation_for_testing` in
+  // AppListView to true in order to disable the ExpandArrowView animation.
+  AppListView::SetShortAnimationForTesting(true);
+
   SimulateNewUserFirstLogin("user@gmail.com");
   EXPECT_EQ(0, GetNudgeShownCount());
 
