@@ -33,7 +33,6 @@
 namespace syncer {
 
 using base::Time;
-using base::TimeDelta;
 using sync_pb::DeviceInfoSpecifics;
 using sync_pb::FeatureSpecificFields;
 using sync_pb::ModelTypeState;
@@ -58,14 +57,15 @@ Time GetLastUpdateTime(const DeviceInfoSpecifics& specifics) {
   }
 }
 
-TimeDelta GetPulseIntervalFromSpecifics(const DeviceInfoSpecifics& specifics) {
+base::TimeDelta GetPulseIntervalFromSpecifics(
+    const DeviceInfoSpecifics& specifics) {
   if (specifics.has_pulse_interval_in_minutes()) {
-    return TimeDelta::FromMinutes(specifics.pulse_interval_in_minutes());
+    return base::Minutes(specifics.pulse_interval_in_minutes());
   }
   // If the interval is not set on the specifics it must be an old device, so we
   // fall back to the value used by old devices. We really do not want to use
   // the default int value of 0.
-  return TimeDelta::FromDays(1);
+  return base::Days(1);
 }
 
 absl::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
@@ -781,7 +781,7 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
       return false;
     }
 
-    const TimeDelta pulse_delay(DeviceInfoUtil::CalculatePulseDelay(
+    const base::TimeDelta pulse_delay(DeviceInfoUtil::CalculatePulseDelay(
         GetLastUpdateTime(*iter->second), Time::Now()));
     if (!pulse_delay.is_zero()) {
       pulse_timer_.Start(FROM_HERE, pulse_delay,

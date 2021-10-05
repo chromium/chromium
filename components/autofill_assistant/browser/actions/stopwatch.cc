@@ -11,9 +11,7 @@
 
 namespace autofill_assistant {
 
-Stopwatch::Stopwatch() {
-  elapsed_time_.FromMilliseconds(0);
-}
+Stopwatch::Stopwatch() = default;
 
 bool Stopwatch::Start() {
   if (running_) {

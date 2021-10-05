@@ -170,11 +170,11 @@ class FakeSequencedTaskSource : public internal::SequencedTaskSource {
 };
 
 TimeTicks Seconds(int seconds) {
-  return TimeTicks() + TimeDelta::FromSeconds(seconds);
+  return TimeTicks() + base::Seconds(seconds);
 }
 
 TimeTicks Days(int seconds) {
-  return TimeTicks() + TimeDelta::FromDays(seconds);
+  return TimeTicks() + base::Days(seconds);
 }
 
 }  // namespace
@@ -703,7 +703,7 @@ TEST_F(ThreadControllerWithMessagePumpTest, RunWithTimeout) {
         EXPECT_CALL(*message_pump_, Quit());
         EXPECT_FALSE(thread_controller_.DoIdleWork());
       }));
-  thread_controller_.Run(true, TimeDelta::FromSeconds(15));
+  thread_controller_.Run(true, base::Seconds(15));
 }
 
 #if defined(OS_WIN)

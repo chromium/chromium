@@ -31,7 +31,7 @@ enum {
 
 namespace {
 
-TimeDelta EndTimestamp(const StreamParser::BufferQueue& queue) {
+base::TimeDelta EndTimestamp(const StreamParser::BufferQueue& queue) {
   return queue.back()->timestamp() + queue.back()->duration();
 }
 
@@ -73,7 +73,7 @@ unsigned GetMSEBufferSizeLimitIfExists(base::StringPiece switch_string) {
 
 // List of time ranges for each SourceBuffer.
 // static
-Ranges<TimeDelta> SourceBufferState::ComputeRangesIntersection(
+Ranges<base::TimeDelta> SourceBufferState::ComputeRangesIntersection(
     const RangesList& active_ranges,
     bool ended) {
   // TODO(servolk): Perhaps this can be removed in favor of blink implementation
@@ -86,13 +86,13 @@ Ranges<TimeDelta> SourceBufferState::ComputeRangesIntersection(
   // Step 1: If activeSourceBuffers.length equals 0 then return an empty
   //  TimeRanges object and abort these steps.
   if (active_ranges.empty())
-    return Ranges<TimeDelta>();
+    return Ranges<base::TimeDelta>();
 
   // Step 2: Let active ranges be the ranges returned by buffered for each
   //  SourceBuffer object in activeSourceBuffers.
   // Step 3: Let highest end time be the largest range end time in the active
   //  ranges.
-  TimeDelta highest_end_time;
+  base::TimeDelta highest_end_time;
   for (const auto& range : active_ranges) {
     if (!range.size())
       continue;
@@ -102,15 +102,15 @@ Ranges<TimeDelta> SourceBufferState::ComputeRangesIntersection(
 
   // Step 4: Let intersection ranges equal a TimeRange object containing a
   //  single range from 0 to highest end time.
-  Ranges<TimeDelta> intersection_ranges;
-  intersection_ranges.Add(TimeDelta(), highest_end_time);
+  Ranges<base::TimeDelta> intersection_ranges;
+  intersection_ranges.Add(base::TimeDelta(), highest_end_time);
 
   // Step 5: For each SourceBuffer object in activeSourceBuffers run the
   //  following steps:
   for (const auto& range : active_ranges) {
     // Step 5.1: Let source ranges equal the ranges returned by the buffered
     //  attribute on the current SourceBuffer.
-    Ranges<TimeDelta> source_ranges = range;
+    Ranges<base::TimeDelta> source_ranges = range;
 
     // Step 5.2: If readyState is "ended", then set the end time on the last
     //  range in source ranges to highest end time.
@@ -207,9 +207,9 @@ void SourceBufferState::SetParseWarningCallback(
 
 bool SourceBufferState::Append(const uint8_t* data,
                                size_t length,
-                               TimeDelta append_window_start,
-                               TimeDelta append_window_end,
-                               TimeDelta* timestamp_offset) {
+                               base::TimeDelta append_window_start,
+                               base::TimeDelta append_window_end,
+                               base::TimeDelta* timestamp_offset) {
   append_in_progress_ = true;
   DCHECK(timestamp_offset);
   DCHECK(!timestamp_offset_during_append_);
@@ -234,9 +234,9 @@ bool SourceBufferState::Append(const uint8_t* data,
 
 bool SourceBufferState::AppendChunks(
     std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
-    TimeDelta append_window_start,
-    TimeDelta append_window_end,
-    TimeDelta* timestamp_offset) {
+    base::TimeDelta append_window_start,
+    base::TimeDelta append_window_end,
+    base::TimeDelta* timestamp_offset) {
   append_in_progress_ = true;
   DCHECK(timestamp_offset);
   DCHECK(!timestamp_offset_during_append_);
@@ -257,8 +257,8 @@ bool SourceBufferState::AppendChunks(
   return result;
 }
 
-void SourceBufferState::ResetParserState(TimeDelta append_window_start,
-                                         TimeDelta append_window_end,
+void SourceBufferState::ResetParserState(base::TimeDelta append_window_start,
+                                         base::TimeDelta append_window_end,
                                          base::TimeDelta* timestamp_offset) {
   DCHECK(timestamp_offset);
   DCHECK(!timestamp_offset_during_append_);
@@ -274,9 +274,9 @@ void SourceBufferState::ResetParserState(TimeDelta append_window_start,
   media_segment_has_data_for_track_.clear();
 }
 
-void SourceBufferState::Remove(TimeDelta start,
-                               TimeDelta end,
-                               TimeDelta duration) {
+void SourceBufferState::Remove(base::TimeDelta start,
+                               base::TimeDelta end,
+                               base::TimeDelta duration) {
   for (const auto& it : audio_streams_) {
     it.second->Remove(start, end, duration);
   }
@@ -367,8 +367,9 @@ void SourceBufferState::OnMemoryPressure(
   }
 }
 
-Ranges<TimeDelta> SourceBufferState::GetBufferedRanges(TimeDelta duration,
-                                                       bool ended) const {
+Ranges<base::TimeDelta> SourceBufferState::GetBufferedRanges(
+    base::TimeDelta duration,
+    bool ended) const {
   RangesList ranges_list;
   for (const auto& it : audio_streams_)
     ranges_list.push_back(it.second->GetBufferedRanges(duration));
@@ -382,8 +383,8 @@ Ranges<TimeDelta> SourceBufferState::GetBufferedRanges(TimeDelta duration,
   return ComputeRangesIntersection(ranges_list, ended);
 }
 
-TimeDelta SourceBufferState::GetHighestPresentationTimestamp() const {
-  TimeDelta max_pts;
+base::TimeDelta SourceBufferState::GetHighestPresentationTimestamp() const {
+  base::TimeDelta max_pts;
 
   for (const auto& it : audio_streams_) {
     max_pts = std::max(max_pts, it.second->GetHighestPresentationTimestamp());
@@ -400,8 +401,8 @@ TimeDelta SourceBufferState::GetHighestPresentationTimestamp() const {
   return max_pts;
 }
 
-TimeDelta SourceBufferState::GetMaxBufferedDuration() const {
-  TimeDelta max_duration;
+base::TimeDelta SourceBufferState::GetMaxBufferedDuration() const {
+  base::TimeDelta max_duration;
 
   for (const auto& it : audio_streams_) {
     max_duration = std::max(max_duration, it.second->GetBufferedDuration());
@@ -446,7 +447,7 @@ void SourceBufferState::AbortReads() {
   }
 }
 
-void SourceBufferState::Seek(TimeDelta seek_time) {
+void SourceBufferState::Seek(base::TimeDelta seek_time) {
   for (const auto& it : audio_streams_) {
     it.second->Seek(seek_time);
   }
@@ -474,7 +475,7 @@ void SourceBufferState::CompletePendingReadIfPossible() {
   }
 }
 
-void SourceBufferState::OnSetDuration(TimeDelta duration) {
+void SourceBufferState::OnSetDuration(base::TimeDelta duration) {
   for (const auto& it : audio_streams_) {
     it.second->OnSetDuration(duration);
   }
@@ -983,15 +984,16 @@ bool SourceBufferState::OnNewBuffers(
     media_segment_has_data_for_track_[it.first] = true;
   }
 
-  const TimeDelta timestamp_offset_before_processing =
+  const base::TimeDelta timestamp_offset_before_processing =
       *timestamp_offset_during_append_;
 
   // Calculate the new timestamp offset for audio/video tracks if the stream
   // parser corresponds to MSE MIME type with 'Generate Timestamps Flag' set
   // true.
-  TimeDelta predicted_timestamp_offset = timestamp_offset_before_processing;
+  base::TimeDelta predicted_timestamp_offset =
+      timestamp_offset_before_processing;
   if (generate_timestamps_flag()) {
-    TimeDelta min_end_timestamp = kNoTimestamp;
+    base::TimeDelta min_end_timestamp = kNoTimestamp;
     for (const auto& it : buffer_queue_map) {
       const StreamParser::BufferQueue& bufq = it.second;
       DCHECK(!bufq.empty());

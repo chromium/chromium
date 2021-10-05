@@ -19,7 +19,6 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 
 using base::Time;
-using base::TimeDelta;
 using gaia::ListedAccount;
 using signin_metrics::AccountRelation;
 using signin_metrics::ReportingType;
@@ -55,8 +54,8 @@ bool WaitingForExtendedInfo(signin::IdentityManager* identity_manager) {
 
 }  // namespace
 
-const TimeDelta AccountInvestigator::kPeriodicReportingInterval =
-    TimeDelta::FromDays(1);
+const base::TimeDelta AccountInvestigator::kPeriodicReportingInterval =
+    base::Days(1);
 
 AccountInvestigator::AccountInvestigator(
     PrefService* pref_service,
@@ -83,7 +82,7 @@ void AccountInvestigator::Initialize() {
       pref_service_->GetDouble(prefs::kGaiaCookiePeriodicReportTime));
   if (previous.is_null())
     previous = Time::Now();
-  const TimeDelta delay =
+  const base::TimeDelta delay =
       CalculatePeriodicDelay(previous, Time::Now(), kPeriodicReportingInterval);
   timer_.Start(FROM_HERE, delay, this, &AccountInvestigator::TryPeriodicReport);
 }
@@ -145,13 +144,14 @@ void AccountInvestigator::OnExtendedAccountInfoUpdated(
 }
 
 // static
-TimeDelta AccountInvestigator::CalculatePeriodicDelay(Time previous,
-                                                      Time now,
-                                                      TimeDelta interval) {
+base::TimeDelta AccountInvestigator::CalculatePeriodicDelay(
+    Time previous,
+    Time now,
+    base::TimeDelta interval) {
   // Don't allow negatives incase previous is in the future.
-  const TimeDelta age = std::max(now - previous, TimeDelta());
+  const base::TimeDelta age = std::max(now - previous, base::TimeDelta());
   // Don't allow negative intervals for very old things.
-  return std::max(interval - age, TimeDelta());
+  return std::max(interval - age, base::TimeDelta());
 }
 
 // static
@@ -260,9 +260,9 @@ void AccountInvestigator::SharedCookieJarReport(
     const ReportingType type) {
   const Time last_changed = Time::FromDoubleT(
       pref_service_->GetDouble(prefs::kGaiaCookieChangedTime));
-  TimeDelta stable_age;
+  base::TimeDelta stable_age;
   if (!last_changed.is_null())
-    stable_age = std::max(now - last_changed, TimeDelta());
+    stable_age = std::max(now - last_changed, base::TimeDelta());
   signin_metrics::LogCookieJarStableAge(stable_age, type);
 
   int signed_in_count = signed_in_accounts.size();
@@ -278,7 +278,7 @@ void AccountInvestigator::SharedCookieJarReport(
   // IsShared is defined as true if the local cookie jar contains at least one
   // signed out account and a stable age of less than one day.
   signin_metrics::LogIsShared(
-      signed_out_count >= 1 && stable_age < TimeDelta::FromDays(1), type);
+      signed_out_count >= 1 && stable_age < base::Days(1), type);
 }
 
 void AccountInvestigator::SignedInAccountRelationReport(

@@ -57,13 +57,12 @@ namespace {
 namespace em = enterprise_management;
 
 using base::Time;
-using base::TimeDelta;
 
 // How much time in the past to store active periods for.
-constexpr TimeDelta kMaxStoredPastActivityInterval = TimeDelta::FromDays(30);
+constexpr base::TimeDelta kMaxStoredPastActivityInterval = base::Days(30);
 
 // How much time in the future to store active periods for.
-constexpr TimeDelta kMaxStoredFutureActivityInterval = TimeDelta::FromDays(2);
+constexpr base::TimeDelta kMaxStoredFutureActivityInterval = base::Days(2);
 
 // How often the child's usage time is stored.
 constexpr base::TimeDelta kUpdateChildActiveTimeInterval = base::Seconds(30);
@@ -124,7 +123,7 @@ ChildStatusCollector::ChildStatusCollector(
     Profile* profile,
     chromeos::system::StatisticsProvider* provider,
     const AndroidStatusFetcher& android_status_fetcher,
-    TimeDelta activity_day_start)
+    base::TimeDelta activity_day_start)
     : StatusCollector(provider, ash::CrosSettings::Get()),
       pref_service_(pref_service),
       profile_(profile),
@@ -178,9 +177,9 @@ ChildStatusCollector::~ChildStatusCollector() {
   ash::UsageTimeStateNotifier::GetInstance()->RemoveObserver(this);
 }
 
-TimeDelta ChildStatusCollector::GetActiveChildScreenTime() {
+base::TimeDelta ChildStatusCollector::GetActiveChildScreenTime() {
   UpdateChildUsageTime();
-  return TimeDelta::FromMilliseconds(
+  return base::Milliseconds(
       pref_service_->GetInteger(prefs::kChildScreenTimeMilliseconds));
 }
 
@@ -238,7 +237,7 @@ void ChildStatusCollector::UpdateChildUsageTime() {
   Time now = clock_->Now();
   Time reset_time = activity_storage_->GetBeginningOfDay(now);
   if (reset_time > now)
-    reset_time -= TimeDelta::FromDays(1);
+    reset_time -= base::Days(1);
   // Reset screen time if it has not been reset today.
   if (reset_time > pref_service_->GetTime(prefs::kLastChildScreenTimeReset)) {
     pref_service_->SetTime(prefs::kLastChildScreenTimeReset, now);

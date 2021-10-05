@@ -10,7 +10,6 @@
 #include "ui/events/gesture_detection/motion_event_buffer.h"
 #include "ui/events/test/motion_event_test_utils.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using ui::test::MockMotionEvent;
 
