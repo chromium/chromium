@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
@@ -987,6 +988,80 @@ TEST_F(AXPlatformNodeAuraLinuxTest, AtkComponentScrollTo) {
   TestAXNodeWrapper::SetGlobalCoordinateOffset(gfx::Vector2d(0, 0));
 }
 #endif  //  ATK_CHECK_VERSION(2, 30, 0)
+
+//
+// AtkAction tests
+//
+
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetNActions) {
+  AXNodeData root;
+  root.id = 1;
+  root.AddAction(ax::mojom::Action::kDecrement);
+  root.AddAction(ax::mojom::Action::kIncrement);
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  ASSERT_TRUE(ATK_IS_ACTION(root_obj));
+  g_object_ref(root_obj);
+
+  gint number_of_actions = atk_action_get_n_actions(ATK_ACTION(root_obj));
+
+  EXPECT_EQ(3, number_of_actions);
+
+  g_object_unref(root_obj);
+}
+
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionGetName) {
+  AXNodeData root;
+  root.id = 1;
+  root.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+  root.AddAction(ax::mojom::Action::kDecrement);
+  root.AddAction(ax::mojom::Action::kIncrement);
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  ASSERT_TRUE(ATK_IS_ACTION(root_obj));
+  g_object_ref(root_obj);
+
+  const gchar* action_name = atk_action_get_name(ATK_ACTION(root_obj), 0);
+  // The index 0 is reserved for the default action. The rest of actions are
+  // presented in the order they were added.
+  EXPECT_STREQ("click", action_name);
+  action_name = atk_action_get_name(ATK_ACTION(root_obj), 1);
+  EXPECT_STREQ("decrement", action_name);
+  action_name = atk_action_get_name(ATK_ACTION(root_obj), 2);
+  EXPECT_STREQ("increment", action_name);
+  atk_action_do_action(ATK_ACTION(root_obj), 2);
+
+  g_object_unref(root_obj);
+}
+
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkActionDoAction) {
+  AXNodeData root;
+  root.id = 1;
+  root.AddAction(ax::mojom::Action::kDecrement);
+  root.AddAction(ax::mojom::Action::kIncrement);
+  Init(root);
+
+  AtkObject* root_obj(GetRootAtkObject());
+  ASSERT_TRUE(ATK_IS_OBJECT(root_obj));
+  ASSERT_TRUE(ATK_IS_ACTION(root_obj));
+  g_object_ref(root_obj);
+  auto* root_node = GetRootAsAXNode();
+
+  EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 0));
+  EXPECT_EQ(root_node, TestAXNodeWrapper::GetNodeFromLastDefaultAction());
+  EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 1));
+  EXPECT_TRUE(atk_action_do_action(ATK_ACTION(root_obj), 2));
+
+  // Test that querying actions out of bounds doesn't crash
+  EXPECT_FALSE(atk_action_do_action(ATK_ACTION(root_obj), -1));
+  EXPECT_FALSE(atk_action_do_action(ATK_ACTION(root_obj), 3));
+
+  g_object_unref(root_obj);
+}
 
 //
 // AtkValue tests

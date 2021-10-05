@@ -1253,8 +1253,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       node_data->SetRestriction(ax::mojom::blink::Restriction::kDisabled);
       break;
     case AXRestriction::kRestrictionNone:
-      if (CanSetValueAttribute())
-        node_data->AddAction(ax::mojom::blink::Action::kSetValue);
+      SerializeActionAttributes(node_data);
       break;
   }
 
@@ -1643,6 +1642,15 @@ void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) {
   controls_ids.push_back(chooser_popup_id);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kControlsIds, controls_ids);
+}
+
+void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
+  if (CanSetValueAttribute())
+    node_data->AddAction(ax::mojom::blink::Action::kSetValue);
+  if (IsSlider()) {
+    node_data->AddAction(ax::mojom::blink::Action::kDecrement);
+    node_data->AddAction(ax::mojom::blink::Action::kIncrement);
+  }
 }
 
 void AXObject::TruncateAndAddStringAttribute(

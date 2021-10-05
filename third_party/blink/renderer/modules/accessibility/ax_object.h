@@ -1370,6 +1370,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   const AXObject* TableParent() const;
 
   // Helpers for serialization.
+  void SerializeActionAttributes(ui::AXNodeData* node_data);
   void SerializeColorAttributes(ui::AXNodeData* node_data);
   void SerializeStyleAttributes(ui::AXNodeData* node_data);
   void SerializeSparseAttributes(ui::AXNodeData* node_data);
