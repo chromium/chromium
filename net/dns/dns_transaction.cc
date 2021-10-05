@@ -21,6 +21,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -903,7 +904,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
  public:
   DnsOverHttpsProbeRunner(base::WeakPtr<DnsSession> session,
                           ResolveContext* context)
-      : session_(std::move(session)), context_(context) {
+      : session_(std::move(session)), context_(context->AsSafeRef()) {
     DCHECK(session_);
     DCHECK(!session_->config().dns_over_https_servers.empty());
 
@@ -1054,8 +1055,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
   }
 
   base::WeakPtr<DnsSession> session_;
-  // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* const context_;
+  base::SafeRef<ResolveContext> context_;
   std::string formatted_probe_hostname_;
 
   // List of ProbeStats, one for each DoH server, indexed by the DoH server
@@ -1098,7 +1098,7 @@ class DnsTransactionImpl : public DnsTransaction,
         qnames_initial_size_(0),
         attempts_count_(0),
         had_tcp_retry_(false),
-        resolve_context_(resolve_context),
+        resolve_context_(resolve_context->AsSafeRef()),
         request_priority_(DEFAULT_PRIORITY) {
     DCHECK(session_.get());
     DCHECK(!hostname_.empty());
@@ -1670,8 +1670,7 @@ class DnsTransactionImpl : public DnsTransaction,
   base::OneShotTimer timer_;
   std::unique_ptr<base::ElapsedTimer> time_from_start_;
 
-  // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* resolve_context_;
+  base::SafeRef<ResolveContext> resolve_context_;
   RequestPriority request_priority_;
 
   THREAD_CHECKER(thread_checker_);

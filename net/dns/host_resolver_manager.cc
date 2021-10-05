@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/safe_ref.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -656,7 +657,7 @@ class HostResolverManager::RequestImpl
                 : NetworkIsolationKey()),
         parameters_(optional_parameters ? std::move(optional_parameters).value()
                                         : ResolveHostParameters()),
-        resolve_context_(resolve_context),
+        resolve_context_(resolve_context->AsSafeRef()),
         host_cache_(host_cache),
         host_resolver_flags_(
             HostResolver::ParametersToHostResolverFlags(parameters_)),
@@ -829,7 +830,7 @@ class HostResolverManager::RequestImpl
 
   const ResolveHostParameters& parameters() const { return parameters_; }
 
-  ResolveContext* resolve_context() const { return resolve_context_; }
+  ResolveContext* resolve_context() const { return &*resolve_context_; }
 
   HostCache* host_cache() const { return host_cache_; }
 
@@ -904,8 +905,7 @@ class HostResolverManager::RequestImpl
   const absl::variant<url::SchemeHostPort, HostPortPair> request_host_;
   const NetworkIsolationKey network_isolation_key_;
   ResolveHostParameters parameters_;
-  // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* const resolve_context_;
+  base::SafeRef<ResolveContext> resolve_context_;
   HostCache* const host_cache_;
   const HostResolverFlags host_resolver_flags_;
 
@@ -936,7 +936,7 @@ class HostResolverManager::ProbeRequestImpl
  public:
   ProbeRequestImpl(ResolveContext* context,
                    base::WeakPtr<HostResolverManager> resolver)
-      : context_(context), resolver_(resolver) {}
+      : context_(context->AsSafeRef()), resolver_(resolver) {}
 
   ProbeRequestImpl(const ProbeRequestImpl&) = delete;
   ProbeRequestImpl& operator=(const ProbeRequestImpl&) = delete;
@@ -946,17 +946,17 @@ class HostResolverManager::ProbeRequestImpl
   void Cancel() override {
     runner_.reset();
 
-    if (context_)
-      context_->UnregisterDohStatusObserver(this);
-    context_ = nullptr;
+    if (context_.has_value())
+      context_.value()->UnregisterDohStatusObserver(this);
+    context_.reset();
   }
 
   int Start() override {
     DCHECK(resolver_);
-    DCHECK(context_);
+    DCHECK(context_.has_value());
     DCHECK(!runner_);
 
-    context_->RegisterDohStatusObserver(this);
+    context_.value()->RegisterDohStatusObserver(this);
 
     StartRunner(false /* network_change */);
     return ERR_IO_PENDING;
@@ -980,7 +980,7 @@ class HostResolverManager::ProbeRequestImpl
     DCHECK(!resolver_->invalidation_in_progress_);
 
     if (!runner_)
-      runner_ = resolver_->CreateDohProbeRunner(context_);
+      runner_ = resolver_->CreateDohProbeRunner(&*context_.value());
     if (runner_)
       runner_->Start(network_change);
   }
@@ -992,8 +992,10 @@ class HostResolverManager::ProbeRequestImpl
     weak_ptr_factory_.InvalidateWeakPtrs();
   }
 
-  // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* context_;
+  // nullopt after cancellation, but otherwise expected to contain a still-valid
+  // ResolveContext reference.
+  absl::optional<base::SafeRef<ResolveContext>> context_;
+
   std::unique_ptr<DnsProbeRunner> runner_;
   base::WeakPtr<HostResolverManager> resolver_;
 
@@ -1268,7 +1270,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
           bool fallback_available)
       : client_(client),
         host_(std::move(host)),
-        resolve_context_(resolve_context),
+        resolve_context_(resolve_context->AsSafeRef()),
         secure_(secure),
         secure_dns_mode_(secure_dns_mode),
         delegate_(delegate),
@@ -1425,7 +1427,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
             base::BindOnce(&DnsTask::OnTransactionComplete,
                            base::Unretained(this), tick_clock_->NowTicks(),
                            dns_query_type),
-            net_log_, secure_, secure_dns_mode_, resolve_context_,
+            net_log_, secure_, secure_dns_mode_, &*resolve_context_,
             fallback_available_ /* fast_timeout */);
     trans->SetRequestPriority(delegate_->priority());
     return trans;
@@ -1887,8 +1889,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 
   absl::variant<url::SchemeHostPort, std::string> host_;
 
-  // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* const resolve_context_;
+  base::SafeRef<ResolveContext> resolve_context_;
 
   // Whether lookups in this DnsTask should occur using DoH or plaintext.
   const bool secure_;
@@ -1931,11 +1932,15 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 //-----------------------------------------------------------------------------
 
 struct HostResolverManager::JobKey {
+  JobKey(ResolveContext* resolve_context)
+      : resolve_context(resolve_context->AsSafeRef()) {}
+
   bool operator<(const JobKey& other) const {
     return std::forward_as_tuple(query_type, flags, source, secure_dns_mode,
-                                 resolve_context, host, network_isolation_key) <
+                                 &*resolve_context, host,
+                                 network_isolation_key) <
            std::forward_as_tuple(other.query_type, other.flags, other.source,
-                                 other.secure_dns_mode, other.resolve_context,
+                                 other.secure_dns_mode, &*other.resolve_context,
                                  other.host, other.network_isolation_key);
   }
 
@@ -1945,8 +1950,7 @@ struct HostResolverManager::JobKey {
   HostResolverFlags flags;
   HostResolverSource source;
   SecureDnsMode secure_dns_mode;
-  // TODO(ericorth@chromium.org): Use base::UnownedPtr once available.
-  ResolveContext* resolve_context;
+  base::SafeRef<ResolveContext> resolve_context;
 
   HostCache::Key ToCacheKey(bool secure) const {
     HostCache::Key key(host, query_type, flags, source, network_isolation_key);
@@ -2429,7 +2433,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // running it, as a "started" job needs a task to be properly cleaned up.
     dns_task_ = std::make_unique<DnsTask>(
         resolver_->dns_client_.get(), key_.host, key_.query_type,
-        key_.resolve_context, secure, key_.secure_dns_mode, this, net_log_,
+        &*key_.resolve_context, secure, key_.secure_dns_mode, this, net_log_,
         tick_clock_, !tasks_.empty() /* fallback_available */);
     dns_task_->StartNextTransaction();
     // Schedule a second transaction, if needed. DoH queries can bypass the
@@ -3130,12 +3134,11 @@ int HostResolverManager::Resolve(RequestImpl* request) {
   DCHECK(!invalidation_in_progress_);
 
   const auto& parameters = request->parameters();
-  JobKey job_key;
+  JobKey job_key(request->resolve_context());
   job_key.host =
       CreateHostForJobKey(request->request_host(), parameters.dns_query_type);
   job_key.network_isolation_key = request->network_isolation_key();
   job_key.source = parameters.source;
-  job_key.resolve_context = request->resolve_context();
 
   IPAddress ip_address;
   bool is_ip = ip_address.AssignFromIPLiteral(GetHostname(job_key.host));
@@ -3605,7 +3608,7 @@ void HostResolverManager::CreateTaskSequence(
                dns_client_->CanQueryAdditionalTypesViaInsecureDns());
           PushDnsTasks(proc_task_allowed, job_key.secure_dns_mode,
                        insecure_allowed, allow_cache, prioritize_local_lookups,
-                       job_key.resolve_context, out_tasks);
+                       &*job_key.resolve_context, out_tasks);
         } else if (proc_task_allowed) {
           out_tasks->push_back(TaskType::PROC);
         }
@@ -3629,7 +3632,7 @@ void HostResolverManager::CreateTaskSequence(
              dns_client_->CanQueryAdditionalTypesViaInsecureDns());
         PushDnsTasks(false /* proc_task_allowed */, job_key.secure_dns_mode,
                      insecure_allowed, allow_cache, prioritize_local_lookups,
-                     job_key.resolve_context, out_tasks);
+                     &*job_key.resolve_context, out_tasks);
       }
       break;
     case HostResolverSource::MULTICAST_DNS:
