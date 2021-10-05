@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
+#include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
@@ -28,6 +30,13 @@ LibInputEventConverter::LibInputEvent::~LibInputEvent() {
   if (event_) {
     libinput_event_destroy(event_);
   }
+}
+
+libinput_event_pointer* LibInputEventConverter::LibInputEvent::PointerEvent()
+    const {
+  auto* const event = libinput_event_get_pointer_event(event_);
+  DCHECK(event);
+  return event;
 }
 
 libinput_event_type LibInputEventConverter::LibInputEvent::Type() const {
@@ -125,22 +134,26 @@ constexpr libinput_interface
 std::unique_ptr<LibInputEventConverter> LibInputEventConverter::Create(
     const base::FilePath& path,
     int id,
-    const EventDeviceInfo& devinfo) {
+    const EventDeviceInfo& devinfo,
+    CursorDelegateEvdev* cursor,
+    DeviceEventDispatcherEvdev* dispatcher) {
   auto context = LibInputContext::Create();
   if (!context) {
     LOG(ERROR) << "LibInputContext::Create failed";
     return nullptr;
   }
 
-  return std::make_unique<LibInputEventConverter>(std::move(context.value()),
-                                                  path, id, devinfo);
+  return std::make_unique<LibInputEventConverter>(
+      std::move(context.value()), path, id, devinfo, cursor, dispatcher);
 }
 
 LibInputEventConverter::LibInputEventConverter(
     LibInputEventConverter::LibInputContext&& ctx,
     const base::FilePath& path,
     int id,
-    const EventDeviceInfo& devinfo)
+    const EventDeviceInfo& devinfo,
+    CursorDelegateEvdev* cursor,
+    DeviceEventDispatcherEvdev* dispatcher)
     : EventConverterEvdev(ctx.Fd(),
                           path,
                           id,
@@ -150,6 +163,8 @@ LibInputEventConverter::LibInputEventConverter(
                           devinfo.vendor_id(),
                           devinfo.product_id(),
                           devinfo.version()),
+      dispatcher_(dispatcher),
+      cursor_(cursor),
       has_keyboard_(devinfo.HasKeyboard()),
       has_mouse_(devinfo.HasMouse()),
       has_touchpad_(devinfo.HasTouchpad()),
@@ -188,6 +203,9 @@ void LibInputEventConverter::OnFileCanReadWithoutBlocking(int fd) {
 void LibInputEventConverter::HandleEvent(const LibInputEvent& event) {
   switch (event.Type()) {
     case LIBINPUT_EVENT_POINTER_MOTION:
+      HandlePointerMotion(event);
+      break;
+
     case LIBINPUT_EVENT_POINTER_BUTTON:
     case LIBINPUT_EVENT_POINTER_AXIS:
     case LIBINPUT_EVENT_TOUCH_DOWN:
@@ -218,6 +236,27 @@ void LibInputEventConverter::HandleEvent(const LibInputEvent& event) {
       DVLOG(3) << "Ignoring libinput event: " << event.Type();
       break;
   }
+}
+
+void LibInputEventConverter::HandlePointerMotion(const LibInputEvent& evt) {
+  libinput_event_pointer* event = evt.PointerEvent();
+  const int flags = EF_NONE;
+  const double dx = libinput_event_pointer_get_dx(event);
+  const double dy = libinput_event_pointer_get_dy(event);
+
+  cursor_->MoveCursor(gfx::Vector2dF(dx, dy));
+
+  DVLOG(3) << "Pointer motion: dx=" << dx << ", dy=" << dy;
+
+  dispatcher_->DispatchMouseMoveEvent(
+      {input_device_.id, flags, cursor_->GetLocation(), nullptr /*delta*/,
+       PointerDetails(EventPointerType::kMouse), Timestamp(evt)});
+}
+
+base::TimeTicks LibInputEventConverter::Timestamp(const LibInputEvent& evt) {
+  libinput_event_pointer* event = evt.PointerEvent();
+  uint64_t time_usec = libinput_event_pointer_get_time_usec(event);
+  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(time_usec);
 }
 
 }  // namespace ui

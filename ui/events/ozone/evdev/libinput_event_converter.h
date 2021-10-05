@@ -13,6 +13,8 @@
 
 namespace ui {
 
+class CursorDelegateEvdev;
+class DeviceEventDispatcherEvdev;
 class EventDeviceInfo;
 
 // Use libinput (freedesktop.org/wiki/Software/libinput) to read events from
@@ -31,6 +33,7 @@ class LibInputEventConverter : public EventConverterEvdev {
     LibInputEvent& operator=(const LibInputEvent& other) = delete;
     ~LibInputEvent();
 
+    libinput_event_pointer* PointerEvent() const;
     libinput_event_type Type() const;
 
    private:
@@ -67,13 +70,19 @@ class LibInputEventConverter : public EventConverterEvdev {
     libinput* li_;
   };
 
-  static std::unique_ptr<LibInputEventConverter>
-  Create(const base::FilePath& path, int id, const EventDeviceInfo& devinfo);
+  static std::unique_ptr<LibInputEventConverter> Create(
+      const base::FilePath& path,
+      int id,
+      const EventDeviceInfo& devinfo,
+      CursorDelegateEvdev* cursor,
+      DeviceEventDispatcherEvdev* dispatcher);
 
   LibInputEventConverter(LibInputEventConverter::LibInputContext&& ctx,
                          const base::FilePath& path,
                          int id,
-                         const EventDeviceInfo& devinfo);
+                         const EventDeviceInfo& devinfo,
+                         CursorDelegateEvdev* cursor,
+                         DeviceEventDispatcherEvdev* dispatcher);
   LibInputEventConverter(const LibInputEventConverter& other) = delete;
   LibInputEventConverter& operator=(const LibInputEventConverter& other) =
       delete;
@@ -90,6 +99,11 @@ class LibInputEventConverter : public EventConverterEvdev {
  private:
   void OnFileCanReadWithoutBlocking(int fd) final;
   void HandleEvent(const LibInputEvent& event);
+  void HandlePointerMotion(const LibInputEvent& evt);
+  base::TimeTicks Timestamp(const LibInputEvent& evt);
+
+  DeviceEventDispatcherEvdev* const dispatcher_;
+  CursorDelegateEvdev* const cursor_;
 
   const bool has_keyboard_;
   const bool has_mouse_;
