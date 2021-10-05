@@ -52,6 +52,13 @@ const base::Feature kEnableUsap{"ArcEnableUsap",
 const base::Feature kFilePickerExperimentFeature{
     "ArcFilePickerExperiment", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether the guest zram is enabled. This is only for ARCVM.
+const base::Feature kGuestZram{"ArcGuestZram",
+                               base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls the size of the guest zram.
+const base::FeatureParam<int> kGuestZramSize{&kGuestZram, "size", 0};
+
 // Controls image copy & paste app compat feature in ARC.
 const base::Feature kImageCopyPasteCompatFeature{
     "ArcImageCopyPasteCompat", base::FEATURE_ENABLED_BY_DEFAULT};

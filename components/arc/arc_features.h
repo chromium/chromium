@@ -25,6 +25,8 @@ extern const base::Feature kEnableUnifiedAudioFocusFeature;
 extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
 extern const base::Feature kEnableUsap;
 extern const base::Feature kFilePickerExperimentFeature;
+extern const base::Feature kGuestZram;
+extern const base::FeatureParam<int> kGuestZramSize;
 extern const base::Feature kImageCopyPasteCompatFeature;
 extern const base::Feature kKeyboardShortcutHelperIntegrationFeature;
 extern const base::Feature kMoreVcpusWithCoreScheduling;
