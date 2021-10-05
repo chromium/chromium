@@ -7,6 +7,9 @@
 
 #include "chromeos/services/bluetooth_config/device_name_manager.h"
 
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_device.h"
+
 class PrefRegistrySimple;
 class PrefService;
 
@@ -18,7 +21,9 @@ class DeviceNameManagerImpl : public DeviceNameManager {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  explicit DeviceNameManagerImpl(PrefService* pref_service);
+  DeviceNameManagerImpl(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      PrefService* pref_service);
   ~DeviceNameManagerImpl() override;
 
   // DeviceNameManager:
@@ -28,6 +33,11 @@ class DeviceNameManagerImpl : public DeviceNameManager {
                          const std::string& nickname) override;
 
  private:
+  // Returns true if a BluetoothDevice* with identifier |device_id| exists in
+  // |bluetooth_adapter_|, else false.
+  bool DoesDeviceExist(const std::string& device_id) const;
+
+  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   PrefService* pref_service_;
 };
 

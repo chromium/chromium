@@ -32,8 +32,11 @@ void DeviceNameManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
                                    base::Value(base::Value::Type::DICTIONARY));
 }
 
-DeviceNameManagerImpl::DeviceNameManagerImpl(PrefService* pref_service)
-    : pref_service_(pref_service) {}
+DeviceNameManagerImpl::DeviceNameManagerImpl(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    PrefService* pref_service)
+    : bluetooth_adapter_(std::move(bluetooth_adapter)),
+      pref_service_(pref_service) {}
 
 DeviceNameManagerImpl::~DeviceNameManagerImpl() = default;
 
@@ -51,9 +54,16 @@ absl::optional<std::string> DeviceNameManagerImpl::GetDeviceNickname(
 void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
                                               const std::string& nickname) {
   if (!IsNicknameValid(nickname)) {
-    BLUETOOTH_LOG(ERROR)
-        << "SetDeviceNickname failed because nickname is invalid, nickname: "
-        << nickname;
+    BLUETOOTH_LOG(ERROR) << "SetDeviceNickname for device with id " << device_id
+                         << " failed because nickname is invalid, nickname: "
+                         << nickname;
+    return;
+  }
+
+  if (!DoesDeviceExist(device_id)) {
+    BLUETOOTH_LOG(ERROR) << "SetDeviceNickname for device failed because "
+                            "device_id was not found, device_id: "
+                         << device_id;
     return;
   }
 
@@ -62,6 +72,15 @@ void DeviceNameManagerImpl::SetDeviceNickname(const std::string& device_id,
   DCHECK(device_id_to_nickname_map)
       << "Device ID to nickname map pref is unregistered.";
   device_id_to_nickname_map->SetStringKey(device_id, nickname);
+}
+
+bool DeviceNameManagerImpl::DoesDeviceExist(
+    const std::string& device_id) const {
+  for (auto* device : bluetooth_adapter_->GetDevices()) {
+    if (device->GetIdentifier() == device_id)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace bluetooth_config
