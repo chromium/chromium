@@ -11,10 +11,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/supports_user_data.h"
-#include "components/content_creation/notes/core/templates/note_template.h"
-#include "components/prefs/pref_service.h"
+
+class PrefService;
 
 namespace content_creation {
+
+class NoteTemplate;
 
 using GetTemplatesCallback =
     base::OnceCallback<void(std::vector<NoteTemplate>)>;

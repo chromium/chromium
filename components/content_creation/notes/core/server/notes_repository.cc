@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "components/content_creation/notes/core/note_features.h"
+#include "components/content_creation/notes/core/server/note_data.h"
 #include "components/content_creation/notes/core/server/notes_server_saver.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

@@ -13,8 +13,10 @@
 #include "base/task_runner_util.h"
 #include "components/content_creation/notes/core/note_features.h"
 #include "components/content_creation/notes/core/note_prefs.h"
+#include "components/content_creation/notes/core/templates/note_template.h"
 #include "components/content_creation/notes/core/templates/template_constants.h"
 #include "components/content_creation/notes/core/templates/template_types.h"
+#include "components/prefs/pref_service.h"
 
 namespace content_creation {
 
