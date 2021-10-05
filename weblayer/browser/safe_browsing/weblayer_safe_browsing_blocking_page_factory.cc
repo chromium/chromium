@@ -6,7 +6,6 @@
 
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
-#include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
 #include "content/public/browser/navigation_entry.h"
 #include "weblayer/browser/browser_context_impl.h"
@@ -25,14 +24,6 @@ WebLayerSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
     const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
         unsafe_resources,
     bool should_trigger_reporting) {
-  // TODO(crbug.com/1248408): Is this adjusting of main_frame_url necessary?
-  // //chrome doesn't seem to do it.
-  content::NavigationEntry* entry =
-      security_interstitials::GetNavigationEntryForResource(
-          unsafe_resources[0]);
-  GURL url =
-      (main_frame_url.is_empty() && entry) ? entry->GetURL() : main_frame_url;
-
   BrowserContextImpl* browser_context =
       static_cast<BrowserContextImpl*>(web_contents->GetBrowserContext());
   security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
@@ -49,7 +40,7 @@ WebLayerSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
   // TODO(crbug.com/1080748): Set settings_page_helper once enhanced protection
   // is supported on weblayer.
   return new safe_browsing::SafeBrowsingBlockingPage(
-      ui_manager, web_contents, url, unsafe_resources,
+      ui_manager, web_contents, main_frame_url, unsafe_resources,
       safe_browsing::BaseBlockingPage::CreateControllerClient(
           web_contents, unsafe_resources, ui_manager,
           browser_context->pref_service(),
