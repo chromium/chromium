@@ -37,6 +37,9 @@ const char kCurrencyCodeUS[] = "USD";
 const char kCurrencyCodeCanada[] = "CAD";
 const char kCurrentPriceFormatted[] = "$5.00";
 const char kPreviousPriceFormatted[] = "$10.00";
+const int64_t kLessthanTwoUnitsPreviousPrice = 8'500'000;
+const int64_t kLessthanTenPercentPreviousPrice = 9'200'000;
+const int64_t kHigherThanPreviousPrice = 20'000'000;
 const int64_t kLowerThanCurrentPriceMicros = 1'000'000;
 const int64_t kCurrentPriceMicros = 5'000'000;
 const int64_t kPreviousPreiceMicros = 10'000'000;
@@ -178,4 +181,48 @@ TEST_F(ShoppingPersistedDataTabHelperTest, TestInconsistentCurrencyCode) {
   CommitToUrlAndNavigate(GURL(kPriceDropUrl));
   RunUntilIdle();
   EXPECT_EQ(nullptr, GetPriceDrop());
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTwoUnits) {
+  commerce::PriceTrackingData price_tracking_data;
+  FillPriceTrackingProto(price_tracking_data, kOfferId, kPreviousPreiceMicros,
+                         kLessthanTwoUnitsPreviousPrice, kCurrencyCodeUS);
+  MockOptimizationGuideResponse(price_tracking_data);
+  CommitToUrlAndNavigate(GURL(kPriceDropUrl));
+  RunUntilIdle();
+  EXPECT_EQ(nullptr, GetPriceDrop());
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest, TestPriceDropLessThanTenPercent) {
+  commerce::PriceTrackingData price_tracking_data;
+  FillPriceTrackingProto(price_tracking_data, kOfferId, kPreviousPreiceMicros,
+                         kLessthanTenPercentPreviousPrice, kCurrencyCodeUS);
+  MockOptimizationGuideResponse(price_tracking_data);
+  CommitToUrlAndNavigate(GURL(kPriceDropUrl));
+  RunUntilIdle();
+  EXPECT_EQ(nullptr, GetPriceDrop());
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest,
+       TestIsQualifyingPriceDropRegularPrice) {
+  EXPECT_TRUE(
+      IsQualifyingPriceDrop(kCurrentPriceMicros, kPreviousPreiceMicros));
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest,
+       TestIsQualifyingPriceDropLessThanTwoUnits) {
+  EXPECT_FALSE(IsQualifyingPriceDrop(kLessthanTwoUnitsPreviousPrice,
+                                     kPreviousPreiceMicros));
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest,
+       TestIsQualifyingPriceDropLessThanTenPercent) {
+  EXPECT_FALSE(IsQualifyingPriceDrop(kLessthanTenPercentPreviousPrice,
+                                     kPreviousPreiceMicros));
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest,
+       TestIsQualifyingPriceDropPriceIncrease) {
+  EXPECT_FALSE(
+      IsQualifyingPriceDrop(kHigherThanPreviousPrice, kPreviousPreiceMicros));
 }

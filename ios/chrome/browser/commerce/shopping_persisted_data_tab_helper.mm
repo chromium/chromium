@@ -170,9 +170,11 @@ void ShoppingPersistedDataTabHelper::ParseProto(
       product_update.new_price().currency_code())
     return;
 
-  if (product_update.new_price().amount_micros() >=
-      product_update.old_price().amount_micros())
+  if (!IsQualifyingPriceDrop(product_update.new_price().amount_micros(),
+                             product_update.old_price().amount_micros())) {
     return;
+  }
+
   // TODO(crbug.com/1254900) Filter out non-qualifying price drops (< 10% or
   // < 2 units).
   payments::CurrencyFormatter* currencyFormatter =
