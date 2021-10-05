@@ -3091,6 +3091,8 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/quick_unlock/pin_migration_browsertest.cc",
         "../browser/ash/login/reset_browsertest.cc",
         "../browser/ash/login/saml/fake_saml_idp_mixin.cc",
+        "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.cc",
+        "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h",
         "../browser/ash/login/saml/password_change_extension_browsertest.cc",
         "../browser/ash/login/saml/password_change_success_detection_browsertest.cc",
         "../browser/ash/login/saml/saml_browsertest.cc",

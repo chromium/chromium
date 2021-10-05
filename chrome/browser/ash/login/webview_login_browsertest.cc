@@ -32,6 +32,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/helper.h"
+#include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
@@ -145,6 +147,8 @@ constexpr test::UIPath kSecondaryButton = {"gaia-signin", "signin-frame-dialog",
 constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
                                       "signin-back-button"};
 constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame_()";
+constexpr char kSigninWebviewOnLockScreen[] =
+    "$('main-element').getSigninFrame_()";
 
 // UMA names for better test reading.
 const char kLoginRequests[] = "OOBE.GaiaScreen.LoginRequests";
@@ -1109,14 +1113,15 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
   // the given `webview_path`. Returns the `net::SSLInfo` as observed by the
   // server, or `absl::nullopt` if the server did not report any such value.
   absl::optional<net::SSLInfo> RequestClientCertTestPageInFrame(
+      test::JSChecker js_checker,
       const std::string& webview_path) {
     const GURL url = https_server_->GetURL("/client-cert");
     content::TestNavigationObserver navigation_observer(url);
     navigation_observer.WatchExistingWebContents();
     navigation_observer.StartWatchingNewWebContents();
 
-    test::OobeJS().Evaluate(base::StringPrintf(
-        "%s.src='%s'", webview_path.c_str(), url.spec().c_str()));
+    js_checker.Evaluate(base::StringPrintf("%s.src='%s'", webview_path.c_str(),
+                                           url.spec().c_str()));
     navigation_observer.Wait();
 
     base::AutoLock lock(server_ssl_info_lock_);
@@ -1214,6 +1219,13 @@ class WebviewClientCertsLoginTest : public WebviewClientCertsLoginTestBase {
                                 system_nss_key_slot_mixin_.slot());
   }
 
+ protected:
+  LoginManagerMixin::TestUserInfo test_user_{
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                     FakeGaiaMixin::kFakeUserGaiaId),
+      user_manager::USER_TYPE_REGULAR};
+  LoginManagerMixin login_manager_mixin_{&mixin_host_, {test_user_}};
+
  private:
   ScopedTestSystemNSSKeySlotMixin system_nss_key_slot_mixin_{&mixin_host_};
 };
@@ -1238,7 +1250,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 
   // Use `watch_new_webcontents` because the EULA webview has not navigated yet.
   absl::optional<net::SSLInfo> ssl_info =
-      RequestClientCertTestPageInFrame("$('cros-eula-frame')");
+      RequestClientCertTestPageInFrame(test::OobeJS(), "$('cros-eula-frame')");
   ASSERT_TRUE(ssl_info);
   EXPECT_FALSE(ssl_info->cert);
 }
@@ -1317,7 +1329,8 @@ class SigninFrameWebviewClientCertsLoginTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest, Test) {
+IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest,
+                       LoginScreenTest) {
   // Arrange the system slot.
   ASSERT_NO_FATAL_FAILURE(
       SetUpClientCertsInSystemSlot(GetParam().client_certs));
@@ -1346,11 +1359,69 @@ IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest, Test) {
   if (GetParam().manually_select_cert)
     SimulateUserWillSelectClientCert(*GetParam().manually_select_cert);
 
+  EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   // Act: navigate to the page hosted by the test server.
   absl::optional<net::SSLInfo> ssl_info =
-      RequestClientCertTestPageInFrame(kSigninWebview);
+      RequestClientCertTestPageInFrame(test::OobeJS(), kSigninWebview);
+  ASSERT_TRUE(ssl_info);
+
+  // Assert the expectation on the client certificate that got selected.
+  if (GetParam().assert_cert) {
+    ASSERT_TRUE(ssl_info->cert);
+    EXPECT_THAT(*ssl_info->cert, EqualsCert(*GetParam().assert_cert));
+  } else {
+    EXPECT_FALSE(ssl_info->cert);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(SigninFrameWebviewClientCertsLoginTest, LockscreenTest) {
+  // Arrange the system slot.
+  ASSERT_NO_FATAL_FAILURE(
+      SetUpClientCertsInSystemSlot(GetParam().client_certs));
+  // Arrange the device policy.
+  if (GetParam().intermediate_cert) {
+    const base::FilePath intermediate_cert_path =
+        net::GetTestCertsDirectory()
+            .AppendASCII(*GetParam().intermediate_cert)
+            .AddExtensionASCII("pem");
+    ASSERT_NO_FATAL_FAILURE(
+        SetIntermediateAuthorityInDeviceOncPolicy(intermediate_cert_path));
+  }
+  SetAutoSelectCertificatePatterns(GetParam().autoselect_patterns);
+  if (GetParam().prompt_on_multiple_matches) {
+    SetPromptOnMultipleMatchingCertificatesPolicy(
+        *GetParam().prompt_on_multiple_matches);
+  }
+
+  // Prepare the test server for the "act" part of the test.
+  net::SSLServerConfig server_config;
+  server_config.client_cert_type = net::SSLServerConfig::OPTIONAL_CLIENT_CERT;
+  server_config.cert_authorities = GetParam().ca_certs;
+  ASSERT_NO_FATAL_FAILURE(StartHttpsServer(server_config));
+  // Prepare the certificate selector hook for simulating the user gesture in
+  // the "act" part of the test.
+  if (GetParam().manually_select_cert)
+    SimulateUserWillSelectClientCert(*GetParam().manually_select_cert);
+
+  // Log in a user and lock the screen, then trigger the lock screen SAML reauth
+  // dialog.
+  login_manager_mixin_.LoginWithDefaultContext(test_user_);
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> lock_screen_reauth_dialog =
+      LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+  ASSERT_TRUE(lock_screen_reauth_dialog);
+  lock_screen_reauth_dialog->ForceSamlRedirect();
+  lock_screen_reauth_dialog->ExpectVerifyAccountScreenVisible();
+  lock_screen_reauth_dialog->ClickVerifyButton();
+  lock_screen_reauth_dialog->WaitForSamlScreen();
+
+  // Act: navigate to the page hosted by the test server in the sign-in frame of
+  // the lock screen SAML reauth dialog.
+  absl::optional<net::SSLInfo> ssl_info = RequestClientCertTestPageInFrame(
+      lock_screen_reauth_dialog->DialogJS(), kSigninWebviewOnLockScreen);
   ASSERT_TRUE(ssl_info);
 
   // Assert the expectation on the client certificate that got selected.
@@ -1732,7 +1803,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
   TpmManagerClient::Get()->GetTestInterface()->EmitOwnershipTakenSignal();
 
   absl::optional<net::SSLInfo> ssl_info =
-      RequestClientCertTestPageInFrame(kSigninWebview);
+      RequestClientCertTestPageInFrame(test::OobeJS(), kSigninWebview);
   ASSERT_TRUE(ssl_info);
   ASSERT_TRUE(ssl_info->cert);
   EXPECT_THAT(*ssl_info->cert, EqualsCert(std::string(kClientCert1Name)));

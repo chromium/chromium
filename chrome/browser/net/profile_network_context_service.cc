@@ -527,11 +527,12 @@ ProfileNetworkContextService::CreateClientCertStore() {
   bool use_system_key_slot = false;
   // Enable client certificates for the Chrome OS sign-in frame, if this feature
   // is not disabled by a flag.
-  // Note that while this applies to the whole sign-in profile, client
-  // certificates will only be selected for the StoragePartition currently used
-  // in the sign-in frame (see SigninPartitionManager).
+  // Note that while this applies to the whole sign-in profile / lock screen
+  // profile, client certificates will only be selected for the StoragePartition
+  // currently used in the sign-in frame (see SigninPartitionManager).
   if (chromeos::switches::IsSigninFrameClientCertsEnabled() &&
-      chromeos::ProfileHelper::IsSigninProfile(profile_)) {
+      (chromeos::ProfileHelper::IsSigninProfile(profile_) ||
+       chromeos::ProfileHelper::IsLockScreenProfile(profile_))) {
     use_system_key_slot = true;
   }
 
