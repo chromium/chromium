@@ -110,9 +110,14 @@ Polymer({
     const makeOption = (option) => {
       const name = option.name;
       const uiType = settings.input_method_util.getOptionUiType(name);
-      const value = name in currentSettings ?
+      let value = name in currentSettings ?
           currentSettings[name] :
           settings.input_method_util.OPTION_DEFAULT[name];
+      if (!this.isSettingValueValid_(name, value)) {
+        value = settings.input_method_util.OPTION_DEFAULT[name];
+        this.updatePref_(name, value);
+      }
+
       const label = settings.input_method_util.isOptionLabelTranslated(name) ?
           this.i18n(settings.input_method_util.getOptionLabelName(name)) :
           settings.input_method_util.getUntranslatedOptionLabelName(name);
@@ -183,6 +188,15 @@ Polymer({
     Polymer.RenderStatus.afterNextRender(this, () => {
       this.updatePref_(option.name, option.value);
     });
+  },
+
+  isSettingValueValid_(name, value) {
+    const uiType = settings.input_method_util.getOptionUiType(name);
+    if (uiType !== UiType.DROPDOWN) {
+      return true;
+    }
+    const menuItems = settings.input_method_util.getOptionMenuItems(name);
+    return menuItems.find((item) => item.value === value);
   },
 
   /**
