@@ -928,10 +928,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
 // does not allow for accessing the source API (networkingPrivate) directly.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasSourceDoesntGiveAliasAccess) {
-  const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetID(kWhitelistedId)
+          .SetID(kAllowlistedId)
           .AddPermission("networkingPrivate")
           .Build();
 
@@ -960,10 +960,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // allow for accessing the alias.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasDoesntGiveAliasSourceAccess) {
-  const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetID(kWhitelistedId)
+          .SetID(kAllowlistedId)
           .AddPermission("networking.onc")
           .Build();
   RegisterExtension(extension);
@@ -990,10 +990,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 // Test that if an extension has access to both an alias and an alias source,
 // the objects on the API are different.
 TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
-  const char kWhitelistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
+  const char kAllowlistedId[] = "pkedcjkdefgpdelpbcmbmeomcjbeemfm";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
-          .SetID(kWhitelistedId)
+          .SetID(kAllowlistedId)
           .AddPermissions({"networkingPrivate", "networking.onc"})
           .Build();
   RegisterExtension(extension);
