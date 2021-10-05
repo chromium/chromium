@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {NetworkType, RoutineType} from 'chrome://diagnostics/diagnostics_types.js';
-import {convertKibToGibDecimalString, getRoutineGroups, getSubnetMaskFromRoutingPrefix} from 'chrome://diagnostics/diagnostics_utils.js';
+import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
 import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
@@ -106,5 +106,16 @@ export function diagnosticsUtilsTestSuite() {
         internetConnectivityGroup.routines.includes(RoutineType.kArcPing));
     assertFalse(
         internetConnectivityGroup.routines.includes(RoutineType.kArcHttp));
+  });
+
+  test('GetNetworkCardTitle', () => {
+    // Force connection state into title by setting displayStateInTitle to true.
+    setDisplayStateInTitleForTesting(true);
+    assertEquals(
+        'Ethernet (Online)', getNetworkCardTitle('Ethernet', 'Online'));
+
+    // Default state is to not display connection details in title.
+    setDisplayStateInTitleForTesting(false);
+    assertEquals('Ethernet', getNetworkCardTitle('Ethernet', 'Online'));
   });
 }

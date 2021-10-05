@@ -301,3 +301,36 @@ export function filterNameServers(network) {
         network.ipConfig.nameServers.filter(n => n !== '0.0.0.0');
   }
 }
+
+/*
+ * If true network state text is appended to network and connectivity card
+ * title.
+ * @type {boolean}
+ */
+let displayStateInTitle = false;
+
+/**
+ * Test helper function to allow change if state text is appended to the card
+ * title.
+ * @param {boolean} state
+ */
+export function setDisplayStateInTitleForTesting(state) {
+  displayStateInTitle = state;
+}
+
+/**
+ * Build common string for network title for network and connectivity card.
+ * Current network state is included for debugging when `displayStateInTitle`
+ * is true.
+ * @param {string} networkType
+ * @param {string} networkState
+ * @returns
+ */
+export function getNetworkCardTitle(networkType, networkState) {
+  let titleForCard = `${networkType}`;
+  if (displayStateInTitle) {
+    titleForCard = `${titleForCard} (${networkState})`;
+  }
+
+  return `${titleForCard}`;
+}
