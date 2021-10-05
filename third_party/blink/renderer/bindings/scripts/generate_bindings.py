@@ -32,7 +32,7 @@ def parse_output_reldirs(reldirs):
 
 def parse_options(valid_tasks):
     parser = argparse.ArgumentParser(
-        description='Generator for blink bindings.')
+        description='Generator for Blink bindings.')
     parser.add_argument("--web_idl_database",
                         required=True,
                         type=str,
@@ -81,11 +81,12 @@ def main():
         'enumeration': bind_gen.generate_enumerations,
         'interface': bind_gen.generate_interfaces,
         'namespace': bind_gen.generate_namespaces,
+        'observable_array': bind_gen.generate_observable_arrays,
         'typedef': bind_gen.generate_typedefs,
         'union': bind_gen.generate_unions,
     }
 
-    options = parse_options(dispatch_table.keys())
+    options = parse_options(valid_tasks=dispatch_table.keys())
 
     output_reldirs = parse_output_reldirs(options.output_reldir)
 

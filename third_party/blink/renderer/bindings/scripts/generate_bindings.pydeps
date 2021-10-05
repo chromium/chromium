@@ -42,6 +42,7 @@ bind_gen/interface.py
 bind_gen/mako_renderer.py
 bind_gen/name_style.py
 bind_gen/namespace.py
+bind_gen/observable_array.py
 bind_gen/package_initializer.py
 bind_gen/path_manager.py
 bind_gen/style_format.py
@@ -76,6 +77,7 @@ web_idl/ir_map.py
 web_idl/literal_constant.py
 web_idl/make_copy.py
 web_idl/namespace.py
+web_idl/observable_array.py
 web_idl/operation.py
 web_idl/reference.py
 web_idl/runtime_enabled_features.py
