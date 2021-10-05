@@ -18,6 +18,8 @@
 #include "components/arc/intent_helper/intent_filter.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -350,6 +352,87 @@ TEST_F(IntentUtilsTest, CreateShareIntentFromFiles_GetFileUrls) {
   EXPECT_EQ(intent_with_text_and_title_str,
             apps_util::CreateLaunchIntent("com.android.vending",
                                           intent_with_text_and_title));
+}
+
+TEST_F(IntentUtilsTest, CreateChromeAppIntentFilters_FileHandlers) {
+  // Foo app provides file handler for text/plain and all file types.
+  extensions::ExtensionBuilder foo_app;
+  foo_app.SetManifest(
+      extensions::DictionaryBuilder()
+          .Set("name", "Foo")
+          .Set("version", "1.0.0")
+          .Set("manifest_version", 2)
+          .Set("app", extensions::DictionaryBuilder()
+                          .Set("background",
+                               extensions::DictionaryBuilder()
+                                   .Set("scripts", extensions::ListBuilder()
+                                                       .Append("background.js")
+                                                       .Build())
+                                   .Build())
+                          .Build())
+          .Set(
+              "file_handlers",
+              extensions::DictionaryBuilder()
+                  .Set("any",
+                       extensions::DictionaryBuilder()
+                           .Set("types",
+                                extensions::ListBuilder().Append("*/*").Build())
+                           .Build())
+                  .Set("text",
+                       extensions::DictionaryBuilder()
+                           .Set("types", extensions::ListBuilder()
+                                             .Append("text/plain")
+                                             .Build())
+                           .Set("extensions",
+                                extensions::ListBuilder().Append("txt").Build())
+                           .Set("verb", "open_with")
+                           .Build())
+                  .Build())
+          .Build());
+  foo_app.SetID("abcdzxcv");
+  scoped_refptr<const extensions::Extension> foo = foo_app.Build();
+
+  std::vector<IntentFilterPtr> filters =
+      apps_util::CreateChromeAppIntentFilters(foo.get());
+
+  ASSERT_EQ(filters.size(), 2);
+
+  // "any" filter - View action
+  const IntentFilterPtr& mime_filter = filters[0];
+  ASSERT_EQ(mime_filter->conditions.size(), 2);
+  const Condition& view_cond = *mime_filter->conditions[0];
+  EXPECT_EQ(view_cond.condition_type, ConditionType::kAction);
+  ASSERT_EQ(view_cond.condition_values.size(), 1);
+  EXPECT_EQ(view_cond.condition_values[0]->value, apps_util::kIntentActionView);
+
+  // "any" filter - mime type match
+  const Condition& file_cond = *mime_filter->conditions[1];
+  EXPECT_EQ(file_cond.condition_type, ConditionType::kFile);
+  ASSERT_EQ(file_cond.condition_values.size(), 1);
+  EXPECT_EQ(file_cond.condition_values[0]->match_type,
+            PatternMatchType::kMimeType);
+  EXPECT_EQ(file_cond.condition_values[0]->value, "*/*");
+
+  // Text filter - View action
+  const IntentFilterPtr& mime_filter2 = filters[1];
+  ASSERT_EQ(mime_filter2->conditions.size(), 2);
+  const Condition& view_cond2 = *mime_filter2->conditions[0];
+  EXPECT_EQ(view_cond2.condition_type, ConditionType::kAction);
+  ASSERT_EQ(view_cond2.condition_values.size(), 1);
+  EXPECT_EQ(view_cond2.condition_values[0]->value,
+            apps_util::kIntentActionView);
+
+  // Text filter - mime type match
+  const Condition& file_cond2 = *mime_filter2->conditions[1];
+  EXPECT_EQ(file_cond2.condition_type, ConditionType::kFile);
+  ASSERT_EQ(file_cond2.condition_values.size(), 2);
+  EXPECT_EQ(file_cond2.condition_values[0]->match_type,
+            PatternMatchType::kMimeType);
+  EXPECT_EQ(file_cond2.condition_values[0]->value, "text/plain");
+  // Text filter - file extension match
+  EXPECT_EQ(file_cond2.condition_values[1]->match_type,
+            PatternMatchType::kFileExtension);
+  EXPECT_EQ(file_cond2.condition_values[1]->value, "txt");
 }
 
 // Converting an Arc Intent filter for a URL view intent filter should add a

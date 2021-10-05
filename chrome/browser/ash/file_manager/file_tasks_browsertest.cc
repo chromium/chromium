@@ -386,8 +386,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MediaAppPreferredOverChromeApps) {
       TaskDescriptor(extension->id(), StringToTaskType("app"), "tiffAction"),
       {"tiff"}, {"image/tiff"});
   if (profile_type() == TestProfileType::kIncognito) {
-    // In incognito, the provided file system can exist, but the file handler
-    // preference can't be changed.
+    // In incognito, the installed app is not enabled and we filter it out.
     TestExpectationsAgainstDefaultTasks({{"tiff", kMediaAppId}});
   } else {
     TestExpectationsAgainstDefaultTasks({{"tiff", extension->id().c_str()}});

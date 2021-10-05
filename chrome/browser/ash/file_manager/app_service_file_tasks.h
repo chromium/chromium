@@ -24,6 +24,10 @@ class FileSystemURL;
 namespace file_manager {
 namespace file_tasks {
 
+// Returns true if a file handler is enabled. Some handlers such as
+// import-crostini-image can be disabled at runtime by enterprise policy.
+bool FileHandlerIsEnabled(Profile* profile, const std::string& file_handler_id);
+
 // Finds the app services tasks that can handle |entries|, appends them to
 // |result_list|, and calls back to |callback|.
 // Only support sharing at the moment.

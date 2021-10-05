@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/app_service_impl.h"
@@ -28,6 +29,7 @@
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/url_data_source.h"
+#include "extensions/common/constants.h"
 #include "ui/display/types/display_constants.h"
 #include "url/url_constants.h"
 
@@ -380,6 +382,33 @@ std::vector<std::string> AppServiceProxyBase::GetAppIdsForUrl(
   return app_ids;
 }
 
+bool ShouldIgnoreApp(const apps::AppUpdate& update) {
+  bool is_ready = apps_util::IsInstalled(update.Readiness());
+  bool show_in_launcher =
+      update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue;
+  // TODO(1240906): Find a way to properly filter in/out apps that should
+  // participate in intent handling.
+  bool is_exempt =
+      web_app::IsSystemAppIdWithFileHandlers(update.AppId()) ||
+      update.AppId() == file_manager::kAudioPlayerAppId ||
+      update.AppId() == extension_misc::kQuickOfficeComponentExtensionId;
+  return !is_ready || (!show_in_launcher && !is_exempt);
+}
+
+std::string GetActivityLabel(const apps::mojom::IntentFilterPtr& filter,
+                             const apps::AppUpdate& update) {
+  if (filter->activity_label && !filter->activity_label->empty()) {
+    return filter->activity_label.value();
+  } else {
+    return update.Name();
+  }
+}
+
+struct IndexAndGeneric {
+  size_t index;
+  bool is_generic;
+};
+
 std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
     const apps::mojom::IntentPtr& intent,
     bool exclude_browsers,
@@ -395,42 +424,53 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
                                     &exclude_browsers,
                                     &exclude_browser_tab_apps](
                                        const apps::AppUpdate& update) {
-      // TODO(1240906): Find a way to properly filter in/out apps that should
-      // participate in intent handling.
-      if (!apps_util::IsInstalled(update.Readiness()) ||
-          (update.ShowInLauncher() != apps::mojom::OptionalBool::kTrue &&
-           !web_app::IsSystemAppIdWithFileHandlers(update.AppId()))) {
+      if (ShouldIgnoreApp(update)) {
         return;
       }
       if (exclude_browser_tab_apps &&
           update.WindowMode() == mojom::WindowMode::kBrowser) {
         return;
       }
-      std::set<std::string> existing_activities;
+      // |activity_label| -> {index, is_generic}
+      std::map<std::string, IndexAndGeneric> best_handler_map;
+      bool is_file_handling_intent =
+          intent->files.has_value() && intent->files->size() > 0;
+      size_t index = 0;
       for (const auto& filter : update.IntentFilters()) {
         if (exclude_browsers && apps_util::IsBrowserFilter(filter)) {
           continue;
         }
         if (apps_util::IntentMatchesFilter(intent, filter)) {
-          IntentLaunchInfo entry;
-          entry.app_id = update.AppId();
-          std::string activity_label;
-          if (filter->activity_label &&
-              !filter->activity_label.value().empty()) {
-            activity_label = filter->activity_label.value();
-          } else {
-            activity_label = update.Name();
+          // Return the first non-generic match if it exists, otherwise the
+          // first generic match.
+          bool generic = false;
+          if (is_file_handling_intent) {
+            generic = apps_util::IsGenericFileHandler(intent, filter);
           }
-          if (base::Contains(existing_activities, activity_label)) {
-            continue;
+          std::string activity_label = GetActivityLabel(filter, update);
+          // Replace the best handler if it is generic and we have a non-generic
+          // one.
+          auto it = best_handler_map.find(activity_label);
+          if (it == best_handler_map.end() ||
+              (it->second.is_generic && !generic)) {
+            best_handler_map[activity_label] = IndexAndGeneric{index, generic};
           }
-          existing_activities.insert(activity_label);
-          entry.activity_label = activity_label;
-          entry.activity_name = filter->activity_name.value_or("");
-          entry.is_file_extension_match =
-              apps_util::FilterIsForFileExtensions(filter);
-          intent_launch_info.push_back(entry);
         }
+        index++;
+      }
+      const auto& filters = update.IntentFilters();
+      for (const auto& handler_entry : best_handler_map) {
+        const mojom::IntentFilterPtr& filter =
+            filters[handler_entry.second.index];
+        IntentLaunchInfo entry;
+        entry.app_id = update.AppId();
+        entry.activity_label = GetActivityLabel(filter, update);
+        entry.activity_name = filter->activity_name.value_or("");
+        entry.is_generic_file_handler =
+            apps_util::IsGenericFileHandler(intent, filter);
+        entry.is_file_extension_match =
+            apps_util::FilterIsForFileExtensions(filter);
+        intent_launch_info.push_back(entry);
       }
     });
   }
@@ -438,11 +478,9 @@ std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForIntent(
 }
 
 std::vector<IntentLaunchInfo> AppServiceProxyBase::GetAppsForFiles(
-    const std::vector<GURL>& filesystem_urls,
-    const std::vector<std::string>& mime_types) {
+    std::vector<apps::mojom::IntentFilePtr> files) {
   return GetAppsForIntent(
-      apps_util::CreateViewIntentFromFiles(filesystem_urls, mime_types), false,
-      false);
+      apps_util::CreateViewIntentFromFiles(std::move(files)), false, false);
 }
 
 void AppServiceProxyBase::AddPreferredApp(const std::string& app_id,

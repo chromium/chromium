@@ -20,6 +20,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/json/json_string_value_serializer.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
@@ -80,6 +84,11 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     old_content_browser_client_ =
         content::SetBrowserClientForTesting(content_browser_client_.get());
 
+    app_service_test_.SetUp(GetProfile());
+    app_service_proxy_ =
+        apps::AppServiceProxyFactory::GetForProfile(GetProfile());
+    ASSERT_TRUE(app_service_proxy_);
+
     // The test_directory needs to be mounted for it to be accessible.
     GetProfile()->GetMountPoints()->RegisterFileSystem(
         "test", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
@@ -119,7 +128,20 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
             extensions::mojom::ManifestLocation::kInvalidLocation,
             *manifest_dictionary, extensions::Extension::NO_FLAGS, &error);
     ASSERT_TRUE(error.empty()) << error;
-    extensions::ExtensionRegistry::Get(GetProfile())->AddEnabled(extension);
+
+    std::vector<apps::mojom::AppPtr> apps;
+    auto app = apps::mojom::App::New();
+    app->app_id = "invalid-chrome-app";
+    app->app_type = apps::mojom::AppType::kExtension;
+    app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
+    app->readiness = apps::mojom::Readiness::kReady;
+    app->intent_filters =
+        apps_util::CreateChromeAppIntentFilters(extension.get());
+    apps.push_back(std::move(app));
+    app_service_proxy_->AppRegistryCache().OnApps(
+        std::move(apps), apps::mojom::AppType::kExtension,
+        /*should_notify_initialized=*/false);
+    app_service_test_.WaitForAppService();
   }
 
   void SetUp() override {
@@ -141,6 +163,8 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<content::ContentBrowserClient> content_browser_client_;
   content::ContentBrowserClient* old_content_browser_client_ = nullptr;
+  apps::AppServiceTest app_service_test_;
+  apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
 };
 
 #else

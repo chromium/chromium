@@ -41,6 +41,7 @@ struct IntentLaunchInfo {
   std::string app_id;
   std::string activity_name;
   std::string activity_label;
+  bool is_generic_file_handler;
   bool is_file_extension_match;
 };
 
@@ -204,10 +205,9 @@ class AppServiceProxyBase : public KeyedService,
       bool exclude_browser_tab_apps = true);
 
   // Returns a list of apps (represented by their ids) and activities (if
-  // applied) which can handle |filesystem_urls| and |mime_types|.
+  // applied) which can handle |files|.
   std::vector<IntentLaunchInfo> GetAppsForFiles(
-      const std::vector<GURL>& filesystem_urls,
-      const std::vector<std::string>& mime_types);
+      std::vector<apps::mojom::IntentFilePtr> files);
 
   // Adds a preferred app for |url|.
   void AddPreferredApp(const std::string& app_id, const GURL& url);

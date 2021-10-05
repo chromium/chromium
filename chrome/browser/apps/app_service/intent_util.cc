@@ -12,10 +12,13 @@
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -35,7 +38,8 @@ apps::mojom::IntentFilterPtr CreateFileFilter(
     const std::vector<std::string>& intent_actions,
     const std::vector<std::string>& mime_types,
     const std::vector<std::string>& file_extensions,
-    const std::string& activity_name = "") {
+    const std::string& activity_name = "",
+    bool include_directories = false) {
   DCHECK(!mime_types.empty() || !file_extensions.empty());
   auto intent_filter = apps::mojom::IntentFilter::New();
 
@@ -62,6 +66,10 @@ apps::mojom::IntentFilterPtr CreateFileFilter(
   for (const std::string& extension : file_extensions) {
     condition_values.push_back(apps_util::MakeConditionValue(
         extension, apps::mojom::PatternMatchType::kFileExtension));
+  }
+  if (include_directories) {
+    condition_values.push_back(apps_util::MakeConditionValue(
+        "", apps::mojom::PatternMatchType::kIsDirectory));
   }
 
   DCHECK(!condition_values.empty());
@@ -231,6 +239,36 @@ std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
         GURL(chromeos::kChromeUIUntrustedProjectorPwaUrl)));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  return filters;
+}
+
+std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
+    const extensions::Extension* extension) {
+  const extensions::FileHandlersInfo* file_handlers =
+      extensions::FileHandlers::GetFileHandlers(extension);
+  if (!file_handlers)
+    return {};
+  // Check that the extension can be launched with files. This includes all
+  // platform apps and allowlisted extensions.
+  if (!CanLaunchViaEvent(extension))
+    return {};
+
+  std::vector<apps::mojom::IntentFilterPtr> filters;
+  for (const apps::FileHandlerInfo& handler : *file_handlers) {
+    // "share_with", "add_to" and "pack_with" are ignored in the Files app
+    // frontend.
+    if (handler.verb != apps::file_handler_verbs::kOpenWith)
+      continue;
+    std::vector<std::string> mime_types(handler.types.begin(),
+                                        handler.types.end());
+    std::vector<std::string> file_extensions(handler.extensions.begin(),
+                                             handler.extensions.end());
+    filters.push_back(CreateFileFilter({apps_util::kIntentActionView},
+                                       mime_types, file_extensions, handler.id,
+                                       handler.include_directories));
+    filters.back()->activity_label = extension->name();
+  }
 
   return filters;
 }
@@ -466,6 +504,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
             case apps::mojom::PatternMatchType::kNone:
             case apps::mojom::PatternMatchType::kMimeType:
             case apps::mojom::PatternMatchType::kFileExtension:
+            case apps::mojom::PatternMatchType::kIsDirectory:
               NOTREACHED();
               return arc::IntentFilter();
           }

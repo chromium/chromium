@@ -341,6 +341,7 @@ enum PatternMatchType {
   kGlob,
   kMimeType,
   kFileExtension,
+  kIsDirectory,
 };
 
 // For pattern type of condition, the value match will be based on the pattern
@@ -388,6 +389,7 @@ struct IntentFile {
   string? file_name;  // Human readable file name, including extension. Should
                       // not contain path separators.
   uint64 file_size;   // File size in bytes.
+  OptionalBool is_directory; // Whether this is a directory or not.
 };
 
 // Action and resource handling request. This should

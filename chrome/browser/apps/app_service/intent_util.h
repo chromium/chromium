@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "extensions/common/extension.h"
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
@@ -41,6 +42,11 @@ namespace apps_util {
 std::vector<apps::mojom::IntentFilterPtr> CreateWebAppIntentFilters(
     const web_app::WebApp& web_app,
     const GURL& scope);
+
+// Create intent filters for a Chrome app (extension-based) e.g. for
+// file_handlers.
+std::vector<apps::mojom::IntentFilterPtr> CreateChromeAppIntentFilters(
+    const extensions::Extension* extension);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Create an intent struct with filesystem:// or file:// type URLs from the
