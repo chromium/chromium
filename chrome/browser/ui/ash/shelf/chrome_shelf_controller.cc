@@ -1123,8 +1123,7 @@ void ChromeShelfController::SyncPinPosition(const ash::ShelfID& shelf_id) {
       shelf_ids_after.push_back(shelf_id_after);
   }
 
-  shelf_prefs_->SetPinPosition(profile(), shelf_id, shelf_id_before,
-                               shelf_ids_after);
+  shelf_prefs_->SetPinPosition(shelf_id, shelf_id_before, shelf_ids_after);
 }
 
 void ChromeShelfController::OnSyncModelUpdated() {

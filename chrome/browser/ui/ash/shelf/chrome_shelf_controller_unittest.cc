@@ -287,6 +287,21 @@ class TestV2AppShelfItemController : public ash::ShelfItemDelegate {
   void Close() override {}
 };
 
+// A fake that uses a testing profile.
+class FakeChromeShelfItemFactory : public ChromeShelfItemFactory {
+ public:
+  explicit FakeChromeShelfItemFactory(Profile* profile)
+      : ChromeShelfItemFactory(), profile_(profile) {}
+  FakeChromeShelfItemFactory(const FakeChromeShelfItemFactory&) = delete;
+  FakeChromeShelfItemFactory& operator=(const FakeChromeShelfItemFactory&) =
+      delete;
+  ~FakeChromeShelfItemFactory() override = default;
+
+ private:
+  Profile* GetPrimaryProfile() override { return profile_; }
+  Profile* const profile_;
+};
+
 // Simulates selection of the shelf item.
 void SelectItem(ash::ShelfItemDelegate* delegate) {
   std::unique_ptr<ui::Event> event = std::make_unique<ui::MouseEvent>(
@@ -555,7 +570,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
 
   // Create an uninitialized controller instance.
   ChromeShelfController* CreateShelfController() {
-    shelf_item_factory_ = std::make_unique<ChromeShelfItemFactory>();
+    shelf_item_factory_ =
+        std::make_unique<FakeChromeShelfItemFactory>(profile());
     shelf_controller_ = std::make_unique<ChromeShelfController>(
         profile(), model_.get(), shelf_item_factory_.get());
     shelf_controller_->SetProfileForTest(profile());

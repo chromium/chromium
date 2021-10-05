@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
 
+#include <map>
 #include <memory>
 
 #include "base/containers/contains.h"
@@ -98,10 +99,27 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
 
   bool ShouldAddDefaultApps(PrefService* pref_service) override { return true; }
 
+  bool IsStandaloneBrowserPublishingChromeApps() override {
+    return standalone_browser_publishing_chrome_apps_;
+  }
+
+  apps::mojom::AppType GetAppType(const std::string& app_id) override {
+    // If the item isn't present this lazy constructs it with kUnknown.
+    return app_type_map_[app_id];
+  }
+  bool IsAshExtensionApp(const std::string& app_id) override {
+    return app_type_map_[app_id] == apps::mojom::AppType::kExtension;
+  }
+  bool IsAshKeepListApp(const std::string& app_id) override { return false; }
+
   void ObserveSyncService() override {}
 
   TestingPrefServiceSimple* const pref_service_;
   AppListSyncableServiceFake* const syncable_service_;
+  bool standalone_browser_publishing_chrome_apps_ = false;
+
+  // A map that returns the app type for a given app id.
+  std::map<std::string, apps::mojom::AppType> app_type_map_;
 };
 
 // Unit tests for ChromeShelfPrefs
@@ -122,6 +140,15 @@ class ChromeShelfPrefsTest : public testing::Test {
   }
 
   void TearDown() override { shelf_prefs_.reset(); }
+
+  std::vector<std::string> StringsFromShelfIds(
+      const std::vector<ash::ShelfID>& shelf_ids) {
+    std::vector<std::string> results;
+    std::vector<std::string> pinned_apps_strs;
+    for (auto& shelf_id : shelf_ids)
+      results.push_back(shelf_id.app_id);
+    return results;
+  }
 
  protected:
   TestingPrefServiceSimple pref_service_;
@@ -212,6 +239,66 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
   // Change the profile. Migration is necessary again!
   shelf_prefs_->AttachProfile(nullptr);
   ASSERT_TRUE(shelf_prefs_->ShouldPerformConsistencyMigrations());
+}
+
+// Checks that we properly transform app_ids for standalone browser chrome apps.
+TEST_F(ChromeShelfPrefsTest, TransformationForStandaloneBrowserChromeApps) {
+  shelf_prefs_->standalone_browser_publishing_chrome_apps_ = true;
+
+  // We make three fake sync items. One is an ash chrome app, one corresponds to
+  // a lacros chrome app, the third is neither.
+  std::string kAshChromeAppId = "test1";
+  std::string kAshChromeAppIdWithUsualPrefix = "Default###test1";
+  std::string kLacrosChromeAppId = "test2";
+  std::string kLacrosChromeAppIdWithUsualPrefix = "Default###test2";
+  std::string kNeitherId = "test3";
+
+  syncer::StringOrdinal ordinal1 =
+      syncer::StringOrdinal::CreateInitialOrdinal();
+  syncer::StringOrdinal ordinal2 = ordinal1.CreateAfter();
+  syncer::StringOrdinal ordinal3 = ordinal2.CreateAfter();
+
+  syncable_service_.item_map_[kAshChromeAppId] =
+      MakeSyncItem(kAshChromeAppId, ordinal1);
+  syncable_service_.item_map_[kLacrosChromeAppId] =
+      MakeSyncItem(kLacrosChromeAppId, ordinal2);
+  syncable_service_.item_map_[kNeitherId] = MakeSyncItem(kNeitherId, ordinal3);
+
+  shelf_prefs_->app_type_map_[kAshChromeAppId] =
+      apps::mojom::AppType::kExtension;
+  shelf_prefs_->app_type_map_[kLacrosChromeAppIdWithUsualPrefix] =
+      apps::mojom::AppType::kStandaloneBrowserExtension;
+
+  std::vector<ash::ShelfID> pinned_apps =
+      shelf_prefs_->GetPinnedAppsFromSync(nullptr);
+  std::vector<std::string> pinned_apps_strs = StringsFromShelfIds(pinned_apps);
+
+  ASSERT_TRUE(base::Contains(pinned_apps_strs, kAshChromeAppIdWithUsualPrefix));
+  ASSERT_TRUE(
+      base::Contains(pinned_apps_strs, kLacrosChromeAppIdWithUsualPrefix));
+  ASSERT_TRUE(base::Contains(pinned_apps_strs, kNeitherId));
+
+  // The three items should come in order. Other items might be added by
+  // migration. That's OK.
+  auto it = std::find(pinned_apps_strs.begin(), pinned_apps_strs.end(),
+                      kAshChromeAppIdWithUsualPrefix);
+  size_t index = it - pinned_apps_strs.begin();
+
+  ASSERT_EQ(pinned_apps_strs[index + 1], kLacrosChromeAppIdWithUsualPrefix);
+  ASSERT_EQ(pinned_apps_strs[index + 2], kNeitherId);
+
+  // Now we move kNeitherId in between the first two ids.
+  shelf_prefs_->SetPinPosition(pinned_apps[index + 2], pinned_apps[index],
+                               {pinned_apps[index + 1]});
+
+  // Get pinned apps again.
+  pinned_apps = shelf_prefs_->GetPinnedAppsFromSync(nullptr);
+  pinned_apps_strs = StringsFromShelfIds(pinned_apps);
+
+  // The ordering should have changed
+  ASSERT_EQ(pinned_apps_strs[index], kAshChromeAppIdWithUsualPrefix);
+  ASSERT_EQ(pinned_apps_strs[index + 1], kNeitherId);
+  ASSERT_EQ(pinned_apps_strs[index + 2], kLacrosChromeAppIdWithUsualPrefix);
 }
 
 }  // namespace
