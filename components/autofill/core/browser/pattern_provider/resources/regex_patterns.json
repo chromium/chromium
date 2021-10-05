@@ -2111,7 +2111,7 @@
     "zh-CN": [
       {
         "pattern_identifier": "zh_email_preserving",
-        "positive_pattern": "邮件|邮箱",
+        "positive_pattern": "邮件|邮箱|電子郵件",
         "positive_score": 1.4,
         "negative_pattern": null,
         "match_field_attributes": 3,
@@ -2285,7 +2285,7 @@
     "zh-CN": [
       {
         "pattern_identifier": "zh_full_name_preserving",
-        "positive_pattern": "姓名",
+        "positive_pattern": "姓\\s*名",
         "positive_score": 0.9,
         "negative_pattern": null,
         "match_field_attributes": 3,

@@ -315,7 +315,7 @@ const char16_t kEmailRe[] =
     u"|correo.*electr(o|ó)nico"      // es-ES
     u"|メールアドレス"               // ja-JP
     u"|Электронн(ая|ой).?Почт(а|ы)"  // ru
-    u"|邮件|邮箱"                    // zh-CN
+    u"|邮件|邮箱|電子郵件"           // zh-CN
     u"|電郵地址|電子信箱"            // zh-TW
     u"|ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?"
     u"മെയിൽ"                                        // ml
@@ -340,7 +340,7 @@ const char16_t kNameRe[] =
     u"|お名前|氏名"                             // ja-JP
     u"|^nome"                                   // pt-BR, pt-PT
     u"|نام.*نام.*خانوادگی"                      // fa
-    u"|姓名"                                    // zh-CN
+    u"|姓\\s*名"                                // zh-CN
     u"|контактное.?лицо"                        // ru
     u"|(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)"  // tr
     u"|성명"                                    // ko-KR
