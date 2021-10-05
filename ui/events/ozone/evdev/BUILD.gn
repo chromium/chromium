@@ -33,6 +33,16 @@ if (use_evdev_gestures) {
   }
 }
 
+if (use_libinput) {
+  pkg_config("libinput") {
+    packages = [ "libinput" ]
+  }
+
+  config("libinput_config") {
+    defines = [ "USE_LIBINPUT" ]
+  }
+}
+
 component("evdev") {
   output_name = "events_ozone_evdev"
 
@@ -151,6 +161,16 @@ component("evdev") {
     ]
 
     public_configs += [ ":evdev_gestures_config" ]
+  }
+
+  if (use_libinput) {
+    configs += [ ":libinput" ]
+    public_configs += [ ":libinput_config" ]
+
+    sources += [
+      "libinput_event_converter.cc",
+      "libinput_event_converter.h",
+    ]
   }
 
   visibility += [
