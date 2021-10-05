@@ -248,6 +248,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   const std::string name = "Name" + seed_str;
   const std::string description = "Description" + seed_str;
   const absl::optional<SkColor> theme_color = random.next_uint();
+  absl::optional<SkColor> dark_mode_theme_color;
   const absl::optional<SkColor> background_color = random.next_uint();
   const absl::optional<SkColor> synced_theme_color = random.next_uint();
   auto app = std::make_unique<WebApp>(app_id);
@@ -267,12 +268,17 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   if (!app->HasAnySources())
     app->AddSource(Source::kSync);
 
+  if (random.next_bool()) {
+    dark_mode_theme_color = SkColorSetA(random.next_uint(), SK_AlphaOPAQUE);
+  }
+
   app->SetName(name);
   app->SetDescription(description);
   app->SetManifestId(manifest_id);
   app->SetStartUrl(GURL(start_url));
   app->SetScope(GURL(scope));
   app->SetThemeColor(theme_color);
+  app->SetDarkModeThemeColor(dark_mode_theme_color);
   app->SetBackgroundColor(background_color);
   app->SetIsLocallyInstalled(random.next_bool());
   app->SetIsFromSyncAndPendingInstallation(random.next_bool());

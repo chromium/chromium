@@ -234,4 +234,7 @@ message WebAppProto {
   // A list of disallowed launch protocols. The user has elected to never
   // allow these protocols be launched in the web app.
   repeated string disallowed_launch_protocols = 40;
+
+  // A background color to be used when the app is opened in dark mode.
+  optional uint32 dark_mode_theme_color = 41;
 }

@@ -36,6 +36,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/style/color_provider.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 
 namespace {
@@ -223,12 +224,21 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
   if (web_theme_color)
     return web_theme_color;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<SkColor> dark_mode_color =
+      registrar().GetAppDarkModeThemeColor(app_id());
+  if (ash::ColorProvider::Get()->IsDarkModeEnabled() && dark_mode_color) {
+    return dark_mode_color;
+  }
+#endif
+
   return registrar().GetAppThemeColor(app_id());
 }
 
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
   if (auto color = AppBrowserController::GetBackgroundColor())
     return color;
+
   return registrar().GetAppBackgroundColor(app_id());
 }
 

@@ -301,6 +301,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->scope().is_empty());
   EXPECT_FALSE(app->theme_color().has_value());
   EXPECT_FALSE(app->background_color().has_value());
+  EXPECT_FALSE(app->dark_mode_theme_color().has_value());
   EXPECT_TRUE(app->manifest_icons().empty());
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::ANY).empty());
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MASKABLE).empty());
@@ -365,6 +366,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->scope().is_empty());
   EXPECT_FALSE(app_copy->theme_color().has_value());
   EXPECT_FALSE(app_copy->background_color().has_value());
+  EXPECT_FALSE(app_copy->dark_mode_theme_color().has_value());
   EXPECT_TRUE(app_copy->last_badging_time().is_null());
   EXPECT_TRUE(app_copy->last_launch_time().is_null());
   EXPECT_TRUE(app_copy->install_time().is_null());

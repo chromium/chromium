@@ -524,6 +524,12 @@ absl::optional<SkColor> WebAppRegistrar::GetAppBackgroundColor(
   return web_app ? web_app->background_color() : absl::nullopt;
 }
 
+absl::optional<SkColor> WebAppRegistrar::GetAppDarkModeThemeColor(
+    const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->dark_mode_theme_color() : absl::nullopt;
+}
+
 const GURL& WebAppRegistrar::GetAppStartUrl(const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
   return web_app ? web_app->start_url() : GURL::EmptyGURL();

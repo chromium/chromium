@@ -229,6 +229,10 @@ struct WebApplicationInfo {
   // The color to use for the web app frame.
   absl::optional<SkColor> theme_color;
 
+  // The color to use for the web app frame when
+  // launched in dark mode. This doesn't yet have manifest support.
+  absl::optional<SkColor> dark_mode_theme_color;
+
   // The expected page background color of the web app.
   // https://www.w3.org/TR/appmanifest/#background_color-member
   absl::optional<SkColor> background_color;

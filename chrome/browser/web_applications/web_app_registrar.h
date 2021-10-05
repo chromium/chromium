@@ -129,6 +129,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   std::string GetAppDescription(const AppId& app_id) const;
   absl::optional<SkColor> GetAppThemeColor(const AppId& app_id) const;
   absl::optional<SkColor> GetAppBackgroundColor(const AppId& app_id) const;
+  absl::optional<SkColor> GetAppDarkModeThemeColor(const AppId& app_id) const;
   const GURL& GetAppStartUrl(const AppId& app_id) const;
   absl::optional<std::string> GetAppManifestId(const AppId& app_id) const;
   const std::string* GetAppLaunchQueryParams(const AppId& app_id) const;

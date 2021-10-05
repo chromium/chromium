@@ -2,9 +2,20 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <!DOCTYPE html>
+<head>
+<link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
 <meta charset="utf-8">
 <title>Sample System Web App</title>
 <header id='title'>Sample System Web App</header>
+<style>
+  html {
+    background-color: var(--cros-bg-color);
+    color: var(--cros-text-color-primary);
+    font-family: Roboto;
+  }
+
+</style>
+</head>
 <br>
 <a href="/sandbox.html"><button>Untrusted Sandbox Demo</button></a>
 <a href="/component_playground.html"><button>Component Playground</button></a>
