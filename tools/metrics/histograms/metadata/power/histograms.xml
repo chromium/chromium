@@ -546,7 +546,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 
 <histogram
     name="Power.ForegroundBatteryDrain.30SecondsAvg{Exclusive}{DarkeningType}"
-    units="uAh" expires_after="2021-11-07">
+    units="uAh" expires_after="2022-11-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -596,7 +596,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain.30Seconds{Exclusive}" units="uAh"
-    expires_after="2021-11-07">
+    expires_after="2022-11-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
@@ -644,7 +644,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.ForegroundBatteryDrain{Exclusive}" units="0.1 mAh"
-    expires_after="2021-11-07">
+    expires_after="2022-11-07">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
