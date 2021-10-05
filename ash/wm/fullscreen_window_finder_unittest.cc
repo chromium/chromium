@@ -7,18 +7,14 @@
 #include <memory>
 
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_util.h"
 #include "base/macros.h"
-#include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ash {
-
-using ::chromeos::kWindowPinTypeKey;
-using ::chromeos::WindowPinType;
 
 class FullscreenWindowFinderTest : public AshTestBase {
  public:
@@ -63,14 +59,14 @@ TEST_F(FullscreenWindowFinderTest, RegularFullscreen) {
 
 // Test that a pinned fullscreen window is found by GetWindowForFullscreenMode.
 TEST_F(FullscreenWindowFinderTest, PinnedFullscreen) {
-  test_window_->SetProperty(kWindowPinTypeKey, WindowPinType::kPinned);
+  window_util::PinWindow(test_window_.get(), /*trusted=*/false);
   EXPECT_TRUE(FullscreenWindowExists());
 }
 
 // Test that a trusted pinned fullscreen window is found by
 // GetWindowForFullscreenMode.
 TEST_F(FullscreenWindowFinderTest, TrustedPinnedFullscreen) {
-  test_window_->SetProperty(kWindowPinTypeKey, WindowPinType::kTrustedPinned);
+  window_util::PinWindow(test_window_.get(), /*trusted=*/true);
   EXPECT_TRUE(FullscreenWindowExists());
 }
 
