@@ -3936,9 +3936,9 @@ hooks = [
   },
   {
     # Should run after the clang hook.
-    'name': 'objdump/mac',
+    'name': 'objdump',
     'pattern': '.',
-    'condition': 'checkout_mac and host_os != "mac"',
+    'condition': '(checkout_mac and host_os != "mac") or checkout_fuchsia',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=objdump'],
   },
