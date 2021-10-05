@@ -838,6 +838,30 @@ BUILDERS = {
             'synthetic_product_name': '11A5S4L300 [ThinkCentre M75q-1] (LENOVO)'
         },
     },
+    'win-10_amd_laptop-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            # Explicitly set GPU driver version and Windows OS version such
+            # that we can be informed if this
+            # version ever changes or becomes inconsistent. It is important
+            # that bots are homogeneous. See crbug.com/988045 for history.
+            'os': 'Windows-10-19043.1052',
+            'gpu': '1002:1638-10.0.19041.868',
+            'synthetic_product_name': 'OMEN by HP Laptop 16-c0xxx [ ] (HP)',
+        },
+    },
     'Win 7 Perf': {
         'tests': [
             {
