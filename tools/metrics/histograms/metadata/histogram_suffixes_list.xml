@@ -10799,6 +10799,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram_suffixes name="OptimizationGuide_OptimizationTargets" separator=".">
   <suffix name="LanguageDetection" label="Language detection"/>
   <suffix name="ModelValidation" label="Model validation triggered via CLI"/>
+  <suffix name="NotificationPermissions" label="Notification permissions"/>
   <suffix name="PageEntities" label="Page entities"/>
   <suffix name="PageTopics" label="Page topics"/>
   <suffix name="PainfulPageLoad" label="Painful page load"/>

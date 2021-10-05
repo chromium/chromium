@@ -251,6 +251,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_MODEL_VALIDATION = 7;
   // Target for determining entities present on a page.
   OPTIMIZATION_TARGET_PAGE_ENTITIES = 8;
+  // Target for Chrome Permissions Suggestions Service: Notification permission.
+  OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS = 9;
 }
 
 // The types of models that can be evaluated.

@@ -40,6 +40,8 @@ std::string GetStringNameForOptimizationTarget(
       return "ModelValidation";
     case proto::OPTIMIZATION_TARGET_PAGE_ENTITIES:
       return "PageEntities";
+    case proto::OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS:
+      return "NotificationPermissions";
   }
   NOTREACHED();
   return std::string();
