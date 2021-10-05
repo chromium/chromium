@@ -1026,6 +1026,7 @@ class ExistingUserControllerActiveDirectoryUserAllowlistTest
     em::ChromeDeviceSettingsProto device_policy;
     device_policy.mutable_user_allowlist()->add_user_allowlist()->assign(
         kUserAllowlist);
+    device_policy.mutable_allow_new_users()->set_allow_new_users(false);
     FakeAuthPolicyClient::Get()->set_device_policy(device_policy);
   }
 

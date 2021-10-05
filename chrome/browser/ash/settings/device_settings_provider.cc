@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -196,6 +197,75 @@ void SetSettingWithValidatingRegex(const std::string& policy_name,
     pref_value_map->SetString(policy_name, policy_value);
 }
 
+// Returns the value of the allow_new_users (DeviceAllowNewUsers) device
+// policy or an empty absl::optional if the policy was not set.
+absl::optional<bool> GetAllowNewUsers(
+    const em::ChromeDeviceSettingsProto& policy) {
+  if (!policy.has_allow_new_users() ||
+      !policy.allow_new_users().has_allow_new_users())
+    return absl::nullopt;
+  return absl::optional<bool>{policy.allow_new_users().allow_new_users()};
+}
+
+// Returns:
+// - an empty absl::optional if the user_allowlist outer wrapper message is
+//   not present
+// - true if the user_allowlist outer wrapper message is present and the
+//   user_allowlist inner list is empty
+// - false if the user_allowlist outer wrapper message is present and the
+//   user_allowlist inner list has at least one element.
+absl::optional<bool> GetIsEmptyAllowList(
+    const em::ChromeDeviceSettingsProto& policy) {
+  if (!policy.has_user_allowlist())
+    return absl::nullopt;
+  return absl::optional<bool>{policy.user_allowlist().user_allowlist_size() ==
+                              0};
+}
+
+// Decodes the allow_new_users (DeviceAllowNewUsers) and user_allowlist
+// (DeviceUserAllowlist) policies and the guest_mode_enabled
+// (DeviceGuestModeEnabled) policy.
+void DecodeAllowedUsers(const em::ChromeDeviceSettingsProto& policy,
+                        PrefValueMap* new_values_cache) {
+  auto allow_new_users = GetAllowNewUsers(policy);
+  auto is_empty_allowlist = GetIsEmptyAllowList(policy);
+
+  if (allow_new_users.has_value() && allow_new_users.value() &&
+      is_empty_allowlist.has_value() && is_empty_allowlist.value()) {
+    // Allow any user to sign in
+    new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, true);
+  } else if (allow_new_users.has_value() && !allow_new_users.value() &&
+             is_empty_allowlist.has_value() && !is_empty_allowlist.value()) {
+    // Restrict sign in to a list of users
+    new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, false);
+  } else if (allow_new_users.has_value() && !allow_new_users.value() &&
+             is_empty_allowlist.has_value() && is_empty_allowlist.value()) {
+    // Do not allow any user to sign in
+    new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, false);
+  } else if (!allow_new_users.has_value() && !is_empty_allowlist.has_value()) {
+    // If policies haven't been touched, behavior is similar
+    // to allow any user to sign in
+    new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, true);
+  } else if (allow_new_users.has_value() && allow_new_users.value() &&
+             is_empty_allowlist.has_value() && !is_empty_allowlist.value()) {
+    // Some consumer devices out there already have this
+    // combination of policies configured, the behavior is
+    // similar to the first case: Allow any user to sign in
+    new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, true);
+  } else {
+    // If for some reason we encounter a combination other than
+    // the 5 above, we simply default to allowing everyone to sign in
+    new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, true);
+    NOTREACHED();
+  }
+
+  new_values_cache->SetBoolean(
+      kAccountsPrefAllowGuest,
+      !policy.has_guest_mode_enabled() ||
+          !policy.guest_mode_enabled().has_guest_mode_enabled() ||
+          policy.guest_mode_enabled().guest_mode_enabled());
+}
+
 void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
                          PrefValueMap* new_values_cache) {
   // For all our boolean settings the following is applicable:
@@ -204,28 +274,12 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   //   kAccountsPrefEphemeralUsersEnabled has a default value of false.
   //   kAccountsPrefTransferSAMLCookies has a default value of false.
   //   kAccountsPrefFamilyLinkAccountsAllowed has a default value of false.
-  if (policy.has_allow_new_users() &&
-      policy.allow_new_users().has_allow_new_users()) {
-    if (policy.allow_new_users().allow_new_users()) {
-      // New users allowed, user whitelist ignored.
-      new_values_cache->SetBoolean(kAccountsPrefAllowNewUser, true);
-    } else {
-      // New users not allowed, enforce user allowlist if present.
-      new_values_cache->SetBoolean(
-          kAccountsPrefAllowNewUser,
-          !policy.has_user_whitelist() && !policy.has_user_allowlist());
-    }
-  } else {
-    // No configured allow-new-users value, enforce whitelist if non-empty.
-    new_values_cache->SetBoolean(
-        kAccountsPrefAllowNewUser,
-        policy.user_whitelist().user_whitelist_size() == 0 &&
-            policy.user_allowlist().user_allowlist_size() == 0);
-  }
 
   // Value of DeviceFamilyLinkAccountsAllowed policy does not affect
   // |kAccountsPrefAllowNewUser| setting. Family Link accounts are only
   // allowed if user allowlist is enforced.
+  DecodeAllowedUsers(policy, new_values_cache);
+
   bool user_allowlist_enforced =
       ((policy.has_user_whitelist() &&
         policy.user_whitelist().user_whitelist_size() > 0) ||
@@ -245,12 +299,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       policy.has_reboot_on_shutdown() &&
           policy.reboot_on_shutdown().has_reboot_on_shutdown() &&
           policy.reboot_on_shutdown().reboot_on_shutdown());
-
-  new_values_cache->SetBoolean(
-      kAccountsPrefAllowGuest,
-      !policy.has_guest_mode_enabled() ||
-          !policy.guest_mode_enabled().has_guest_mode_enabled() ||
-          policy.guest_mode_enabled().guest_mode_enabled());
 
   new_values_cache->SetBoolean(
       kAccountsPrefShowUserNamesOnSignIn,
@@ -1414,6 +1462,7 @@ bool DeviceSettingsProvider::MitigateMissingPolicy() {
 
   device_settings_.Clear();
   device_settings_.mutable_allow_new_users()->set_allow_new_users(true);
+  device_settings_.mutable_user_allowlist()->clear_user_allowlist();
   device_settings_.mutable_guest_mode_enabled()->set_guest_mode_enabled(true);
   em::PolicyData empty_policy_data;
   UpdateValuesCache(empty_policy_data, device_settings_, TRUSTED);

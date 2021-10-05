@@ -53,20 +53,29 @@ class DeviceFamilyLinkAllowedPolicyTest : public LoginManagerTest {
       const DeviceFamilyLinkAllowedPolicyTest&) = delete;
   ~DeviceFamilyLinkAllowedPolicyTest() override = default;
 
-  void AddUserToAllowlist(const std::string& user_id) {
-    policy_helper_.device_policy()
-        ->payload()
-        .mutable_user_allowlist()
-        ->add_user_allowlist(user_id);
-    policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
-        {kAccountsPrefUsers});
-  }
-
   void SetDeviceAllowNewUsersPolicy(bool enabled) {
     policy_helper_.device_policy()
         ->payload()
         .mutable_allow_new_users()
         ->set_allow_new_users(enabled);
+  }
+
+  void AllowUniqueUserToSignIn(const std::string& user_id) {
+    policy_helper_.device_policy()
+        ->payload()
+        .mutable_user_allowlist()
+        ->add_user_allowlist(user_id);
+    SetDeviceAllowNewUsersPolicy(false);
+    policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
+        {kAccountsPrefUsers});
+  }
+
+  void AllowAllUsersToSignIn() {
+    SetDeviceAllowNewUsersPolicy(true);
+    policy_helper_.device_policy()
+        ->payload()
+        .mutable_user_allowlist()
+        ->clear_user_allowlist();
     policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
         {kAccountsPrefAllowNewUser});
   }
@@ -126,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, LoginScreenUpdates) {
   EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 3);
 
   // User allowlist on - only school domain account available.
-  AddUserToAllowlist(kSchoolAllowlist);
+  AllowUniqueUserToSignIn(kSchoolAllowlist);
   EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
 
   // Family Link allowed - school and Family Link accounts available.
@@ -138,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, LoginScreenUpdates) {
   EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 1);
 
   // Allow all new users.
-  SetDeviceAllowNewUsersPolicy(true);
+  AllowAllUsersToSignIn();
   EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 3);
 }
 
@@ -148,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(DeviceFamilyLinkAllowedPolicyTest, InSessionUpdate) {
             session_manager::SessionState::LOGIN_PRIMARY);
 
   // Family Link allowed - school and Family Link accounts available.
-  AddUserToAllowlist(kSchoolAllowlist);
+  AllowUniqueUserToSignIn(kSchoolAllowlist);
   SetDeviceFamilyLinkAccountsAllowedPolicy(true);
   EXPECT_EQ(LoginScreenTestApi::GetUsersCount(), 2);
 

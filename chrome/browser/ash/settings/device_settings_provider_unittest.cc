@@ -451,9 +451,9 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   }
 
   void AddUserToAllowlist(const std::string& user_id) {
-    em::UserAllowlistProto* proto =
-        device_policy_->payload().mutable_user_allowlist();
-    proto->add_user_allowlist(user_id);
+    auto& proto = device_policy_->payload();
+    proto.mutable_user_allowlist()->add_user_allowlist(user_id);
+    proto.mutable_allow_new_users()->set_allow_new_users(true);
     BuildAndInstallDevicePolicy();
   }
 
