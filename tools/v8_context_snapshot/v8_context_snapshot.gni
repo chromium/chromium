@@ -30,6 +30,13 @@ declare_args() {
     } else if (v8_target_cpu == "arm64") {
       v8_context_snapshot_filename = "v8_context_snapshot.arm64.bin"
     }
+  } else if (is_android) {
+    if (v8_target_cpu == "arm" || v8_target_cpu == "x86" ||
+        v8_target_cpu == "mipsel") {
+      v8_context_snapshot_filename = "v8_context_snapshot_32.bin"
+    } else {
+      v8_context_snapshot_filename = "v8_context_snapshot_64.bin"
+    }
   } else {
     v8_context_snapshot_filename = "v8_context_snapshot.bin"
   }
