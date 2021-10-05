@@ -9,6 +9,8 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
@@ -303,7 +305,7 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
   //
   // Treat 'Intervention' as a CORS-safelisted header, since it is added by
   // Chrome when an intervention is (or may be) applied.
-  static const char* const safe_names[] = {
+  static constexpr auto safe_names = base::MakeFixedFlatSet<base::StringPiece>({
       "accept",
       "accept-language",
       "content-language",
@@ -362,9 +364,8 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       "sec-ch-dpr",
       "sec-ch-width",
       "sec-ch-viewport-width",
-  };
-  if (std::find(std::begin(safe_names), std::end(safe_names), lower_name) ==
-      std::end(safe_names))
+  });
+  if (!base::Contains(safe_names, lower_name))
     return false;
 
   // Client hints are device specific, and not origin specific. As such all
