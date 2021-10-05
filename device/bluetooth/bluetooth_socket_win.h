@@ -35,6 +35,9 @@ class BluetoothSocketWin : public BluetoothSocketNet {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<BluetoothSocketThread> socket_thread);
 
+  BluetoothSocketWin(const BluetoothSocketWin&) = delete;
+  BluetoothSocketWin& operator=(const BluetoothSocketWin&) = delete;
+
   // Connect to the peer device and calls |success_callback| when the
   // connection has been established successfully. If an error occurs, calls
   // |error_callback| with a system error message.
@@ -96,8 +99,6 @@ class BluetoothSocketWin : public BluetoothSocketNet {
   std::unique_ptr<ServiceRegData> service_reg_data_;
   std::unique_ptr<net::TCPSocket> accept_socket_;
   net::IPEndPoint accept_address_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketWin);
 };
 
 }  // namespace device

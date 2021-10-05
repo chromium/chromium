@@ -41,6 +41,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<device::BluetoothSocketThread> socket_thread);
 
+  BluetoothSocketBlueZ(const BluetoothSocketBlueZ&) = delete;
+  BluetoothSocketBlueZ& operator=(const BluetoothSocketBlueZ&) = delete;
+
   // Connects this socket to the service on |device| published as UUID |uuid|,
   // the underlying protocol and PSM or Channel is obtained through service
   // discovery. On a successful connection the socket properties will be updated
@@ -178,8 +181,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
     bool cancelled;
   };
   base::queue<std::unique_ptr<ConnectionRequest>> connection_request_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketBlueZ);
 };
 
 }  // namespace bluez

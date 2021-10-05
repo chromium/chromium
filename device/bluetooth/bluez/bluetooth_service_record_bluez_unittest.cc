@@ -42,6 +42,11 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
         error_callbacks_(0),
         last_seen_handle_(0) {}
 
+  BluetoothServiceRecordBlueZTest(const BluetoothServiceRecordBlueZTest&) =
+      delete;
+  BluetoothServiceRecordBlueZTest& operator=(
+      const BluetoothServiceRecordBlueZTest&) = delete;
+
   void SetUp() override {
     BluetoothTestBlueZ::SetUp();
     InitWithFakeAdapter();
@@ -161,8 +166,6 @@ class BluetoothServiceRecordBlueZTest : public device::BluetoothTestBlueZ {
 
   uint32_t last_seen_handle_;
   std::vector<BluetoothServiceRecordBlueZ> records_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothServiceRecordBlueZTest);
 };
 
 TEST_F(BluetoothServiceRecordBlueZTest, CreateAndRemove) {

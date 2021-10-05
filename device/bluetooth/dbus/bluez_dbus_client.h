@@ -18,6 +18,9 @@ namespace bluez {
 // access to the Init function to BluezDBusManager only to prevent
 // incorrect calls. Stub clients may lift that restriction however.
 class BluezDBusClient {
+ public:
+  BluezDBusClient& operator=(const BluezDBusClient&) = delete;
+
  protected:
   virtual ~BluezDBusClient() {}
 
@@ -29,8 +32,6 @@ class BluezDBusClient {
 
  private:
   friend class BluezDBusManager;
-
-  DISALLOW_ASSIGN(BluezDBusClient);
 };
 
 }  // namespace bluez

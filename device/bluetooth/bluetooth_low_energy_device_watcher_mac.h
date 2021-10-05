@@ -40,6 +40,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
           update_low_energy_device_list_callback);
 
   BluetoothLowEnergyDeviceWatcherMac(
+      const BluetoothLowEnergyDeviceWatcherMac&) = delete;
+  BluetoothLowEnergyDeviceWatcherMac& operator=(
+      const BluetoothLowEnergyDeviceWatcherMac&) = delete;
+
+  BluetoothLowEnergyDeviceWatcherMac(
       scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner,
       LowEnergyDeviceListUpdatedCallback
           update_low_energy_device_list_callback);
@@ -86,8 +91,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyDeviceWatcherMac
       std::make_unique<base::FilePathWatcher>();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyDeviceWatcherMac);
 };
 
 }  // namespace device

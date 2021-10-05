@@ -118,6 +118,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   explicit BluetoothTaskManagerWin(
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
+  BluetoothTaskManagerWin(const BluetoothTaskManagerWin&) = delete;
+  BluetoothTaskManagerWin& operator=(const BluetoothTaskManagerWin&) = delete;
+
   static scoped_refptr<BluetoothTaskManagerWin> CreateForTesting(
       std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper,
       std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper,
@@ -347,8 +350,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothTaskManagerWin
   // Wrapper around the Windows Bluetooth APIs. Owns the radio handle.
   std::unique_ptr<win::BluetoothClassicWrapper> classic_wrapper_;
   std::unique_ptr<win::BluetoothLowEnergyWrapper> le_wrapper_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothTaskManagerWin);
 };
 
 }  // namespace device

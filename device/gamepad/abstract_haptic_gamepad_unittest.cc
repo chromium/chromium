@@ -66,6 +66,10 @@ class AbstractHapticGamepadTest : public testing::Test {
             mojom::GamepadHapticsResult::GamepadHapticsResultError),
         gamepad_(std::make_unique<FakeHapticGamepad>()) {}
 
+  AbstractHapticGamepadTest(const AbstractHapticGamepadTest&) = delete;
+  AbstractHapticGamepadTest& operator=(const AbstractHapticGamepadTest&) =
+      delete;
+
   void TearDown() override { gamepad_->Shutdown(); }
 
   void PostPlayEffect(
@@ -107,8 +111,6 @@ class AbstractHapticGamepadTest : public testing::Test {
   std::unique_ptr<FakeHapticGamepad> gamepad_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(AbstractHapticGamepadTest);
 };
 
 TEST_F(AbstractHapticGamepadTest, PlayEffectTest) {

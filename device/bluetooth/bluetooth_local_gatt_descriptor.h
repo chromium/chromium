@@ -50,14 +50,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLocalGattDescriptor
       BluetoothGattCharacteristic::Permissions permissions,
       BluetoothLocalGattCharacteristic* characteristic);
 
+  BluetoothLocalGattDescriptor(const BluetoothLocalGattDescriptor&) = delete;
+  BluetoothLocalGattDescriptor& operator=(const BluetoothLocalGattDescriptor&) =
+      delete;
+
   virtual BluetoothLocalGattCharacteristic* GetCharacteristic() const = 0;
 
  protected:
   BluetoothLocalGattDescriptor();
   ~BluetoothLocalGattDescriptor() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLocalGattDescriptor);
 };
 
 }  // namespace device

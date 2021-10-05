@@ -22,6 +22,9 @@ class GraphicCharacters {
                                                   GraphicCharacters>>::get();
   }
 
+  GraphicCharacters(const GraphicCharacters&) = delete;
+  GraphicCharacters& operator=(const GraphicCharacters&) = delete;
+
   bool HasGraphicCharacter(base::StringPiece s) {
     int32_t length = graphic_->spanUTF8(
         s.data(), s.size(), USetSpanCondition::USET_SPAN_NOT_CONTAINED);
@@ -35,8 +38,6 @@ class GraphicCharacters {
 
   // set of graphic characters.
   std::unique_ptr<icu::UnicodeSet> graphic_;
-
-  DISALLOW_COPY_AND_ASSIGN(GraphicCharacters);
 };
 
 GraphicCharacters::GraphicCharacters() {

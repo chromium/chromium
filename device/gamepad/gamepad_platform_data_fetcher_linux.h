@@ -42,6 +42,12 @@ class DEVICE_GAMEPAD_EXPORT GamepadPlatformDataFetcherLinux
 
   GamepadPlatformDataFetcherLinux(
       scoped_refptr<base::SequencedTaskRunner> dbus_runner);
+
+  GamepadPlatformDataFetcherLinux(const GamepadPlatformDataFetcherLinux&) =
+      delete;
+  GamepadPlatformDataFetcherLinux& operator=(
+      const GamepadPlatformDataFetcherLinux&) = delete;
+
   ~GamepadPlatformDataFetcherLinux() override;
 
   GamepadSource source() override;
@@ -89,8 +95,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadPlatformDataFetcherLinux
   scoped_refptr<base::SequencedTaskRunner> dbus_runner_;
 
   base::WeakPtrFactory<GamepadPlatformDataFetcherLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadPlatformDataFetcherLinux);
 };
 
 }  // namespace device

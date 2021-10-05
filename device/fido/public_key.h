@@ -20,6 +20,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
   PublicKey(int32_t algorithm,
             base::span<const uint8_t> cbor_bytes,
             absl::optional<std::vector<uint8_t>> der_bytes);
+
+  PublicKey(const PublicKey&) = delete;
+  PublicKey& operator=(const PublicKey&) = delete;
+
   ~PublicKey();
 
   // algorithm contains the COSE algorithm identifier for this public key.
@@ -34,9 +38,6 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) PublicKey {
   // public-key algorithms so not all public keys can be transformed into SPKI
   // form.)
   const absl::optional<std::vector<uint8_t>> der_bytes;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PublicKey);
 };
 
 }  // namespace device

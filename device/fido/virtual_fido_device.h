@@ -136,6 +136,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
     State();
 
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
+
     // The common name in the attestation certificate.
     std::string attestation_cert_common_name;
 
@@ -303,8 +306,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
    private:
     friend class base::RefCounted<State>;
     ~State();
-
-    DISALLOW_COPY_AND_ASSIGN(State);
   };
 
   // Constructs an object with ephemeral state. In order to have the state of
@@ -314,6 +315,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
   // Constructs an object that will read from, and write to, |state|.
   explicit VirtualFidoDevice(scoped_refptr<State> state);
+
+  VirtualFidoDevice(const VirtualFidoDevice&) = delete;
+  VirtualFidoDevice& operator=(const VirtualFidoDevice&) = delete;
 
   ~VirtualFidoDevice() override;
 
@@ -358,8 +362,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
 
   const std::string id_ = MakeVirtualFidoDeviceId();
   scoped_refptr<State> state_ = base::MakeRefCounted<State>();
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualFidoDevice);
 };
 
 }  // namespace device

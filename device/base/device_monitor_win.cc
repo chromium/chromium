@@ -59,6 +59,10 @@ class DeviceMonitorMessageWindow {
     return g_message_window;
   }
 
+  DeviceMonitorMessageWindow(const DeviceMonitorMessageWindow&) = delete;
+  DeviceMonitorMessageWindow& operator=(const DeviceMonitorMessageWindow&) =
+      delete;
+
   DeviceMonitorWin* GetForDeviceInterface(const GUID& device_interface) {
     std::unique_ptr<DeviceMonitorWin>& device_monitor =
         device_monitors_[device_interface];
@@ -150,8 +154,6 @@ class DeviceMonitorMessageWindow {
   DeviceMonitorWin all_device_monitor_;
   std::unique_ptr<base::win::MessageWindow> window_;
   HDEVNOTIFY notify_handle_ = NULL;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceMonitorMessageWindow);
 };
 
 void DeviceMonitorWin::Observer::OnDeviceAdded(

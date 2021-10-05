@@ -117,6 +117,10 @@ struct WebXrSharedBuffer {
 
 struct WebXrFrame {
   WebXrFrame();
+
+  WebXrFrame(const WebXrFrame&) = delete;
+  WebXrFrame& operator=(const WebXrFrame&) = delete;
+
   ~WebXrFrame();
 
   bool IsValid() const;
@@ -167,8 +171,6 @@ struct WebXrFrame {
   // That should be updated to use this implementation, at that time a matching
   // bounds_right would need to be added.
   gfx::RectF bounds_left;
-
-  DISALLOW_COPY_AND_ASSIGN(WebXrFrame);
 };
 
 class WebXrPresentationState {

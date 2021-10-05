@@ -44,6 +44,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
       const base::android::JavaRef<jobject>&
           bluetooth_adapter_wrapper);  // Java Type: bluetoothAdapterWrapper
 
+  BluetoothAdapterAndroid(const BluetoothAdapterAndroid&) = delete;
+  BluetoothAdapterAndroid& operator=(const BluetoothAdapterAndroid&) = delete;
+
   // BluetoothAdapter:
   void Initialize(base::OnceClosure callback) override;
   std::string GetAddress() const override;
@@ -137,8 +140,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterAndroid> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterAndroid);
 };
 
 }  // namespace device

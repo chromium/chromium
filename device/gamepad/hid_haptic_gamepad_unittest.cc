@@ -86,6 +86,9 @@ class HidHapticGamepadTest : public testing::Test {
                                                   std::move(fake_hid_writer));
   }
 
+  HidHapticGamepadTest(const HidHapticGamepadTest&) = delete;
+  HidHapticGamepadTest& operator=(const HidHapticGamepadTest&) = delete;
+
   void TearDown() override { gamepad_->Shutdown(); }
 
   void PostPlayEffect(
@@ -130,8 +133,6 @@ class HidHapticGamepadTest : public testing::Test {
   std::unique_ptr<HidHapticGamepad> gamepad_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(HidHapticGamepadTest);
 };
 
 TEST_F(HidHapticGamepadTest, PlayEffectTest) {

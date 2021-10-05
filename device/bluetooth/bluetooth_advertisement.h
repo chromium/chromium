@@ -135,6 +135,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
         BluetoothAdvertisement* advertisement) = 0;
   };
 
+  BluetoothAdvertisement(const BluetoothAdvertisement&) = delete;
+  BluetoothAdvertisement& operator=(const BluetoothAdvertisement&) = delete;
+
   // Adds and removes observers for events for this advertisement.
   void AddObserver(BluetoothAdvertisement::Observer* observer);
   void RemoveObserver(BluetoothAdvertisement::Observer* observer);
@@ -158,9 +161,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
   // List of observers interested in event notifications from us. Objects in
   // |observers_| are expected to outlive a BluetoothAdvertisement object.
   base::ObserverList<BluetoothAdvertisement::Observer>::Unchecked observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisement);
 };
 
 }  // namespace device

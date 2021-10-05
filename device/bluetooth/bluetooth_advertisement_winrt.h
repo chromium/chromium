@@ -24,6 +24,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementWinrt
     : public BluetoothAdvertisement {
  public:
   BluetoothAdvertisementWinrt();
+
+  BluetoothAdvertisementWinrt(const BluetoothAdvertisementWinrt&) = delete;
+  BluetoothAdvertisementWinrt& operator=(const BluetoothAdvertisementWinrt&) =
+      delete;
+
   bool Initialize(
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data);
   void Register(SuccessCallback callback, ErrorCallback error_callback);
@@ -75,8 +80,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementWinrt
   std::unique_ptr<PendingCallbacks> pending_unregister_callbacks_;
 
   base::WeakPtrFactory<BluetoothAdvertisementWinrt> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementWinrt);
 };
 
 }  // namespace device

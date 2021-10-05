@@ -33,6 +33,10 @@ const size_t kMaxDevicesForFilter = 5;
 class BluetoothUtilsTest : public testing::Test {
  protected:
   BluetoothUtilsTest() = default;
+
+  BluetoothUtilsTest(const BluetoothUtilsTest&) = delete;
+  BluetoothUtilsTest& operator=(const BluetoothUtilsTest&) = delete;
+
   base::HistogramTester histogram_tester;
 
   void SetUp() override {
@@ -74,8 +78,6 @@ class BluetoothUtilsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<testing::NiceMock<MockBluetoothAdapter>>();
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothUtilsTest);
 };
 
 TEST_F(BluetoothUtilsTest,

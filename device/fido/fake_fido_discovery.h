@@ -65,6 +65,9 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
   explicit FakeFidoDiscovery(FidoTransportProtocol transport,
                              StartMode mode = StartMode::kManual);
 
+  FakeFidoDiscovery(const FakeFidoDiscovery&) = delete;
+  FakeFidoDiscovery& operator=(const FakeFidoDiscovery&) = delete;
+
   // Blocks until start is requested.
   void WaitForCallToStart();
 
@@ -85,8 +88,6 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
 
   const StartMode mode_;
   base::RunLoop wait_for_start_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscovery);
 };
 
 // Overrides FidoDeviceDiscovery::Create* to construct FakeFidoDiscoveries.

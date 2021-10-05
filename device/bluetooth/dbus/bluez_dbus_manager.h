@@ -100,6 +100,9 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   // Gets the global instance. Initialize() must be called first.
   static BluezDBusManager* Get();
 
+  BluezDBusManager(const BluezDBusManager&) = delete;
+  BluezDBusManager& operator=(const BluezDBusManager&) = delete;
+
   // Returns various D-Bus bus instances, owned by BluezDBusManager.
   dbus::Bus* GetSystemBus();
 
@@ -180,8 +183,6 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluezDBusManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluezDBusManager);
 };
 
 class DEVICE_BLUETOOTH_EXPORT BluezDBusManagerSetter {

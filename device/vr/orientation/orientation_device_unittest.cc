@@ -80,6 +80,9 @@ class FakeScreen : public display::Screen {
 
 class VROrientationDeviceTest : public testing::Test {
  public:
+  VROrientationDeviceTest(const VROrientationDeviceTest&) = delete;
+  VROrientationDeviceTest& operator=(const VROrientationDeviceTest&) = delete;
+
   void onDisplaySynced() {}
 
  protected:
@@ -239,8 +242,6 @@ class VROrientationDeviceTest : public testing::Test {
 
   std::unique_ptr<FakeScreen> fake_screen_;
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(VROrientationDeviceTest);
 };
 
 TEST_F(VROrientationDeviceTest, InitializationTest) {

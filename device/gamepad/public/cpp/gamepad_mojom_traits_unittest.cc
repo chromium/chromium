@@ -160,13 +160,15 @@ bool isWebGamepadEqual(const Gamepad& send, const Gamepad& echo) {
 }  // namespace
 
 class GamepadStructTraitsTest : public testing::Test {
+ public:
+  GamepadStructTraitsTest(const GamepadStructTraitsTest&) = delete;
+  GamepadStructTraitsTest& operator=(const GamepadStructTraitsTest&) = delete;
+
  protected:
   GamepadStructTraitsTest() {}
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadStructTraitsTest);
 };
 
 TEST_F(GamepadStructTraitsTest, GamepadCommon) {

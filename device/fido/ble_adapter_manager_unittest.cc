@@ -74,6 +74,10 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
     Start();
   }
 
+  FakeFidoRequestHandlerBase(const FakeFidoRequestHandlerBase&) = delete;
+  FakeFidoRequestHandlerBase& operator=(const FakeFidoRequestHandlerBase&) =
+      delete;
+
   void SimulateFidoRequestHandlerHasAuthenticator(bool simulate_authenticator) {
     simulate_authenticator_ = simulate_authenticator;
   }
@@ -87,8 +91,6 @@ class FakeFidoRequestHandlerBase : public FidoRequestHandlerBase {
   }
 
   bool simulate_authenticator_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoRequestHandlerBase);
 };
 
 }  // namespace

@@ -38,6 +38,12 @@ std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory(int32_t, int32_t) {
 }  // namespace
 
 class VROrientationDeviceProviderTest : public testing::Test {
+ public:
+  VROrientationDeviceProviderTest(const VROrientationDeviceProviderTest&) =
+      delete;
+  VROrientationDeviceProviderTest& operator=(
+      const VROrientationDeviceProviderTest&) = delete;
+
  protected:
   VROrientationDeviceProviderTest() = default;
   ~VROrientationDeviceProviderTest() override = default;
@@ -153,8 +159,6 @@ class VROrientationDeviceProviderTest : public testing::Test {
   mojo::PendingRemote<mojom::Sensor> sensor_;
   mojo::ScopedSharedBufferHandle shared_buffer_handle_;
   mojo::Remote<mojom::SensorClient> sensor_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(VROrientationDeviceProviderTest);
 };
 
 TEST_F(VROrientationDeviceProviderTest, InitializationTest) {
