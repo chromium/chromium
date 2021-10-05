@@ -322,22 +322,16 @@ if (is_android || is_chromeos) {
   # like the toolchain roots.
   if (current_cpu == "x86") {
     android_prebuilt_arch = "android-x86"
-    _binary_prefix = "i686-linux-android"
   } else if (current_cpu == "arm") {
     android_prebuilt_arch = "android-arm"
-    _binary_prefix = "arm-linux-androideabi"
   } else if (current_cpu == "mipsel") {
     android_prebuilt_arch = "android-mips"
-    _binary_prefix = "mipsel-linux-android"
   } else if (current_cpu == "x64") {
     android_prebuilt_arch = "android-x86_64"
-    _binary_prefix = "x86_64-linux-android"
   } else if (current_cpu == "arm64") {
     android_prebuilt_arch = "android-arm64"
-    _binary_prefix = "aarch64-linux-android"
   } else if (current_cpu == "mips64el") {
     android_prebuilt_arch = "android-mips64"
-    _binary_prefix = "mips64el-linux-android"
   } else {
     assert(false, "Need android libgcc support for your target arch.")
   }
