@@ -385,4 +385,86 @@ TEST_F(ShapeResultViewTest, MarkerAndTrailingSpace) {
   shape_result->IndividualCharacterRanges(&ranges);
 }
 
+TEST_F(ShapeResultViewTest, SpacesInLTR) {
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  constexpr float kWidth = 8;
+  const auto result = ShapeResult::CreateForSpaces(
+      &font, TextDirection::kLtr, kStartIndex, kLength, kWidth);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// http://crbug.com/1160582
+TEST_F(ShapeResultViewTest, SpacesInRTL) {
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  constexpr float kWidth = 8;
+  const auto result = ShapeResult::CreateForSpaces(
+      &font, TextDirection::kRtl, kStartIndex, kLength, kWidth);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+TEST_F(ShapeResultViewTest, TabulationCharactersInLTR) {
+  constexpr float kPosition = 0;
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  const auto result = ShapeResult::CreateForTabulationCharacters(
+      &font, TextDirection::kLtr, TabSize(8), kPosition, kStartIndex, kLength);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
+// http://crbug.com/1255310
+TEST_F(ShapeResultViewTest, TabulationCharactersInRTL) {
+  constexpr float kPosition = 0;
+  constexpr unsigned kStartIndex = 0;
+  constexpr unsigned kLength = 2;
+  const auto result = ShapeResult::CreateForTabulationCharacters(
+      &font, TextDirection::kRtl, TabSize(8), kPosition, kStartIndex, kLength);
+
+  const auto view0 = ShapeResultView::Create(result.get(), 0, 2);
+  EXPECT_EQ(view0->NumCharacters(), 2u);
+  EXPECT_EQ(view0->NumGlyphs(), 2u);
+
+  const auto view1 = ShapeResultView::Create(result.get(), 0, 1);
+  EXPECT_EQ(view1->NumCharacters(), 1u);
+  EXPECT_EQ(view1->NumGlyphs(), 1u);
+
+  const auto view2 = ShapeResultView::Create(result.get(), 1, 2);
+  EXPECT_EQ(view2->NumCharacters(), 1u);
+  EXPECT_EQ(view2->NumGlyphs(), 1u);
+}
+
 }  // namespace blink

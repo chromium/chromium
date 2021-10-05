@@ -1481,7 +1481,8 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForTabulationCharacters(
       // 2nd and following tabs have the base width, without using |position|.
       if (i == 1)
         advance = font->TabWidth(font_data, tab_size);
-      run->glyph_data_[i] = {font_data->SpaceGlyph(), i, true, advance};
+      const unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
+      run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, advance};
       position += advance;
     }
     run->width_ = position - start_position;
@@ -1515,7 +1516,7 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForSpaces(const Font* font,
       HB_SCRIPT_COMMON, start_index, length, length);
   result->width_ = run->width_ = width;
   for (unsigned i = 0; i < length; i++) {
-    unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
+    const unsigned index = blink::IsLtr(direction) ? i : length - 1 - i;
     run->glyph_data_[i] = {font_data->SpaceGlyph(), index, true, width};
     width = 0;
   }
