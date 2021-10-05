@@ -81,10 +81,12 @@ class DummyTextInputClient : public TextInputClient {
       const std::vector<GrammarFragment>& fragments) override;
 #endif
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
   void GetActiveTextInputControlLayoutBounds(
       absl::optional<gfx::Rect>* control_bounds,
       absl::optional<gfx::Rect>* selection_bounds) override;
+#endif
+#if defined(OS_WIN)
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
       const std::u16string& active_composition_text,

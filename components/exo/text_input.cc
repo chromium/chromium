@@ -388,6 +388,12 @@ bool TextInput::AddGrammarFragments(
   return false;
 }
 
+void GetActiveTextInputControlLayoutBounds(
+    absl::optional<gfx::Rect>* control_bounds,
+    absl::optional<gfx::Rect>* selection_bounds) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void TextInput::OnKeyboardVisibilityChanged(bool is_visible) {
   delegate_->OnVirtualKeyboardVisibilityChanged(is_visible);
 }

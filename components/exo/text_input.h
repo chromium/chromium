@@ -176,6 +176,9 @@ class TextInput : public ui::TextInputClient,
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<ui::GrammarFragment>& fragments) override;
+  void GetActiveTextInputControlLayoutBounds(
+      absl::optional<gfx::Rect>* control_bounds,
+      absl::optional<gfx::Rect>* selection_bounds) override {}
 
   // ash::KeyboardControllerObserver:
   void OnKeyboardVisibilityChanged(bool is_visible) override;
