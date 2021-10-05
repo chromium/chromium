@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SESSIONS_SCENE_UTIL_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
@@ -36,9 +37,7 @@ void MigrateSessionStorageForDirectory(const base::FilePath& directory,
                                        NSString* session_identifier,
                                        NSString* previous_session_identifier);
 
-// Returns the identifier to use for the session for |scene|. Note that |scene|
-// is a UIScene* but passed as a id to allow calling this function even if the
-// application is build with a deployment target older than iOS 13.
-NSString* SessionIdentifierForScene(id scene);
+// Returns the identifier to use for the session for |scene|.
+NSString* SessionIdentifierForScene(UIScene* scene);
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SCENE_UTIL_H_

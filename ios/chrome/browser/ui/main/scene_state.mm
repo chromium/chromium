@@ -127,8 +127,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 }
 
 - (NSString*)sceneSessionID {
-  id maybe_scene = _scene;
-  return SessionIdentifierForScene(maybe_scene);
+  return SessionIdentifierForScene(_scene);
 }
 
 - (void)setActivationLevel:(SceneActivationLevel)newLevel {
