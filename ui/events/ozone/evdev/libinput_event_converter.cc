@@ -207,6 +207,9 @@ void LibInputEventConverter::HandleEvent(const LibInputEvent& event) {
       break;
 
     case LIBINPUT_EVENT_POINTER_BUTTON:
+      HandlePointerButton(event);
+      break;
+
     case LIBINPUT_EVENT_POINTER_AXIS:
     case LIBINPUT_EVENT_TOUCH_DOWN:
     case LIBINPUT_EVENT_TOUCH_UP:
@@ -251,6 +254,29 @@ void LibInputEventConverter::HandlePointerMotion(const LibInputEvent& evt) {
   dispatcher_->DispatchMouseMoveEvent(
       {input_device_.id, flags, cursor_->GetLocation(), nullptr /*delta*/,
        PointerDetails(EventPointerType::kMouse), Timestamp(evt)});
+}
+
+void LibInputEventConverter::HandlePointerButton(const LibInputEvent& evt) {
+  libinput_event_pointer* event = evt.PointerEvent();
+  const int flags = EF_NONE;
+  const uint32_t button = libinput_event_pointer_get_button(event);
+  const bool down = libinput_event_pointer_get_button_state(event) ==
+                    LIBINPUT_BUTTON_STATE_PRESSED;
+
+  // allow_remap: Controls whether or not remapping buttons is allowed; in
+  // this case whether or not it should respect the "Swap Left/Right Mouse
+  // Button" option in the ChromeOS settings.
+  //
+  // Since we only deal with touchpad buttons here, this should be false,
+  // but if we expand this to handle mice in the future we may need to
+  // have more intricate logic.
+  const MouseButtonMapType allow_remap = MouseButtonMapType::kNone;
+
+  DVLOG(3) << "Button: " << button << ", pressed: " << down;
+
+  dispatcher_->DispatchMouseButtonEvent(
+      {input_device_.id, flags, cursor_->GetLocation(), button, down,
+       allow_remap, PointerDetails(EventPointerType::kMouse), Timestamp(evt)});
 }
 
 base::TimeTicks LibInputEventConverter::Timestamp(const LibInputEvent& evt) {
