@@ -21,6 +21,247 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="EventLatencyBreakdown">
+  <variant name="Activation" summary="the duration of the activation stage">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="BeginImplFrameToSendBeginMainFrame"
+      summary="the time from when the compositor impl frame is started to when
+               BeginMainFrame is sent">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="BrowserToRendererCompositor"
+      summary="the time from when the event is generated until the first
+               compositor stage after the event arrives in the renderer">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="Commit" summary="the duration of the commit stage">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="EndActivateToSubmitCompositorFrame"
+      summary="the time from when an activation is complete to the next
+               SubmitCompositorFrame">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="EndCommitToActivation"
+      summary="the time from when a commit is complete to the beginning of the
+               next activation">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit"
+      summary="the time from when the BeginMainFrame is sent to the beginning
+               of the commit">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.Animate"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               animations">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.BeginMainSentToStarted"
+      summary="the time portion of SendBeginMainFrameToCommit spent before
+               starting main thread work">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.Composite"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               compositing">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.CompositeCommit"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               composite commit">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.CompositingAssignments"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               updating compositing assignments">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.CompositingInputs"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               updating compositing inputs">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.HandleInputEvents"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               handling imput events">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.LayoutUpdate"
+      summary="the time portion of SendBeginMainFrameToCommit spent on layout
+               update">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.Paint"
+      summary="the time portion of SendBeginMainFrameToCommit spent on paint">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.Prepaint"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               prepaint">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.ScrollingCoordinator"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               scrolling coordinator">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.StyleUpdate"
+      summary="the time portion of SendBeginMainFrameToCommit spent on style
+               update">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SendBeginMainFrameToCommit.UpdateLayers"
+      summary="the time portion of SendBeginMainFrameToCommit spent on
+               updating layers">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="SubmitCompositorFrameToPresentationCompositorFrame"
+      summary="the time from when the compositor frame is submitted to the
+               display compositor to when it is presented">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant
+      name="SubmitCompositorFrameToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw"
+      summary="the time from when the compositor frame is received to when it
+               starts to draw">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant
+      name="SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart"
+      summary="the time from when the compositor frame is started to draw to
+               when it starts swap">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SubmitToReceiveCompositorFrame"
+      summary="the time from when the compositor frame is submitted to when it
+               is received">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame"
+      summary="the time from when the compositor frame ends swap to when it is
+               presented">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant
+      name="SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd"
+      summary="the time from when the compositor frame starts to swap to when
+               it ends swap">
+    <obsolete>
+      Obsolete as of M90. Breakdowns are being tracked in UKM.
+    </obsolete>
+  </variant>
+  <variant name="TotalLatency"
+      summary="total latency from when the event is generated until the frame
+               is presented on screen"/>
+</variants>
+
+<variants name="EventLatencyEventType">
+  <variant name="GestureDoubleTap" summary="gesture-double-tap events"/>
+  <variant name="GestureLongPress" summary="gesture-long-press events"/>
+  <variant name="GestureLongTap" summary="gesture-long-tap events"/>
+  <variant name="GestureShowPress" summary="gesture-show-press events"/>
+  <variant name="GestureTap" summary="gesture-tap events"/>
+  <variant name="GestureTapCancel" summary="gesture-tap-cancel events"/>
+  <variant name="GestureTapDown" summary="gesture-tap-down events"/>
+  <variant name="GestureTapUnconfirmed"
+      summary="gesture-tap-unconfirmed events"/>
+  <variant name="GestureTwoFingerTap" summary="gesture-two-finger-tap events"/>
+  <variant name="KeyPressed" summary="key-pressed events"/>
+  <variant name="KeyReleased" summary="key-released events"/>
+  <variant name="MouseDragged" summary="mouse-dragged events"/>
+  <variant name="MousePressed" summary="mouse-pressed events"/>
+  <variant name="MouseReleased" summary="mouse-released events"/>
+  <variant name="MouseWheel" summary="mouse-wheel events"/>
+  <variant name="TouchMoved" summary="touch-moved events"/>
+  <variant name="TouchPressed" summary="touch-pressed events"/>
+  <variant name="TouchReleased" summary="touch-released events"/>
+</variants>
+
+<variants name="EventLatencyPinchEventType">
+  <variant name="GesturePinchBegin" summary="gesture-pinch-begin events"/>
+  <variant name="GesturePinchEnd" summary="gesture-pinch-end events"/>
+  <variant name="GesturePinchUpdate"
+      summary="gesture-pinch-update events in a scroll sequence"/>
+</variants>
+
+<variants name="EventLatencyPinchInputType">
+  <variant name="Touchpad" summary="touchpad"/>
+  <variant name="Touchscreen" summary="touchscreen"/>
+</variants>
+
+<variants name="EventLatencyScrollEventType">
+  <variant name="FirstGestureScrollUpdate"
+      summary="the first gesture-scroll-update event in a scroll sequence"/>
+  <variant name="GestureScrollBegin" summary="gesture-scroll-begin events"/>
+  <variant name="GestureScrollEnd" summary="gesture-scroll-end events"/>
+  <variant name="GestureScrollUpdate"
+      summary="non-inertial gesture-scroll-update events in a scroll sequence
+               except for the first one"/>
+  <variant name="InertialGestureScrollUpdate"
+      summary="inertial gesture-scroll-update events in a scroll sequence"/>
+</variants>
+
+<variants name="EventLatencyScrollInputType">
+  <variant name="Autoscroll" summary="autoscroll"/>
+  <variant name="Scrollbar" summary="scrollbar"/>
+  <variant name="Touchscreen" summary="touchscreen"/>
+  <variant name="Wheel" summary="mouse wheel or touchpad"/>
+</variants>
+
 <variants name="TopControlsState">
   <variant name=".NoTopControlsMoved" summary="Top controls did not change."/>
   <variant name=".TopControlsMoved" summary="Top controls changed."/>
@@ -1930,18 +2171,70 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="EventLatency" units="microseconds"
+<histogram name="EventLatency.TotalLatency" units="microseconds"
     expires_after="2022-01-16">
   <owner>mohsen@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
-    Tracks the duration of various stages an event goes through from when it is
-    generated on the browser side until it ends up generating a frame that is
-    eventually presented to the user. If the frame is dropped, nothing is
-    reported.
+    Tracks the total latency of all event types from when the event is generated
+    until the frame containing updates from that event is presented on the
+    screen.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
+</histogram>
+
+<histogram name="EventLatency.{EventType}.{Breakdown}" units="microseconds"
+    expires_after="2022-01-16">
+  <owner>mohsen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks {Breakdown} for {EventType}.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="EventType" variants="EventLatencyEventType"/>
+  <token key="Breakdown" variants="EventLatencyBreakdown"/>
+</histogram>
+
+<histogram name="EventLatency.{PinchEventType}.{PinchInputType}.{Breakdown}"
+    units="microseconds" expires_after="2022-01-16">
+  <owner>mohsen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks {Breakdown} for {PinchEventType} by {PinchInputType}.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="PinchEventType" variants="EventLatencyPinchEventType"/>
+  <token key="PinchInputType" variants="EventLatencyPinchInputType"/>
+  <token key="Breakdown" variants="EventLatencyBreakdown"/>
+</histogram>
+
+<histogram name="EventLatency.{ScrollEventType}.{ScrollInputType}.{Breakdown}"
+    units="microseconds" expires_after="2022-01-16">
+  <owner>mohsen@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks {Breakdown} for {ScrollEventType} by {ScrollInputType}.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="ScrollEventType" variants="EventLatencyScrollEventType"/>
+  <token key="ScrollInputType" variants="EventLatencyScrollInputType"/>
+  <token key="Breakdown" variants="EventLatencyBreakdown">
+    <variant name="TotalLatencyToSwapBegin"
+        summary="total latency from when the event is generated until the
+                 gpu-swap is started"/>
+    <variant name="TotalLatencyToSwapEnd"
+        summary="total latency from when the event is generated until the
+                 gpu-swap is completed">
+      <obsolete>
+        Deprecated as of 07/2020. Replaced with TotalLatencyToSwapBegin variant
+        which measures what we actually intended to measure.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 </histograms>
