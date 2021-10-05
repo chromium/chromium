@@ -170,9 +170,10 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
   }
 
   stats::RecordSegmentSelectionComputed(
-      new_selection, previous_selection.has_value()
-                         ? absl::make_optional(previous_selection->segment_id)
-                         : absl::nullopt);
+      config_->segmentation_key, new_selection,
+      previous_selection.has_value()
+          ? absl::make_optional(previous_selection->segment_id)
+          : absl::nullopt);
 
   if (skip_updating_prefs)
     return;

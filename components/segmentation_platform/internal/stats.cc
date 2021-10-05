@@ -7,8 +7,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/config.h"
 
 namespace segmentation_platform {
 namespace stats {
@@ -24,6 +27,13 @@ std::string OptimizationTargetToHistogramVariant(
       return "Share";
     case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
       return "Voice";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
+      return "Dummy";
+    case OptimizationTarget::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
+      return "ChromeStartAndroid";
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
+      return "QueryTiles";
     default:
       NOTREACHED();
       return "Unknown";
@@ -51,7 +61,10 @@ enum class SegmentationModel {
   kNewTab = 4,
   kShare = 5,
   kVoice = 6,
-  kMaxValue = kVoice,
+  kDummy = 10,
+  kChromeStartAndroid = 11,
+  kQueryTiles = 12,
+  kMaxValue = kQueryTiles,
 };
 
 AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
@@ -70,7 +83,26 @@ AdaptiveToolbarButtonVariant OptimizationTargetToAdaptiveToolbarButtonVariant(
   }
 }
 
-AdaptiveToolbarSegmentSwitch GetSegmentSwitch(
+bool IsBooleanSegment(const std::string& segmentation_key) {
+  return segmentation_key == kChromeStartAndroidSegmentationKey ||
+         segmentation_key == kQueryTilesSegmentationKey;
+}
+
+BooleanSegmentSwitch GetBooleanSegmentSwitch(
+    OptimizationTarget new_selection,
+    OptimizationTarget previous_selection) {
+  if (new_selection != OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN &&
+      previous_selection == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+    return BooleanSegmentSwitch::kNoneToEnabled;
+  } else if (new_selection == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN &&
+             previous_selection !=
+                 OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+    return BooleanSegmentSwitch::kEnabledToNone;
+  }
+  return BooleanSegmentSwitch::kUnknown;
+}
+
+AdaptiveToolbarSegmentSwitch GetAdaptiveToolbarSegmentSwitch(
     OptimizationTarget new_selection,
     OptimizationTarget previous_selection) {
   switch (previous_selection) {
@@ -141,6 +173,13 @@ SegmentationModel OptimizationTargetToSegmentationModel(
       return SegmentationModel::kShare;
     case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
       return SegmentationModel::kVoice;
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
+      return SegmentationModel::kDummy;
+    case OptimizationTarget::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
+      return SegmentationModel::kChromeStartAndroid;
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
+      return SegmentationModel::kQueryTiles;
     default:
       return SegmentationModel::kUnknown;
   }
@@ -191,21 +230,76 @@ float ZeroValueFraction(const std::vector<float>& tensor) {
   return static_cast<float>(zero_values) / static_cast<float>(tensor.size());
 }
 
+const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
+  if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
+    return "AdaptiveToolbar";
+  } else if (segmentation_key == kDummySegmentationKey) {
+    return "DummyFeature";
+  } else if (segmentation_key == kChromeStartAndroidSegmentationKey) {
+    return "ChromeStartAndroid";
+  } else if (segmentation_key == kQueryTilesSegmentationKey) {
+    return "QueryTiles";
+  } else if (base::StartsWith(segmentation_key, "test_key")) {
+    return "TestKey";
+  }
+  NOTREACHED();
+  return "Unknown";
+}
+
 }  // namespace
 
 void RecordModelScore(OptimizationTarget segment_id, float score) {
-  base::UmaHistogramPercentage(
-      "SegmentationPlatform.AdaptiveToolbar.ModelScore." +
-          OptimizationTargetToHistogramVariant(segment_id),
-      score * 100);
+  // Special case adaptive toolbar models since it already has histograms being
+  // recorded and updating names will affect current work.
+  switch (segment_id) {
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
+      base::UmaHistogramPercentage(
+          "SegmentationPlatform.AdaptiveToolbar.ModelScore." +
+              OptimizationTargetToHistogramVariant(segment_id),
+          score * 100);
+      break;
+    default:
+      break;
+  }
+
+  switch (segment_id) {
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE:
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB:
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE:
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
+    case OptimizationTarget::
+        OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
+    case OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
+      // Assumes all models return score between 0 and 1. This is true for all
+      // the models we have currently.
+      base::UmaHistogramPercentage(
+          "SegmentationPlatform.ModelScore." +
+              OptimizationTargetToHistogramVariant(segment_id),
+          score * 100);
+      break;
+    default:
+      break;
+  }
 }
 
 void RecordSegmentSelectionComputed(
+    const std::string& segmentation_key,
     OptimizationTarget new_selection,
     absl::optional<OptimizationTarget> previous_selection) {
+  // Special case adaptive toolbar since it already has histograms being
+  // recorded and updating names will affect current work.
+  if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
+    base::UmaHistogramEnumeration(
+        "SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed",
+        OptimizationTargetToAdaptiveToolbarButtonVariant(new_selection));
+  }
+  std::string computed_hist = base::StrCat(
+      {"SegmentationPlatform.", SegmentationKeyToUmaName(segmentation_key),
+       ".SegmentSelection.Computed2"});
   base::UmaHistogramEnumeration(
-      "SegmentationPlatform.AdaptiveToolbar.SegmentSelection.Computed",
-      OptimizationTargetToAdaptiveToolbarButtonVariant(new_selection));
+      computed_hist, OptimizationTargetToSegmentationModel(new_selection));
 
   OptimizationTarget prev_segment =
       previous_selection.has_value()
@@ -215,9 +309,19 @@ void RecordSegmentSelectionComputed(
   if (prev_segment == new_selection)
     return;
 
-  base::UmaHistogramEnumeration(
-      "SegmentationPlatform.AdaptiveToolbar.SegmentSwitched",
-      GetSegmentSwitch(new_selection, prev_segment));
+  std::string switched_hist = base::StrCat(
+      {"SegmentationPlatform.", SegmentationKeyToUmaName(segmentation_key),
+       ".SegmentSwitched"});
+  if (segmentation_key == kAdaptiveToolbarSegmentationKey) {
+    base::UmaHistogramEnumeration(
+        switched_hist,
+        GetAdaptiveToolbarSegmentSwitch(new_selection, prev_segment));
+  } else if (IsBooleanSegment(segmentation_key)) {
+    base::UmaHistogramEnumeration(
+        switched_hist, GetBooleanSegmentSwitch(new_selection, prev_segment));
+  }
+  // Do not record switched histogram for all keys by default, the client needs
+  // to write custom logic for other kinds of segments.
 }
 
 void RecordMaintenanceCleanupSignalSuccessCount(size_t count) {

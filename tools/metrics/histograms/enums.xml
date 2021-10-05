@@ -75223,6 +75223,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="Warning"/>
 </enum>
 
+<enum name="SegmentationBooleanSegmentSwitch">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None to enabled"/>
+  <int value="2" label="Enabled to none"/>
+</enum>
+
 <enum name="SegmentationPlatformModelExecutionStatus">
   <int value="0" label="Success"/>
   <int value="1" label="ExecutionError"/>
@@ -75234,6 +75240,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="NewTab"/>
   <int value="5" label="Share"/>
   <int value="6" label="Voice"/>
+  <int value="10" label="Dummy"/>
+  <int value="11" label="ClankStart"/>
+  <int value="12" label="QueryTiles"/>
 </enum>
 
 <enum name="SegmentationPlatformValidationResult">

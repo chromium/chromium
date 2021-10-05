@@ -12,6 +12,19 @@
 
 namespace segmentation_platform {
 
+// The key to be used for adaptive toolbar feature.
+const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
+
+// The key to be used for any feature that needs to collect and store data on
+// client side while being built.
+const char kDummySegmentationKey[] = "dummy_feature";
+
+// The key is used to decide whether to show Chrome Start or not.
+const char kChromeStartAndroidSegmentationKey[] = "chrome_start_android";
+
+// The key is used to decide whether to show query tiles.
+const char kQueryTilesSegmentationKey[] = "query_tiles";
+
 // Contains various finch configuration params used by the segmentation
 // platform.
 struct Config {

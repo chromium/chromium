@@ -35,12 +35,22 @@ enum class AdaptiveToolbarSegmentSwitch {
   kMaxValue = kVoiceToShare,
 };
 
+// Keep in sync with SegmentationBooleanSegmentSwitch in enums.xml.
+// Visible for testing.
+enum class BooleanSegmentSwitch {
+  kUnknown = 0,
+  kNoneToEnabled = 1,
+  kEnabledToNone = 2,
+  kMaxValue = kEnabledToNone,
+};
+
 // Records the score computed for a given segment.
 void RecordModelScore(OptimizationTarget segment_id, float score);
 
 // Records the result of segment selection whenever segment selection is
 // computed.
 void RecordSegmentSelectionComputed(
+    const std::string& segmentation_key,
     OptimizationTarget new_selection,
     absl::optional<OptimizationTarget> previous_selection);
 

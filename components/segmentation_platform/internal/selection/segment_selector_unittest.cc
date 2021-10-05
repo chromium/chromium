@@ -29,7 +29,7 @@ namespace {
 
 Config CreateTestConfig() {
   Config config;
-  config.segmentation_key = "some_key";
+  config.segmentation_key = "test_key";
   config.segment_selection_ttl = base::Days(28);
   config.segment_ids = {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,

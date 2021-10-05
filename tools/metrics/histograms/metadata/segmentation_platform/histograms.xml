@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="BooleanModel">
+  <variant name="ChromeStartAndroid"/>
+  <variant name="QueryTiles"/>
+</variants>
+
 <variants name="ModelExecutionStatus">
   <variant name="ExecutionError"/>
   <variant name="InvalidMetadata"/>
@@ -28,8 +33,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="Unknown"/>
 </variants>
 
+<variants name="SegmentationKey">
+  <variant name="AdaptiveToolbar"/>
+  <variant name="ChromeStartAndroid"/>
+  <variant name="DummyFeature"/>
+  <variant name="QueryTiles"/>
+</variants>
+
 <variants name="SegmentationModel">
+  <variant name="ChromeStartAndroid"/>
+  <variant name="Dummy"/>
   <variant name="NewTab"/>
+  <variant name="QueryTiles"/>
   <variant name="Share"/>
   <variant name="Unknown"/>
   <variant name="Voice"/>
@@ -353,6 +368,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="SegmentationModel" variants="SegmentationModel"/>
 </histogram>
 
+<histogram name="SegmentationPlatform.ModelScore.{SegmentID}" units="%"
+    expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the segmentation platform model evaluation score for the given
+    {SegmentID}. Recorded whenever the model evaluation is completed
+    successfully.
+  </summary>
+  <token key="SegmentID" variants="SegmentationModel"/>
+</histogram>
+
 <histogram
     name="SegmentationPlatform.SignalDatabase.GetSamples.DatabaseEntryCount"
     units="entries" expires_after="2022-02-01">
@@ -408,6 +435,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     signals that the segmentation platform is currently listening to.
   </summary>
   <token key="SignalType" variants="SignalType"/>
+</histogram>
+
+<histogram name="SegmentationPlatform.{BooleanModel}.SegmentSwitched"
+    enum="SegmentationBooleanSegmentSwitch" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the segment selection switch from an old value to a new segment
+    after a model evaluation completes. Recorded only if the selected segment
+    switches to a new value.
+  </summary>
+  <token key="BooleanModel" variants="BooleanModel"/>
+</histogram>
+
+<histogram
+    name="SegmentationPlatform.{SegmentationKey}.SegmentSelection.Computed2"
+    enum="SegmentationPlatformSegmentationModel" expires_after="2022-02-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the result of segment selection. Recorded whenever the segment
+    selection is updated.
+  </summary>
+  <token key="SegmentationKey" variants="SegmentationKey"/>
 </histogram>
 
 </histograms>

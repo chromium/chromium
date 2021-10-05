@@ -50,9 +50,9 @@
 namespace segmentation_platform {
 namespace {
 
-constexpr char kTestSegmentationKey1[] = "some_key1";
-constexpr char kTestSegmentationKey2[] = "some_key2";
-constexpr char kTestSegmentationKey3[] = "some_key3";
+constexpr char kTestSegmentationKey1[] = "test_key1";
+constexpr char kTestSegmentationKey2[] = "test_key2";
+constexpr char kTestSegmentationKey3[] = "test_key3";
 
 std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
   std::vector<std::unique_ptr<Config>> configs;

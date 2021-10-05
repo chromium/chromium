@@ -28,9 +28,6 @@ namespace {
 constexpr int kDefaultSegmentSelectionTTLDays = 28;
 #endif
 
-// The key to be used for adaptive toolbar feature.
-const char kAdaptiveToolbarSegmentationKey[] = "adaptive_toolbar";
-
 std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kAdaptiveToolbarSegmentationKey;
@@ -52,11 +49,46 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   return config;
 }
 
+std::unique_ptr<Config> GetConfigForDummyFeature() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kDummySegmentationKey;
+  config->segment_ids = {
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
+  };
+  // TTL can be added as result TTL in metadata if needed.
+  return config;
+}
+
+std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kChromeStartAndroidSegmentationKey;
+  config->segment_ids = {
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+  };
+  // TODO(ssid): Fill in TTL for segments, also potentially update the TTL to be
+  // per result key.
+  return config;
+}
+
+std::unique_ptr<Config> GetConfigForQueryTiles() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kQueryTilesSegmentationKey;
+  config->segment_ids = {
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
+  };
+  // TODO(ssid): Fill in TTL for segments, also potentially update the TTL to be
+  // per result key.
+  return config;
+}
+
 }  // namespace
 
 std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   std::vector<std::unique_ptr<Config>> configs;
   configs.emplace_back(GetConfigForAdaptiveToolbar());
+  configs.emplace_back(GetConfigForDummyFeature());
+  configs.emplace_back(GetConfigForChromeStartAndroid());
+  configs.emplace_back(GetConfigForQueryTiles());
   return configs;
 }
 
