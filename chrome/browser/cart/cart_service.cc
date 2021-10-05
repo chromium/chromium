@@ -12,7 +12,6 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
 #include "chrome/browser/cart/cart_features.h"
-#include "chrome/browser/cart/fetch_discount_worker.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -37,7 +36,6 @@
 
 namespace {
 constexpr char kFakeDataPrefix[] = "Fake:";
-const int kDelayStartMs = 10;
 constexpr char kNoRbdUtmTag[] = "chrome_cart_no_rbd";
 constexpr char kRbdUtmTag[] = "chrome_cart_rbd";
 
@@ -151,6 +149,7 @@ void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kCartDiscountAcknowledged, false);
   registry->RegisterBooleanPref(prefs::kCartDiscountEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCartUsedDiscounts);
+  registry->RegisterTimePref(prefs::kCartDiscountLastFetchedTime, base::Time());
 }
 
 GURL CartService::AppendUTM(const GURL& base_url, bool is_discount_enabled) {
@@ -852,6 +851,19 @@ void CartService::StartGettingDiscount() {
   DCHECK(!fetch_discount_worker_)
       << "fetch_discount_worker_ should not be valid at this point.";
 
+  base::Time last_fetched_time =
+      profile_->GetPrefs()->GetTime(prefs::kCartDiscountLastFetchedTime);
+  base::TimeDelta fetch_delay = cart_features::kDiscountFetchDelayParam.Get() -
+                                (base::Time::Now() - last_fetched_time);
+  if (last_fetched_time == base::Time() || fetch_delay < base::TimeDelta()) {
+    fetch_delay = base::TimeDelta();
+  }
+
+  if (fetch_discount_worker_for_testing_) {
+    fetch_discount_worker_for_testing_->Start(fetch_delay);
+    return;
+  }
+
   fetch_discount_worker_ = std::make_unique<FetchDiscountWorker>(
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
@@ -860,14 +872,18 @@ void CartService::StartGettingDiscount() {
       IdentityManagerFactory::GetForProfile(profile_),
       profile_->GetVariationsClient());
 
-  fetch_discount_worker_->Start(
-      base::TimeDelta::FromMilliseconds(kDelayStartMs));
+  fetch_discount_worker_->Start(fetch_delay);
 }
 
 bool CartService::IsDiscountUsed(const std::string& rule_id) {
   return profile_->GetPrefs()
              ->GetDictionary(prefs::kCartUsedDiscounts)
              ->FindBoolKey(rule_id) != absl::nullopt;
+}
+
+void CartService::RecordFetchTimestamp() {
+  profile_->GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
+                                base::Time::Now());
 }
 
 void CartService::CacheUsedDiscounts(
@@ -918,4 +934,9 @@ void CartService::OnDeleteCart(bool success,
 void CartService::SetCartDiscountLinkFetcherForTesting(
     std::unique_ptr<CartDiscountLinkFetcher> discount_link_fetcher) {
   discount_link_fetcher_ = std::move(discount_link_fetcher);
+}
+
+void CartService::SetFetchDiscountWorkerForTesting(
+    std::unique_ptr<FetchDiscountWorker> fetch_discount_worker) {
+  fetch_discount_worker_for_testing_ = std::move(fetch_discount_worker);
 }

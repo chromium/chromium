@@ -1156,6 +1156,7 @@ extern const char kCartModuleWelcomeSurfaceShownTimes[];
 extern const char kCartDiscountAcknowledged[];
 extern const char kCartDiscountEnabled[];
 extern const char kCartUsedDiscounts[];
+extern const char kCartDiscountLastFetchedTime[];
 #endif
 
 #if defined(OS_ANDROID)

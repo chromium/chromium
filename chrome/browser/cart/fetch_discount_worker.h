@@ -35,6 +35,7 @@ class CartServiceDelegate {
   virtual void UpdateCart(const std::string& cart_url,
                           const cart_db::ChromeCartContentProto new_proto,
                           const bool is_tester);
+  virtual void RecordFetchTimestamp();
 
  private:
   CartService* cart_service_;
@@ -66,14 +67,15 @@ class FetchDiscountWorker {
       std::unique_ptr<CartServiceDelegate> cart_service_delegate,
       signin::IdentityManager* const identity_manager,
       variations::VariationsClient* const chrome_variations_client);
-  ~FetchDiscountWorker();
+  virtual ~FetchDiscountWorker();
   // Starts the worker to work.
-  void Start(base::TimeDelta delay);
+  virtual void Start(base::TimeDelta delay);
 
  private:
   using AfterFetchingCallback =
       base::OnceCallback<void(CartDiscountFetcher::CartDiscountMap, bool)>;
   using ContinueToWorkCallback = base::OnceCallback<void()>;
+  friend class FakeFetchDiscountWorker;
 
   scoped_refptr<network::SharedURLLoaderFactory>
       browserProcessURLLoaderFactory_;

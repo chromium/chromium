@@ -466,6 +466,10 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountConsentCardVisible) {
 
 // Test OnDiscountConsentAcknowledged can update status in CartService.
 TEST_F(CartHandlerNtpModuleDiscountTest, TestOnDiscountConsentAcknowledged) {
+  // Update fetch timestamp to avoid fetching triggered by consent
+  // acknowledgement.
+  profile_.GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
+                               base::Time::Now());
   CartDB* cart_db = service_->GetDB();
   base::RunLoop run_loop[4];
   // Add a partner cart.

@@ -3274,6 +3274,9 @@ const char kCartDiscountAcknowledged[] = "cart_discount_acknowledged";
 const char kCartDiscountEnabled[] = "cart_discount_enabled";
 // Map pref recording the discounts used by users.
 const char kCartUsedDiscounts[] = "cart_used_discounts";
+// A time pref indicating the timestamp of when last cart discount fetch
+// happened.
+const char kCartDiscountLastFetchedTime[] = "cart_discount_last_fetched_time";
 #endif
 
 #if defined(OS_ANDROID)
