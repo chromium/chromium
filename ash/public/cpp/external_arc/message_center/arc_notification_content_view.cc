@@ -565,10 +565,9 @@ void ArcNotificationContentView::UpdateMask(bool force_update) {
     return;
   mask_insets_ = new_insets;
 
-  SkColor color =
-      GetColorProvider()->GetColor(ui::kColorNotificationBackgroundInactive);
-  if (ash::features::IsNotificationsRefreshEnabled())
-    color = SK_ColorTRANSPARENT;
+  SkColor color = GetColorProvider()->GetColor(
+      message_view_->is_active() ? ui::kColorNotificationBackgroundActive
+                                 : ui::kColorNotificationBackgroundInactive);
 
   auto mask_painter =
       std::make_unique<message_center::NotificationBackgroundPainter>(

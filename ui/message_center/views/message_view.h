@@ -181,6 +181,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   std::string notification_id() const { return notification_id_; }
   NotifierId notifier_id() const { return notifier_id_; }
 
+  bool is_active() const { return is_active_; }
+
  protected:
   class HighlightPathGenerator : public views::HighlightPathGenerator {
    public:
