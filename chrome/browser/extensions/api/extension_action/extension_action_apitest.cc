@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
 #include "chrome/browser/extensions/api/extension_action/test_icon_image_observer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -553,8 +554,16 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, PopupCreation) {
 
 // Tests that sessionStorage does not persist between closing and opening of a
 // popup.
+// TODO(crbug/1256760): Flaky on Linux.
+#if defined(OS_LINUX)
+#define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
+  DISABLED_SessionStorageDoesNotPersistBetweenOpenings
+#else
+#define MAYBE_SessionStorageDoesNotPersistBetweenOpenings \
+  SessionStorageDoesNotPersistBetweenOpenings
+#endif
 IN_PROC_BROWSER_TEST_P(MultiActionAPITest,
-                       SessionStorageDoesNotPersistBetweenOpenings) {
+                       MAYBE_SessionStorageDoesNotPersistBetweenOpenings) {
   constexpr char kManifestTemplate[] =
       R"({
            "name": "Test sessionStorage",
