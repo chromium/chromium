@@ -259,8 +259,8 @@ void SideSearchBrowserController::UpdateSidePanelForContents(
 std::unique_ptr<ToolbarButton>
 SideSearchBrowserController::CreateToolbarButton() {
   auto toolbar_button = std::make_unique<ToolbarButton>();
-  toolbar_button->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON));
+  toolbar_button->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
   toolbar_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_SEARCH_TOOLBAR_BUTTON));
 
@@ -395,6 +395,11 @@ void SideSearchBrowserController::UpdateSidePanel() {
                                 ? tab_contents_helper->GetSidePanelContents()
                                 : nullptr);
   side_panel_->SetVisible(will_show_side_panel);
+  toolbar_button_->SetHighlighted(will_show_side_panel);
+  toolbar_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+      will_show_side_panel
+          ? IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_ACTIVATED
+          : IDS_ACCNAME_SIDE_SEARCH_TOOLBAR_BUTTON_NOT_ACTIVATED));
 
   // The toolbar button should remain visible in the toolbar as a side panel can
   // be shown for the active tab.
