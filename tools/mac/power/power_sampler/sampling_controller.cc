@@ -33,6 +33,15 @@ bool SamplingController::AddSampler(std::unique_ptr<Sampler> new_sampler) {
       return false;
   }
 
+  for (const auto& name_and_unit : new_sampler->GetDatumNameUnits()) {
+    bool inserted =
+        data_columns_units_
+            .emplace(DataColumnKey{new_sampler->GetName(), name_and_unit.first},
+                     name_and_unit.second)
+            .second;
+    DCHECK(inserted);
+  }
+
   samplers_.push_back(std::move(new_sampler));
   return true;
 }
@@ -46,7 +55,7 @@ void SamplingController::StartSession() {
   DCHECK(!started_);
 
   for (auto& monitor : monitors_)
-    monitor->OnStartSession(samplers_);
+    monitor->OnStartSession(data_columns_units_);
 
   started_ = true;
 }
@@ -54,21 +63,22 @@ void SamplingController::StartSession() {
 bool SamplingController::OnSamplingEvent() {
   DCHECK(started_);
 
-  std::vector<Sample> samples;
+  DataRow data_row;
   const base::TimeTicks sample_time = base::TimeTicks::Now();
   for (auto& sampler : samplers_) {
-    Sample sample = sampler->GetSample(sample_time);
-    DCHECK_EQ(sample.sampler_name(), sampler->GetName());
-    // TODO(siggi): Verify that the samplers return only the datums they
-    //      declare (in debug).
-    samples.push_back(std::move(sample));
+    Sampler::Sample sample = sampler->GetSample(sample_time);
+    for (const auto& value : sample) {
+      DataColumnKey column_key{sampler->GetName(), value.first};
+      DCHECK(base::Contains(data_columns_units_, column_key));
+      data_row.emplace(column_key, value.second);
+    }
   }
 
   // Notify all monitors of the new sample, and make sure we stop sampling
   // after this round if any of them want out.
   bool should_end_session = false;
   for (auto& monitor : monitors_)
-    if (monitor->OnSample(sample_time, samples))
+    if (monitor->OnSample(sample_time, data_row))
       should_end_session = true;
 
   return should_end_session;

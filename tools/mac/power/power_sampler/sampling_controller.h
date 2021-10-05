@@ -11,12 +11,13 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string_piece.h"
+#include "base/containers/flat_map.h"
 
 namespace power_sampler {
 
 class Sampler;
 class Monitor;
+struct DataColumnKey;
 
 // The sampling controller takes care of colleting datums from all samplers
 // on a sampling event.
@@ -58,6 +59,8 @@ class SamplingController {
 
   Samplers samplers_;
   Monitors monitors_;
+
+  base::flat_map<DataColumnKey, std::string> data_columns_units_;
 
   bool started_ = false;
 };

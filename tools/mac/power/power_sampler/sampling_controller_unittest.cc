@@ -36,9 +36,8 @@ class TestSampler : public Sampler {
   }
 
   Sample GetSample(base::TimeTicks sample_time) override {
-    Sample sample(name_);
-    sample.AddDatum(name_, sample_);
-
+    Sample sample;
+    sample.emplace(name_, sample_);
     return sample;
   }
 
@@ -52,10 +51,12 @@ class LenientMockMonitor : public Monitor {
   LenientMockMonitor() = default;
   ~LenientMockMonitor() = default;
 
-  MOCK_METHOD(void, OnStartSession, (const Samplers& samplers));
+  MOCK_METHOD(void,
+              OnStartSession,
+              ((const base::flat_map<DataColumnKey, std::string>&)));
   MOCK_METHOD(bool,
               OnSample,
-              (base::TimeTicks sample_time, const Samples& samples));
+              (base::TimeTicks sample_time, const DataRow& data_row));
   MOCK_METHOD(void, OnEndSession, ());
 };
 using MockMonitor = StrictMock<LenientMockMonitor>;
@@ -90,27 +91,27 @@ TEST(SamplingControllerTest, CallsSamplersAndMonitors) {
   controller.StartSession();
 
   base::TimeTicks first_now = base::TimeTicks::Now();
-  std::vector<Sample> last_seen_samples;
+  DataRow last_seen_data_row;
   EXPECT_CALL(*monitor, OnSample(first_now, _))
-      .WillOnce(DoAll(SaveArg<1>(&last_seen_samples), Return(false)));
+      .WillOnce(DoAll(SaveArg<1>(&last_seen_data_row), Return(false)));
   EXPECT_FALSE(controller.OnSamplingEvent());
 
-  Sample foo("foo");
-  foo.AddDatum("foo", 1.0);
-  Sample bar("bar");
-  bar.AddDatum("bar", 2.0);
-  EXPECT_THAT(last_seen_samples, ElementsAre(foo, bar));
+  EXPECT_THAT(last_seen_data_row,
+              ElementsAre(std::make_pair(DataColumnKey{"bar", "bar"}, 2.0),
+                          std::make_pair(DataColumnKey{"foo", "foo"}, 1.0)));
 
-  last_seen_samples.clear();
+  last_seen_data_row.clear();
 
   task_environment.FastForwardBy(base::Milliseconds(1500));
   base::TimeTicks second_now = base::TimeTicks::Now();
   // Terminate the sampling session on the next sample.
   EXPECT_CALL(*monitor, OnSample(second_now, _))
-      .WillOnce(DoAll(SaveArg<1>(&last_seen_samples), Return(true)));
+      .WillOnce(DoAll(SaveArg<1>(&last_seen_data_row), Return(true)));
   EXPECT_TRUE(controller.OnSamplingEvent());
   // We still expect the same samples.
-  EXPECT_THAT(last_seen_samples, ElementsAre(foo, bar));
+  EXPECT_THAT(last_seen_data_row,
+              ElementsAre(std::make_pair(DataColumnKey{"bar", "bar"}, 2.0),
+                          std::make_pair(DataColumnKey{"foo", "foo"}, 1.0)));
 
   EXPECT_CALL(*monitor, OnEndSession());
   controller.EndSession();

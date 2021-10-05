@@ -9,42 +9,16 @@
 #include <map>
 #include <string>
 
-#include "base/strings/string_piece.h"
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 
 namespace power_sampler {
 
-// A sample is a potentially sparse collection of named datums.
-class Sample {
- public:
-  using Datums = std::map<std::string, double>;
-
-  Sample();
-  explicit Sample(base::StringPiece sampler_name);
-  Sample(Sample&&);
-  ~Sample();
-
-  // Allow copy and comparison for ease of use in testing.
-  Sample(const Sample&);
-  Sample& operator=(const Sample&);
-  bool operator==(const Sample& other) const;
-
-  // Add a datum with |name| and |value|.
-  // Note: |name| must not already exist in the sample.
-  void AddDatum(base::StringPiece name, double value);
-
-  const std::string& sampler_name() const { return sampler_name_; }
-  const Datums& datums() const { return datums_; }
-
- private:
-  std::string sampler_name_;
-  Datums datums_;
-};
-
 // Concrete sampler classes override this interface.
 class Sampler {
  public:
-  using DatumNameUnits = std::map<std::string, std::string, std::less<>>;
+  using DatumNameUnits = base::flat_map<std::string, std::string>;
+  using Sample = base::flat_map<std::string, double>;
 
   Sampler() = default;
   virtual ~Sampler() = 0;
@@ -57,8 +31,7 @@ class Sampler {
 
   // Subclasses override to return their sample, |sample_time| is the time
   // when the controller started the acquisition of this sample.
-  // Returns the new sample, which must have the sampler_name set to the
-  // same value as |GetName()| of this sampler.
+  // Returns the new sample.
   virtual Sample GetSample(base::TimeTicks sample_time) = 0;
 };
 

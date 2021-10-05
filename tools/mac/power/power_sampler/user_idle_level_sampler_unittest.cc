@@ -26,13 +26,11 @@ TEST(UserIdleLevelSamplerTest, ReturnsASample) {
   std::unique_ptr<UserIdleLevelSampler> sampler(UserIdleLevelSampler::Create());
   ASSERT_NE(nullptr, sampler.get());
 
-  Sample sample = sampler->GetSample(base::TimeTicks::Now());
+  Sampler::Sample sample = sampler->GetSample(base::TimeTicks::Now());
 
-  EXPECT_EQ("UserIdleLevel", sample.sampler_name());
-  const auto& datums = sample.datums();
-  EXPECT_EQ(1u, datums.size());
-  auto it = datums.find("user_idle_level");
-  ASSERT_TRUE(it != datums.end());
+  EXPECT_EQ(1u, sample.size());
+  auto it = sample.find("user_idle_level");
+  ASSERT_TRUE(it != sample.end());
   // These are the values seen so far.
   EXPECT_TRUE(it->second == 0.0 || it->second == 128.0);
 }

@@ -67,13 +67,13 @@ Sampler::DatumNameUnits UserIdleLevelSampler::GetDatumNameUnits() {
   return ret;
 }
 
-Sample UserIdleLevelSampler::GetSample(base::TimeTicks sample_time) {
+Sampler::Sample UserIdleLevelSampler::GetSample(base::TimeTicks sample_time) {
   DCHECK(!mib_name_.empty());
 
-  Sample sample(kSamplerName);
+  Sample sample;
   auto value = GetIntSysCtl(mib_name_);
   if (value.has_value())
-    sample.AddDatum("user_idle_level", value.value());
+    sample.emplace("user_idle_level", value.value());
 
   return sample;
 }
