@@ -176,6 +176,55 @@ presets:
           - android-pixel4-perf
         stories:
           - Speedometer2
+  chrome_health_limited:
+    telemetry_batch_experiment:
+      - benchmark: loading.desktop
+        configs:
+          - mac-10_12_laptop_low_end-perf
+          - linux-perf
+          - win-10-perf
+        stories:
+          - 24h_cold
+          - 24h_warm
+          - AirBnB_cold
+          - Aljayyash_warm
+          - Daum_warm
+          - Donga_cold
+          - Economist_cold
+          - FlipKart_warm
+          - QQ_cold
+          - Ruten_cold
+          - Ruten_warm
+          - Vietnamnet_cold
+          - Walgreens_warm
+          - yahoo.co.jp_cold
+          - yahoo.co.jp_warm
+      - benchmark: loading.mobile
+        configs:
+          - android-pixel2-perf
+          - android-pixel4-perf
+        stories:
+          - 58Pic
+          - Amazon
+          - BOLNoticias
+          - Baidu
+          - Bradesco
+          - Dailymotion
+          - Facebook
+          - FlipBoard_cold
+          - FlipBoard_hot
+          - LocalMoxie
+          - SlideShare
+          - Youtube
+      - benchmark: speedometer2
+        configs:
+          - mac-10_12_laptop_low_end-perf
+          - linux-perf
+          - win-10-perf
+          - android-pixel2-perf
+          - android-pixel4-perf
+        stories:
+          - Speedometer2
   chrome_health_summary_report:
     batch_summary_report_spec:
       loading.desktop:
