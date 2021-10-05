@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.start_surface;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Intent;
 
@@ -43,6 +45,7 @@ import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -112,7 +115,7 @@ public class StartSurfaceNoTabsTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/tab_count_button_on_start_surface/true"})
     public void testShow_SingleAsHomepage_NoTabs() throws TimeoutException {
         // clang-format on
         CriteriaHelper.pollUiThread(
@@ -132,8 +135,13 @@ public class StartSurfaceNoTabsTest {
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
                 .check(matches(isDisplayed()));
-        onView(withId(R.id.start_tab_switcher_button))
-                .check(matches(withEffectiveVisibility(GONE)));
+        onView(withId(R.id.start_tab_switcher_button)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.logo)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.start_tab_switcher_button)).perform(click());
+        onViewWaiting(withId(R.id.secondary_tasks_surface_view));
+        pressBack();
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
     }
 
     @Test
@@ -163,5 +171,12 @@ public class StartSurfaceNoTabsTest {
                 .check(matches(withEffectiveVisibility(GONE)));
         onView(withId(org.chromium.chrome.tab_ui.R.id.tasks_surface_body))
                 .check(matches(isDisplayed()));
+    }
+
+    private void pressBack() {
+        // ChromeTabbedActivity expects the native libraries to be loaded when back is pressed.
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onBackPressed());
     }
 }

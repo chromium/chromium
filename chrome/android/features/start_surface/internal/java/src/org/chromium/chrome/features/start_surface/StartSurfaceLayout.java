@@ -336,7 +336,6 @@ public class StartSurfaceLayout extends Layout {
 
     @Override
     public boolean onBackPressed() {
-        if (mTabModelSelector.getCurrentModel().getCount() == 0) return false;
         return mController.onBackPressed();
     }
 
