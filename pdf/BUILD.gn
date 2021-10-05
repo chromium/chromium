@@ -175,6 +175,7 @@ if (enable_pdf) {
     public_deps = [
       "//printing/mojom",
       "//skia",
+      "//v8",
     ]
 
     deps = [
@@ -507,6 +508,7 @@ if (enable_pdf) {
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",
       "//ui/gfx/range",
+      "//v8",
     ]
 
     if (v8_use_external_startup_data) {

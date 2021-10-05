@@ -14,7 +14,7 @@ include_rules = [
   "+ui/display",
   "+ui/events",
   "+ui/gfx",
-  "+v8/include/v8.h"
+  "+v8/include",
 ]
 
 specific_include_rules = {

@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdfview.h"
+#include "v8/include/v8-isolate.h"
 
 namespace chrome_pdf {
 
@@ -189,13 +190,53 @@ class PDFiumFormFiller : public FPDF_FORMFILLINFO, public IPDF_JSPLATFORM {
   static void Form_GotoPage(IPDF_JSPLATFORM* param, int page_number);
 #endif  // defined(PDF_ENABLE_V8)
 
-  static PDFiumEngine* GetEngine(FPDF_FORMFILLINFO* info);
-  static PDFiumEngine* GetEngine(IPDF_JSPLATFORM* platform);
+  // A utility class that helps in enforcing accesses of `PDFiumEngine` within a
+  // given `v8::Isolate`. The entries of the isolates are scoped to the
+  // lifetimes of its instances. This class is tolerant of null isolates.
+  class EngineInIsolateScope {
+   public:
+    EngineInIsolateScope(PDFiumEngine* engine, v8::Isolate* isolate);
+    EngineInIsolateScope(EngineInIsolateScope&&);
+    EngineInIsolateScope& operator=(EngineInIsolateScope&&);
+    ~EngineInIsolateScope();
+
+    PDFiumEngine* engine() { return engine_; }
+
+   private:
+    std::unique_ptr<v8::Isolate::Scope> isolate_scope_;
+    PDFiumEngine* engine_;
+  };
+
+  class EngineInIsolateScopeFactory {
+   public:
+    explicit EngineInIsolateScopeFactory(PDFiumEngine* engine);
+    EngineInIsolateScopeFactory(const EngineInIsolateScope&) = delete;
+    EngineInIsolateScopeFactory& operator=(
+        const EngineInIsolateScopeFactory&&) = delete;
+    ~EngineInIsolateScopeFactory();
+
+    // Retrieves `engine_` while attempting to enter `callback_isolate_`.
+    EngineInIsolateScope GetEngineInIsolateScope() const;
+
+   private:
+    PDFiumEngine* const engine_;
+
+    // The V8 isolate to enter inside callbacks from PDFium. Can be `nullptr`
+    // because indirect callers of `PDFiumFormFiller` might not be embedding V8
+    // separately. This can happen in utility processes (through callers of
+    // //pdf/pdf.h) and in Pepper plugin processes.
+    v8::Isolate* const callback_isolate_;
+  };
+
+  // Gets an `EngineInIsolateScope` using `engine_in_isolate_scope_factory_`.
+  static EngineInIsolateScope GetEngineInIsolateScope(FPDF_FORMFILLINFO* info);
+  static EngineInIsolateScope GetEngineInIsolateScope(
+      IPDF_JSPLATFORM* platform);
 
   int SetTimer(const base::TimeDelta& delay, TimerCallback timer_func);
   void KillTimer(int timer_id);
 
-  PDFiumEngine* const engine_;
+  const EngineInIsolateScopeFactory engine_in_isolate_scope_factory_;
   const ScriptOption script_option_;
   std::map<int, std::unique_ptr<base::RepeatingTimer>> timers_;
 };
