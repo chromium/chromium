@@ -48,6 +48,7 @@ constexpr int kAlpha40 = 102;  // 40%
 constexpr int kAlpha60 = 153;  // 60%
 constexpr int kAlpha80 = 204;  // 80%
 constexpr int kAlpha90 = 230;  // 90%
+constexpr int kAlpha95 = 242;  // 95%
 
 // Alpha value that is used to calculate themed color. Please see function
 // GetBackgroundThemedColor() about how the themed color is calculated.
@@ -314,8 +315,8 @@ SkColor AshColorProvider::GetShieldLayerColorImpl(ShieldLayerType type,
 
 SkColor AshColorProvider::GetBaseLayerColorImpl(BaseLayerType type,
                                                 bool inverted) const {
-  constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60,
-                             kAlpha80, kAlpha90, 0xFF};
+  constexpr int kAlphas[] = {kAlpha20, kAlpha40, kAlpha60, kAlpha80,
+                             kAlpha90, kAlpha95, 0xFF};
   DCHECK_LT(static_cast<size_t>(type), base::size(kAlphas));
   return SkColorSetA(
       inverted ? GetInvertedBackgroundColor() : GetBackgroundColor(),

@@ -41,6 +41,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kTransparent60,
     kTransparent80,
     kTransparent90,
+    kTransparent95,
 
     // Base layer is opaque.
     kOpaque,
