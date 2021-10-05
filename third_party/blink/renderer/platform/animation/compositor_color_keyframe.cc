@@ -23,8 +23,8 @@ CompositorColorKeyframe::CompositorColorKeyframe(
 
 CompositorColorKeyframe::~CompositorColorKeyframe() = default;
 
-double CompositorColorKeyframe::Time() const {
-  return color_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorColorKeyframe::Time() const {
+  return color_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorColorKeyframe::CcTimingFunction() const {

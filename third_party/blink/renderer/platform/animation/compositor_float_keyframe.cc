@@ -23,8 +23,8 @@ CompositorFloatKeyframe::CompositorFloatKeyframe(
 
 CompositorFloatKeyframe::~CompositorFloatKeyframe() = default;
 
-double CompositorFloatKeyframe::Time() const {
-  return float_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorFloatKeyframe::Time() const {
+  return float_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorFloatKeyframe::CcTimingFunction() const {

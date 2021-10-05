@@ -1396,12 +1396,12 @@ TEST_P(AnimationCompositorAnimationsTest, CreateSimpleOpacityAnimation) {
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
@@ -1426,7 +1426,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(kDuration, keyframes[1]->Time() * kDuration);
+  EXPECT_EQ(kDuration, keyframes[1]->Time().InSecondsF() * kDuration);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1458,22 +1458,22 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(4UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(0.25, keyframes[1]->Time());
+  EXPECT_EQ(0.25, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(0.5, keyframes[2]->Time());
+  EXPECT_EQ(0.5, keyframes[2]->Time().InSecondsF());
   EXPECT_EQ(0.25f, keyframes[2]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[2]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[3]->Time());
+  EXPECT_EQ(1.0, keyframes[3]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[3]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[3]->GetTimingFunctionForTesting()->GetType());
@@ -1507,8 +1507,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(1.75,
-            keyframes[1]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(1.75, keyframes[1]->Time().InSecondsF() *
+                      timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.5f, keyframes[1]->Value());
 }
 
@@ -1550,25 +1550,26 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(4UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF() *
+                   timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   ExpectKeyframeTimingFunctionCubic(*keyframes[0],
                                     CubicBezierTimingFunction::EaseType::EASE);
 
-  EXPECT_EQ(0.5,
-            keyframes[1]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(0.5, keyframes[1]->Time().InSecondsF() *
+                     timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0,
-            keyframes[2]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(1.0, keyframes[2]->Time().InSecondsF() *
+                     timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.35f, keyframes[2]->Value());
   ExpectKeyframeTimingFunctionCubic(
       *keyframes[2], CubicBezierTimingFunction::EaseType::CUSTOM);
 
-  EXPECT_EQ(2.0,
-            keyframes[3]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(2.0, keyframes[3]->Time().InSecondsF() *
+                     timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.5f, keyframes[3]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[3]->GetTimingFunctionForTesting()->GetType());
@@ -1617,22 +1618,22 @@ TEST_P(AnimationCompositorAnimationsTest, CreateReversedOpacityAnimation) {
   EXPECT_EQ(keyframed_float_curve->GetTimingFunctionForTesting()->GetType(),
             TimingFunction::Type::LINEAR);
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   ExpectKeyframeTimingFunctionCubic(
       *keyframes[0], CubicBezierTimingFunction::EaseType::EASE_IN);
 
-  EXPECT_EQ(0.25, keyframes[1]->Time());
+  EXPECT_EQ(0.25, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(0.5, keyframes[2]->Time());
+  EXPECT_EQ(0.5, keyframes[2]->Time().InSecondsF());
   EXPECT_EQ(0.25f, keyframes[2]->Value());
   ExpectKeyframeTimingFunctionCubic(
       *keyframes[2], CubicBezierTimingFunction::EaseType::CUSTOM);
 
-  EXPECT_EQ(1.0, keyframes[3]->Time());
+  EXPECT_EQ(1.0, keyframes[3]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[3]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[3]->GetTimingFunctionForTesting()->GetType());
@@ -1739,12 +1740,12 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
@@ -1794,12 +1795,12 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(10, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(20, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
@@ -1828,12 +1829,12 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_color_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(SkColorSetRGB(0, 0, 0), keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());

@@ -20,8 +20,8 @@ CompositorFilterKeyframe::CompositorFilterKeyframe(
 
 CompositorFilterKeyframe::~CompositorFilterKeyframe() = default;
 
-double CompositorFilterKeyframe::Time() const {
-  return filter_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorFilterKeyframe::Time() const {
+  return filter_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorFilterKeyframe::CcTimingFunction() const {

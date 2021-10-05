@@ -19,8 +19,8 @@ CompositorTransformKeyframe::CompositorTransformKeyframe(
 
 CompositorTransformKeyframe::~CompositorTransformKeyframe() = default;
 
-double CompositorTransformKeyframe::Time() const {
-  return transform_keyframe_->Time().InSecondsF();
+base::TimeDelta CompositorTransformKeyframe::Time() const {
+  return transform_keyframe_->Time();
 }
 
 const gfx::TimingFunction* CompositorTransformKeyframe::CcTimingFunction()

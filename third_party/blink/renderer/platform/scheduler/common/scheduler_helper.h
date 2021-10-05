@@ -106,7 +106,6 @@ class PLATFORM_EXPORT SchedulerHelper
   void RegisterTimeDomain(base::sequence_manager::TimeDomain* time_domain);
   void UnregisterTimeDomain(base::sequence_manager::TimeDomain* time_domain);
   bool GetAndClearSystemIsQuiescentBit();
-  double GetSamplingRateForRecordingCPUTime() const;
   bool HasCPUTimingForEachTask() const;
 
   bool ShouldRecordTaskUkm(bool task_has_thread_time) {
