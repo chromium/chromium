@@ -232,15 +232,35 @@ void DisplayLockDocumentState::ForcedNodeInfo::ForceLockIfNeeded(
 
 void DisplayLockDocumentState::ForcedRangeInfo::ForceLockIfNeeded(
     Element* new_locked_element) {
-  for (Node& node : EphemeralRangeInFlatTree(range_).Nodes()) {
-    if (new_locked_element == &node) {
+  // TODO(crbug.com/1256849): Combine this with the range loop in
+  //   DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl.
+  // Ranges use NodeTraversal::Next to go in between their start and end nodes,
+  // and will access the layout information of each of those nodes. In order to
+  // ensure that each of these nodes has unlocked layout information, we have to
+  // do a scoped unlock for each of those nodes by unlocking all of their flat
+  // tree ancestors.
+  for (Node* node = range_->FirstNode(); node != range_->PastLastNode();
+       node = NodeTraversal::Next(*node)) {
+    if (node->IsChildOfShadowHost()) {
+      // This node may be slotted into another place in the flat tree, so we
+      // have to do a flat tree parent traversal for it.
+      for (Node* ancestor = node; ancestor;
+           ancestor = FlatTreeTraversal::Parent(*ancestor)) {
+        if (ancestor == new_locked_element) {
+          chain_->AddForcedUpdateScopeForContext(
+              new_locked_element->GetDisplayLockContext());
+          return;
+        }
+      }
+    } else if (node == new_locked_element) {
       chain_->AddForcedUpdateScopeForContext(
           new_locked_element->GetDisplayLockContext());
       return;
     }
   }
-  for (Node& node : FlatTreeTraversal::AncestorsOf(*range_->FirstNode())) {
-    if (new_locked_element == &node) {
+  for (Node* node = range_->FirstNode(); node;
+       node = FlatTreeTraversal::Parent(*node)) {
+    if (node == new_locked_element) {
       chain_->AddForcedUpdateScopeForContext(
           new_locked_element->GetDisplayLockContext());
       return;

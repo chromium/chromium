@@ -249,6 +249,8 @@ DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl(
           .LockedDisplayLockCount() == 0)
     return;
 
+  // TODO(crbug.com/1256849): Move this loop to a shared iterator class so we
+  //   can combine it with the one in DisplayLockDocumentState.
   // Ranges use NodeTraversal::Next to go in between their start and end nodes,
   // and will access the layout information of each of those nodes. In order to
   // ensure that each of these nodes has unlocked layout information, we have to
