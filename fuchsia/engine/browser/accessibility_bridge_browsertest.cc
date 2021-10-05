@@ -6,10 +6,10 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <zircon/types.h>
 
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/accessibility_bridge.h"
@@ -1060,7 +1060,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
   // src to be |out_of_process_url|.
   frame_->AddBeforeLoadJavaScript(
       kBindingsId, {"*"},
-      cr_fuchsia::MemBufferFromString(
+      base::MemBufferFromString(
           base::StringPrintf("iframeSrc = '%s'",
                              out_of_process_url.spec().c_str()),
           "test"),
@@ -1097,7 +1097,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, OutOfProcessIframe) {
                          out_of_process_url_2.spec().c_str());
 
   frame_->ExecuteJavaScript(
-      {"*"}, cr_fuchsia::MemBufferFromString(script, "test2"),
+      {"*"}, base::MemBufferFromString(script, "test2"),
       [](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
         CHECK(result.is_response());
       });

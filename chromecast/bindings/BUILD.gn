@@ -45,7 +45,6 @@ if (is_fuchsia) {
       "//base",
       "//components/cast/message_port",
       "//fuchsia:cast_fidl",
-      "//fuchsia/base",
       "//fuchsia/base:message_port",
     ]
   }

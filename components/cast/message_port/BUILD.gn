@@ -73,16 +73,12 @@ if (is_fuchsia) {
 
     public_deps = [
       ":public",
-
-      # TODO(crbug.com/1120731): Remove dependencies on //fuchsia.
-      "//fuchsia/base",
+      "//base",
+      "//third_party/abseil-cpp:absl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     ]
 
-    deps = [
-      "//base",
-      "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
-    ]
+    deps = [ "//third_party/fuchsia-sdk/sdk/pkg/fit-promise" ]
   }
 }
 

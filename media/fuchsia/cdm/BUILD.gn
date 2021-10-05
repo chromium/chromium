@@ -18,12 +18,14 @@ source_set("cdm") {
     "fuchsia_stream_decryptor.h",
   ]
 
-  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm" ]
+  public_deps = [
+    "//base",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.drm",
+  ]
 
   configs += [ "//media:subcomponent_config" ]
 
   deps = [
-    "//fuchsia/base",
     "//media/base",
     "//media/cdm",
     "//media/fuchsia/common",

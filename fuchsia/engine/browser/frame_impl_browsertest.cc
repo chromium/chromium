@@ -13,6 +13,8 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -27,7 +29,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/string_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
@@ -112,9 +113,9 @@ class MockWebContentsObserver : public content::WebContentsObserver {
 };
 
 std::string StringFromMemBufferOrDie(const fuchsia::mem::Buffer& buffer) {
-  std::string output;
-  CHECK(cr_fuchsia::StringFromMemBuffer(buffer, &output));
-  return output;
+  absl::optional<std::string> output = base::StringFromMemBuffer(buffer);
+  CHECK(output.has_value());
+  return std::move(*output);
 }
 
 }  // namespace
@@ -137,8 +138,7 @@ std::string GetDocumentVisibilityState(fuchsia::web::Frame* frame) {
   auto visibility = base::MakeRefCounted<base::RefCountedData<std::string>>();
   base::RunLoop loop;
   frame->ExecuteJavaScript(
-      {"*"},
-      cr_fuchsia::MemBufferFromString("document.visibilityState;", "test"),
+      {"*"}, base::MemBufferFromString("document.visibilityState;", "test"),
       [visibility, quit_loop = loop.QuitClosure()](
           fuchsia::web::Frame_ExecuteJavaScript_Result result) {
         ASSERT_TRUE(result.is_response());
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScript) {
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'hello';", "test"),
+      base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -813,7 +813,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptUpdated) {
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'hello';", "test"),
+      base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -823,8 +823,8 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptUpdated) {
   // "helloclobber").
   frame->AddBeforeLoadJavaScript(
       kBindingsId, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString(
-          "stashed_title = document.title + 'clobber';", "test"),
+      base::MemBufferFromString("stashed_title = document.title + 'clobber';",
+                                "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -849,13 +849,13 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptOrdered) {
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId1, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'hello';", "test"),
+      base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
   frame->AddBeforeLoadJavaScript(
       kBindingsId2, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title += ' there';", "test"),
+      base::MemBufferFromString("stashed_title += ' there';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -878,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptRemoved) {
 
   frame->AddBeforeLoadJavaScript(
       kBindingsId1, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'foo';", "test"),
+      base::MemBufferFromString("stashed_title = 'foo';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -886,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptRemoved) {
   // Add a script which clobbers "foo".
   frame->AddBeforeLoadJavaScript(
       kBindingsId2, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'bar';", "test"),
+      base::MemBufferFromString("stashed_title = 'bar';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -935,7 +935,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ExecuteJavaScript) {
   // Execute with no result to set the variable.
   frame->ExecuteJavaScriptNoResult(
       {kUrl.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString(
+      base::MemBufferFromString(
           base::StringPrintf("my_variable = %s;", kJsonStringLiteral), "test"),
       [](fuchsia::web::Frame_ExecuteJavaScriptNoResult_Result result) {
         EXPECT_TRUE(result.is_response());
@@ -945,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ExecuteJavaScript) {
   base::RunLoop loop;
   frame->ExecuteJavaScript(
       {kUrl.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("my_variable;", "test"),
+      base::MemBufferFromString("my_variable;", "test"),
       [&](fuchsia::web::Frame_ExecuteJavaScript_Result result) {
         ASSERT_TRUE(result.is_response());
         std::string result_json =
@@ -965,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptVmoDestroyed) {
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'hello';", "test"),
+      base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -985,7 +985,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptWrongOrigin) {
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {"http://example.com"},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'hello';", "test"),
+      base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -1008,7 +1008,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, BeforeLoadScriptWildcardOrigin) {
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {"*"},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'hello';", "test"),
+      base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -1046,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest,
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title = 'hello';", "test"),
+      base::MemBufferFromString("stashed_title = 'hello';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -1058,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest,
 
   frame->AddBeforeLoadJavaScript(
       kOnLoadScriptId2, {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("stashed_title += ' there';", "test"),
+      base::MemBufferFromString("stashed_title += ' there';", "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         EXPECT_TRUE(result.is_response());
       });
@@ -1093,8 +1093,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ExecuteJavaScriptBadEncoding) {
 
   // 0xFE is an illegal UTF-8 byte; it should cause UTF-8 conversion to fail.
   frame->ExecuteJavaScriptNoResult(
-      {url.GetOrigin().spec()},
-      cr_fuchsia::MemBufferFromString("true;\xfe", "test"),
+      {url.GetOrigin().spec()}, base::MemBufferFromString("true;\xfe", "test"),
       [&run_loop](fuchsia::web::Frame_ExecuteJavaScriptNoResult_Result result) {
         EXPECT_TRUE(result.is_err());
         EXPECT_EQ(result.err(), fuchsia::web::FrameError::BUFFER_NOT_UTF8);
@@ -1272,7 +1271,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessage) {
                                                         "postmessage");
 
   fuchsia::web::WebMessage message;
-  message.set_data(cr_fuchsia::MemBufferFromString(kPage1Path, "test"));
+  message.set_data(base::MemBufferFromString(kPage1Path, "test"));
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
   frame->PostMessage(
       post_message_url.GetOrigin().spec(), std::move(message),
@@ -1307,8 +1306,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessagePassMessagePort) {
     frame->PostMessage(
         post_message_url.GetOrigin().spec(),
         cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-            message_port.NewRequest(),
-            cr_fuchsia::MemBufferFromString("hi", "test")),
+            message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
         cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
 
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
@@ -1321,7 +1319,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessagePassMessagePort) {
 
   {
     fuchsia::web::WebMessage msg;
-    msg.set_data(cr_fuchsia::MemBufferFromString("ping", "test"));
+    msg.set_data(base::MemBufferFromString("ping", "test"));
     base::test::TestFuture<fuchsia::web::MessagePort_PostMessage_Result>
         post_result;
     message_port->PostMessage(std::move(msg), cr_fuchsia::CallbackToFitFunction(
@@ -1468,8 +1466,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessageMessagePortDisconnected) {
     frame->PostMessage(
         post_message_url.GetOrigin().spec(),
         cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-            message_port.NewRequest(),
-            cr_fuchsia::MemBufferFromString("hi", "test")),
+            message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
         cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
 
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
@@ -1519,8 +1516,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessageUseContentProvidedPort) {
     frame->PostMessage(
         "*",
         cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-            message_port.NewRequest(),
-            cr_fuchsia::MemBufferFromString("hi", "test")),
+            message_port.NewRequest(), base::MemBufferFromString("hi", "test")),
         cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
 
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
@@ -1545,7 +1541,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessageUseContentProvidedPort) {
     base::test::TestFuture<fuchsia::web::MessagePort_PostMessage_Result>
         post_result;
     fuchsia::web::WebMessage msg;
-    msg.set_data(cr_fuchsia::MemBufferFromString("ping", "test"));
+    msg.set_data(base::MemBufferFromString("ping", "test"));
     incoming_message_port->PostMessage(
         std::move(msg),
         cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
@@ -1565,7 +1561,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessageUseContentProvidedPort) {
         "*",
         cr_fuchsia::CreateWebMessageWithMessagePortRequest(
             ack_message_port.NewRequest(),
-            cr_fuchsia::MemBufferFromString("hi", "test")),
+            base::MemBufferFromString("hi", "test")),
         cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
     base::test::TestFuture<fuchsia::web::WebMessage> receiver;
     ack_message_port->ReceiveMessage(
@@ -1610,7 +1606,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessageBadOriginDropped) {
       "https://example.com",
       cr_fuchsia::CreateWebMessageWithMessagePortRequest(
           bad_origin_incoming_message_port.NewRequest(),
-          cr_fuchsia::MemBufferFromString("bad origin, bad!", "test")),
+          base::MemBufferFromString("bad origin, bad!", "test")),
       cr_fuchsia::CallbackToFitFunction(unused_post_result.GetCallback()));
   base::test::TestFuture<fuchsia::web::WebMessage> unused_message_read;
   bad_origin_incoming_message_port->ReceiveMessage(
@@ -1628,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessageBadOriginDropped) {
       "*",
       cr_fuchsia::CreateWebMessageWithMessagePortRequest(
           message_port.NewRequest(),
-          cr_fuchsia::MemBufferFromString("good origin", "test")),
+          base::MemBufferFromString("good origin", "test")),
       cr_fuchsia::CallbackToFitFunction(post_result.GetCallback()));
   base::test::TestFuture<fuchsia::web::WebMessage> receiver;
   message_port->ReceiveMessage(
@@ -1718,7 +1714,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ChildFrameNavigationIgnored) {
 
   // Notify the page so that it constructs a child iframe.
   fuchsia::web::WebMessage message;
-  message.set_data(cr_fuchsia::MemBufferFromString("test", "test"));
+  message.set_data(base::MemBufferFromString("test", "test"));
   base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result> post_result;
   frame->PostMessage(
       page_url.GetOrigin().spec(), std::move(message),

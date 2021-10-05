@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/user_metrics.h"
@@ -37,7 +38,6 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/renderer_preferences_util.h"
 #include "content/public/browser/web_contents.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/message_port.h"
 #include "fuchsia/engine/browser/accessibility_bridge.h"
 #include "fuchsia/engine/browser/context_impl.h"
@@ -343,8 +343,9 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
     return;
   }
 
-  std::u16string script_utf16;
-  if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(script, &script_utf16)) {
+  absl::optional<std::u16string> script_utf16 =
+      base::ReadUTF8FromVMOAsUTF16(script);
+  if (!script_utf16) {
     callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
     return;
   }
@@ -359,13 +360,13 @@ void FrameImpl::ExecuteJavaScriptInternal(std::vector<std::string> origins,
             return;
           }
 
-          callback(fpromise::ok(cr_fuchsia::MemBufferFromString(
+          callback(fpromise::ok(base::MemBufferFromString(
               std::move(result_json), "cr-execute-js-response")));
         },
         std::move(callback));
   }
 
-  web_contents_->GetMainFrame()->ExecuteJavaScript(script_utf16,
+  web_contents_->GetMainFrame()->ExecuteJavaScript(*script_utf16,
                                                    std::move(result_callback));
 
   if (!need_result) {
@@ -674,8 +675,9 @@ void FrameImpl::AddBeforeLoadJavaScript(
     return;
   }
 
-  std::string script_as_string;
-  if (!cr_fuchsia::StringFromMemBuffer(script, &script_as_string)) {
+  absl::optional<std::string> script_as_string =
+      base::StringFromMemBuffer(script);
+  if (!script_as_string) {
     LOG(ERROR) << "Couldn't read script from buffer.";
     callback(fpromise::error(fuchsia::web::FrameError::INTERNAL_ERROR));
     return;
@@ -686,7 +688,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
                   [kWildcardOrigin](base::StringPiece origin) {
                     return origin == kWildcardOrigin;
                   })) {
-    script_injector_.AddScriptForAllOrigins(id, script_as_string);
+    script_injector_.AddScriptForAllOrigins(id, *script_as_string);
   } else {
     std::vector<url::Origin> origins_converted;
     for (const std::string& origin : origins) {
@@ -698,7 +700,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
       origins_converted.push_back(origin_parsed);
     }
 
-    script_injector_.AddScript(id, origins_converted, script_as_string);
+    script_injector_.AddScript(id, origins_converted, *script_as_string);
   }
 
   callback(fpromise::ok());
@@ -729,8 +731,9 @@ void FrameImpl::PostMessage(std::string origin,
   if (origin != kWildcardOrigin)
     origin_utf16 = base::UTF8ToUTF16(origin);
 
-  std::u16string data_utf16;
-  if (!cr_fuchsia::ReadUTF8FromVMOAsUTF16(message.data(), &data_utf16)) {
+  absl::optional<std::u16string> data_utf16 =
+      base::ReadUTF8FromVMOAsUTF16(message.data());
+  if (!data_utf16) {
     callback(fpromise::error(fuchsia::web::FrameError::BUFFER_NOT_UTF8));
     return;
   }
@@ -760,7 +763,7 @@ void FrameImpl::PostMessage(std::string origin,
 
   content::MessagePortProvider::PostMessageToFrame(
       web_contents_->GetPrimaryPage(), std::u16string(), origin_utf16,
-      std::move(data_utf16), std::move(message_ports));
+      std::move(*data_utf16), std::move(message_ports));
   callback(fpromise::ok());
 }
 

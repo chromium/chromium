@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/callback_helpers.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
@@ -113,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, LoadSuccess) {
   const GURL page_url(
       embedded_test_server()->GetURL(kCastStreamingReceiverPath));
   fuchsia::mem::Buffer ignored_message_string =
-      cr_fuchsia::MemBufferFromString("hi", "test");
+      base::MemBufferFromString("hi", "test");
 
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
   std::unique_ptr<cast_api_bindings::MessagePort> receiver_message_port;
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(CastStreamingTest, VideoOnlyReceiver) {
   const GURL kPageUrl(
       embedded_test_server()->GetURL(kCastStreamingReceiverPath));
   fuchsia::mem::Buffer ignored_message_string =
-      cr_fuchsia::MemBufferFromString("hi", "test");
+      base::MemBufferFromString("hi", "test");
 
   std::unique_ptr<cast_api_bindings::MessagePort> sender_message_port;
   std::unique_ptr<cast_api_bindings::MessagePort> receiver_message_port;

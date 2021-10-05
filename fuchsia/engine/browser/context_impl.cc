@@ -13,13 +13,13 @@
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -131,10 +131,9 @@ void ContextImpl::CreateFrameForWebContents(
   // present, it will be provided to the FrameImpl after it is created below.
   absl::optional<std::string> explicit_sites_filter_error_page;
   if (params.has_explicit_sites_filter_error_page()) {
-    explicit_sites_filter_error_page.emplace();
-    if (!cr_fuchsia::StringFromMemData(
-            params.explicit_sites_filter_error_page(),
-            &explicit_sites_filter_error_page.value())) {
+    explicit_sites_filter_error_page =
+        base::StringFromMemData(params.explicit_sites_filter_error_page());
+    if (!explicit_sites_filter_error_page) {
       frame_request.Close(ZX_ERR_INVALID_ARGS);
       return;
     }

@@ -13,11 +13,11 @@
 
 #include "base/cxx17_backports.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_devtools_list_fetcher.h"
@@ -216,7 +216,7 @@ TEST_F(WebEngineIntegrationTest, CreateFrameWithUnclonableFrameParamsFails) {
 
   // Create a buffer and remove the ability clone it by changing its rights to
   // not include ZX_RIGHT_DUPLICATE.
-  auto buffer = cr_fuchsia::MemBufferFromString("some data", "some name");
+  auto buffer = base::MemBufferFromString("some data", "some name");
   zx::vmo unclonable_readonly_vmo;
   EXPECT_EQ(ZX_OK, buffer.vmo.duplicate(kReadRightsWithoutDuplicate,
                                         &unclonable_readonly_vmo));

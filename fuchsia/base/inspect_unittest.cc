@@ -10,13 +10,14 @@
 #include <lib/inspect/service/cpp/reader.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/inspect/cpp/component.h>
+
 #include <cstdint>
 #include <memory>
 
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/test/task_environment.h"
 #include "components/version_info/version_info.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -78,8 +79,8 @@ TEST_F(InspectTest, PublishVersionInfoToInspect) {
 
   // Parse the data as an inspect::Hierarchy.
   ASSERT_TRUE(content.has_buffer());
-  std::string buffer_data;
-  cr_fuchsia::StringFromMemBuffer(content.buffer(), &buffer_data);
+  std::string buffer_data =
+      base::StringFromMemBuffer(content.buffer()).value_or(std::string());
   inspect::Hierarchy hierarchy =
       inspect::ReadFromBuffer(cr_fuchsia::StringToBytes(buffer_data))
           .take_value();

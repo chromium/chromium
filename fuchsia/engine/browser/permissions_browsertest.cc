@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 #include "fuchsia/engine/browser/frame_impl_browser_test_base.h"
@@ -55,8 +55,7 @@ class PermissionsBrowserTest : public FrameImplTestBaseWithServer {
 
 void PermissionsBrowserTest::InjectBeforeLoadJs(const std::string& code) {
   frame_->AddBeforeLoadJavaScript(
-      before_load_js_id_++, {"*"},
-      cr_fuchsia::MemBufferFromString(code, "test"),
+      before_load_js_id_++, {"*"}, base::MemBufferFromString(code, "test"),
       [](fuchsia::web::Frame_AddBeforeLoadJavaScript_Result result) {
         CHECK(result.is_response());
       });

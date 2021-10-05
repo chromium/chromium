@@ -9,6 +9,7 @@ import("//testing/test.gni")
 
 # Integration helpers for commonly used fuchsia.* APIs.
 source_set("base") {
+  visibility = [ "//fuchsia/*" ]
   sources = [
     "config_reader.cc",
     "feedback_registration.cc",
@@ -41,6 +42,7 @@ source_set("base") {
 
 # Integration helpers for fuchsia.modular.
 source_set("modular") {
+  visibility = [ "//fuchsia/*" ]
   sources = [
     "agent_impl.cc",
     "agent_impl.h",
@@ -58,20 +60,30 @@ source_set("modular") {
 
 # FIDL/Mojo adapters for MessagePorts.
 source_set("message_port") {
+  visibility = [
+    "//chromecast/bindings:bindings_manager_fuchsia",
+    "//fuchsia/*",
+  ]
   sources = [ "message_port.cc" ]
   public = [ "message_port.h" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/common:headers",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+  ]
   deps = [
-    ":base",
     "//base",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
-    "//third_party/blink/public/common:headers",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
   ]
 }
 
 source_set("legacymetrics") {
+  visibility = [
+    ":*",
+    "//fuchsia/engine/*",
+  ]
   sources = [
     "legacymetrics_client.cc",
     "legacymetrics_client.h",

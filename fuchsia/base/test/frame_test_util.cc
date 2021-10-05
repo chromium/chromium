@@ -4,11 +4,11 @@
 
 #include "fuchsia/base/test/frame_test_util.h"
 
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
 
@@ -37,18 +37,19 @@ bool LoadUrlAndExpectResponse(
 absl::optional<base::Value> ExecuteJavaScript(fuchsia::web::Frame* frame,
                                               base::StringPiece script) {
   base::test::TestFuture<fuchsia::web::Frame_ExecuteJavaScript_Result> result;
-  frame->ExecuteJavaScript({"*"}, MemBufferFromString(script, "test"),
+  frame->ExecuteJavaScript({"*"}, base::MemBufferFromString(script, "test"),
                            CallbackToFitFunction(result.GetCallback()));
 
   if (!result.Wait() || !result.Get().is_response())
     return {};
 
-  std::string result_json;
-  if (!StringFromMemBuffer(result.Get().response().result, &result_json)) {
+  absl::optional<std::string> result_json =
+      base::StringFromMemBuffer(result.Get().response().result);
+  if (!result_json) {
     return {};
   }
 
-  return base::JSONReader::Read(result_json);
+  return base::JSONReader::Read(*result_json);
 }
 
 fuchsia::web::LoadUrlParams CreateLoadUrlParamsWithUserActivation() {

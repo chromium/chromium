@@ -8,12 +8,12 @@
 #include "base/barrier_closure.h"
 #include "base/base_paths_fuchsia.h"
 #include "base/files/file_util.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "content/public/test/browser_test.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "fuchsia/base/test/fit_adapter.h"
 #include "fuchsia/base/test/frame_test_util.h"
 #include "fuchsia/base/test/test_navigation_listener.h"
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
   // Define the injected bindings.
   std::vector<chromium::cast::ApiBinding> binding_list;
   chromium::cast::ApiBinding echo_binding;
-  echo_binding.set_before_load_script(cr_fuchsia::MemBufferFromString(
+  echo_binding.set_before_load_script(base::MemBufferFromString(
       "window.echo = cast.__platform__.PortConnector.bind('echoService');",
       "test"));
   binding_list.emplace_back(std::move(echo_binding));
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
 
   // Connect to the echo service hosted by the page and send a ping to it.
   fuchsia::web::WebMessage message;
-  message.set_data(cr_fuchsia::MemBufferFromString("ping", "ping-msg"));
+  message.set_data(base::MemBufferFromString("ping", "ping-msg"));
   fuchsia::web::MessagePortPtr port =
       api_service_.RunAndReturnConnectedPort("echoService").Bind();
   port->PostMessage(std::move(message),
@@ -139,10 +139,10 @@ IN_PROC_BROWSER_TEST_F(ApiBindingsClientTest, EndToEnd) {
       cr_fuchsia::CallbackToFitFunction(response.GetCallback()));
   ASSERT_TRUE(response.Wait());
 
-  std::string response_string;
-  EXPECT_TRUE(
-      cr_fuchsia::StringFromMemBuffer(response.Get().data(), &response_string));
-  EXPECT_EQ("ack ping", response_string);
+  absl::optional<std::string> response_string =
+      base::StringFromMemBuffer(response.Get().data());
+  ASSERT_TRUE(response_string.has_value());
+  EXPECT_EQ("ack ping", *response_string);
 
   // Ensure that we've received acks for all messages.
   post_message_responses_loop.Run();

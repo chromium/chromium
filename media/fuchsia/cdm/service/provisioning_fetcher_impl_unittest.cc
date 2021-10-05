@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/location.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "media/fuchsia/cdm/service/mock_provision_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -37,8 +37,7 @@ drm::ProvisioningRequest CreateProvisioningRequest(
   drm::ProvisioningRequest request;
   request.default_provisioning_server_url =
       std::move(default_provisioning_server_url);
-  request.message =
-      cr_fuchsia::MemBufferFromString(message, "provisioning_request");
+  request.message = base::MemBufferFromString(message, "provisioning_request");
   return request;
 }
 
@@ -66,13 +65,14 @@ TEST_F(ProvisioningFetcherImplTest, Fetch) {
 
   fetcher.Bind(base::MakeExpectedNotRunClosure(FROM_HERE));
 
-  std::string response_message;
+  absl::optional<std::string> response_message;
   fetcher.Fetch(CreateProvisioningRequest(kTestDefaultUrl, kTestRequest),
                 [&](drm::ProvisioningResponse response) {
-                  ASSERT_TRUE(cr_fuchsia::StringFromMemBuffer(
-                      response.message, &response_message));
+                  response_message =
+                      base::StringFromMemBuffer(response.message);
                 });
-  EXPECT_EQ(response_message, kTestResponse);
+  ASSERT_TRUE(response_message.has_value());
+  EXPECT_EQ(*response_message, kTestResponse);
 }
 
 TEST_F(ProvisioningFetcherImplTest, RetrieveFails) {
@@ -89,13 +89,14 @@ TEST_F(ProvisioningFetcherImplTest, RetrieveFails) {
 
   fetcher.Bind(base::MakeExpectedNotRunClosure(FROM_HERE));
 
-  std::string response_message;
+  absl::optional<std::string> response_message;
   fetcher.Fetch(CreateProvisioningRequest(kTestDefaultUrl, kTestRequest),
                 [&](drm::ProvisioningResponse response) {
-                  ASSERT_TRUE(cr_fuchsia::StringFromMemBuffer(
-                      response.message, &response_message));
+                  response_message =
+                      base::StringFromMemBuffer(response.message);
                 });
-  EXPECT_TRUE(response_message.empty());
+  ASSERT_TRUE(response_message.has_value());
+  EXPECT_TRUE(response_message->empty());
 }
 
 TEST_F(ProvisioningFetcherImplTest, NoDefaultProvisioningUrl) {
