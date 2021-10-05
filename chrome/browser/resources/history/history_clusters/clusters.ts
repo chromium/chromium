@@ -4,6 +4,7 @@
 
 import './cluster.js';
 import './shared_vars.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
