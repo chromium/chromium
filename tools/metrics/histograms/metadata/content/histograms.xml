@@ -1529,7 +1529,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="Engaged"
         summary="after the user has been recorded as FeedEngagementType
                  'Engaged', reported at most once per day when the user
-                 interacts with the Following Feed."/>
+                 interacts with either the For-You or Following Feeds."/>
     <variant name="NoContentShown"
         summary="after the Following Feed is shown, and no content is
                  available for display."/>
