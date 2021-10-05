@@ -22,12 +22,6 @@ class WebState;
 @interface NewTabPageCoordinator
     : ChromeCoordinator <LogoAnimationControllerOwnerOwner>
 
-// Initializes this Coordinator with its |browser|.
-- (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-
 // ViewController associated with this coordinator.
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 

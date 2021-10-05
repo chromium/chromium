@@ -57,6 +57,9 @@ class ReadingListModel;
 // over.
 @property(nonatomic, assign) BOOL focusOmniboxWhenViewAppears;
 
+// The base view controller from which to present UI.
+@property(nonatomic, weak) UIViewController* baseViewController;
+
 // Return the toolbar view;
 - (UIView*)toolBarView;
 

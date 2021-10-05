@@ -149,10 +149,11 @@
 
 #pragma mark - ChromeCoordinator
 
-- (instancetype)initWithBrowser:(Browser*)browser {
-  self = [super initWithBaseViewController:nil browser:browser];
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    self.containerViewController = [[UIViewController alloc] init];
+    _containerViewController = [[UIViewController alloc] init];
 
     _prefService =
         ChromeBrowserState::FromBrowserState(browser->GetBrowserState())
@@ -256,12 +257,16 @@
 
   if (self.discoverFeedViewController) {
     [self.contentSuggestionsCoordinator start];
+    self.contentSuggestionsCoordinator.headerController.baseViewController =
+      self.baseViewController;
     [self configureNTPAsMainViewController];
     self.ntpViewController.discoverFeedMetricsRecorder =
         discoverFeedMetricsRecorder;
   } else {
     self.ntpViewController = nil;
     [self.contentSuggestionsCoordinator start];
+    self.contentSuggestionsCoordinator.headerController.baseViewController =
+      self.baseViewController;
     [self configureMainViewControllerUsing:self.contentSuggestionsCoordinator
                                                .viewController];
   }
