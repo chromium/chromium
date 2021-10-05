@@ -926,6 +926,13 @@ AccessibleNodeList* AccessibleNode::childNodes() {
 
 void AccessibleNode::appendChild(AccessibleNode* child,
                                  ExceptionState& exception_state) {
+  if (child == this) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidAccessError,
+        "An AccessibleNode cannot be a child of itself");
+    return;
+  }
+
   if (child->element()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
