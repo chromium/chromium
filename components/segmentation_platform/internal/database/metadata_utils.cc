@@ -192,5 +192,35 @@ SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type) {
   }
 }
 
+int ConvertToDiscreteScore(const std::string& mapping_key,
+                           float input_score,
+                           const proto::SegmentationModelMetadata& metadata) {
+  auto iter = metadata.discrete_mappings().find(mapping_key);
+  if (iter == metadata.discrete_mappings().end()) {
+    iter =
+        metadata.discrete_mappings().find(metadata.default_discrete_mapping());
+    if (iter == metadata.discrete_mappings().end())
+      return 0;
+  }
+  DCHECK(iter != metadata.discrete_mappings().end());
+
+  const auto& mapping = iter->second;
+
+  // Iterate over the entries and find the largest entry whose min result is
+  // equal to or less than the input.
+  int discrete_result = 0;
+  float largest_score_below_input_score = std::numeric_limits<float>::min();
+  for (int i = 0; i < mapping.entries_size(); i++) {
+    const auto& entry = mapping.entries(i);
+    if (entry.min_result() <= input_score &&
+        entry.min_result() > largest_score_below_input_score) {
+      largest_score_below_input_score = entry.min_result();
+      discrete_result = entry.rank();
+    }
+  }
+
+  return discrete_result;
+}
+
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

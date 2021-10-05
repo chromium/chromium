@@ -6,11 +6,14 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_METADATA_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/internal/database/signal_key.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+using optimization_guide::proto::OptimizationTarget;
 
 namespace segmentation_platform {
 namespace metadata_utils {
@@ -75,6 +78,11 @@ base::TimeDelta GetTimeUnit(
 
 // Conversion methods between SignalKey::Kind and proto::SignalType.
 SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type);
+
+// Helper method to convert continuous to discrete score.
+int ConvertToDiscreteScore(const std::string& mapping_key,
+                           float input_score,
+                           const proto::SegmentationModelMetadata& metadata);
 
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

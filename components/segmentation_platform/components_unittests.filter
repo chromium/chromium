@@ -13,6 +13,7 @@ SegmentationPlatformServiceImplTest.*
 SegmentationPlatformServiceImplMultiClientTest.*
 SegmentationResultPrefsTest.*
 SegmentInfoDatabaseTest.*
+SegmentScoreProviderTest.*
 SegmentSelectorTest.*
 SignalDatabaseImplTest.*
 SignalFilterProcessorTest.*

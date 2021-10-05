@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -27,6 +28,7 @@
 #include "components/segmentation_platform/internal/proto/signal.pb.h"
 #include "components/segmentation_platform/internal/proto/signal_storage_config.pb.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
+#include "components/segmentation_platform/internal/selection/segment_score_provider.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
@@ -119,6 +121,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       all_segment_ids_.insert(segment_id);
   }
 
+  segment_score_provider_ =
+      SegmentScoreProvider::Create(segment_info_database_.get());
+
   database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
       all_segment_ids_, clock, segment_info_database_.get(),
       signal_database_.get(), signal_storage_config_.get());
@@ -153,6 +158,7 @@ void SegmentationPlatformServiceImpl::EnableMetrics(
 void SegmentationPlatformServiceImpl::OnSegmentInfoDatabaseInitialized(
     bool success) {
   segment_info_database_initialized_ = success;
+  segment_score_provider_->Initialize(base::DoNothing());
   MaybeRunPostInitializationRoutines();
 }
 

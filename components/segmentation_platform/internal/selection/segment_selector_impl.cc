@@ -29,8 +29,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
       signal_storage_config_(signal_storage_config),
       result_prefs_(result_prefs),
       config_(config),
-      clock_(clock),
-      initialized_(false) {
+      clock_(clock) {
   // Read selected segment from prefs.
   const auto& selected_segment =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
@@ -42,38 +41,11 @@ SegmentSelectorImpl::SegmentSelectorImpl(
 
 SegmentSelectorImpl::~SegmentSelectorImpl() = default;
 
-void SegmentSelectorImpl::Initialize(base::OnceClosure callback) {
-  // Read model results from DB.
-  segment_database_->GetSegmentInfoForSegments(
-      config_->segment_ids,
-      base::BindOnce(&SegmentSelectorImpl::ReadScoresFromLastSession,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void SegmentSelectorImpl::GetSelectedSegment(
     SegmentSelectionCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), selected_segment_last_session_));
-}
-
-void SegmentSelectorImpl::GetSegmentScore(
-    OptimizationTarget segment_id,
-    SingleSegmentResultCallback callback) {
-  DCHECK(initialized_);
-
-  absl::optional<float> score;
-  auto iter = segment_score_last_session_.find(segment_id);
-  if (iter != segment_score_last_session_.end())
-    score = iter->second;
-
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), score));
-}
-
-void SegmentSelectorImpl::OnSegmentUsed(OptimizationTarget segment_id) {
-  DCHECK(initialized_);
-  // TODO(shaktisahu): Implement this.
 }
 
 void SegmentSelectorImpl::OnModelExecutionCompleted(
@@ -139,9 +111,9 @@ OptimizationTarget SegmentSelectorImpl::FindBestSegment(
   for (const auto& pair : all_segments) {
     OptimizationTarget id = pair.first;
     const proto::SegmentInfo& info = pair.second;
-    int score = ConvertToDiscreteScore(id, config_->segmentation_key,
-                                       info.prediction_result().result(),
-                                       info.model_metadata());
+    int score = metadata_utils::ConvertToDiscreteScore(
+        config_->segmentation_key, info.prediction_result().result(),
+        info.model_metadata());
     if (score > max_score) {
       max_score = score;
       max_score_id = id;
@@ -184,57 +156,6 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
 
   result_prefs_->SaveSegmentationResultToPref(config_->segmentation_key,
                                               updated_selection);
-}
-
-void SegmentSelectorImpl::ReadScoresFromLastSession(
-    base::OnceClosure callback,
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        all_segments) {
-  // Read results from last session to memory.
-  for (const auto& pair : all_segments) {
-    OptimizationTarget id = pair.first;
-    const proto::SegmentInfo& info = pair.second;
-    if (!info.has_prediction_result())
-      continue;
-
-    float result = info.prediction_result().result();
-    segment_score_last_session_.emplace(std::make_pair(id, result));
-  }
-
-  initialized_ = true;
-  std::move(callback).Run();
-}
-
-int SegmentSelectorImpl::ConvertToDiscreteScore(
-    OptimizationTarget segment_id,
-    const std::string& mapping_key,
-    float input_score,
-    const proto::SegmentationModelMetadata& metadata) {
-  auto iter = metadata.discrete_mappings().find(mapping_key);
-  if (iter == metadata.discrete_mappings().end()) {
-    iter =
-        metadata.discrete_mappings().find(metadata.default_discrete_mapping());
-    if (iter == metadata.discrete_mappings().end())
-      return 0;
-  }
-  DCHECK(iter != metadata.discrete_mappings().end());
-
-  const auto& mapping = iter->second;
-
-  // Iterate over the entries and find the largest entry whose min result is
-  // equal to or less than the input.
-  int discrete_result = 0;
-  float largest_score_below_input_score = std::numeric_limits<float>::min();
-  for (int i = 0; i < mapping.entries_size(); i++) {
-    const auto& entry = mapping.entries(i);
-    if (entry.min_result() <= input_score &&
-        entry.min_result() > largest_score_below_input_score) {
-      largest_score_below_input_score = entry.min_result();
-      discrete_result = entry.rank();
-    }
-  }
-
-  return discrete_result;
 }
 
 }  // namespace segmentation_platform

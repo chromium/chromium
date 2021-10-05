@@ -11,6 +11,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {
+namespace {
+
+void AddDiscreteMapping(proto::SegmentationModelMetadata* metadata,
+                        float mappings[][2],
+                        int num_pairs,
+                        const std::string& discrete_mapping_key) {
+  auto* discrete_mappings_map = metadata->mutable_discrete_mappings();
+  auto& discrete_mappings = (*discrete_mappings_map)[discrete_mapping_key];
+  for (int i = 0; i < num_pairs; i++) {
+    auto* pair = mappings[i];
+    auto* entry = discrete_mappings.add_entries();
+    entry->set_min_result(pair[0]);
+    entry->set_rank(pair[1]);
+  }
+}
+
+}  // namespace
 
 class MetadataUtilsTest : public testing::Test {
  public:
@@ -410,6 +427,83 @@ TEST_F(MetadataUtilsTest, SignalTypeToSignalKind) {
   EXPECT_EQ(SignalKey::Kind::UNKNOWN,
             metadata_utils::SignalTypeToSignalKind(
                 proto::SignalType::UNKNOWN_SIGNAL_TYPE));
+}
+
+TEST_F(MetadataUtilsTest, CheckDiscreteMapping) {
+  proto::SegmentationModelMetadata metadata;
+  std::string segmentation_key = "some_key";
+  float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
+  AddDiscreteMapping(&metadata, mapping, 3, segmentation_key);
+
+  ASSERT_EQ(0, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.1,
+                                                      metadata));
+  ASSERT_EQ(1, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.4,
+                                                      metadata));
+  ASSERT_EQ(3, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.5,
+                                                      metadata));
+  ASSERT_EQ(3, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.6,
+                                                      metadata));
+  ASSERT_EQ(4, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.9,
+                                                      metadata));
+}
+
+TEST_F(MetadataUtilsTest, CheckDiscreteMappingInNonAscendingOrder) {
+  proto::SegmentationModelMetadata metadata;
+  std::string segmentation_key = "some_key";
+  float mapping[][2] = {{0.2, 1}, {0.7, 4}, {0.5, 3}};
+  AddDiscreteMapping(&metadata, mapping, 3, segmentation_key);
+
+  ASSERT_EQ(0, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.1,
+                                                      metadata));
+  ASSERT_EQ(1, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.4,
+                                                      metadata));
+  ASSERT_EQ(3, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.5,
+                                                      metadata));
+  ASSERT_EQ(3, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.6,
+                                                      metadata));
+  ASSERT_EQ(4, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.9,
+                                                      metadata));
+}
+
+TEST_F(MetadataUtilsTest, CheckMissingDiscreteMapping) {
+  proto::SegmentationModelMetadata metadata;
+  std::string segmentation_key = "some_key";
+
+  // Any value should result in a 0 mapping, since no mapping exists.
+  ASSERT_EQ(0, metadata_utils::ConvertToDiscreteScore(segmentation_key, 0.9,
+                                                      metadata));
+}
+
+TEST_F(MetadataUtilsTest, CheckDefaultDiscreteMapping) {
+  std::string segmentation_key = "some_key";
+  float mapping_specific[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
+  float mapping_default[][2] = {{0.2, 5}, {0.5, 6}, {0.7, 7}};
+  proto::SegmentationModelMetadata metadata;
+  AddDiscreteMapping(&metadata, mapping_specific, 3, segmentation_key);
+  AddDiscreteMapping(&metadata, mapping_default, 3, "my-default");
+
+  // No valid mapping should be found since there is no default mapping.
+  EXPECT_EQ(0, metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6,
+                                                      metadata));
+
+  metadata.set_default_discrete_mapping("my-default");
+  // Should now use the default values instead of the one from the
+  // one in the configuration key.
+  EXPECT_EQ(6, metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6,
+                                                      metadata));
+}
+
+TEST_F(MetadataUtilsTest, CheckMissingDefaultDiscreteMapping) {
+  proto::SegmentationModelMetadata metadata;
+  std::string segmentation_key = "some_key";
+  float mapping_default[][2] = {{0.2, 5}, {0.5, 6}, {0.7, 7}};
+  AddDiscreteMapping(&metadata, mapping_default, 3, "my-default");
+  metadata.set_default_discrete_mapping("not-my-default");
+
+  // Should not find 'not-my-default' mapping, since it is registered as
+  // 'my-default', so we should get a 0 result.
+  EXPECT_EQ(0, metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6,
+                                                      metadata));
 }
 
 }  // namespace segmentation_platform

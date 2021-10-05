@@ -53,6 +53,7 @@ class SegmentSelectorImpl;
 class SignalDatabaseImpl;
 class SignalFilterProcessor;
 class SignalStorageConfig;
+class SegmentScoreProvider;
 class UserActionSignalHandler;
 
 // The internal implementation of the SegmentationPlatformService.
@@ -135,6 +136,9 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   // SegmentSelectorImpl and ModelExecutionSchedulerImpl.
   base::flat_map<std::string, std::unique_ptr<SegmentSelectorImpl>>
       segment_selectors_;
+
+  // Segment results.
+  std::unique_ptr<SegmentScoreProvider> segment_score_provider_;
 
   // Model execution scheduling logic.
   std::unique_ptr<ModelExecutionSchedulerImpl> model_execution_scheduler_;
