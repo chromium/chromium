@@ -198,6 +198,8 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
       return "UploadEncryptedReport";
     case DeviceManagementService::JobConfiguration::TYPE_CHECK_USER_ACCOUNT:
       return "CheckUserAccount";
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
+      return "UploadEuiccInfo";
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";

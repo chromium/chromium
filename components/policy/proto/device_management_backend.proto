@@ -3529,6 +3529,34 @@ message RsuLookupKeyUploadResponse {
   optional bool rsu_lookup_key_updated = 1;
 }
 
+// Information about an eSIM profile installed on an EUICC (Embedded Universal
+// Integrated Circuit Card).
+message ESimProfileInfo {
+  // ICCID of the eSIM profile. Upto 22 decimal digits encoded
+  // as ASCII string.
+  // Example: 3554020401587593554020.
+  optional string iccid = 1;
+
+  // SMDP (Subscription Management - Data Preparation) server address
+  // that was used to install this eSIM profile. Upto 255 characters
+  // encoded as UTF8 string.
+  // Example: LPA:1$esim.example.com$
+  optional string smdp_address = 2;
+}
+
+// Request from device to server to update information about EUICCs
+// on the device.
+message UploadEuiccInfoRequest {
+  // Number of EUICCs on the device.
+  optional uint32 euicc_count = 1;
+
+  // List of policy provisioned eSIM profiles on the device.
+  repeated ESimProfileInfo esim_profiles = 2;
+}
+
+// Response from server to device for EUICC status update.
+message UploadEuiccInfoResponse {}
+
 // An event used for reporting when a new print job has completed.
 message PrintJobEvent {
   message PrintJobConfiguration {
@@ -3963,6 +3991,7 @@ message BrowserPublicKeyUploadResponse {
 //     * refresh_account
 //     * client_cert_provisioning
 //     * browser_public_key_upload
+//     * upload_euicc_info
 //   * devicetype: MUST BE "1" for Android, "2" for Chrome OS or "3" for Chrome
 //     browser.
 //   * apptype: MUST BE Android or Chrome.
@@ -4021,6 +4050,7 @@ message BrowserPublicKeyUploadResponse {
 //   device_initial_enrollment_state: device_initial_enrollment_state_request
 //   refresh_account: refresh_account_request
 //   client_cert_provisioning: client_certificate_provisioning_request
+//   upload_euicc_info: upload_euicc_info_request
 message DeviceManagementRequest {
   reserved 24;  // unused previous version of chrome_desktop_report_request.
 
@@ -4141,7 +4171,10 @@ message DeviceManagementRequest {
   // Request from browser to upload public key.
   optional BrowserPublicKeyUploadRequest browser_public_key_upload_request = 38;
 
-  // Next id: 39.
+  // Request to upload info about eSIM provisioning.
+  optional UploadEuiccInfoRequest upload_euicc_info_request = 39;
+
+  // Next id: 40.
 }
 
 // Response from server to device.
@@ -4281,7 +4314,9 @@ message DeviceManagementResponse {
   optional BrowserPublicKeyUploadResponse browser_public_key_upload_response =
       36;
 
-  // Next id: 37.
+  optional UploadEuiccInfoResponse upload_euicc_info_response = 37;
+
+  // Next id: 38.
 }
 
 // Device State Information stored in the server is retrieval at

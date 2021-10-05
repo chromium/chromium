@@ -219,6 +219,7 @@ class POLICY_EXPORT DeviceManagementService {
       TYPE_PSM_HAS_DEVICE_STATE_REQUEST = 26,
       TYPE_UPLOAD_ENCRYPTED_REPORT = 27,
       TYPE_CHECK_USER_ACCOUNT = 28,
+      TYPE_UPLOAD_EUICC_INFO = 29,
     };
 
     // The set of HTTP query parameters of the request.

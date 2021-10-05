@@ -90,6 +90,8 @@ const char* JobTypeToRequestType(
         TYPE_UPLOAD_ENCRYPTED_REPORT:
       NOTREACHED() << "Not a DMServer request type " << type;
       break;
+    case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
+      return dm_protocol::kValueRequestUploadEuiccInfo;
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";
