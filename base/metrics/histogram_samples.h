@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/atomicops.h"
-#include "base/compiler_specific.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -64,8 +63,7 @@ class BASE_EXPORT HistogramSamples {
     // Adds a given count to the held bucket. If not possible, it returns false
     // and leaves the parts unchanged. Once extracted/disabled, this always
     // returns false. This in an "acquire/release" operation.
-    // TODO(crbug.com/1254354): Remove NOINLINE after diagnosis.
-    bool NOINLINE Accumulate(size_t bucket, HistogramBase::Count count);
+    bool Accumulate(size_t bucket, HistogramBase::Count count);
 
     // Returns if the sample has been "disabled" (via Extract) and thus not
     // allowed to accept further accumulation.
@@ -189,14 +187,12 @@ class BASE_EXPORT HistogramSamples {
   // Accumulates to the embedded single-sample field if possible. Returns true
   // on success, false otherwise. Sum and redundant-count are also updated in
   // the success case.
-  // TODO(crbug.com/1254354): Remove NOINLINE after diagnosis.
-  bool NOINLINE AccumulateSingleSample(HistogramBase::Sample value,
-                                       HistogramBase::Count count,
-                                       size_t bucket);
+  bool AccumulateSingleSample(HistogramBase::Sample value,
+                              HistogramBase::Count count,
+                              size_t bucket);
 
   // Atomically adjust the sum and redundant-count.
-  // TODO(crbug.com/1254354): Remove NOINLINE after diagnosis.
-  void NOINLINE IncreaseSumAndCount(int64_t sum, HistogramBase::Count count);
+  void IncreaseSumAndCount(int64_t sum, HistogramBase::Count count);
 
   // Record a negative-sample observation and the reason why.
   void RecordNegativeSample(NegativeSampleReason reason,
