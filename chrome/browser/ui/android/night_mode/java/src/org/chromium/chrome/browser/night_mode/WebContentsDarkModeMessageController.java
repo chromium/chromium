@@ -10,11 +10,15 @@ import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -27,28 +31,51 @@ import org.chromium.ui.modelutil.PropertyModel;
  * feature.
  */
 public class WebContentsDarkModeMessageController {
-    @VisibleForTesting
-    static boolean sIsEnabledForTesting;
-
-    private static boolean isEnabled() {
+    /**
+     * Checks if auto-dark theming is enabled. Also checks if the feature engagement system
+     * requirements are met. If both are true, returns true indicating the user education message
+     * should be sent. Otherwise return false.
+     *
+     * @param profile Profile associated with current tab.
+     * @return Whether or not the user education message should be shown.
+     */
+    private static boolean shouldSendMessage(Profile profile) {
         // Only send message if the feature is enabled and the message has not yet been shown.
-        // TODO(crbug.com/1252868): Add feature engagement check
-        boolean featureEnabled = UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                         .getBoolean(Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED);
-        return featureEnabled && sIsEnabledForTesting;
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        boolean featureEnabled =
+                UserPrefs.get(profile).getBoolean(Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED);
+        return featureEnabled
+                && tracker.shouldTriggerHelpUI(
+                        FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE);
     }
 
     /**
-     * Checks if the auto-dark feature is enabled. If it is, send a user education message showing
-     * an overview and how to disable the feature.
+     * Marks in the feature engagement system that the ThemeSettings were opened while auto dark
+     * was enabled.
+     *
+     * @param profile Profile to get tracker for feature engagement system from.
      */
-    public static void sendMessageIfAutoDarkEnabled(Activity activity,
-            SettingsLauncher settingsLauncher, MessageDispatcher messageDispatcher) {
-        if (!isEnabled()) return;
+    public static void notifyEventSettingsOpened(Profile profile) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        tracker.notifyEvent(EventConstants.AUTO_DARK_SETTINGS_OPENED);
+    }
 
-        Resources resources = activity.getResources();
+    /**
+     * Checks if the auto-dark theming is enabled and the feature engagement system requirements are
+     * met. If they are, send a user education message showing an overview and how to disable the
+     * feature.
+     *
+     * @param activity Activity for resources and to launch SettingsActivity from.
+     * @param profile Profile associated with current tab.
+     * @param settingsLauncher Launcher into theme settings.
+     * @param messageDispatcher Dispatcher for the message we are creating.
+     */
+    public static void attemptToSendMessage(Activity activity, Profile profile,
+            SettingsLauncher settingsLauncher, MessageDispatcher messageDispatcher) {
+        if (!shouldSendMessage(profile)) return;
 
         // Set the properties (icon, text, etc.) for the message.
+        Resources resources = activity.getResources();
         PropertyModel message =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
@@ -66,7 +93,7 @@ public class WebContentsDarkModeMessageController {
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> { onPrimaryAction(activity, settingsLauncher); })
                         .with(MessageBannerProperties.ON_DISMISSED,
-                                (dismissReason) -> { onMessageDismissed(dismissReason); })
+                                (dismissReason) -> { onMessageDismissed(profile, dismissReason); })
                         .build();
 
         // Enqueue the message so that it will appear on-screen.
@@ -89,7 +116,8 @@ public class WebContentsDarkModeMessageController {
      * Record that the message was dismissed.
      */
     @VisibleForTesting
-    static void onMessageDismissed(@DismissReason int dismissReason) {
-        // TODO(crbug.com/1252868): Notify feature engagement system that message was shown
+    static void onMessageDismissed(Profile profile, @DismissReason int dismissReason) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        tracker.dismissed(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE);
     }
 }

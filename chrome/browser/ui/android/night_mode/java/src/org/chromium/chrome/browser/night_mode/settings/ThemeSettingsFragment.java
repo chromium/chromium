@@ -18,7 +18,9 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkSettingsChangeSource;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.UiUtils;
 
@@ -68,6 +70,12 @@ public class ThemeSettingsFragment extends PreferenceFragmentCompat {
                 : "<theme_settings_entry> is missing in args.";
             NightModeMetrics.recordThemeSettingsEntry(
                     getArguments().getInt(KEY_THEME_SETTINGS_ENTRY));
+        }
+
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
+            WebContentsDarkModeMessageController.notifyEventSettingsOpened(
+                    Profile.getLastUsedRegularProfile());
         }
     }
 

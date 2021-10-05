@@ -64,6 +64,8 @@ const base::Feature kIPHAddToHomescreenMessageFeature{
     "IPH_AddToHomescreenMessage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHAddToHomescreenTextBubbleFeature{
     "IPH_AddToHomescreenTextBubble", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kIPHAutoDarkUserEducationMessageFeature{
+    "IPH_AutoDarkUserEducationMessage", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverDetailFeature{
     "IPH_DataSaverDetail", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHDataSaverMilestonePromoFeature{

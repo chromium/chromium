@@ -25,9 +25,13 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.prefs.PrefService;
@@ -46,86 +50,137 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     public JniMocker mJniMocker = new JniMocker();
 
     @Mock
-    Activity mActivity;
-    @Mock
-    SettingsLauncher mSettingsLauncher;
-    @Mock
-    MessageDispatcher mMessageDispatcher;
-
+    Activity mMockActivity;
     @Mock
     Profile mMockProfile;
+    @Mock
+    SettingsLauncher mMockSettingsLauncher;
+    @Mock
+    MessageDispatcher mMockMessageDispatcher;
+
     @Mock
     UserPrefs.Natives mMockUserPrefJni;
     @Mock
     PrefService mMockPrefService;
     @Mock
-    Resources mResources;
+    Resources mMockResources;
+    @Mock
+    Tracker mMockTracker;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
 
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefJni);
-        when(mMockUserPrefJni.get(any())).thenReturn(mMockPrefService);
-        when(mMockPrefService.getBoolean(any())).thenReturn(true);
-        when(mActivity.getResources()).thenReturn(mResources);
-        when(mResources.getString(anyInt())).thenReturn("");
+        when(mMockUserPrefJni.get(eq(mMockProfile))).thenReturn(mMockPrefService);
+        when(mMockPrefService.getBoolean(eq(Pref.WEB_KIT_FORCE_DARK_MODE_ENABLED)))
+                .thenReturn(true);
+        when(mMockActivity.getResources()).thenReturn(mMockResources);
+        when(mMockResources.getString(anyInt())).thenReturn("");
 
-        WebContentsDarkModeMessageController.sIsEnabledForTesting = true;
-        Profile.setLastUsedProfileForTesting(mMockProfile);
+        TrackerFactory.setTrackerForTests(mMockTracker);
     }
 
     @After
     public void tearDown() {
-        Profile.setLastUsedProfileForTesting(null);
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
     public void testSendMessage_enabledAndNotClicked() {
         // Successfully send message.
-        WebContentsDarkModeMessageController.sendMessageIfAutoDarkEnabled(
-                mActivity, mSettingsLauncher, mMessageDispatcher);
-        verify(mMessageDispatcher, times(1)).enqueueWindowScopedMessage(any(), eq(false));
+        when(mMockTracker.shouldTriggerHelpUI(
+                     eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE)))
+                .thenReturn(true);
+        WebContentsDarkModeMessageController.attemptToSendMessage(
+                mMockActivity, mMockProfile, mMockSettingsLauncher, mMockMessageDispatcher);
+        verify(mMockTracker, times(1))
+                .shouldTriggerHelpUI(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
+        verify(mMockMessageDispatcher, times(1)).enqueueWindowScopedMessage(any(), eq(false));
 
         // Message not clicked, so action was not run.
-        verify(mSettingsLauncher, times(0))
-                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class), notNull());
+        verify(mMockSettingsLauncher, times(0))
+                .launchSettingsActivity(
+                        eq(mMockActivity), eq(ThemeSettingsFragment.class), notNull());
 
-        // TODO(crbug.com/1252868): Message dismissed and marked as shown as a result.
-        WebContentsDarkModeMessageController.onMessageDismissed(DismissReason.UNKNOWN);
+        // Message dismissed and marked as shown as a result.
+        WebContentsDarkModeMessageController.onMessageDismissed(
+                mMockProfile, DismissReason.UNKNOWN);
+        verify(mMockTracker, times(1))
+                .dismissed(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
     }
 
     @Test
     public void testSendMessage_enabledAndClicked() {
         // Successfully send message.
-        WebContentsDarkModeMessageController.sendMessageIfAutoDarkEnabled(
-                mActivity, mSettingsLauncher, mMessageDispatcher);
-        verify(mMessageDispatcher, times(1)).enqueueWindowScopedMessage(any(), eq(false));
+        when(mMockTracker.shouldTriggerHelpUI(
+                     eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE)))
+                .thenReturn(true);
+        WebContentsDarkModeMessageController.attemptToSendMessage(
+                mMockActivity, mMockProfile, mMockSettingsLauncher, mMockMessageDispatcher);
+        verify(mMockTracker, times(1))
+                .shouldTriggerHelpUI(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
+        verify(mMockMessageDispatcher, times(1)).enqueueWindowScopedMessage(any(), eq(false));
 
         // Message clicked, so action was run.
-        WebContentsDarkModeMessageController.onPrimaryAction(mActivity, mSettingsLauncher);
-        verify(mSettingsLauncher, times(1))
-                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class), notNull());
+        WebContentsDarkModeMessageController.onPrimaryAction(mMockActivity, mMockSettingsLauncher);
+        verify(mMockSettingsLauncher, times(1))
+                .launchSettingsActivity(
+                        eq(mMockActivity), eq(ThemeSettingsFragment.class), notNull());
 
-        // TODO(crbug.com/1252868): Message dismissed and marked as shown as a result.
-        WebContentsDarkModeMessageController.onMessageDismissed(DismissReason.UNKNOWN);
+        // Message dismissed and marked as shown as a result.
+        WebContentsDarkModeMessageController.onMessageDismissed(
+                mMockProfile, DismissReason.UNKNOWN);
+        verify(mMockTracker, times(1))
+                .dismissed(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
     }
 
     @Test
     public void testSendMessage_featureDisabled() {
         // Feature is disabled.
         when(mMockPrefService.getBoolean(any())).thenReturn(false);
-        WebContentsDarkModeMessageController.sIsEnabledForTesting = false;
+        when(mMockTracker.shouldTriggerHelpUI(
+                     eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE)))
+                .thenReturn(true);
 
         // Attempt to send message and fail because feature is disabled.
-        WebContentsDarkModeMessageController.sendMessageIfAutoDarkEnabled(
-                mActivity, mSettingsLauncher, mMessageDispatcher);
-        verify(mMessageDispatcher, times(0)).enqueueWindowScopedMessage(any(), eq(false));
+        WebContentsDarkModeMessageController.attemptToSendMessage(
+                mMockActivity, mMockProfile, mMockSettingsLauncher, mMockMessageDispatcher);
+        verify(mMockTracker, times(0))
+                .shouldTriggerHelpUI(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
+        verify(mMockMessageDispatcher, times(0)).enqueueWindowScopedMessage(any(), eq(false));
 
         // Message not shown, so action not run.
-        verify(mSettingsLauncher, times(0))
-                .launchSettingsActivity(eq(mActivity), eq(ThemeSettingsFragment.class), notNull());
+        verify(mMockSettingsLauncher, times(0))
+                .launchSettingsActivity(
+                        eq(mMockActivity), eq(ThemeSettingsFragment.class), notNull());
 
-        // TODO(crbug.com/1252868): Message not marked as shown.
+        // Message not marked as shown.
+        verify(mMockTracker, times(0))
+                .dismissed(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
+    }
+
+    @Test
+    public void testSendMessage_messageShownBefore() {
+        // Message has been shown.
+        when(mMockTracker.shouldTriggerHelpUI(
+                     eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE)))
+                .thenReturn(false);
+
+        // Attempt to send message and fail because message has already been shown.
+        WebContentsDarkModeMessageController.attemptToSendMessage(
+                mMockActivity, mMockProfile, mMockSettingsLauncher, mMockMessageDispatcher);
+        verify(mMockTracker, times(1))
+                .shouldTriggerHelpUI(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
+        verify(mMockMessageDispatcher, times(0)).enqueueWindowScopedMessage(any(), eq(false));
+
+        // Message not shown, so action not run.
+        verify(mMockSettingsLauncher, times(0))
+                .launchSettingsActivity(
+                        eq(mMockActivity), eq(ThemeSettingsFragment.class), notNull());
+
+        // Message not marked as shown.
+        verify(mMockTracker, times(0))
+                .dismissed(eq(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE));
     }
 }

@@ -625,8 +625,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
             // TODO(crbug.com/1252965): Investigate locking feature engagement system during
             // "second run promos" to avoid !didTriggerPromo check.
-            WebContentsDarkModeMessageController.sendMessageIfAutoDarkEnabled(
-                    mActivity, new SettingsLauncherImpl(), mMessageDispatcher);
+            WebContentsDarkModeMessageController.attemptToSendMessage(mActivity,
+                    Profile.fromWebContents(mActivityTabProvider.get().getWebContents()),
+                    new SettingsLauncherImpl(), mMessageDispatcher);
         }
 
         if (FeedFeatures.isWebFeedUIEnabled()) {

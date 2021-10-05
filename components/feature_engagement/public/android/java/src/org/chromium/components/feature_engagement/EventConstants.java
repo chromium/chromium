@@ -272,6 +272,9 @@ public final class EventConstants {
     public static final String SHARING_HUB_WEBNOTES_STYLIZE_USED =
             "sharing_hub_webnotes_stylize_used";
 
+    /** AutoDark disabled from app menu events. */
+    public static final String AUTO_DARK_SETTINGS_OPENED = "auto_dark_settings_opened";
+
     /**
      * Do not instantiate.
      */

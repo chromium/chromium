@@ -39,6 +39,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="IPH_AddToHomescreenTextBubble"
       summary="educating users about adding website shortcuts to their home
                screen (using a text bubble)"/>
+  <variant name="IPH_AutoDarkUserEducationMessage"
+      summary="message educating users about adding disabling auto dark web
+               contents feature globally"/>
   <variant name="IPH_BadgedReadingList" summary="badged reading list"/>
   <variant name="IPH_Bookmark" summary="bookmark"/>
   <variant name="IPH_BottomToolbarTip" summary="bottom toolbar"/>
