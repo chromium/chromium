@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.survey.ChromeSurveyController.InfoBarClosingState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -621,6 +622,20 @@ public class ChromeSurveyControllerFlowTest {
         }
     }
 
+    @Test
+    public void testMessages_Dismiss_OnTabHidden() {
+        presentMessages();
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+
+        mTabObserver.onHidden(mMockTab, TabHidingType.ACTIVITY_HIDDEN);
+        verify(mMessageDispatcher).dismissMessage(messageModel, DismissReason.TAB_SWITCHED);
+
+        // Simulate the invocation of the message dismissal callback.
+        messageModel.get(MessageBannerProperties.ON_DISMISSED).onResult(DismissReason.TAB_SWITCHED);
+        assertInfoBarDisplayedRecorded();
+        assertInfoBarClosingStateRecorded(InfoBarClosingState.UNKNOWN);
+    }
+
     private void initializeChromeSurveyController() {
         ChromeSurveyController.initialize(
                 mMockModelSelector, mMockLifecycleDispatcher, mActivity, mMessageDispatcher);
@@ -653,6 +668,7 @@ public class ChromeSurveyControllerFlowTest {
         mockTabReady();
         mTestSurveyController.onDownloadSuccessRunnable.run();
         assertSurveyMessagesEnqueued();
+        Assert.assertNotNull("mTabObserver is null.", mTabObserver);
     }
 
     private void mockTabReady() {
@@ -712,6 +728,9 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     private void assertInfoBarDisplayedRecorded() {
+        if (mTabObserver != null) {
+            verify(mMockTab).removeObserver(mTabObserver);
+        }
         Assert.assertTrue("SharedPreference for InfoBarShown is not recorded.",
                 SharedPreferencesManager.getInstance().contains(mPrefKeyPromptShown));
     }

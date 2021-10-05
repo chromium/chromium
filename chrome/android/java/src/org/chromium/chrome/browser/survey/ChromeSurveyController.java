@@ -128,6 +128,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
     private final @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Activity mActivity;
     private final MessageDispatcher mMessageDispatcher;
+    private @Nullable TabObserver mTabObserver;
 
     @VisibleForTesting
     ChromeSurveyController(String triggerId,
@@ -253,6 +254,18 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                                     this::recordSurveyPromptMetrics)
                             .build();
 
+            // Dismiss the message when the original tab in which the message is shown is hidden.
+            // This keeps in line with existing infobar behavior and prevents the prompt from
+            // being shown if the tab is opened after being hidden for a duration in which the
+            // survey expired. See crbug.com/1249055 for details.
+            mTabObserver = new EmptyTabObserver() {
+                @Override
+                public void onHidden(Tab tab, @TabHidingType int type) {
+                    mMessageDispatcher.dismissMessage(message, DismissReason.TAB_SWITCHED);
+                }
+            };
+            mSurveyPromptTab.addObserver(mTabObserver);
+
             mMessageDispatcher.enqueueWindowScopedMessage(message, false);
         } else {
             InfoBarContainer.get(tab).addAnimationListener(this);
@@ -279,18 +292,26 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
      * @param dismissReason The reason for dismissal of the survey prompt.
      */
     private void recordSurveyPromptMetrics(@DismissReason int dismissReason) {
+        if (mSurveyPromptTab != null && mTabObserver != null) {
+            mSurveyPromptTab.removeObserver(mTabObserver);
+            mTabObserver = null;
+        }
         if (dismissReason == DismissReason.GESTURE) {
-            // Survey prompt was dismissed by the user
+            // Survey prompt was dismissed by the user.
             recordInfoBarClosingState(InfoBarClosingState.CLOSE_BUTTON);
             recordSurveyPromptDisplayed();
         } else if (dismissReason == DismissReason.PRIMARY_ACTION) {
-            // Survey was accepted by the user
+            // Survey was accepted by the user.
             recordInfoBarClosingState(InfoBarClosingState.ACCEPTED_SURVEY);
             recordSurveyPromptDisplayed();
             recordSurveyAccepted();
         } else if (dismissReason == DismissReason.TIMER) {
-            // Survey prompt was auto-dismissed from the front
+            // Survey prompt was auto-dismissed from the front.
             recordInfoBarClosingState(InfoBarClosingState.VISIBLE_INDIRECT);
+            recordSurveyPromptDisplayed();
+        } else if (dismissReason == DismissReason.TAB_SWITCHED) {
+            // Survey prompt was dismissed when the tab showing the prompt was hidden.
+            recordInfoBarClosingState(InfoBarClosingState.UNKNOWN);
             recordSurveyPromptDisplayed();
         } else {
             recordInfoBarClosingState(InfoBarClosingState.UNKNOWN);
