@@ -7,8 +7,11 @@
  * @enum {string}
  */
 export const I18nString = {
+  ARIA_CAMERA_MODE_GROUP: 'aria_camera_mode_group',
   ARIA_GRID_3X3: 'aria_grid_3x3',
   ARIA_GRID_4X4: 'aria_grid_4x4',
+  ARIA_RECORD_TYPE_GROUP: 'aria_record_type_group',
+  ARIA_SCAN_TYPE_GROUP: 'aria_scan_type_group',
   BACK_BUTTON: 'back_button',
   BARCODE_COPY_LINK_BUTTON: 'barcode_copy_link_button',
   BARCODE_COPY_TEXT_BUTTON: 'barcode_copy_text_button',

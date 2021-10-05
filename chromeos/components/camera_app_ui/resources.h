@@ -15,8 +15,11 @@ const struct {
   const char* name;
   int id;
 } kStringResourceMap[] = {
+    {"aria_camera_mode_group", IDS_ARIA_CAMERA_MODE_GROUP},
     {"aria_grid_3x3", IDS_ARIA_GRID_3X3},
     {"aria_grid_4x4", IDS_ARIA_GRID_4X4},
+    {"aria_record_type_group", IDS_ARIA_RECORD_TYPE_GROUP},
+    {"aria_scan_type_group", IDS_ARIA_SCAN_TYPE_GROUP},
     {"back_button", IDS_BACK_BUTTON},
     {"barcode_copy_link_button", IDS_BARCODE_COPY_LINK_BUTTON},
     {"barcode_copy_text_button", IDS_BARCODE_COPY_TEXT_BUTTON},

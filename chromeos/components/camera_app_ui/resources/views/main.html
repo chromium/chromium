@@ -154,7 +154,8 @@
                 i18n-label="gallery_button" hidden></button>
       </div>
       <div id="mode-selector" class="bottom-stripe">
-        <div id="modes-group" class="buttons">
+        <div id="modes-group" class="buttons" role="radiogroup"
+             i18n-aria="aria_camera_mode_group">
           <div class="mode-item">
             <input type="radio" name="mode"
                  data-mode="video" tabindex="0"
@@ -192,7 +193,8 @@
           </div>
         </div>
       </div>
-      <div id="scan-modes-group" class="mode-subgroup">
+      <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
+           i18n-aria="aria_scan_type_group">
         <div id="scan-document-option" class="item">
           <input id="scan-document" type="radio" tabindex="0"
                  name="scan-type" data-scantype="document"
@@ -208,7 +210,8 @@
                aria-hidden="true"></div>
         </div>
       </div>
-      <div id="record-types-group" class="mode-subgroup">
+      <div id="record-types-group" class="mode-subgroup" role="radiogroup"
+           i18n-aria="aria_record_type_group">
         <div class="item">
           <input type="radio" tabindex="0" name="record-type"
                  data-state="record-type-normal"

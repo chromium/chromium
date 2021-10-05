@@ -523,23 +523,32 @@ If your feedback is about image or video quality, please attach a sample photo o
       <message desc="Message indicating App is busy for processing image." name="IDS_MSG_PROCESSING_IMAGE">
         Processing image...
       </message>
-      <message desc="Label for button saving result document photo in PDF format" name="IDS_LABEL_SAVE_PDF_DOCUMENT">
+      <message desc="Label for button saving result document photo in PDF format." name="IDS_LABEL_SAVE_PDF_DOCUMENT">
         Save as PDF
       </message>
-      <message desc="Label for button saving result document photo in normal photo format" name="IDS_LABEL_SAVE_PHOTO_DOCUMENT">
+      <message desc="Label for button saving result document photo in normal photo format." name="IDS_LABEL_SAVE_PHOTO_DOCUMENT">
         Save as Photo
       </message>
-      <message desc="Label for button for dropping current photo result and to retake another photo" name="IDS_LABEL_RETAKE">
+      <message desc="Label for button for dropping current photo result and to retake another photo." name="IDS_LABEL_RETAKE">
         Retake
       </message>
-      <message desc="Label for current record time and the maximal record time in seconds separated by '/' sign" name="IDS_LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME">
+      <message desc="Label for current record time and the maximal record time in seconds separated by '/' sign." name="IDS_LABEL_CURRENT_AND_MAXIMAL_RECORD_TIME">
         <ph name="current">$1<ex>4.3</ex></ph> / <ph name="maximal">$2<ex>5.0</ex></ph>s
       </message>
-      <message desc="Label for button for saving current photo result" name="IDS_LABEL_SAVE">
+      <message desc="Label for button for saving current photo result." name="IDS_LABEL_SAVE">
         Save
       </message>
-      <message desc="Label for button for sharing current photo result" name="IDS_LABEL_SHARE">
+      <message desc="Label for button for sharing current photo result." name="IDS_LABEL_SHARE">
         Share
+      </message>
+      <message desc="Label for spoken feedback to read out group of camera mode options." name="IDS_ARIA_CAMERA_MODE_GROUP">
+        Camera mode
+      </message>
+      <message desc="Label for spoken feedback to read out group of scan type options." name="IDS_ARIA_SCAN_TYPE_GROUP">
+        Scan type
+      </message>
+      <message desc="Label for spoken feedback to read out group of record type options." name="IDS_ARIA_RECORD_TYPE_GROUP">
+        Record type
       </message>
     </messages>
   </release>
