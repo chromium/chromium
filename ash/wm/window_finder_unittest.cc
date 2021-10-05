@@ -44,18 +44,18 @@ TEST_F(WindowFinderTest, ToplevelCanBeNotDrawn) {
 }
 
 TEST_F(WindowFinderTest, MultipleDisplays) {
-  UpdateDisplay("200x200,300x300");
+  UpdateDisplay("300x200,400x300");
 
   std::unique_ptr<aura::Window> window1 =
       CreateTestWindow(gfx::Rect(0, 0, 100, 100));
   std::unique_ptr<aura::Window> window2 =
-      CreateTestWindow(gfx::Rect(200, 0, 100, 100));
+      CreateTestWindow(gfx::Rect(300, 0, 100, 100));
   ASSERT_NE(window1->GetRootWindow(), window2->GetRootWindow());
 
   std::set<aura::Window*> ignore;
   EXPECT_EQ(window1.get(), GetTopmostWindowAtPoint(gfx::Point(10, 10), ignore));
   EXPECT_EQ(window2.get(),
-            GetTopmostWindowAtPoint(gfx::Point(210, 10), ignore));
+            GetTopmostWindowAtPoint(gfx::Point(310, 10), ignore));
   EXPECT_EQ(nullptr, GetTopmostWindowAtPoint(gfx::Point(10, 210), ignore));
 }
 
@@ -81,7 +81,7 @@ TEST_F(WindowFinderTest, WindowTargeterWithHitTestRects) {
 // the window in overview that contains the specified screen point, even though
 // it might be a minimized window.
 TEST_F(WindowFinderTest, TopmostWindowWithOverviewActive) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window1 =
       CreateTestWindow(gfx::Rect(0, 0, 100, 100));
   std::unique_ptr<aura::Window> window2 =

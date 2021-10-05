@@ -2103,7 +2103,7 @@ using MultiDisplayWorkspaceWindowResizerTest = AshTestBase;
 // Makes sure that window drag magnetism still works when a window is dragged
 // between different displays.
 TEST_F(MultiDisplayWorkspaceWindowResizerTest, Magnetism) {
-  UpdateDisplay("800x600,500x500");
+  UpdateDisplay("800x600,600x500");
   auto roots = Shell::GetAllRootWindows();
   ASSERT_EQ(2u, roots.size());
 

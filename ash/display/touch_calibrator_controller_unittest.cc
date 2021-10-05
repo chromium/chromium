@@ -83,8 +83,8 @@ class TouchCalibratorControllerTest : public AshTestBase {
   }
 
   const display::Display& InitDisplays() {
-    // Initialize 2 displays each with resolution 500x500.
-    UpdateDisplay("500x500,500x500");
+    // Initialize 2 displays each with resolution 600x500.
+    UpdateDisplay("600x500,600x500");
     // Assuming index 0 points to the native display, we will calibrate the
     // touch display at index 1.
     const int kTargetDisplayIndex = 1;
@@ -376,7 +376,7 @@ TEST_F(TouchCalibratorControllerTest, IgnoreInternalTouchDevices) {
 
 TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
   // Initialize 3 displays each with different device scale factors.
-  UpdateDisplay("500x500*2,400x300*3,500x500*1.5");
+  UpdateDisplay("600x500*2,400x300*3,600x500*1.5");
 
   // Index 0 points to the native internal display, we will calibrate the touch
   // display at index 2.
@@ -470,7 +470,7 @@ TEST_F(TouchCalibratorControllerTest, HighDPIMonitorsCalibration) {
 TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
   // Initialize 2 displays each with resolution 500x500. One of them at 2x
   // device scale factor.
-  UpdateDisplay("500x500*2,500x500*1.5/r");
+  UpdateDisplay("600x500*2,600x500*1.5/r");
 
   // Index 0 points to the native internal display, we will calibrate the touch
   // display at index 1.
@@ -562,7 +562,7 @@ TEST_F(TouchCalibratorControllerTest, RotatedHighDPIMonitorsCalibration) {
 
   // The display point should have the root transform applied.
   EXPECT_EQ(GetTouchPointQuad(touch_calibrator_controller).at(0).first,
-            gfx::Point(290, 210));
+            gfx::Point(390, 210));
 }
 
 TEST_F(TouchCalibratorControllerTest, InternalTouchDeviceIsRejected) {

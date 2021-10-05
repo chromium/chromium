@@ -442,22 +442,24 @@ TEST_F(RootWindowTransformersTest, ConvertHostToRootCoords) {
 
 TEST_F(RootWindowTransformersTest, LetterBoxPillarBox) {
   MirrorWindowTestApi test_api;
-  UpdateDisplay("400x200,500x500");
+  // Letter boxed
+  UpdateDisplay("400x200,500x400");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
   std::unique_ptr<RootWindowTransformer> transformer(
       CreateCurrentRootWindowTransformerForMirroring());
-  // Y margin must be margin is (500 - 500/400 * 200) / 2 = 125.
-  EXPECT_EQ("0,125,0,125", transformer->GetHostInsets().ToString());
+  // Y margin must be margin is (400 - 500/400 * 200) / 2 = 75
+  EXPECT_EQ("0,75,0,75", transformer->GetHostInsets().ToString());
 
-  UpdateDisplay("200x400,500x500");
-  // The aspect ratio is flipped, so X margin is now 125.
+  // Pillar boxed
+  UpdateDisplay("200x400,500x400");
+  // X margin must be margin is (500 - 200) / 2 = 150
   transformer = CreateCurrentRootWindowTransformerForMirroring();
-  EXPECT_EQ("125,0,125,0", transformer->GetHostInsets().ToString());
+  EXPECT_EQ("150,0,150,0", transformer->GetHostInsets().ToString());
 }
 
 TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
   MirrorWindowTestApi test_api;
-  UpdateDisplay("400x200,500x500");
+  UpdateDisplay("400x200,500x400");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
 
   for (auto rotation :
@@ -472,17 +474,15 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
 
     const bool need_transpose = rotation == display::Display::ROTATE_90 ||
                                 rotation == display::Display::ROTATE_270;
-
-    // Y margin is (500 - 500/400 * 200) / 2 = 125 for no rotation. Transposed
+    // Y margin is (400 - 500/400 * 200) / 2 = 75 for no rotation. Transposed
     // on 90/270 degree.
-    gfx::Insets expected_insets(0, 125);
-    if (need_transpose)
-      expected_insets = gfx::Insets(125, 0);
+    gfx::Insets expected_insets =
+        need_transpose ? gfx::Insets(75, 0) : gfx::Insets(0, 75);
     EXPECT_EQ(expected_insets, transformer->GetHostInsets());
 
     // Expected rect in mirror of the source root, with y margin applied for no
     // rotation. Transposed on 90/270 degree.
-    gfx::RectF expected_rect(0, 125, 500, 250);
+    gfx::RectF expected_rect(0, 75, 500, 250);
     if (need_transpose)
       expected_rect.Transpose();
 

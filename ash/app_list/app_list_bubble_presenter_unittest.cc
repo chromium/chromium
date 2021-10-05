@@ -335,7 +335,7 @@ TEST_F(AppListBubblePresenterTest, BubbleSizedForDisplay) {
 
 // Test that the AppListBubbleView scales up with more apps on a larger display.
 TEST_F(AppListBubblePresenterTest, BubbleSizedForLargeDisplay) {
-  UpdateDisplay("2000x2000");
+  UpdateDisplay("2100x2000");
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 

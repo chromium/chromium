@@ -35,7 +35,7 @@ class WindowPositionerTest : public AshTestBase {
 };
 
 TEST_F(WindowPositionerTest, OpenDefaultWindowOnSecondDisplay) {
-  UpdateDisplay("400x400,1400x900");
+  UpdateDisplay("500x400,1400x900");
   aura::Window* second_root_window = Shell::GetAllRootWindows()[1];
   display::ScopedDisplayForNewWindows display_for_new_windows(
       second_root_window);

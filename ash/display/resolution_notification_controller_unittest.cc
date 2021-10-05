@@ -190,7 +190,7 @@ class ResolutionNotificationControllerTest
 
 // Basic behaviors and verifies it doesn't cause crashes.
 TEST_P(ResolutionNotificationControllerTest, Basic) {
-  UpdateDisplay("400x300#400x300%57|300x200%58,250x250#250x250%60|300x200%59");
+  UpdateDisplay("400x300#400x300%57|300x200%58,300x250#300x250%60|300x200%59");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
   ASSERT_EQ(0, accept_count());
@@ -214,13 +214,13 @@ TEST_P(ResolutionNotificationControllerTest, Basic) {
   EXPECT_FALSE(IsNotificationVisible());
   EXPECT_EQ(0, accept_count());
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("250x250", mode.size().ToString());
+  EXPECT_EQ("300x250", mode.size().ToString());
   EXPECT_EQ(60.0, mode.refresh_rate());
 }
 
 // Check that notification is not shown when changes are forced by policy.
 TEST_P(ResolutionNotificationControllerTest, ForcedByPolicy) {
-  UpdateDisplay("400x300#400x300%57|300x200%58,250x250#250x250%59|300x200%60");
+  UpdateDisplay("400x300#400x300%57|300x200%58,300x250#300x250%59|300x200%60");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
   ASSERT_EQ(0, accept_count());
@@ -239,7 +239,7 @@ TEST_P(ResolutionNotificationControllerTest, ForcedByPolicy) {
 }
 
 TEST_P(ResolutionNotificationControllerTest, ClickMeansAccept) {
-  UpdateDisplay("400x300#400x300%57|300x200%58,250x250#250x250%59|300x200%60");
+  UpdateDisplay("400x300#400x300%57|300x200%58,300x250#300x250%59|300x200%60");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
   ASSERT_EQ(0, accept_count());
@@ -306,7 +306,7 @@ TEST_P(ResolutionNotificationControllerTest, AcceptButton) {
 }
 
 TEST_P(ResolutionNotificationControllerTest, Close) {
-  UpdateDisplay("100x100,150x150#150x150%59|300x200%60");
+  UpdateDisplay("200x100,250x150#250x150%59|300x200%60");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
   ASSERT_EQ(0, accept_count());
@@ -356,11 +356,11 @@ TEST_P(ResolutionNotificationControllerTest, Timeout) {
 TEST_P(ResolutionNotificationControllerTest, DisplayDisconnected) {
   UpdateDisplay(
       "400x300#400x300%56|300x200%57,"
-      "300x200#250x250%58|300x200%60|100x100%60");
+      "300x200#300x250%58|300x200%60|200x100%60");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   int64_t id2 = display_manager_test.GetSecondaryDisplay().id();
   SetDisplayResolutionAndNotify(
-      display_manager_test.GetSecondaryDisplay(), gfx::Size(100, 100), 60,
+      display_manager_test.GetSecondaryDisplay(), gfx::Size(200, 100), 60,
       /*old_is_native=*/false, /*new_is_native=*/false);
   ASSERT_TRUE(IsNotificationVisible());
 

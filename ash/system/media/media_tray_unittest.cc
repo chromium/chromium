@@ -400,7 +400,7 @@ class MediaTrayPinnedParamTest : public AshTestBase {
 };
 
 TEST_F(MediaTrayPinnedParamTest, PinParamTest) {
-  UpdateDisplay("100x100");
+  UpdateDisplay("200x100");
   EXPECT_TRUE(MediaTray::IsPinnedToShelf());
 }
 

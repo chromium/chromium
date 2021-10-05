@@ -233,7 +233,7 @@ TEST_F(PowerEventObserverTest, DelaySuspendForCompositing_MultiDisplay) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  UpdateDisplay("100x100,300x200");
+  UpdateDisplay("200x100,300x200");
 
   chromeos::FakePowerManagerClient* client =
       chromeos::FakePowerManagerClient::Get();
@@ -282,7 +282,7 @@ TEST_F(PowerEventObserverTest,
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  UpdateDisplay("100x100,300x200");
+  UpdateDisplay("200x100,300x200");
 
   chromeos::FakePowerManagerClient* client =
       chromeos::FakePowerManagerClient::Get();
@@ -310,7 +310,7 @@ TEST_F(PowerEventObserverTest,
 
   // Remove the second display, and verify the remaining compositor is hidden
   // at this point.
-  UpdateDisplay("100x100");
+  UpdateDisplay("200x100");
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0, client->num_pending_suspend_readiness_callbacks());
@@ -570,7 +570,7 @@ TEST_F(PowerEventObserverTest, DisplayRemovedDuringWallpaperAnimation) {
   SetCanLockScreen(true);
   SetShouldLockScreenAutomatically(true);
 
-  UpdateDisplay("100x100,300x200");
+  UpdateDisplay("200x100,300x200");
 
   // Set up animation state so wallpaper widget animations are not ended on
   // their creation.
@@ -583,7 +583,7 @@ TEST_F(PowerEventObserverTest, DisplayRemovedDuringWallpaperAnimation) {
   observer_->OnLockAnimationsComplete();
 
   // Remove a display before wallpaper animation ends.
-  UpdateDisplay("100x100");
+  UpdateDisplay("200x100");
   base::RunLoop().RunUntilIdle();
 
   // Start suspend and verify the suspend proceeds when the primary window's

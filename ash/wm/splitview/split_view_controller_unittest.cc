@@ -3423,7 +3423,7 @@ TEST_F(SplitViewTabDraggingTest, DividerIsBelowDraggedWindow) {
 // Test the functionalities that are related to dragging a maximized window's
 // tabs. See the expected behaviors described in go/tab-dragging-in-tablet-mode.
 TEST_F(SplitViewTabDraggingTest, DragMaximizedWindow) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(
       CreateWindowWithType(bounds, AppType::BROWSER));
@@ -3591,7 +3591,7 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindow) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(
       CreateWindowWithType(bounds, AppType::BROWSER));
@@ -3775,7 +3775,7 @@ TEST_F(SplitViewTabDraggingTest, DragSnappedWindowWhileOverviewOpen) {
   ui::ScopedAnimationDurationScaleMode anmatin_scale(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(
       CreateWindowWithType(bounds, AppType::BROWSER));
@@ -4541,7 +4541,7 @@ TEST_F(SplitViewTabDraggingTest, OverviewEndedOnWindowDrag) {
 // When tab dragging a window, the dragged window might need to merge back into
 // the source window when the drag ends. Tests the related functionalities.
 TEST_F(SplitViewTabDraggingTest, MergeBackToSourceWindow) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> dragged_window(
       CreateWindowWithType(bounds, AppType::BROWSER));
@@ -4653,7 +4653,7 @@ TEST_F(SplitViewTabDraggingTest, FlingTest) {
 // Tests that in various cases, after the tab drag ends, the dragged window and
 // the source window should have correct bounds.
 TEST_F(SplitViewTabDraggingTest, BoundsTest) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(
       CreateWindowWithType(bounds, AppType::BROWSER));
@@ -4787,7 +4787,7 @@ TEST_F(SplitViewTabDraggingTest, PressOverviewKeyDuringDrag) {
 // the dragged window gets snapped, the divider bar is placed correctly above
 // the snapped windows.
 TEST_F(SplitViewTabDraggingTest, DragActiveWindow) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   const gfx::Rect bounds(0, 0, 400, 400);
   std::unique_ptr<aura::Window> window1(
       CreateWindowWithType(bounds, AppType::BROWSER));

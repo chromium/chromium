@@ -545,8 +545,8 @@ TEST_F(FullscreenMagnifierControllerTest, EnableMagnifierInUnifiedDesktop) {
 
   display::Screen* screen = display::Screen::GetScreen();
 
-  UpdateDisplay("500x500, 500x500");
-  EXPECT_EQ("0,0 1000x500", screen->GetPrimaryDisplay().bounds().ToString());
+  UpdateDisplay("500x400, 500x400");
+  EXPECT_EQ("0,0 1000x400", screen->GetPrimaryDisplay().bounds().ToString());
   EXPECT_EQ(2.0f, GetFullscreenMagnifierController()->GetScale());
 
   GetFullscreenMagnifierController()->SetEnabled(false);
@@ -556,18 +556,18 @@ TEST_F(FullscreenMagnifierControllerTest, EnableMagnifierInUnifiedDesktop) {
   GetFullscreenMagnifierController()->SetEnabled(true);
   EXPECT_EQ(2.0f, GetFullscreenMagnifierController()->GetScale());
 
-  UpdateDisplay("500x500");
-  EXPECT_EQ("0,0 500x500", screen->GetPrimaryDisplay().bounds().ToString());
+  UpdateDisplay("500x400");
+  EXPECT_EQ("0,0 500x400", screen->GetPrimaryDisplay().bounds().ToString());
   EXPECT_EQ(2.0f, GetFullscreenMagnifierController()->GetScale());
 
   GetFullscreenMagnifierController()->SetEnabled(false);
-  EXPECT_EQ("0,0 500x500", screen->GetPrimaryDisplay().bounds().ToString());
+  EXPECT_EQ("0,0 500x400", screen->GetPrimaryDisplay().bounds().ToString());
   EXPECT_EQ(1.0f, GetFullscreenMagnifierController()->GetScale());
 }
 
 // Make sure that mouse can move across display in magnified mode.
 TEST_F(FullscreenMagnifierControllerTest, MoveMouseToSecondDisplay) {
-  UpdateDisplay("0+0-500x500, 500+0-500x500");
+  UpdateDisplay("0+0-500x400, 400+0-500x400");
   EXPECT_EQ(2ul, display::Screen::GetScreen()->GetAllDisplays().size());
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -591,7 +591,7 @@ TEST_F(FullscreenMagnifierControllerTest, MoveMouseToSecondDisplay) {
 }
 
 TEST_F(FullscreenMagnifierControllerTest, MoveToSecondDisplayWithTouch) {
-  UpdateDisplay("0+0-500x500, 500+0-500x500");
+  UpdateDisplay("0+0-500x400, 500+0-500x400");
   EXPECT_EQ(2ul, display::Screen::GetScreen()->GetAllDisplays().size());
 
   ui::test::EventGenerator* event_generator = GetEventGenerator();
@@ -790,14 +790,14 @@ TEST_F(FullscreenMagnifierControllerTest, TwoFingersScrollRotation) {
 }
 
 TEST_F(FullscreenMagnifierControllerTest, ZoomsIntoCenter) {
-  UpdateDisplay("0+0-500x500");
+  UpdateDisplay("500x600");
 
   GetFullscreenMagnifierController()->SetEnabled(true);
   ASSERT_EQ(2.0f, GetFullscreenMagnifierController()->GetScale());
 
-  GetFullscreenMagnifierController()->CenterOnPoint(gfx::Point(250, 250));
+  GetFullscreenMagnifierController()->CenterOnPoint(gfx::Point(250, 300));
   ASSERT_EQ(
-      gfx::Point(250, 250),
+      gfx::Point(250, 300),
       GetFullscreenMagnifierController()->GetViewportRect().CenterPoint());
 
   base::TimeTicks time = base::TimeTicks::Now();
@@ -805,32 +805,32 @@ TEST_F(FullscreenMagnifierControllerTest, ZoomsIntoCenter) {
   ui::PointerDetails pointer_details2(ui::EventPointerType::kTouch, 1);
 
   // Simulate pinch gesture with keeping center of bounding box of touches at
-  // (250, 250). Note that GestureProvider dispatches scroll gesture from this
+  // (250, 300). Note that GestureProvider dispatches scroll gesture from this
   // touch sequence as well.
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(245, 250), time,
+  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(245, 300), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(255, 250), time,
+  DispatchTouchEvent(ui::ET_TOUCH_PRESSED, gfx::Point(255, 300), time,
                      pointer_details2);
 
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(145, 250), time,
+  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(145, 300), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(355, 250), time,
+  DispatchTouchEvent(ui::ET_TOUCH_MOVED, gfx::Point(355, 300), time,
                      pointer_details2);
 
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(145, 250), time,
+  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(145, 300), time,
                      pointer_details1);
-  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(355, 250), time,
+  DispatchTouchEvent(ui::ET_TOUCH_RELEASED, gfx::Point(355, 300), time,
                      pointer_details2);
 
   // Confirms that scale has increased with the gesture.
   ASSERT_LT(2.0f, GetFullscreenMagnifierController()->GetScale());
 
   // Confirms that center is kept at center of pinch gesture. In ideal
-  // situation, center of viewport should be kept at (250, 250). But as noted
+  // situation, center of viewport should be kept at (250, 300). But as noted
   // above, scroll gesture caused by touch events for simulating pinch gesture
   // moves the viewport a little. We accept 5 pixels viewport move for the
   // scroll gesture.
-  EXPECT_TRUE(gfx::Rect(245, 245, 10, 10)
+  EXPECT_TRUE(gfx::Rect(245, 295, 10, 10)
                   .Contains(GetFullscreenMagnifierController()
                                 ->GetViewportRect()
                                 .CenterPoint()));

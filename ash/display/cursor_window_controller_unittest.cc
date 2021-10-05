@@ -89,7 +89,7 @@ class CursorWindowControllerTest : public AshTestBase {
 // Test that the composited cursor moves to another display when the real cursor
 // moves to another display.
 TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
-  UpdateDisplay("200x200,200x200*2/r");
+  UpdateDisplay("300x200,300x200*2/r");
 
   WindowTreeHostManager* window_tree_host_manager =
       Shell::Get()->window_tree_host_manager();
@@ -136,7 +136,7 @@ TEST_F(CursorWindowControllerTest, MoveToDifferentDisplay) {
   hot_point = GetCursorHotPoint();
   EXPECT_EQ("3,3", hot_point.ToString());
   cursor_bounds = GetCursorWindow()->GetBoundsInScreen();
-  EXPECT_EQ(220, cursor_bounds.x() + hot_point.x());
+  EXPECT_EQ(320, cursor_bounds.x() + hot_point.x());
   EXPECT_EQ(50, cursor_bounds.y() + hot_point.y());
 }
 

@@ -179,9 +179,9 @@ TEST_F(OverviewHighlightControllerTest, ItemClosed) {
 
 // Tests basic selection across multiple monitors.
 TEST_F(OverviewHighlightControllerTest, BasicMultiMonitorArrowKeyNavigation) {
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("500x400,500x400");
   const gfx::Rect bounds1(100, 100);
-  const gfx::Rect bounds2(450, 0, 100, 100);
+  const gfx::Rect bounds2(550, 0, 100, 100);
   std::unique_ptr<aura::Window> window4(CreateTestWindow(bounds2));
   std::unique_ptr<aura::Window> window3(CreateTestWindow(bounds2));
   std::unique_ptr<aura::Window> window2(CreateTestWindow(bounds1));
@@ -206,14 +206,14 @@ TEST_F(OverviewHighlightControllerTest, BasicMultiMonitorArrowKeyNavigation) {
 // Tests first monitor when display order doesn't match left to right screen
 // positions.
 TEST_F(OverviewHighlightControllerTest, MultiMonitorReversedOrder) {
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("500x400,500x400");
   Shell::Get()->display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(display_manager(),
                                          display::DisplayPlacement::LEFT, 0));
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::unique_ptr<aura::Window> window2(CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window1(
-      CreateTestWindow(gfx::Rect(-350, 0, 100, 100)));
+      CreateTestWindow(gfx::Rect(-450, 0, 100, 100)));
   EXPECT_EQ(root_windows[1], window1->GetRootWindow());
   EXPECT_EQ(root_windows[0], window2->GetRootWindow());
 
@@ -236,12 +236,12 @@ TEST_F(OverviewHighlightControllerTest, MultiMonitorReversedOrder) {
 
 // Tests three monitors where the grid becomes empty on one of the monitors.
 TEST_F(OverviewHighlightControllerTest, ThreeMonitor) {
-  UpdateDisplay("400x400,400x400,400x400");
+  UpdateDisplay("500x400,500x400,500x400");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   std::unique_ptr<aura::Window> window3(
-      CreateTestWindow(gfx::Rect(800, 0, 100, 100)));
+      CreateTestWindow(gfx::Rect(1000, 0, 100, 100)));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(400, 0, 100, 100)));
+      CreateTestWindow(gfx::Rect(500, 0, 100, 100)));
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(100, 100)));
   EXPECT_EQ(root_windows[0], window1->GetRootWindow());
   EXPECT_EQ(root_windows[1], window2->GetRootWindow());
@@ -259,7 +259,7 @@ TEST_F(OverviewHighlightControllerTest, ThreeMonitor) {
   EXPECT_EQ(nullptr, GetOverviewHighlightedWindow());
   ToggleOverview();
 
-  window3 = CreateTestWindow(gfx::Rect(800, 0, 100, 100));
+  window3 = CreateTestWindow(gfx::Rect(1000, 0, 100, 100));
   ToggleOverview();
   SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);
   SendKeyUntilOverviewItemIsHighlighted(ui::VKEY_RIGHT);

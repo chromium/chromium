@@ -64,7 +64,7 @@ TEST_F(AccessibilityFocusRingControllerTest, SetFocusRingCorrectRingGroup) {
 }
 
 TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
-  UpdateDisplay("400x400,500x500");
+  UpdateDisplay("500x400,500x400");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 
@@ -83,7 +83,7 @@ TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
 
   // Simulate a mouse event at the same local location on the secondary display.
   gfx::Point location_on_secondary = location;
-  location_on_secondary.Offset(400, 0);
+  location_on_secondary.Offset(500, 0);
   controller->SetCursorRing(location_on_secondary);
 
   cursor_layer = controller->cursor_layer_for_testing();
@@ -95,7 +95,7 @@ TEST_F(AccessibilityFocusRingControllerTest, CursorWorksOnMultipleDisplays) {
 }
 
 TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
-  UpdateDisplay("400x400,500x500");
+  UpdateDisplay("500x400,600x500");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 
@@ -124,7 +124,7 @@ TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
   // Move it to the secondary display.
   auto moved = std::make_unique<AccessibilityFocusRingInfo>();
   moved->color = SkColorSetRGB(0x33, 0x66, 0x99);
-  moved->rects_in_screen.push_back(gfx::Rect(500, 50, 10, 10));
+  moved->rects_in_screen.push_back(gfx::Rect(600, 50, 10, 10));
   controller->SetFocusRing("catsRCute", std::move(moved));
 
   // Check it is correctly positioned on the secondary display.
@@ -140,7 +140,7 @@ TEST_F(AccessibilityFocusRingControllerTest, FocusRingWorksOnMultipleDisplays) {
 }
 
 TEST_F(AccessibilityFocusRingControllerTest, HighlightWorksOnMultipleDisplays) {
-  UpdateDisplay("400x400,500x500");
+  UpdateDisplay("500x400,600x500");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 
@@ -169,7 +169,7 @@ TEST_F(AccessibilityFocusRingControllerTest, HighlightWorksOnMultipleDisplays) {
 
   // Simulate highlighting on the secondary display.
   controller->SetHighlights(
-      {gfx::Rect(450, 50, 10, 10), gfx::Rect(450, 60, 10, 10)},
+      {gfx::Rect(550, 50, 10, 10), gfx::Rect(550, 60, 10, 10)},
       SkColorSetRGB(0x33, 0x66, 0x99));
 
   highlight_layer = controller->highlight_layer_for_testing();
