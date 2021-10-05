@@ -1,0 +1,40 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("commerce") {
+  sources = [
+    "shopping_persisted_data_tab_helper.h",
+    "shopping_persisted_data_tab_helper.mm",
+  ]
+  deps = [
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core:core",
+    "//components/payments/core:core",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:browser_state",
+    "//ios/chrome/browser/optimization_guide:optimization_guide",
+    "//ios/web",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "shopping_persisted_data_tab_helper_unittest.mm" ]
+  deps = [
+    ":commerce",
+    "//base/test:test_support",
+    "//components/commerce/core:proto",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/optimization_guide:optimization_guide",
+    "//ios/chrome/browser/optimization_guide:unit_tests",
+    "//ios/web/public:public",
+    "//ios/web/public/test:test",
+    "//ios/web/public/test:util",
+    "//ios/web/public/test/fakes:fakes",
+  ]
+}
