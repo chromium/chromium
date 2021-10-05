@@ -472,7 +472,6 @@ generate_event_interfaces("core_event_interfaces") {
     "editing/ime/text_update_event.idl",
     "events/animation_event.idl",
     "events/animation_playback_event.idl",
-    "events/application_cache_error_event.idl",
     "events/before_create_policy_event.idl",
     "events/before_unload_event.idl",
     "events/clipboard_event.idl",

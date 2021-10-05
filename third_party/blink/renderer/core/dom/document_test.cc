@@ -68,7 +68,6 @@
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -332,22 +331,6 @@ class MockDocumentValidationMessageClient
 
   // virtual void Trace(Visitor* visitor) const {
   // ValidationMessageClient::trace(visitor); }
-};
-
-class MockApplicationCacheHost final : public ApplicationCacheHostForFrame {
- public:
-  explicit MockApplicationCacheHost(DocumentLoader* loader)
-      : ApplicationCacheHostForFrame(loader,
-                                     GetEmptyBrowserInterfaceBroker(),
-                                     /*task_runner=*/nullptr,
-                                     base::UnguessableToken()) {}
-  ~MockApplicationCacheHost() override = default;
-
-  void SelectCacheWithoutManifest() override {
-    without_manifest_was_called_ = true;
-  }
-
-  bool without_manifest_was_called_ = false;
 };
 
 class PrefersColorSchemeTestListener final : public MediaQueryListListener {
@@ -783,19 +766,6 @@ TEST_F(DocumentTest, ValidationMessageCleanup) {
   EXPECT_FALSE(mock_client->show_validation_message_was_called);
 
   GetPage().SetValidationMessageClientForTesting(original_client);
-}
-
-TEST_F(DocumentTest, SandboxDisablesAppCache) {
-  NavigateWithSandbox(KURL("https://test.com/foobar/document"));
-
-  GetDocument().Loader()->SetApplicationCacheHostForTesting(
-      MakeGarbageCollected<MockApplicationCacheHost>(GetDocument().Loader()));
-  ApplicationCacheHostForFrame* appcache_host =
-      GetDocument().Loader()->GetApplicationCacheHost();
-  appcache_host->SelectCacheWithManifest(
-      KURL("https://test.com/foobar/manifest"));
-  auto* mock_host = static_cast<MockApplicationCacheHost*>(appcache_host);
-  EXPECT_TRUE(mock_host->without_manifest_was_called_);
 }
 
 // Verifies that calling EnsurePaintLocationDataValidForNode cleans compositor

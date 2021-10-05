@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_worker.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_thread.h"
@@ -61,13 +60,7 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     const SharedWorkerToken& token,
     const base::UnguessableToken& appcache_host_id)
     : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
-      token_(token) {
-  if (base::FeatureList::IsEnabled(blink::features::kAppCache)) {
-    appcache_host_ = MakeGarbageCollected<ApplicationCacheHostForWorker>(
-        appcache_host_id, GetBrowserInterfaceBroker(),
-        GetTaskRunner(TaskType::kInternalLoading));
-  }
-}
+      token_(token) {}
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;
 
@@ -122,13 +115,7 @@ void SharedWorkerGlobalScope::Initialize(
   // origin trial features in JavaScript's global object.
   ScriptController()->PrepareForEvaluation();
 
-  if (appcache_host_) {
-    appcache_host_->SelectCacheForWorker(
-        appcache_id, WTF::Bind(&SharedWorkerGlobalScope::OnAppCacheSelected,
-                               WrapWeakPersistent(this)));
-  } else {
-    ReadyToRunWorkerScript();
-  }
+  ReadyToRunWorkerScript();
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
@@ -284,7 +271,6 @@ void SharedWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
 }
 
 void SharedWorkerGlobalScope::Trace(Visitor* visitor) const {
-  visitor->Trace(appcache_host_);
   WorkerGlobalScope::Trace(visitor);
 }
 

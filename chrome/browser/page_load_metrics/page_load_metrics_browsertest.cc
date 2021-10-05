@@ -1277,16 +1277,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       static_cast<int32_t>(WebFeature::kNavigatorVibrate), 1);
   histogram_tester_->ExpectBucketCount(
       internal::kFeaturesHistogramName,
-      static_cast<int32_t>(
-          WebFeature::kApplicationCacheManifestSelectSecureOrigin),
-      1);
-  histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramMainFrameName,
-      static_cast<int32_t>(
-          WebFeature::kApplicationCacheManifestSelectSecureOrigin),
-      1);
-  histogram_tester_->ExpectBucketCount(
-      internal::kFeaturesHistogramName,
       static_cast<int32_t>(WebFeature::kPageVisits), 1);
   histogram_tester_->ExpectBucketCount(
       internal::kFeaturesHistogramMainFrameName,
@@ -1517,7 +1507,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
 
   const auto& entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Blink_UseCounter::kEntryName);
-  EXPECT_THAT(entries, SizeIs(4));
+  EXPECT_THAT(entries, SizeIs(3));
   std::vector<int64_t> ukm_features;
   for (const auto* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
@@ -1528,14 +1518,11 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
     DCHECK(metric);
     ukm_features.push_back(*metric);
   }
-  EXPECT_THAT(
-      ukm_features,
-      UnorderedElementsAre(
-          static_cast<int64_t>(WebFeature::kPageVisits),
-          static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
-          static_cast<int64_t>(WebFeature::kNavigatorVibrate),
-          static_cast<int64_t>(
-              WebFeature::kApplicationCacheManifestSelectSecureOrigin)));
+  EXPECT_THAT(ukm_features,
+              UnorderedElementsAre(
+                  static_cast<int64_t>(WebFeature::kPageVisits),
+                  static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
+                  static_cast<int64_t>(WebFeature::kNavigatorVibrate)));
 }
 
 // Test UseCounter UKM mixed content features observed.
@@ -1568,7 +1555,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
 
   const auto& entries = test_ukm_recorder_->GetEntriesByName(
       ukm::builders::Blink_UseCounter::kEntryName);
-  EXPECT_THAT(entries, SizeIs(7));
+  EXPECT_THAT(entries, SizeIs(6));
   std::vector<int64_t> ukm_features;
   for (const auto* entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, url);
@@ -1584,8 +1571,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
                   static_cast<int64_t>(WebFeature::kPageVisits),
                   static_cast<int64_t>(WebFeature::kFullscreenSecureOrigin),
                   static_cast<int64_t>(WebFeature::kNavigatorVibrate),
-                  static_cast<int64_t>(
-                      WebFeature::kApplicationCacheManifestSelectSecureOrigin),
                   static_cast<int64_t>(WebFeature::kMixedContentImage),
                   static_cast<int64_t>(WebFeature::kMixedContentAudio),
                   static_cast<int64_t>(WebFeature::kMixedContentVideo)));

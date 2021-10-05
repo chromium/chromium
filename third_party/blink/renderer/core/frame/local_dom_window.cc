@@ -110,7 +110,6 @@
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -926,7 +925,6 @@ void LocalDOMWindow::Reset() {
   navigator_ = nullptr;
   media_ = nullptr;
   custom_elements_ = nullptr;
-  application_cache_ = nullptr;
   trusted_types_map_.clear();
 }
 
@@ -1025,19 +1023,6 @@ FrameConsole* LocalDOMWindow::GetFrameConsole() const {
   if (!IsCurrentlyDisplayedInFrame())
     return nullptr;
   return &GetFrame()->Console();
-}
-
-ApplicationCache* LocalDOMWindow::applicationCache() {
-  DCHECK(RuntimeEnabledFeatures::AppCacheEnabled(this));
-  if (!IsCurrentlyDisplayedInFrame())
-    return nullptr;
-  if (!IsSecureContext()) {
-    Deprecation::CountDeprecation(
-        this, WebFeature::kApplicationCacheAPIInsecureOrigin);
-  }
-  if (!application_cache_)
-    application_cache_ = MakeGarbageCollected<ApplicationCache>(this);
-  return application_cache_.Get();
 }
 
 Navigator* LocalDOMWindow::navigator() {
@@ -2133,7 +2118,6 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   visitor->Trace(custom_elements_);
   visitor->Trace(modulator_);
   visitor->Trace(external_);
-  visitor->Trace(application_cache_);
   visitor->Trace(visualViewport_);
   visitor->Trace(event_listener_observers_);
   visitor->Trace(current_event_);

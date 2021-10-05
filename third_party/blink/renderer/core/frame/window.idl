@@ -75,7 +75,6 @@
 
     // the user agent
     [LogActivity=GetterOnly] readonly attribute Navigator navigator;
-    [LogActivity=GetterOnly, SecureContext, RuntimeEnabled=AppCache] readonly attribute ApplicationCache applicationCache;
 
     [RuntimeEnabled=OriginIsolationHeader] readonly attribute boolean originAgentCluster;
 

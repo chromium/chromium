@@ -55,7 +55,6 @@
 
 namespace blink {
 
-class ApplicationCache;
 class BarProp;
 class CSSStyleDeclaration;
 class CustomElementRegistry;
@@ -254,8 +253,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // WebKit extensions
   double devicePixelRatio() const;
-
-  ApplicationCache* applicationCache();
 
   // This is the interface orientation in degrees. Some examples are:
   //  0 is straight up; -90 is when the device is rotated 90 clockwise;
@@ -496,8 +493,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   String default_status_;
 
   Vector<String> origin_policy_ids_;
-
-  mutable Member<ApplicationCache> application_cache_;
 
   scoped_refptr<SerializedScriptValue> pending_state_object_;
 

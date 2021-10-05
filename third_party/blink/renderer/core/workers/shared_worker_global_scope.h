@@ -41,7 +41,6 @@
 
 namespace blink {
 
-class ApplicationCacheHostForWorker;
 class SharedWorkerThread;
 class WorkerClassicScriptLoader;
 
@@ -115,7 +114,6 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   void ExceptionThrown(ErrorEvent*) override;
 
   const SharedWorkerToken token_;
-  Member<ApplicationCacheHostForWorker> appcache_host_;
 };
 
 template <>
