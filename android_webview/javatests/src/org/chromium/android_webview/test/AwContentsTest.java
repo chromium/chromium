@@ -1249,6 +1249,68 @@ public class AwContentsTest {
         }
     }
 
+    // This test verifies that Private Network Access' secure context
+    // restriction (feature flag BlockInsecurePrivateNetworkRequests) does not
+    // apply to Webview: insecure private network requests are allowed.
+    //
+    // This is a regression test for crbug.com/1255675.
+    @Test
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
+    @SmallTest
+    public void testInsecurePrivateNetworkAccess() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        final AwTestContainerView testContainer =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        final AwContents awContents = testContainer.getAwContents();
+
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        // This SettableFuture and its accompanying injected object allows us to
+        // synchronize on the fetch result.
+        final SettableFuture<Boolean> fetchResultFuture = SettableFuture.create();
+        Object injectedObject = new Object() {
+            @JavascriptInterface
+            public void success() {
+                fetchResultFuture.set(true);
+            }
+            @JavascriptInterface
+            public void error() {
+                fetchResultFuture.set(false);
+            }
+        };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                awContents, injectedObject, "injectedObject");
+
+        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+
+        // Need to avoid http://localhost, which is considered secure, so we
+        // use http://foo.test, which resolves to 127.0.0.1 thanks to the
+        // host resolver rules command-line flag.
+        //
+        // The resulting document is a non-secure context in the public IP
+        // address space. If the secure context restriction were applied, it
+        // would not be allowed to fetch subresources from localhost.
+        String url = testServer.getURLWithHostName(
+                "foo.test", "/set-header?Content-Security-Policy: treat-as-public-address");
+
+        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+        // Fetch a subresource from the same server, whose IP address is still
+        // 127.0.0.1, thus belonging to the local IP address space.
+        // This should succeed.
+        mActivityTestRule.executeJavaScriptAndWaitForResult(awContents, mContentsClient,
+                "fetch('/defaultresponse')"
+                        + ".then(() => { injectedObject.success() })"
+                        + ".catch((err) => { "
+                        + "  console.log(err); "
+                        + "  injectedObject.error(); "
+                        + "})");
+
+        Assert.assertTrue(AwActivityTestRule.waitForFuture(fetchResultFuture));
+    }
+
     private static final String HELLO_WORLD_URL = "/android_webview/test/data/hello_world.html";
     private static final String HELLO_WORLD_TITLE = "Hello, World!";
     private static final String WEBUI_URL = "chrome://safe-browsing";
