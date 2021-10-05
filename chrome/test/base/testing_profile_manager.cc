@@ -203,19 +203,8 @@ void TestingProfileManager::DeleteTestingProfile(const std::string& name) {
 }
 
 void TestingProfileManager::DeleteAllTestingProfiles() {
-  ProfileAttributesStorage& storage =
-      profile_manager_->GetProfileAttributesStorage();
-  for (auto it = testing_profiles_.begin(); it != testing_profiles_.end();
-       ++it) {
-    TestingProfile* profile = it->second;
-    if (profile->IsGuestSession() || profile->IsSystemProfile()) {
-      // This Profile was skipped in ProfileManager::AddProfileToStorage().
-      continue;
-    }
-    storage.RemoveProfile(profile->GetPath());
-  }
-  testing_profiles_.clear();
-  profile_observations_.RemoveAllObservations();
+  DCHECK(called_set_up_);
+  profile_manager_->profiles_info_.clear();
 }
 
 

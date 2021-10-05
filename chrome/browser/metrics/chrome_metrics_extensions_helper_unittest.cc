@@ -43,5 +43,6 @@ TEST(ChromeMetricsExtensionsHelperTest, Basic) {
                                                site_instance->GetId());
   EXPECT_TRUE(extensions_helper.IsExtensionProcess(host));
 #endif
+  rph_factory.reset();
   profile_manager.DeleteAllTestingProfiles();
 }

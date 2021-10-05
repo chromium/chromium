@@ -255,16 +255,6 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
     delete manager_->status_icon_;
     manager_->status_icon_ = nullptr;
 
-    // We have to destroy the profiles now because we created them with real
-    // thread state. This causes a lot of machinery to spin up that stops
-    // working when we tear down our thread state at the end of the test.
-    // Deleting our testing profile may have the side-effect of disabling
-    // background mode if it was enabled for that profile (explicitly note that
-    // here to satisfy StrictMock requirements.
-    EXPECT_CALL(*manager_, EnableLaunchOnStartup(false)).Times(AtMost(1));
-    profile_manager_->DeleteAllTestingProfiles();
-    Mock::VerifyAndClearExpectations(manager_.get());
-
     // We're getting ready to shutdown the message loop. Clear everything out!
     base::RunLoop().RunUntilIdle();
 
