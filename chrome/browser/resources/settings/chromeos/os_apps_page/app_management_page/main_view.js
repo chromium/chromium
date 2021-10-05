@@ -16,7 +16,7 @@ import {routes} from '../../os_route.m.js';
 
 import {AppManagementStore} from './store.js';
 import {AppManagementStoreClient} from './store_client.js';
-import {alphabeticalSort, convertOptionalBoolToBool, createPermission, getAppIcon, getPermission, getPermissionValueBool, getSelectedApp, openAppDetailPage, openMainPage, permissionTypeHandle, recordAppManagementUserAction, toggleOptionalBool} from './util.js';
+import {alphabeticalSort} from './util.js';
 
 Polymer({
   _template: html`{__html_template__}`,

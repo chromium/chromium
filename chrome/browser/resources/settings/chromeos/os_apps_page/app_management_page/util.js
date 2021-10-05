@@ -40,7 +40,7 @@ export function createInitialState(apps) {
 }
 
 /**
- * @param {number} permissionType
+ * @param {PermissionType} permissionType
  * @param {!PermissionValueType} valueType
  * @param {number} value
  * @param {boolean} isManaged
@@ -48,7 +48,7 @@ export function createInitialState(apps) {
  */
 export function createPermission(permissionType, valueType, value, isManaged) {
   return {
-    /** @type {PermissionType} */ permissionType,
+    permissionType,
     valueType,
     value,
     isManaged,
@@ -122,16 +122,7 @@ export function getPermissionValueBool(app, permissionType) {
  * @return {Permission|undefined}
  */
 export function getPermission(app, permissionType) {
-  return app.permissions[permissionTypeHandle(app, permissionType)];
-}
-
-/**
- * @param {App} app
- * @param {string} permissionType
- * @return {PermissionType}
- */
-export function permissionTypeHandle(app, permissionType) {
-  return PermissionType[permissionType];
+  return app.permissions[PermissionType[permissionType]];
 }
 
 /**
