@@ -22,6 +22,21 @@ class EventDeviceInfo;
 // implementation only attaches one device per libinput context.
 class LibInputEventConverter : public EventConverterEvdev {
  public:
+  // This class wraps the libinput_event struct from libinput library.
+  class LibInputEvent {
+   public:
+    LibInputEvent(LibInputEvent&& other);
+    explicit LibInputEvent(libinput_event* const event);
+    LibInputEvent(const LibInputEvent& other) = delete;
+    LibInputEvent& operator=(const LibInputEvent& other) = delete;
+    ~LibInputEvent();
+
+    libinput_event_type Type() const;
+
+   private:
+    libinput_event* event_;
+  };
+
   // This class wraps the libinput struct from libinput library. Any operations
   // that uses libinput struct are implemented here.
   class LibInputContext {
@@ -32,7 +47,9 @@ class LibInputEventConverter : public EventConverterEvdev {
     LibInputContext& operator=(const LibInputContext& other) = delete;
     ~LibInputContext();
 
+    bool Dispatch() const;
     int Fd();
+    absl::optional<LibInputEventConverter::LibInputEvent> NextEvent() const;
 
    private:
     explicit LibInputContext(libinput* const li);
@@ -72,6 +89,7 @@ class LibInputEventConverter : public EventConverterEvdev {
 
  private:
   void OnFileCanReadWithoutBlocking(int fd) final;
+  void HandleEvent(const LibInputEvent& event);
 
   const bool has_keyboard_;
   const bool has_mouse_;

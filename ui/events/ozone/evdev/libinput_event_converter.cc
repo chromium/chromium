@@ -15,6 +15,25 @@
 
 namespace ui {
 
+LibInputEventConverter::LibInputEvent::LibInputEvent(LibInputEvent&& other)
+    : event_(other.event_) {
+  other.event_ = nullptr;
+}
+
+LibInputEventConverter::LibInputEvent::LibInputEvent(
+    libinput_event* const event)
+    : event_(event) {}
+
+LibInputEventConverter::LibInputEvent::~LibInputEvent() {
+  if (event_) {
+    libinput_event_destroy(event_);
+  }
+}
+
+libinput_event_type LibInputEventConverter::LibInputEvent::Type() const {
+  return libinput_event_get_type(event_);
+}
+
 LibInputEventConverter::LibInputContext::LibInputContext(
     LibInputContext&& other)
     : li_(other.li_) {
@@ -45,8 +64,26 @@ LibInputEventConverter::LibInputContext::Create() {
   return absl::make_optional(LibInputEventConverter::LibInputContext(li));
 }
 
+bool LibInputEventConverter::LibInputContext::Dispatch() const {
+  const auto rc = libinput_dispatch(li_);
+  if (rc != 0) {
+    LOG(ERROR) << "libinput_dispatch failed: " << rc;
+    return false;
+  }
+  return true;
+}
+
 int LibInputEventConverter::LibInputContext::Fd() {
   return libinput_get_fd(li_);
+}
+
+absl::optional<LibInputEventConverter::LibInputEvent>
+LibInputEventConverter::LibInputContext::NextEvent() const {
+  libinput_event* const event = libinput_get_event(li_);
+  if (!event) {
+    return absl::nullopt;
+  }
+  return absl::make_optional(LibInputEvent(event));
 }
 
 int LibInputEventConverter::LibInputContext::OpenRestricted(const char* path,
@@ -137,6 +174,50 @@ bool LibInputEventConverter::HasTouchscreen() const {
   return has_touchscreen_;
 }
 
-void LibInputEventConverter::OnFileCanReadWithoutBlocking(int fd) {}
+void LibInputEventConverter::OnFileCanReadWithoutBlocking(int fd) {
+  if (!context_.Dispatch()) {
+    LOG(ERROR) << "LibInputContext::Dispatch failed";
+    return;
+  }
+
+  while (auto event = context_.NextEvent()) {
+    HandleEvent(*event);
+  }
+}
+
+void LibInputEventConverter::HandleEvent(const LibInputEvent& event) {
+  switch (event.Type()) {
+    case LIBINPUT_EVENT_POINTER_MOTION:
+    case LIBINPUT_EVENT_POINTER_BUTTON:
+    case LIBINPUT_EVENT_POINTER_AXIS:
+    case LIBINPUT_EVENT_TOUCH_DOWN:
+    case LIBINPUT_EVENT_TOUCH_UP:
+    case LIBINPUT_EVENT_TOUCH_MOTION:
+    case LIBINPUT_EVENT_TOUCH_CANCEL:
+    case LIBINPUT_EVENT_TOUCH_FRAME:
+    case LIBINPUT_EVENT_NONE:
+    case LIBINPUT_EVENT_DEVICE_ADDED:
+    case LIBINPUT_EVENT_DEVICE_REMOVED:
+    case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE:
+    case LIBINPUT_EVENT_TABLET_TOOL_AXIS:
+    case LIBINPUT_EVENT_TABLET_TOOL_PROXIMITY:
+    case LIBINPUT_EVENT_TABLET_TOOL_TIP:
+    case LIBINPUT_EVENT_TABLET_TOOL_BUTTON:
+    case LIBINPUT_EVENT_TABLET_PAD_BUTTON:
+    case LIBINPUT_EVENT_TABLET_PAD_RING:
+    case LIBINPUT_EVENT_TABLET_PAD_STRIP:
+    case LIBINPUT_EVENT_KEYBOARD_KEY:
+    case LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN:
+    case LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE:
+    case LIBINPUT_EVENT_GESTURE_SWIPE_END:
+    case LIBINPUT_EVENT_GESTURE_PINCH_BEGIN:
+    case LIBINPUT_EVENT_GESTURE_PINCH_UPDATE:
+    case LIBINPUT_EVENT_GESTURE_PINCH_END:
+    case LIBINPUT_EVENT_SWITCH_TOGGLE:
+    case LIBINPUT_EVENT_TABLET_PAD_KEY:
+      DVLOG(3) << "Ignoring libinput event: " << event.Type();
+      break;
+  }
+}
 
 }  // namespace ui
