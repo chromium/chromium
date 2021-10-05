@@ -1278,7 +1278,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   auto dict = std::move(context).WriteDictionary();
   SetGeneratingNodeInfo(dict, &layout_image, "nodeId");
   if (const ImageResourceContent* content = layout_image.CachedImage())
-    dict.Add("url", content->Url().GetString());
+    dict.Add("url", content->Url().ElidedString());
 
   dict.Add("x", dest_rect.X());
   dict.Add("y", dest_rect.Y());
@@ -1294,7 +1294,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   auto dict = std::move(context).WriteDictionary();
   SetGeneratingNodeInfo(dict, &owning_layout_object, "nodeId");
   if (const ImageResourceContent* content = style_image.CachedImage())
-    dict.Add("url", content->Url().GetString());
+    dict.Add("url", content->Url().ElidedString());
 }
 
 void inspector_paint_image_event::Data(perfetto::TracedValue context,
@@ -1306,7 +1306,7 @@ void inspector_paint_image_event::Data(perfetto::TracedValue context,
   if (node)
     SetNodeInfo(dict, node, "nodeId", nullptr);
   if (const ImageResourceContent* content = style_image.CachedImage())
-    dict.Add("url", content->Url().GetString());
+    dict.Add("url", content->Url().ElidedString());
 
   dict.Add("x", dest_rect.X());
   dict.Add("y", dest_rect.Y());
@@ -1322,7 +1322,7 @@ void inspector_paint_image_event::Data(
     const ImageResourceContent& image_content) {
   auto dict = std::move(context).WriteDictionary();
   SetGeneratingNodeInfo(dict, owning_layout_object, "nodeId");
-  dict.Add("url", image_content.Url().GetString());
+  dict.Add("url", image_content.Url().ElidedString());
 }
 
 static size_t UsedHeapSize() {
