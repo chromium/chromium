@@ -40,7 +40,6 @@ oobe_auto_imports = [
   "chrome/browser/resources/chromeos/login/components/behaviors/login_screen_behavior.html|LoginScreenBehavior,LoginScreenBehaviorInterface",
   "chrome/browser/resources/chromeos/login/components/behaviors/multi_step_behavior.html|MultiStepBehavior,MultiStepBehaviorInterface",
   "chrome/browser/resources/chromeos/login/components/display_manager_types.html|OOBE_UI_STATE",
-  "ui/webui/resources/html/assert.html|assert,assertNotReached",
   "ui/webui/resources/cr_components/chromeos/network/mojo_interface_provider.html|MojoInterfaceProviderImpl",
   "ui/webui/resources/cr_components/chromeos/network/network_list_types.html|NetworkList",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
