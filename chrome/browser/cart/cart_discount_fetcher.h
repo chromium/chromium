@@ -21,12 +21,14 @@ struct MerchantIdAndDiscounts {
   std::string merchant_id;
   std::vector<cart_db::RuleDiscountInfoProto> rule_discount_list;
   std::string highest_discount_string;
+  bool has_coupons;
   // TODO(crbug.com/1240341): Include a list of coupon info.
 
   explicit MerchantIdAndDiscounts(
       std::string merchant_id,
       std::vector<cart_db::RuleDiscountInfoProto> rule_discount_list,
-      std::string discount_string);
+      std::string discount_string,
+      bool has_coupons);
   MerchantIdAndDiscounts(const MerchantIdAndDiscounts& other);
   MerchantIdAndDiscounts& operator=(const MerchantIdAndDiscounts& other);
   MerchantIdAndDiscounts(MerchantIdAndDiscounts&& other);

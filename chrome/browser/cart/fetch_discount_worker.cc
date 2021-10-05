@@ -251,6 +251,7 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
         merchant_discounts.highest_discount_string);
     *cart_discount_proto->mutable_rule_discount_info() = {
         discount_infos.begin(), discount_infos.end()};
+    cart_discount_proto->set_has_coupons(merchant_discounts.has_coupons);
 
     cart_service_delegate_->UpdateCart(cart_url, std::move(cart_proto),
                                        is_tester);
