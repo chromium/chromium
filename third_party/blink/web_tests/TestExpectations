@@ -7139,3 +7139,7 @@ crbug.com/1222126 http/tests/devtools/network/json-preview.js [ Skip ]
 
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Skip ]
+
+# Sheriff 2021-10-05
+crbug.com/1256701 [ Debug Linux ] fast/forms/form-invalid-url.html [ Failure Pass ]
+
