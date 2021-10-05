@@ -18,12 +18,9 @@ namespace gtk {
 // out of NativeThemeGtk. This mixer should leverage the hierarchical nature of
 // color pipeline to reduce duplication of color definitions in
 // `SkColorFromColorId()`.
-void AddGtkNativeCoreColorMixer(
-    ui::ColorProvider* provider,
-    ui::ColorProviderManager::ColorMode color_mode,
-    ui::ColorProviderManager::ContrastMode contrast_mode,
-    ui::ColorProviderManager::SystemTheme system_theme) {
-  if (system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
+void AddGtkNativeCoreColorMixer(ui::ColorProvider* provider,
+                                const ui::ColorProviderManager::Key& key) {
+  if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
     return;
 
   ui::ColorMixer& mixer = provider->AddMixer();

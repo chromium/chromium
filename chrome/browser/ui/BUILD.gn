@@ -1654,7 +1654,6 @@ static_library("ui") {
       "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/ui/color:color_headers",
-      "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/commander:fuzzy_finder",
       "//chrome/browser/ui/webui/app_management:mojo_bindings",
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",

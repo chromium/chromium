@@ -55,6 +55,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
 
   const ui::ThemeProvider* GetThemeProviderForProfileBeingCreated() const;
+  ui::ColorProviderManager::InitializerSupplier*
+  GetCustomThemeForProfileBeingCreated() const;
 
   // Displays sign in error message that is created by Chrome but not GAIA
   // without browser window. If the dialog is not currently shown, this does

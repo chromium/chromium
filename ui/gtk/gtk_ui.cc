@@ -906,7 +906,7 @@ void GtkUi::UpdateColors() {
            (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
                ? ui::ColorProviderManager::ContrastMode::kHigh
                : ui::ColorProviderManager::ContrastMode::kNormal,
-           ui::ColorProviderManager::SystemTheme::kCustom});
+           ui::ColorProviderManager::SystemTheme::kCustom, nullptr});
 
   SkColor location_bar_border = GetBorderColor("GtkEntry#entry");
   if (SkColorGetA(location_bar_border))

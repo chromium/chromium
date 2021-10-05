@@ -125,6 +125,10 @@ class ProfilePickerWidget : public views::Widget {
   const ui::ThemeProvider* GetThemeProvider() const override {
     return profile_picker_view_->GetThemeProviderForProfileBeingCreated();
   }
+  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
+      const override {
+    return profile_picker_view_->GetCustomThemeForProfileBeingCreated();
+  }
 
  private:
   ProfilePickerView* const profile_picker_view_;
@@ -351,6 +355,16 @@ ProfilePickerView::GetThemeProviderForProfileBeingCreated() const {
   // Theme provider is only needed for the dice flow.
   if (dice_sign_in_provider_)
     return dice_sign_in_provider_->GetThemeProvider();
+#endif
+  return nullptr;
+}
+
+ui::ColorProviderManager::InitializerSupplier*
+ProfilePickerView::GetCustomThemeForProfileBeingCreated() const {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Custom theme is only needed for the dice flow.
+  if (dice_sign_in_provider_)
+    return dice_sign_in_provider_->GetCustomTheme();
 #endif
   return nullptr;
 }
