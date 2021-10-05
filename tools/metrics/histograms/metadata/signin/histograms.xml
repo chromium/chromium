@@ -736,6 +736,9 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.IOSGaiaCookiePresentOnNavigation" enum="BooleanPresent"
     expires_after="2022-01-30">
+  <obsolete>
+    Removed 2020-12.
+  </obsolete>
   <owner>fernandex@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
