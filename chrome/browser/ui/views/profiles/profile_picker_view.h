@@ -25,6 +25,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ProfilePickerDiceSignInProvider;
+class ProfilePickerDiceSignInToolbar;
 #endif
 
 class ProfilePickerSignedInFlowController;
@@ -68,15 +69,12 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // ProfilePickerWebContentsHost:
   void ShowScreen(content::WebContents* contents,
                   const GURL& url,
-                  bool show_toolbar,
                   base::OnceClosure navigation_finished_closure =
                       base::OnceClosure()) override;
   void ShowScreenInSystemContents(
       const GURL& url,
-      bool show_toolbar,
       base::OnceClosure navigation_finished_closure =
           base::OnceClosure()) override;
-  void CreateToolbarBackButton() override;
   void Clear() override;
   bool ShouldUseDarkColors() const override;
 
@@ -175,9 +173,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  void OnThemeChanged() override;
-#endif
 
   // Builds the views hieararchy.
   void BuildLayout();
@@ -186,7 +181,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   void ShowScreenFinished(
       content::WebContents* contents,
-      bool show_toolbar,
       base::OnceClosure navigation_finished_closure = base::OnceClosure());
 
   void BackButtonPressed(const ui::Event& event);
@@ -231,8 +225,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Handler for unhandled key events from renderer.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
-  // Views, owned by the view hierarchy.
-  views::View* toolbar_ = nullptr;
+  // Owned by the view hierarchy.
   views::WebView* web_view_ = nullptr;
 
   // The web contents backed by the system profile. This is used for displaying
@@ -245,6 +238,11 @@ class ProfilePickerView : public views::WidgetDelegateView,
   std::unique_ptr<NavigationFinishedObserver> show_screen_finished_observer_;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Toolbar view displayed on top of the WebView for GAIA sign-in, owned by the
+  // view hierarchy.
+  ProfilePickerDiceSignInToolbar* toolbar_ = nullptr;
+
+  // Handles the logic for signing-in to GAIA.
   std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider_;
 #endif
 

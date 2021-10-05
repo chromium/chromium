@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 
 struct CoreAccountInfo;
+class ProfilePickerDiceSignInToolbar;
 
 namespace content {
 struct ContextMenuParams;
@@ -45,7 +46,8 @@ class ProfilePickerDiceSignInProvider
                               std::unique_ptr<content::WebContents>,
                               bool is_saml)>;
 
-  explicit ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host);
+  ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host,
+                                  ProfilePickerDiceSignInToolbar* toolbar);
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
       delete;
@@ -119,8 +121,9 @@ class ProfilePickerDiceSignInProvider
 
   content::WebContents* contents() const { return contents_.get(); }
 
-  // The host object, must outlive this object.
-  ProfilePickerWebContentsHost* host_;
+  // The host and toolbar objects, must outlive this object.
+  ProfilePickerWebContentsHost* const host_;
+  ProfilePickerDiceSignInToolbar* const toolbar_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;
 
