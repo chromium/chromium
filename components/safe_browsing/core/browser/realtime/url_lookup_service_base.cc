@@ -322,6 +322,8 @@ void RealTimeUrlLookupServiceBase::MayBeCacheRealTimeUrlVerdict(
 
 void RealTimeUrlLookupServiceBase::StartLookup(
     const GURL& url,
+    const GURL& last_committed_url,
+    bool is_mainframe,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
@@ -341,11 +343,12 @@ void RealTimeUrlLookupServiceBase::StartLookup(
   }
 
   if (CanPerformFullURLLookupWithToken()) {
-    GetAccessToken(url, std::move(request_callback),
-                   std::move(response_callback),
+    GetAccessToken(url, last_committed_url, is_mainframe,
+                   std::move(request_callback), std::move(response_callback),
                    std::move(callback_task_runner));
   } else {
-    SendRequest(url, /* access_token_string */ absl::nullopt,
+    SendRequest(url, last_committed_url, is_mainframe,
+                /* access_token_string */ absl::nullopt,
                 std::move(request_callback), std::move(response_callback),
                 std::move(callback_task_runner));
   }
@@ -353,12 +356,15 @@ void RealTimeUrlLookupServiceBase::StartLookup(
 
 void RealTimeUrlLookupServiceBase::SendRequest(
     const GURL& url,
+    const GURL& last_committed_url,
+    bool is_mainframe,
     absl::optional<std::string> access_token_string,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::unique_ptr<RTLookupRequest> request = FillRequestProto(url);
+  std::unique_ptr<RTLookupRequest> request =
+      FillRequestProto(url, last_committed_url, is_mainframe);
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
       request->population().user_population());
@@ -484,7 +490,9 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
 }
 
 std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
-    const GURL& url) {
+    const GURL& url,
+    const GURL& last_committed_url,
+    bool is_mainframe) {
   auto request = std::make_unique<RTLookupRequest>();
   request->set_url(SanitizeURL(url).spec());
   request->set_lookup_type(RTLookupRequest::NAVIGATION);
@@ -511,6 +519,9 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
         GetMinAllowedTimestampForReferrerChains(),
         /*should_remove_subresource_url=*/!CanCheckSubresourceURL());
   }
+
+  // TODO(crbug.com/1240403): Use |last_committed_url| and |is_mainframe|
+  // to obtain page load token.
 
   return request;
 }

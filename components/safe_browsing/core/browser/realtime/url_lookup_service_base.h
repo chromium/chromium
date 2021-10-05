@@ -80,9 +80,13 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // |callback_task_runner| when response is received.
   // Note that |request_callback| is not called if there's a valid entry in the
   // cache for |url|.
+  // |last_committed_url| and |is_mainframe| are for obtaining page load token
+  // for the request.
   // This function is overridden in unit tests.
   virtual void StartLookup(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner);
@@ -116,6 +120,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // It also attached an auth header if |access_token_string| has a value.
   void SendRequest(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       absl::optional<std::string> access_token_string,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
@@ -151,6 +157,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // true.
   virtual void GetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
@@ -223,7 +231,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       std::unique_ptr<std::string> response_body);
 
   // Fills in fields in |RTLookupRequest|.
-  std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url);
+  std::unique_ptr<RTLookupRequest> FillRequestProto(
+      const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

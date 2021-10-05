@@ -86,6 +86,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // enabled real time URL lookups for subresource URLs.
   // |real_time_lookup_enabled| must be true if |can_rt_check_subresource_url|
   // is true.
+  // |last_committed_url| is used for obtaining the page load token when the URL
+  // being checked is not a mainframe URL. Only used when real time lookup is
+  // performed.
   // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
   // object.
   SafeBrowsingUrlCheckerImpl(
@@ -103,6 +106,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
       bool real_time_lookup_enabled,
       bool can_rt_check_subresource_url,
       bool can_check_db,
+      GURL last_committed_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       WebUIDelegate* webui_delegate);
@@ -211,6 +215,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   static void StartLookupOnUIThread(
       base::WeakPtr<SafeBrowsingUrlCheckerImpl> weak_checker_on_io,
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
@@ -323,6 +329,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // enterprise real time URL lookup is enabled and safe browsing is disabled
   // for this profile.
   bool can_check_db_;
+
+  // The last committed URL when the checker is constructed. It is used to
+  // obtain page load token when the URL being checked is not a mainframe URL.
+  // Only used when real time lookup is performed.
+  GURL last_committed_url_;
 
   // The task runner for the UI thread.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;

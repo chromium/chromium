@@ -179,6 +179,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<TestingProfile> test_profile_;
   syncer::TestSyncService test_sync_service_;
   std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
+  GURL last_committed_url_ = GURL("http://lastcommitted.test");
+  bool is_mainframe_ = true;
 };
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -192,9 +194,9 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
   base::MockCallback<RTLookupRequestCallback> request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(url, request_callback.Get(),
-                                       response_callback.Get(),
-                                       content::GetIOThreadTaskRunner({}));
+  enterprise_rt_service()->StartLookup(
+      url, last_committed_url_, is_mainframe_, request_callback.Get(),
+      response_callback.Get(), content::GetIOThreadTaskRunner({}));
 
   // |request_callback| should not be called if the verdict is already cached.
   EXPECT_CALL(request_callback, Run(_, _)).Times(0);
@@ -223,7 +225,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
   base::MockCallback<RTLookupResponseCallback> response_callback;
   enterprise_rt_service()->StartLookup(
-      url,
+      url, last_committed_url_, is_mainframe_,
       base::BindOnce(
           [](std::unique_ptr<RTLookupRequest> request, std::string token) {
             EXPECT_EQ("http://example.test/", request->url());

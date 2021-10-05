@@ -86,6 +86,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   int GetReferrerUserGestureLimit() const override;
   void GetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
@@ -101,6 +103,8 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   // Called when the access token is obtained from |token_fetcher_|.
   void OnGetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

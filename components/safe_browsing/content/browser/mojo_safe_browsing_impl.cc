@@ -163,7 +163,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       content::RenderFrameHost::kNoFrameTreeNodeId,
       /*real_time_lookup_enabled=*/false,
       /*can_rt_check_subresource_url=*/false,
-      /*can_check_db=*/true, content::GetUIThreadTaskRunner({}),
+      /*can_check_db=*/true, /*last_committed_url=*/GURL(),
+      content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr, WebUIInfoSingleton::GetInstance());
 
   checker_impl->CheckUrl(

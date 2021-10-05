@@ -72,13 +72,16 @@ RealTimeUrlLookupService::RealTimeUrlLookupService(
 
 void RealTimeUrlLookupService::GetAccessToken(
     const GURL& url,
+    const GURL& last_committed_url,
+    bool is_mainframe,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   token_fetcher_->Start(base::BindOnce(
       &RealTimeUrlLookupService::OnGetAccessToken, weak_factory_.GetWeakPtr(),
-      url, std::move(request_callback), std::move(response_callback),
-      std::move(callback_task_runner), base::TimeTicks::Now()));
+      url, last_committed_url, is_mainframe, std::move(request_callback),
+      std::move(response_callback), std::move(callback_task_runner),
+      base::TimeTicks::Now()));
 }
 
 void RealTimeUrlLookupService::OnPrefChanged() {
@@ -89,6 +92,8 @@ void RealTimeUrlLookupService::OnPrefChanged() {
 
 void RealTimeUrlLookupService::OnGetAccessToken(
     const GURL& url,
+    const GURL& last_committed_url,
+    bool is_mainframe,
     RTLookupRequestCallback request_callback,
     RTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -101,8 +106,9 @@ void RealTimeUrlLookupService::OnGetAccessToken(
                           base::TimeTicks::Now() - get_token_start_time);
   base::UmaHistogramBoolean("SafeBrowsing.RT.HasTokenFromFetcher",
                             !access_token.empty());
-  SendRequest(url, access_token, std::move(request_callback),
-              std::move(response_callback), std::move(callback_task_runner));
+  SendRequest(url, last_committed_url, is_mainframe, access_token,
+              std::move(request_callback), std::move(response_callback),
+              std::move(callback_task_runner));
 }
 
 void RealTimeUrlLookupService::OnResponseUnauthorized(

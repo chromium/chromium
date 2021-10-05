@@ -63,6 +63,8 @@ class ChromeEnterpriseRealTimeUrlLookupService
   int GetReferrerUserGestureLimit() const override;
   void GetAccessToken(
       const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
       RTLookupRequestCallback request_callback,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override;
