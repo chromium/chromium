@@ -597,6 +597,12 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.msan.browser_tests.oobe_negative.filter',
         ],
       },
+      # https://crbug.com/1084469
+      'Linux Tests (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
+        ],
+      },
       'Linux Tests (dbg)(1)': {
         # crbug.com/1066161
         'swarming': {
@@ -1181,6 +1187,12 @@
           'shards': 15,
         },
       },
+      # https://crbug.com/1077181
+      'Linux Tests (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_content_browsertests.filter',
+        ],
+      },
       'Lollipop Phone Tester': {
         'swarming': {
           'shards': 10,
@@ -1746,6 +1758,8 @@
   'headless_browsertests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
+      # Wayland bot doesn't support headless mode.
+      'Linux Tests (Wayland)',
     ],
     'modifications': {
       'fuchsia-code-coverage': {
@@ -1821,6 +1835,12 @@
         'swarming': {
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
+      },
+      # https://crbug.com/1192997
+      'Linux Tests (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter',
+        ],
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1251656
         'experiment_percentage': 100,
@@ -2372,6 +2392,13 @@
         ],
       },
     },
+  },
+  'ozone_x11_unittests': {
+    # Wayland bot uses chromium_linux_gtests that includes some x11 only
+    # test targets. To avoid maintaining a list of tests, remove them here.
+    'remove_from': [
+      'Linux Tests (Wayland)',
+    ],
   },
   'perfetto_unittests': {
     'remove_from': [
@@ -2977,6 +3004,12 @@
           'shards': 2,
         },
       },
+      # https://crbug.com/1184127
+      'Linux Tests (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.unit_tests_wayland.filter',
+        ],
+      },
       'ToTLinuxASan': {
         'swarming': {
           'shards': 2,
@@ -3047,6 +3080,11 @@
   },
   'views_unittests': {
     'modifications': {
+      'Linux Tests (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter',
+        ],
+      },
       'fuchsia-fyi-arm64-dbg': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.debug.views_unittests.filter',
@@ -3521,6 +3559,13 @@
   'webview_ui_test_app_test_apk': {
     'remove_from': [
       'android-11-x86-rel', # crbug.com/1165280
+    ],
+  },
+  'x11_unittests': {
+    # Wayland bot uses chromium_linux_gtests that includes some x11 only
+    # test targets. To avoid maintaining a list of tests, remove them here.
+    'remove_from': [
+      'Linux Tests (Wayland)',
     ],
   },
   'xr_browser_tests': {
