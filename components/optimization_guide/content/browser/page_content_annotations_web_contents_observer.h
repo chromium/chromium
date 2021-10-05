@@ -49,6 +49,7 @@ class PageContentAnnotationsWebContentsObserver
 
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
+  void TitleWasSet(content::NavigationEntry* navigation_entry) override;
 
   // PageTextObserver::Consumer:
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>

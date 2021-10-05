@@ -70,6 +70,10 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_annotation_request_;
   }
 
+  void ClearLastAnnotationRequest() {
+    last_annotation_request_ = absl::nullopt;
+  }
+
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
   last_related_searches_extraction_request() const {
     return last_related_searches_extraction_request_;
@@ -87,7 +91,8 @@ class PageContentAnnotationsWebContentsObserverTest
   PageContentAnnotationsWebContentsObserverTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageContentAnnotations,
-        {{"extract_related_searches", "false"}});
+        {{"extract_related_searches", "false"},
+         {"annotate_title_instead_of_page_content", "false"}});
   }
 
   void SetUp() override {
@@ -219,6 +224,14 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   EXPECT_TRUE(last_annotation_request.has_value());
   EXPECT_EQ(last_annotation_request->first.url, GURL("http://test.com"));
   EXPECT_EQ(last_annotation_request->second, "some text");
+
+  service()->ClearLastAnnotationRequest();
+
+  // Update title - make sure we don't annotate if we intend to annotate
+  // content.
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      u"newtitle");
+  EXPECT_FALSE(service()->last_annotation_request());
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -311,6 +324,81 @@ TEST_F(PageContentAnnotationsWebContentsObserverRelatedSearchesTest,
   EXPECT_EQ(last_request->first.url,
             GURL("http://default-engine.com/search?q=a"));
   EXPECT_EQ(last_request->second, web_contents());
+}
+
+class PageContentAnnotationsWebContentsObserverAnnotateTitleTest
+    : public PageContentAnnotationsWebContentsObserverTest {
+ public:
+  PageContentAnnotationsWebContentsObserverAnnotateTitleTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageContentAnnotations,
+        {{"annotate_title_instead_of_page_content", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
+       SameDocumentNavigationsStillAnnotatesTitle) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://foo"), main_rfh());
+
+  // Set title and favicon.
+  std::u16string title(u"Title");
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      title);
+
+  // history.pushState() is called for url2.
+  GURL url2("http://foo#foo");
+  std::unique_ptr<content::NavigationSimulator> navigation_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(url2, main_rfh());
+  navigation_simulator->CommitSameDocument();
+
+  // The title should be what is requested to be annotated.
+  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+      service()->last_annotation_request();
+  EXPECT_TRUE(last_annotation_request.has_value());
+  EXPECT_EQ(last_annotation_request->first.url, url2);
+  EXPECT_EQ(last_annotation_request->second, "Title");
+
+  service()->ClearLastAnnotationRequest();
+
+  // Update title again - make sure we don't reannotate for same page.
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      u"newtitle");
+  EXPECT_FALSE(service()->last_annotation_request());
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
+       AnnotatesTitleInsteadOfContent) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://www.foo.com/someurl"));
+
+  // Make sure we didn't register with the PageTextObserver.
+  EXPECT_EQ(page_text_observer()->outstanding_requests(), 0u);
+
+  // Set title.
+  std::u16string title(u"Title");
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      title);
+
+  // The title should be what is requested to be annotated.
+  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+      service()->last_annotation_request();
+  EXPECT_TRUE(last_annotation_request.has_value());
+  EXPECT_EQ(last_annotation_request->first.url,
+            GURL("http://www.foo.com/someurl"));
+  EXPECT_EQ(last_annotation_request->second, "Title");
+
+  service()->ClearLastAnnotationRequest();
+
+  // Update title again - make sure we don't reannotate for same page.
+  web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
+                                      u"newtitle");
+  EXPECT_FALSE(service()->last_annotation_request());
 }
 
 }  // namespace optimization_guide

@@ -363,6 +363,11 @@ uint64_t MaxSizeForPageContentTextDump() {
       kPageContentAnnotations, "max_size_for_text_dump_in_bytes", 1024));
 }
 
+bool ShouldAnnotateTitleInsteadOfPageContent() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kPageContentAnnotations, "annotate_title_instead_of_page_content", false);
+}
+
 bool ShouldWriteContentAnnotationsToHistoryService() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kPageContentAnnotations, "write_to_history_service", true);
