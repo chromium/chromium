@@ -435,7 +435,9 @@ class CartHandlerNtpModuleDiscountTest : public CartHandlerTest {
 };
 
 // Test discount consent card visibility aligns with CartService.
-TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountConsentCardVisible) {
+// Flaky on multiple platforms: crbug.com/1256745
+TEST_F(CartHandlerNtpModuleDiscountTest,
+       DISABLED_TestGetDiscountConsentCardVisible) {
   CartDB* cart_db = service_->GetDB();
   base::RunLoop run_loop[5];
   service_->ShouldShowDiscountConsent(
@@ -465,7 +467,9 @@ TEST_F(CartHandlerNtpModuleDiscountTest, TestGetDiscountConsentCardVisible) {
 }
 
 // Test OnDiscountConsentAcknowledged can update status in CartService.
-TEST_F(CartHandlerNtpModuleDiscountTest, TestOnDiscountConsentAcknowledged) {
+// Flaky on multiple platforms: crbug.com/1256745
+TEST_F(CartHandlerNtpModuleDiscountTest,
+       DISABLED_TestOnDiscountConsentAcknowledged) {
   // Update fetch timestamp to avoid fetching triggered by consent
   // acknowledgement.
   profile_.GetPrefs()->SetTime(prefs::kCartDiscountLastFetchedTime,
