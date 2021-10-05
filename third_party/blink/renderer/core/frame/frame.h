@@ -338,10 +338,12 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Frame* Opener() const { return opener_; }
 
   // Returns the parent frame or null if this is the top-most frame.
-  Frame* Parent() const { return parent_; }
+  Frame* Parent(FrameTreeBoundary frame_tree_boundary =
+                    FrameTreeBoundary::kIgnoreFence) const;
 
   // Returns the top-most frame in the hierarchy containing this frame.
-  Frame* Top();
+  Frame* Top(
+      FrameTreeBoundary frame_tree_boundary = FrameTreeBoundary::kIgnoreFence);
 
   // Returns the first child frame.
   Frame* FirstChild() const { return first_child_; }

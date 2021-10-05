@@ -117,12 +117,12 @@ void FrameTree::SetName(const AtomicString& name,
 }
 
 DISABLE_CFI_PERF
-Frame* FrameTree::Parent() const {
-  return this_frame_->Parent();
+Frame* FrameTree::Parent(FrameTreeBoundary frame_tree_boundary) const {
+  return this_frame_->Parent(frame_tree_boundary);
 }
 
-Frame& FrameTree::Top() const {
-  return *this_frame_->Top();
+Frame& FrameTree::Top(FrameTreeBoundary frame_tree_boundary) const {
+  return *this_frame_->Top(frame_tree_boundary);
 }
 
 Frame* FrameTree::NextSibling() const {
