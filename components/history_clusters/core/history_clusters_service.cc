@@ -699,6 +699,16 @@ void HistoryClustersService::OnGotHistoryVisits(
                           ? "null (i.e. exhausted history)"
                           : base::TimeToISO8601(continuation_end_time)));
 
+  if (annotated_visits.empty()) {
+    // Early exit without calling backend if there's no annotated visits.
+    QueryClustersResult result;
+    if (!continuation_end_time.is_null()) {
+      result.continuation_end_time = continuation_end_time;
+    }
+    std::move(callback).Run(std::move(result));
+    return;
+  }
+
   NotifyDebugMessage("  Visits JSON follows:");
   NotifyDebugMessage(GetDebugJSONForVisits(annotated_visits));
 
