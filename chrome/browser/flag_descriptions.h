@@ -937,9 +937,6 @@ extern const char kMixedFormsInterstitialDescription[];
 extern const char kMobileIdentityConsistencyFREName[];
 extern const char kMobileIdentityConsistencyFREDescription[];
 
-extern const char kWipeDataOnChildAccountSigninName[];
-extern const char kWipeDataOnChildAccountSigninDescription[];
-
 extern const char kMobilePwaInstallUseBottomSheetName[];
 extern const char kMobilePwaInstallUseBottomSheetDescription[];
 

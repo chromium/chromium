@@ -1628,11 +1628,6 @@ const char kMixedFormsInterstitialDescription[] =
     "content form (a form on an HTTPS site that submits over HTTP) is "
     "submitted.";
 
-const char kWipeDataOnChildAccountSigninName[] =
-    "Wipe Data On Child account signin";
-const char kWipeDataOnChildAccountSigninDescription[] =
-    "Wipe Data from previous account when signing in a child account";
-
 const char kMobileIdentityConsistencyFREName[] =
     "Mobile identity consistency FRE";
 const char kMobileIdentityConsistencyFREDescription[] =

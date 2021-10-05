@@ -5525,10 +5525,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if defined(OS_ANDROID)
-    {"wipe-data-on-child-account-signin",
-     flag_descriptions::kWipeDataOnChildAccountSigninName,
-     flag_descriptions::kWipeDataOnChildAccountSigninDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(switches::kWipeDataOnChildAccountSignin)},
     {"mobile-identity-consistency-fre",
      flag_descriptions::kMobileIdentityConsistencyFREName,
      flag_descriptions::kMobileIdentityConsistencyFREDescription, kOsAndroid,

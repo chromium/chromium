@@ -537,7 +537,6 @@ public abstract class ChromeFeatureList {
     public static final String WEB_FEED = "WebFeed";
     public static final String WEB_FEED_SORT = "WebFeedSort";
     public static final String WEBNOTES_STYLIZE = "WebNotesStylize";
-    public static final String WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN = "WipeDataOnChildAccountSignin";
     public static final String WEB_APK_INSTALL_COMPLETE_NOTIFICATION =
             "WebApkInstallCompleteNotification";
     public static final String WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT =

@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -173,17 +172,11 @@ public class SigninChecker
                     @Override
                     public void onSignInAborted() {}
                 };
-                if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.WIPE_DATA_ON_CHILD_ACCOUNT_SIGNIN)) {
-                    SyncUserDataWiper.wipeSyncUserData().then((Void v) -> {
-                        RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
-                        mSigninManager.signinAndEnableSync(
-                                SigninAccessPoint.FORCED_SIGNIN, account, signInCallback);
-                    });
-                } else {
+                SyncUserDataWiper.wipeSyncUserData().then((Void v) -> {
+                    RecordUserAction.record("Signin_Signin_WipeDataOnChildAccountSignin2");
                     mSigninManager.signinAndEnableSync(
                             SigninAccessPoint.FORCED_SIGNIN, account, signInCallback);
-                }
+                });
                 return;
             }
         }

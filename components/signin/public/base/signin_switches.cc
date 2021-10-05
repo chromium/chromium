@@ -22,12 +22,6 @@ const base::Feature kAccountIdMigration{"AccountIdMigration",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if defined(OS_ANDROID)
-// This feature flag is used to wipe device data on child account signin.
-const base::Feature kWipeDataOnChildAccountSignin{
-    "WipeDataOnChildAccountSignin", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if defined(OS_ANDROID) || defined(OS_IOS)
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};

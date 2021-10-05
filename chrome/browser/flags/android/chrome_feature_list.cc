@@ -344,7 +344,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &send_tab_to_self::kSendTabToSelfWhenSignedIn,
     &signin::kMobileIdentityConsistencyPromos,
     &switches::kForceStartupSigninPromo,
-    &switches::kWipeDataOnChildAccountSignin,
     &switches::kDecoupleSyncFromAndroidMasterSync,
     &switches::kForceDisableExtendedSyncPromos,
     &switches::kSyncTrustedVaultPassphraseRecovery,
