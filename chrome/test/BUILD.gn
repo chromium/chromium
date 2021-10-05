@@ -4582,7 +4582,6 @@ test("unit_tests") {
     "../browser/performance_manager/mechanisms/page_freezer_unittest.cc",
     "../browser/performance_manager/metrics/memory_pressure_metrics_unittest.cc",
     "../browser/performance_manager/observers/isolation_context_metrics_unittest.cc",
-    "../browser/performance_manager/observers/metrics_collector_unittest.cc",
     "../browser/performance_manager/policies/page_freezing_policy_unittest.cc",
     "../browser/performance_manager/policies/working_set_trimmer_policy_unittest.cc",
     "../browser/performance_manager/test_support/page_aggregator.cc",

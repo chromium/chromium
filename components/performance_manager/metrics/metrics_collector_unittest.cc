@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/observers/metrics_collector.h"
+#include "components/performance_manager/public/metrics/metrics_collector.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -50,7 +50,6 @@ class MAYBE_MetricsCollectorTest : public GraphTestHarness {
 
  protected:
   static constexpr uint64_t kDummyID = 1u;
-
 
   base::HistogramTester histogram_tester_;
 
