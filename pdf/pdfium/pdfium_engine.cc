@@ -3746,6 +3746,12 @@ void PDFiumEngine::OnSelectionPositionChanged() {
 
 gfx::Size PDFiumEngine::ApplyDocumentLayout(
     const DocumentLayout::Options& options) {
+  layout_.SetOptions(options);
+
+  // Don't actually update layout until the document finishes loading.
+  if (!document_loaded_)
+    return layout_.size();
+
   // We need to return early if the layout would not change, otherwise calling
   // client_->ScrollToPage() would send another "viewport" message, triggering
   // an infinite loop.
@@ -3753,7 +3759,6 @@ gfx::Size PDFiumEngine::ApplyDocumentLayout(
   // TODO(crbug.com/1013800): The current implementation computes layout twice
   // (here, and in InvalidateAllPages()). This shouldn't be too expensive at
   // realistic page counts, but could be avoided.
-  layout_.SetOptions(options);
   UpdateDocumentLayout(&layout_);
   if (!layout_.dirty())
     return layout_.size();

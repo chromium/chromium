@@ -887,6 +887,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageInitially) {
     "userInitiated": false,
     "zoom": 1,
     "layoutOptions": {
+      "direction": 0,
       "defaultPageOrientation": 0,
       "twoUpViewEnabled": false,
     },
@@ -909,6 +910,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
     "userInitiated": false,
     "zoom": 1,
     "layoutOptions": {
+      "direction": 0,
       "defaultPageOrientation": 0,
       "twoUpViewEnabled": false,
     },
@@ -927,6 +929,7 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
     "userInitiated": false,
     "zoom": 1,
     "layoutOptions": {
+      "direction": 0,
       "defaultPageOrientation": 0,
       "twoUpViewEnabled": true,
     },

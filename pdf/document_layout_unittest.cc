@@ -4,6 +4,11 @@
 
 #include "pdf/document_layout.h"
 
+#include "base/i18n/rtl.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
+#include "pdf/page_orientation.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -18,34 +23,43 @@ class DocumentLayoutOptionsTest : public testing::Test {
 };
 
 TEST_F(DocumentLayoutOptionsTest, DefaultConstructor) {
+  EXPECT_EQ(options_.direction(), base::i18n::UNKNOWN_DIRECTION);
   EXPECT_EQ(options_.default_page_orientation(), PageOrientation::kOriginal);
   EXPECT_EQ(options_.page_spread(), DocumentLayout::PageSpread::kOneUp);
 }
 
 TEST_F(DocumentLayoutOptionsTest, CopyConstructor) {
+  options_.set_direction(base::i18n::RIGHT_TO_LEFT);
   options_.RotatePagesClockwise();
   options_.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
 
   DocumentLayout::Options copy(options_);
+  EXPECT_EQ(copy.direction(), base::i18n::RIGHT_TO_LEFT);
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
   EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 
+  options_.set_direction(base::i18n::LEFT_TO_RIGHT);
   options_.RotatePagesClockwise();
   options_.set_page_spread(DocumentLayout::PageSpread::kOneUp);
+  EXPECT_EQ(copy.direction(), base::i18n::RIGHT_TO_LEFT);
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
   EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 }
 
 TEST_F(DocumentLayoutOptionsTest, CopyAssignment) {
+  options_.set_direction(base::i18n::RIGHT_TO_LEFT);
   options_.RotatePagesClockwise();
   options_.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
 
   DocumentLayout::Options copy = options_;
+  EXPECT_EQ(copy.direction(), base::i18n::RIGHT_TO_LEFT);
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
   EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 
+  options_.set_direction(base::i18n::LEFT_TO_RIGHT);
   options_.RotatePagesClockwise();
   options_.set_page_spread(DocumentLayout::PageSpread::kOneUp);
+  EXPECT_EQ(copy.direction(), base::i18n::RIGHT_TO_LEFT);
   EXPECT_EQ(copy.default_page_orientation(), PageOrientation::kClockwise90);
   EXPECT_EQ(copy.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 }
@@ -54,6 +68,12 @@ TEST_F(DocumentLayoutOptionsTest, Equals) {
   EXPECT_TRUE(options_ == options_);
 
   DocumentLayout::Options copy;
+  EXPECT_TRUE(copy == options_);
+
+  options_.set_direction(base::i18n::RIGHT_TO_LEFT);
+  EXPECT_FALSE(copy == options_);
+
+  copy.set_direction(base::i18n::RIGHT_TO_LEFT);
   EXPECT_TRUE(copy == options_);
 
   options_.RotatePagesClockwise();
@@ -73,12 +93,6 @@ TEST_F(DocumentLayoutOptionsTest, Equals) {
 
   copy.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
   EXPECT_TRUE(copy == options_);
-
-  options_.set_page_spread(DocumentLayout::PageSpread::kOneUp);
-  EXPECT_FALSE(copy == options_);
-
-  copy.set_page_spread(DocumentLayout::PageSpread::kOneUp);
-  EXPECT_TRUE(copy == options_);
 }
 
 TEST_F(DocumentLayoutOptionsTest, NotEquals) {
@@ -94,6 +108,51 @@ TEST_F(DocumentLayoutOptionsTest, NotEquals) {
 
   copy.RotatePagesClockwise();
   EXPECT_FALSE(copy != options_);
+}
+
+TEST_F(DocumentLayoutOptionsTest, ToValueDefault) {
+  base::Value value = options_.ToValue();
+
+  EXPECT_THAT(value, base::test::IsJson(R"({
+    "direction": 0,
+    "defaultPageOrientation": 0,
+    "twoUpViewEnabled": false,
+  })"));
+}
+
+TEST_F(DocumentLayoutOptionsTest, ToValueModified) {
+  options_.set_direction(base::i18n::LEFT_TO_RIGHT);
+  options_.RotatePagesClockwise();
+  options_.set_page_spread(DocumentLayout::PageSpread::kTwoUpOdd);
+  base::Value value = options_.ToValue();
+
+  EXPECT_THAT(value, base::test::IsJson(R"({
+    "direction": 2,
+    "defaultPageOrientation": 1,
+    "twoUpViewEnabled": true,
+  })"));
+}
+
+TEST_F(DocumentLayoutOptionsTest, FromValueDefault) {
+  options_.FromValue(base::test::ParseJson(R"({
+    "direction": 0,
+    "defaultPageOrientation": 0,
+    "twoUpViewEnabled": false,
+  })"));
+
+  EXPECT_EQ(options_, DocumentLayout::Options());
+}
+
+TEST_F(DocumentLayoutOptionsTest, FromValueModified) {
+  options_.FromValue(base::test::ParseJson(R"({
+    "direction": 2,
+    "defaultPageOrientation": 1,
+    "twoUpViewEnabled": true,
+  })"));
+
+  EXPECT_EQ(options_.direction(), base::i18n::LEFT_TO_RIGHT);
+  EXPECT_EQ(options_.default_page_orientation(), PageOrientation::kClockwise90);
+  EXPECT_EQ(options_.page_spread(), DocumentLayout::PageSpread::kTwoUpOdd);
 }
 
 TEST_F(DocumentLayoutOptionsTest, RotatePagesClockwise) {

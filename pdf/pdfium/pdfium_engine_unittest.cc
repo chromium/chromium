@@ -133,6 +133,17 @@ class PDFiumEngineTest : public PDFiumTestBase {
     return loaded_incrementally;
   }
 
+  void FinishWithPluginSizeUpdated(MockTestClient& client,
+                                   PDFiumEngine& engine) {
+    ResultCallback callback;
+    EXPECT_CALL(client, ScheduleTaskOnMainThread)
+        .WillOnce(MoveArg<1>(&callback));
+    engine.PluginSizeUpdated({});
+
+    ASSERT_TRUE(callback);
+    std::move(callback).Run(0);
+  }
+
   // Counts the number of available pages. Returns `int` instead of `size_t` for
   // consistency with `PDFiumEngine::GetNumberOfPages()`.
   int CountAvailablePages(const PDFiumEngine& engine) {
@@ -251,6 +262,23 @@ TEST_F(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
   EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(343, 1664)))
       .WillOnce(Return());
   engine->RotateCounterclockwise();
+}
+
+TEST_F(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
+  NiceMock<MockTestClient> client;
+  InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
+      &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
+  ASSERT_TRUE(initialize_result.engine);
+  initialize_result.FinishLoading();
+  PDFiumEngine& engine = *initialize_result.engine;
+
+  DocumentLayout::Options options;
+  options.RotatePagesClockwise();
+  EXPECT_CALL(client, ScrollToPage(-1)).Times(0);
+  EXPECT_EQ(gfx::Size(343, 1664), engine.ApplyDocumentLayout(options));
+
+  EXPECT_CALL(client, ScrollToPage(-1)).Times(1);
+  ASSERT_NO_FATAL_FAILURE(FinishWithPluginSizeUpdated(client, engine));
 }
 
 TEST_F(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
@@ -481,14 +509,8 @@ TEST_F(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
   ASSERT_TRUE(initialize_result.engine);
   PDFiumEngine& engine = *initialize_result.engine;
 
-  ResultCallback callback;
-  EXPECT_CALL(client, ScheduleTaskOnMainThread).WillOnce(MoveArg<1>(&callback));
-
   initialize_result.FinishLoading();
-  engine.PluginSizeUpdated({});
-
-  ASSERT_TRUE(callback);
-  std::move(callback).Run(0);
+  ASSERT_NO_FATAL_FAILURE(FinishWithPluginSizeUpdated(client, engine));
 
   EXPECT_EQ(engine.GetNumberOfPages(), CountAvailablePages(engine));
 }

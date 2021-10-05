@@ -16,6 +16,7 @@ namespace chrome_pdf {
 
 namespace {
 
+constexpr char kDirection[] = "direction";
 constexpr char kDefaultPageOrientation[] = "defaultPageOrientation";
 constexpr char kTwoUpViewEnabled[] = "twoUpViewEnabled";
 
@@ -51,6 +52,7 @@ DocumentLayout::Options::~Options() = default;
 
 base::Value DocumentLayout::Options::ToValue() const {
   base::Value dictionary(base::Value::Type::DICTIONARY);
+  dictionary.SetIntKey(kDirection, direction_);
   dictionary.SetIntKey(kDefaultPageOrientation,
                        static_cast<int32_t>(default_page_orientation_));
   dictionary.SetBoolKey(kTwoUpViewEnabled,
@@ -60,6 +62,11 @@ base::Value DocumentLayout::Options::ToValue() const {
 
 void DocumentLayout::Options::FromValue(const base::Value& value) {
   DCHECK(value.is_dict());
+
+  int32_t direction = value.FindIntKey(kDirection).value();
+  DCHECK_GE(direction, base::i18n::UNKNOWN_DIRECTION);
+  DCHECK_LE(direction, base::i18n::TEXT_DIRECTION_MAX);
+  direction_ = static_cast<base::i18n::TextDirection>(direction);
 
   int32_t default_page_orientation =
       value.FindIntKey(kDefaultPageOrientation).value();
