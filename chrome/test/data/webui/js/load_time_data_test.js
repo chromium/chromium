@@ -13,9 +13,8 @@ suite('LoadTimeDataModuleTest', function() {
   });
 
   test('getStringPieces', function() {
-    const assertSubstitutedPieces = function(expected, var_args) {
-      var var_args = Array.prototype.slice.call(arguments, 1);
-      var pieces =
+    const assertSubstitutedPieces = function(expected, ...var_args) {
+      const pieces =
           loadTimeData.getSubstitutedStringPieces.apply(loadTimeData, var_args);
       assertDeepEquals(expected, pieces);
 

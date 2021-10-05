@@ -8,16 +8,16 @@ import {assertArrayEquals, assertEquals} from '../../../chai_assert.js';
 // clang-format on
 
 function testSlice() {
-  var m = new ArrayDataModel([0, 1, 2]);
+  const m = new ArrayDataModel([0, 1, 2]);
   assertArrayEquals([0, 1, 2], m.slice());
   assertArrayEquals([1, 2], m.slice(1));
   assertArrayEquals([1], m.slice(1, 2));
 }
 
 function testPush() {
-  var m = new ArrayDataModel([0, 1, 2]);
+  const m = new ArrayDataModel([0, 1, 2]);
 
-  var count = 0;
+  let count = 0;
   m.addEventListener('splice', function(e) {
     count++;
     assertEquals(3, e.index);
@@ -26,7 +26,7 @@ function testPush() {
   });
 
   assertEquals(5, m.push(3, 4));
-  var a = m.slice();
+  const a = m.slice();
   assertArrayEquals([0, 1, 2, 3, 4], a);
 
   assertEquals(1, count, 'The splice event should only fire once');
@@ -34,9 +34,9 @@ function testPush() {
 
 function testSplice() {
   function compare(array, args) {
-    var m = new ArrayDataModel(array.slice());
-    var expected = array.slice();
-    var result = expected.splice.apply(expected, args);
+    const m = new ArrayDataModel(array.slice());
+    const expected = array.slice();
+    const result = expected.splice.apply(expected, args);
     assertArrayEquals(result, m.splice.apply(m, args));
     assertArrayEquals(expected, m.slice());
   }
@@ -53,14 +53,14 @@ function testSplice() {
 
 function testPermutation() {
   function doTest(sourceArray, spliceArgs) {
-    var m = new ArrayDataModel(sourceArray.slice());
-    var permutation;
+    const m = new ArrayDataModel(sourceArray.slice());
+    let permutation;
     m.addEventListener('permuted', function(event) {
       permutation = event.permutation;
     });
     m.splice.apply(m, spliceArgs);
-    var deleted = 0;
-    for (var i = 0; i < sourceArray.length; i++) {
+    let deleted = 0;
+    for (let i = 0; i < sourceArray.length; i++) {
       if (permutation[i] === -1) {
         deleted++;
       } else {
@@ -79,8 +79,8 @@ function testPermutation() {
 }
 
 function testUpdateIndexes() {
-  var m = new ArrayDataModel([1, 2, 3]);
-  var changedIndexes = [];
+  const m = new ArrayDataModel([1, 2, 3]);
+  const changedIndexes = [];
   m.addEventListener('change', function(event) {
     changedIndexes.push(event.index);
   });
@@ -89,9 +89,9 @@ function testUpdateIndexes() {
 }
 
 function testReplaceItem() {
-  var m = new ArrayDataModel([1, 2, 3]);
-  var permutation = null;
-  var changeIndex;
+  const m = new ArrayDataModel([1, 2, 3]);
+  let permutation = null;
+  let changeIndex;
   m.addEventListener('permuted', function(event) {
     permutation = event.permutation;
   });

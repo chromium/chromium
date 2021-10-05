@@ -6,7 +6,7 @@ import {parseHtmlSubset, sanitizeInnerHtml} from 'chrome://resources/js/parse_ht
 
 suite('ParseHtmlSubsetModuleTest', function() {
   function parseAndAssertThrows() {
-    var args = arguments;
+    const args = arguments;
     assertThrows(function() {
       parseHtmlSubset.apply(null, args);
     });
@@ -67,7 +67,7 @@ suite('ParseHtmlSubsetModuleTest', function() {
   });
 
   test('anchor target', function() {
-    var df = parseHtmlSubset(
+    const df = parseHtmlSubset(
         '<a href="https://google.com" target="_blank">Google</a>');
     assertEquals('_blank', df.firstChild.target);
   });

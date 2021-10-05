@@ -10,17 +10,17 @@ import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
 function testFunctionListener() {
-  var fi = 0;
+  let fi = 0;
   function f(e) {
     fi++;
   }
 
-  var gi = 0;
+  let gi = 0;
   function g(e) {
     gi++;
   }
 
-  var et = new EventTarget;
+  const et = new EventTarget;
   et.addEventListener('f', f);
   et.addEventListener('g', g);
 
@@ -39,21 +39,21 @@ function testFunctionListener() {
 }
 
 function testHandleEvent() {
-  var fi = 0;
-  var f = /** @type {!EventListener} */ ({
+  let fi = 0;
+  const f = /** @type {!EventListener} */ ({
     handleEvent: function(e) {
       fi++;
     }
   });
 
-  var gi = 0;
-  var g = /** @type {!EventListener} */ ({
+  let gi = 0;
+  const g = /** @type {!EventListener} */ ({
     handleEvent: function(e) {
       gi++;
     }
   });
 
-  var et = new EventTarget;
+  const et = new EventTarget;
   et.addEventListener('f', f);
   et.addEventListener('g', g);
 
@@ -72,18 +72,18 @@ function testHandleEvent() {
 }
 
 function testPreventDefault() {
-  var i = 0;
+  let i = 0;
   function prevent(e) {
     i++;
     e.preventDefault();
   }
 
-  var j = 0;
+  let j = 0;
   function pass(e) {
     j++;
   }
 
-  var et = new EventTarget;
+  const et = new EventTarget;
   et.addEventListener('test', pass);
 
   assertTrue(et.dispatchEvent(new Event('test', {cancelable: true})));

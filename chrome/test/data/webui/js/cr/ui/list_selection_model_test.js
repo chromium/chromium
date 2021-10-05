@@ -17,13 +17,13 @@ import {adjust, range} from './list_selection_model_test_util.js';
  * @return {!ListSelectionModel}
  */
 function createSelectionModel(len, dependentLeadItem) {
-  var sm = new ListSelectionModel(len);
+  const sm = new ListSelectionModel(len);
   sm.independentLeadItem_ = !dependentLeadItem;
   return sm;
 }
 
 function testAdjust1() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
   adjust(sm, 0, 10, 0);
@@ -34,7 +34,7 @@ function testAdjust1() {
 }
 
 function testAdjust2() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 50;
   adjust(sm, 60, 10, 0);
@@ -45,7 +45,7 @@ function testAdjust2() {
 }
 
 function testAdjust3() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
   adjust(sm, 0, 0, 10);
@@ -56,7 +56,7 @@ function testAdjust3() {
 }
 
 function testAdjust4() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = 100;
   sm.selectRange(100, 110);
@@ -69,7 +69,7 @@ function testAdjust4() {
 }
 
 function testAdjust5() {
-  var sm = createSelectionModel(100);
+  const sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 99;
 
@@ -81,7 +81,7 @@ function testAdjust5() {
 }
 
 function testAdjust6() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = 105;
   sm.selectRange(100, 110);
@@ -95,7 +95,7 @@ function testAdjust6() {
 }
 
 function testAdjust7() {
-  var sm = createSelectionModel(1);
+  const sm = createSelectionModel(1);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 0;
 
@@ -107,7 +107,7 @@ function testAdjust7() {
 }
 
 function testAdjust8() {
-  var sm = createSelectionModel(100);
+  const sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = 50;
   sm.selectAll();
@@ -120,7 +120,7 @@ function testAdjust8() {
 }
 
 function testAdjust9() {
-  var sm = createSelectionModel(10);
+  const sm = createSelectionModel(10);
 
   sm.leadIndex = sm.anchorIndex = 5;
   sm.selectAll();
@@ -134,7 +134,7 @@ function testAdjust9() {
 }
 
 function testAdjust10() {
-  var sm = createSelectionModel(10);
+  const sm = createSelectionModel(10);
 
   sm.leadIndex = sm.anchorIndex = 5;
   sm.selectAll();
@@ -147,7 +147,7 @@ function testAdjust10() {
 }
 
 function testAdjust11() {
-  var sm = createSelectionModel(20);
+  const sm = createSelectionModel(20);
 
   sm.leadIndex = sm.anchorIndex = 10;
   sm.selectAll();
@@ -160,7 +160,7 @@ function testAdjust11() {
 }
 
 function testAdjust12() {
-  var sm = createSelectionModel(20, true);
+  const sm = createSelectionModel(20, true);
 
   sm.selectAll();
   sm.leadIndex = sm.anchorIndex = 10;
@@ -173,7 +173,7 @@ function testAdjust12() {
 }
 
 function testAdjust13() {
-  var sm = createSelectionModel(20, true);
+  const sm = createSelectionModel(20, true);
 
   sm.selectAll();
   sm.leadIndex = sm.anchorIndex = 15;
@@ -186,7 +186,7 @@ function testAdjust13() {
 }
 
 function testAdjust14() {
-  var sm = createSelectionModel(5, true);
+  const sm = createSelectionModel(5, true);
 
   sm.selectedIndexes = [2, 3];
   sm.leadIndex = sm.anchorIndex = 3;
@@ -199,7 +199,7 @@ function testAdjust14() {
 }
 
 function testAdjust15() {
-  var sm = createSelectionModel(7, true);
+  const sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
   sm.leadIndex = sm.anchorIndex = 1;
@@ -214,7 +214,7 @@ function testAdjust15() {
 }
 
 function testAdjust16() {
-  var sm = createSelectionModel(7, true);
+  const sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
   sm.leadIndex = sm.anchorIndex = 3;
@@ -229,7 +229,7 @@ function testAdjust16() {
 }
 
 function testAdjust17() {
-  var sm = createSelectionModel(7, true);
+  const sm = createSelectionModel(7, true);
 
   sm.selectedIndexes = [1, 3, 5];
   sm.leadIndex = sm.anchorIndex = 5;
@@ -244,7 +244,7 @@ function testAdjust17() {
 }
 
 function testLeadAndAnchor1() {
-  var sm = createSelectionModel(20, true);
+  const sm = createSelectionModel(20, true);
 
   sm.selectAll();
   sm.leadIndex = sm.anchorIndex = 10;
@@ -254,7 +254,7 @@ function testLeadAndAnchor1() {
 }
 
 function testLeadAndAnchor2() {
-  var sm = createSelectionModel(20, true);
+  const sm = createSelectionModel(20, true);
 
   sm.leadIndex = sm.anchorIndex = 10;
   sm.selectAll();
@@ -264,9 +264,9 @@ function testLeadAndAnchor2() {
 }
 
 function testSelectAll() {
-  var sm = createSelectionModel(10);
+  const sm = createSelectionModel(10);
 
-  var changes = null;
+  let changes = null;
   sm.addEventListener('change', function(e) {
     changes = e.changes;
   });
@@ -280,9 +280,9 @@ function testSelectAll() {
 }
 
 function testSelectAllOnEmptyList() {
-  var sm = createSelectionModel(0);
+  const sm = createSelectionModel(0);
 
-  var changes = null;
+  let changes = null;
   sm.addEventListener('change', function(e) {
     changes = e.changes;
   });

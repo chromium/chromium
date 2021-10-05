@@ -12,14 +12,14 @@ import {assertEquals} from '../../../chai_assert.js';
 // clang-format on
 
 function testClearPinnedItem() {
-  var list = document.createElement('ul');
+  const list = document.createElement('ul');
   list.style.position = 'absolute';
   list.style.width = '800px';
   list.style.height = '800px';
   decorate(list, List);
   document.body.appendChild(list);
 
-  var model = new ArrayDataModel(['Item A', 'Item B']);
+  const model = new ArrayDataModel(['Item A', 'Item B']);
   list.dataModel = model;
   list.selectionModel.setIndexSelected(0, true);
   list.selectionModel.leadIndex = 0;

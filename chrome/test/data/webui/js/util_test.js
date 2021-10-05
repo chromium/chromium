@@ -14,8 +14,8 @@ suite('UtilModuleTest', function() {
         quoteString('(._.) ( :l ) (.-.)'));
 
     // Using the output as a regex.
-    var re = new RegExp(quoteString('"hello"'), 'gim');
-    var match = re.exec('She said "Hello" loudly');
+    let re = new RegExp(quoteString('"hello"'), 'gim');
+    let match = re.exec('She said "Hello" loudly');
     assertEquals(9, match.index);
 
     re = new RegExp(quoteString('Hello, .*'), 'gim');

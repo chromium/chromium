@@ -14,8 +14,8 @@ import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_
  * @return {!Array<number>}
  */
 export function range(start, end) {
-  var a = [];
-  for (var i = start; i <= end; i++) {
+  const a = [];
+  for (let i = start; i <= end; i++) {
     a.push(i);
   }
   return a;
@@ -30,15 +30,15 @@ export function range(start, end) {
  * @param {number} added Number of entries to add to the list.
  */
 export function adjust(model, index, removed, added) {
-  var permutation = [];
-  for (var i = 0; i < index; i++) {
+  const permutation = [];
+  for (let i = 0; i < index; i++) {
     permutation.push(i);
   }
-  for (var i = 0; i < removed; i++) {
+  for (let j = 0; j < removed; j++) {
     permutation.push(-1);
   }
-  for (var i = index + removed; i < model.length; i++) {
-    permutation.push(i - removed + added);
+  for (let k = index + removed; k < model.length; k++) {
+    permutation.push(k - removed + added);
   }
   model.adjustLength(model.length - removed + added);
   model.adjustToReordering(permutation);

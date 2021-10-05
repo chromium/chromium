@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
 // clang-format on
 
 /** @type {Menu} */
-var menu;
+let menu;
 
 /**
  * @param {number} x The screenX coord of the mouseup event.
@@ -23,7 +23,7 @@ var menu;
  *     https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent
  */
 function mouseUpAt(x, y) {
-  var mouseUpEvent = new MouseEvent('mouseup', {
+  const mouseUpEvent = new MouseEvent('mouseup', {
     bubbles: true,
     cancelable: true,
     target: menu,
@@ -40,13 +40,13 @@ function setUp() {
 
 /** @suppress {visibility} Allow test to reach to private properties. */
 function testHandleMouseOver() {
-  var called = false;
+  let called = false;
   menu.findMenuItem_ = function() {
     called = true;
     return Menu.prototype.findMenuItem_.apply(this, arguments);
   };
 
-  var over =
+  const over =
       new MouseEvent('mouseover', {bubbles: true, target: document.body});
   assertFalse(called);
   menu.dispatchEvent(over);
@@ -54,7 +54,7 @@ function testHandleMouseOver() {
 }
 
 function testHandleMouseUp() {
-  var realNow = Date.now;
+  const realNow = Date.now;
   Date.now = function() {
     return 10;
   };
@@ -87,7 +87,7 @@ function testShowViaKeyboardIgnoresMouseUps() {
  */
 function testCommandMenuItem() {
   // Test 1: The case that the command label is set and other attributes copied.
-  var command = new Command();
+  const command = new Command();
   command.id = 'the-command';
   command.label = 'CommandLabel';
   command.disabled = true;
@@ -95,7 +95,7 @@ function testCommandMenuItem() {
   command.checked = true;
   document.body.appendChild(command);
 
-  var menuItem = new MenuItem();
+  const menuItem = new MenuItem();
   menuItem.command = '#the-command';
 
   // Confirms the label is copied from the command.
@@ -107,11 +107,11 @@ function testCommandMenuItem() {
 
   // Test 2: The case that the command label is not set, and other attributes
   // have default values.
-  var command2 = new Command();
+  const command2 = new Command();
   command2.id = 'the-command2';
   document.body.appendChild(command2);
 
-  var menuItem2 = new MenuItem();
+  const menuItem2 = new MenuItem();
   menuItem2.label = 'MenuLabel';
   menuItem2.command = '#the-command2';
 
@@ -128,10 +128,10 @@ function testCommandMenuItem() {
  * expected number of separators are visible.
  */
 function runSeparatorTest(items, hiddenItems, expectedSeparators) {
-  for (let item of menu.menuItems) {
+  for (const item of menu.menuItems) {
     item.hidden = false;
   }
-  for (let i of hiddenItems) {
+  for (const i of hiddenItems) {
     items[i].hidden = true;
   }
   menu.updateCommands();

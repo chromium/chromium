@@ -17,7 +17,7 @@ function setUp() {
 }
 
 function testCommandDefaultPrevented() {
-  var calls = 0;
+  let calls = 0;
   document.addEventListener('canExecute', function(e) {
     ++calls;
     assertFalse(e.defaultPrevented);

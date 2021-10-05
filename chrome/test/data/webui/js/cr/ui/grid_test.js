@@ -13,7 +13,7 @@ import {assertEquals} from '../../../chai_assert.js';
  * @suppress {visibility} Allow test to reach to private properties.
  */
 function testGetColumnCount() {
-  var g = Grid.prototype;
+  const g = Grid.prototype;
   g.measured_ = {
     height: 8,
     marginTop: 0,
@@ -22,7 +22,7 @@ function testGetColumnCount() {
     marginLeft: 0,
     marginRight: 0
   };
-  var columns = g.getColumnCount_();
+  let columns = g.getColumnCount_();
   g.measured_.width = 0;
   columns = g.getColumnCount_();
   // Item width equals 0.

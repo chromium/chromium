@@ -17,13 +17,13 @@ import {adjust} from './list_selection_model_test_util.js';
  * @return {!ListSingleSelectionModel}
  */
 function createSelectionModel(len, dependentLeadItem) {
-  var sm = new ListSingleSelectionModel(len);
+  const sm = new ListSingleSelectionModel(len);
   sm.independentLeadItem_ = !dependentLeadItem;
   return sm;
 }
 
 export function testAdjust1() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
   adjust(sm, 0, 10, 0);
@@ -34,7 +34,7 @@ export function testAdjust1() {
 }
 
 export function testAdjust2() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 50;
   adjust(sm, 60, 10, 0);
@@ -45,7 +45,7 @@ export function testAdjust2() {
 }
 
 export function testAdjust3() {
-  var sm = createSelectionModel(200);
+  const sm = createSelectionModel(200);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 100;
   adjust(sm, 0, 0, 10);
@@ -56,7 +56,7 @@ export function testAdjust3() {
 }
 
 export function testAdjust4() {
-  var sm = createSelectionModel(100);
+  const sm = createSelectionModel(100);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 99;
 
@@ -68,7 +68,7 @@ export function testAdjust4() {
 }
 
 export function testAdjust5() {
-  var sm = createSelectionModel(1);
+  const sm = createSelectionModel(1);
 
   sm.leadIndex = sm.anchorIndex = sm.selectedIndex = 0;
 
@@ -80,7 +80,7 @@ export function testAdjust5() {
 }
 
 export function testSelectedIndex1() {
-  var sm = createSelectionModel(100, true);
+  const sm = createSelectionModel(100, true);
 
   sm.selectedIndex = 99;
 
@@ -90,7 +90,7 @@ export function testSelectedIndex1() {
 }
 
 export function testLeadIndex1() {
-  var sm = createSelectionModel(100);
+  const sm = createSelectionModel(100);
 
   sm.leadIndex = 99;
 
@@ -100,7 +100,7 @@ export function testLeadIndex1() {
 }
 
 export function testLeadIndex2() {
-  var sm = createSelectionModel(100, true);
+  const sm = createSelectionModel(100, true);
 
   sm.leadIndex = 99;
 
