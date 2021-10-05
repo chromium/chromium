@@ -82,8 +82,7 @@ TEST_F(PhotosServiceTest, PassesDataOnSuccess) {
       "Content-Type: application/json\r\nAuthorization: Bearer foo\r\n\r\n");
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_memories",
+      "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read",
       R"(
         {
           "memory": [
@@ -145,8 +144,7 @@ TEST_F(PhotosServiceTest, RequestIsCached) {
   network::URLLoaderCompletionStatus status;
   status.exists_in_cache = true;
   test_url_loader_factory_.AddResponse(
-      GURL("https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-           "read_memories"),
+      GURL("https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read"),
       network::CreateURLResponseHead(net::HTTP_OK),
       R"(
         {
@@ -237,8 +235,7 @@ TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
       "foo", base::Time());
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_memories",
+      "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read",
       R"(
         {
           "memory": [
@@ -314,8 +311,7 @@ TEST_F(PhotosServiceTest, PassesNoDataOnNetError) {
           .request.headers.ToString(),
       "Content-Type: application/json\r\nAuthorization: Bearer foo\r\n\r\n");
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_memories",
+      "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read",
       std::string(), net::HTTP_BAD_REQUEST,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
@@ -345,9 +341,8 @@ TEST_F(PhotosServiceTest, PassesNoDataOnEmptyResponse) {
       "foo", base::Time());
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_memories",
-      "", net::HTTP_OK,
+      "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read", "",
+      net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   EXPECT_TRUE(empty_response);
@@ -370,8 +365,7 @@ TEST_F(PhotosServiceTest, PassesNoDataOnMissingItemKey) {
       "foo", base::Time());
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "https://photosfirstparty-pa.googleapis.com/chrome_ntp/"
-      "read_memories",
+      "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read",
       R"(
         {
           "memory": []

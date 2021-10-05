@@ -26,7 +26,7 @@ namespace {
 // Maximum accepted size of an API response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 const char server_url[] =
-    "https://photosfirstparty-pa.googleapis.com/chrome_ntp/read_memories";
+    "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read";
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("photos_service", R"(
       semantics {
