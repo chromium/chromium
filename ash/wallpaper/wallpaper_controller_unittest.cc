@@ -901,7 +901,7 @@ TEST_P(WallpaperControllerTest, GetMaxDisplaySize) {
             WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
 
   // First display has maximum size.
-  UpdateDisplay("400x300,100x100");
+  UpdateDisplay("400x300,200x100");
   EXPECT_EQ("400x300",
             WallpaperControllerImpl::GetMaxDisplaySizeInNative().ToString());
 
@@ -1851,7 +1851,7 @@ TEST_P(WallpaperControllerTest, ShowCustomWallpaperWithCorrectResolution) {
   // be loaded.
   ClearWallpaperCount();
   ClearDecodeFilePaths();
-  UpdateDisplay("800x600,2000x2000");
+  UpdateDisplay("800x600,3000x2000");
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   ASSERT_EQ(2u, GetDecodeFilePaths().size());
@@ -1861,11 +1861,11 @@ TEST_P(WallpaperControllerTest, ShowCustomWallpaperWithCorrectResolution) {
   // Detach the secondary display.
   UpdateDisplay("800x600");
   RunAllTasksUntilIdle();
-  // Hook up the 2000x2000 display again. The large resolution default wallpaper
+  // Hook up the 3000x2000 display again. The large resolution default wallpaper
   // should persist. Test for crbug/165788.
   ClearWallpaperCount();
   ClearDecodeFilePaths();
-  UpdateDisplay("800x600,2000x2000");
+  UpdateDisplay("800x600,3000x2000");
   RunAllTasksUntilIdle();
   EXPECT_EQ(1, GetWallpaperCount());
   ASSERT_EQ(2u, GetDecodeFilePaths().size());

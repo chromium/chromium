@@ -1265,19 +1265,19 @@ TEST_F(OverviewSessionTest, Shutdown) {
 
 // Tests adding a display during overview.
 TEST_F(OverviewSessionTest, AddDisplay) {
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   ToggleOverview();
   EXPECT_TRUE(InOverviewSession());
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("500x400,500x400");
   EXPECT_FALSE(InOverviewSession());
 }
 
 // Tests removing a display during overview.
 TEST_F(OverviewSessionTest, RemoveDisplay) {
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("500x400,500x400");
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(450, 0, 100, 100)));
+      CreateTestWindow(gfx::Rect(550, 0, 100, 100)));
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_EQ(root_windows[0], window1->GetRootWindow());
@@ -1288,16 +1288,16 @@ TEST_F(OverviewSessionTest, RemoveDisplay) {
 
   ToggleOverview();
   EXPECT_TRUE(InOverviewSession());
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_FALSE(InOverviewSession());
 }
 
 // Tests removing a display during overview with NON_ZERO_DURATION animation.
 TEST_F(OverviewSessionTest, RemoveDisplayWithAnimation) {
-  UpdateDisplay("400x400,400x400");
+  UpdateDisplay("500x400,500x400");
   std::unique_ptr<aura::Window> window1(CreateTestWindow(gfx::Rect(100, 100)));
   std::unique_ptr<aura::Window> window2(
-      CreateTestWindow(gfx::Rect(450, 0, 100, 100)));
+      CreateTestWindow(gfx::Rect(550, 0, 100, 100)));
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_EQ(root_windows[0], window1->GetRootWindow());
@@ -1311,7 +1311,7 @@ TEST_F(OverviewSessionTest, RemoveDisplayWithAnimation) {
 
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_FALSE(InOverviewSession());
 }
 
@@ -1361,7 +1361,7 @@ TEST_F(OverviewSessionTest, NoCrashOnTabAfterExitWithNoWindows) {
 // Tests that dragging a window from overview creates a drop target on the same
 // display.
 TEST_F(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
-  UpdateDisplay("600x600,600x600");
+  UpdateDisplay("600x500,600x500");
   EnterTabletMode();
   // DisplayConfigurationObserver enables mirror mode when tablet mode is
   // enabled. Disable mirror mode to test multiple displays.
@@ -1372,10 +1372,10 @@ TEST_F(OverviewSessionTest, DropTargetOnCorrectDisplayForDraggingFromOverview) {
   ASSERT_EQ(2u, root_windows.size());
 
   std::unique_ptr<aura::Window> primary_screen_window =
-      CreateTestWindow(gfx::Rect(0, 0, 600, 600));
+      CreateTestWindow(gfx::Rect(0, 0, 600, 500));
   ASSERT_EQ(root_windows[0], primary_screen_window->GetRootWindow());
   std::unique_ptr<aura::Window> secondary_screen_window =
-      CreateTestWindow(gfx::Rect(600, 0, 600, 600));
+      CreateTestWindow(gfx::Rect(600, 0, 600, 500));
   ASSERT_EQ(root_windows[1], secondary_screen_window->GetRootWindow());
 
   ToggleOverview();
@@ -1802,7 +1802,7 @@ TEST_F(OverviewSessionTest, NoWindowsIndicatorAddItem) {
 // Verify that when opening overview mode with multiple displays, the no items
 // indicator on the primary grid if there are no windows.
 TEST_F(OverviewSessionTest, NoWindowsIndicatorPositionMultiDisplay) {
-  UpdateDisplay("400x400,400x400,400x400");
+  UpdateDisplay("500x400,500x400,500x400");
 
   // Enter overview mode. Verify that the no windows indicator is located on the
   // primary display.
@@ -1811,13 +1811,13 @@ TEST_F(OverviewSessionTest, NoWindowsIndicatorPositionMultiDisplay) {
   RoundedLabelWidget* no_windows_widget =
       GetOverviewSession()->no_windows_widget_for_testing();
   const int expected_y = (400 - ShelfConfig::Get()->shelf_size()) / 2;
-  EXPECT_EQ(gfx::Point(200, expected_y),
+  EXPECT_EQ(gfx::Point(250, expected_y),
             no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
 }
 
 // Tests that we do not exit overview mode until all the grids are empty.
 TEST_F(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
-  UpdateDisplay("400x400,400x400,400x400");
+  UpdateDisplay("500x400,500x400,500x400");
 
   // Create two windows with widgets (widgets are needed to close the windows
   // later in the test), one each on the first two monitors.
@@ -2240,7 +2240,7 @@ TEST_F(OverviewSessionTest, HandleAlwaysOnTopWindow) {
 // released.
 TEST_F(OverviewSessionTest, WindowItemCanAnimateOnDragRelease) {
   base::HistogramTester histogram_tester;
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   wm::ActivateWindow(window2.get());
@@ -2256,7 +2256,7 @@ TEST_F(OverviewSessionTest, WindowItemCanAnimateOnDragRelease) {
   generator->PressLeftButton();
   base::RunLoop().RunUntilIdle();
 
-  generator->MoveMouseTo(gfx::Point(200, 200));
+  generator->MoveMouseTo(gfx::Point(250, 200));
   histogram_tester.ExpectTotalCount(
       "Ash.Overview.WindowDrag.PresentationTime.TabletMode", 1);
   histogram_tester.ExpectTotalCount(
@@ -2278,7 +2278,7 @@ TEST_F(OverviewSessionTest, WindowItemCanAnimateOnDragRelease) {
 // when a item is being dragged.
 TEST_F(OverviewSessionTest, OverviewItemTitleCloseVisibilityOnDrag) {
   base::HistogramTester histogram_tester;
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
 
@@ -2303,7 +2303,7 @@ TEST_F(OverviewSessionTest, OverviewItemTitleCloseVisibilityOnDrag) {
   // Drag |item1| in a way so that |window1| does not get activated (drags
   // within a certain threshold count as clicks). Verify the close button and
   // titlebar is visible for all items.
-  generator->MoveMouseTo(gfx::Point(200, 200));
+  generator->MoveMouseTo(gfx::Point(250, 200));
   histogram_tester.ExpectTotalCount(
       "Ash.Overview.WindowDrag.PresentationTime.TabletMode", 1);
   histogram_tester.ExpectTotalCount(
@@ -2610,7 +2610,7 @@ TEST_F(OverviewSessionTest, ShadowBounds) {
   // Add three windows which in overview mode will be considered wide, tall and
   // normal. Set top view insets to 0 so it is easy to check the ratios of the
   // shadows match the ratios of the untransformed windows.
-  UpdateDisplay("800x800");
+  UpdateDisplay("900x800");
   std::unique_ptr<aura::Window> wide(
       CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect(400, 100)));
   std::unique_ptr<aura::Window> tall(
@@ -2829,7 +2829,7 @@ TEST_F(OverviewSessionTest, DraggingFromTopAnimation) {
 // Tests the grid bounds are as expected with different shelf auto hide
 // behaviors and alignments.
 TEST_F(OverviewSessionTest, GridBounds) {
-  UpdateDisplay("600x600");
+  UpdateDisplay("700x600");
   std::unique_ptr<aura::Window> window(CreateTestWindow(gfx::Rect(200, 200)));
 
   Shelf* shelf = GetPrimaryShelf();
@@ -2840,12 +2840,12 @@ TEST_F(OverviewSessionTest, GridBounds) {
   // minus the shelf area on the bottom regardless of auto hide behavior.
   const int shelf_size = ShelfConfig::Get()->shelf_size();
   ToggleOverview();
-  EXPECT_EQ(gfx::Rect(0, 0, 600, 600 - shelf_size), GetGridBounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 700, 600 - shelf_size), GetGridBounds());
   ToggleOverview();
 
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   ToggleOverview();
-  EXPECT_EQ(gfx::Rect(0, 0, 600, 600 - shelf_size), GetGridBounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 700, 600 - shelf_size), GetGridBounds());
   ToggleOverview();
 
   // Test that with the right shelf, the grid should take up the entire display
@@ -2853,12 +2853,12 @@ TEST_F(OverviewSessionTest, GridBounds) {
   shelf->SetAlignment(ShelfAlignment::kRight);
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kNever);
   ToggleOverview();
-  EXPECT_EQ(gfx::Rect(0, 0, 600 - shelf_size, 600), GetGridBounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 700 - shelf_size, 600), GetGridBounds());
   ToggleOverview();
 
   shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   ToggleOverview();
-  EXPECT_EQ(gfx::Rect(0, 0, 600 - shelf_size, 600), GetGridBounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 700 - shelf_size, 600), GetGridBounds());
   ToggleOverview();
 }
 
@@ -5212,7 +5212,7 @@ TEST_F(SplitViewOverviewSessionTest,
 // Verify that an item's unsnappable indicator is updated for display rotation.
 TEST_F(SplitViewOverviewSessionTest,
        OverviewUnsnappableIndicatorVisibilityAfterDisplayRotation) {
-  UpdateDisplay("800x800");
+  UpdateDisplay("900x800");
   std::unique_ptr<aura::Window> snapped_window = CreateTestWindow();
   // Because of its minimum size, |overview_window| is snappable in horizontal
   // split view but not in vertical split view.
@@ -6747,7 +6747,7 @@ TEST_P(SplitViewOverviewSessionInClamshellTest,
 // display, even if the window bounds are mostly on another display.
 TEST_P(SplitViewOverviewSessionInClamshellTest,
        DragFromOverviewWithBoundsMostlyOnAnotherDisplay) {
-  UpdateDisplay("600x600,600x600");
+  UpdateDisplay("700x600,700x600");
   const aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
   const display::DisplayIdList display_ids =

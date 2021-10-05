@@ -312,7 +312,7 @@ class ConvertToScreenEventHandler : public ui::EventHandler {
 // that no events are dispatched at this time.
 TEST_F(ScreenPositionControllerTest,
        ConvertToScreenWhileRemovingSecondaryDisplay) {
-  UpdateDisplay("600x600,600x600");
+  UpdateDisplay("600x500,600x500");
   base::RunLoop().RunUntilIdle();
 
   // Create a window on the secondary display.
@@ -336,7 +336,7 @@ TEST_F(ScreenPositionControllerTest,
       new ConvertToScreenEventHandler);
 
   // Remove the secondary monitor.
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
 
   // The secondary root window is not immediately destroyed.
   EXPECT_TRUE(tracker.Contains(root_windows[1]));

@@ -642,9 +642,9 @@ TEST_F(ScreenOrientationControllerTest, RotateInactiveDisplay) {
   const display::Display::Rotation kNewRotation = display::Display::ROTATE_180;
 
   const display::ManagedDisplayInfo internal_display_info =
-      CreateDisplayInfo(kInternalDisplayId, gfx::Rect(0, 0, 500, 500));
+      CreateDisplayInfo(kInternalDisplayId, gfx::Rect(0, 0, 600, 500));
   const display::ManagedDisplayInfo external_display_info =
-      CreateDisplayInfo(kExternalDisplayId, gfx::Rect(1, 1, 500, 500));
+      CreateDisplayInfo(kExternalDisplayId, gfx::Rect(1, 1, 600, 500));
 
   std::vector<display::ManagedDisplayInfo> display_info_list_two_active;
   display_info_list_two_active.push_back(internal_display_info);

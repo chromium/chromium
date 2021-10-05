@@ -541,7 +541,7 @@ TEST_F(KeyboardControllerImplTest, OccludedBoundsInMultipleDisplays) {
 // Test for http://crbug.com/303429. |GetContainerForDisplay| should move
 // keyboard to specified display even when it's not touchable.
 TEST_F(KeyboardControllerImplTest, GetContainerForDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make primary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -571,7 +571,7 @@ TEST_F(KeyboardControllerImplTest, GetContainerForDisplay) {
 // no window is focused.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerInPrimaryDisplayWhenNoDisplayHasTouch) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   EXPECT_NE(display::Display::TouchSupport::AVAILABLE,
             GetPrimaryDisplay().touch_support());
@@ -587,7 +587,7 @@ TEST_F(KeyboardControllerImplTest,
 // move keyboard to focused display if no display has touch capability.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerIsInFocusedDisplayWhenNoDisplayHasTouch) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   EXPECT_NE(display::Display::TouchSupport::AVAILABLE,
             GetPrimaryDisplay().touch_support());
@@ -603,7 +603,7 @@ TEST_F(KeyboardControllerImplTest,
 // Test for http://crbug.com/303429. |GetContainerForDefaultDisplay| should
 // move keyboard to first touchable display when there is one.
 TEST_F(KeyboardControllerImplTest, DefaultContainerIsInFirstTouchableDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make secondary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -626,7 +626,7 @@ TEST_F(KeyboardControllerImplTest, DefaultContainerIsInFirstTouchableDisplay) {
 TEST_F(
     KeyboardControllerImplTest,
     DefaultContainerIsInFirstTouchableDisplayIfFocusedDisplayIsNotTouchable) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make secondary display touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -650,7 +650,7 @@ TEST_F(
 // move keyborad to first touchable display when there is one.
 TEST_F(KeyboardControllerImplTest,
        DefaultContainerIsInFocusedDisplayIfTouchable) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   // Make both displays touchable.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -680,7 +680,7 @@ TEST_F(KeyboardControllerImplTest,
 
 // Test for https://crbug.com/897007.
 TEST_F(KeyboardControllerImplTest, ShowKeyboardInSecondaryDisplay) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
 
   keyboard_controller()->SetEnableFlag(KeyboardEnableFlag::kExtensionEnabled);
 

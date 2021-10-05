@@ -729,7 +729,7 @@ TEST_F(DesksTest, TestWindowPositioningPaused) {
 // This test makes sure we have coverage for that desk switch animation when run
 // with multiple displays.
 TEST_F(DesksTest, DeskActivationDualDisplay) {
-  UpdateDisplay("600x600,400x500");
+  UpdateDisplay("700x600,400x500");
 
   auto* controller = DesksController::Get();
   ASSERT_EQ(1u, controller->desks().size());
@@ -1082,7 +1082,7 @@ TEST_F(DesksTest, ActivateDeskFromOverview) {
 // This test makes sure we have coverage for that desk switch animation when run
 // with multiple displays while overview mode is active.
 TEST_F(DesksTest, ActivateDeskFromOverviewDualDisplay) {
-  UpdateDisplay("600x600,400x500");
+  UpdateDisplay("700x600,400x500");
 
   auto* controller = DesksController::Get();
 

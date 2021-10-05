@@ -529,7 +529,7 @@ TEST_F(ClientControlledStateTest, ClosePinned) {
 }
 
 TEST_F(ClientControlledStateTest, MoveWindowToDisplay) {
-  UpdateDisplay("500x500, 500x500");
+  UpdateDisplay("600x500, 600x500");
 
   display::Screen* screen = display::Screen::GetScreen();
 
@@ -546,12 +546,12 @@ TEST_F(ClientControlledStateTest, MoveWindowToDisplay) {
 }
 
 TEST_F(ClientControlledStateTest, MoveWindowToDisplayOutOfBounds) {
-  UpdateDisplay("1000x500, 500x500");
+  UpdateDisplay("1000x500, 600x500");
 
   state()->set_bounds_locally(true);
-  widget()->SetBounds(gfx::Rect(600, 0, 100, 200));
+  widget()->SetBounds(gfx::Rect(700, 0, 100, 200));
   state()->set_bounds_locally(false);
-  EXPECT_EQ(gfx::Rect(600, 0, 100, 200), widget()->GetWindowBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(700, 0, 100, 200), widget()->GetWindowBoundsInScreen());
 
   display::Screen* screen = display::Screen::GetScreen();
 
@@ -567,19 +567,19 @@ TEST_F(ClientControlledStateTest, MoveWindowToDisplayOutOfBounds) {
   // The bounds is constrained by
   // |AdjustBoundsToEnsureMinimumWindowVisibility| in the secondary
   // display.
-  EXPECT_EQ(gfx::Rect(475, 0, 100, 200), delegate()->requested_bounds());
+  EXPECT_EQ(gfx::Rect(575, 0, 100, 200), delegate()->requested_bounds());
 }
 
 // Make sure disconnecting primary notifies the display id change.
 TEST_F(ClientControlledStateTest, DisconnectPrimary) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
   SwapPrimaryDisplay();
   auto* screen = display::Screen::GetScreen();
   auto old_primary_id = screen->GetPrimaryDisplay().id();
   EXPECT_EQ(old_primary_id, window_state()->GetDisplay().id());
   gfx::Rect bounds = window()->bounds();
 
-  UpdateDisplay("500x500");
+  UpdateDisplay("600x500");
   ASSERT_NE(old_primary_id, screen->GetPrimaryDisplay().id());
   EXPECT_EQ(delegate()->display_id(), screen->GetPrimaryDisplay().id());
   EXPECT_EQ(bounds, delegate()->requested_bounds());

@@ -370,7 +370,7 @@ TEST_F(ImeControllerImplTest, ShowModeIndicator) {
 }
 
 TEST_F(ImeControllerImplTest, MirroringChanged) {
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
   // The controller is already an observer of the display_manager
   ImeControllerImpl* controller = Shell::Get()->ime_controller();
   TestImeControllerClient client;
@@ -381,10 +381,10 @@ TEST_F(ImeControllerImplTest, MirroringChanged) {
   display_manager->UpdateDisplays();
   EXPECT_TRUE(client.is_mirroring_);
 
-  UpdateDisplay("500x500");
+  UpdateDisplay("600x500");
   EXPECT_FALSE(client.is_mirroring_);
 
-  UpdateDisplay("500x500,500x500");
+  UpdateDisplay("600x500,600x500");
   EXPECT_TRUE(client.is_mirroring_);
 }
 

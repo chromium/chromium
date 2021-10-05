@@ -22,7 +22,7 @@ namespace ash {
 using PersistentWindowControllerTest = AshTestBase;
 
 TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -76,7 +76,7 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
   // A third id which is different from primary and secondary.
   const int64_t third_id = secondary_id + 1;
   display::ManagedDisplayInfo third_info =
-      display::CreateDisplayInfo(third_id, gfx::Rect(0, 501, 500, 500));
+      display::CreateDisplayInfo(third_id, gfx::Rect(0, 501, 600, 500));
   // Connects another secondary display with |third_id|.
   display_info_list.push_back(third_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
@@ -105,7 +105,7 @@ TEST_F(PersistentWindowControllerTest, DisconnectDisplay) {
 }
 
 TEST_F(PersistentWindowControllerTest, ThreeDisplays) {
-  UpdateDisplay("0+0-500x500,0+501-500x500,0+1002-500x500");
+  UpdateDisplay("500x600,500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -183,7 +183,7 @@ TEST_F(PersistentWindowControllerTest, ThreeDisplays) {
 }
 
 TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -205,7 +205,7 @@ TEST_F(PersistentWindowControllerTest, NormalMirrorMode) {
 }
 
 TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
-  UpdateDisplay("0+0-500x500,0+501-500x500,0+1002-500x500");
+  UpdateDisplay("500x600,500x600,500x600");
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
   aura::Window* w2 =
@@ -250,7 +250,7 @@ TEST_F(PersistentWindowControllerTest, MixedMirrorMode) {
 }
 
 TEST_F(PersistentWindowControllerTest, WindowMovedByAccel) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -306,7 +306,7 @@ TEST_F(PersistentWindowControllerTest, WindowMovedByAccel) {
 }
 
 TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
@@ -350,7 +350,7 @@ TEST_F(PersistentWindowControllerTest, ReconnectOnLockScreen) {
 }
 
 TEST_F(PersistentWindowControllerTest, RecordNumOfWindowsRestored) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
   aura::Window* w1 =
       CreateTestWindowInShellWithBounds(gfx::Rect(200, 0, 100, 200));
   aura::Window* w2 =
@@ -397,9 +397,9 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
           .SetFirstDisplayAsInternalDisplay();
   const display::ManagedDisplayInfo native_display_info =
       display::CreateDisplayInfo(internal_display_id,
-                                 gfx::Rect(0, 0, 500, 500));
+                                 gfx::Rect(0, 0, 500, 600));
   const display::ManagedDisplayInfo secondary_display_info =
-      display::CreateDisplayInfo(10, gfx::Rect(1, 1, 400, 400));
+      display::CreateDisplayInfo(10, gfx::Rect(1, 1, 400, 500));
 
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(native_display_info);
@@ -415,9 +415,9 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
 
   // Swaps primary display and check window bounds.
   SwapPrimaryDisplay();
-  ASSERT_EQ(gfx::Rect(-500, 0, 500, 500),
+  ASSERT_EQ(gfx::Rect(-500, 0, 500, 600),
             display_manager()->GetDisplayForId(internal_display_id).bounds());
-  ASSERT_EQ(gfx::Rect(0, 0, 400, 400),
+  ASSERT_EQ(gfx::Rect(0, 0, 400, 500),
             display_manager()->GetDisplayForId(10).bounds());
   EXPECT_EQ(gfx::Rect(200, 0, 100, 200), w1->GetBoundsInScreen());
   EXPECT_EQ(gfx::Rect(-499, 0, 200, 100), w2->GetBoundsInScreen());
@@ -425,7 +425,7 @@ TEST_F(PersistentWindowControllerTest, SwapPrimaryDisplay) {
 
 // Tests that restore bounds persist after adding and removing a display.
 TEST_F(PersistentWindowControllerTest, RestoreBounds) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   std::unique_ptr<aura::Window> window = CreateTestWindow(gfx::Rect(200, 200));
   const int64_t primary_id = WindowTreeHostManager::GetPrimaryDisplayId();
@@ -473,7 +473,7 @@ TEST_F(PersistentWindowControllerTest, RestoreBounds) {
 // Tests that the MRU order is maintained visually after adding and removing a
 // display.
 TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   // Add three windows, all on the secondary display.
   const gfx::Rect bounds(500, 0, 200, 200);
@@ -538,7 +538,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStacking) {
 
 // Similar to the above test but with windows created on both displays.
 TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
-  UpdateDisplay("0+0-500x500,0+501-500x500");
+  UpdateDisplay("500x600,500x600");
 
   // Add four windows, two on each display.
   const gfx::Rect primary_bounds(200, 200);
@@ -610,7 +610,7 @@ TEST_F(PersistentWindowControllerTest, MRUOrderMatchesStackingInterleaved) {
 // reconnect the windows bounds will be persisted.
 TEST_F(PersistentWindowControllerTest, DisconnectingPrimaryDisplay) {
   // Create two displays with the one higher resolution.
-  UpdateDisplay("0+0-500x500,0+501-1500x500");
+  UpdateDisplay("500x600,1500x500");
   const int64_t small_id = WindowTreeHostManager::GetPrimaryDisplayId();
   const int64_t large_id =
       display::test::DisplayManagerTestApi(display_manager())

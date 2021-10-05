@@ -201,7 +201,7 @@ TEST_F(AccessibilityHighlightControllerTest, TestFocusRingDrawsPixels) {
 // Integration test of cursor handling between AccessibilityHighlightController
 // and AccessibilityFocusRingController.
 TEST_F(AccessibilityHighlightControllerTest, CursorWorksOnMultipleDisplays) {
-  UpdateDisplay("500x400,500x500");
+  UpdateDisplay("500x400,500x400");
   aura::Window::Windows root_windows = Shell::Get()->GetAllRootWindows();
   ASSERT_EQ(2u, root_windows.size());
 

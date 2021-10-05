@@ -209,7 +209,7 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   // user of it. See issue 827406 (https://crbug.com/827406).
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .set_maximum_display(2u);
-  UpdateDisplay("500x400,300x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
@@ -233,7 +233,7 @@ TEST_F(ScreenLayoutObserverTest, DISABLED_DisplayNotifications) {
   // becomes mirror mode from extending mode. Under this circumstance, user is
   // still notified of connecting more displays than maximum. See issue 827406
   // (https://crbug.com/827406).
-  UpdateDisplay("500x400,300x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
@@ -321,9 +321,9 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   const int64_t second_display_id =
       display::GetNextSynthesizedDisplayId(first_display_id);
   display::ManagedDisplayInfo first_display_info =
-      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 500));
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
   display::ManagedDisplayInfo second_display_info =
-      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 500));
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(first_display_info);
   display_info_list.push_back(second_display_info);
@@ -334,7 +334,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   // warn user of it. See issue 827406 (https://crbug.com/827406).
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
       .set_maximum_display(2u);
-  UpdateDisplay("500x400,300x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_TRUE(GetDisplayNotificationText().empty());
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
@@ -356,7 +356,7 @@ TEST_F(ScreenLayoutObserverTest, DisplayNotificationsDisabled) {
   // becomes mirror mode from extending mode. Under this circumstance, user is
   // still notified of connecting more displays than maximum. See issue 827406
   // (https://crbug.com/827406). Notification should still be shown.
-  UpdateDisplay("500x400,300x200,100x100");
+  UpdateDisplay("500x400,300x200,200x100");
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_TRAY_DISPLAY_REMOVED_EXCEEDED_MAXIMUM),
             GetDisplayNotificationAdditionalText());
@@ -663,12 +663,12 @@ TEST_F(ScreenLayoutObserverTest, MirrorModeAddOrRemoveDisplayMessage) {
   constexpr int first_display_id = 11;
   constexpr int second_display_id = 12;
   display::ManagedDisplayInfo first_display_info =
-      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 500));
+      display::CreateDisplayInfo(first_display_id, gfx::Rect(1, 1, 500, 400));
   display::ManagedDisplayInfo second_display_info =
-      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 500));
+      display::CreateDisplayInfo(second_display_id, gfx::Rect(2, 2, 500, 400));
   std::vector<display::ManagedDisplayInfo> display_info_list;
   display_info_list.push_back(display::CreateDisplayInfo(
-      internal_display_id, gfx::Rect(0, 0, 100, 100)));
+      internal_display_id, gfx::Rect(0, 0, 200, 100)));
   display_info_list.push_back(first_display_info);
   display_info_list.push_back(second_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);

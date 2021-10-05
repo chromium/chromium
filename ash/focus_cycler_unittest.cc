@@ -384,7 +384,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 TEST_F(FocusCyclerTest, RemoveWidgetOnDisplayRemoved) {
   // Two displays are added, so two shelf widgets and two status area widgets
   // are added to focus cycler.
-  UpdateDisplay("800x700, 500x500");
+  UpdateDisplay("800x700, 600x500");
   // Remove one display. Its shelf widget and status area widget should also be
   // removed from focus cycler.
   UpdateDisplay("800x700");

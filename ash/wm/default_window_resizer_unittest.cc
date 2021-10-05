@@ -29,7 +29,7 @@ class DefaultWindowResizerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    UpdateDisplay("1000x1000");
+    UpdateDisplay("1200x1000");
 
     delegate_.set_minimum_size(gfx::Size(10, 10));
     delegate_.set_maximum_size(gfx::Size(500, 500));

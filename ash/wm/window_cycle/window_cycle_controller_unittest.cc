@@ -823,7 +823,7 @@ TEST_F(WindowCycleControllerTest, MultiDisplayPositioning) {
         list, builder.Build());
 
     // Use two displays.
-    UpdateDisplay("500x500,600x600");
+    UpdateDisplay("500x400,600x500");
 
     gfx::Rect second_display_bounds =
         display_manager()->GetDisplayAt(1).bounds();
