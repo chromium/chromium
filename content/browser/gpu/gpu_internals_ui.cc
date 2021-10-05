@@ -749,9 +749,7 @@ void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
   DCHECK_GE(args->GetList().size(), static_cast<size_t>(2));
   // unpack args into requestId, submessage and submessageArgs
   bool ok;
-  const base::Value* requestId;
-  ok = args->Get(0, &requestId);
-  DCHECK(ok);
+  const base::Value& requestId = args->GetList()[0];
 
   std::string submessage;
   ok = args->GetString(1, &submessage);
@@ -759,11 +757,9 @@ void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
 
   auto submessageArgs = std::make_unique<base::ListValue>();
   for (size_t i = 2; i < args->GetList().size(); ++i) {
-    const base::Value* arg;
-    ok = args->Get(i, &arg);
-    DCHECK(ok);
+    const base::Value& arg = args->GetList()[i];
 
-    submessageArgs->Append(arg->Clone());
+    submessageArgs->Append(arg.Clone());
   }
 
   // call the submessage handler
@@ -780,10 +776,10 @@ void GpuMessageHandler::OnCallAsync(const base::ListValue* args) {
   // call BrowserBridge.onCallAsyncReply with result
   if (ret) {
     web_ui()->CallJavascriptFunctionUnsafe("browserBridge.onCallAsyncReply",
-                                           *requestId, *ret);
+                                           requestId, *ret);
   } else {
     web_ui()->CallJavascriptFunctionUnsafe("browserBridge.onCallAsyncReply",
-                                           *requestId);
+                                           requestId);
   }
 }
 
