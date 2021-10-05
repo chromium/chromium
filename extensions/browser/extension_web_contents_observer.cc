@@ -69,14 +69,15 @@ void ExtensionWebContentsObserver::Initialize() {
 
   extension_frame_host_ = CreateExtensionFrameHost(web_contents());
 
-  for (content::RenderFrameHost* rfh : web_contents()->GetAllFrames()) {
-    // We only initialize the frame if the renderer counterpart is live;
-    // otherwise we wait for the RenderFrameCreated notification.
-    if (!rfh->IsRenderFrameLive())
-      continue;
-
-    InitializeRenderFrame(rfh);
-  }
+  web_contents()->ForEachRenderFrameHost(base::BindRepeating(
+      [](ExtensionWebContentsObserver* observer,
+         content::RenderFrameHost* render_frame_host) {
+        // We only initialize the frame if the renderer counterpart is live;
+        // otherwise we wait for the RenderFrameCreated notification.
+        if (render_frame_host->IsRenderFrameLive())
+          observer->InitializeRenderFrame(render_frame_host);
+      },
+      this));
 }
 
 ExtensionWebContentsObserver::ExtensionWebContentsObserver(

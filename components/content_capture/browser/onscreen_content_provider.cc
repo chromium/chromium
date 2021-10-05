@@ -27,10 +27,14 @@ const void* const kUserDataKey = &kUserDataKey;
 OnscreenContentProvider::OnscreenContentProvider(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
-  const std::vector<content::RenderFrameHost*> frames =
-      web_contents->GetAllFrames();
-  for (content::RenderFrameHost* frame : frames)
-    RenderFrameCreated(frame);
+  web_contents->ForEachRenderFrameHost(base::BindRepeating(
+      [](OnscreenContentProvider* provider,
+         content::RenderFrameHost* render_frame_host) {
+        if (render_frame_host->IsRenderFrameLive()) {
+          provider->RenderFrameCreated(render_frame_host);
+        }
+      },
+      this));
 
   web_contents->SetUserData(kUserDataKey, base::WrapUnique(this));
 }
