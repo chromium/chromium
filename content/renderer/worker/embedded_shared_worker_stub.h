@@ -71,7 +71,6 @@ class EmbeddedSharedWorkerStub : public blink::WebSharedWorkerClient,
           content_settings,
       blink::mojom::ServiceWorkerContainerInfoForClientPtr
           service_worker_container_info,
-      const base::UnguessableToken& appcache_host_id,
       blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
           pending_subresource_loader_factory_bundle,

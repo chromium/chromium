@@ -307,9 +307,6 @@ void SharedWorkerHost::Start(
       devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),
       std::move(renderer_preferences), std::move(preference_watcher_receiver),
       std::move(content_settings), service_worker_handle_->TakeContainerInfo(),
-      appcache_handle_
-          ? absl::make_optional(appcache_handle_->appcache_host_id())
-          : absl::nullopt,
       std::move(main_script_load_params),
       std::move(subresource_loader_factories), std::move(controller),
       receiver_.BindNewPipeAndPassRemote(), std::move(worker_receiver_),

@@ -34,7 +34,6 @@
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
@@ -94,13 +93,10 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     // in Initialize().
     // Pass dummy origin trial tokens here as it is already set to outside's
     // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
-    // Pass kAppCacheNoCacheId here as on-the-main-thread script fetch doesn't
-    // have its own appcache and instead depends on the parent frame's one.
     global_scope->Initialize(
         response_script_url, response_referrer_policy, *response_address_space,
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-        nullptr /* response_origin_trial_tokens */,
-        mojom::blink::kAppCacheNoCacheId);
+        nullptr /* response_origin_trial_tokens */);
     return global_scope;
   } else {
     // Off-the-main-thread worker script fetch:
@@ -201,8 +197,7 @@ void DedicatedWorkerGlobalScope::Initialize(
     network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::
                ContentSecurityPolicyPtr> /* response_csp_headers */,
-    const Vector<String>* /* response_origin_trial_tokens */,
-    int64_t appcache_id) {
+    const Vector<String>* /* response_origin_trial_tokens */) {
   // Step 14.3. "Set worker global scope's url to response's url."
   InitializeURL(response_url);
 
@@ -232,9 +227,6 @@ void DedicatedWorkerGlobalScope::Initialize(
   // DedicatedWorkerGlobalScope inherits the outside's OriginTrialTokens in the
   // constructor instead of the response origin trial tokens.
   ScriptController()->PrepareForEvaluation();
-
-  // TODO(https://crbug.com/945673): Notify an application cache host of
-  // |appcache_id| here to support AppCache with PlzDedicatedWorker.
 
   // Step 14.11. "If is shared is false and response's url's scheme is "data",
   // then set worker global scope's cross-origin isolated capability to false."
@@ -423,8 +415,7 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
              classic_script_loader->ResponseAddressSpace(),
              Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-             nullptr /* response_origin_trial_tokens */,
-             classic_script_loader->AppCacheID());
+             nullptr /* response_origin_trial_tokens */);
 
   // Step 12.7. "Asynchronously complete the perform the fetch steps with
   // response."

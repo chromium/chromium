@@ -52,8 +52,7 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
       std::unique_ptr<GlobalScopeCreationParams> creation_params,
       SharedWorkerThread* thread,
       base::TimeTicks time_origin,
-      const SharedWorkerToken& token,
-      const base::UnguessableToken& appcache_host_id);
+      const SharedWorkerToken& token);
 
   ~SharedWorkerGlobalScope() override;
 
@@ -68,8 +67,7 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
       network::mojom::ReferrerPolicy response_referrer_policy,
       network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-      const Vector<String>* response_origin_trial_tokens,
-      int64_t appcache_id) override;
+      const Vector<String>* response_origin_trial_tokens) override;
   void FetchAndRunClassicScript(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
@@ -91,8 +89,6 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(connect, kConnect)
 
   void Connect(MessagePortChannel channel);
-
-  void OnAppCacheSelected();
 
   void Trace(Visitor*) const override;
 

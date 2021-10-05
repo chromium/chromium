@@ -11,7 +11,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -103,8 +102,7 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
         ->Initialize(script_url, network::mojom::ReferrerPolicy::kDefault,
                      network::mojom::IPAddressSpace::kLocal,
                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-                     nullptr /* response_origin_trial_tokens */,
-                     mojom::blink::kAppCacheNoCacheId);
+                     nullptr /* response_origin_trial_tokens */);
   }
 };
 

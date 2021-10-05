@@ -46,7 +46,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
@@ -440,8 +439,7 @@ void ServiceWorkerGlobalScope::Initialize(
     network::mojom::ReferrerPolicy response_referrer_policy,
     network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-    const Vector<String>* response_origin_trial_tokens,
-    int64_t appcache_id) {
+    const Vector<String>* response_origin_trial_tokens) {
   // Step 4.5. "Set workerGlobalScope's url to serviceWorker's script url."
   InitializeURL(response_url);
 
@@ -480,9 +478,6 @@ void ServiceWorkerGlobalScope::Initialize(
   // This should be called after OriginTrialContext::AddTokens() to install
   // origin trial features in JavaScript's global object.
   ScriptController()->PrepareForEvaluation();
-
-  // Service Workers don't use application cache.
-  DCHECK_EQ(appcache_id, mojom::blink::kAppCacheNoCacheId);
 }
 
 void ServiceWorkerGlobalScope::LoadAndRunInstalledClassicScript(
@@ -532,8 +527,7 @@ void ServiceWorkerGlobalScope::RunClassicScript(
     const v8_inspector::V8StackTraceId& stack_id) {
   // Step 4.5-4.11 are implemented in Initialize().
   Initialize(response_url, response_referrer_policy, response_address_space,
-             std::move(response_csp), response_origin_trial_tokens,
-             mojom::blink::kAppCacheNoCacheId);
+             std::move(response_csp), response_origin_trial_tokens);
 
   // Step 4.12. "Let evaluationStatus be the result of running the classic
   // script script if script is a classic script, otherwise, the result of

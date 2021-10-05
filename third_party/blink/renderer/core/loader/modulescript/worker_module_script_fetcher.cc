@@ -174,7 +174,7 @@ void WorkerModuleScriptFetcher::NotifyClient(
         response_url, response_referrer_policy, response.AddressSpace(),
         ParseContentSecurityPolicyHeaders(
             ContentSecurityPolicyResponseHeaders(response)),
-        response_origin_trial_tokens.get(), response.AppCacheID());
+        response_origin_trial_tokens.get());
   }
 
   // <spec step="12.7">Asynchronously complete the perform the fetch steps with

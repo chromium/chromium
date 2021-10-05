@@ -116,8 +116,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       network::mojom::ReferrerPolicy response_referrer_policy,
       network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-      const Vector<String>* response_origin_trial_tokens,
-      int64_t appcache_id) override;
+      const Vector<String>* response_origin_trial_tokens) override;
   // Fetches and runs the top-level classic worker script.
   void FetchAndRunClassicScript(
       const KURL& script_url,

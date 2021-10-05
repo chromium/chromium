@@ -66,8 +66,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       network::mojom::ReferrerPolicy response_referrer_policy,
       network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-      const Vector<String>* response_origin_trial_tokens,
-      int64_t appcache_id) override {
+      const Vector<String>* response_origin_trial_tokens) override {
     InitializeURL(response_url);
     SetReferrerPolicy(response_referrer_policy);
     SetAddressSpace(response_address_space);

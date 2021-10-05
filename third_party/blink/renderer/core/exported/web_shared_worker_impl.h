@@ -92,7 +92,6 @@ class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
 
   WebSharedWorkerImpl(
       const blink::SharedWorkerToken& token,
-      const base::UnguessableToken& appcache_host_id,
       CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase> host,
       WebSharedWorkerClient*);
 

@@ -57,8 +57,7 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
-    const SharedWorkerToken& token,
-    const base::UnguessableToken& appcache_host_id)
+    const SharedWorkerToken& token)
     : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
       token_(token) {}
 
@@ -74,8 +73,7 @@ void SharedWorkerGlobalScope::Initialize(
     network::mojom::ReferrerPolicy response_referrer_policy,
     network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-    const Vector<String>* response_origin_trial_tokens,
-    int64_t appcache_id) {
+    const Vector<String>* response_origin_trial_tokens) {
   // Step 12.3. "Set worker global scope's url to response's url."
   InitializeURL(response_url);
 
@@ -202,11 +200,6 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
   DispatchEvent(*event);
 }
 
-void SharedWorkerGlobalScope::OnAppCacheSelected() {
-  DCHECK(IsContextThread());
-  ReadyToRunWorkerScript();
-}
-
 void SharedWorkerGlobalScope::DidReceiveResponseForClassicScript(
     WorkerClassicScriptLoader* classic_script_loader) {
   DCHECK(IsContextThread());
@@ -253,8 +246,7 @@ void SharedWorkerGlobalScope::DidFetchClassicScript(
                  ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
                                    ->GetParsedPolicies())
                  : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-             classic_script_loader->OriginTrialTokens(),
-             classic_script_loader->AppCacheID());
+             classic_script_loader->OriginTrialTokens());
 
   // Step 12.7. "Asynchronously complete the perform the fetch steps with
   // response."

@@ -120,7 +120,6 @@ void MockSharedWorkerFactory::CreateSharedWorker(
         content_settings,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr
         service_worker_container_info,
-    const absl::optional<base::UnguessableToken>& appcache_host_id,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,

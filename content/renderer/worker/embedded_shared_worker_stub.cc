@@ -47,7 +47,6 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
         content_settings,
     blink::mojom::ServiceWorkerContainerInfoForClientPtr
         service_worker_container_info,
-    const base::UnguessableToken& appcache_host_id,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         pending_subresource_loader_factory_bundle,
@@ -124,7 +123,7 @@ EmbeddedSharedWorkerStub::EmbeddedSharedWorkerStub(
       info->creation_address_space,
       FetchClientSettingsObjectFromMojomToWeb(
           info->outside_fetch_client_settings_object),
-      appcache_host_id, devtools_worker_token, std::move(content_settings),
+      devtools_worker_token, std::move(content_settings),
       std::move(browser_interface_broker), pause_on_start,
       std::move(worker_main_script_load_params),
       std::move(web_worker_fetch_context), std::move(host), this,
