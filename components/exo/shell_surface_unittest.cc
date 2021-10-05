@@ -4,6 +4,8 @@
 
 #include "components/exo/shell_surface.h"
 
+#include <vector>
+
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/frame/non_client_frame_view_ash.h"
@@ -1624,6 +1626,38 @@ TEST_F(ShellSurfaceTest, OverlayCanResize) {
     shell_surface->AddOverlay(std::move(params));
   }
   EXPECT_TRUE(shell_surface->GetWidget()->widget_delegate()->CanResize());
+}
+
+class TestWindowObserver : public WMHelper::ExoWindowObserver {
+ public:
+  TestWindowObserver() {}
+
+  TestWindowObserver(const TestWindowObserver&) = delete;
+  TestWindowObserver& operator=(const TestWindowObserver&) = delete;
+
+  // WMHelper::ExoWindowObserver overrides
+  void OnExoWindowCreated(aura::Window* window) override {
+    windows_.push_back(window);
+  }
+
+  const std::vector<aura::Window*>& observed_windows() { return windows_; }
+
+ private:
+  std::vector<aura::Window*> windows_;
+};
+
+TEST_F(ShellSurfaceTest, NotifyOnWindowCreation) {
+  auto shell_surface =
+      test::ShellSurfaceBuilder({100, 100}).SetNoCommit().BuildShellSurface();
+
+  TestWindowObserver observer;
+  WMHelper::GetInstance()->AddExoWindowObserver(&observer);
+
+  // Committing a surface triggers window creation if it isn't already attached
+  // to the root.
+  shell_surface->surface_for_testing()->Commit();
+
+  EXPECT_EQ(1u, observer.observed_windows().size());
 }
 
 }  // namespace exo

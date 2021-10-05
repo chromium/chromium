@@ -110,6 +110,12 @@ class WMHelper : public aura::client::DragDropDelegate {
         ui::PropertyHandler& out_properties_container) = 0;
   };
 
+  class ExoWindowObserver : public base::CheckedObserver {
+   public:
+    // Called every time exo creates a new window but before it is shown.
+    virtual void OnExoWindowCreated(aura::Window* window) {}
+  };
+
   WMHelper();
 
   WMHelper(const WMHelper&) = delete;
@@ -128,6 +134,8 @@ class WMHelper : public aura::client::DragDropDelegate {
       aura::client::FocusChangeObserver* observer) = 0;
   virtual void RemoveFocusObserver(
       aura::client::FocusChangeObserver* observer) = 0;
+  void AddExoWindowObserver(ExoWindowObserver* observer);
+  void RemoveExoWindowObserver(ExoWindowObserver* observer);
 
   virtual void AddDragDropObserver(DragDropObserver* observer) = 0;
   virtual void RemoveDragDropObserver(DragDropObserver* observer) = 0;
@@ -186,7 +194,13 @@ class WMHelper : public aura::client::DragDropDelegate {
   void PopulateAppProperties(const AppPropertyResolver::Params& params,
                              ui::PropertyHandler& out_properties_container);
 
+  // Notifies observers that |window| has been created by exo and is ready for
+  // to receive content.
+  void NotifyExoWindowCreated(aura::Window* window);
+
  protected:
+  base::ObserverList<ExoWindowObserver> exo_window_observers_;
+
   std::vector<std::unique_ptr<AppPropertyResolver>> resolver_list_;
 };
 

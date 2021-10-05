@@ -1264,6 +1264,8 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   }
 
   root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
+
+  WMHelper::GetInstance()->NotifyExoWindowCreated(widget_->GetNativeWindow());
 }
 
 ShellSurfaceBase::OverlayParams::OverlayParams(
