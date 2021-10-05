@@ -16,8 +16,6 @@ static_library("structured") {
     "key_data.h",
     "persistent_proto.cc",
     "persistent_proto.h",
-    "structured_metrics_features.cc",
-    "structured_metrics_features.h",
     "structured_metrics_provider.cc",
     "structured_metrics_provider.h",
   ]
@@ -78,6 +76,8 @@ source_set("common") {
     "histogram_util.h",
     "recorder.cc",
     "recorder.h",
+    "structured_metrics_features.cc",
+    "structured_metrics_features.h",
   ]
 
   public_deps = [

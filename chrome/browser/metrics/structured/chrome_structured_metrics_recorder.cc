@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -16,7 +17,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/metrics/structured/lacros_structured_metrics_recorder.h"  // nogncheck
 #endif
-
 namespace metrics {
 namespace structured {
 
@@ -60,7 +60,11 @@ void ChromeStructuredMetricsRecorder::Initialize() {
     auto* lacros_recorder =
         static_cast<LacrosStructuredMetricsRecorder*>(delegate_.get());
 
-    DCHECK(base::CurrentUIThread::IsSet());
+    const bool is_current_ui_thread_set = base::CurrentUIThread::IsSet();
+    LogClientInitializationSuccessful(is_current_ui_thread_set);
+
+    // Ensure that the sequence is the ui thread.
+    DCHECK(is_current_ui_thread_set);
     lacros_recorder->SetSequence(base::SequencedTaskRunnerHandle::Get());
   }
 #endif
@@ -69,11 +73,13 @@ void ChromeStructuredMetricsRecorder::Initialize() {
 void ChromeStructuredMetricsRecorder::RecordEvent(Event&& event) {
   DCHECK(IsReadyToRecord());
   delegate_->RecordEvent(std::move(event));
+  LogIsEventRecordedUsingMojo(true);
 }
 
 void ChromeStructuredMetricsRecorder::Record(EventBase&& event_base) {
   DCHECK(IsReadyToRecord());
   delegate_->Record(std::move(event_base));
+  LogIsEventRecordedUsingMojo(true);
 }
 
 bool ChromeStructuredMetricsRecorder::IsReadyToRecord() const {

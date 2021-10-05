@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/structured_metrics_features.h"
 
 namespace metrics {
 namespace structured {
@@ -33,14 +35,22 @@ void Recorder::Record(EventBase&& event) {
   // All calls to StructuredMetricsProvider (the observer) must be on the UI
   // sequence, so re-call Record if needed. If a UI task runner hasn't been set
   // yet, ignore this Record.
-  if (!ui_task_runner_)
+  if (!ui_task_runner_) {
+    LogInternalError(StructuredMetricsError::kUninitializedClient);
     return;
+  }
 
   if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
     ui_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&Recorder::Record, base::Unretained(this), event));
     return;
+  }
+
+  // If the feature is disabled, it means that the event was recorded directly
+  // and not through the mojo API.
+  if (!base::FeatureList::IsEnabled(kUseCrosApiInterface)) {
+    LogIsEventRecordedUsingMojo(false);
   }
 
   DCHECK(base::CurrentUIThread::IsSet());

@@ -10,6 +10,7 @@
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
+#include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/recorder.h"
 
 namespace metrics {
@@ -30,7 +31,9 @@ void AshStructuredMetricsRecorder::Initialize() {
     crosapi::CrosapiManager::Get()->crosapi_ash()->BindStructuredMetricsService(
         remote_.BindNewPipeAndPassReceiver());
     is_initialized_ = true;
+    LogClientInitializationSuccessful(true);
   } else {
+    LogClientInitializationSuccessful(false);
     VLOG(2) << "Initialize() called before CrosApi is initialized.";
   }
 }

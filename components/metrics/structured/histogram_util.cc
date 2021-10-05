@@ -31,5 +31,15 @@ void LogKeyValidation(KeyValidationState state) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.KeyValidationState", state);
 }
 
+void LogClientInitializationSuccessful(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("UMA.StructuredMetrics.ClientInitializationSuccessful",
+                        success);
+}
+
+void LogIsEventRecordedUsingMojo(bool used_mojo_api) {
+  UMA_HISTOGRAM_BOOLEAN("UMA.StructuredMetrics.EventsRecordedUsingMojo",
+                        used_mojo_api);
+}
+
 }  // namespace structured
 }  // namespace metrics

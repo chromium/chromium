@@ -28,7 +28,8 @@ enum class StructuredMetricsError {
   kEventParseError = 6,
   kEventWriteError = 7,
   kEventSerializationError = 8,
-  kMaxValue = kEventSerializationError,
+  kUninitializedClient = 13,
+  kMaxValue = kUninitializedClient,
 };
 
 // Whether a single event was recorded correctly, or otherwise what error state
@@ -68,6 +69,11 @@ void LogKeyValidation(KeyValidationState state);
 // Log how many structured metrics events were contained in a call to
 // ProvideCurrentSessionData.
 void LogNumEventsInUpload(int num_events);
+
+void LogClientInitializationSuccessful(bool success);
+
+// Logs that an event was recorded using the mojo API.
+void LogIsEventRecordedUsingMojo(bool used_mojo_api);
 
 }  // namespace structured
 }  // namespace metrics
