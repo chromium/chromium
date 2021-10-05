@@ -1826,7 +1826,7 @@ crbug.com/1050754 external/wpt/web-bundle/subresource-loading/link-nested-bundle
 crbug.com/1050754 external/wpt/web-bundle/subresource-loading/link-path-restriction.https.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/web-bundle/subresource-loading/link-static-element-with-base.https.tentative.html [ Failure ]
 crbug.com/1050754 external/wpt/web-bundle/subresource-loading/link-static-element.https.tentative.html [ Failure ]
-crbug.com/1050754 external/wpt/web-bundle/subresource-loading/link-subresource-load.https.tentative.html [ Failure ]
+crbug.com/1050754 external/wpt/web-bundle/subresource-loading/link-subresource-load.https.tentative.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/web-locks/acquire.tentative.https.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/web-locks/held.tentative.https.any.sharedworker.html [ Failure ]
 crbug.com/1050754 external/wpt/web-locks/idlharness.tentative.https.any.sharedworker.html [ Failure ]

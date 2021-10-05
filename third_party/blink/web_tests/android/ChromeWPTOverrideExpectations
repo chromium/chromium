@@ -248,7 +248,7 @@ crbug.com/1198085 external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-
 crbug.com/1198085 external/wpt/signed-exchange/service-workers/sxg-sw-register-after-fallback.tentative.https.html [ Failure ]
 crbug.com/1198085 external/wpt/signed-exchange/service-workers/sxg-sw-register.tentative.https.html [ Timeout ]
 crbug.com/1198085 external/wpt/signed-exchange/subresource/sxg-subresource-header-integrity-mismatch.tentative.html [ Timeout ]
-crbug.com/1198085 external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Timeout ]
+crbug.com/1198085 external/wpt/signed-exchange/subresource/sxg-subresource.tentative.sub.html [ Timeout ]
 crbug.com/1198085 external/wpt/signed-exchange/sxg-data-cert-url.tentative.html [ Failure ]
 crbug.com/1198085 external/wpt/signed-exchange/sxg-location-fragment.tentative.html [ Failure ]
 crbug.com/1198085 external/wpt/signed-exchange/sxg-location.tentative.html [ Failure ]

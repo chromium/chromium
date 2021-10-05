@@ -143,7 +143,7 @@ function createWebBundleElement(url, resources, options) {
     link.href = url;
     if (options) {
       if (options.crossOrigin) {
-        link.crossOrigin = crossOrigin;
+        link.crossOrigin = options.crossOrigin;
       }
       if (options.scopes) {
         for (const scope of options.scopes) {
@@ -160,6 +160,8 @@ function createWebBundleElement(url, resources, options) {
   script.type = "webbundle";
   script.textContent =
       JSON.stringify({"source": url, "resources": resources});
+  // TODO(crbug.com/1245166): Support |options.crossOrigin|.
+  // TODO(crbug.com/1245166): Support |options.scopes|.
   return script;
 }
 
@@ -173,3 +175,41 @@ function addWebBundleElementAndWaitForError(url, resources, options) {
   return addElementAndWaitForError(element);
 }
 
+function changeWebBundleUrl(element, new_url) {
+  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
+    // TODO(crbug.com/1245166): Support changing the web bundle url for <script
+    // type=webbundle>.
+    throw new Error(
+        'Changing the URL of web bundle is not supported for : ' +
+        window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
+  }
+  element.href= new_url;
+}
+
+function changeWebBundleScopes(element, scopes) {
+  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
+    // TODO(crbug.com/1245166): Support changing the web bundle scopes for
+    // <script type=webbundle>.
+    throw new Error(
+        'Changing the scopes of web bundle is not supported for : ' +
+        window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
+  }
+  element.scopes = '';
+  for (const scope of scopes) {
+    element.scopes.add(scope);
+  }
+}
+
+function changeWebBundleResources(element, resources) {
+  if (window.TEST_WEB_BUNDLE_ELEMENT_TYPE != 'link') {
+    // TODO(crbug.com/1245166): Support changing the web bundle resources for
+    // <script type=webbundle>.
+    throw new Error(
+        'Changing the resources of web bundle is not supported for : ' +
+        window.TEST_WEB_BUNDLE_ELEMENT_TYPE);
+  }
+  element.resources = '';
+  for (const url of resources) {
+    element.resources.add(url);
+  }
+}

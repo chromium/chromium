@@ -4374,6 +4374,7 @@ crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-service-wor
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element.https.tentative.sub.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-static-element-with-base.https.tentative.sub.html [ Skip ]
 crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-subframe-from-web-bundle.https.tentative.html [ Skip ]
+crbug.com/1245166 external/wpt/web-bundle/subresource-loading/script-subresource-load.https.tentative.sub.html [ Skip ]
 
 # Sheriff failures 2017-07-03
 crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html [ Pass Skip Timeout ]
