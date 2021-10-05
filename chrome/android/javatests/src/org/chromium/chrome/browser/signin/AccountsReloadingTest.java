@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.signin;
 
-import android.os.Build;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -19,7 +17,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -174,8 +171,7 @@ public class AccountsReloadingTest {
 
     @Test
     @MediumTest
-    @DisableIf.
-    Build(sdk_is_greater_than = Build.VERSION_CODES.M, message = "http://crbug.com/1254405")
+    @DisabledTest(message = "http://crbug.com/1254405")
     public void testRefreshTokenUpdateWhenSignedInUserAddsNewAccount() {
         final CoreAccountInfo account1 = mAccountManagerTestRule.addTestAccountThenSignin();
         CriteriaHelper.pollUiThread(() -> mObserver.mCallCount == 1);
