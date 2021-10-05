@@ -4,11 +4,11 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-import {assertDeepEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -52,6 +52,8 @@ export function networkCardTestSuite() {
     provider.setFakeNetworkState('wifiPortalGuid', [fakePortalWifiNetwork]);
     provider.setFakeNetworkState(
         'ethernetConnectingGuid', [fakeConnectingEthernetNetwork]);
+    provider.setFakeNetworkState(
+        'wifiGuidInvalidNameServers', [fakeWifiNetworkInvalidNameServers]);
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
@@ -106,6 +108,18 @@ export function networkCardTestSuite() {
     assertTrue(!!networkInfoElement);
 
     return dx_utils.getWifiInfoElement(networkInfoElement);
+  }
+
+  /** @return {!Array<string>} */
+  function getNameServers() {
+    return /** @type {!Array<string>} */ (
+        networkCardElement.network.ipConfig.nameServers);
+  }
+
+  /** @return {!Promise} */
+  function openIpConfigDrawer() {
+    networkCardElement.$$('#ipConfigInfoDrawer').$$('#drawerToggle').click();
+    return flushTasks();
   }
 
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
@@ -191,5 +205,21 @@ export function networkCardTestSuite() {
           isVisible(/** @type {!HTMLElement} */ (ipConfigInfoDrawerElement)));
       assertDeepEquals(fakeWifiNetwork, ipConfigInfoDrawerElement.network);
     });
+  });
+
+  test('InvalidNameServersFilteredCorrectly', () => {
+    return initializeNetworkCard('wifiGuidInvalidNameServers')
+        .then(() => openIpConfigDrawer())
+        .then(() => {
+          assertFalse(getNameServers().includes('0.0.0.0'));
+          const ipConfigInfoDrawerElement =
+              /** @type {!IpConfigInfoDrawerElement} */ (
+                  networkCardElement.$$('#ipConfigInfoDrawer'));
+          // Valid name server should not have been filtered from the list.
+          assertEquals(
+              dx_utils.getDataPointValue(
+                  ipConfigInfoDrawerElement, '#nameServers'),
+              '192.168.86.1');
+        });
   });
 }

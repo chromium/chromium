@@ -14,7 +14,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, TroubleshootingInfo} from './diagnostics_types.js';
-import {formatMacAddress, getNetworkState, getNetworkType, isConnectedOrOnline, isNetworkMissingNameServers} from './diagnostics_utils.js';
+import {filterNameServers, formatMacAddress, getNetworkState, getNetworkType, isConnectedOrOnline, isNetworkMissingNameServers} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 const BASE_SUPPORT_URL = 'https://support.google.com/chromebook?p=diagnostics_';
@@ -159,6 +159,9 @@ Polymer({
     this.networkType_ = getNetworkType(network.type);
     this.networkState_ = getNetworkState(network.state);
     this.macAddress_ = network.macAddress || '';
+
+    // Remove '0.0.0.0' (if present) from list of name servers.
+    filterNameServers(network);
     this.set('network', network);
     let isIpAddressMissing = !network.ipConfig || !network.ipConfig.ipAddress;
     let isTimerInProgress = this.timerId_ !== -1;

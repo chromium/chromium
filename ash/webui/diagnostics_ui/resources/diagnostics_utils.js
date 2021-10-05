@@ -290,3 +290,14 @@ export function isNetworkMissingNameServers(network) {
   return !network.ipConfig || !network.ipConfig.nameServers ||
       network.ipConfig.nameServers.length === 0;
 }
+
+/**
+ * Removes '0.0.0.0' from list of name servers.
+ * @param {!Network} network
+ */
+export function filterNameServers(network) {
+  if (network && network.ipConfig && network.ipConfig.nameServers) {
+    network.ipConfig.nameServers =
+        network.ipConfig.nameServers.filter(n => n !== '0.0.0.0');
+  }
+}
