@@ -55,7 +55,7 @@ void RecordGetLayoutMapResult(ExecutionContext* context,
     return;
 
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(kGetKeyboardLayoutMapSurface, value)
+      .Add(kGetKeyboardLayoutMapSurface, value)
       .Record(context->UkmRecorder());
 }
 

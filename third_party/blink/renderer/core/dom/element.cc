@@ -1398,7 +1398,7 @@ void Element::RecordScrollbarSizeForStudy(int measurement,
   }
 
   blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
-      .Set(blink::IdentifiableSurface::FromTypeAndToken(
+      .Add(blink::IdentifiableSurface::FromTypeAndToken(
                blink::IdentifiableSurface::Type::kScrollbarSize, surface),
            scrollbar_size)
       .Record(GetDocument().UkmRecorder());

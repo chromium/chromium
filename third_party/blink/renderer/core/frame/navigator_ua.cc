@@ -61,7 +61,7 @@ void NavigatorUA::MaybeRecordMetrics(const NavigatorUAData& ua_data) {
       token_builder.AddAtomic(brand->version().Utf8());
   }
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(identifiable_surface, token_builder.GetToken())
+      .Add(identifiable_surface, token_builder.GetToken())
       .Record(context->UkmRecorder());
 }
 

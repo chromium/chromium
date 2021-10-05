@@ -279,7 +279,7 @@ void HTMLCanvasElement::RecordIdentifiabilityMetric(
     IdentifiableSurface surface,
     IdentifiableToken value) const {
   blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
-      .Set(surface, value)
+      .Add(surface, value)
       .Record(GetDocument().UkmRecorder());
 }
 
@@ -305,7 +305,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContext(
   if (IdentifiabilityStudySettings::Get()->ShouldSample(
           IdentifiableSurface::Type::kCanvasRenderingContext)) {
     IdentifiabilityMetricBuilder(doc.UkmSourceID())
-        .Set(IdentifiableSurface::FromTypeAndToken(
+        .Add(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kCanvasRenderingContext,
                  CanvasRenderingContext::RenderingAPIFromId(
                      type, GetExecutionContext())),

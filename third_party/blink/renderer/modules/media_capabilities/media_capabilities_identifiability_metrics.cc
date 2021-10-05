@@ -39,7 +39,7 @@ void RecordDecodingIdentifiabilityMetric(ExecutionContext* context,
                                          IdentifiableToken output_token) {
   DCHECK(IsDecodingInfoTypeAllowed());
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(IdentifiableSurface::FromTypeAndToken(
+      .Add(IdentifiableSurface::FromTypeAndToken(
                IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo,
                input_token),
            output_token)

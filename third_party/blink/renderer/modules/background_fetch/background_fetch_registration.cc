@@ -340,7 +340,7 @@ const String BackgroundFetchRegistration::result() const {
 
 const String BackgroundFetchRegistration::failureReason() const {
   blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
-      .Set(
+      .Add(
           blink::IdentifiableSurface::FromTypeAndToken(
               blink::IdentifiableSurface::Type::kWebFeature,
               WebFeature::

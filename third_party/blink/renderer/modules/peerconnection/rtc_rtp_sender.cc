@@ -819,7 +819,7 @@ RTCRtpCapabilities* RTCRtpSender::getCapabilities(ScriptState* state,
     IdentifiableTokenBuilder builder;
     IdentifiabilityAddRTCRtpCapabilitiesToBuilder(builder, *capabilities);
     IdentifiabilityMetricBuilder(ExecutionContext::From(state)->UkmSourceID())
-        .Set(IdentifiableSurface::FromTypeAndToken(
+        .Add(IdentifiableSurface::FromTypeAndToken(
                  IdentifiableSurface::Type::kRtcRtpSenderGetCapabilities,
                  IdentifiabilityBenignStringToken(kind)),
              builder.GetToken())

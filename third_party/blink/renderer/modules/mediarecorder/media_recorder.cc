@@ -358,7 +358,7 @@ bool MediaRecorder::isTypeSupported(ExecutionContext* context,
   if (IdentifiabilityStudySettings::Get()->ShouldSample(
           blink::IdentifiableSurface::Type::kMediaRecorder_IsTypeSupported)) {
     blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .Set(blink::IdentifiableSurface::FromTypeAndToken(
+        .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::
                      kMediaRecorder_IsTypeSupported,
                  IdentifiabilityBenignStringToken(type)),

@@ -204,7 +204,7 @@ void GPU::RecordAdapterForIdentifiability(
   }
 
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(surface, output_builder.GetToken())
+      .Add(surface, output_builder.GetToken())
       .Record(context->UkmRecorder());
 }
 

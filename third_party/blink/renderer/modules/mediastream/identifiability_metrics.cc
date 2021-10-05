@@ -276,7 +276,7 @@ void RecordIdentifiabilityMetric(const IdentifiableSurface& surface,
   if (surface.IsValid() && context &&
       IdentifiabilityStudySettings::Get()->ShouldSample(surface)) {
     IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .Set(surface, token)
+        .Add(surface, token)
         .Record(context->UkmRecorder());
   }
 }

@@ -662,7 +662,7 @@ void MediaSource::RecordIdentifiabilityMetric(ExecutionContext* context,
     return;
   }
   blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .Set(blink::IdentifiableSurface::FromTypeAndToken(
+      .Add(blink::IdentifiableSurface::FromTypeAndToken(
                blink::IdentifiableSurface::Type::kMediaSource_IsTypeSupported,
                IdentifiabilityBenignStringToken(type)),
            result)

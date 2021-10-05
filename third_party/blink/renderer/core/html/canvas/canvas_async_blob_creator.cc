@@ -499,7 +499,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
 
   if (data_buffer) {
     blink::IdentifiabilityMetricBuilder(context_->UkmSourceID())
-        .Set(blink::IdentifiableSurface::FromTypeAndToken(
+        .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
              blink::IdentifiabilityDigestOfBytes(base::make_span(

@@ -55,7 +55,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
     return;
   Document* document = window->document();
   IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .SetWebfeature(feature, value)
+      .AddWebFeature(feature, value)
       .Record(document->UkmRecorder());
 }
 

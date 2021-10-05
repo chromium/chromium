@@ -105,7 +105,7 @@ void RecordGamepadsForIdentifiabilityStudy(ExecutionContext* context,
     }
   }
   IdentifiabilityMetricBuilder(context->UkmSourceID())
-      .SetWebfeature(WebFeature::kGetGamepads, builder.GetToken())
+      .AddWebFeature(WebFeature::kGetGamepads, builder.GetToken())
       .Record(context->UkmRecorder());
 }
 

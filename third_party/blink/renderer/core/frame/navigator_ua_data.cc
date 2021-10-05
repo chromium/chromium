@@ -33,7 +33,7 @@ void MaybeRecordMetric(bool record_identifiability,
       IdentifiableSurface::Type::kNavigatorUAData_GetHighEntropyValues,
       IdentifiableToken(hint.Utf8()));
   IdentifiabilityMetricBuilder(execution_context->UkmSourceID())
-      .Set(identifiable_surface, IdentifiableToken(value.Utf8()))
+      .Add(identifiable_surface, IdentifiableToken(value.Utf8()))
       .Record(execution_context->UkmRecorder());
 }
 

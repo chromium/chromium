@@ -104,7 +104,7 @@ void RecordPlugins(LocalDOMWindow* window, DOMPluginArray* plugins) {
     }
   }
   IdentifiabilityMetricBuilder(window->UkmSourceID())
-      .SetWebfeature(WebFeature::kNavigatorPlugins, builder.GetToken())
+      .AddWebFeature(WebFeature::kNavigatorPlugins, builder.GetToken())
       .Record(window->UkmRecorder());
 }
 
@@ -129,7 +129,7 @@ void RecordMimeTypes(LocalDOMWindow* window, DOMMimeTypeArray* mime_types) {
     }
   }
   IdentifiabilityMetricBuilder(window->UkmSourceID())
-      .Set(surface, builder.GetToken())
+      .Add(surface, builder.GetToken())
       .Record(window->UkmRecorder());
 }
 

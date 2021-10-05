@@ -479,7 +479,7 @@ void RecordEnumeratedDevices(ScriptPromiseResolver* resolver,
     // Ignore group_id since that is varies per-site.
   }
   IdentifiabilityMetricBuilder(document->UkmSourceID())
-      .SetWebfeature(WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices,
+      .AddWebFeature(WebFeature::kIdentifiabilityMediaDevicesEnumerateDevices,
                      builder.GetToken())
       .Record(document->UkmRecorder());
 }

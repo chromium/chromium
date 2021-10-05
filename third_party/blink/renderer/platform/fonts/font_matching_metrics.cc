@@ -294,7 +294,7 @@ void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
     const IdentifiableSurface::Type surface_type = surface_entry.second;
     if (IdentifiabilityStudySettings::Get()->ShouldSample(surface_type)) {
       for (const auto& individual_lookup : *hash_map) {
-        builder.Set(IdentifiableSurface::FromTypeAndToken(
+        builder.Add(IdentifiableSurface::FromTypeAndToken(
                         surface_type, individual_lookup.key.token),
                     individual_lookup.value);
       }

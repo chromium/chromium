@@ -620,7 +620,7 @@ void WebGL2RenderingContextBase::RecordInternalFormatParameter(
     builder.AddValue(values[i]);
   }
   IdentifiabilityMetricBuilder(ukm_params.source_id)
-      .Set(IdentifiableSurface::FromTypeAndToken(
+      .Add(IdentifiableSurface::FromTypeAndToken(
                IdentifiableSurface::Type::kWebGLInternalFormatParameter,
                internalformat),
            builder.GetToken())

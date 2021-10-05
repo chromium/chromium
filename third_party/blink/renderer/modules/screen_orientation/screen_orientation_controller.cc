@@ -271,7 +271,7 @@ void ScreenOrientationController::OnLockOrientationResult(
               WebFeature::kScreenOrientationLock))) {
     auto* context = GetExecutionContext();
     IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .SetWebfeature(WebFeature::kScreenOrientationLock,
+        .AddWebFeature(WebFeature::kScreenOrientationLock,
                        result == ScreenOrientationLockResult::
                                      SCREEN_ORIENTATION_LOCK_RESULT_SUCCESS)
         .Record(context->UkmRecorder());

@@ -118,7 +118,7 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
     builder.AddToken(voice->localService());
   }
   IdentifiabilityMetricBuilder(GetSupplementable()->UkmSourceID())
-      .Set(surface, builder.GetToken())
+      .Add(surface, builder.GetToken())
       .Record(GetSupplementable()->UkmRecorder());
 }
 

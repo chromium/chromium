@@ -234,7 +234,7 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
   if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface))
     return;
   blink::IdentifiabilityMetricBuilder(GetExecutionContext()->UkmSourceID())
-      .Set(surface, token)
+      .Add(surface, token)
       .Record(GetExecutionContext()->UkmRecorder());
 }
 
