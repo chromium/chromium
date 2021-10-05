@@ -309,6 +309,12 @@
       <message name="IDS_ALWAYS" desc="Generic label for a user to select an always option">
         Always
       </message>
+      <message name="IDS_LATEST" desc="Generic label for a user to select a Latest option, eg. sort by latest">
+        Latest
+      </message>
+      <message name="IDS_SORT_BY" desc="Generic label for a prompt to sort something.">
+        Sort by:
+      </message>
 
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
         More options

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed.shared.stream;
 
+import android.view.View;
+
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -76,6 +78,13 @@ public interface Stream {
      * Called when the placeholder is shown and the first batch of articles are about to show.
      */
     void hidePlaceholder();
+
+    /**
+     * Returns the options for this stream if one exists.
+     */
+    default View getOptionsView() {
+        return null;
+    }
 
     /** Record that user tapped ManageInterests. */
     default void recordActionManageInterests() {}

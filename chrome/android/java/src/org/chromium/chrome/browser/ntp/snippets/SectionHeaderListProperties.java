@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp.snippets;
 
+import android.view.View;
+
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -14,16 +16,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Properties for a list of {@link SectionHeaderProperties} models.
  */
 public class SectionHeaderListProperties {
-    /**
-     * Constants for visibility of a view.
-     *
-     * Maps to View.VISIBLE, View.INVISIBLE, and View.GONE.
-     */
-    public enum ViewVisibility {
-        VISIBLE,
-        INVISIBLE,
-        GONE;
-    }
 
     public static final PropertyModel.WritableBooleanPropertyKey IS_SECTION_ENABLED_KEY =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -54,12 +46,15 @@ public class SectionHeaderListProperties {
     public static final PropertyModel
             .WritableObjectPropertyKey<ViewVisibility> INDICATOR_VIEW_VISIBILITY_KEY =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<View> EXPANDING_DRAWER_VIEW_KEY =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     public static PropertyModel create() {
         return new PropertyModel
                 .Builder(IS_SECTION_ENABLED_KEY, SECTION_HEADERS_KEY, CURRENT_TAB_INDEX_KEY,
                         ON_TAB_SELECTED_CALLBACK_KEY, MENU_MODEL_LIST_KEY, MENU_DELEGATE_KEY,
-                        IS_TAB_MODE_KEY, IS_LOGO_KEY, INDICATOR_VIEW_VISIBILITY_KEY)
+                        IS_TAB_MODE_KEY, IS_LOGO_KEY, INDICATOR_VIEW_VISIBILITY_KEY,
+                        EXPANDING_DRAWER_VIEW_KEY)
                 .with(SECTION_HEADERS_KEY, new PropertyListModel<>())
                 .with(INDICATOR_VIEW_VISIBILITY_KEY, ViewVisibility.INVISIBLE)
                 .build();

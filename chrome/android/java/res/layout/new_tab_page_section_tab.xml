@@ -3,11 +3,30 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
-    android:gravity="center"
-    android:maxLines="1"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:duplicateParentState="true"
-    android:textAppearance="@style/TextAppearance.TabLayout" />
+    android:orientation="horizontal"
+    android:duplicateParentState="true" >
+  <TextView
+      android:id="@android:id/text1"
+      android:gravity="center"
+      android:maxLines="1"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:minHeight="@dimen/ntp_header_tab_text_height"
+      android:duplicateParentState="true"
+      android:textAppearance="@style/TextAppearance.TabLayout" />
+  <ImageView
+      android:id="@+id/options_indicator"
+      android:layout_width="@dimen/ntp_header_dropdown_size"
+      android:layout_height="@dimen/ntp_header_dropdown_size"
+      android:scaleType="centerInside"
+      app:tint="@color/default_text_color_blue"
+      android:visibility="gone"
+      android:src="@drawable/mtrl_ic_arrow_drop_down"
+      android:layout_gravity="center_vertical"
+      android:contentDescription="@string/feed_options_dropdown_description" />
+</LinearLayout>

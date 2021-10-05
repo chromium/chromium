@@ -185,7 +185,6 @@
     <dimen name="experimental_explore_sites_spacing">12dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
     <dimen name="snippets_article_header_menu_size">48dp</dimen>
-    <dimen name="ntp_header_lateral_paddings_v2">16dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
@@ -201,6 +200,11 @@
     <dimen name="feed_v2_header_menu_width">18dp</dimen>
     <dimen name="feed_v2_header_menu_touch_size">48dp</dimen>
     <dimen name="feed_v2_header_disabled_padding">11dp</dimen>
+    <dimen name="ntp_header_lateral_paddings_v2">16dp</dimen>
+    <dimen name="feed_options_vertical_margins">6dp</dimen>
+    <dimen name="feed_options_chip_margin">8dp</dimen>
+    <dimen name="ntp_header_dropdown_size">15dp</dimen>
+    <dimen name="ntp_header_tab_text_height">24dp</dimen>
 
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>

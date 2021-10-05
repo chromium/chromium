@@ -17,7 +17,11 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.animation.Animation;
+import android.view.animation.Transformation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,10 +33,12 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.BadgeUtils;
 import com.google.android.material.tabs.TabLayout;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -68,12 +74,16 @@ public class SectionHeaderView extends LinearLayout {
 
         @Override
         public void onTabUnselected(TabLayout.Tab tab) {
-            // Do nothing; Not supported.
+            if (mListener != null) {
+                mListener.onSectionHeaderUnselected(tab.getPosition());
+            }
         }
 
         @Override
         public void onTabReselected(TabLayout.Tab tab) {
-            // Do nothing; Not supported.
+            if (mListener != null) {
+                mListener.onSectionHeaderReselected(tab.getPosition());
+            }
         }
     }
 
@@ -127,6 +137,7 @@ public class SectionHeaderView extends LinearLayout {
     private boolean mAnimatePaddingWhenDisabled;
     private @Nullable View mDivider;
     private LinearLayout mContent;
+    private @Nullable FrameLayout mOptionsPanel;
 
     // Cached the indicator drawables for easy swapping.
     private Drawable mEnabledIndicatorDrawable;
@@ -157,11 +168,17 @@ public class SectionHeaderView extends LinearLayout {
         mTabLayout = findViewById(R.id.tab_list_view);
         mDivider = findViewById(R.id.divider);
         mContent = findViewById(R.id.main_content);
+        mOptionsPanel = findViewById(R.id.options_content);
 
         if (mTabLayout != null) {
             mTabListener = new SectionHeaderTabListener();
             mTabLayout.addOnTabSelectedListener(mTabListener);
             mEnabledIndicatorDrawable = mTabLayout.getTabSelectedIndicator();
+        }
+
+        if (mOptionsPanel != null) {
+            mOptionsPanel.setBackgroundColor(
+                    ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
         }
 
         int touchSize;
@@ -232,17 +249,32 @@ public class SectionHeaderView extends LinearLayout {
         applyTabState(tab);
     }
 
+    /**
+     * Sets the visibility of the options indicator on a tab
+     *
+     * @param index index of the tab to set options indicator on.
+     * @param visibility visibility of the options indicator to use.
+     */
+    void setOptionsIndicatorVisibilityForHeader(int index, ViewVisibility visibility) {
+        TabLayout.Tab tab = getTabAt(index);
+        if (tab == null) return;
+
+        ImageView image = tab.view.findViewById(R.id.options_indicator);
+        image.setVisibility(ViewVisibility.toVisibility(visibility));
+    }
+
     @Nullable
     private TabLayout.Tab getTabAt(int index) {
         return mTabLayout != null ? mTabLayout.getTabAt(index) : null;
     }
 
     /**
-     * @param index The index of the tab to set as active. Does nothing if index is invalid.
+     * @param index The index of the tab to set as active.
+     *              Does nothing if index is invalid or already selected.
      */
     void setActiveTab(int index) {
         TabLayout.Tab tab = getTabAt(index);
-        if (tab != null) {
+        if (tab != null && mTabLayout.getSelectedTabPosition() != index) {
             mTabLayout.selectTab(tab);
         }
     }
@@ -288,21 +320,9 @@ public class SectionHeaderView extends LinearLayout {
     }
 
     /** Sets the visibility of the indicator. */
-    void setIndicatorVisibility(SectionHeaderListProperties.ViewVisibility visibility) {
+    void setIndicatorVisibility(ViewVisibility visibility) {
         if (mLeadingStatusIndicator != null) {
-            int viewVisibility = View.GONE;
-            switch (visibility) {
-                case INVISIBLE:
-                    viewVisibility = View.INVISIBLE;
-                    break;
-                case VISIBLE:
-                    viewVisibility = View.VISIBLE;
-                    break;
-                case GONE:
-                    viewVisibility = View.GONE;
-                    break;
-            }
-            mLeadingStatusIndicator.setVisibility(viewVisibility);
+            mLeadingStatusIndicator.setVisibility(ViewVisibility.toVisibility(visibility));
         }
     }
 
@@ -369,8 +389,24 @@ public class SectionHeaderView extends LinearLayout {
             });
             animator.setDuration(ANIMATION_DURATION_MS);
             animator.start();
+            if (mOptionsPanel != null && mOptionsPanel.getVisibility() == VISIBLE) {
+                collapseOptionsPanel();
+            }
         } else {
             setBackground(true);
+        }
+    }
+
+    void setOptionsPanel(View optionsView) {
+        if (mOptionsPanel == null) return;
+        if (optionsView == null && mOptionsPanel.getVisibility() == VISIBLE) {
+            collapseOptionsPanel();
+        } else if (optionsView != null) {
+            if (optionsView.getParent() != null) {
+                ((ViewGroup) optionsView.getParent()).removeView(optionsView);
+            }
+            mOptionsPanel.addView(optionsView);
+            expandOptionsPanel();
         }
     }
 
@@ -390,6 +426,67 @@ public class SectionHeaderView extends LinearLayout {
             applyTabState(mTabLayout.getTabAt(i));
         }
         mTitleView.setEnabled(enabled);
+    }
+
+    private void expandOptionsPanel() {
+        // Width is match_parent and height is wrap_content.
+        int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
+        int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        mOptionsPanel.measure(widthMeasureSpec, heightMeasureSpec);
+        int targetHeight = mOptionsPanel.getMeasuredHeight();
+
+        // Older (pre-API21) Android versions cancel animations with height of 0.
+        mOptionsPanel.getLayoutParams().height = 1;
+        mOptionsPanel.setVisibility(VISIBLE);
+
+        Animation animation = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                int height;
+                if (interpolatedTime == 1) {
+                    height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                } else {
+                    height = (int) (targetHeight * interpolatedTime);
+                }
+                mOptionsPanel.getLayoutParams().height = height;
+                mOptionsPanel.requestLayout();
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        animation.setDuration(ANIMATION_DURATION_MS);
+        mOptionsPanel.startAnimation(animation);
+    }
+
+    private void collapseOptionsPanel() {
+        int initialHeight = mOptionsPanel.getMeasuredHeight();
+
+        Animation animation = new Animation() {
+            @Override
+            protected void applyTransformation(float interpolatedTime, Transformation t) {
+                if (interpolatedTime == 1) {
+                    mOptionsPanel.setVisibility(GONE);
+                    mOptionsPanel.removeAllViews();
+                } else {
+                    mOptionsPanel.getLayoutParams().height =
+                            initialHeight - (int) (initialHeight * interpolatedTime);
+                    mOptionsPanel.requestLayout();
+                }
+                Log.e(TAG, "drawer height is: " + mOptionsPanel.getLayoutParams().height);
+            }
+
+            @Override
+            public boolean willChangeBounds() {
+                return true;
+            }
+        };
+
+        animation.setDuration(ANIMATION_DURATION_MS);
+        mOptionsPanel.startAnimation(animation);
     }
 
     /** Shows an IPH on the feed header menu button. */

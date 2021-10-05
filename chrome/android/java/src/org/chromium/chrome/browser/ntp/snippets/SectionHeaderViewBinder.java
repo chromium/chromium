@@ -46,6 +46,8 @@ public class SectionHeaderViewBinder
                     model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
         } else if (key == SectionHeaderListProperties.IS_LOGO_KEY) {
             view.setIsLogo(model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        } else if (key == SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY) {
+            view.setOptionsPanel(model.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY));
         }
     }
 
@@ -95,6 +97,14 @@ public class SectionHeaderViewBinder
 
                 view.setHeaderAt(tabModel.get(SectionHeaderProperties.HEADER_TEXT_KEY),
                         hasUnreadContent, i);
+            }
+        }
+        if (payload == null
+                || payload == SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY) {
+            for (int i = index; i < index + count; i++) {
+                PropertyModel tabModel = headers.get(i);
+                view.setOptionsIndicatorVisibilityForHeader(
+                        i, tabModel.get(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY));
             }
         }
     }

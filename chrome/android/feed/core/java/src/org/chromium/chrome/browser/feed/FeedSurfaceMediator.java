@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ntp.snippets.OnSectionHeaderSelectedListener;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderListProperties;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderProperties;
 import org.chromium.chrome.browser.ntp.snippets.SectionType;
+import org.chromium.chrome.browser.ntp.snippets.ViewVisibility;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -156,23 +157,44 @@ public class FeedSurfaceMediator
         public void onSectionHeaderSelected(int index) {
             PropertyListModel<PropertyModel, PropertyKey> headerList =
                     mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
-            if (index >= headerList.size()) {
-                Log.e(TAG, "Attempted to select a Tab with an invalid index");
-                return;
-            }
             mSectionHeaderModel.set(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY, index);
-            Runnable onSelectCallback =
-                    headerList.get(index).get(SectionHeaderProperties.ON_SELECT_CALLBACK_KEY);
-            if (onSelectCallback != null) {
-                onSelectCallback.run();
-            }
 
             // Proactively disable the unread content. Waiting for observers is too slow.
             headerList.get(index).set(SectionHeaderProperties.UNREAD_CONTENT_KEY, false);
 
             maybeLogLaunchFinished(DiscoverLaunchResult.SWITCHED_FEED_TABS);
             getPrefService().setInteger(Pref.LAST_SEEN_FEED_TYPE, index);
-            bindStream(mTabToStreamMap.get(index));
+
+            Stream newStream = mTabToStreamMap.get(index);
+            if (newStream.getOptionsView() != null) {
+                headerList.get(index).set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
+                        ViewVisibility.VISIBLE);
+            }
+
+            bindStream(newStream);
+        }
+
+        @Override
+        public void onSectionHeaderUnselected(int index) {
+            PropertyListModel<PropertyModel, PropertyKey> headerList =
+                    mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY);
+            PropertyModel headerModel = headerList.get(index);
+            if (mTabToStreamMap.get(index).getOptionsView() != null) {
+                headerModel.set(SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
+                        ViewVisibility.INVISIBLE);
+            }
+            mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY, null);
+        }
+
+        @Override
+        public void onSectionHeaderReselected(int index) {
+            Stream stream = mTabToStreamMap.get(index);
+            if (stream.getOptionsView() == null) return;
+            // Reselected toggles the visibility of the options view.
+            View currentView =
+                    mSectionHeaderModel.get(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY);
+            mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY,
+                    currentView == null ? stream.getOptionsView() : null);
         }
     }
 
@@ -522,10 +544,19 @@ public class FeedSurfaceMediator
     }
 
     private void addHeaderAndStream(String headerText, Stream stream) {
+        int tabId = mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).size();
+        mTabToStreamMap.put(tabId, stream);
+
         PropertyModel headerModel = SectionHeaderProperties.createSectionHeader(headerText);
+        ViewVisibility indicatorVisibility;
+        if (stream.getOptionsView() == null) {
+            indicatorVisibility = ViewVisibility.GONE;
+        } else {
+            indicatorVisibility = ViewVisibility.INVISIBLE;
+        }
+        headerModel.set(
+                SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY, indicatorVisibility);
         mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).add(headerModel);
-        int tabId =
-                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY).size() - 1;
 
         // Update UNREAD_CONTENT_KEY and HEADER_ACCESSIBILITY_TEXT_KEY now, and any time
         // hasUnreadContent() changes.
@@ -533,8 +564,6 @@ public class FeedSurfaceMediator
             headerModel.set(SectionHeaderProperties.UNREAD_CONTENT_KEY, hasUnreadContent);
         };
         callback.onResult(stream.hasUnreadContent().addObserver(callback));
-
-        mTabToStreamMap.put(tabId, stream);
     }
 
     private int getTabIdForSection(@SectionType int sectionType) {
@@ -783,20 +812,26 @@ public class FeedSurfaceMediator
         // When Google is not the default search engine, we need to show the Logo.
         mSectionHeaderModel.set(SectionHeaderListProperties.IS_LOGO_KEY,
                 !isGoogleSearchEngine && isSignedIn && suggestionsVisible);
-        SectionHeaderListProperties.ViewVisibility indicatorState;
+        ViewVisibility indicatorState;
         if (!isSignedIn) {
             // Gone when not signed in to align text to far left.
-            indicatorState = SectionHeaderListProperties.ViewVisibility.GONE;
+            indicatorState = ViewVisibility.GONE;
         } else if (!suggestionsVisible || !isGoogleSearchEngine) {
             // Visible when Google is not the search engine (show logo) or when turned off (eye).
-            indicatorState = SectionHeaderListProperties.ViewVisibility.VISIBLE;
+            indicatorState = ViewVisibility.VISIBLE;
         } else {
             // Invisible when we have centered text (signed in and not shown). This
             // counterbalances the gear icon so text is properly centered.
-            indicatorState = SectionHeaderListProperties.ViewVisibility.INVISIBLE;
+            indicatorState = ViewVisibility.INVISIBLE;
         }
         mSectionHeaderModel.set(
                 SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY, indicatorState);
+
+        // Make sure to collapse option panel if not shown.
+        if (!suggestionsVisible) {
+            mSectionHeaderModel.set(SectionHeaderListProperties.EXPANDING_DRAWER_VIEW_KEY, null);
+        }
+
         // Set enabled last because it makes the animation smoother.
         mSectionHeaderModel.set(
                 SectionHeaderListProperties.IS_SECTION_ENABLED_KEY, suggestionsVisible);
@@ -828,10 +863,27 @@ public class FeedSurfaceMediator
         if (suggestionsVisible) mCoordinator.getSurfaceLifecycleManager().show();
         mStreamContentChanged = true;
 
+        PropertyModel currentStreamHeaderModel =
+                mSectionHeaderModel.get(SectionHeaderListProperties.SECTION_HEADERS_KEY)
+                        .get(mSectionHeaderModel.get(
+                                SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+        Stream currentStream = mTabToStreamMap.get(
+                mSectionHeaderModel.get(SectionHeaderListProperties.CURRENT_TAB_INDEX_KEY));
+
         // If feed turned on, we bind the last stream that was visible. Else unbind it.
         if (suggestionsVisible) {
+            if (currentStream.getOptionsView() != null) {
+                currentStreamHeaderModel.set(
+                        SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
+                        ViewVisibility.VISIBLE);
+            }
             rebindStream();
         } else {
+            if (currentStream.getOptionsView() != null) {
+                currentStreamHeaderModel.set(
+                        SectionHeaderProperties.OPTIONS_INDICATOR_VISIBILITY_KEY,
+                        ViewVisibility.INVISIBLE);
+            }
             unbindStream();
         }
     }
@@ -1211,5 +1263,20 @@ public class FeedSurfaceMediator
 
     private boolean isSuggestionsVisible() {
         return getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE);
+    }
+
+    @VisibleForTesting
+    OnSectionHeaderSelectedListener getOrCreateSectionHeaderListenerForTesting() {
+        OnSectionHeaderSelectedListener listener =
+                mSectionHeaderModel.get(SectionHeaderListProperties.ON_TAB_SELECTED_CALLBACK_KEY);
+        if (listener == null) {
+            listener = new FeedSurfaceHeaderSelectedCallback();
+        }
+        return listener;
+    }
+
+    @VisibleForTesting
+    void setStreamForTesting(int key, Stream stream) {
+        mTabToStreamMap.put(key, stream);
     }
 }
