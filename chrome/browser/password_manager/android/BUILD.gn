@@ -112,6 +112,14 @@ android_resources("java_resources") {
   ]
 }
 
+android_library("settings_interface_java") {
+  deps = [ "//base:base_java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncher.java",
+    "java/src/org/chromium/chrome/browser/password_manager/CredentialManagerLauncherFactory.java",
+  ]
+}
+
 android_library("backend_interface_java") {
   deps = [ "//base:base_java" ]
   sources = [
