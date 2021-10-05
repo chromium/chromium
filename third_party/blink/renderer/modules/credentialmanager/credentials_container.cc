@@ -941,7 +941,7 @@ ScriptPromise CredentialsContainer::get(
               resolver->GetExecutionContext()) &&
           options->publicKey()->extensions()->hasPayment()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
+            DOMExceptionCode::kNotAllowedError,
             "The 'payment' extension is only valid when creating a "
             "credential"));
         return promise;
