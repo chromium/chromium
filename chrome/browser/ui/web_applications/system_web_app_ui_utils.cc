@@ -218,18 +218,12 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   DCHECK(url.GetOrigin() ==
          provider->registrar().GetAppLaunchUrl(params.app_id).GetOrigin());
 
-  // Make sure we have a browser for app.  Always reuse an existing browser for
-  // popups, otherwise check app type whether we should use a single window.
-  // TODO(crbug.com/1060423): Allow apps to control whether popups are single.
   Browser* browser = nullptr;
   Browser::Type browser_type = Browser::TYPE_APP;
   if (params.disposition == WindowOpenDisposition::NEW_POPUP)
     browser_type = Browser::TYPE_APP_POPUP;
   auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
-  if (browser_type == Browser::TYPE_APP_POPUP ||
-      (system_app && system_app->ShouldBeSingleWindow())) {
-    browser = FindSystemWebAppBrowser(profile, app_type, browser_type);
-  }
+  browser = FindSystemWebAppBrowser(profile, app_type, browser_type);
 
   bool can_resize = system_app && system_app->ShouldAllowResize();
   bool can_maximize = system_app && system_app->ShouldAllowMaximize();
@@ -240,10 +234,23 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   // passing through the underlying value of params.omit_from_session_restore.
   const bool omit_from_session_restore = true;
 
+  // Always reuse an existing browser for popups, otherwise check app type
+  // whether we should use a single window.
+  // TODO(crbug.com/1060423): Allow apps to control whether popups are single.
+  const bool reuse_existing_window =
+      browser_type == Browser::TYPE_APP_POPUP ||
+      (system_app && system_app->ShouldBeSingleWindow());
+
   if (!browser) {
     browser = CreateWebApplicationWindow(
         profile, params.app_id, params.disposition, params.restore_id,
         omit_from_session_restore, can_resize, can_maximize);
+  } else if (!reuse_existing_window) {
+    gfx::Rect initial_bounds = browser->window()->GetRestoredBounds();
+    initial_bounds.Offset(20, 20);
+    browser = CreateWebApplicationWindow(
+        profile, params.app_id, params.disposition, params.restore_id,
+        omit_from_session_restore, can_resize, can_maximize, initial_bounds);
   }
 
   // Navigate application window to application's |url| if necessary.
@@ -310,15 +317,24 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   if (!provider->registrar().IsInstalled(app_id.value()))
     return nullptr;
 
+  Browser* browser_to_return = nullptr;
+  // Look through all the windows, find a browser for this app. Prefer the app
+  // window that's currently active if there is one.
   for (auto* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile || browser->type() != browser_type)
       continue;
 
-    if (GetAppIdFromApplicationName(browser->app_name()) == app_id.value())
+    if (GetAppIdFromApplicationName(browser->app_name()) != app_id.value())
+      continue;
+
+    if (browser->window()->IsActive()) {
       return browser;
+    }
+
+    browser_to_return = browser;
   }
 
-  return nullptr;
+  return browser_to_return;
 }
 
 bool IsSystemWebApp(Browser* browser) {

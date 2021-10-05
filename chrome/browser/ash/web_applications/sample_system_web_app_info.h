@@ -22,6 +22,8 @@ class SampleSystemAppDelegate : public web_app::SystemWebAppDelegate {
   // web_app::SystemWebAppDelegate overrides:
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
+  bool ShouldBeSingleWindow() const override;
+  bool ShouldShowNewWindowMenuOption() const override;
   absl::optional<web_app::SystemAppBackgroundTaskInfo> GetTimerInfo()
       const override;
 };

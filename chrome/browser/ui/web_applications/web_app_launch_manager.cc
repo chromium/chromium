@@ -454,9 +454,9 @@ Browser* CreateWebApplicationWindow(Profile* profile,
                                     int32_t restore_id,
                                     bool omit_from_session_restore,
                                     bool can_resize,
-                                    bool can_maximize) {
+                                    bool can_maximize,
+                                    const gfx::Rect initial_bounds) {
   std::string app_name = GenerateApplicationNameFromAppId(app_id);
-  gfx::Rect initial_bounds;
   Browser::CreateParams browser_params =
       disposition == WindowOpenDisposition::NEW_POPUP
           ? Browser::CreateParams::CreateForAppPopup(

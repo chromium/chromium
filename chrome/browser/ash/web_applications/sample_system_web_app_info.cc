@@ -74,6 +74,14 @@ bool SampleSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
 
+bool SampleSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
+  return true;
+}
+
+bool SampleSystemAppDelegate::ShouldBeSingleWindow() const {
+  return false;
+}
+
 absl::optional<web_app::SystemAppBackgroundTaskInfo>
 SampleSystemAppDelegate::GetTimerInfo() const {
   return web_app::SystemAppBackgroundTaskInfo(

@@ -135,6 +135,18 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
         test_system_web_app_installation_->GetAppUrl(), *params);
   }
 
+  Browser* LaunchMockSWA() {
+    auto params = web_app::CreateSystemWebAppLaunchParams(
+        profile(), test_system_web_app_installation_->GetType(),
+        display::kInvalidDisplayId);
+    EXPECT_TRUE(params.has_value());
+    params->disposition = WindowOpenDisposition::NEW_WINDOW;
+
+    return web_app::LaunchSystemWebAppImpl(
+        profile(), test_system_web_app_installation_->GetType(),
+        test_system_web_app_installation_->GetAppUrl(), *params);
+  }
+
   void InstallAndLaunchMockApp() {
     InstallMockSystemWebApp();
     LaunchMockApp();
@@ -143,6 +155,11 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
   void InstallAndLaunchMockPopup() {
     InstallMockSystemWebApp();
     LaunchMockPopup();
+  }
+
+  Browser* InstallAndLaunchMockSWA() {
+    InstallMockSystemWebApp();
+    return LaunchMockSWA();
   }
 
   GURL GetActiveTabURL() {
@@ -296,6 +313,38 @@ IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
   InstallAndLaunchMockPopup();
   EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+}
+
+IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
+                       OpenMultipleBrowsersForMultiWindowSWA) {
+  Browser* first_browser = InstallAndLaunchMockSWA();
+  // We should have the original browser for this BrowserTest, plus a new one,
+  // offset by a tasteful amount.
+  EXPECT_NE(nullptr, first_browser);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
+  Browser* second_browser = LaunchMockSWA();
+  EXPECT_NE(nullptr, second_browser);
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
+
+  auto bounds1 = first_browser->window()->GetRestoredBounds();
+  auto bounds2 = second_browser->window()->GetRestoredBounds();
+  // We've already hit the bottom bounds, so the y axis didn't move.
+  EXPECT_EQ(bounds1.x() + 20, bounds2.x());
+
+  // Open a ton of windows until they start stacking. Then keep making them to
+  // make sure we don't crash.
+  bool hit_the_bottom_right = false;
+  gfx::Rect previous_bounds = bounds2;
+  for (int i = 0; i < 10; i++) {
+    Browser* next_browser = LaunchMockSWA();
+    if (previous_bounds == next_browser->window()->GetRestoredBounds()) {
+      hit_the_bottom_right = true;
+      break;
+    }
+    previous_bounds = next_browser->window()->GetRestoredBounds();
+  }
+
+  EXPECT_TRUE(hit_the_bottom_right);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBrowserControllerBrowserTest,
