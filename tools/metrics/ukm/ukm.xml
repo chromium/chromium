@@ -4037,6 +4037,18 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InstallSource2" enum="InstallSource2">
+    <summary>
+      An enum that records where the app was installed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="InstallTime" enum="InstallTime">
     <summary>
       An enum that records when the app was installed.

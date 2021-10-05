@@ -43553,6 +43553,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="6" label="Installed by user action"/>
 </enum>
 
+<enum name="InstallSource2">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Installed as part of Chrome OS"/>
+  <int value="2" label="Installed from sync"/>
+  <int value="3" label="Installed from Play store"/>
+  <int value="4" label="Installed from Chrome web store"/>
+  <int value="5" label="Installed from browser"/>
+</enum>
+
 <enum name="InstallStatus">
   <obsolete>
     Removed in M88.

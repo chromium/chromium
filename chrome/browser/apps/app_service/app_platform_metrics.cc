@@ -1218,6 +1218,7 @@ void AppPlatformMetrics::RecordAppsInstallUkm(const apps::AppUpdate& update,
   ukm::builders::ChromeOSApp_InstalledApp builder(source_id);
   builder.SetAppType((int)app_type_name)
       .SetInstallReason((int)update.InstallReason())
+      .SetInstallSource2((int)update.InstallSource())
       .SetInstallTime((int)install_time)
       .SetUserDeviceMatrix(user_type_by_device_type_)
       .Record(ukm::UkmRecorder::Get());
