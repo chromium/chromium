@@ -13,53 +13,59 @@
 namespace network {
 namespace {
 
-PrivateNetworkAccessCheckResult PrivateNetworkAccessCheckInternal(
-    const network::mojom::ClientSecurityState* client_security_state,
+using Policy = mojom::PrivateNetworkRequestPolicy;
+using Result = PrivateNetworkAccessCheckResult;
+
+Result PrivateNetworkAccessCheckInternal(
+    const mojom::ClientSecurityState* client_security_state,
     mojom::IPAddressSpace target_address_space,
     int32_t url_load_options,
     mojom::IPAddressSpace resource_address_space) {
   if (url_load_options & mojom::kURLLoadOptionBlockLocalRequest &&
       IsLessPublicAddressSpace(resource_address_space,
-                               network::mojom::IPAddressSpace::kPublic)) {
-    return PrivateNetworkAccessCheckResult::kBlockedByLoadOption;
+                               mojom::IPAddressSpace::kPublic)) {
+    return Result::kBlockedByLoadOption;
   }
 
   if (target_address_space != mojom::IPAddressSpace::kUnknown) {
     return resource_address_space == target_address_space
-               ? PrivateNetworkAccessCheckResult::kAllowedByTargetIpAddressSpace
-               : PrivateNetworkAccessCheckResult::
-                     kBlockedByTargetIpAddressSpace;
+               ? Result::kAllowedByTargetIpAddressSpace
+               : Result::kBlockedByTargetIpAddressSpace;
   }
 
   if (!client_security_state) {
-    return PrivateNetworkAccessCheckResult::kAllowedMissingClientSecurityState;
+    return Result::kAllowedMissingClientSecurityState;
   }
 
   if (!IsLessPublicAddressSpace(resource_address_space,
                                 client_security_state->ip_address_space)) {
-    return PrivateNetworkAccessCheckResult::kAllowedNoLessPublic;
+    return Result::kAllowedNoLessPublic;
   }
 
   // We use a switch statement to force this code to be amended when values are
   // added to the `PrivateNetworkRequestPolicy` enum.
   switch (client_security_state->private_network_request_policy) {
-    case mojom::PrivateNetworkRequestPolicy::kAllow:
-      return PrivateNetworkAccessCheckResult::kAllowedByPolicyAllow;
-    case mojom::PrivateNetworkRequestPolicy::kWarn:
-      return PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn;
-    case mojom::PrivateNetworkRequestPolicy::kBlock:
-      return PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock;
+    case Policy::kAllow:
+      return Result::kAllowedByPolicyAllow;
+    case Policy::kWarn:
+      return Result::kAllowedByPolicyWarn;
+    case Policy::kBlock:
+      return Result::kBlockedByPolicyBlock;
+    case Policy::kPreflightWarn:
+      return Result::kBlockedByPolicyPreflightWarn;
+    case Policy::kPreflightBlock:
+      return Result::kBlockedByPolicyPreflightBlock;
   }
 }
 
 }  // namespace
 
-PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
-    const network::mojom::ClientSecurityState* client_security_state,
+Result PrivateNetworkAccessCheck(
+    const mojom::ClientSecurityState* client_security_state,
     mojom::IPAddressSpace target_address_space,
     int32_t url_load_options,
     mojom::IPAddressSpace resource_address_space) {
-  PrivateNetworkAccessCheckResult result = PrivateNetworkAccessCheckInternal(
+  Result result = PrivateNetworkAccessCheckInternal(
       client_security_state, target_address_space, url_load_options,
       resource_address_space);
   base::UmaHistogramEnumeration("Security.PrivateNetworkAccess.CheckResult",

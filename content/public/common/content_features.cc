@@ -567,6 +567,20 @@ const base::Feature kHighPriorityBeforeUnload{
 const base::Feature kPrioritizeBootstrapTasks = {
     "PrioritizeBootstrapTasks", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Requires that CORS preflight requests succeed before sending private network
+// requests. This flag implies `kPrivateNetworkAccessSendPreflights`.
+// See: https://wicg.github.io/private-network-access/#cors-preflight
+const base::Feature kPrivateNetworkAccessRespectPreflightResults = {
+    "PrivateNetworkAccessRespectPreflightResults",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables sending CORS preflight requests ahead of private network requests.
+// If this flag is enabled, then `kWarnAboutSecurePrivateNetworkRequests` is
+// ignored.
+// See: https://wicg.github.io/private-network-access/#cors-preflight
+const base::Feature kPrivateNetworkAccessSendPreflights = {
+    "PrivateNetworkAccessSendPreflights", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable the ProactivelySwapBrowsingInstance experiment. A browsing instance
 // represents a set of frames that can script each other. Currently, Chrome does
 // not always switch BrowsingInstance when navigating in between two unrelated

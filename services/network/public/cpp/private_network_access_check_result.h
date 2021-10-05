@@ -42,8 +42,16 @@ enum class PrivateNetworkAccessCheckResult {
   // resource address space. This may be indicative of a DNS rebinding attack.
   kBlockedByTargetIpAddressSpace = 7,
 
+  // Private network request: blocked because `target_ip_address_space` is
+  // `kUnknown` and policy is `kPreflightWarn`.
+  kBlockedByPolicyPreflightWarn = 8,
+
+  // Private network request: blocked because `target_ip_address_space` is
+  // `kUnknown` and policy is `kPreflightBlock`.
+  kBlockedByPolicyPreflightBlock = 9,
+
   // Required for UMA histogram logging.
-  kMaxValue = kBlockedByTargetIpAddressSpace,
+  kMaxValue = kBlockedByPolicyPreflightBlock,
 };
 
 // If `result` indicates that the request should be blocked, returns the

@@ -110,6 +110,11 @@ enum CorsError {
   // be different from the IP address space of the remote endpoint.
   // See: https://wicg.github.io/private-network-access/#request-target-ip-address-space
   kInvalidPrivateNetworkAccess,
+
+  // The request did not carry a `target_ip_address_space` yet turned out to be
+  // a private network request.
+  // See: https://wicg.github.io/private-network-access/#request-target-ip-address-space
+  kUnexpectedPrivateNetworkAccess,
 };
 
 // Contains additional details about a CORS-related error.
@@ -131,8 +136,9 @@ struct CorsErrorStatus {
   // The address space of the requested resource.
   // Set iff `cors_error` is one of:
   //
-  // - `kInvalidPrivateNetworkAccess`
   // - `kInsecurePrivateNetwork`
+  // - `kInvalidPrivateNetworkAccess`
+  // - `kUnexpectedPrivateNetworkAccess`
   //
   IPAddressSpace resource_address_space = IPAddressSpace.kUnknown;
 

@@ -28,7 +28,7 @@ class ClientSecurityState;
 // https://wicg.github.io/private-network-access/#private-network-access-check
 PrivateNetworkAccessCheckResult COMPONENT_EXPORT(NETWORK_SERVICE)
     PrivateNetworkAccessCheck(
-        const network::mojom::ClientSecurityState* client_security_state,
+        const mojom::ClientSecurityState* client_security_state,
         mojom::IPAddressSpace target_address_space,
         int32_t url_load_options,
         mojom::IPAddressSpace resource_address_space);

@@ -15306,6 +15306,7 @@ Called by update_net_error_codes.py.-->
   <int value="23" label="kRedirectContainsCredentials"/>
   <int value="24" label="kInsecurePrivateNetwork"/>
   <int value="25" label="kInvalidPrivateNetworkAccess"/>
+  <int value="26" label="kUnexpectedPrivateNetworkAccess"/>
 </enum>
 
 <enum name="CorsAccessCheckResult">

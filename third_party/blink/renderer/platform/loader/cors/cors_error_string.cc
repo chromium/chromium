@@ -233,6 +233,10 @@ String GetErrorString(const network::CorsErrorStatus& status,
                        "` yet the resource is in address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
       break;
+    case CorsError::kUnexpectedPrivateNetworkAccess:
+      Append(builder, {"Request had no target IP address space, yet the "
+                       "resource is in address space `",
+                       ShortAddressSpace(status.resource_address_space), "`."});
   }
   return builder.ToString();
 }

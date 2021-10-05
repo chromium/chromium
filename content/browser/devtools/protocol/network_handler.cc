@@ -2167,6 +2167,9 @@ String BuildCorsError(network::mojom::CorsError cors_error) {
 
     case network::mojom::CorsError::kInvalidPrivateNetworkAccess:
       return protocol::Network::CorsErrorEnum::InvalidPrivateNetworkAccess;
+
+    case network::mojom::CorsError::kUnexpectedPrivateNetworkAccess:
+      return protocol::Network::CorsErrorEnum::UnexpectedPrivateNetworkAccess;
   }
 }
 }  // namespace
@@ -3034,6 +3037,10 @@ String NetworkHandler::BuildPrivateNetworkRequestPolicy(
       // TODO(https://crbug.com/1141824): Fix this.
       return protocol::Network::PrivateNetworkRequestPolicyEnum::
           WarnFromInsecureToMorePrivate;
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightBlock:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightBlock;
+    case network::mojom::PrivateNetworkRequestPolicy::kPreflightWarn:
+      return protocol::Network::PrivateNetworkRequestPolicyEnum::PreflightWarn;
   }
 }
 

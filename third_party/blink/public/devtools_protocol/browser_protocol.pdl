@@ -4836,8 +4836,14 @@ domain Network
       MethodDisallowedByPreflightResponse
       HeaderDisallowedByPreflightResponse
       RedirectContainsCredentials
+      # Request was a private network request initiated by a non-secure context.
       InsecurePrivateNetwork
+      # Request carried a target IP address space property that did not match
+      # the target resource's address space.
       InvalidPrivateNetworkAccess
+      # Request was a private network request yet did not carry a target IP
+      # address space.
+      UnexpectedPrivateNetworkAccess
       NoCorsRedirectModeNotFollow
 
   type CorsErrorStatus extends object
@@ -5867,6 +5873,8 @@ domain Network
       Allow
       BlockFromInsecureToMorePrivate
       WarnFromInsecureToMorePrivate
+      PreflightBlock
+      PreflightWarn
 
   experimental type IPAddressSpace extends string
     enum
