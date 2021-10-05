@@ -13,6 +13,7 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "net/base/isolation_info.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -149,6 +150,16 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
       memory_dump_str.begin(), memory_dump_str.end(),
       [](char c) { return !std::isalnum(static_cast<unsigned char>(c)); }, '_');
   return memory_dump_str;
+}
+
+const net::SiteForCookies StorageKey::ToNetSiteForCookies() const {
+  if (!nonce_ &&
+      net::registry_controlled_domains::SameDomainOrHost(
+          origin_, url::Origin::Create(top_level_site_.GetURL()),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return net::SiteForCookies::FromUrl(top_level_site_.GetURL());
+  }
+  return net::SiteForCookies();
 }
 
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {

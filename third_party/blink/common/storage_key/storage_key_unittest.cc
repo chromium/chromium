@@ -507,4 +507,52 @@ TEST(StorageKeyTest, IsThirdPartyContext) {
   }
 }
 
+TEST(StorageKeyTest, ToNetSiteForCookies) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kThirdPartyStoragePartitioning);
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://www.foo.com"));
+  const url::Origin kInsecureOrigin =
+      url::Origin::Create(GURL("http://www.foo.com"));
+  const url::Origin kSubdomainOrigin =
+      url::Origin::Create(GURL("https://bar.foo.com"));
+  const url::Origin kDifferentSite =
+      url::Origin::Create(GURL("https://www.bar.com"));
+
+  struct TestCase {
+    const url::Origin origin;
+    const url::Origin top_level_origin;
+    const net::SchemefulSite expected;
+    const bool expected_opaque = false;
+    const bool has_nonce = false;
+  } test_cases[] = {
+      {kOrigin, kOrigin, net::SchemefulSite(kOrigin)},
+      {kOrigin, kInsecureOrigin, net::SchemefulSite(kInsecureOrigin)},
+      {kInsecureOrigin, kOrigin, net::SchemefulSite(kOrigin)},
+      {kOrigin, kSubdomainOrigin, net::SchemefulSite(kOrigin)},
+      {kSubdomainOrigin, kOrigin, net::SchemefulSite(kOrigin)},
+      {kOrigin, kDifferentSite, net::SchemefulSite(), true},
+      {kOrigin, kOrigin, net::SchemefulSite(), true, true},
+  };
+  for (const auto& test_case : test_cases) {
+    net::SchemefulSite got_site;
+    if (test_case.has_nonce) {
+      got_site = StorageKey::CreateWithNonce(test_case.origin,
+                                             base::UnguessableToken::Create())
+                     .ToNetSiteForCookies()
+                     .site();
+    } else {
+      got_site = StorageKey(test_case.origin, test_case.top_level_origin)
+                     .ToNetSiteForCookies()
+                     .site();
+    }
+    if (test_case.expected_opaque) {
+      EXPECT_TRUE(got_site.opaque());
+      continue;
+    }
+    EXPECT_EQ(test_case.expected, got_site);
+  }
+}
+
 }  // namespace blink

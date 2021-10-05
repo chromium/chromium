@@ -1306,7 +1306,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<network::mojom::RestrictedCookieManager>(
-      BindServiceWorkerReceiverForOrigin(
+      BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker,
           host));
   map->Add<blink::mojom::BucketManagerHost>(BindServiceWorkerReceiverForOrigin(

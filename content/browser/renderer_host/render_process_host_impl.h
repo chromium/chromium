@@ -573,10 +573,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
 
   // Binds |receiver| to the RestrictedCookieManager instance owned by
   // |storage_partition_impl_|, and is used by a service worker via
-  // BrowserInterfaceBroker. |receiver| belongs to the service worker at
-  // |origin| hosted by this process,
+  // BrowserInterfaceBroker. |receiver| belongs to the service worker that use
+  // |storage_key| hosted by this process,
   void BindRestrictedCookieManagerForServiceWorker(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver)
       override;
 

@@ -2163,14 +2163,22 @@ void RenderProcessHostImpl::BindNativeIOHost(
 }
 
 void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   StoragePartitionImpl* storage_partition =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
+
   storage_partition->CreateRestrictedCookieManager(
-      network::mojom::RestrictedCookieManagerRole::SCRIPT, origin,
-      net::IsolationInfo::ToDoUseTopFrameOriginAsWell(origin),
+      network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
+      net::IsolationInfo::Create(
+          net::IsolationInfo::RequestType::kOther,
+          url::Origin::Create(storage_key.top_level_site().GetURL()),
+          storage_key.origin(), storage_key.ToNetSiteForCookies(),
+          /*party_context=*/absl::nullopt,
+          storage_key.nonce().has_value() ? &storage_key.nonce().value()
+                                          : nullptr),
       true /* is_service_worker */, GetID(), MSG_ROUTING_NONE,
       std::move(receiver),
       storage_partition->CreateCookieAccessObserverForServiceWorker());

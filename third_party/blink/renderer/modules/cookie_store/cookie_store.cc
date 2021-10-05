@@ -226,8 +226,12 @@ scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(
     return window->document()->TopFrameOrigin()->IsolatedCopy();
   }
 
+  // TODO(crbug.com/1225444): This is a temporary solution until we can plumb
+  // BlinkStorageKey to ServiceWorkerGlobalScope. Once we do the top-frame
+  // origin should be BlinkStorageKey's top-frame site.
   auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
-  return scope->GetSecurityOrigin()->IsolatedCopy();
+  return SecurityOrigin::CreateFromUrlOrigin(url::Origin::Create(
+      net::SchemefulSite(scope->GetSecurityOrigin()->ToUrlOrigin()).GetURL()));
 }
 
 }  // namespace

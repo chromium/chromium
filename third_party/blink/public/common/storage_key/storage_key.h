@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/unguessable_token.h"
 #include "net/base/schemeful_site.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "url/gurl.h"
@@ -134,6 +135,14 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Provides a concise string representation suitable for memory dumps.
   // Limits the length to `max_length` chars and strips special characters.
   std::string GetMemoryDumpString(size_t max_length) const;
+
+  // Return the "site for cookies" for the StorageKey's frame (or worker).
+  //
+  // Right now this "site for cookies" is not entirely accurate. For example
+  // consider if A.com embeds B.com which embeds A.com in a child frame. The
+  // site for cookies according to this method will be A.com, but according to
+  // the spec it should be an opaque origin.
+  const net::SiteForCookies ToNetSiteForCookies() const;
 
  private:
   StorageKey(const url::Origin& origin,
