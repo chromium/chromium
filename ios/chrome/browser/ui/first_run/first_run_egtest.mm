@@ -55,6 +55,41 @@ id<GREYMatcher> GetAcceptButton() {
                     grey_sufficientlyVisible(), nil);
 }
 
+// Returns a matcher for the button to turn on sync.
+id<GREYMatcher> GetTurnSyncOnButton() {
+  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
+    return grey_allOf(grey_text(l10n_util::GetNSString(
+                          IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON)),
+                      grey_sufficientlyVisible(), nil);
+  }
+  return grey_allOf(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION)),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the button to not turn on sync.
+id<GREYMatcher> GetDontSyncButton() {
+  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
+    return grey_allOf(grey_text(l10n_util::GetNSString(
+                          IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON)),
+                      grey_sufficientlyVisible(), nil);
+  }
+  return grey_allOf(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION)),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the button to open the Sync settings.
+id<GREYMatcher> GetSyncSettings() {
+  if ([FirstRunAppInterface isOldSyncStringInFREEnabled]) {
+    return grey_allOf(grey_accessibilityLabel(@"settings"),
+                      grey_sufficientlyVisible(), nil);
+  }
+  return grey_allOf(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)),
+                    grey_sufficientlyVisible(), nil);
+}
+
 // Returns a matcher for the sign-in screen "Continue as <identity>" button.
 id<GREYMatcher> GetContinueButtonWithIdentity(
     FakeChromeIdentity* fakeIdentity) {
@@ -498,10 +533,7 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySyncScreenIsDisplayed];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_text(l10n_util::GetNSString(
-                                IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION)),
-                            grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:GetTurnSyncOnButton()]
       performAction:grey_tap()];
 
   // Dismiss the location prompt.
@@ -530,11 +562,7 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySyncScreenIsDisplayed];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_text(l10n_util::GetNSString(
-                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION)),
-                     grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:GetDontSyncButton()]
       performAction:grey_tap()];
 
   // Verify that the user is signed in.
@@ -568,11 +596,7 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySyncScreenIsDisplayed];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_text(l10n_util::GetNSString(
-                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)),
-                     grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 
   // Check that Sync hasn't started yet, allowing the user to change some
@@ -586,11 +610,7 @@ GREYLayoutConstraint* BelowConstraint() {
   // Check sync did not start.
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't start when discarding advanced settings.");
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_text(l10n_util::GetNSString(
-                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_SECONDARY_ACTION)),
-                     grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:GetDontSyncButton()]
       performAction:grey_tap()];
 
   // Verify that the user is signed in.
@@ -623,11 +643,7 @@ GREYLayoutConstraint* BelowConstraint() {
       performAction:grey_tap()];
 
   [self verifySyncScreenIsDisplayed];
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_text(l10n_util::GetNSString(
-                         IDS_IOS_FIRST_RUN_SYNC_SCREEN_ADVANCE_SETTINGS)),
-                     grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:GetSyncSettings()]
       performAction:grey_tap()];
 
   // Check that Sync hasn't started yet, allowing the user to change some
@@ -642,10 +658,7 @@ GREYLayoutConstraint* BelowConstraint() {
   GREYAssertFalse([FirstRunAppInterface isSyncFirstSetupComplete],
                   @"Sync shouldn't start when discarding advanced settings.");
 
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_text(l10n_util::GetNSString(
-                                IDS_IOS_FIRST_RUN_SYNC_SCREEN_PRIMARY_ACTION)),
-                            grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:GetTurnSyncOnButton()]
       performAction:grey_tap()];
 
   // Check sync did start.

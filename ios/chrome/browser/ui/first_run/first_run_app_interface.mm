@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -48,6 +49,10 @@
   return SyncSetupServiceFactory::GetForBrowserState(
              chrome_test_util::GetOriginalBrowserState())
       ->IsFirstSetupComplete();
+}
+
++ (BOOL)isOldSyncStringInFREEnabled {
+  return base::FeatureList::IsEnabled(kOldSyncStringFRE);
 }
 
 @end
