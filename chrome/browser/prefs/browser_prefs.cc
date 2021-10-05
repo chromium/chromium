@@ -469,6 +469,10 @@ const char kSupervisedUserAllowlists[] = "profile.managed.whitelists";
 
 // Deprecated 12/2020
 const char kFirstRunTrialGroup[] = "help_app_first_run.trial_group";
+
+// Deprecated 10/2021
+const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
@@ -728,6 +732,7 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kSupervisedUserAllowlists);
   ash::HelpAppNotificationController::RegisterObsoletePrefsForMigration(
       registry);
+  registry->RegisterBooleanPref(kHasCameraAppMigratedToSWA, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
@@ -1548,6 +1553,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 12/2020
   profile_prefs->ClearPref(kAssistantPrivacyInfoShownInLauncher);
   profile_prefs->ClearPref(kAssistantPrivacyInfoDismissedInLauncher);
+
+  // Added 10/2021
+  profile_prefs->ClearPref(kHasCameraAppMigratedToSWA);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Added 12/2020

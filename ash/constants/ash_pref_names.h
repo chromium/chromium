@@ -63,8 +63,6 @@ extern const char kSuggestedContentEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLauncherResultEverLaunched[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const char kHasCameraAppMigratedToSWA[];
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLauncherSearchNormalizerParameters[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDeviceSystemWideTracingEnabled[];

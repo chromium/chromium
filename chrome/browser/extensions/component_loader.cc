@@ -399,21 +399,6 @@ void ComponentLoader::AddKeyboardApp() {
   Add(IDR_KEYBOARD_MANIFEST, base::FilePath(FILE_PATH_LITERAL("keyboard")));
 }
 
-void ComponentLoader::AddChromeCameraApp() {
-  // Only adding the Chrome App version of camera app for migration purpose.
-  // We should remove this method totally after a few milestones.
-  if (profile_->GetPrefs()->GetBoolean(
-          chromeos::prefs::kHasCameraAppMigratedToSWA)) {
-    return;
-  }
-
-  base::FilePath resources_path;
-  if (base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
-    AddComponentFromDir(resources_path.Append(extension_misc::kCameraAppPath),
-                        extension_misc::kCameraAppId, base::RepeatingClosure());
-  }
-}
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 scoped_refptr<const Extension> ComponentLoader::CreateExtension(
@@ -528,7 +513,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
           switches::kLoadGuestModeTestExtension));
       AddGuestModeTestExtension(path);
     }
-    AddChromeCameraApp();
     AddAudioPlayerExtension();
     AddFileManagerExtension();
     AddImageLoaderExtension();

@@ -140,10 +140,6 @@ const char kSuggestedContentEnabled[] = "settings.suggested_content_enabled";
 // the Chrome OS launcher.
 const char kLauncherResultEverLaunched[] = "launcher.result_ever_launched";
 
-// Whether the status of the platform app version of camera app is migrated to
-// SWA.
-const char kHasCameraAppMigratedToSWA[] = "camera.has_migrated_to_swa";
-
 // Dictioanry pref to store data on the distribution of provider relevance
 // scores for the launcher normalizer.
 const char kLauncherSearchNormalizerParameters[] =

@@ -20,7 +20,6 @@ class CameraSystemAppDelegate : public web_app::SystemWebAppDelegate {
 
   // web_app::SystemWebAppDelegate overrides
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
-  std::vector<web_app::AppId> GetAppIdsToUninstallAndReplace() const override;
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;

@@ -635,14 +635,6 @@ void SystemWebAppManager::OnAppsSynchronized(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&SystemWebAppManager::StartBackgroundTasks,
                                 weak_ptr_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_camera_app_installed =
-      system_app_delegates_.find(SystemAppType::CAMERA) !=
-      system_app_delegates_.end();
-  profile_->GetPrefs()->SetBoolean(chromeos::prefs::kHasCameraAppMigratedToSWA,
-                                   is_camera_app_installed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void SystemWebAppManager::StartBackgroundTasks() const {

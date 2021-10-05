@@ -71,15 +71,6 @@ std::unique_ptr<WebApplicationInfo> CameraSystemAppDelegate::GetWebAppInfo()
   return CreateWebAppInfoForCameraSystemWebApp();
 }
 
-std::vector<web_app::AppId>
-CameraSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
-  if (!profile_->GetPrefs()->GetBoolean(
-          chromeos::prefs::kHasCameraAppMigratedToSWA)) {
-    return {extension_misc::kCameraAppId};
-  }
-  return {};
-}
-
 bool CameraSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
