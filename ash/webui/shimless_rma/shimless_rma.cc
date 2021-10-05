@@ -25,7 +25,7 @@ namespace ash {
 
 namespace {
 
-// TODO(joonbug): Replace with webui::SetUpWebUIDataSource() once it no
+// TODO(crbug/1051793): Replace with webui::SetUpWebUIDataSource() once it no
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const webui::ResourcePath> resources,
