@@ -14,7 +14,7 @@ import shutil
 import sys
 import tempfile
 import time
-import urllib2
+import six.moves.urllib.error
 
 import common
 
@@ -287,7 +287,7 @@ def _run_tests():
     if driver:
       try:
         driver.quit()
-      except urllib2.URLError:
+      except six.moves.urllib.error.URLError:
         # Ignore the error as ChromeDriver may have already exited.
         pass
 

@@ -17,10 +17,8 @@ import glob
 import itertools
 import json
 import os
-import re
 import string
 import sys
-import traceback
 
 import buildbot_json_magic_substitutions as magic_substitutions
 

@@ -10,6 +10,8 @@ tests to run and pass. Useful for isolating tests from the real $HOME, which
 can contain config files that negatively affect test performance.
 """
 
+from __future__ import print_function
+
 import os
 import shutil
 import subprocess
@@ -44,7 +46,7 @@ def _set_up_dummy_home(original_home, dummy_home):
 def main():
   try:
     dummy_home = tempfile.mkdtemp()
-    print 'Creating dummy home in %s' % dummy_home
+    print('Creating dummy home in %s' % dummy_home)
 
     original_home = os.environ['HOME']
     os.environ['HOME'] = dummy_home

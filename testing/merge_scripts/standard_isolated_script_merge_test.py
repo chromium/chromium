@@ -3,11 +3,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import itertools
 import json
 import os
 import shutil
-import sys
 import tempfile
 import unittest
 
@@ -55,7 +53,7 @@ class StandardIsolatedScriptMergeTest(unittest.TestCase):
 
   def _stage(self, summary, files):
     self.summary = self._write_temp_file('summary.json', summary)
-    for path, content in files.iteritems():
+    for path, content in files.items():
       abs_path = self._write_temp_file(path, content)
       self.test_files.append(abs_path)
 

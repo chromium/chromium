@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import copy
 import json
 import sys
@@ -179,7 +181,7 @@ def _merge_json_test_result_format(shard_results_list):
     if result_json:
       raise MergeException(  # pragma: no cover (covered by
                              # results_merger_unittest).
-          'Unmergable values %s' % result_json.keys())
+          'Unmergable values %s' % list(result_json.keys()))
 
   return merged_results
 
@@ -202,7 +204,7 @@ def merge_tries(source, dest):
   pending_nodes = [('', dest, source)]
   while pending_nodes:
     prefix, dest_node, curr_node = pending_nodes.pop()
-    for k, v in curr_node.iteritems():
+    for k, v in curr_node.items():
       if k in dest_node:
         if not isinstance(v, dict):
           raise MergeException(
@@ -234,7 +236,7 @@ def sum_dicts(source, dest):
 
   This is intended for use as a merge_func parameter to merge_value.
   """
-  for k, v in source.iteritems():
+  for k, v in source.items():
     dest.setdefault(k, 0)
     dest[k] += v
 
@@ -274,7 +276,7 @@ def main(files):
   for f in files[1:]:
     sys.stderr.write('Merging %s\n' % f)
     result = merge_test_results([result, json.load(open(f))])
-  print json.dumps(result)
+  print(json.dumps(result))
   return 0
 
 

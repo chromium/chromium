@@ -123,7 +123,7 @@ class UnitTest(unittest.TestCase):
         # the last build that ran the shard that corresponds to that
         # index.  If that shard hasn't been run before the entry
         # should be an empty string.
-        for i in xrange(num_shards):
+        for i in range(num_shards):
             task = {
                 'tasks': [{
                     'request': {
@@ -169,7 +169,7 @@ class UnitTest(unittest.TestCase):
 
     def list_contains_sublist(self, main_list, sub_list):
         return any(sub_list == main_list[offset:offset + len(sub_list)]
-                   for offset in xrange(len(main_list) - (len(sub_list) - 1)))
+                   for offset in range(len(main_list) - (len(sub_list) - 1)))
 
     def get_triggered_shard_to_bot(self, triggerer):
         triggered_map = {}
