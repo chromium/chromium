@@ -84,6 +84,8 @@ public class TabbedModeTabPersistencePolicyTest {
         for (Activity activity : ApplicationStatus.getRunningActivities()) {
             activity.finishAndRemoveTask();
         }
+
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
     private TabbedModeTabModelOrchestrator buildTestTabModelSelector(

@@ -12,6 +12,7 @@ import android.view.ViewGroup.LayoutParams;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -276,14 +277,20 @@ public class TabPersistentStoreTest {
 
     @BeforeClass
     public static void beforeClassSetUp() {
+        // Required for parameterized tests - otherwise we will fail
+        // assert sInstance == null in setTabModelSelectorFactoryForTesting
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
+                sMockTabModelSelectorFactory);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Required for parameterized tests - otherwise we will fail
-            // assert sInstance == null in setTabModelSelectorFactoryForTesting
-            TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
-            TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                    sMockTabModelSelectorFactory);
             sTabWindowManager = (TabWindowManagerImpl) TabWindowManagerSingleton.getInstance();
         });
+    }
+
+    @AfterClass
+    public static void afterClassTearDown() {
+        TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
     }
 
     @Before
@@ -381,7 +388,8 @@ public class TabPersistentStoreTest {
     private static TabbedModeTabPersistencePolicy createTabPersistencePolicy(
             int selectorIndex, boolean mergeTabs, boolean tabMergingEnabled) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new TabbedModeTabPersistencePolicy(selectorIndex, mergeTabs, tabMergingEnabled);
+            return new TabbedModeTabPersistencePolicy(selectorIndex, mergeTabs, tabMergingEnabled,
+                    TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors());
         });
     }
 
