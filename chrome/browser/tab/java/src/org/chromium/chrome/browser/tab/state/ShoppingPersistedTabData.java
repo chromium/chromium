@@ -446,8 +446,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                                     return;
                                                 }
                                                 if (decision != OptimizationGuideDecision.TRUE) {
-                                                    supplierCallback.onResult(
-                                                            getEmptyShoppingPersistedTabData(tab));
+                                                    ShoppingPersistedTabData res =
+                                                            getEmptyShoppingPersistedTabData(tab);
+                                                    res.logPriceDropMetrics(
+                                                            METRICS_IDENTIFIER_PREFIX);
+                                                    supplierCallback.onResult(res);
                                                     return;
                                                 }
                                                 try {
@@ -462,6 +465,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                                                             .parsePriceTrackingDataProto(tab,
                                                                     priceTrackingDataProto,
                                                                     previous);
+                                                    shoppingPersistedTabData.logPriceDropMetrics(
+                                                            METRICS_IDENTIFIER_PREFIX);
                                                     supplierCallback.onResult(
                                                             shoppingPersistedTabData);
                                                 } catch (InvalidProtocolBufferException e) {
