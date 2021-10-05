@@ -807,8 +807,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(image_original_url, image_load_info->original_url);
 }
 
+// Flaky on all platforms, http://crbug.com/1256643.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       ResourceLoadCompleteNetError) {
+                       DISABLED_ResourceLoadCompleteNetError) {
   ResourceLoadObserver observer(shell());
   ASSERT_TRUE(embedded_test_server()->Start());
 
