@@ -89,6 +89,8 @@ class GLScalerTestUtil {
   // is being done).
   static void ConvertRGBABitmapToYUV(SkBitmap* image);
 
+  static SkBitmap CopyAndConvertToRGBA(const SkBitmap& bitmap);
+
   // Performs an in-place swizzling of the red and blue color channels in the
   // given |image|.
   static void SwizzleBitmap(SkBitmap* image);

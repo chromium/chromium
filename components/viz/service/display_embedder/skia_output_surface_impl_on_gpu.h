@@ -63,6 +63,8 @@ class PlatformWindowSurface;
 
 namespace viz {
 
+class AsyncReadResultHelper;
+class AsyncReadResultLock;
 class DawnContextProvider;
 class ImageContextImpl;
 class VulkanContextProvider;
@@ -235,6 +237,11 @@ class SkiaOutputSurfaceImplOnGpu
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver);
 
+  const scoped_refptr<AsyncReadResultLock> GetAsyncReadResultLock() const;
+
+  void AddAsyncReadResultHelper(AsyncReadResultHelper* helper);
+  void RemoveAsyncReadResultHelper(AsyncReadResultHelper* helper);
+
  private:
   class DisplayContext;
 
@@ -394,11 +401,6 @@ class SkiaOutputSurfaceImplOnGpu
 
   int num_readbacks_pending_ = 0;
   bool readback_poll_pending_ = false;
-
-  class AsyncReadResultLock;
-  class AsyncReadResultHelper;
-  class CopyOutputResultYUV;
-  class CopyOutputResultRGBA;
 
   // Lock for |async_read_result_helpers_|.
   scoped_refptr<AsyncReadResultLock> async_read_result_lock_;

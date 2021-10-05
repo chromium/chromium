@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_REQUEST_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback.h"
@@ -132,6 +133,8 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // Creates a RGBA request with ResultDestination::kSystemMemory that ignores
   // results, for testing purposes.
   static std::unique_ptr<CopyOutputRequest> CreateStubForTesting();
+
+  std::string ToString() const;
 
  private:
   // Note: The StructTraits may "steal" the |result_callback_|, to allow it to

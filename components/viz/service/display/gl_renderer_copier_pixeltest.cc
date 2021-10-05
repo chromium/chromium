@@ -52,19 +52,6 @@ base::FilePath GetTestFilePath(const base::FilePath::CharType* basename) {
   return test_dir.Append(base::FilePath(basename));
 }
 
-SkBitmap CopyAndConvertToRGBA(const SkBitmap& bitmap) {
-  SkBitmap result;
-  result.allocPixels(SkImageInfo::Make(bitmap.width(), bitmap.height(),
-                                       kRGBA_8888_SkColorType,
-                                       kPremul_SkAlphaType));
-
-  SkPixmap pixmap;
-  bool success = bitmap.peekPixels(&pixmap) && result.writePixels(pixmap, 0, 0);
-  CHECK(success);
-
-  return result;
-}
-
 // Creates a packed RGBA (bytes_per_pixel=4) or RGB (bytes_per_pixel=3) bitmap
 // in OpenGL byte/row order from the given SkBitmap.
 std::unique_ptr<uint8_t[]> CreateGLPixelsFromSkBitmap(SkBitmap bitmap,
@@ -221,7 +208,8 @@ class GLRendererCopierPixelTest
         &source_bitmap_));
     source_bitmap_.setImmutable();
 
-    source_bitmap_rgba_ = CopyAndConvertToRGBA(source_bitmap_);
+    source_bitmap_rgba_ =
+        GLScalerTestUtil::CopyAndConvertToRGBA(source_bitmap_);
     source_bitmap_rgba_.setImmutable();
 
     source_bitmap_yuv_ = source_bitmap_rgba_;
@@ -501,7 +489,7 @@ TEST_P(GLRendererCopierPixelTest, ExecutesCopyRequestNV12) {
     return;
   }
 
-  expected = CopyAndConvertToRGBA(expected);
+  expected = GLScalerTestUtil::CopyAndConvertToRGBA(expected);
   GLScalerTestUtil::ConvertRGBABitmapToYUV(&expected);
 
   constexpr float kAvgAbsoluteErrorLimit = 16.f;

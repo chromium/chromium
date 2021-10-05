@@ -8,11 +8,38 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+namespace {
+
+const char* ResultFormatToShortString(
+    viz::CopyOutputRequest::ResultFormat result_format) {
+  switch (result_format) {
+    case viz::CopyOutputRequest::ResultFormat::RGBA:
+      return "RGBA";
+    case viz::CopyOutputRequest::ResultFormat::I420_PLANES:
+      return "I420";
+    case viz::CopyOutputRequest::ResultFormat::NV12_PLANES:
+      return "NV12";
+  }
+}
+
+const char* ResultDestinationToShortString(
+    viz::CopyOutputRequest::ResultDestination result_destination) {
+  switch (result_destination) {
+    case viz::CopyOutputRequest::ResultDestination::kSystemMemory:
+      return "CPU";
+    case viz::CopyOutputRequest::ResultDestination::kNativeTextures:
+      return "GPU";
+  }
+}
+
+}  // namespace
 
 namespace viz {
 
@@ -40,6 +67,17 @@ CopyOutputRequest::~CopyOutputRequest() {
     SendResult(std::make_unique<CopyOutputResult>(
         result_format_, result_destination_, gfx::Rect(), false));
   }
+}
+
+std::string CopyOutputRequest::ToString() const {
+  return base::StringPrintf(
+      "[%s] -%s→%s-> [%s] @ [%s, %s]",
+      has_area() ? area().ToString().c_str() : "noclip",
+      scale_from().ToString().c_str(), scale_to().ToString().c_str(),
+      has_result_selection() ? result_selection().ToString().c_str()
+                             : "noclamp",
+      ResultFormatToShortString(result_format()),
+      ResultDestinationToShortString(result_destination()));
 }
 
 void CopyOutputRequest::SetScaleRatio(const gfx::Vector2d& scale_from,

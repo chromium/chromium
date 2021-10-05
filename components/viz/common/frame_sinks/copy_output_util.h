@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_UTIL_H_
 #define COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_UTIL_H_
 
+#include <string>
+
 #include "components/viz/common/viz_common_export.h"
 
 #include "ui/gfx/geometry/rect.h"
@@ -45,6 +47,8 @@ struct VIZ_COMMON_EXPORT RenderPassGeometry {
 
   RenderPassGeometry();
   ~RenderPassGeometry();
+
+  std::string ToString() const;
 };
 
 // Returns size (in bytes) required to fit luma plane of the |result|. The

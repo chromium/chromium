@@ -221,6 +221,19 @@ void GLScalerTestUtil::ConvertRGBABitmapToYUV(SkBitmap* image) {
 }
 
 // static
+SkBitmap GLScalerTestUtil::CopyAndConvertToRGBA(const SkBitmap& bitmap) {
+  SkBitmap result;
+  result.allocPixels(SkImageInfo::Make(
+      bitmap.dimensions(), kRGBA_8888_SkColorType, kPremul_SkAlphaType));
+
+  SkPixmap pixmap;
+  bool success = bitmap.peekPixels(&pixmap) && result.writePixels(pixmap, 0, 0);
+  CHECK(success);
+
+  return result;
+}
+
+// static
 void GLScalerTestUtil::SwizzleBitmap(SkBitmap* image) {
   for (int y = 0; y < image->height(); ++y) {
     uint32_t* const pixels = image->getAddr32(0, y);
