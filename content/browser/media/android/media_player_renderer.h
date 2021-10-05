@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "media/base/android/media_player_bridge.h"
 #include "media/base/media_log.h"
@@ -25,7 +24,8 @@
 #include "url/gurl.h"
 
 namespace content {
-class RenderFrameHostImpl;
+
+class WebContents;
 class MediaPlayerRendererWebContentsObserver;
 
 // MediaPlayerRenderer bridges the media::Renderer and Android MediaPlayer
@@ -36,7 +36,7 @@ class MediaPlayerRendererWebContentsObserver;
 // living in WMPI in the Renderer process.
 class CONTENT_EXPORT MediaPlayerRenderer
     : public media::Renderer,
-      public DocumentService<media::mojom::MediaPlayerRendererExtension>,
+      public media::mojom::MediaPlayerRendererExtension,
       public media::MediaPlayerBridge::Client {
  public:
   using RendererExtension = media::mojom::MediaPlayerRendererExtension;
@@ -47,7 +47,9 @@ class CONTENT_EXPORT MediaPlayerRenderer
       media::MediaUrlInterceptor* media_url_interceptor);
 
   MediaPlayerRenderer(
-      RenderFrameHostImpl* rfh,
+      int process_id,
+      int routing_id,
+      WebContents* web_contents,
       mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
       mojo::PendingRemote<ClientExtension> client_extension_remote);
 
@@ -109,6 +111,12 @@ class CONTENT_EXPORT MediaPlayerRenderer
 
   mojo::Remote<ClientExtension> client_extension_;
 
+  // Identifiers to find the RenderFrameHost that created |this|.
+  // NOTE: We store these IDs rather than a RenderFrameHost* because we do not
+  // know when the RenderFrameHost is destroyed.
+  int render_process_id_;
+  int routing_id_;
+
   media::RendererClient* renderer_client_;
 
   std::unique_ptr<media::MediaPlayerBridge> media_player_;
@@ -128,6 +136,8 @@ class CONTENT_EXPORT MediaPlayerRenderer
   bool web_contents_muted_;
   MediaPlayerRendererWebContentsObserver* web_contents_observer_;
   float volume_;
+
+  mojo::Receiver<MediaPlayerRendererExtension> renderer_extension_receiver_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaPlayerRenderer> weak_factory_{this};

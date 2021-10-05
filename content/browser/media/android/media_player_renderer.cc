@@ -33,22 +33,33 @@ const float kDefaultVolume = 1.0;
 }  // namespace
 
 MediaPlayerRenderer::MediaPlayerRenderer(
-    RenderFrameHostImpl* rfh,
+    int process_id,
+    int routing_id,
+    WebContents* web_contents,
     mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
     mojo::PendingRemote<ClientExtension> client_extension_remote)
-    : DocumentService(rfh, std::move(renderer_extension_receiver)),
-      client_extension_(std::move(client_extension_remote)),
+    : client_extension_(std::move(client_extension_remote)),
+      render_process_id_(process_id),
+      routing_id_(routing_id),
       has_error_(false),
-      volume_(kDefaultVolume) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
-  web_contents_muted_ = web_contents->IsAudioMuted();
+      volume_(kDefaultVolume),
+      renderer_extension_receiver_(this,
+                                   std::move(renderer_extension_receiver)) {
+  DCHECK_EQ(WebContents::FromRenderFrameHost(
+                RenderFrameHost::FromID(process_id, routing_id)),
+            web_contents);
 
-  MediaPlayerRendererWebContentsObserver::CreateForWebContents(web_contents);
-  web_contents_observer_ =
-      MediaPlayerRendererWebContentsObserver::FromWebContents(web_contents);
-  if (web_contents_observer_)
-    web_contents_observer_->AddMediaPlayerRenderer(this);
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents);
+  web_contents_muted_ = web_contents_impl && web_contents_impl->IsAudioMuted();
+
+  if (web_contents) {
+    MediaPlayerRendererWebContentsObserver::CreateForWebContents(web_contents);
+    web_contents_observer_ =
+        MediaPlayerRendererWebContentsObserver::FromWebContents(web_contents);
+    if (web_contents_observer_)
+      web_contents_observer_->AddMediaPlayerRenderer(this);
+  }
 }
 
 MediaPlayerRenderer::~MediaPlayerRenderer() {
@@ -199,14 +210,20 @@ base::TimeDelta MediaPlayerRenderer::GetMediaTime() {
 media::MediaResourceGetter* MediaPlayerRenderer::GetMediaResourceGetter() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!media_resource_getter_.get()) {
-    RenderProcessHost* process = render_frame_host()->GetProcess();
-    BrowserContext* context = process->GetBrowserContext();
-    StoragePartition* partition = process->GetStoragePartition();
+    RenderProcessHost* host = RenderProcessHost::FromID(render_process_id_);
+
+    // The RenderFrameHost/RenderProcessHost may have been destroyed already,
+    // as there might be a delay between the frame closing and
+    // MojoRendererService receiving a connection closing error.
+    if (!host)
+      return nullptr;
+
+    BrowserContext* context = host->GetBrowserContext();
+    StoragePartition* partition = host->GetStoragePartition();
     storage::FileSystemContext* file_system_context =
         partition ? partition->GetFileSystemContext() : nullptr;
     media_resource_getter_ = std::make_unique<MediaResourceGetterImpl>(
-        context, file_system_context,
-        static_cast<RenderFrameHostImpl*>(render_frame_host()));
+        context, file_system_context, render_process_id_, routing_id_);
   }
   return media_resource_getter_.get();
 }

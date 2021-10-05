@@ -133,7 +133,7 @@ media::mojom::MediaService& GetSecondaryMediaService() {
 class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
                                   public WebContentsObserver {
  public:
-  FrameInterfaceFactoryImpl(RenderFrameHostImpl* render_frame_host,
+  FrameInterfaceFactoryImpl(RenderFrameHost* render_frame_host,
                             const std::string& cdm_file_system_id)
       : WebContentsObserver(
             WebContents::FromRenderFrameHost(render_frame_host)),
@@ -216,8 +216,8 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
 
 }  // namespace
 
-MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* rfh)
-    : RenderDocumentHostUserData<MediaInterfaceProxy>(rfh) {
+MediaInterfaceProxy::MediaInterfaceProxy(RenderFrameHost* render_frame_host)
+    : RenderDocumentHostUserData(render_frame_host) {
   DVLOG(1) << __func__;
 
   std::string cdm_file_system_id;
@@ -319,7 +319,9 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
   media::MojoRendererService::Create(
       nullptr,
       std::make_unique<MediaPlayerRenderer>(
-          static_cast<RenderFrameHostImpl*>(&render_frame_host()),
+          render_frame_host().GetProcess()->GetID(),
+          render_frame_host().GetRoutingID(),
+          WebContents::FromRenderFrameHost(&render_frame_host()),
           std::move(renderer_extension_receiver),
           std::move(client_extension_remote)),
       std::move(receiver));

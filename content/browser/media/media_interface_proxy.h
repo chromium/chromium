@@ -38,8 +38,8 @@
 #endif
 
 namespace content {
+
 class RenderFrameHost;
-class RenderFrameHostImpl;
 
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderFrameHostImpl to help create remote media components in different
