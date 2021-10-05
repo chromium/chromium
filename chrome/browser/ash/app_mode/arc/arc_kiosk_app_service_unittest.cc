@@ -22,6 +22,8 @@
 #include "components/arc/test/fake_app_instance.h"
 #include "components/arc/test/fake_arc_session.h"
 #include "components/exo/shell_surface_util.h"
+#include "components/exo/wm_helper.h"
+#include "components/exo/wm_helper_chromeos.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/test/test_screen.h"
@@ -99,6 +101,7 @@ class ArcKioskAppServiceTest : public testing::Test {
 
   void SetUp() override {
     display::Screen::SetScreenInstance(&test_screen_);
+    wm_helper_ = std::make_unique<exo::WMHelperChromeOS>();
 
     profile_ = std::make_unique<TestingProfile>();
     profile_->set_profile_name(kAppEmail);
@@ -168,6 +171,10 @@ class ArcKioskAppServiceTest : public testing::Test {
 
   arc::FakeAppInstance* app_instance() { return arc_app_test_.app_instance(); }
 
+  void NotifyWindowCreated(aura::Window* window) {
+    wm_helper_->NotifyExoWindowCreated(window);
+  }
+
  private:
   // Number of times app tried to be launched.
   size_t launch_requests_ = 0;
@@ -179,6 +186,7 @@ class ArcKioskAppServiceTest : public testing::Test {
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<ArcKioskAppManager> app_manager_;
+  std::unique_ptr<exo::WMHelper> wm_helper_;
 
   arc::ArcPolicyBridge* arc_policy_bridge_;
 
@@ -255,6 +263,7 @@ TEST_F(ArcKioskAppServiceTest, AppLaunches) {
   auto app_window = std::make_unique<aura::Window>(nullptr);
   app_window->Init(ui::LAYER_SOLID_COLOR);
   exo::SetShellApplicationId(app_window.get(), kAppWindowAppId);
+  NotifyWindowCreated(app_window.get());
 
   controller.WaitUntilWindowCreated();
 }

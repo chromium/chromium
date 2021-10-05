@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_ARC_ARC_KIOSK_APP_LAUNCHER_H_
 
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
+#include "components/exo/wm_helper.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -16,7 +17,7 @@ namespace ash {
 // Keeps track of start progress and pins app window
 // when it's finally opened.
 class ArcKioskAppLauncher : public ArcAppListPrefs::Observer,
-                            public aura::EnvObserver,
+                            public exo::WMHelper::ExoWindowObserver,
                             public aura::WindowObserver {
  public:
   class Delegate {
@@ -45,13 +46,10 @@ class ArcKioskAppLauncher : public ArcAppListPrefs::Observer,
                      const std::string& intent,
                      int32_t session_id) override;
 
-  // aura::EnvObserver overrides.
-  void OnWindowInitialized(aura::Window* window) override;
+  // exo::WMHelper::ExoWindowObserver
+  void OnExoWindowCreated(aura::Window* window) override;
 
   // aura::WindowObserver overrides.
-  void OnWindowPropertyChanged(aura::Window* window,
-                               const void* key,
-                               intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
