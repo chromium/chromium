@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/secure_channel/fake_nearby_endpoint_finder.h"
 #include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/services/secure_channel/public/mojom/nearby_connector.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,7 +70,7 @@ const std::vector<uint8_t>& GetEndpointInfo() {
 
 class NearbyConnectionBrokerImplTest : public testing::Test,
                                        public mojom::NearbyMessageReceiver,
-                                       public mojom::NearbyFilePayloadListener {
+                                       public mojom::FilePayloadListener {
  protected:
   NearbyConnectionBrokerImplTest() = default;
   ~NearbyConnectionBrokerImplTest() override = default;
@@ -277,6 +278,11 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   void RegisterPayloadFile(int64_t payload_id,
                            const base::FilePath& file_path,
                            bool expect_success) {
+    base::File input_file(
+        file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+    base::File output_file(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
+                                          base::File::Flags::FLAG_WRITE);
+
     base::RunLoop nearby_connections_run_loop;
     base::RunLoop file_payload_handler_run_loop;
 
@@ -292,7 +298,8 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
             }));
 
     file_payload_handler_->RegisterPayloadFile(
-        payload_id, file_path,
+        payload_id,
+        mojom::PayloadFiles::New(std::move(input_file), std::move(output_file)),
         file_payload_listener_.BindNewPipeAndPassRemote(),
         base::BindLambdaForTesting([&](bool success) {
           EXPECT_EQ(expect_success, success);
@@ -404,7 +411,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
     std::move(on_message_received_closure_).Run();
   }
 
-  // mojom::NearbyFilePayloadListener:
+  // mojom::FilePayloadListener:
   void OnFileTransferUpdate(mojom::FileTransferUpdatePtr update) override {
     file_transfer_updates_.push_back(std::move(update));
     std::move(on_file_transfer_update_closure_).Run();
@@ -421,7 +428,7 @@ class NearbyConnectionBrokerImplTest : public testing::Test,
   mojo::Remote<mojom::NearbyMessageSender> message_sender_;
   mojo::Remote<mojom::NearbyFilePayloadHandler> file_payload_handler_;
   mojo::Receiver<mojom::NearbyMessageReceiver> message_receiver_{this};
-  mojo::Receiver<mojom::NearbyFilePayloadListener> file_payload_listener_{this};
+  mojo::Receiver<mojom::FilePayloadListener> file_payload_listener_{this};
 
   std::unique_ptr<NearbyConnectionBroker> broker_;
 

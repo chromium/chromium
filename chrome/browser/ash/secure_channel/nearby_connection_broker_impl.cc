@@ -6,13 +6,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
-#include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
@@ -94,24 +90,6 @@ void RecordWebRtcUpgradeDuration(base::TimeDelta duration) {
       /*buckets=*/50);
 }
 
-scoped_refptr<base::SequencedTaskRunner> CreateFileTaskRunner() {
-  // The tasks posted to this sequenced task runner do synchronous File I/O to
-  // open files for handling registered incoming file payloads.
-  return base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
-}
-
-NearbyConnectionBrokerImpl::PayloadFiles CreatePayloadFiles(
-    const base::FilePath& file_path) {
-  NearbyConnectionBrokerImpl::PayloadFiles payload_files;
-  payload_files.input_file = base::File(
-      file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
-  payload_files.output_file =
-      base::File(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
-                                base::File::Flags::FLAG_WRITE);
-  return payload_files;
-}
-
 }  // namespace
 
 // static
@@ -173,8 +151,7 @@ NearbyConnectionBrokerImpl::NearbyConnectionBrokerImpl(
                              std::move(on_disconnected_callback)),
       endpoint_finder_(endpoint_finder),
       nearby_connections_(nearby_connections),
-      timer_(std::move(timer)),
-      task_runner_(CreateFileTaskRunner()) {
+      timer_(std::move(timer)) {
   TransitionToStatus(ConnectionStatus::kDiscoveringEndpoint);
   endpoint_finder_->FindEndpoint(
       bluetooth_public_address, eid,
@@ -429,25 +406,12 @@ void NearbyConnectionBrokerImpl::SendMessage(const std::string& message,
 
 void NearbyConnectionBrokerImpl::RegisterPayloadFile(
     int64_t payload_id,
-    const base::FilePath& file_path,
-    mojo::PendingRemote<mojom::NearbyFilePayloadListener> listener,
+    mojom::PayloadFilesPtr payload_files,
+    mojo::PendingRemote<mojom::FilePayloadListener> listener,
     RegisterPayloadFileCallback callback) {
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&CreatePayloadFiles, file_path),
-      base::BindOnce(&NearbyConnectionBrokerImpl::OnPayloadFilesCreated,
-                     weak_ptr_factory_.GetWeakPtr(), payload_id, file_path,
-                     std::move(listener), std::move(callback)));
-}
-
-void NearbyConnectionBrokerImpl::OnPayloadFilesCreated(
-    int64_t payload_id,
-    const base::FilePath& file_path,
-    mojo::PendingRemote<mojom::NearbyFilePayloadListener> listener,
-    RegisterPayloadFileCallback callback,
-    NearbyConnectionBrokerImpl::PayloadFiles payload_files) {
   nearby_connections_->RegisterPayloadFile(
-      mojom::kServiceId, payload_id, std::move(payload_files.input_file),
-      std::move(payload_files.output_file),
+      mojom::kServiceId, payload_id, std::move(payload_files->input_file),
+      std::move(payload_files->output_file),
       base::BindOnce(&NearbyConnectionBrokerImpl::OnPayloadFileRegistered,
                      weak_ptr_factory_.GetWeakPtr(), payload_id,
                      std::move(listener), std::move(callback)));
@@ -455,7 +419,7 @@ void NearbyConnectionBrokerImpl::OnPayloadFilesCreated(
 
 void NearbyConnectionBrokerImpl::OnPayloadFileRegistered(
     int64_t payload_id,
-    mojo::PendingRemote<mojom::NearbyFilePayloadListener> listener,
+    mojo::PendingRemote<mojom::FilePayloadListener> listener,
     RegisterPayloadFileCallback callback,
     Status status) {
   bool success = status == Status::kSuccess;

@@ -8,6 +8,7 @@ mojom("mojom") {
   sources = [
     "nearby_connector.mojom",
     "secure_channel.mojom",
+    "secure_channel_types.mojom",
   ]
 
   public_deps = [
