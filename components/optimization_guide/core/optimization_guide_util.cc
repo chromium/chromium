@@ -42,6 +42,12 @@ std::string GetStringNameForOptimizationTarget(
       return "PageEntities";
     case proto::OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS:
       return "NotificationPermissions";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY:
+      return "SegmentationDummyFeature";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID:
+      return "SegmentationChromeStartAndroid";
+    case proto::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES:
+      return "SegmentationQueryTiles";
   }
   NOTREACHED();
   return std::string();

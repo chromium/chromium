@@ -10797,12 +10797,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="OptimizationGuide_OptimizationTargets" separator=".">
+  <suffix name="SegmentationChromeStartAndroid" label="Chrome Start Android"/>
+  <suffix name="SegmentationDummyFeature" label="Dummy feature"/>
   <suffix name="LanguageDetection" label="Language detection"/>
   <suffix name="ModelValidation" label="Model validation triggered via CLI"/>
   <suffix name="NotificationPermissions" label="Notification permissions"/>
   <suffix name="PageEntities" label="Page entities"/>
   <suffix name="PageTopics" label="Page topics"/>
   <suffix name="PainfulPageLoad" label="Painful page load"/>
+  <suffix name="SegmentationQueryTiles" label="Query tiles"/>
   <suffix name="SegmentationNewTab" label="Segmentation: New tab page user"/>
   <suffix name="SegmentationShare" label="Segmentation: Share user"/>
   <suffix name="SegmentationVoice" label="Segmentation: Voice user"/>
