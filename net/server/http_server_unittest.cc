@@ -313,32 +313,52 @@ class WebSocketTest : public HttpServerTest {
 };
 
 class WebSocketAcceptingTest : public WebSocketTest {
+ public:
   void OnWebSocketRequest(int connection_id,
                           const HttpServerRequestInfo& info) override {
     HttpServerTest::OnHttpRequest(connection_id, info);
     server_->AcceptWebSocket(connection_id, info, TRAFFIC_ANNOTATION_FOR_TESTS);
   }
+
+  void OnWebSocketMessage(int connection_id, std::string data) override {
+    message_ = data;
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+  }
+
+  std::string GetMessage() {
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+    return message_;
+  }
+
+ private:
+  std::string message_;
+  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-constexpr uint8_t kFinalBit = 0x80;
-constexpr uint8_t kMaskBit = 0x80;
-constexpr size_t kMaskingKeyWidthInBytes = 4;
-
-std::string EncodeControlFrame(std::string message,
-                               WebSocketFrameHeader::OpCodeEnum op_code,
-                               int mask) {
-  const char mask_key_bit = mask ? kMaskBit : 0;
-  std::string encoded_frame = {
-      static_cast<char>(kFinalBit | op_code),
-      static_cast<char>(mask_key_bit | message.length())};
-  if (mask != 0) {
-    const std::string kMaskBytes(reinterpret_cast<char*>(&mask), 4);
-    encoded_frame += kMaskBytes;
-    for (size_t i = 0; i < message.length(); ++i)  // Mask the payload.
-      message[i] = message[i] ^ kMaskBytes[i % kMaskingKeyWidthInBytes];
+std::string EncodeFrame(std::string message,
+                        WebSocketFrameHeader::OpCodeEnum op_code,
+                        bool mask,
+                        bool finish) {
+  WebSocketFrameHeader header(op_code);
+  header.final = finish;
+  header.masked = mask;
+  header.payload_length = message.size();
+  const int header_size = GetWebSocketFrameHeaderSize(header);
+  std::string frame_header;
+  frame_header.resize(header_size);
+  if (mask) {
+    WebSocketMaskingKey masking_key = GenerateWebSocketMaskingKey();
+    WriteWebSocketFrameHeader(header, &masking_key, &frame_header[0],
+                              header_size);
+    MaskWebSocketFramePayload(masking_key, 0, &message[0], message.length());
+  } else {
+    WriteWebSocketFrameHeader(header, nullptr, &frame_header[0], header_size);
   }
-  encoded_frame += message;
-  return encoded_frame;
+  return frame_header + message;
 }
 
 TEST_F(HttpServerTest, Request) {
@@ -527,15 +547,16 @@ TEST_F(WebSocketAcceptingTest, SendPingFrameWithNoMessage) {
       "Sec-WebSocket-Key: key\r\n\r\n");
   RunUntilRequestsReceived(1);
   ASSERT_TRUE(client.ReadResponse(&response));
-  const std::string kMessage = "";
-  constexpr int kMask = 654321;
-  const std::string kPingFrame = EncodeControlFrame(
-      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePing, kMask);
-  const std::string kPongFrame = EncodeControlFrame(
-      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePong, 0);
-  client.Send(kPingFrame);
-  ASSERT_TRUE(client.Read(&response, kPongFrame.length()));
-  EXPECT_EQ(response, kPongFrame);
+  const std::string message = "";
+  const std::string ping_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+                  /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+                  /* mask= */ false, /* finish= */ true);
+  client.Send(ping_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame.length()));
+  EXPECT_EQ(response, pong_frame);
 }
 
 TEST_F(WebSocketAcceptingTest, SendPingFrameWithMessage) {
@@ -550,15 +571,16 @@ TEST_F(WebSocketAcceptingTest, SendPingFrameWithMessage) {
       "Sec-WebSocket-Key: key\r\n\r\n");
   RunUntilRequestsReceived(1);
   ASSERT_TRUE(client.ReadResponse(&response));
-  const std::string kMessage = "hello";
-  constexpr int kMask = 654321;
-  const std::string kPingFrame = EncodeControlFrame(
-      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePing, kMask);
-  const std::string kPongFrame = EncodeControlFrame(
-      kMessage, WebSocketFrameHeader::OpCodeEnum::kOpCodePong, 0);
-  client.Send(kPingFrame);
-  ASSERT_TRUE(client.Read(&response, kPongFrame.length()));
-  EXPECT_EQ(response, kPongFrame);
+  const std::string message = "hello";
+  const std::string ping_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+                  /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame =
+      EncodeFrame(message, WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+                  /* mask= */ false, /* finish= */ true);
+  client.Send(ping_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame.length()));
+  EXPECT_EQ(response, pong_frame);
 }
 
 TEST_F(WebSocketAcceptingTest, SendPongFrame) {
@@ -573,17 +595,50 @@ TEST_F(WebSocketAcceptingTest, SendPongFrame) {
       "Sec-WebSocket-Key: key\r\n\r\n");
   RunUntilRequestsReceived(1);
   ASSERT_TRUE(client.ReadResponse(&response));
-  constexpr int kMask = 654321;
-  const std::string kPingFrame = EncodeControlFrame(
-      "", WebSocketFrameHeader::OpCodeEnum::kOpCodePing, kMask);
-  const std::string kPongFrameSend = EncodeControlFrame(
-      "", WebSocketFrameHeader::OpCodeEnum::kOpCodePong, kMask);
-  const std::string kPongFrameReceive =
-      EncodeControlFrame("", WebSocketFrameHeader::OpCodeEnum::kOpCodePong, 0);
-  client.Send(kPongFrameSend);
-  client.Send(kPingFrame);
-  ASSERT_TRUE(client.Read(&response, kPongFrameReceive.length()));
-  EXPECT_EQ(response, kPongFrameReceive);
+  const std::string ping_frame = EncodeFrame(
+      /* message= */ "", WebSocketFrameHeader::OpCodeEnum::kOpCodePing,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_send = EncodeFrame(
+      /* message= */ "", WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ true, /* finish= */ true);
+  const std::string pong_frame_receive = EncodeFrame(
+      /* message= */ "", WebSocketFrameHeader::OpCodeEnum::kOpCodePong,
+      /* mask= */ false, /* finish= */ true);
+  client.Send(pong_frame_send);
+  client.Send(ping_frame);
+  ASSERT_TRUE(client.Read(&response, pong_frame_receive.length()));
+  EXPECT_EQ(response, pong_frame_receive);
+}
+
+TEST_F(WebSocketAcceptingTest, SendLongTextFrame) {
+  TestHttpClient client;
+  CreateConnection(&client);
+  std::string response;
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Upgrade: WebSocket\r\n"
+      "Connection: SomethingElse, Upgrade\r\n"
+      "Sec-WebSocket-Version: 8\r\n"
+      "Sec-WebSocket-Key: key\r\n\r\n");
+  RunUntilRequestsReceived(1);
+  ASSERT_TRUE(client.ReadResponse(&response));
+  constexpr int kMessageSize = 100000;
+  const std::string text_message(kMessageSize, 'a');
+  const std::string continuation_message(kMessageSize, 'b');
+  const std::string text_frame =
+      EncodeFrame(text_message, WebSocketFrameHeader::OpCodeEnum::kOpCodeText,
+                  /* mask= */ true,
+                  /* finish= */ false);
+  const std::string continuation_frame =
+      EncodeFrame(continuation_message,
+                  WebSocketFrameHeader::OpCodeEnum::kOpCodeContinuation,
+                  /* mask= */ true, /* finish= */ true);
+  client.Send(text_frame);
+  client.Send(continuation_frame);
+  std::string received_message = GetMessage();
+  EXPECT_EQ(received_message.length(),
+            text_message.length() + continuation_message.length());
+  EXPECT_EQ(received_message, text_message + continuation_message);
 }
 
 TEST_F(HttpServerTest, RequestWithTooLargeBody) {
