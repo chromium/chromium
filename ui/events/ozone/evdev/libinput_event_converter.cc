@@ -17,6 +17,25 @@
 
 namespace ui {
 
+namespace {
+
+double GetAxisValue(libinput_event_pointer* const event,
+                    const libinput_pointer_axis axis) {
+  // Check has_axis before get_axis_value to avoid spamming the logs
+  // with libinput errors
+  if (!libinput_event_pointer_has_axis(event, axis)) {
+    return 0.0;
+  }
+
+  // Libinput's scroll axes are reversed compared to Chromium. For
+  // example, libinput produces positive deltas when scrolling down
+  // (with natural scrolling off), but Chromium's event system
+  // produces negative deltas. Simple fix: negate the axis value.
+  return -libinput_event_pointer_get_axis_value(event, axis);
+}
+
+}  // namespace
+
 LibInputEventConverter::LibInputEvent::LibInputEvent(LibInputEvent&& other)
     : event_(other.event_) {
   other.event_ = nullptr;
@@ -211,6 +230,9 @@ void LibInputEventConverter::HandleEvent(const LibInputEvent& event) {
       break;
 
     case LIBINPUT_EVENT_POINTER_AXIS:
+      HandlePointerAxis(event);
+      break;
+
     case LIBINPUT_EVENT_TOUCH_DOWN:
     case LIBINPUT_EVENT_TOUCH_UP:
     case LIBINPUT_EVENT_TOUCH_MOTION:
@@ -277,6 +299,19 @@ void LibInputEventConverter::HandlePointerButton(const LibInputEvent& evt) {
   dispatcher_->DispatchMouseButtonEvent(
       {input_device_.id, flags, cursor_->GetLocation(), button, down,
        allow_remap, PointerDetails(EventPointerType::kMouse), Timestamp(evt)});
+}
+
+void LibInputEventConverter::HandlePointerAxis(const LibInputEvent& evt) {
+  libinput_event_pointer* event = evt.PointerEvent();
+  const auto h = GetAxisValue(event, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL);
+  const auto v = GetAxisValue(event, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL);
+  const gfx::Vector2d delta(h, v);
+
+  DVLOG(3) << "Pointer axis h:" << h << ", v:" << v;
+
+  dispatcher_->DispatchScrollEvent({input_device_.id, ET_SCROLL,
+                                    cursor_->GetLocation(), delta, delta, 2,
+                                    Timestamp(evt)});
 }
 
 base::TimeTicks LibInputEventConverter::Timestamp(const LibInputEvent& evt) {

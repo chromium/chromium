@@ -101,6 +101,7 @@ class LibInputEventConverter : public EventConverterEvdev {
   void HandleEvent(const LibInputEvent& event);
   void HandlePointerMotion(const LibInputEvent& evt);
   void HandlePointerButton(const LibInputEvent& evt);
+  void HandlePointerAxis(const LibInputEvent& evt);
   base::TimeTicks Timestamp(const LibInputEvent& evt);
 
   DeviceEventDispatcherEvdev* const dispatcher_;
