@@ -81,7 +81,7 @@ if (!use_system_xcode) {
 
 # Goma RBE requires paths relative to source directory. When using system
 # Xcode, this is done by creating symbolic links in root_build_dir.
-if (use_system_xcode && (use_goma || use_remotexec)) {
+if (use_system_xcode && (use_goma || use_remoteexec)) {
   sdk_info_args += [
     "--get_sdk_info",
     "--create_symlink_at",
