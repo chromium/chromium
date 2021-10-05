@@ -7,7 +7,6 @@
 #include <math.h>
 #include <algorithm>
 #include <cstddef>
-#include <limits>
 #include <set>
 #include <utility>
 
@@ -143,9 +142,6 @@ Status UpdateKeyGenerator(IndexedDBBackingStore* backing_store,
 
 IndexedDBDatabase::PutOperationParams::PutOperationParams() = default;
 IndexedDBDatabase::PutOperationParams::~PutOperationParams() = default;
-
-IndexedDBDatabase::PutAllOperationParams::PutAllOperationParams() = default;
-IndexedDBDatabase::PutAllOperationParams::~PutAllOperationParams() = default;
 
 IndexedDBDatabase::OpenCursorOperationParams::OpenCursorOperationParams() =
     default;
@@ -1210,124 +1206,6 @@ Status IndexedDBDatabase::PutOperation(
   factory_->NotifyIndexedDBContentChanged(
       storage_key(), metadata_.name,
       metadata_.object_stores[params->object_store_id].name);
-  return s;
-}
-
-Status IndexedDBDatabase::PutAllOperation(
-    int64_t object_store_id,
-    std::vector<std::unique_ptr<PutAllOperationParams>> params,
-    blink::mojom::IDBTransaction::PutAllCallback callback,
-    IndexedDBTransaction* transaction) {
-  base::CheckedNumeric<size_t> size_estimate = 0;
-  for (const auto& put_param : params) {
-    size_estimate += put_param->value.SizeEstimate();
-  }
-  IDB_TRACE2("IndexedDBDatabase::PutAllOperation", "txn.id", transaction->id(),
-             "size", base::checked_cast<int64_t>(size_estimate.ValueOrDie()));
-
-  DCHECK_NE(transaction->mode(), blink::mojom::IDBTransactionMode::ReadOnly);
-  bool key_was_generated = false;
-  Status s = Status::OK();
-  transaction->in_flight_memory() -= size_estimate.ValueOrDefault(0);
-  DCHECK(transaction->in_flight_memory().IsValid());
-
-  if (!IsObjectStoreIdInMetadata(object_store_id)) {
-    IndexedDBDatabaseError error = CreateError(
-        blink::mojom::IDBException::kUnknownError, "Bad request", transaction);
-    std::move(callback).Run(
-        blink::mojom::IDBTransactionPutAllResult::NewErrorResult(
-            blink::mojom::IDBError::New(error.code(), error.message())));
-    return leveldb::Status::InvalidArgument("Invalid object_store_id.");
-  }
-
-  DCHECK(metadata_.object_stores.find(object_store_id) !=
-         metadata_.object_stores.end());
-  const IndexedDBObjectStoreMetadata& object_store =
-      metadata_.object_stores[object_store_id];
-
-  for (auto& put_param : params) {
-    DCHECK(object_store.auto_increment || put_param->key->IsValid());
-    if (object_store.auto_increment && !put_param->key->IsValid()) {
-      std::unique_ptr<IndexedDBKey> auto_inc_key =
-          GenerateKey(backing_store_, transaction, id(), object_store_id);
-      key_was_generated = true;
-      if (!auto_inc_key->IsValid()) {
-        IndexedDBDatabaseError error =
-            CreateError(blink::mojom::IDBException::kConstraintError,
-                        "Maximum key generator value reached.", transaction);
-        std::move(callback).Run(
-            blink::mojom::IDBTransactionPutAllResult::NewErrorResult(
-                blink::mojom::IDBError::New(error.code(), error.message())));
-        return s;
-      }
-      put_param->key = std::move(auto_inc_key);
-    }
-    DCHECK(put_param->key->IsValid());
-  }
-
-  std::vector<blink::IndexedDBKey> keys;
-  for (auto& put_param : params) {
-    std::vector<std::unique_ptr<IndexWriter>> index_writers;
-    std::u16string error_message;
-    IndexedDBBackingStore::RecordIdentifier record_identifier;
-    bool obeys_constraints = false;
-    bool backing_store_success = MakeIndexWriters(
-        transaction, backing_store_, id(), object_store, *(put_param->key),
-        key_was_generated, put_param->index_keys, &index_writers,
-        &error_message, &obeys_constraints);
-    if (!backing_store_success) {
-      IndexedDBDatabaseError error = CreateError(
-          blink::mojom::IDBException::kUnknownError,
-          "Internal error: backing store error updating index keys.",
-          transaction);
-      std::move(callback).Run(
-          blink::mojom::IDBTransactionPutAllResult::NewErrorResult(
-              blink::mojom::IDBError::New(error.code(), error.message())));
-      return s;
-    }
-    if (!obeys_constraints) {
-      IndexedDBDatabaseError error =
-          CreateError(blink::mojom::IDBException::kConstraintError,
-                      error_message, transaction);
-      std::move(callback).Run(
-          blink::mojom::IDBTransactionPutAllResult::NewErrorResult(
-              blink::mojom::IDBError::New(error.code(), error.message())));
-      return s;
-    }
-
-    // Before this point, don't do any mutation. After this point, rollback the
-    // transaction in case of error.
-    s = backing_store_->PutRecord(transaction->BackingStoreTransaction(), id(),
-                                  object_store_id, *(put_param->key),
-                                  &put_param->value, &record_identifier);
-    if (!s.ok())
-      return s;
-
-    for (const auto& writer : index_writers) {
-      writer->WriteIndexKeys(record_identifier, backing_store_,
-                             transaction->BackingStoreTransaction(), id(),
-                             object_store_id);
-    }
-
-    if (object_store.auto_increment &&
-        put_param->key->type() == blink::mojom::IDBKeyType::Number) {
-      s = UpdateKeyGenerator(backing_store_, transaction, id(), object_store_id,
-                             *(put_param->key), !key_was_generated);
-      if (!s.ok())
-        return s;
-    }
-    keys.push_back(*put_param->key);
-  }
-
-  {
-    IDB_TRACE1("IndexedDBDatabase::PutAllOperation.Callbacks", "txn.id",
-               transaction->id());
-    std::move(callback).Run(
-        blink::mojom::IDBTransactionPutAllResult::NewKeys(std::move(keys)));
-  }
-  factory_->NotifyIndexedDBContentChanged(
-      storage_key(), metadata_.name,
-      metadata_.object_stores[object_store_id].name);
   return s;
 }
 

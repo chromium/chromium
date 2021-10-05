@@ -311,17 +311,6 @@ union IDBTransactionPutResult {
   IDBKey key;
 };
 
-union IDBTransactionPutAllResult {
-  IDBError error_result;  // |error| is reserved, so call this |error_result|.
-  array<IDBKey> keys;
-};
-
-struct IDBPutParams {
-  IDBValue value;
-  IDBKey key;
-  array<IDBIndexKeys> index_keys;
-};
-
 interface IDBTransaction {
   CreateObjectStore(int64 object_store_id,
                     mojo_base.mojom.String16 name,
@@ -334,9 +323,6 @@ interface IDBTransaction {
       IDBPutMode mode,
       array<IDBIndexKeys> index_keys)
     => (IDBTransactionPutResult result);
-  PutAll(int64 object_store_id,
-    array<IDBPutParams> put_params)
-    => (IDBTransactionPutAllResult result);
   Commit(int64 num_errors_handled);
 };
 

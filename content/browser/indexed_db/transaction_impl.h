@@ -51,9 +51,6 @@ class TransactionImpl : public blink::mojom::IDBTransaction {
            blink::mojom::IDBPutMode mode,
            const std::vector<blink::IndexedDBIndexKeys>& index_keys,
            blink::mojom::IDBTransaction::PutCallback callback) override;
-  void PutAll(int64_t object_store_id,
-              std::vector<blink::mojom::IDBPutParamsPtr> puts,
-              PutAllCallback callback) override;
   void Commit(int64_t num_errors_handled) override;
 
   void OnGotUsageAndQuotaForCommit(blink::mojom::QuotaStatusCode status,

@@ -1183,10 +1183,6 @@
       status: "experimental",
     },
     {
-      name: "IDBPutAll",
-      status: "experimental",
-    },
-    {
       name: "IdleDetection",
       status: "stable",
     },

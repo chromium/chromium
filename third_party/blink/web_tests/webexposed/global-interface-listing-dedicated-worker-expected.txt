@@ -707,7 +707,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method openCursor
 [Worker]     method openKeyCursor
 [Worker]     method put
-[Worker]     method putAllValues
 [Worker]     setter name
 [Worker] interface IDBOpenDBRequest : IDBRequest
 [Worker]     attribute @@toStringTag
