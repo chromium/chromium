@@ -19,6 +19,7 @@
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_request_permission_delegate.h"
 #include "content/browser/webid/test/mock_sharing_permission_delegate.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -949,6 +950,54 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
 
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
+  EXPECT_EQ(auth_response.second.value(), kToken);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
+  content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      ui::AXMode::kScreenReader);
+
+  AccountList displayed_accounts;
+  const auto& test_case = kSuccessfulMediatedAutoSignInTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Set specific expectations for sharing permission:
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  // Pretend the sharing permission has been granted for this account.
+  //
+  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
+  // but web contents has not navigated to that URL so origin() is null in
+  // tests. We should fix this.
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              HasSharingPermissionForAccount(
+                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*mock_dialog_controller(),
+              ShowAccountsDialog(_, _, _, _, _, _, _))
+      .WillOnce(Invoke(
+          [&](content::WebContents* rp_web_contents,
+              content::WebContents* idp_web_contents,
+              const GURL& idp_signin_url, AccountList accounts,
+              const ClientIdData& client_id_data, SignInMode sign_in_mode,
+              IdentityRequestDialogController::AccountSelectionCallback
+                  on_selected) {
+            // Auto sign in replaced by explicit sign in if screen reader is on.
+            EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
+            displayed_accounts = accounts;
+            std::move(on_selected).Run(accounts[0].sub);
+          }));
+
+  EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+
+  ASSERT_FALSE(displayed_accounts.empty());
+  EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignIn);
   EXPECT_EQ(auth_response.second.value(), kToken);
 }
 

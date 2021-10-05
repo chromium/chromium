@@ -17,6 +17,7 @@
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "ui/accessibility/ax_mode.h"
 #include "url/url_constants.h"
 
 using blink::mojom::LogoutStatus;
@@ -415,12 +416,16 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       }
 
       idp_web_contents_ = CreateIdpWebContents();
+      bool screen_reader_is_on =
+          rp_web_contents->GetAccessibilityMode().has_mode(
+              ui::AXMode::kScreenReader);
       // Auto signs in returning users if they have a single account and are
       // signing in.
       // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
       // https://crbug.com/1236678.
       bool is_auto_sign_in = prefer_auto_sign_in_ && accounts.size() == 1 &&
-                             accounts[0].login_state == LoginState::kSignIn;
+                             accounts[0].login_state == LoginState::kSignIn &&
+                             !screen_reader_is_on;
       ClientIdData data{endpoints_.client_id_metadata.Resolve(
                             client_id_metadata_.terms_of_service_url),
                         endpoints_.client_id_metadata.Resolve(
