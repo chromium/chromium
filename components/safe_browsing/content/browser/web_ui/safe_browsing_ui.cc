@@ -1822,8 +1822,10 @@ std::string SerializeContentAnalysisRequest(
     request_data.SetStringKey("filename", request.request_data().filename());
     request_data.SetStringKey("digest", request.request_data().digest());
     if (request.request_data().has_csd()) {
-      request_data.SetStringKey(
-          "csd", request.request_data().csd().SerializeAsString());
+      std::string csd_base64;
+      base::Base64Encode(request.request_data().csd().SerializeAsString(),
+                         &csd_base64);
+      request_data.SetStringKey("csd", csd_base64);
     }
     request_data.SetStringKey("content_type",
                               request.request_data().content_type());
