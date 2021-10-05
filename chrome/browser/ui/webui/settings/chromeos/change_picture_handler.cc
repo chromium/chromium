@@ -153,14 +153,11 @@ void ChangePictureHandler::OnJavascriptDisallowed() {
 
 void ChangePictureHandler::SendDefaultImages() {
   base::DictionaryValue result;
-  std::unique_ptr<base::ListValue> default_images =
-      default_user_image::GetAsDictionary(true /* all */);
-  result.SetKey("default_images",
-                base::Value::FromUniquePtrValue(std::move(default_images)));
-  std::unique_ptr<base::ListValue> active_images =
-      default_user_image::GetAsDictionary(false /* all */);
-  result.SetKey("active_images",
-                base::Value::FromUniquePtrValue(std::move(active_images)));
+  std::unique_ptr<base::ListValue> current_default_images =
+      default_user_image::GetCurrentImageSet();
+  result.SetKey(
+      "current_default_images",
+      base::Value::FromUniquePtrValue(std::move(current_default_images)));
   FireWebUIListener("default-images-changed", result);
 }
 
@@ -271,14 +268,23 @@ void ChangePictureHandler::SendSelectedImage() {
             default_user_image::GetDefaultImageUrl(previous_image_index_));
         FireWebUIListener("selected-image-changed", image_url);
       } else {
-        // User has an old default image, so present it in the same manner as a
-        // previous image from file.
+        // User has a deprecated default image, send it for preview.
         previous_image_ = user->GetImage();
         previous_image_bytes_ = nullptr;
         previous_image_format_ = user_manager::UserImage::FORMAT_UNKNOWN;
-        SendOldImageWithIndex(
-            default_user_image::GetDefaultImageUrl(previous_image_index_),
+
+        base::DictionaryValue result;
+        result.SetStringPath("url", default_user_image::GetDefaultImageUrl(
+                                        previous_image_index_));
+        auto source_info = default_user_image::GetDefaultImageSourceInfo(
             previous_image_index_);
+        if (source_info.has_value()) {
+          result.SetStringPath("author", l10n_util::GetStringUTF16(std::move(
+                                             source_info.value().author_id)));
+          result.SetStringPath("website", l10n_util::GetStringUTF16(std::move(
+                                              source_info.value().website_id)));
+        }
+        FireWebUIListener("preview-deprecated-image", result);
       }
     }
   }
@@ -304,15 +310,7 @@ void ChangePictureHandler::UpdateProfileImage() {
 }
 
 void ChangePictureHandler::SendOldImage(std::string&& image_url) {
-  SendOldImageWithIndex(std::move(image_url), -1);
-}
-
-void ChangePictureHandler::SendOldImageWithIndex(std::string&& image_url,
-                                                 int image_index) {
-  base::DictionaryValue result;
-  result.SetStringPath("url", std::move(image_url));
-  result.SetIntPath("index", image_index);
-  FireWebUIListener("old-image-changed", result);
+  FireWebUIListener("old-image-changed", base::Value(image_url));
 }
 
 void ChangePictureHandler::HandleSelectImage(const base::ListValue* args) {

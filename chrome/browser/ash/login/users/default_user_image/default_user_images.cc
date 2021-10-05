@@ -147,86 +147,46 @@ const DefaultImageInfo kDefaultImageInfo[] = {
 };
 // clang-format on
 
+// Source info of (deprecated) default user images.
+const DefaultImageSourceInfo kDefaultImageSourceInfo[] = {
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR, IDS_LOGIN_DEFAULT_USER_WEBSITE},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_1, IDS_LOGIN_DEFAULT_USER_WEBSITE_1},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_2, IDS_LOGIN_DEFAULT_USER_WEBSITE_2},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_3, IDS_LOGIN_DEFAULT_USER_WEBSITE_3},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_4, IDS_LOGIN_DEFAULT_USER_WEBSITE_4},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_5, IDS_LOGIN_DEFAULT_USER_WEBSITE_5},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_6, IDS_LOGIN_DEFAULT_USER_WEBSITE_6},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_7, IDS_LOGIN_DEFAULT_USER_WEBSITE_7},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_8, IDS_LOGIN_DEFAULT_USER_WEBSITE_8},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_9, IDS_LOGIN_DEFAULT_USER_WEBSITE_9},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_10, IDS_LOGIN_DEFAULT_USER_WEBSITE_10},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_11, IDS_LOGIN_DEFAULT_USER_WEBSITE_11},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_12, IDS_LOGIN_DEFAULT_USER_WEBSITE_12},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_13, IDS_LOGIN_DEFAULT_USER_WEBSITE_13},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_14, IDS_LOGIN_DEFAULT_USER_WEBSITE_14},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_15, IDS_LOGIN_DEFAULT_USER_WEBSITE_15},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_16, IDS_LOGIN_DEFAULT_USER_WEBSITE_16},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_17, IDS_LOGIN_DEFAULT_USER_WEBSITE_17},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_18, IDS_LOGIN_DEFAULT_USER_WEBSITE_18},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_19, IDS_LOGIN_DEFAULT_USER_WEBSITE_19},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_20, IDS_LOGIN_DEFAULT_USER_WEBSITE_20},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_21, IDS_LOGIN_DEFAULT_USER_WEBSITE_21},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_22, IDS_LOGIN_DEFAULT_USER_WEBSITE_22},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_23, IDS_LOGIN_DEFAULT_USER_WEBSITE_23},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_24, IDS_LOGIN_DEFAULT_USER_WEBSITE_24},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_25, IDS_LOGIN_DEFAULT_USER_WEBSITE_25},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_26, IDS_LOGIN_DEFAULT_USER_WEBSITE_26},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_27, IDS_LOGIN_DEFAULT_USER_WEBSITE_27},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_28, IDS_LOGIN_DEFAULT_USER_WEBSITE_28},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_29, IDS_LOGIN_DEFAULT_USER_WEBSITE_29},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_30, IDS_LOGIN_DEFAULT_USER_WEBSITE_30},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_31, IDS_LOGIN_DEFAULT_USER_WEBSITE_31},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_32, IDS_LOGIN_DEFAULT_USER_WEBSITE_32},
+    {IDS_LOGIN_DEFAULT_USER_AUTHOR_33, IDS_LOGIN_DEFAULT_USER_WEBSITE_33},
+};
+
 const char kDefaultUrlPrefix[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER_";
 const char kZeroDefaultUrl[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER";
-
-const int kDefaultImageAuthorIDs[] = {
-    IDS_LOGIN_DEFAULT_USER_AUTHOR,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_1,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_2,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_3,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_4,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_5,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_6,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_7,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_8,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_9,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_10,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_11,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_12,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_13,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_14,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_15,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_16,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_17,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_18,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_19,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_20,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_21,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_22,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_23,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_24,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_25,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_26,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_27,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_28,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_29,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_30,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_31,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_32,
-    IDS_LOGIN_DEFAULT_USER_AUTHOR_33,
-};
-
-const int kDefaultImageAuthorMaxID = base::size(kDefaultImageAuthorIDs);
-
-const int kDefaultImageWebsiteIDs[] = {
-    IDS_LOGIN_DEFAULT_USER_WEBSITE,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_1,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_2,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_3,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_4,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_5,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_6,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_7,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_8,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_9,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_10,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_11,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_12,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_13,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_14,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_15,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_16,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_17,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_18,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_19,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_20,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_21,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_22,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_23,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_24,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_25,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_26,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_27,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_28,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_29,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_30,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_31,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_32,
-    IDS_LOGIN_DEFAULT_USER_WEBSITE_33,
-};
-
-const int kDefaultImageWebsiteMaxID = base::size(kDefaultImageWebsiteIDs);
 
 // Returns true if the string specified consists of the prefix and one of
 // the default images indices. Returns the index of the image in `image_id`
@@ -249,13 +209,6 @@ bool IsDefaultImageString(const std::string& s,
   }
 
   return false;
-}
-
-void GetFirstLastIndex(int* first, int* last) {
-  if (first)
-    *first = kFirstDefaultImageIndex;
-  if (last)
-    *last = kDefaultImagesCount - 1;
 }
 
 }  // namespace
@@ -309,9 +262,7 @@ const int GetDefaultImageResourceId(int index) {
 }
 
 int GetRandomDefaultImageIndex() {
-  int first;
-  GetFirstLastIndex(&first, nullptr);
-  return base::RandInt(first, kLastRandomDefaultImageIndex);
+  return base::RandInt(kFirstDefaultImageIndex, kLastRandomDefaultImageIndex);
 }
 
 bool IsValidIndex(int index) {
@@ -319,36 +270,19 @@ bool IsValidIndex(int index) {
 }
 
 bool IsInCurrentImageSet(int index) {
-  int first, last;
-  GetFirstLastIndex(&first, &last);
-  return index >= first && index <= last &&
+  return IsValidIndex(index) &&
          kDefaultImageInfo[index].eligibility == Eligibility::kEligible;
 }
 
-std::unique_ptr<base::ListValue> GetAsDictionary(bool all) {
-  int first, last;
-  GetFirstLastIndex(&first, &last);
-  if (all)
-    first = 0;
-
+std::unique_ptr<base::ListValue> GetCurrentImageSet() {
   auto image_urls = std::make_unique<base::ListValue>();
-  for (int i = first; i <= last; ++i) {
-    if (!all && kDefaultImageInfo[i].eligibility == Eligibility::kDeprecated)
+  for (int i = kFirstDefaultImageIndex; i < kDefaultImagesCount; ++i) {
+    if (kDefaultImageInfo[i].eligibility == Eligibility::kDeprecated)
       continue;
 
     auto image_data = std::make_unique<base::DictionaryValue>();
     image_data->SetString("url", default_user_image::GetDefaultImageUrl(i));
     image_data->SetInteger("index", i);
-    if (i < kDefaultImageAuthorMaxID) {
-      image_data->SetString("author",
-                            l10n_util::GetStringUTF16(
-                                default_user_image::kDefaultImageAuthorIDs[i]));
-    }
-    if (i < kDefaultImageWebsiteMaxID) {
-      image_data->SetString(
-          "website", l10n_util::GetStringUTF16(
-                         default_user_image::kDefaultImageWebsiteIDs[i]));
-    }
     int string_id = kDefaultImageInfo[i].description_message_id;
     image_data->SetString("title", string_id
                                        ? l10n_util::GetStringUTF16(string_id)
@@ -358,10 +292,11 @@ std::unique_ptr<base::ListValue> GetAsDictionary(bool all) {
   return image_urls;
 }
 
-int GetFirstDefaultImage() {
-  int first;
-  GetFirstLastIndex(&first, nullptr);
-  return first;
+absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(int index) {
+  if (index >= base::size(kDefaultImageSourceInfo))
+    return absl::nullopt;
+
+  return kDefaultImageSourceInfo[index];
 }
 
 }  // namespace default_user_image

@@ -53,22 +53,12 @@ Polymer({
 
     /**
      * The url of the old image, which is either the existing image sourced from
-     * the camera, a file, or a deprecated default image.
+     * the camera or a file.
      * @private
      */
     oldImageUrl_: {
       type: String,
       value: '',
-    },
-
-    /**
-     * The index associated with the old image if it was a default image, or -1
-     * if the old image was not a defaul timage (i.e. a camera or file image).
-     * @private
-     */
-    oldImageIndex_: {
-      type: Number,
-      value: -1,
     },
 
     /** @private */
@@ -148,17 +138,15 @@ Polymer({
 
   /**
    * @param {string} imageUrl
-   * @param {number=} imageIndex
    */
-  setOldImageUrl(imageUrl, imageIndex) {
-    if (imageUrl === CrPicture.kDefaultImageUrl || imageIndex === 0) {
+  setOldImageUrl(imageUrl) {
+    if (imageUrl === CrPicture.kDefaultImageUrl) {
       // Treat the default image as empty so it does not show in the list.
       this.oldImageUrl_ = '';
       this.setSelectedImageUrl(CrPicture.kDefaultImageUrl);
       return;
     }
     this.oldImageUrl_ = imageUrl;
-    this.oldImageIndex_ = imageIndex === undefined ? -1 : imageIndex;
     if (imageUrl) {
       this.$.selector.select(this.$.selector.indexOf(this.$.oldImage));
       this.selectedImageUrl_ = imageUrl;

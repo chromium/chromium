@@ -56,7 +56,7 @@
         width: 288px;
       }
 
-      #authorCredit {
+      #sourceInfo {
         color: var(--cros-text-color-disabled);
         display: flex;
         flex-direction: column;
@@ -98,19 +98,18 @@
             camera-video-mode-enabled="[[cameraVideoModeEnabled_]]"
             on-keys-pressed="onCameraPaneKeysPressed_">
         </cr-picture-pane>
-        <div id="authorCredit"
-            hidden="[[!isAuthorCreditShown_(selectedItem_)]]">
-          [[getAuthorCredit_(selectedItem_, defaultImages_)]]
-          <a href="[[getAuthorWebsite_(selectedItem_, defaultImages_)]]"
-              target="_blank">
-            [[getAuthorWebsite_(selectedItem_, defaultImages_)]]
+        <div id="sourceInfo"
+            hidden="[[!shouldShowSourceInfo_(selectedItem_, authorInfo_, websiteInfo_)]]">
+          [[authorInfo_]]
+          <a href="[[websiteInfo_]]" target="_blank">
+            [[websiteInfo_]]
           </a>
         </div>
       </div>
       <cr-picture-list id="pictureList"
-          hidden="[[!defaultImages_]]"
+          hidden="[[!currentDefaultImages_]]"
           camera-present="[[cameraPresent_]]"
-          default-images="[[activeImages_]]"
+          default-images="[[currentDefaultImages_]]"
           selected-item="{{selectedItem_}}"
           choose-file-label="$i18n{chooseFile}"
           old-image-label="[[oldImageLabel_]]"

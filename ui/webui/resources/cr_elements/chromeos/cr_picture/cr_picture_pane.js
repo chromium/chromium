@@ -76,6 +76,12 @@ Polymer({
     }
   },
 
+  /** Tells the pane to preview the deprecated default image. */
+  previewDeprecatedImage(url) {
+    this.imageSrc = url;
+    this.imageType = CrPicture.SelectionTypes.DEPRECATED;
+  },
+
   /**
    * @return {boolean}
    * @private

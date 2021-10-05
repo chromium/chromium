@@ -70,14 +70,8 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // if any, on the page. Shouldn't be called before |SendProfileImage|.
   void UpdateProfileImage();
 
-  // Sends the previous user image to the page.
+  // Sends the previous user image from camera or file to the page.
   void SendOldImage(std::string&& image_url);
-
-  // Sends the previous user image to the page. Also sends |image_index| which
-  // is either the index of the previous user image (if it was from an older
-  // default image set) or -1 otherwise. This allows the WebUI to show credits
-  // for older default images.
-  void SendOldImageWithIndex(std::string&& image_url, int image_index);
 
   // Starts camera presence check.
   void CheckCameraPresence();
