@@ -42,13 +42,21 @@ suite('InternetDetailPage', function() {
         },
       },
     },
-    // Added use_shared_proxies because triggering a change in prefs_ without
-    // it will fail a "Pref is missing" assertion in the network-proxy-section
+    // Added use_shared_proxies and lacros_proxy_controlling_extension because
+    // triggering a change in prefs_ without it will fail a "Pref is missing"
+    // assertion in the network-proxy-section
     'settings': {
       'use_shared_proxies': {
         key: 'use_shared_proxies',
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
+      },
+    },
+    'ash': {
+      'lacros_proxy_controlling_extension': {
+        key: 'ash.lacros_proxy_controlling_extension',
+        type: chrome.settingsPrivate.PrefType.DICTIONARY,
+        value: {},
       },
     },
   };

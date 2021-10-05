@@ -339,6 +339,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[chromeos::prefs::kEmojiSuggestionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kLacrosProxyControllingExtension] =
+      settings_api::PrefType::PREF_TYPE_DICTIONARY;
   (*s_allowlist)[::prefs::kLanguageInputMethodSpecificSettings] =
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
   (*s_allowlist)[ash::prefs::kLastUsedImeShortcutReminderDismissed] =

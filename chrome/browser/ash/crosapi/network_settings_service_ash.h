@@ -16,6 +16,8 @@
 
 class PrefService;
 class PrefChangeRegistrar;
+class PrefRegistrySimple;
+class Profile;
 class ProfileManager;
 
 namespace chromeos {
@@ -28,6 +30,10 @@ namespace crosapi {
 // interface. This class must only be used from the main thread.
 // It observes proxy changes coming from policies and the default network, and
 // propagates the proxy configuration to Lacros-Chrome observers.
+// The class also observes the `ProfileAdded` event sent by ProfileManager to
+// verify if Lacros is still enabled in Ash via flag or user policy; if not,
+// then it will clear the proxy settings set by an extension in the primary
+// profile.
 class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
                                   public chromeos::NetworkStateHandlerObserver,
                                   public ProfileManagerObserver {
@@ -44,6 +50,11 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   // crosapi::mojom::NetworkSettingsServiceAsh:
   void AddNetworkSettingsObserver(
       mojo::PendingRemote<mojom::NetworkSettingsObserver> observer) override;
+  // Sets the kProxy preference in the user store.
+  void SetExtensionProxy(crosapi::mojom::ProxyConfigPtr proxy_config) override;
+  void ClearExtensionProxy() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
   // NetworkStateHandlerObserver:
@@ -56,6 +67,11 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   void StartTrackingPrefChanges();
   void OnPrefChanged();
 
+  // Clears the kProxy preference from the user store. If the preference is also
+  // set via policy, then the policy value stored in the managed store will
+  // still be active.
+  void ClearProxyPrefFromUserStore();
+
   void DetermineEffectiveProxy();
 
   // Called when a mojo observer is disconnecting. If there's no observer for
@@ -63,6 +79,7 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   void OnDisconnect(mojo::RemoteSetElementId mojo_id);
 
   // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
   crosapi::mojom::ProxyConfigPtr cached_proxy_config_;

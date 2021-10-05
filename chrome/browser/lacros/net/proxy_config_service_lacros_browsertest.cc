@@ -51,6 +51,11 @@ class FakeNetworkSettingsService
     }
   }
 
+  void SetExtensionProxy(crosapi::mojom::ProxyConfigPtr proxy_config) override {
+  }
+
+  void ClearExtensionProxy() override {}
+
   void SetQuitClosure(base::OnceClosure quit_closure) {
     quit_closure_ = std::move(quit_closure);
   }

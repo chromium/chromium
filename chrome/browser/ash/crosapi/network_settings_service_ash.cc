@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/network_settings_translation.h"
@@ -17,11 +18,16 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/user_manager/user_manager.h"
 
 namespace {
+
+const char kPrefExtensionNameKey[] = "extension_name_key";
+const char kPrefExtensionIdKey[] = "extension_id_key";
+const char kPrefExtensionCanDisabledKey[] = "can_be_disabled_key";
 
 // Returns the preference service of the primary user session profile, or
 // nullptr if no user session has started.
@@ -59,8 +65,9 @@ NetworkSettingsServiceAsh::~NetworkSettingsServiceAsh() {
     chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
         this, FROM_HERE);
   }
-  if (profile_manager_)
+  if (profile_manager_) {
     profile_manager_->RemoveObserver(this);
+  }
 }
 
 void NetworkSettingsServiceAsh::BindReceiver(
@@ -78,6 +85,13 @@ void NetworkSettingsServiceAsh::DefaultNetworkChanged(
   DetermineEffectiveProxy();
 }
 
+// static
+void NetworkSettingsServiceAsh::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(
+      ash::prefs::kLacrosProxyControllingExtension);
+}
+
 void NetworkSettingsServiceAsh::SendProxyConfigToObservers() {
   if (!cached_proxy_config_) {
     LOG(ERROR) << "No proxy configuration to forward";
@@ -86,6 +100,44 @@ void NetworkSettingsServiceAsh::SendProxyConfigToObservers() {
   for (const auto& obs : observers_) {
     obs->OnProxyChanged(cached_proxy_config_.Clone());
   }
+}
+
+// Note that the this will update the value of the kProxy preference in the user
+// store (in Lacros, the extension set proxy is stored in the extension store).
+// Long term, we should deprecate propagating Lacros extension set proxies in
+// Ash in favor of system extensions.
+void NetworkSettingsServiceAsh::SetExtensionProxy(
+    crosapi::mojom::ProxyConfigPtr proxy_config) {
+  DCHECK(proxy_config)
+      << "Received SetExtensionProxy request with missing proxy configuration.";
+  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
+  DCHECK(pref_service);
+
+  if (!proxy_config->extension) {
+    LOG(ERROR)
+        << "Received extension proxy configuration without extension data";
+    return;
+  }
+
+  // Required to display the extension which is controlling the proxy in the OS
+  // Settings > Network > Proxy window.
+  base::Value proxy_extension(base::Value::Type::DICTIONARY);
+  proxy_extension.SetStringKey(kPrefExtensionNameKey,
+                               proxy_config->extension->name);
+  proxy_extension.SetStringKey(kPrefExtensionIdKey,
+                               proxy_config->extension->id);
+  proxy_extension.SetBoolKey(kPrefExtensionCanDisabledKey,
+                             proxy_config->extension->can_be_disabled);
+  pref_service->Set(ash::prefs::kLacrosProxyControllingExtension,
+                    std::move(proxy_extension));
+
+  pref_service->Set(
+      proxy_config::prefs::kProxy,
+      CrosapiProxyToProxyConfig(std::move(proxy_config)).GetDictionary());
+}
+
+void NetworkSettingsServiceAsh::ClearExtensionProxy() {
+  ClearProxyPrefFromUserStore();
 }
 
 void NetworkSettingsServiceAsh::AddNetworkSettingsObserver(
@@ -113,7 +165,33 @@ void NetworkSettingsServiceAsh::StartTrackingPrefChanges() {
 }
 
 void NetworkSettingsServiceAsh::OnPrefChanged() {
+  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
+  DCHECK(pref_service);
+
+  const PrefService::Preference* pref =
+      pref_service->FindPreference(proxy_config::prefs::kProxy);
+
+  if (pref && pref->IsManaged()) {
+    // If the kProxy pref is set via a user policy, it is stored in the managed
+    // store and has priority over the extension set proxy from Lacros (which in
+    // Ash is stored in the user store). Removing the preference from the user
+    // store will ensure that, if the extension gets removed from Lacros while
+    // the proxy policy is active, the user doesn't get stuck with the old proxy
+    // value from the user store.
+    // Note that clearing the proxy pref from the user store will not affect the
+    // value of the proxy pref set by the policy in the managed store, nor will
+    // it affect the value of the proxy pref set by the Lacros extension in the
+    // Lacros extension store.
+    ClearProxyPrefFromUserStore();
+  }
   DetermineEffectiveProxy();
+}
+
+void NetworkSettingsServiceAsh::ClearProxyPrefFromUserStore() {
+  PrefService* pref_service = GetPrimaryLoggedInUserProfilePrefs();
+  DCHECK(pref_service);
+  pref_service->ClearPref(proxy_config::prefs::kProxy);
+  pref_service->ClearPref(ash::prefs::kLacrosProxyControllingExtension);
 }
 
 void NetworkSettingsServiceAsh::DetermineEffectiveProxy() {
@@ -142,9 +220,18 @@ void NetworkSettingsServiceAsh::OnDisconnect(mojo::RemoteSetElementId mojo_id) {
   profile_prefs_registrar_.reset();
 }
 
+void NetworkSettingsServiceAsh::OnProfileAdded(Profile* profile) {
+  if (!GetPrimaryLoggedInUserProfilePrefs()) {
+    // Primary profile pref store not available.
+    return;
+  }
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
+    ClearExtensionProxy();
+  }
+}
+
 void NetworkSettingsServiceAsh::OnProfileManagerDestroying() {
   profile_prefs_registrar_.reset();
-
   if (!profile_manager_)
     return;
   profile_manager_->RemoveObserver(this);

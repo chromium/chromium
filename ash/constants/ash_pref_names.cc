@@ -841,6 +841,14 @@ const char kNextImeShortcutReminderDismissed[] =
 const char kImprovedShortcutsNotificationShownCount[] =
     "ash.improved_shortcuts_notification_shown_count";
 
+// If a user installs an extension which controls the proxy settings in the
+// primary profile of Chrome OS, this dictionary will contain information about
+// the extension controlling the proxy (name, id and if it can be disabled by
+// the user). Used to show the name and icon of the extension in the "Proxy"
+// section of the OS Settings>Network dialog.
+const char kLacrosProxyControllingExtension[] =
+    "ash.lacros_proxy_controlling_extension";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

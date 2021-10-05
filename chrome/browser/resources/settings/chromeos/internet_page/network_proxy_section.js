@@ -27,6 +27,13 @@ import {Route, RouteObserverBehavior, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {PrefsBehavior} from '../prefs_behavior.js';
 
+/**
+ * @typedef {{name: (string|undefined),
+ *            id: (string|undefined),
+ *            canBeDisabled: (boolean|undefined)}}
+ */
+let ExtensionInfo;
+
 Polymer({
   _template: html`{__html_template__}`,
   is: 'network-proxy-section',
@@ -52,10 +59,27 @@ Polymer({
      * @private
      */
     useSharedProxies_: Boolean,
+
+    /**
+     * Indicates if the proxy if set by an extension in the Lacros primary
+     * profile.
+     * @private
+     */
+    isProxySetByLacrosExtension_: Boolean,
+
+    /**
+     * Information about the extension in the Ash or Lacros browser which
+     * controlling the proxy. Can be null is the proxy is not controlled by an
+     * extension.
+     * @type {!ExtensionInfo|undefined}
+     * @private
+     */
+    extensionInfo_: Object,
   },
 
   observers: [
     'useSharedProxiesChanged_(prefs.settings.use_shared_proxies.value)',
+    'extensionProxyChanged_(prefs.ash.lacros_proxy_controlling_extension)',
   ],
 
   /**
@@ -79,6 +103,50 @@ Polymer({
     this.useSharedProxies_ = !!pref && !!pref.value;
   },
 
+  /** @private */
+  extensionProxyChanged_() {
+    if (this.proxySetByAshExtension_()) {
+      return;
+    }
+    const pref = this.getPref('ash.lacros_proxy_controlling_extension');
+    this.isProxySetByLacrosExtension_ = !!pref.value &&
+        !!pref.value['extension_id_key'] && !!pref.value['extension_name_key'];
+    if (this.isProxySetByLacrosExtension_) {
+      this.extensionInfo_ = {
+        id: pref.value['extension_id_key'],
+        name: pref.value['extension_name_key'],
+        canBeDisabled: pref.value['can_be_disabled_key']
+      };
+    }
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  proxySetByAshExtension_() {
+    const property = this.getProxySettingsTypeProperty_();
+    if (!property || !this.isExtensionControlled(property)) {
+      return false;
+    }
+    this.extensionInfo_ = {
+      id: this.prefs.proxy.extensionId,
+      name: this.prefs.proxy.controlledByName,
+      canBeDisabled: this.prefs.proxy.extensionCanBeDisabled
+    };
+    return true;
+  },
+
+  /**
+   * Return true if the proxy is controlled by an extension in the Ash Browser
+   * or in the Lacros Browser.
+   * @returns {boolean}
+   * @private
+   */
+  isProxySetByExtension_() {
+    return this.proxySetByAshExtension_() || this.isProxySetByLacrosExtension_;
+  },
+
   /**
    * @return {boolean}
    * @private
@@ -94,6 +162,9 @@ Polymer({
    * @private
    */
   getProxySettingsTypeProperty_() {
+    if (!this.managedProperties) {
+      return undefined;
+    }
     const proxySettings = this.managedProperties.proxySettings;
     return proxySettings ? proxySettings.type : undefined;
   },
@@ -116,17 +187,8 @@ Polymer({
    */
   shouldShowNetworkPolicyIndicator_() {
     const property = this.getProxySettingsTypeProperty_();
-    return !!property && !this.isExtensionControlled(property) &&
+    return !!property && !this.isProxySetByExtension_() &&
         this.isNetworkPolicyEnforced(property);
-  },
-
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowExtensionIndicator_() {
-    const property = this.getProxySettingsTypeProperty_();
-    return !!property && this.isExtensionControlled(property);
   },
 
   /**

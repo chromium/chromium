@@ -380,6 +380,9 @@ extern const char kNextImeShortcutReminderDismissed[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kImprovedShortcutsNotificationShownCount[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLacrosProxyControllingExtension[];
+
 }  // namespace prefs
 }  // namespace ash
 

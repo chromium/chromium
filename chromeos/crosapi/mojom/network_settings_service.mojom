@@ -23,6 +23,7 @@ struct ProxyLocation {
 struct ExtensionControllingProxy {
     string name;
     string id;
+    [MinVersion=1] bool can_be_disabled;
 };
 
 [Stable]
@@ -82,4 +83,13 @@ interface NetworkSettingsService {
     // Add an Ash network settings service observer.
     AddNetworkSettingsObserver@0(
         pending_remote<NetworkSettingsObserver> observer);
+    // Used by the Lacros browser to forward proxy configurations set via
+    // extensions in the primary profile to Ash. `proxy_config` must specify the
+    // extension setting the proxy.
+    [MinVersion=1]
+    SetExtensionProxy@1(ProxyConfig proxy_config);
+    // Used by the Lacros browser to clear proxy configurations set via
+    // extensions in the primary profile to Ash.
+    [MinVersion=1]
+    ClearExtensionProxy@2();
 };
