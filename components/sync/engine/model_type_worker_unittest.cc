@@ -1323,46 +1323,57 @@ TEST_F(ModelTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
 TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
   base::HistogramTester histogram_tester;
   NormalInitialize();
-  int gu_responses_while_should_have_been_known = 0;
+  int get_updates_while_should_have_been_known = 0;
 
   // Send a GetUpdatesResponse containing data encrypted with an unknown key.
   // The cryptographer doesn't have pending keys, so in theory this key should
-  // have been known.
+  // have been known by now. This will cause
+  // |get_updates_while_should_have_been_known| to be incremented by the end
+  // of this GetUpdates cycle.
   SetUpdateEncryptionFilter(1);
-  TriggerUpdateFromServer(10, kTag1, kValue1);
-  gu_responses_while_should_have_been_known++;
+  TriggerPartialUpdateFromServer(10, kTag1, kValue1);
 
   // The fact that the data type is now blocked should have been recorded.
   histogram_tester.ExpectUniqueSample(
       "Sync.ModelTypeBlockedDueToUndecryptableUpdate",
       ModelTypeHistogramValue(worker()->GetModelType()), 1);
 
-  // Send empty GetUpdatesResponse. Again, the cryptographer isn't in a pending
-  // state, so increase |gu_responses_while_should_have_been_known|.
+  // Send empty GetUpdatesResponse. The counter shouldn't change.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(), {}, status_controller());
-  gu_responses_while_should_have_been_known++;
+
+  // Finish the GetUpdates cycle. The counter should be set to 1.
+  ApplyUpdates();
+  get_updates_while_should_have_been_known++;
+
+  // An empty GetUpdates cycle. The counter should be set to 2.
+  worker()->ProcessGetUpdatesResponse(
+      server()->GetProgress(), server()->GetContext(), {}, status_controller());
+  ApplyUpdates();
+  get_updates_while_should_have_been_known++;
 
   // Send the Nigori containing the missing key. The key isn't available yet
   // though.
   AddPendingKey();
 
-  // Another empty GetUpdatesResponse. This one shouldn't be counted, since the
+  // Another empty GetUpdates cycle. This one shouldn't be counted, since the
   // cryptographer now knows it's lacking some keys.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(), {}, status_controller());
+  ApplyUpdates();
 
   // Double check the histogram hasn't been recorded so far.
   const std::string histogram_name =
-      std::string("Sync.ModelTypeTimeUntilEncryptionKeyFound.") +
+      std::string("Sync.ModelTypeTimeUntilEncryptionKeyFound2.") +
       ModelTypeToHistogramSuffix(worker()->GetModelType());
   EXPECT_TRUE(histogram_tester.GetAllSamples(histogram_name).empty());
 
-  // Make the key available. The correct number of GetUpdatesResponse should
+  // Make the key available. The correct number of GetUpdates cycles should
   // have been recorded.
   DecryptPendingKey();
+  ASSERT_EQ(2, get_updates_while_should_have_been_known);
   histogram_tester.ExpectUniqueSample(
-      histogram_name, gu_responses_while_should_have_been_known, 1);
+      histogram_name, get_updates_while_should_have_been_known, 1);
 }
 
 TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
@@ -1372,7 +1383,7 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
       switches::kIgnoreSyncEncryptionKeysLongMissing);
 
   NormalInitialize();
-  worker()->SetMinGuResponsesToIgnoreKeyForTest(2);
+  worker()->SetMinGetUpdatesToIgnoreKeyForTest(2);
 
   // Send an update encrypted with a key that shall remain unknown.
   SetUpdateEncryptionFilter(1);
@@ -1382,9 +1393,10 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // the worker is still blocked.
   EXPECT_TRUE(worker()->BlockForEncryption());
 
-  // Send empty GetUpdatesResponse, reaching the threshold of 2.
+  // Send empty GetUpdates, reaching the threshold of 2.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(), {}, status_controller());
+  ApplyUpdates();
 
   // The undecryptable update should have been dropped and the worker is no
   // longer blocked.

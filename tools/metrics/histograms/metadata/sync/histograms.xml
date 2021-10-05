@@ -862,6 +862,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Sync.ModelTypeTimeUntilEncryptionKeyFound"
     units="GetUpdatesResponses" expires_after="2022-02-06">
+  <obsolete>
+    Replaced with Sync.ModelTypeTimeUntilEncryptionKeyFound2 on 10/2021 (M96).
+  </obsolete>
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -919,6 +922,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     See ModelTypeTimeUntilEncryptionKeyFound. This version serves only to
     visualize M88 data, since the recording code for that version contains a
     typo in the histogram suffix (cf. crbug.com/1173986).
+  </summary>
+</histogram>
+
+<histogram base="true" name="Sync.ModelTypeTimeUntilEncryptionKeyFound2"
+    units="GetUpdates" expires_after="2022-02-06">
+  <owner>victorvianna@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records how long it took from the moment the first update encrypted with
+    this key was received by ModelTypeWorker, to the moment where the key was
+    available to the Cryptographer. The time is measured by the number of
+    GetUpdates cycles performed by the worker *while* the Cryptographer didn't
+    have pending keys (and thus the key should have been known in theory).
+
+    This replaced Sync.ModelTypeTimeUntilEncryptionKeyFound which used to
+    measure the same time in GetUpdatesResponse-s.
   </summary>
 </histogram>
 
