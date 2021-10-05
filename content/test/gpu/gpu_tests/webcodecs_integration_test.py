@@ -88,8 +88,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab = self.tab
     arg_obj = args[0]
     os_name = self.platform.GetOSName()
-    validate_camera_frames = os_name != 'android'
-    arg_obj["validate_camera_frames"] = validate_camera_frames
+    arg_obj["validate_camera_frames"] = self.CameraCanShowFourColors(os_name)
     tab.Navigate(url)
     tab.action_runner.WaitForJavaScriptCondition(
         'document.readyState == "complete"')
@@ -97,6 +96,10 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab.action_runner.WaitForJavaScriptCondition('TEST.finished', timeout=60)
     if not tab.EvaluateJavaScript('TEST.success'):
       self.fail('Test failure:' + tab.EvaluateJavaScript('TEST.summary()'))
+
+  @staticmethod
+  def CameraCanShowFourColors(os_name):
+    return os_name != 'android' and os_name != 'chromeos'
 
   @classmethod
   def SetUpProcess(cls):
@@ -110,7 +113,7 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.CustomizeBrowserArgs(args)
     platform = cls.platform
 
-    if platform.GetOSName() != 'android':
+    if cls.CameraCanShowFourColors(platform.GetOSName()):
       args.append('--use-file-for-fake-video-capture=' + four_colors_img_path)
       cls.CustomizeBrowserArgs(args)
 

@@ -16,7 +16,7 @@ Take frames coming from various sources and read them using copyTo().
 
   async function validateFourColorsBytes(frame) {
     const m = 4;
-    const tolerance = 5;
+    const tolerance = 8;
     let expected_xy_color = [
       // Left-top yellow
       { x: m, y: m, r: 255, g: 255, b: 0 },
@@ -46,14 +46,12 @@ Take frames coming from various sources and read them using copyTo().
             view.getUint8(layout[1].offset),   // U
             view.getUint8(layout[2].offset));  // V
           break;
-
         case "NV12":
           rgb = yuv_to_rgb(view.getUint8(layout[0].offset),   // Y
             view.getUint8(layout[1].offset),                  // U
             view.getUint8(layout[1].offset + 1));             // V
           break;
-
-        case "RGB":
+        case "RGBX":
         case "RGBA":
           rgb = {
             r: view.getUint8(layout[0].offset),
@@ -61,12 +59,21 @@ Take frames coming from various sources and read them using copyTo().
             b: view.getUint8(layout[0].offset + 2)
           };
           break;
+        case "BGRX":
+        case "BGRA":
+          rgb = {
+            r: view.getUint8(layout[0].offset + 2),
+            g: view.getUint8(layout[0].offset + 1),
+            b: view.getUint8(layout[0].offset)
+          };
+          break;
         default:
           TEST.reportFailure("Unexpected frame format: " + frame.format);
           return;
       }
 
-      let message = `Test ${JSON.stringify(test)} ${JSON.stringify(rgb)}`;
+      let message =
+          `Test ${frame.format} ${JSON.stringify(test)} ${JSON.stringify(rgb)}`;
       TEST.assert(Math.abs(rgb.r - test.r) < tolerance, message);
       TEST.assert(Math.abs(rgb.g - test.g) < tolerance, message);
       TEST.assert(Math.abs(rgb.b - test.b) < tolerance, message);
