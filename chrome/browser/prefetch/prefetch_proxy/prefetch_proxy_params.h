@@ -112,4 +112,10 @@ bool PrefetchProxyAllowAllDomains();
 // The maximum time a prefetched response is servable.
 base::TimeDelta PrefetchProxyCacheableDuration();
 
+// This value is included in the |PrefetchProxyProxyHeaderKey| request header.
+// The tunnel proxy will use this to determine what, if any, experimental
+// behavior to apply to requests. If the client is not in any server experiment
+// group, this will return an empty string.
+std::string PrefetchProxyServerExperimentGroup();
+
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PARAMS_H_

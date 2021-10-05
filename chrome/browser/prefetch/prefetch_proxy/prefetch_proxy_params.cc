@@ -261,3 +261,8 @@ base::TimeDelta PrefetchProxyCacheableDuration() {
   return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kIsolatePrerenders, "cacheable_duration", 300));
 }
+
+std::string PrefetchProxyServerExperimentGroup() {
+  return base::GetFieldTrialParamValueByFeature(features::kIsolatePrerenders,
+                                                "server_experiment_group");
+}

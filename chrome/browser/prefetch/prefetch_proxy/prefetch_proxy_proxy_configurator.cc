@@ -24,8 +24,14 @@ PrefetchProxyProxyConfigurator::PrefetchProxyProxyConfigurator()
       clock_(base::DefaultClock::GetInstance()) {
   DCHECK(PrefetchProxyProxyHost().is_valid());
 
+  std::string header_value = "key=" + google_apis::GetAPIKey();
+  std::string server_experiment_group = PrefetchProxyServerExperimentGroup();
+  if (server_experiment_group != "") {
+    header_value += ",exp=" + server_experiment_group;
+  }
+
   connect_tunnel_headers_.SetHeader(PrefetchProxyProxyHeaderKey(),
-                                    "key=" + google_apis::GetAPIKey());
+                                    header_value);
 }
 
 PrefetchProxyProxyConfigurator::~PrefetchProxyProxyConfigurator() = default;

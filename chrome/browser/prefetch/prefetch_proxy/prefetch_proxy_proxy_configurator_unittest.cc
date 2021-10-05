@@ -283,3 +283,21 @@ TEST_F(PrefetchProxyProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
   FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 }
+
+TEST_F(PrefetchProxyProxyConfiguratorTest, ServerExperimentGroup) {
+  GURL proxy_url("https://proxy.com");
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIsolatePrerenders,
+      {{"proxy_host", proxy_url.spec()},
+       {"proxy_header_key", "test-header"},
+       {"server_experiment_group", "test_group"}});
+
+  configurator()->UpdateCustomProxyConfig();
+  base::RunLoop().RunUntilIdle();
+
+  net::HttpRequestHeaders headers;
+  headers.SetHeader("test-header",
+                    "key=" + google_apis::GetAPIKey() + ",exp=test_group");
+  VerifyLatestProxyConfig(proxy_url, headers);
+}
