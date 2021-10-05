@@ -8,7 +8,4 @@ grit("resources") {
     "grit/input_overlay_resources.h",
     "input_overlay_resources.pak",
   ]
-
-  # Allow GRIT to assign IDs using its default set of base IDs.
-  resource_ids = ""
 }
