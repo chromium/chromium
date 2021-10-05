@@ -224,7 +224,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       g_browser_process->shared_url_loader_factory());
   night_light_client_->Start();
 
-  if (chromeos::features::IsProjectorEnabled()) {
+  if (ash::features::IsProjectorEnabled()) {
     projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
     projector_client_ = std::make_unique<ProjectorClientImpl>();
   }

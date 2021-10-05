@@ -26,6 +26,8 @@ class RecordingOverlayViewImpl : public ash::RecordingOverlayView {
   RecordingOverlayViewImpl& operator=(const RecordingOverlayViewImpl&) = delete;
   ~RecordingOverlayViewImpl() override = default;
 
+  views::WebView* GetWebViewForTest() { return web_view_; }
+
  private:
   views::WebView* web_view_;
 };

@@ -6,8 +6,7 @@
 
 #include <memory>
 
-#include "base/bind.h"
-#include "base/callback.h"
+#include "ash/public/cpp/projector/projector_controller.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
@@ -18,17 +17,6 @@ namespace chromeos {
 
 AnnotatorMessageHandler::AnnotatorMessageHandler() = default;
 AnnotatorMessageHandler::~AnnotatorMessageHandler() = default;
-
-void AnnotatorMessageHandler::SetOnToolSetCallback(ToolSetCallback callback) {
-  DCHECK(!tool_set_callback_);
-  tool_set_callback_ = std::move(callback);
-}
-
-void AnnotatorMessageHandler::SetUndoRedoAvailabilityCallback(
-    UndoRedoAvailabilityCallback callback) {
-  DCHECK(!undo_redo_availability_callback_);
-  undo_redo_availability_callback_ = std::move(callback);
-}
 
 void AnnotatorMessageHandler::SetTool(const AnnotatorTool& tool) {
   AllowJavascript();
@@ -63,22 +51,17 @@ void AnnotatorMessageHandler::RegisterMessages() {
 }
 
 void AnnotatorMessageHandler::OnToolSet(base::Value::ConstListView args) {
-  if (!tool_set_callback_)
-    return;
-
   DCHECK_EQ(args.size(), 1u);
-  tool_set_callback_.Run(AnnotatorTool::FromValue(args[0]));
+  ash::ProjectorController::Get()->OnToolSet(AnnotatorTool::FromValue(args[0]));
 }
 
 void AnnotatorMessageHandler::OnUndoRedoAvailabilityChanged(
     base::Value::ConstListView args) {
-  if (!undo_redo_availability_callback_)
-    return;
-
   DCHECK_EQ(args.size(), 2u);
   DCHECK(args[0].is_bool());
   DCHECK(args[1].is_bool());
-  undo_redo_availability_callback_.Run(args[0].GetBool(), args[1].GetBool());
+  ash::ProjectorController::Get()->OnUndoRedoAvailabilityChanged(
+      args[0].GetBool(), args[1].GetBool());
 }
 
 }  // namespace chromeos

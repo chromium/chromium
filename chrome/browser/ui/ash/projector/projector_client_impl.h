@@ -24,7 +24,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
                             public speech::SodaInstaller::Observer {
  public:
-  // Used by unittests and browsertests to set projector controller.
   explicit ProjectorClientImpl(ash::ProjectorController* controller);
 
   ProjectorClientImpl();

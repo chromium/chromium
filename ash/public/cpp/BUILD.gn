@@ -223,6 +223,8 @@ component("cpp") {
     "presentation_time_recorder.h",
     "privacy_screen_dlp_helper.cc",
     "privacy_screen_dlp_helper.h",
+    "projector/projector_annotator_controller.cc",
+    "projector/projector_annotator_controller.h",
     "projector/projector_client.h",
     "projector/projector_controller.cc",
     "projector/projector_controller.h",

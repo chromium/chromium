@@ -49,6 +49,9 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void OnTranscriptionError() override;
   bool IsEligible() const override;
   bool CanStartNewSession() const override;
+  void OnToolSet(const chromeos::AnnotatorTool& tool) override;
+  void OnUndoRedoAvailabilityChanged(bool undo_available,
+                                     bool redo_available) override;
 
   // Create the screencast container directory. If there is an error, the
   // callback will be triggered with an empty FilePath.

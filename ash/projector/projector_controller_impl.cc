@@ -146,6 +146,18 @@ bool ProjectorControllerImpl::CanStartNewSession() const {
          client_->IsDriveFsMounted();
 }
 
+void ProjectorControllerImpl::OnToolSet(const chromeos::AnnotatorTool& tool) {
+  // TODO(b/198184362): Reflect the annotator tool changes on the Projector
+  // toolbar.
+}
+
+void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
+    bool undo_available,
+    bool redo_available) {
+  // TODO(b/198184362): Reflect undo and redo buttons availability on the
+  // Projector toolbar.
+}
+
 void ProjectorControllerImpl::SetCaptionBubbleState(bool is_on) {
   ui_controller_->SetCaptionBubbleState(is_on);
 }

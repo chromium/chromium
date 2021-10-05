@@ -4,6 +4,7 @@
 
 #include "chromeos/components/projector_app/trusted_projector_ui.h"
 
+#include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "chromeos/components/projector_app/annotator_message_handler.h"
 #include "chromeos/components/projector_app/projector_app_constants.h"
 #include "chromeos/components/projector_app/projector_message_handler.h"
@@ -58,7 +59,9 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui, const GURL& url)
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
   if (url == GURL(kChromeUITrustedAnnotatorUrl)) {
-    web_ui->AddMessageHandler(std::make_unique<AnnotatorMessageHandler>());
+    // Don't create another AnnotatorMessageHandler if one already exists.
+    if (!ash::ProjectorAnnotatorController::Get())
+      web_ui->AddMessageHandler(std::make_unique<AnnotatorMessageHandler>());
     return;
   }
 

@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/components/projector_app/annotator_message_handler.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "ash/public/cpp/test/mock_projector_controller.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/components/projector_app/annotator_tool.h"
@@ -55,12 +54,14 @@ class AnnotatorMessageHandlerTest : public testing::Test {
 
   content::TestWebUI& web_ui() { return web_ui_; }
   AnnotatorMessageHandler* handler() { return message_handler_.get(); }
+  ash::MockProjectorController& controller() { return controller_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   std::unique_ptr<AnnotatorMessageHandler> message_handler_;
   content::TestWebUI web_ui_;
+  ash::MockProjectorController controller_;
 };
 
 TEST_F(AnnotatorMessageHandlerTest, SetTool) {
@@ -78,18 +79,11 @@ TEST_F(AnnotatorMessageHandlerTest, SetTool) {
   EXPECT_EQ(requested_tool, expected_tool);
 
   // Now let's check that when the tool has been set, we notify the callback.
-  base::RunLoop run_loop;
-  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  handler()->SetOnToolSetCallback(base::BindLambdaForTesting(
-      [&quit_closure, &expected_tool](const AnnotatorTool& result_tool) {
-        EXPECT_EQ(result_tool, expected_tool);
-        quit_closure.Run();
-      }));
+  EXPECT_CALL(controller(), OnToolSet(expected_tool));
 
   base::ListValue list_args;
   list_args.Append(expected_tool.ToValue());
   web_ui().HandleReceivedMessage("onToolSet", &list_args);
-  run_loop.Run();
 }
 
 TEST_F(AnnotatorMessageHandlerTest, Undo) {
@@ -108,35 +102,14 @@ TEST_F(AnnotatorMessageHandlerTest, Clear) {
 }
 
 TEST_F(AnnotatorMessageHandlerTest, UndoRedoAvailabilityChanged) {
-  bool expected_undo_available = false;
-  bool expected_redo_available = false;
-  base::RepeatingClosure quit_closure;
-
-  handler()->SetUndoRedoAvailabilityCallback(
-      base::BindLambdaForTesting([&](bool undo_available, bool redo_available) {
-        EXPECT_EQ(expected_undo_available, undo_available);
-        EXPECT_EQ(expected_redo_available, redo_available);
-        quit_closure.Run();
-      }));
-
-  base::RunLoop run_loop1;
-  quit_closure = run_loop1.QuitClosure();
+  EXPECT_CALL(controller(), OnUndoRedoAvailabilityChanged(false, false));
   SendUndoRedoAvailableChanged(false, false);
-  run_loop1.Run();
 
-  base::RunLoop run_loop2;
-  quit_closure = run_loop2.QuitClosure();
-  expected_undo_available = true;
-  expected_redo_available = true;
+  EXPECT_CALL(controller(), OnUndoRedoAvailabilityChanged(true, true));
   SendUndoRedoAvailableChanged(true, true);
-  run_loop2.Run();
 
-  base::RunLoop run_loop3;
-  quit_closure = run_loop3.QuitClosure();
-  expected_undo_available = false;
-  expected_redo_available = true;
+  EXPECT_CALL(controller(), OnUndoRedoAvailabilityChanged(false, true));
   SendUndoRedoAvailableChanged(false, true);
-  run_loop3.Run();
 }
 
 }  // namespace chromeos
