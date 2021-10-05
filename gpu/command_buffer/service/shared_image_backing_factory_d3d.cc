@@ -473,8 +473,10 @@ SharedImageBackingFactoryD3D::CreateSharedImage(
       alpha_type, usage, std::move(d3d11_texture), std::move(handle));
   if (backing) {
     // This marks the needs_upload_to_gpu_ flag to defer uploading the GMB which
-    // is unnecessary for the GPU write CPU read e.g. two copy canvas capture,
-    // but is needed for CPU write GPU read e.g. software video decoder.
+    // is unnecessary for GPU-write CPU-read scenarios e.g. two copy canvas
+    // capture, but is needed for CPU-write GPU-read cases e.g. software video
+    // decoder. In the GPU-write CPU-read scenario, previous GMB/CPU data is
+    // discarded after calling CopyToGpuMemoryBuffer().
     backing->Update(/*in_fence=*/nullptr);
     backing->SetCleared();
   }
@@ -511,10 +513,11 @@ bool SharedImageBackingFactoryD3D::UseMapOnDefaultTextures() {
         D3D11_FEATURE_D3D11_OPTIONS2, &features,
         sizeof(D3D11_FEATURE_DATA_D3D11_OPTIONS2));
     if (SUCCEEDED(hr)) {
-      map_on_default_textures_.emplace(features.MapOnDefaultTextures);
+      map_on_default_textures_.emplace(features.MapOnDefaultTextures &&
+                                       features.UnifiedMemoryArchitecture);
     } else {
-      DLOG(ERROR) << "Failed to retrieve D3D11_FEATURE_D3D11_OPTIONS2. hr = "
-                  << std::hex << hr;
+      DVLOG(1) << "Failed to retrieve D3D11_FEATURE_D3D11_OPTIONS2. hr = "
+               << std::hex << hr;
       map_on_default_textures_.emplace(false);
     }
   }

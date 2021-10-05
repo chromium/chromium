@@ -18,8 +18,8 @@
 #include "gpu/command_buffer/service/shared_image_representation_d3d.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_image_shared_memory.h"
 #include "ui/gl/trace_util.h"
 
@@ -178,6 +178,18 @@ scoped_refptr<gles2::TexturePassthrough> CreateGLTexture(
 
   return texture;
 }
+
+void CopyPlane(const uint8_t* source_memory,
+               size_t source_stride,
+               uint8_t* dest_memory,
+               size_t dest_stride,
+               viz::ResourceFormat format,
+               const gfx::Size& size) {
+  int row_bytes = size.width() * viz::BitsPerPixel(format) / 8;
+  libyuv::CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
+                    row_bytes, size.height());
+}
+
 }  // namespace
 
 SharedImageBackingD3D::SharedState::SharedState(
@@ -469,6 +481,10 @@ SharedImageBackingD3D::~SharedImageBackingD3D() {
 
 ID3D11Texture2D* SharedImageBackingD3D::GetOrCreateStagingTexture() {
   if (!staging_texture_) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+    DCHECK(d3d11_texture_);
+    d3d11_texture_->GetDevice(&d3d11_device);
+
     D3D11_TEXTURE2D_DESC texture_desc;
     d3d11_texture_->GetDesc(&texture_desc);
 
@@ -483,8 +499,6 @@ ID3D11Texture2D* SharedImageBackingD3D::GetOrCreateStagingTexture() {
     staging_desc.CPUAccessFlags =
         D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 
-    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-        gl::QueryD3D11DeviceObjectFromANGLE();
     HRESULT hr = d3d11_device->CreateTexture2D(&staging_desc, nullptr,
                                                &staging_texture_);
     if (FAILED(hr)) {
@@ -522,13 +536,14 @@ bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
   const uint8_t* source_memory = mapped_shared_memory.GetMemory();
   const size_t source_stride = mapped_shared_memory.GetStride();
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  DCHECK(d3d11_texture_);
+  d3d11_texture_->GetDevice(&d3d11_device);
+
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
   d3d11_device->GetImmediateContext(&device_context);
 
   D3D11_TEXTURE2D_DESC texture_desc;
-  DCHECK(d3d11_texture_);
   d3d11_texture_->GetDesc(&texture_desc);
 
   if (texture_desc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) {
@@ -560,11 +575,8 @@ bool SharedImageBackingD3D::UploadToGpuIfNeeded() {
     }
     uint8_t* dest_memory = static_cast<uint8_t*>(mapped_resource.pData);
     const size_t dest_stride = mapped_resource.RowPitch;
-    const size_t row_bytes = size().width() * viz::BitsPerPixel(format()) / 8;
-    for (int i = 0; i < size().height(); i++) {
-      memcpy(dest_memory + i * dest_stride, source_memory + i * source_stride,
-             row_bytes);
-    }
+    CopyPlane(source_memory, source_stride, dest_memory, dest_stride, format(),
+              size());
     device_context->Unmap(staging_texture, 0);
     device_context->CopySubresourceRegion(d3d11_texture_.Get(), 0, 0, 0, 0,
                                           staging_texture, 0, nullptr);
@@ -591,13 +603,14 @@ bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
   uint8_t* dest_memory = mapped_shared_memory.GetMemory();
   const size_t dest_stride = mapped_shared_memory.GetStride();
 
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  DCHECK(d3d11_texture_);
+  d3d11_texture_->GetDevice(&d3d11_device);
+
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
   d3d11_device->GetImmediateContext(&device_context);
 
   D3D11_TEXTURE2D_DESC texture_desc;
-  DCHECK(d3d11_texture_);
   d3d11_texture_->GetDesc(&texture_desc);
 
   if (texture_desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) {
@@ -631,11 +644,8 @@ bool SharedImageBackingD3D::CopyToGpuMemoryBuffer() {
     }
     const uint8_t* source_memory = static_cast<uint8_t*>(mapped_resource.pData);
     const size_t source_stride = mapped_resource.RowPitch;
-    const size_t row_bytes = size().width() * viz::BitsPerPixel(format()) / 8;
-    for (int i = 0; i < size().height(); i++) {
-      memcpy(dest_memory + i * dest_stride, source_memory + i * source_stride,
-             row_bytes);
-    }
+    CopyPlane(source_memory, source_stride, dest_memory, dest_stride, format(),
+              size());
     device_context->Unmap(staging_texture, 0);
   }
   return true;
