@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_TEST_CONTROLLER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_TEST_CONTROLLER_ASH_H_
 
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -13,14 +14,17 @@ namespace crosapi {
 
 // This class is the ash-chrome implementation of the TestController interface.
 // This class must only be used from the main thread.
-class TestControllerAsh : public mojom::TestController {
+class TestControllerAsh : public mojom::TestController,
+                          public CrosapiAsh::TestControllerReceiver {
  public:
   TestControllerAsh();
   TestControllerAsh(const TestControllerAsh&) = delete;
   TestControllerAsh& operator=(const TestControllerAsh&) = delete;
   ~TestControllerAsh() override;
 
-  void BindReceiver(mojo::PendingReceiver<mojom::TestController> receiver);
+  // CrosapiAsh::TestControllerReceiver:
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::TestController> receiver) override;
 
   // crosapi::mojom::TestController:
   void ClickWindow(const std::string& window_id) override;

@@ -5,7 +5,13 @@
 #ifndef CHROME_TEST_BASE_CHROMEOS_FAKE_ASH_TEST_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_
 #define CHROME_TEST_BASE_CHROMEOS_FAKE_ASH_TEST_CHROME_BROWSER_MAIN_EXTRA_PARTS_H_
 
+#include <memory>
+
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+
+namespace crosapi {
+class TestControllerAsh;
+}  // namespace crosapi
 
 namespace test {
 
@@ -21,6 +27,9 @@ class FakeAshTestChromeBrowserMainExtraParts
 
   void PreBrowserStart() override;
   void PostBrowserStart() override;
+
+ private:
+  std::unique_ptr<crosapi::TestControllerAsh> test_controller_ash_;
 };
 
 }  // namespace test

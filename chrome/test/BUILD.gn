@@ -9720,6 +9720,10 @@ if (is_chromeos_ash) {
       "//chromeos/services/machine_learning/public/cpp:stub",
       "//ui/base:test_support",
 
+      # For crosapi specific test support.
+      "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/crosapi:test_support",
+
       # On Linux, link the dependencies (libraries) that make up actual
       # Chromium functionality directly into the executable.
       "//chrome:browser_dependencies",

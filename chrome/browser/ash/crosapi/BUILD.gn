@@ -102,8 +102,6 @@ source_set("crosapi") {
     "system_display_ash.h",
     "task_manager_ash.cc",
     "task_manager_ash.h",
-    "test_controller_ash.cc",
-    "test_controller_ash.h",
     "test_mojo_connection_manager.cc",
     "test_mojo_connection_manager.h",
     "translate_crosapi_to_proxy_config.cc",
@@ -191,6 +189,21 @@ source_set("crosapi") {
   # depend on //chrome/browser/chromeos. However, that creates a circular
   # dependency, so add this indirect dependency to make it work as intended.
   deps += [ "//ash/webui/print_management/mojom" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_controller_ash.cc",
+    "test_controller_ash.h",
+  ]
+
+  deps = [
+    ":crosapi",
+    "//ash",
+    "//chromeos/crosapi/mojom",
+  ]
 }
 
 source_set("unit_tests") {
