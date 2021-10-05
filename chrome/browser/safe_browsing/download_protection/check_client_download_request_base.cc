@@ -206,7 +206,7 @@ void CheckClientDownloadRequestBase::FinishRequest(
                             REASON_MAX);
 
   NotifyRequestFinished(result, reason);
-  service()->RequestFinished(this);
+  service()->RequestFinished(this, GetBrowserContext(), result);
   // DownloadProtectionService::RequestFinished may delete us.
 }
 

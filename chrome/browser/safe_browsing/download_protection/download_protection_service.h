@@ -33,6 +33,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 
@@ -270,8 +271,11 @@ class DownloadProtectionService {
   void CancelPendingRequests();
 
   // Called by a CheckClientDownloadRequest instance when it finishes, to
-  // remove it from |download_requests_|.
-  void RequestFinished(CheckClientDownloadRequestBase* request);
+  // remove it from |download_requests_| and to report security sensitive
+  // events to safe_browsing_metrics_collector.
+  void RequestFinished(CheckClientDownloadRequestBase* request,
+                       content::BrowserContext* browser_context,
+                       DownloadCheckResult result);
 
   // Called by a DeepScanningRequest when it finishes, to remove it from
   // |deep_scanning_requests_|.

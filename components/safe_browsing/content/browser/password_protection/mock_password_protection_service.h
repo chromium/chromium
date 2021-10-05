@@ -22,7 +22,8 @@ class MockPasswordProtectionService : public PasswordProtectionService {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
       signin::IdentityManager* identity_manager,
-      bool try_token_fetch);
+      bool try_token_fetch,
+      SafeBrowsingMetricsCollector* metrics_collector);
 
   MockPasswordProtectionService(const MockPasswordProtectionService&) = delete;
   MockPasswordProtectionService& operator=(

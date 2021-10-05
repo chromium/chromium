@@ -74515,6 +74515,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="PASSWORD_REUSE_MODAL_BYPASS"/>
   <int value="7" label="EXTENSION_ALLOWLIST_INSTALL_BYPASS"/>
   <int value="8" label="NON_ALLOWLISTED_EXTENSION_RE_ENABLED"/>
+  <int value="9" label="SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL"/>
+  <int value="10" label="SECURITY_SENSITIVE_SSL_INTERSTITIAL"/>
+  <int value="11" label="SECURITY_SENSITIVE_PASSWORD_PROTECTION"/>
+  <int value="12" label="SECURITY_SENSITIVE_DOWNLOAD"/>
 </enum>
 
 <enum name="SBPhishingClassifierEvent">

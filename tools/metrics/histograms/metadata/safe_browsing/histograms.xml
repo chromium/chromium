@@ -38,6 +38,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       summary="real time URL check warning bypass"/>
 </variants>
 
+<variants name="MetricsCollectorSecuritySensitiveEventType">
+  <variant name="Download" summary="download"/>
+  <variant name="PasswordProtection" summary="password protection"/>
+  <variant name="SafeBrowsingInterstitial"
+      summary="safe browsing interstitial"/>
+  <variant name="SSLInterstitial" summary="SSL interstitial"/>
+</variants>
+
 <variants name="MetricsCollectorUserState">
   <variant name="EnhancedProtection" summary="enhanced protection"/>
   <variant name="Managed" summary="Safe Browsing managed mode"/>
@@ -224,6 +232,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="UserState" variants="MetricsCollectorUserState"/>
   <token key="EventType" variants="MetricsCollectorBypassEventType">
+    <variant name="AllEvents" summary="any type of events"/>
+  </token>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.{UserState}.{EventType}"
+    units="events" expires_after="2022-03-08">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the total number of security sensitive {EventType} in the last 28 days.
+    Recorded for all non-Incognito profiles that are under {UserState} every 24
+    hours and at startup if the last recording was more than 24 hours ago.
+  </summary>
+  <token key="UserState" variants="MetricsCollectorUserState"/>
+  <token key="EventType" variants="MetricsCollectorSecuritySensitiveEventType">
     <variant name="AllEvents" summary="any type of events"/>
   </token>
 </histogram>

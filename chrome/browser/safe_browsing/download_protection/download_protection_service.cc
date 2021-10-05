@@ -30,6 +30,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_request_maker.h"
 #include "chrome/browser/safe_browsing/download_protection/download_url_sb_client.h"
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
@@ -101,6 +102,47 @@ int GetDownloadAttributionUserGestureLimit(const download::DownloadItem& item) {
   if (!IsExtendedReportingEnabled(*prefs))
     return kDownloadAttributionUserGestureLimit;
   return kDownloadAttributionUserGestureLimitForExtendedReporting;
+}
+
+bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
+  using Result = safe_browsing::DownloadCheckResult;
+  switch (result) {
+    case Result::UNKNOWN:
+    case Result::DANGEROUS:
+    case Result::UNCOMMON:
+    case Result::DANGEROUS_HOST:
+    case Result::POTENTIALLY_UNWANTED:
+    case Result::DANGEROUS_ACCOUNT_COMPROMISE:
+      return true;
+    case Result::SAFE:
+    case Result::ALLOWLISTED_BY_POLICY:
+    case Result::ASYNC_SCANNING:
+    case Result::BLOCKED_PASSWORD_PROTECTED:
+    case Result::BLOCKED_TOO_LARGE:
+    case Result::SENSITIVE_CONTENT_BLOCK:
+    case Result::SENSITIVE_CONTENT_WARNING:
+    case Result::DEEP_SCANNED_SAFE:
+    case Result::PROMPT_FOR_SCANNING:
+    case Result::BLOCKED_UNSUPPORTED_FILE_TYPE:
+      return false;
+  }
+  NOTREACHED();
+  return false;
+}
+
+void MaybeLogSecuritySensitiveDownloadEvent(
+    content::BrowserContext* browser_context,
+    DownloadCheckResult result) {
+  if (browser_context) {
+    SafeBrowsingMetricsCollector* metrics_collector =
+        SafeBrowsingMetricsCollectorFactory::GetForProfile(
+            Profile::FromBrowserContext(browser_context));
+    if (metrics_collector && IsDownloadSecuritySensitive(result)) {
+      metrics_collector->AddSafeBrowsingEventToPref(
+          safe_browsing::SafeBrowsingMetricsCollector::EventType::
+              SECURITY_SENSITIVE_DOWNLOAD);
+    }
+  }
 }
 
 }  // namespace
@@ -345,8 +387,11 @@ void DownloadProtectionService::CancelPendingRequests() {
 }
 
 void DownloadProtectionService::RequestFinished(
-    CheckClientDownloadRequestBase* request) {
+    CheckClientDownloadRequestBase* request,
+    content::BrowserContext* browser_context,
+    DownloadCheckResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  MaybeLogSecuritySensitiveDownloadEvent(browser_context, result);
   auto it = download_requests_.find(request);
   DCHECK(it != download_requests_.end());
   download_requests_.erase(it);

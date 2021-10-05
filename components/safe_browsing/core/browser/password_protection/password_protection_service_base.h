@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -69,7 +70,8 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       bool is_off_the_record,
       signin::IdentityManager* identity_manager,
-      bool try_token_fetch);
+      bool try_token_fetch,
+      SafeBrowsingMetricsCollector* metrics_collector);
 
   PasswordProtectionServiceBase(const PasswordProtectionServiceBase&) = delete;
   PasswordProtectionServiceBase& operator=(
@@ -460,6 +462,9 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   // A boolean indicates whether access token fetch should be attempted or not.
   // Use this to disable token fetches from ios and certain tests.
   bool try_token_fetch_;
+
+  // Unowned object used for recording metrics/prefs.
+  SafeBrowsingMetricsCollector* metrics_collector_;
 
   base::WeakPtrFactory<PasswordProtectionServiceBase> weak_factory_{this};
 };

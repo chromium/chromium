@@ -97,6 +97,12 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                               unsafe_resources[0].request_destination);
   }
 
+  if (metrics_collector_) {
+    metrics_collector_->AddSafeBrowsingEventToPref(
+        SafeBrowsingMetricsCollector::EventType::
+            SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+  }
+
   if (!trigger_manager_)
     return;
 

@@ -184,7 +184,8 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
                                       std::move(token_fetcher),
                                       is_off_the_record,
                                       identity_manager,
-                                      try_token_fetch),
+                                      try_token_fetch,
+                                      nullptr),
         cache_manager_(
             std::make_unique<VerdictCacheManager>(nullptr,
                                                   content_setting_map.get())) {

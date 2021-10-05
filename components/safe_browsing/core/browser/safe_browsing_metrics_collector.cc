@@ -114,24 +114,41 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
   UserState user_state = GetUserState();
 
   int total_bypass_count = 0;
+  int total_security_sensitive_event_count = 0;
   for (int event_type_int = 0; event_type_int <= EventType::kMaxValue;
        event_type_int += 1) {
     EventType event_type = static_cast<EventType>(event_type_int);
-    if (!IsBypassEventType(event_type)) {
-      continue;
+    if (IsBypassEventType(event_type)) {
+      int bypass_count =
+          GetEventCountSince(user_state, event_type,
+                             base::Time::Now() - base::TimeDelta::FromDays(28));
+      base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
+                                      GetUserStateMetricSuffix(user_state) +
+                                      "." +
+                                      GetEventTypeMetricSuffix(event_type),
+                                  bypass_count);
+      total_bypass_count += bypass_count;
     }
-    int bypass_count = GetEventCountSince(user_state, event_type,
-                                          base::Time::Now() - base::Days(28));
-    base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
-                                    GetUserStateMetricSuffix(user_state) + "." +
-                                    GetEventTypeMetricSuffix(event_type),
-                                bypass_count);
-    total_bypass_count += bypass_count;
+    if (IsSecuritySensitiveEventType(event_type)) {
+      int security_sensitive_event_count =
+          GetEventCountSince(user_state, event_type,
+                             base::Time::Now() - base::TimeDelta::FromDays(28));
+      base::UmaHistogramCounts100(
+          "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days." +
+              GetUserStateMetricSuffix(user_state) + "." +
+              GetEventTypeMetricSuffix(event_type),
+          security_sensitive_event_count);
+      total_security_sensitive_event_count += security_sensitive_event_count;
+    }
   }
   base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
                                   GetUserStateMetricSuffix(user_state) +
                                   ".AllEvents",
                               total_bypass_count);
+  base::UmaHistogramCounts100(
+      "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days." +
+          GetUserStateMetricSuffix(user_state) + ".AllEvents",
+      total_security_sensitive_event_count);
 }
 
 void SafeBrowsingMetricsCollector::RemoveOldEventsFromPref() {
@@ -354,6 +371,10 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
   switch (type) {
     case EventType::USER_STATE_DISABLED:
     case EventType::USER_STATE_ENABLED:
+    case EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL:
+    case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:
+    case EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION:
+    case EventType::SECURITY_SENSITIVE_DOWNLOAD:
       return false;
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
     case EventType::CSD_INTERSTITIAL_BYPASS:
@@ -362,6 +383,27 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
     case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
     case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
+      return true;
+  }
+}
+
+bool SafeBrowsingMetricsCollector::IsSecuritySensitiveEventType(
+    const EventType& type) {
+  switch (type) {
+    case EventType::USER_STATE_DISABLED:
+    case EventType::USER_STATE_ENABLED:
+    case EventType::DATABASE_INTERSTITIAL_BYPASS:
+    case EventType::CSD_INTERSTITIAL_BYPASS:
+    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::DANGEROUS_DOWNLOAD_BYPASS:
+    case EventType::PASSWORD_REUSE_MODAL_BYPASS:
+    case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
+    case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
+      return false;
+    case EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL:
+    case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:
+    case EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION:
+    case EventType::SECURITY_SENSITIVE_DOWNLOAD:
       return true;
   }
 }
@@ -399,6 +441,14 @@ std::string SafeBrowsingMetricsCollector::GetEventTypeMetricSuffix(
       return "ExtensionAllowlistInstallBypass";
     case EventType::NON_ALLOWLISTED_EXTENSION_RE_ENABLED:
       return "NonAllowlistedExtensionReEnabled";
+    case EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL:
+      return "SafeBrowsingInterstitial";
+    case EventType::SECURITY_SENSITIVE_SSL_INTERSTITIAL:
+      return "SSLInterstitial";
+    case EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION:
+      return "PasswordProtection";
+    case EventType::SECURITY_SENSITIVE_DOWNLOAD:
+      return "Download";
   }
 }
 

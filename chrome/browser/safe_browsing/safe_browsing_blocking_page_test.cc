@@ -71,6 +71,7 @@
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -1272,6 +1273,15 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, MAYBE_LearnMore) {
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        Histograms_DontProceed) {
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SafeBrowsingMetricsCollector* metrics_collector =
+      SafeBrowsingMetricsCollectorFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  EXPECT_EQ(absl::nullopt,
+            metrics_collector->GetLatestEventTimestamp(
+                SafeBrowsingMetricsCollector::EventType::
+                    SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL));
   base::HistogramTester histograms;
   std::string prefix;
   SBThreatType threat_type = GetThreatType();
@@ -1305,6 +1315,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   histograms.ExpectBucketCount(
       interaction_histogram,
       security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION, 1);
+
+  // Check if security sensitive event is added to prefs.
+  EXPECT_NE(absl::nullopt,
+            metrics_collector->GetLatestEventTimestamp(
+                SafeBrowsingMetricsCollector::EventType::
+                    SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL));
 
   // Decision should be recorded.
   EXPECT_TRUE(ClickAndWaitForDetach("primary-button"));

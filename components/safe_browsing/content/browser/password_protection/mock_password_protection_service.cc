@@ -18,7 +18,8 @@ MockPasswordProtectionService::MockPasswordProtectionService()
                                 nullptr,
                                 false,
                                 nullptr,
-                                /*try_token_fetch=*/false) {}
+                                /*try_token_fetch=*/false,
+                                nullptr) {}
 
 MockPasswordProtectionService::MockPasswordProtectionService(
     const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager,
@@ -28,7 +29,8 @@ MockPasswordProtectionService::MockPasswordProtectionService(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     bool is_off_the_record,
     signin::IdentityManager* identity_manager,
-    bool try_token_fetch)
+    bool try_token_fetch,
+    SafeBrowsingMetricsCollector* metrics_collector)
     : PasswordProtectionService(database_manager,
                                 url_loader_factory,
                                 history_service,
@@ -36,7 +38,8 @@ MockPasswordProtectionService::MockPasswordProtectionService(
                                 std::move(token_fetcher),
                                 is_off_the_record,
                                 identity_manager,
-                                try_token_fetch) {}
+                                try_token_fetch,
+                                metrics_collector) {}
 
 MockPasswordProtectionService::~MockPasswordProtectionService() {}
 

@@ -40,6 +40,31 @@ const int kRequestTimeoutMs = 10000;
 const char kPasswordProtectionRequestUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/login";
 
+// Check if the verdict makes this a security sensitive event.
+bool IsSecuritySensitiveVerdict(
+    LoginReputationClientResponse::VerdictType verdict_type) {
+  switch (verdict_type) {
+    case LoginReputationClientResponse::SAFE:
+      return false;
+    case LoginReputationClientResponse::LOW_REPUTATION:
+    case LoginReputationClientResponse::PHISHING:
+    case LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED:
+      return true;
+  }
+  NOTREACHED() << "Unexpected verdict_type: " << verdict_type;
+  return false;
+}
+
+// Log security sensitive event if required.
+void MaybeRecordSecuritySensitiveEvent(
+    SafeBrowsingMetricsCollector* metrics_collector,
+    LoginReputationClientResponse::VerdictType verdict_type) {
+  if (metrics_collector && IsSecuritySensitiveVerdict(verdict_type)) {
+    metrics_collector->AddSafeBrowsingEventToPref(
+        SafeBrowsingMetricsCollector::EventType::
+            SECURITY_SENSITIVE_PASSWORD_PROTECTION);
+  }
+}
 }  // namespace
 
 PasswordProtectionServiceBase::PasswordProtectionServiceBase(
@@ -50,14 +75,16 @@ PasswordProtectionServiceBase::PasswordProtectionServiceBase(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     bool is_off_the_record,
     signin::IdentityManager* identity_manager,
-    bool try_token_fetch)
+    bool try_token_fetch,
+    SafeBrowsingMetricsCollector* metrics_collector)
     : database_manager_(database_manager),
       url_loader_factory_(url_loader_factory),
       pref_service_(pref_service),
       token_fetcher_(std::move(token_fetcher)),
       is_off_the_record_(is_off_the_record),
       identity_manager_(identity_manager),
-      try_token_fetch_(try_token_fetch) {
+      try_token_fetch_(try_token_fetch),
+      metrics_collector_(metrics_collector) {
   if (history_service)
     history_service_observation_.Observe(history_service);
 }
@@ -176,6 +203,9 @@ void PasswordProtectionServiceBase::RequestFinished(
     auto verdict =
         response ? response->verdict_type()
                  : LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED;
+
+    // If verdict declares a security sensitive event, log accordingly.
+    MaybeRecordSecuritySensitiveEvent(metrics_collector_, verdict);
 
 // Disabled on Android, because enterprise reporting extension is not supported.
 #if !defined(OS_ANDROID)

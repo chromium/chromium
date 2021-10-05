@@ -27,13 +27,14 @@ namespace safe_browsing {
 // metrics when enhanced protection is disabled.
 class SafeBrowsingMetricsCollector : public KeyedService {
  public:
-  // Enum representing different types of Safe Browsing events for measuring
-  // user friction. They are used as keys of the SafeBrowsingEventTimestamps
-  // pref. They are used for logging histograms, entries must not be removed or
-  // reordered. Please update the enums.xml file if new values are added.
-  // They are also used to construct suffixes of histograms. Please update the
-  // MetricsCollectorBypassEventType variants in the histograms.xml file if new
-  // values are added.
+  // Enum representing different types of Safe Browsing events, such as those
+  // for measuring user friction, or security sensitive actions. They are used
+  // as keys of the SafeBrowsingEventTimestamps pref. They are used for logging
+  // histograms, entries must not be removed or reordered. Please update the
+  // enums.xml file if new values are added. They are also used to construct
+  // suffixes of histograms. Please update the MetricsCollectorBypassEventType
+  // or MetricsCollectorSecuritySensitiveEventType
+  // variants in the histograms.xml file if new event values are added.
   enum EventType {
     // The user state is disabled.
     USER_STATE_DISABLED = 0,
@@ -61,8 +62,20 @@ class SafeBrowsingMetricsCollector : public KeyedService {
     // allowlist.
     // This is only shown to ESB users. Added in M91.
     NON_ALLOWLISTED_EXTENSION_RE_ENABLED = 8,
+    // User committed a security sensitive action, and was shown a Safe Browsing
+    // interstitial.
+    SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL = 9,
+    // User committed a security sensitive action, and was shown a SSL
+    // interstitial.
+    SECURITY_SENSITIVE_SSL_INTERSTITIAL = 10,
+    // User received a non-safe verdict from phishguard, because of
+    // an on focus ping or a password reuse ping.
+    SECURITY_SENSITIVE_PASSWORD_PROTECTION = 11,
+    // User committed a security sensitive action related to downloads, as
+    // checked by Safe Browsing.
+    SECURITY_SENSITIVE_DOWNLOAD = 12,
 
-    kMaxValue = NON_ALLOWLISTED_EXTENSION_RE_ENABLED
+    kMaxValue = SECURITY_SENSITIVE_DOWNLOAD
   };
 
   // Enum representing the current user state. They are used as keys of the
@@ -112,6 +125,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(SafeBrowsingMetricsCollectorTest, GetUserState);
 
   static bool IsBypassEventType(const EventType& type);
+  static bool IsSecuritySensitiveEventType(const EventType& type);
   static std::string GetUserStateMetricSuffix(const UserState& user_state);
   static std::string GetEventTypeMetricSuffix(const EventType& event_type);
 

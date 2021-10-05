@@ -435,6 +435,12 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   FastForwardAndAddEvent(base::Hours(1), EventType::CSD_INTERSTITIAL_BYPASS);
   FastForwardAndAddEvent(base::Hours(1),
                          EventType::REAL_TIME_INTERSTITIAL_BYPASS);
+  FastForwardAndAddEvent(
+      base::TimeDelta::FromHours(1),
+      EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+  FastForwardAndAddEvent(
+      base::TimeDelta::FromHours(1),
+      EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
 
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectTotalCount(
@@ -458,6 +464,20 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
       "SafeBrowsing.Daily.BypassCountLast28Days.EnhancedProtection."
       "RealTimeInterstitialBypass",
       /* sample */ 1,
+      /* expected_count */ 1);
+  histograms.ExpectTotalCount(
+      "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.EnhancedProtection."
+      "AllEvents",
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.EnhancedProtection."
+      "AllEvents",
+      /* sample */ 2,
+      /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.EnhancedProtection."
+      "SafeBrowsingInterstitial",
+      /* sample */ 2,
       /* expected_count */ 1);
 
   FastForwardAndAddEvent(base::Hours(1), EventType::CSD_INTERSTITIAL_BYPASS);

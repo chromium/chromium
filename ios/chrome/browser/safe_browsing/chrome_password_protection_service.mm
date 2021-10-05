@@ -149,7 +149,8 @@ ChromePasswordProtectionService::ChromePasswordProtectionService(
           /*token_fetcher=*/nullptr,
           browser_state->IsOffTheRecord(),
           /*identity_manager=*/nullptr,
-          /*try_token_fetch=*/false),
+          /*try_token_fetch=*/false,
+          /*metrics_collector=*/nullptr),
       browser_state_(browser_state),
       add_phished_credentials_(std::move(add_phished_credentials)),
       remove_phished_credentials_(std::move(remove_phished_credentials)) {}
