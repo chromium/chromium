@@ -394,7 +394,8 @@ void OpaqueBrowserFrameView::SizeConstraintsChanged() {}
 // OpaqueBrowserFrameView, views::View overrides:
 
 void OpaqueBrowserFrameView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kTitleBar;
+  // Expose this view as a generic container as it contains/paints many things.
+  node_data->role = ax::mojom::Role::kPane;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
