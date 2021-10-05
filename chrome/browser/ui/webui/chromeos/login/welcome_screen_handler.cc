@@ -283,13 +283,11 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   if (!language_list)
     language_list = GetMinimalUILanguageList();
 
-  const bool enable_layouts = true;
-
   dict->SetKey("languageList",
                base::Value::FromUniquePtrValue(std::move(language_list)));
   dict->SetKey("inputMethodsList",
-               GetAndActivateLoginKeyboardLayouts(
-                   application_locale, selected_input_method, enable_layouts));
+               GetAndActivateLoginKeyboardLayouts(application_locale,
+                                                  selected_input_method));
   dict->SetKey("timezoneList", GetTimezoneList());
   dict->SetKey("demoModeCountryList", DemoSession::GetCountryList());
 

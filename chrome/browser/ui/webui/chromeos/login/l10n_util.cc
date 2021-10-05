@@ -497,9 +497,9 @@ std::string FindMostRelevantLocale(
   return fallback_locale;
 }
 
-base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
-                                                   const std::string& selected,
-                                                   bool activate_keyboards) {
+base::ListValue GetAndActivateLoginKeyboardLayouts(
+    const std::string& locale,
+    const std::string& selected) {
   base::ListValue input_methods_list;
   input_method::InputMethodManager* manager =
       input_method::InputMethodManager::Get();
@@ -508,12 +508,10 @@ base::ListValue GetAndActivateLoginKeyboardLayouts(const std::string& locale,
   const std::vector<std::string>& hardware_login_input_methods =
       util->GetHardwareLoginInputMethodIds();
 
-  if (activate_keyboards) {
-    DCHECK(
-        ProfileHelper::IsSigninProfile(ProfileManager::GetActiveUserProfile()));
-    manager->GetActiveIMEState()->EnableLoginLayouts(
-        locale, hardware_login_input_methods);
-  }
+  DCHECK(
+      ProfileHelper::IsSigninProfile(ProfileManager::GetActiveUserProfile()));
+  manager->GetActiveIMEState()->EnableLoginLayouts(
+      locale, hardware_login_input_methods);
 
   std::unique_ptr<input_method::InputMethodDescriptors> input_methods(
       manager->GetActiveIMEState()->GetEnabledInputMethods());
