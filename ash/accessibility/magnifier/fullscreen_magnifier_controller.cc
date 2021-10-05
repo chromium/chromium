@@ -637,10 +637,11 @@ void FullscreenMagnifierController::RedrawKeepingMousePosition(
     AfterAnimationMoveCursorTo(mouse_in_root);
 }
 
-void FullscreenMagnifierController::OnMouseMove(const gfx::Point& location) {
+void FullscreenMagnifierController::OnMouseMove(
+    const gfx::Point& location_in_dip) {
   DCHECK(root_window_);
 
-  gfx::Point mouse(location);
+  gfx::Point center_point_in_dip(location_in_dip);
   int margin = kCursorPanningMargin / scale_;  // No need to consider DPI.
 
   // Edge mouse following mode.
@@ -648,18 +649,45 @@ void FullscreenMagnifierController::OnMouseMove(const gfx::Point& location) {
   int x_margin = margin;
   int y_margin = margin;
 
-  if (mouse_following_mode_ == MagnifierMouseFollowingMode::kCentered) {
+  if (mouse_following_mode_ == MagnifierMouseFollowingMode::kCentered ||
+      mouse_following_mode_ == MagnifierMouseFollowingMode::kContinuous) {
     const gfx::Rect window_rect = GetViewportRect();
     x_margin = window_rect.width() / 2;
     y_margin = window_rect.height() / 2;
+  }
+
+  if (mouse_following_mode_ == MagnifierMouseFollowingMode::kContinuous) {
+    // Continuous mouse panning mode is similar to centered mouse panning mode,
+    // in that the screen moves behind the cursor when the user moves the mouse.
+    // Unlike centered mouse panning mode however, the cursor is not centered in
+    // the middle of the screen, but is able to freely move around, with the
+    // screen moving in the opposite direction; for example, when the cursor
+    // approaches the top left corner, the screen also scrolls behind it, so
+    // that more of the top left portion of the screen is visible, until the
+    // cursor reaches and meets up with the corner of the screen. This logic
+    // calculates where the center point of the magnified region should be,
+    // such that where the cursor is located in the magnified region corresponds
+    // in proportion to where the cursor is located on the screen overall.
+    const gfx::Size host_size_in_dip = GetHostSizeDIP();
+    const gfx::SizeF window_size_in_dip = GetWindowRectDIP(scale_).size();
+    const float x = location_in_dip.x();
+    const float y = location_in_dip.y();
+
+    const int center_point_in_dip_x =
+        x - x * window_size_in_dip.width() / host_size_in_dip.width() +
+        window_size_in_dip.width() / 2;
+    const int center_point_in_dip_y =
+        y - y * window_size_in_dip.height() / host_size_in_dip.height() +
+        window_size_in_dip.height() / 2;
+    center_point_in_dip = {center_point_in_dip_x, center_point_in_dip_y};
   }
 
   // Reduce the bottom margin if the keyboard is visible.
   bool reduce_bottom_margin =
       keyboard::KeyboardUIController::Get()->IsKeyboardVisible();
 
-  MoveMagnifierWindowFollowPoint(mouse, x_margin, y_margin, x_margin, y_margin,
-                                 reduce_bottom_margin);
+  MoveMagnifierWindowFollowPoint(center_point_in_dip, x_margin, y_margin,
+                                 x_margin, y_margin, reduce_bottom_margin);
 }
 
 void FullscreenMagnifierController::AfterAnimationMoveCursorTo(
@@ -836,9 +864,13 @@ void FullscreenMagnifierController::MoveMagnifierWindowFollowPoint(
                          kDefaultAnimationTweenType);
 
     if (ret) {
-      // If the magnified region is moved, hides the mouse cursor and moves it.
-      if (x_diff != 0 || y_diff != 0)
+      // If the magnified region is moved, hides the mouse cursor and moves it,
+      // unless we're in continuous mode (in which case mouse position is
+      // good already).
+      if ((x_diff != 0 || y_diff != 0) &&
+          mouse_following_mode_ != MagnifierMouseFollowingMode::kContinuous) {
         MoveCursorTo(root_window_->GetHost(), point);
+      }
     }
   }
 }
