@@ -35,8 +35,11 @@ namespace features {
 //
 // The goal is to reduce jank by ensuring chromium is handling input events as
 // soon as possible.
+//
+// TODO(nuskos): Remove this feature flag after we've done our retroactive study
+// of all chrometto performance improvements.
 constexpr base::Feature kBrowserPrioritizeInputQueue{
-    "BrowserPrioritizeInputQueue", base::FEATURE_DISABLED_BY_DEFAULT};
+    "BrowserPrioritizeInputQueue", base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
 
 namespace {
