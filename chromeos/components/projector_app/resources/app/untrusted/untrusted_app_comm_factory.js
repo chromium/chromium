@@ -78,9 +78,27 @@ const CLIENT_DELEGATE = {
    * device.
    * @return {Promise<Array<!projectorApp.PendingScreencast>>}
    */
-  // TODO(b/197015567) Wired this up with ProjectorMessageHandler.
+  // TODO(b/197015567): Wired this up with ProjectorMessageHandler.
   getPendingScreencasts() {
     return Promise.resolve([]);
+  },
+
+  /*
+   * Send XHR request.
+   * @param {string} url the request URL.
+   * @param {string} method the request method.
+   * @param {string=} requestBody the request body data.
+   * @param {boolean=} useCredentials authorize the request with end user
+   *  credentials. Used for getting streaming URL.
+   * @return {!Promise<!projectorApp.XhrResponse>}
+   */
+  sendXhr (url, method, requestBody, useCredentials) {
+    // TODO(b/202074799): Wired this up with ProjectorMessageHandler.
+    return Promise.resolve({
+      success: true,
+      response: '',
+      error: ''
+    });
   },
 }
 

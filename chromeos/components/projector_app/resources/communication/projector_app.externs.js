@@ -167,6 +167,31 @@ projectorApp.PendingScreencast.prototype.uploadProgress;
 // TODO(b/197015567): Add other screencast fields(duration, createdDate etc.).
 
 /**
+ * Structure for XHR response.
+ * @record
+ * @struct
+ */
+projectorApp.XhrResponse = function() {};
+
+/**
+ * True if the request is sent successfully.
+ * @type {boolean}
+ */
+projectorApp.XhrResponse.prototype.success;
+
+/**
+ * The response text of the XHR request.
+ * @type {string}
+ */
+projectorApp.XhrResponse.prototype.response;
+
+/**
+ * The error message associated with the XHR request.
+ * @type {string}
+ */
+projectorApp.XhrResponse.prototype.error;
+
+/**
  * The delegate interface that the Projector app can use to make requests to
  * chrome.
  * @record
@@ -217,6 +242,18 @@ projectorApp.ClientDelegate.prototype.onError = function(msg) {};
  * @return {Promise<Array<!projectorApp.PendingScreencast>>}
  */
 projectorApp.ClientDelegate.prototype.getPendingScreencasts = function() {};
+
+/*
+ * Send XHR request.
+ * @param {string} url the request URL.
+ * @param {string} method the request method.
+ * @param {string=} requestBody the request body data.
+ * @param {boolean=} useCredentials authorize the request with end user
+ *  credentials. Used for getting streaming URL.
+ * @return {!Promise<!projectorApp.XhrResponse>}
+ */
+projectorApp.ClientDelegate.prototype.sendXhr = function(
+    url, method, requestBody, useCredentials) {};
 
 /**
  * The client Api for interacting with the Projector app instance.
