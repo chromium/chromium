@@ -54,7 +54,10 @@ mojom("test_api") {
 
 source_set("tests") {
   testonly = true
-  sources = [ "buckets/bucket_id_mojom_traits_unittest.cc" ]
+  sources = [
+    "buckets/bucket_id_mojom_traits_unittest.cc",
+    "buckets/bucket_locator_mojom_traits_unittest.cc",
+  ]
   deps = [
     "//components/services/storage/public/cpp/buckets",
     "//components/services/storage/public/mojom/buckets",

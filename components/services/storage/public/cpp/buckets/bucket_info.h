@@ -14,6 +14,11 @@
 
 namespace storage {
 
+// Snapshot of a bucket's information in the quota database.
+//
+// Properties that can be updated by the Storage Buckets API, like
+// `expiration` and `quota`, may get out of sync with the database. The
+// database is the source of truth.
 struct COMPONENT_EXPORT(STORAGE_SERVICE_BUCKETS_SUPPORT) BucketInfo {
   BucketInfo();
   BucketInfo(BucketId bucket_id,
