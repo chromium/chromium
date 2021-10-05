@@ -25,6 +25,7 @@
 #endif
 
 namespace {
+constexpr char kHintsHost[] = "hints.com";
 constexpr char kHintsURL[] = "https://hints.com/with_hints.html";
 }
 
@@ -79,8 +80,32 @@ class OptimizationGuideValidationTabHelperTest : public PlatformTest {
   web::FakeWebState web_state_;
 };
 
-TEST_F(OptimizationGuideValidationTabHelperTest, TestValidMetadataFetch) {
-  SetUpMetadataFetchValidation("MetadataFetchValidation");
+TEST_F(OptimizationGuideValidationTabHelperTest,
+       TestValidMetadataFetchHostKeyed) {
+  SetUpMetadataFetchValidation(kHintsHost);
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kHintsURL));
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationStarted(&context);
+  web_state_.OnNavigationFinished(&context);
+  RetryForHistogramUntilCountReached(
+      &histogram_tester_, "OptimizationGuide.MetadataFetchValidation.Result",
+      1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.MetadataFetchValidation.Result", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecisionAsync.MetadataFetchValidation",
+      optimization_guide::OptimizationTypeDecision::kAllowedByHint, 1);
+}
+
+TEST_F(OptimizationGuideValidationTabHelperTest,
+       TestValidMetadataFetchURLKeyed) {
+  SetUpMetadataFetchValidation(kHintsURL);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      optimization_guide::features::kOptimizationGuideMetadataValidation,
+      {{"is_host_keyed", "false"}});
 
   web::FakeNavigationContext context;
   context.SetUrl(GURL(kHintsURL));

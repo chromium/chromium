@@ -228,6 +228,9 @@ int NumBitsForRAPPORMetrics();
 // Must be between 0 and 1.
 double NoiseProbabilityForRAPPORMetrics();
 
+// Returns whether the metadata validation fetch feature is host keyed.
+bool ShouldMetadataValidationFetchHostKeyed();
+
 }  // namespace features
 }  // namespace optimization_guide
 

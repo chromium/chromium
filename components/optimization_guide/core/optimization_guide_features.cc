@@ -437,5 +437,11 @@ double NoiseProbabilityForRAPPORMetrics() {
                                          "noise_prob_for_rappor_metrics", .5)));
 }
 
+bool ShouldMetadataValidationFetchHostKeyed() {
+  DCHECK(base::FeatureList::IsEnabled(kOptimizationGuideMetadataValidation));
+  return GetFieldTrialParamByFeatureAsBool(kOptimizationGuideMetadataValidation,
+                                           "is_host_keyed", true);
+}
+
 }  // namespace features
 }  // namespace optimization_guide

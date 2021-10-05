@@ -75,7 +75,7 @@ void OptimizationGuideValidationTabHelper::DidFinishNavigation(
       navigation_context, optimization_guide::proto::METADATA_FETCH_VALIDATION,
       base::BindOnce(&OptimizationGuideValidationTabHelper::
                          OnMetadataFetchValidationDecisionReceived,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), navigation_context->GetUrl()));
   optimization_guide_service->CanApplyOptimization(
       navigation_context->GetUrl(),
       optimization_guide::proto::BLOOM_FILTER_VALIDATION,
@@ -91,6 +91,7 @@ void OptimizationGuideValidationTabHelper::WebStateDestroyed(
 
 void OptimizationGuideValidationTabHelper::
     OnMetadataFetchValidationDecisionReceived(
+        const GURL& url,
         optimization_guide::OptimizationGuideDecision decision,
         const optimization_guide::OptimizationMetadata& metadata) {
   DCHECK(base::FeatureList::IsEnabled(
@@ -99,14 +100,16 @@ void OptimizationGuideValidationTabHelper::
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue)
     return;
 
+  auto expected_metadata =
+      optimization_guide::features::ShouldMetadataValidationFetchHostKeyed()
+          ? url.host()
+          : url.spec();
+
   auto string_metadata =
       metadata.ParsedMetadata<optimization_guide::proto::StringValue>();
   base::UmaHistogramBoolean(
       "OptimizationGuide.MetadataFetchValidation.Result",
-      string_metadata &&
-          string_metadata->value() ==
-              optimization_guide::GetStringNameForOptimizationType(
-                  optimization_guide::proto::METADATA_FETCH_VALIDATION));
+      string_metadata && string_metadata->value() == expected_metadata);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(OptimizationGuideValidationTabHelper)

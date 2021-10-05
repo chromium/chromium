@@ -39,6 +39,7 @@ class OptimizationGuideValidationTabHelper
   // Callback invoked when the decision for validate metadata fetch type is
   // received from the optimization guide.
   void OnMetadataFetchValidationDecisionReceived(
+      const GURL& url,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
