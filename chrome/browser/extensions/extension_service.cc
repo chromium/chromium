@@ -924,8 +924,8 @@ void ExtensionService::ClearGreylistedAcknowledgedStateAndMaybeReenable(
   }
   // Clear all acknowledged states so the extension will still get disabled if
   // it is added to the greylist again.
-  blocklist_prefs::ClearAcknowledgedBlocklistStates(extension_id,
-                                                    extension_prefs_);
+  blocklist_prefs::ClearAcknowledgedGreylistStates(extension_id,
+                                                   extension_prefs_);
   RemoveDisableReasonAndMaybeEnable(extension_id,
                                     disable_reason::DISABLE_GREYLIST);
 }

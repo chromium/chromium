@@ -158,12 +158,11 @@ void RemoveAcknowledgedBlocklistState(
       static_cast<int>(kDefaultBitMapBlocklistState));
 }
 
-void ClearAcknowledgedBlocklistStates(const std::string& extension_id,
-                                      ExtensionPrefs* extension_prefs) {
-  extension_prefs->ModifyBitMapPrefBits(
-      extension_id, 0, ExtensionPrefs::BIT_MAP_PREF_CLEAR,
-      kPrefAcknowledgedBlocklistState,
-      static_cast<int>(kDefaultBitMapBlocklistState));
+void ClearAcknowledgedGreylistStates(const std::string& extension_id,
+                                     ExtensionPrefs* extension_prefs) {
+  for (auto state : kGreylistStates) {
+    RemoveAcknowledgedBlocklistState(extension_id, state, extension_prefs);
+  }
 }
 
 bool HasAcknowledgedBlocklistState(const std::string& extension_id,

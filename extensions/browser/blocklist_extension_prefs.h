@@ -61,9 +61,9 @@ void RemoveAcknowledgedBlocklistState(
     const std::string& extension_id,
     BitMapBlocklistState state,
     extensions::ExtensionPrefs* extension_prefs);
-// Clears all states in the acknowledged blocklist state pref.
-void ClearAcknowledgedBlocklistStates(const std::string& extension_id,
-                                      ExtensionPrefs* extension_prefs);
+// Clears all greylisted states in the acknowledged blocklist state pref.
+void ClearAcknowledgedGreylistStates(const std::string& extension_id,
+                                     ExtensionPrefs* extension_prefs);
 // Checks whether the `extension_id` has the `state` in the acknowledged
 // blocklist state pref.
 bool HasAcknowledgedBlocklistState(const std::string& extension_id,

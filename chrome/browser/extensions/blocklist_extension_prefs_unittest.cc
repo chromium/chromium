@@ -105,12 +105,19 @@ TEST_F(BlocklistExtensionPrefsUnitTest, AcknowledgedBlocklistState) {
   EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
       kExtensionId, state1, extension_prefs()));
 
-  blocklist_prefs::ClearAcknowledgedBlocklistStates(kExtensionId,
-                                                    extension_prefs());
+  blocklist_prefs::AddAcknowledgedBlocklistState(
+      kExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs());
+  blocklist_prefs::ClearAcknowledgedGreylistStates(kExtensionId,
+                                                   extension_prefs());
   EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
       kExtensionId, state1, extension_prefs()));
   EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
       kExtensionId, state2, extension_prefs()));
+  // The malware acknowledged state should not be cleared.
+  EXPECT_TRUE(blocklist_prefs::HasAcknowledgedBlocklistState(
+      kExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extension_prefs()));
 }
 
 TEST_F(BlocklistExtensionPrefsUnitTest,
