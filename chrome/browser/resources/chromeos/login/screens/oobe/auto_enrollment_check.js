@@ -6,14 +6,32 @@
  * @fileoverview Oobe Auto-enrollment check screen implementation.
  */
 
-Polymer({
-  is: 'auto-enrollment-check-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeI18nBehavior, LoginScreenBehavior, OobeDialogHostBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {LoginScreenBehaviorInterface}
+ */
+const AutoEnrollmentCheckElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    Polymer.Element);
+
+class AutoEnrollmentCheckElement extends AutoEnrollmentCheckElementBase {
+  static get is() {
+    return 'auto-enrollment-check-element';
+  }
+
+  /* #html_template_placeholder */
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('AutoEnrollmentCheckScreen', {
       resetAllowed: true,
     });
-  },
-});
+  }
+}
+
+customElements.define(
+    AutoEnrollmentCheckElement.is, AutoEnrollmentCheckElement);
