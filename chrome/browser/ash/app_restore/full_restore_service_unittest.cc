@@ -18,6 +18,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -222,7 +223,8 @@ class FullRestoreServiceTest : public testing::Test {
 // If the system is crash, and there is no FullRestore file, don't show the
 // crash notification, and don't restore.
 TEST_F(FullRestoreServiceTest, Crash) {
-  profile()->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   CreateFullRestoreServiceForTesting();
 
   VerifyNotification(false /* has_crash_notification */,
@@ -295,7 +297,8 @@ class FullRestoreServiceTestHavingFullRestoreFile
 // If the system is crash, show the crash notification, and verify the restore
 // flag when click the restore button.
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
-  profile()->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   CreateFullRestoreServiceForTesting();
 
   VerifyNotification(true /* has_crash_notification */,
@@ -316,7 +319,8 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndRestore) {
 // If the system is crash, show the crash notification, and verify the restore
 // flag when click the cancel button.
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
-  profile()->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   CreateFullRestoreServiceForTesting();
 
   VerifyNotification(true /* has_crash_notification */,
@@ -333,7 +337,8 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCancel) {
 // If the system is crash, show the crash notification, close the notification,
 // and verify the restore flag when click the cancel button.
 TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCloseNotification) {
-  profile()->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   CreateFullRestoreServiceForTesting();
 
   VerifyNotification(true /* has_crash_notification */,

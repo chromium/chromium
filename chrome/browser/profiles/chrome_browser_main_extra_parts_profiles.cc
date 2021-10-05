@@ -195,6 +195,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/exit_type_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #endif
 
@@ -317,6 +318,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   dom_distiller::DomDistillerServiceFactory::GetInstance();
   DownloadCoreServiceFactory::GetInstance();
   BackgroundDownloadServiceFactory::GetInstance();
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  ExitTypeServiceFactory::GetInstance();
+#endif
 #if defined(OS_ANDROID)
   explore_sites::ExploreSitesServiceFactory::GetInstance();
 #endif

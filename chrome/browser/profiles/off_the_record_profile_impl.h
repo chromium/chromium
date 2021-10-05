@@ -75,8 +75,6 @@ class OffTheRecordProfileImpl : public Profile {
   base::FilePath last_selected_directory() override;
   void set_last_selected_directory(const base::FilePath& path) override;
   bool WasCreatedByVersionOrLater(const std::string& version) override;
-  void SetExitType(ExitType exit_type) override;
-  ExitType GetLastSessionExitType() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void ChangeAppLocale(const std::string& locale, AppLocaleChangedVia) override;

@@ -18,6 +18,7 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
@@ -631,7 +632,7 @@ bool HatsService::CanShowAnySurvey(bool user_prompted) const {
 
   // Do not show surveys if Chrome's last exit was a crash. This avoids
   // biasing survey results unnecessarily.
-  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+  if (ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
     UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
                               ShouldShowSurveyReasons::kNoLastSessionCrashed);
     return false;

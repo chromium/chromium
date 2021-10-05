@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/common/chrome_switches.h"
@@ -244,7 +245,8 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
 
   restore_data()->RemoveApp(extension_misc::kChromeAppId);
 
-  if (profile()->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+  if (ExitTypeService::GetLastSessionExitType(profile()) ==
+      ExitType::kCrashed) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kHideCrashRestoreBubble);
   }
@@ -292,7 +294,8 @@ void FullRestoreAppLaunchHandler::LaunchBrowserForFirstRunFullRestore() {
   // restored, so we don't need to call session restore to restore app type
   // browsers. If the session restore setting is not restore, we don't need to
   // restore app type browser neither.
-  if (profile()->GetLastSessionExitType() != Profile::EXIT_CRASHED &&
+  if (ExitTypeService::GetLastSessionExitType(profile()) !=
+          ExitType::kCrashed &&
       !::full_restore::HasAppTypeBrowser(profile()->GetPath()) &&
       session_startup_pref.type == SessionStartupPref::LAST) {
     // Restore the app type browsers only when the web apps are ready.

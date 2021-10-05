@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -824,8 +825,8 @@ void ArcAppLaunchHandler::RecordArcGhostWindowLaunch(bool is_arc_ghost_window) {
 
 void ArcAppLaunchHandler::RecordLaunchBoundsState(bool has_root_bounds,
                                                   bool has_screen_bounds) {
-  bool is_from_crash =
-      handler_->profile()->GetLastSessionExitType() == Profile::EXIT_CRASHED;
+  bool is_from_crash = ExitTypeService::GetLastSessionExitType(
+                           handler_->profile()) == ExitType::kCrashed;
   if (!has_root_bounds) {
     base::UmaHistogramEnumeration(
         kNoGhostWindowReasonHistogram,

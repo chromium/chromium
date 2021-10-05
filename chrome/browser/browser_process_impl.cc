@@ -198,6 +198,10 @@
 #include "content/public/browser/plugin_service.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/exit_type_service.h"
+#endif
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -601,12 +605,15 @@ void BrowserProcessImpl::FlushLocalStateAndReply(base::OnceClosure reply) {
 void BrowserProcessImpl::EndSession() {
   // Mark all the profiles as clean.
   ProfileManager* pm = profile_manager();
-  std::vector<Profile*> profiles(pm->GetLoadedProfiles());
   scoped_refptr<RundownTaskCounter> rundown_counter =
       base::MakeRefCounted<RundownTaskCounter>();
-  for (size_t i = 0; i < profiles.size(); ++i) {
-    Profile* profile = profiles[i];
-    profile->SetExitType(Profile::EXIT_SESSION_ENDED);
+  for (Profile* profile : pm->GetLoadedProfiles()) {
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+    ExitTypeService* exit_type_service =
+        ExitTypeService::GetInstanceForProfile(profile);
+    if (exit_type_service)
+      exit_type_service->SetCurrentSessionExitType(ExitType::kForcedShutdown);
+#endif
     if (profile->GetPrefs()) {
       profile->GetPrefs()->CommitPendingWrite(
           base::OnceClosure(), rundown_counter->GetRundownClosure());

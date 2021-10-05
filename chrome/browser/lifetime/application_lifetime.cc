@@ -42,6 +42,7 @@
 
 #if !defined(OS_ANDROID)
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -203,9 +204,12 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
 
 #if !defined(OS_ANDROID)
 void MarkAsCleanShutdown() {
-  // TODO(beng): Can this use ProfileManager::GetLoadedProfiles() instead?
-  for (auto* browser : *BrowserList::GetInstance())
-    browser->profile()->SetExitType(Profile::EXIT_NORMAL);
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (ExitTypeService* exit_type_service =
+            ExitTypeService::GetInstanceForProfile(browser->profile())) {
+      exit_type_service->SetCurrentSessionExitType(ExitType::kClean);
+    }
+  }
 }
 #endif
 

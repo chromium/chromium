@@ -541,9 +541,6 @@ OffTheRecordProfileImpl::GetProfilePolicyConnector() const {
   return profile_->GetProfilePolicyConnector();
 }
 
-void OffTheRecordProfileImpl::SetExitType(ExitType exit_type) {
-}
-
 base::FilePath OffTheRecordProfileImpl::last_selected_directory() {
   const base::FilePath& directory = last_selected_directory_;
   if (directory.empty()) {
@@ -560,10 +557,6 @@ void OffTheRecordProfileImpl::set_last_selected_directory(
 bool OffTheRecordProfileImpl::WasCreatedByVersionOrLater(
     const std::string& version) {
   return profile_->WasCreatedByVersionOrLater(version);
-}
-
-Profile::ExitType OffTheRecordProfileImpl::GetLastSessionExitType() const {
-  return profile_->GetLastSessionExitType();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -996,10 +996,6 @@ bool TestingProfile::IsNewProfile() const {
   return is_new_profile_;
 }
 
-Profile::ExitType TestingProfile::GetLastSessionExitType() const {
-  return last_session_exited_cleanly_ ? EXIT_NORMAL : EXIT_CRASHED;
-}
-
 TestingProfile::Builder::Builder() = default;
 
 TestingProfile::Builder::~Builder() = default;

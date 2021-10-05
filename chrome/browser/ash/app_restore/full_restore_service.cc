@@ -19,6 +19,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/grit/chromium_strings.h"
@@ -147,7 +148,7 @@ void FullRestoreService::Init() {
   DCHECK(prefs);
 
   // If the system crashed before reboot, show the restore notification.
-  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
+  if (ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
     if (!HasRestorePref(prefs))
       SetDefaultRestorePrefIfNecessary(prefs);
 

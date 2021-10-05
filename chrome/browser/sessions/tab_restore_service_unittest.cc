@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_utils.h"
@@ -200,7 +201,8 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     AddWindowWithOneTabToSessionService(pinned);
 
     // Set this, otherwise previous session won't be loaded.
-    profile()->set_last_session_exited_cleanly(false);
+    ExitTypeService::GetInstanceForProfile(profile())
+        ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   }
 
   void SynchronousLoadTabsFromLastSession() {
@@ -564,7 +566,8 @@ TEST_F(TabRestoreServiceImplTest, DontLoadAfterCleanExit) {
   SessionServiceFactory::GetForProfile(profile())
       ->MoveCurrentSessionToLastSession();
 
-  profile()->set_last_session_exited_cleanly(true);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kClean);
 
   SynchronousLoadTabsFromLastSession();
 
@@ -806,7 +809,8 @@ TEST_F(TabRestoreServiceImplTest, TimestampSurvivesRestore) {
   }
 
   // Set this, otherwise previous session won't be loaded.
-  profile()->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   RecreateService();
 
@@ -853,7 +857,8 @@ TEST_F(TabRestoreServiceImplTest, StatusCodesSurviveRestore) {
   }
 
   // Set this, otherwise previous session won't be loaded.
-  profile()->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   RecreateService();
 

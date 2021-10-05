@@ -6714,6 +6714,10 @@ static_library("browser") {
 
   if (enable_session_service) {
     sources += [
+      "sessions/exit_type_service.cc",
+      "sessions/exit_type_service.h",
+      "sessions/exit_type_service_factory.cc",
+      "sessions/exit_type_service_factory.h",
       "sessions/session_data_deleter.cc",
       "sessions/session_data_deleter.h",
       "sessions/session_data_service.cc",

@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -391,7 +392,8 @@ TEST_F(RecentTabsSubMenuModelTabRestoreTest,
       sessions::ContentTestHelper::CreateNavigation("http://wnd1/tab1",
                                                     "title"));
   // Set this, otherwise previous session won't be loaded.
-  profile()->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   // Move this session to the last so that TabRestoreService will load it as the
   // last session.
   SessionServiceFactory::GetForProfile(profile())->

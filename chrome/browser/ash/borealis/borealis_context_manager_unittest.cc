@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -428,7 +429,8 @@ TEST_F(BorealisContextManagerTest, VmShutsDownAfterChromeCrashes) {
   // Ensure that GetVmInfo returns success - a VM "still running".
   SendVmStartedSignal();
 
-  profile_->set_last_session_exited_cleanly(false);
+  ExitTypeService::GetInstanceForProfile(profile_.get())
+      ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   BorealisContextManagerImpl context_manager(profile_.get());
   task_environment_.RunUntilIdle();
   EXPECT_GE(fake_concierge_client->stop_vm_call_count(), 1);

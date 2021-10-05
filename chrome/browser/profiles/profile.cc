@@ -435,7 +435,7 @@ bool Profile::CanUseDiskWhenOffTheRecord() {
 #endif
 }
 
-bool Profile::ShouldRestoreOldSessionCookies() const {
+bool Profile::ShouldRestoreOldSessionCookies() {
   return false;
 }
 

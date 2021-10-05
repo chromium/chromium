@@ -54,6 +54,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -1363,7 +1364,8 @@ bool StartupBrowserCreator::ActivatedProfile() {
 }
 
 bool HasPendingUncleanExit(Profile* profile) {
-  return profile->GetLastSessionExitType() == Profile::EXIT_CRASHED &&
+  return ExitTypeService::GetLastSessionExitType(profile) ==
+             ExitType::kCrashed &&
          !profile_launch_observer.Get().HasBeenLaunched(profile) &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kHideCrashRestoreBubble);

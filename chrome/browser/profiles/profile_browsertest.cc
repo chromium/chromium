@@ -98,6 +98,10 @@
 #include "components/account_id/account_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/sessions/exit_type_service.h"
+#endif
+
 namespace {
 
 // A helper class which creates a SimpleURLLoader with an expected final status
@@ -491,48 +495,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ProfileReadmeCreated) {
       base::PathExists(temp_dir.GetPath().Append(chrome::kReadmeFilename)));
 }
 
-// Test that repeated setting of exit type is handled correctly.
-IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ExitType) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  MockProfileDelegate delegate;
-  EXPECT_CALL(delegate, OnProfileCreationFinished(
-                            testing::NotNull(),
-                            Profile::CREATE_MODE_SYNCHRONOUS, true, true));
-  {
-    std::unique_ptr<Profile> profile(CreateProfile(
-        temp_dir.GetPath(), &delegate, Profile::CREATE_MODE_SYNCHRONOUS));
-
-    PrefService* prefs = profile->GetPrefs();
-    // The initial state is crashed; store for later reference.
-    std::string crash_value(prefs->GetString(prefs::kSessionExitType));
-
-    // The first call to a type other than crashed should change the value.
-    profile->SetExitType(Profile::EXIT_SESSION_ENDED);
-    std::string first_call_value(prefs->GetString(prefs::kSessionExitType));
-    EXPECT_NE(crash_value, first_call_value);
-
-    // Subsequent calls to a non-crash value should be ignored.
-    profile->SetExitType(Profile::EXIT_NORMAL);
-    std::string second_call_value(prefs->GetString(prefs::kSessionExitType));
-    EXPECT_EQ(first_call_value, second_call_value);
-
-    // Setting back to a crashed value should work.
-    profile->SetExitType(Profile::EXIT_CRASHED);
-    std::string final_value(prefs->GetString(prefs::kSessionExitType));
-    EXPECT_EQ(crash_value, final_value);
-
-    // Creating a profile causes an implicit connection attempt to a Mojo
-    // service, which occurs as part of a new task. Before deleting |profile|,
-    // ensure this task runs to prevent a crash.
-    FlushIoTaskRunnerAndSpinThreads();
-  }
-
-  FlushIoTaskRunnerAndSpinThreads();
-}
-
 // The EndSession IO synchronization is only critical on Windows, but also
 // happens under the USE_OZONE define. See BrowserProcessImpl::EndSession.
 #if defined(OS_WIN) || defined(USE_OZONE)
@@ -604,7 +566,10 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   bool succeeded = false;
   for (size_t retries = 0; !succeeded && retries < 3; ++retries) {
     // Flush the profile data to disk for all loaded profiles.
-    profile->SetExitType(Profile::EXIT_CRASHED);
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+    ExitTypeService::GetInstanceForProfile(profile)->SetCurrentSessionExitType(
+        ExitType::kCrashed);
+#endif
     profile->GetPrefs()->CommitPendingWrite();
     FlushTaskRunner(profile->GetIOTaskRunner().get());
 

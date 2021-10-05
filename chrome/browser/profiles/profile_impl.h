@@ -64,9 +64,6 @@ class PrefRegistrySyncable;
 // The default profile implementation.
 class ProfileImpl : public Profile {
  public:
-  // Value written to prefs when the exit type is EXIT_NORMAL. Public for tests.
-  static const char kPrefExitTypeNormal[];
-
   ProfileImpl(const ProfileImpl&) = delete;
   ProfileImpl& operator=(const ProfileImpl&) = delete;
   ~ProfileImpl() override;
@@ -154,9 +151,7 @@ class ProfileImpl : public Profile {
   void set_last_selected_directory(const base::FilePath& path) override;
   GURL GetHomePage() override;
   bool WasCreatedByVersionOrLater(const std::string& version) override;
-  void SetExitType(ExitType exit_type) override;
-  ExitType GetLastSessionExitType() const override;
-  bool ShouldRestoreOldSessionCookies() const override;
+  bool ShouldRestoreOldSessionCookies() override;
   bool ShouldPersistSessionCookies() const override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -283,10 +278,6 @@ class ProfileImpl : public Profile {
   scoped_refptr<ExtensionSpecialStoragePolicy>
       extension_special_storage_policy_;
 #endif
-
-  // Exit type the last time the profile was opened. This is set only once from
-  // prefs.
-  ExitType last_session_exit_type_;
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   base::OneShotTimer create_session_service_timer_;
