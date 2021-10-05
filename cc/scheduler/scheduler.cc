@@ -646,6 +646,17 @@ void Scheduler::FinishImplFrame() {
       reason = FrameSkippedReason::kDrawThrottled;
 
     SendDidNotProduceFrame(begin_impl_frame_tracker_.Current(), reason);
+
+    // If the current finished impl frame is not the last activated frame, but
+    // the last activated frame has succeeded draw, it means that the drawn
+    // frame would not be submitted and is causing no visible damage.
+    if (begin_impl_frame_tracker_.Current().frame_id !=
+            last_activate_origin_frame_args_.frame_id &&
+        state_machine_.draw_succeeded_in_last_frame()) {
+      compositor_frame_reporting_controller_->DidNotProduceFrame(
+          last_activate_origin_frame_args_.frame_id,
+          FrameSkippedReason::kNoDamage);
+    }
   }
 
   begin_impl_frame_tracker_.Finish();
