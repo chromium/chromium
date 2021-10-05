@@ -142,7 +142,6 @@ export class Photo extends ModeBase {
     try {
       const blob = await this.takePhoto_();
       state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, false, {facing: this.facing_});
-      this.handler_.playShutterEffect();
       state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
@@ -162,6 +161,7 @@ export class Photo extends ModeBase {
   }
 
   /**
+   * @private
    * @return {!Promise<!Blob>}
    */
   async takePhoto_() {
@@ -185,6 +185,7 @@ export class Photo extends ModeBase {
     }
     await this.handler_.waitPreviewReady();
     const results = await this.crosImageCapture_.takePhoto(photoSettings);
+    this.handler_.playShutterEffect();
     return results[0];
   }
 
