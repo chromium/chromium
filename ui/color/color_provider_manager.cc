@@ -42,28 +42,6 @@ absl::optional<GlobalManager>& GetGlobalManager() {
 
 }  // namespace
 
-ColorProviderManager::Key::Key()
-    : Key(ColorMode::kLight,
-          ContrastMode::kNormal,
-          SystemTheme::kDefault,
-          nullptr) {}
-
-ColorProviderManager::Key::Key(ColorMode color_mode,
-                               ContrastMode contrast_mode,
-                               SystemTheme system_theme,
-                               scoped_refptr<InitializerSupplier> custom_theme)
-    : color_mode(color_mode),
-      contrast_mode(contrast_mode),
-      system_theme(system_theme),
-      custom_theme(std::move(custom_theme)) {}
-
-ColorProviderManager::Key::Key(const Key&) = default;
-
-ColorProviderManager::Key& ColorProviderManager::Key::operator=(const Key&) =
-    default;
-
-ColorProviderManager::Key::~Key() = default;
-
 ColorProviderManager::ColorProviderManager() {
   ResetColorProviderInitializerList();
 }
@@ -117,13 +95,22 @@ void ColorProviderManager::AppendColorProviderInitializer(
       initializer_list_->Add(std::move(initializer)));
 }
 
-ColorProvider* ColorProviderManager::GetColorProviderFor(Key key) {
+ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
   auto iter = color_providers_.find(key);
   if (iter == color_providers_.end()) {
     auto provider = std::make_unique<ColorProvider>();
     DCHECK(initializer_list_);
-    if (!initializer_list_->empty())
-      initializer_list_->Notify(provider.get(), key);
+    if (!initializer_list_->empty()) {
+      DVLOG(2) << "ColorProviderManager: Initializing Color Provider"
+               << " - ColorMode: " << ColorModeName(std::get<ColorMode>(key))
+               << " - ContrastMode: "
+               << ContrastModeName(std::get<ContrastMode>(key))
+               << " - SystemTheme: "
+               << SystemThemeName(std::get<SystemTheme>(key));
+      initializer_list_->Notify(provider.get(), std::get<ColorMode>(key),
+                                std::get<ContrastMode>(key),
+                                std::get<SystemTheme>(key));
+    }
 
     iter = color_providers_.emplace(key, std::move(provider)).first;
   }

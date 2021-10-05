@@ -9,7 +9,6 @@
 #include "base/memory/ref_counted.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
-#include "ui/color/color_provider_manager.h"
 
 namespace base {
 class RefCountedMemory;
@@ -23,15 +22,11 @@ namespace gfx {
 class Image;
 }
 
-namespace ui {
-class ColorProvider;
-}
-
 // A representation of a theme. All theme properties can be accessed through the
 // public methods. Subclasses are expected to override all methods which should
 // provide non-default values.
 class CustomThemeSupplier
-    : public ui::ColorProviderManager::InitializerSupplier {
+    : public base::RefCountedThreadSafe<CustomThemeSupplier> {
  public:
   enum ThemeType {
     EXTENSION,
@@ -86,15 +81,8 @@ class CustomThemeSupplier
   // doesn't supply all the colors it should (http://crbug.com/1045630).
   virtual bool CanUseIncognitoColors() const;
 
-  // ui::ColorProviderManager::InitializerSupplier:
-  void AddColorMixers(ui::ColorProvider* provider,
-                      const ui::ColorProviderManager::Key& key) const override {
-    // TODO(pkasting): All classes that override GetColor() should override
-    // this.
-  }
-
  protected:
-  ~CustomThemeSupplier() override;
+  virtual ~CustomThemeSupplier();
 
   void set_extension_id(base::StringPiece id) {
     DCHECK_EQ(theme_type_, EXTENSION);

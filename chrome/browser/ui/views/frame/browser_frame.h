@@ -127,8 +127,6 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   bool GetAccelerator(int command_id,
                       ui::Accelerator* accelerator) const override;
   const ui::ThemeProvider* GetThemeProvider() const override;
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
-      const override;
   void OnNativeWidgetWorkspaceChanged() override;
 
   // views::ContextMenuController:

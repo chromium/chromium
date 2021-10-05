@@ -15,7 +15,9 @@ class ColorProvider;
 // Adds all ui/-side color mixers to `provider`.
 COMPONENT_EXPORT(COLOR)
 void AddColorMixers(ColorProvider* provider,
-                    const ColorProviderManager::Key& key);
+                    ColorProviderManager::ColorMode color_mode,
+                    ColorProviderManager::ContrastMode contrast_mode,
+                    ColorProviderManager::SystemTheme system_theme);
 
 }  // namespace ui
 

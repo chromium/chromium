@@ -870,10 +870,6 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
                                               : nullptr;
 }
 
-ui::ColorProviderManager::InitializerSupplier* Widget::GetCustomTheme() const {
-  return nullptr;
-}
-
 FocusManager* Widget::GetFocusManager() {
   Widget* toplevel_widget = GetTopLevelWidget();
   return toplevel_widget ? toplevel_widget->focus_manager_.get() : nullptr;
@@ -1750,20 +1746,18 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
       GetColorProviderKey());
 }
 
-ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
+ui::ColorProviderManager::ColorProviderKey Widget::GetColorProviderKey() const {
   const auto* native_theme = GetNativeTheme();
   const auto color_scheme = native_theme->GetDefaultSystemColorScheme();
-  return ui::ColorProviderManager::Key(
-      (color_scheme == ui::NativeTheme::ColorScheme::kDark)
-          ? ui::ColorProviderManager::ColorMode::kDark
-          : ui::ColorProviderManager::ColorMode::kLight,
-      (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-          ? ui::ColorProviderManager::ContrastMode::kHigh
-          : ui::ColorProviderManager::ContrastMode::kNormal,
-      native_theme->is_custom_system_theme()
-          ? ui::ColorProviderManager::SystemTheme::kCustom
-          : ui::ColorProviderManager::SystemTheme::kDefault,
-      GetCustomTheme());
+  return {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
+              ? ui::ColorProviderManager::ColorMode::kDark
+              : ui::ColorProviderManager::ColorMode::kLight,
+          (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
+              ? ui::ColorProviderManager::ContrastMode::kHigh
+              : ui::ColorProviderManager::ContrastMode::kNormal,
+          native_theme->is_custom_system_theme()
+              ? ui::ColorProviderManager::SystemTheme::kCustom
+              : ui::ColorProviderManager::SystemTheme::kDefault};
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -11,11 +11,12 @@
 namespace ui {
 
 void AddColorMixers(ColorProvider* provider,
-                    const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
+                    ColorProviderManager::ColorMode color_mode,
+                    ColorProviderManager::ContrastMode contrast_mode,
+                    ColorProviderManager::SystemTheme system_theme) {
+  const bool dark_mode = color_mode == ColorProviderManager::ColorMode::kDark;
   const bool high_contrast =
-      key.contrast_mode == ColorProviderManager::ContrastMode::kHigh;
+      contrast_mode == ColorProviderManager::ContrastMode::kHigh;
   ui::AddCoreDefaultColorMixer(provider, dark_mode, high_contrast);
   ui::AddNativeCoreColorMixer(provider, dark_mode, high_contrast);
   ui::AddUiColorMixer(provider, dark_mode, high_contrast);

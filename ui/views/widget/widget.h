@@ -741,10 +741,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the ThemeProvider that provides theme resources for this Widget.
   virtual const ui::ThemeProvider* GetThemeProvider() const;
 
-  // Returns a custom theme object suitable for use in a
-  // ColorProviderManager::Key. If this is null, the window has no custom theme.
-  virtual ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const;
-
   ui::NativeTheme* GetNativeTheme() {
     return const_cast<ui::NativeTheme*>(
         static_cast<const Widget*>(this)->GetNativeTheme());
@@ -1044,7 +1040,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // ui::ColorProviderSource:
   const ui::ColorProvider* GetColorProvider() const override;
-  ui::ColorProviderManager::Key GetColorProviderKey() const override;
+  ui::ColorProviderManager::ColorProviderKey GetColorProviderKey()
+      const override;
 
   // Set the native theme from which this widget gets color from.
   void SetNativeThemeForTest(ui::NativeTheme* native_theme) {

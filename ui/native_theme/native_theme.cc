@@ -140,8 +140,7 @@ absl::optional<SkColor> NativeTheme::GetColorProviderColor(
                : ColorProviderManager::ContrastMode::kNormal,
            is_custom_system_theme_
                ? ColorProviderManager::SystemTheme::kCustom
-               : ColorProviderManager::SystemTheme::kDefault,
-           nullptr});
+               : ColorProviderManager::SystemTheme::kDefault});
       ReportHistogramBooleanUsesColorProvider(true);
       return color_provider->GetColor(provider_color_id.value());
     }

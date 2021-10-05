@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/login/ui/captive_portal_view.h"
-#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -31,8 +30,6 @@ class CaptivePortalWidget : public views::Widget {
 
   // views::Widget:
   const ui::ThemeProvider* GetThemeProvider() const override;
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
-      const override;
 
  private:
   Profile* profile_;
@@ -43,11 +40,6 @@ CaptivePortalWidget::CaptivePortalWidget(Profile* profile)
 
 const ui::ThemeProvider* CaptivePortalWidget::GetThemeProvider() const {
   return &ThemeService::GetThemeProviderForProfile(profile_);
-}
-
-ui::ColorProviderManager::InitializerSupplier*
-CaptivePortalWidget::GetCustomTheme() const {
-  return ThemeService::GetThemeSupplierForProfile(profile_);
 }
 
 // The captive portal dialog is system-modal, but uses the web-content-modal

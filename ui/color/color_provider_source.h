@@ -32,7 +32,8 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSource {
 
   // Gets the ColorProviderKey associated with the source's current
   // ColorProvider instance.
-  virtual ColorProviderManager::Key GetColorProviderKey() const = 0;
+  virtual ColorProviderManager::ColorProviderKey GetColorProviderKey()
+      const = 0;
 
   void AddObserver(ColorProviderSourceObserver* observer);
   void RemoveObserver(ColorProviderSourceObserver* observer);

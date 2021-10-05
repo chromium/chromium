@@ -93,36 +93,21 @@ class BubbleWidget : public Widget {
 
   // Widget:
   const ui::ThemeProvider* GetThemeProvider() const override {
-    const Widget* const anchor = GetAnchorWidget();
-    return anchor ? anchor->GetThemeProvider() : Widget::GetThemeProvider();
-  }
-
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
-      const override {
-    const Widget* const anchor = GetAnchorWidget();
-    return anchor ? anchor->GetCustomTheme() : Widget::GetCustomTheme();
-  }
-
-  const ui::NativeTheme* GetNativeTheme() const override {
-    const Widget* const anchor = GetAnchorWidget();
-    return anchor ? anchor->GetNativeTheme() : Widget::GetNativeTheme();
-  }
-
-  Widget* GetPrimaryWindowWidget() override {
-    Widget* const anchor = GetAnchorWidget();
-    return anchor ? anchor->GetPrimaryWindowWidget()
-                  : Widget::GetPrimaryWindowWidget();
-  }
-
- private:
-  const Widget* GetAnchorWidget() const {
     // TODO(pbos): Could this use Widget::parent() instead of anchor_widget()?
     BubbleDialogDelegate* const bubble_delegate =
         static_cast<BubbleDialogDelegate*>(widget_delegate());
-    return bubble_delegate ? bubble_delegate->anchor_widget() : nullptr;
+    if (!bubble_delegate || !bubble_delegate->anchor_widget())
+      return Widget::GetThemeProvider();
+    return bubble_delegate->anchor_widget()->GetThemeProvider();
   }
-  Widget* GetAnchorWidget() {
-    return const_cast<Widget*>(base::as_const(*this).GetAnchorWidget());
+
+  Widget* GetPrimaryWindowWidget() override {
+    // TODO(pbos): Could this use Widget::parent() instead of anchor_widget()?
+    BubbleDialogDelegate* const bubble_delegate =
+        static_cast<BubbleDialogDelegate*>(widget_delegate());
+    if (!bubble_delegate || !bubble_delegate->anchor_widget())
+      return Widget::GetPrimaryWindowWidget();
+    return bubble_delegate->anchor_widget()->GetPrimaryWindowWidget();
   }
 };
 

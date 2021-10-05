@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "ui/color/color_provider_manager.h"
 
 struct CoreAccountInfo;
 class ProfilePickerDiceSignInToolbar;
@@ -73,7 +72,6 @@ class ProfilePickerDiceSignInProvider
   // Returns theme provider based on the sign-in profile or nullptr if the flow
   // is not yet initialized.
   const ui::ThemeProvider* GetThemeProvider() const;
-  ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const;
 
  private:
   // content::WebContentsDelegate:
