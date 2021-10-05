@@ -372,6 +372,9 @@ class PerfIterator {
     }
   }
 
+  PerfIterator(const PerfIterator&) = delete;
+  PerfIterator& operator=(const PerfIterator&) = delete;
+
   bool Iterate() {
     if (--current_iterations_ > 0)
       return true;
@@ -414,8 +417,6 @@ class PerfIterator {
   int current_iterations_ = 1 + kWarmupIterations;
   bool warmup_ = true;
   bool for_linux_perf_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfIterator);
 };
 
 class DecoderPerfTest : public testing::Test {

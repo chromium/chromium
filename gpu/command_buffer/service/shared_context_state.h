@@ -84,6 +84,9 @@ class GPU_GLES2_EXPORT SharedContextState
       base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor =
           nullptr);
 
+  SharedContextState(const SharedContextState&) = delete;
+  SharedContextState& operator=(const SharedContextState&) = delete;
+
   bool InitializeGrContext(const GpuPreferences& gpu_preferences,
                            const GpuDriverBugWorkarounds& workarounds,
                            gpu::raster::GrShaderCache* cache,
@@ -357,8 +360,6 @@ class GPU_GLES2_EXPORT SharedContextState
   absl::optional<raster::GrCacheController> gr_cache_controller_;
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharedContextState);
 };
 
 }  // namespace gpu

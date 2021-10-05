@@ -36,6 +36,10 @@ class ShaderTranslatorInterface
  public:
   ShaderTranslatorInterface() = default;
 
+  ShaderTranslatorInterface(const ShaderTranslatorInterface&) = delete;
+  ShaderTranslatorInterface& operator=(const ShaderTranslatorInterface&) =
+      delete;
+
   // Initializes the translator.
   // Must be called once before using the translator object.
   virtual bool Init(sh::GLenum shader_type,
@@ -70,7 +74,6 @@ class ShaderTranslatorInterface
 
  private:
   friend class base::RefCounted<ShaderTranslatorInterface>;
-  DISALLOW_COPY_AND_ASSIGN(ShaderTranslatorInterface);
 };
 
 // Implementation of ShaderTranslatorInterface

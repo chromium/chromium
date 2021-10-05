@@ -160,6 +160,9 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   FeatureInfo(const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds,
               const GpuFeatureInfo& gpu_feature_info);
 
+  FeatureInfo(const FeatureInfo&) = delete;
+  FeatureInfo& operator=(const FeatureInfo&) = delete;
+
   // Initializes the feature information. Needs a current GL context.
   void Initialize(ContextType context_type,
                   bool is_passthrough_cmd_decoder,
@@ -279,8 +282,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
 
   bool disable_shader_translator_;
   std::unique_ptr<gl::GLVersionInfo> gl_version_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(FeatureInfo);
 };
 
 }  // namespace gles2

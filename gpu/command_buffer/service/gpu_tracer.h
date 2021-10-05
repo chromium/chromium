@@ -178,6 +178,9 @@ class GPU_GLES2_EXPORT GPUTrace : public base::RefCounted<GPUTrace> {
            const bool tracing_service,
            const bool tracing_device);
 
+  GPUTrace(const GPUTrace&) = delete;
+  GPUTrace& operator=(const GPUTrace&) = delete;
+
   void Destroy(bool have_context);
 
   void Start();
@@ -201,8 +204,6 @@ class GPU_GLES2_EXPORT GPUTrace : public base::RefCounted<GPUTrace> {
   std::unique_ptr<gl::GPUTimer> gpu_timer_;
   const bool service_enabled_ = false;
   const bool device_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUTrace);
 };
 
 class ScopedGPUTrace {

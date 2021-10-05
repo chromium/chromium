@@ -176,6 +176,11 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
   MockImageDecodeAcceleratorWorker(gfx::BufferFormat format_for_decodes)
       : format_for_decodes_(format_for_decodes) {}
 
+  MockImageDecodeAcceleratorWorker(const MockImageDecodeAcceleratorWorker&) =
+      delete;
+  MockImageDecodeAcceleratorWorker& operator=(
+      const MockImageDecodeAcceleratorWorker&) = delete;
+
   void Decode(std::vector<uint8_t> encoded_data,
               const gfx::Size& output_size,
               CompletedDecodeCB decode_cb) override {
@@ -222,8 +227,6 @@ class MockImageDecodeAcceleratorWorker : public ImageDecodeAcceleratorWorker {
 
   const gfx::BufferFormat format_for_decodes_;
   base::queue<PendingDecode> pending_decodes_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockImageDecodeAcceleratorWorker);
 };
 
 const int kChannelId = 1;

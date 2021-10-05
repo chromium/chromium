@@ -70,6 +70,9 @@ class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
  public:
   explicit Buffer(std::unique_ptr<BufferBacking> backing);
 
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   BufferBacking* backing() const { return backing_.get(); }
   void* memory() const { return memory_; }
   uint32_t size() const { return size_; }
@@ -90,8 +93,6 @@ class GPU_EXPORT Buffer : public base::RefCountedThreadSafe<Buffer> {
   std::unique_ptr<BufferBacking> backing_;
   void* memory_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 inline std::unique_ptr<BufferBacking> MakeBackingFromSharedMemory(

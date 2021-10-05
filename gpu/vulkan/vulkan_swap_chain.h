@@ -57,6 +57,10 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
   };
 
   explicit VulkanSwapChain(uint64_t acquire_next_image_timeout_ns);
+
+  VulkanSwapChain(const VulkanSwapChain&) = delete;
+  VulkanSwapChain& operator=(const VulkanSwapChain&) = delete;
+
   ~VulkanSwapChain();
 
   // min_image_count is the minimum number of presentable images.
@@ -192,8 +196,6 @@ class COMPONENT_EXPORT(VULKAN) VulkanSwapChain {
       GUARDED_BY(lock_);
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanSwapChain);
 };
 
 }  // namespace gpu

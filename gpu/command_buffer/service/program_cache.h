@@ -58,6 +58,10 @@ class GPU_GLES2_EXPORT ProgramCache {
   };
 
   explicit ProgramCache(size_t max_cache_size_bytes);
+
+  ProgramCache(const ProgramCache&) = delete;
+  ProgramCache& operator=(const ProgramCache&) = delete;
+
   virtual ~ProgramCache();
 
   bool HasSuccessfullyCompiledShader(const std::string& shader_signature) const;
@@ -153,8 +157,6 @@ class GPU_GLES2_EXPORT ProgramCache {
   LinkStatusMap link_status_;
   // only cache the hash of successfully compiled shaders
   CachedCompiledShaderSet compiled_shaders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgramCache);
 };
 
 }  // namespace gles2

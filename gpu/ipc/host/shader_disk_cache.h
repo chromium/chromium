@@ -33,6 +33,9 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
   using ShaderLoadedCallback =
       base::RepeatingCallback<void(const std::string&, const std::string&)>;
 
+  ShaderDiskCache(const ShaderDiskCache&) = delete;
+  ShaderDiskCache& operator=(const ShaderDiskCache&) = delete;
+
   void set_shader_loaded_callback(const ShaderLoadedCallback& callback) {
     shader_loaded_callback_ = callback;
   }
@@ -100,8 +103,6 @@ class ShaderDiskCache : public base::RefCounted<ShaderDiskCache> {
   std::unordered_map<ShaderDiskCacheEntry*,
                      std::unique_ptr<ShaderDiskCacheEntry>>
       entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderDiskCache);
 };
 
 // ShaderCacheFactory maintains a cache of ShaderDiskCache objects

@@ -66,6 +66,9 @@ class GPU_GLES2_EXPORT TextureOwner
       Mode mode,
       scoped_refptr<SharedContextState> context_state);
 
+  TextureOwner(const TextureOwner&) = delete;
+  TextureOwner& operator=(const TextureOwner&) = delete;
+
   // Create a texture that's appropriate for a TextureOwner.
   static std::unique_ptr<gles2::AbstractTexture> CreateTexture(
       scoped_refptr<SharedContextState> context_state);
@@ -171,8 +174,6 @@ class GPU_GLES2_EXPORT TextureOwner
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<gles2::AbstractTexture> texture_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureOwner);
 };
 
 }  // namespace gpu

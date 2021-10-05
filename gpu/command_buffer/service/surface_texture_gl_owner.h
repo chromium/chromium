@@ -26,6 +26,9 @@ namespace gpu {
 // present in the surface.
 class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
  public:
+  SurfaceTextureGLOwner(const SurfaceTextureGLOwner&) = delete;
+  SurfaceTextureGLOwner& operator=(const SurfaceTextureGLOwner&) = delete;
+
   gl::GLContext* GetContext() const override;
   gl::GLSurface* GetSurface() const override;
   void SetFrameAvailableCallback(
@@ -68,7 +71,6 @@ class GPU_GLES2_EXPORT SurfaceTextureGLOwner : public TextureOwner {
   bool is_frame_available_callback_set_ = false;
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(SurfaceTextureGLOwner);
 };
 
 }  // namespace gpu

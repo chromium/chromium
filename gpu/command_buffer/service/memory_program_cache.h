@@ -82,6 +82,9 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
                       const InterfaceBlockMap& interface_block_map_1,
                       MemoryProgramCache* program_cache);
 
+    ProgramCacheValue(const ProgramCacheValue&) = delete;
+    ProgramCacheValue& operator=(const ProgramCacheValue&) = delete;
+
     GLenum format() const {
       return format_;
     }
@@ -163,8 +166,6 @@ class GPU_GLES2_EXPORT MemoryProgramCache : public ProgramCache {
     const OutputVariableList output_variable_list_1_;
     const InterfaceBlockMap interface_block_map_1_;
     MemoryProgramCache* const program_cache_;
-
-    DISALLOW_COPY_AND_ASSIGN(ProgramCacheValue);
   };
 
   friend class ProgramCacheValue;

@@ -43,6 +43,10 @@ class RASTER_EXPORT GrShaderCache
   };
 
   GrShaderCache(size_t max_cache_size_bytes, Client* client);
+
+  GrShaderCache(const GrShaderCache&) = delete;
+  GrShaderCache& operator=(const GrShaderCache&) = delete;
+
   ~GrShaderCache() override;
 
   // GrContextOptions::PersistentCache implementation.
@@ -134,8 +138,6 @@ class RASTER_EXPORT GrShaderCache
   // Bound to the thread on which GrShaderCache is created. Some methods can
   // only be called on this thread. GrShaderCache is created on gpu main thread.
   THREAD_CHECKER(gpu_main_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GrShaderCache);
 };
 
 }  // namespace raster

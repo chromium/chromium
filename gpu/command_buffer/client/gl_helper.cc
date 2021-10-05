@@ -60,14 +60,15 @@ class TextureHolder {
                    GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
   }
 
+  TextureHolder(const TextureHolder&) = delete;
+  TextureHolder& operator=(const TextureHolder&) = delete;
+
   GLuint texture() const { return texture_.id(); }
   gfx::Size size() const { return size_; }
 
  private:
   ScopedTexture texture_;
   gfx::Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextureHolder);
 };
 
 class I420ConverterImpl : public I420Converter {

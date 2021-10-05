@@ -21,6 +21,9 @@ class FreeOffsetSet {
   // Creates a new set, containing 0 to |element_count|.
   explicit FreeOffsetSet(uint32_t element_count);
 
+  FreeOffsetSet(const FreeOffsetSet&) = delete;
+  FreeOffsetSet& operator=(const FreeOffsetSet&) = delete;
+
   // Returns true if the set contains at least one element.
   bool HasFreeOffset() const;
 
@@ -46,8 +49,6 @@ class FreeOffsetSet {
 
   const uint32_t element_count_;
   base::flat_set<FreeRange, CompareFreeRanges> free_ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(FreeOffsetSet);
 };
 
 FreeOffsetSet::FreeOffsetSet(uint32_t element_count)

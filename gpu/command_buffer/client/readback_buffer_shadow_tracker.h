@@ -57,6 +57,11 @@ class ReadbackBufferShadowTracker {
 
   ReadbackBufferShadowTracker(MappedMemoryManager* mapped_memory,
                               GLES2CmdHelper* helper);
+
+  ReadbackBufferShadowTracker(const ReadbackBufferShadowTracker&) = delete;
+  ReadbackBufferShadowTracker& operator=(const ReadbackBufferShadowTracker&) =
+      delete;
+
   ~ReadbackBufferShadowTracker();
 
   Buffer* GetOrCreateBuffer(GLuint id, GLuint size);
@@ -87,8 +92,6 @@ class ReadbackBufferShadowTracker {
 
   MappedMemoryManager* mapped_memory_;
   GLES2CmdHelper* helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadbackBufferShadowTracker);
 };
 
 }  // namespace gles2

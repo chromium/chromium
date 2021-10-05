@@ -42,6 +42,9 @@ class StreamTexture : public StreamTextureSharedImageInterface,
       int stream_id,
       mojo::PendingAssociatedReceiver<mojom::StreamTexture> receiver);
 
+  StreamTexture(const StreamTexture&) = delete;
+  StreamTexture& operator=(const StreamTexture&) = delete;
+
   // Cleans up related data and nulls |channel_|. Called when the channel
   // releases its ref on this class.
   void ReleaseChannel();
@@ -132,7 +135,6 @@ class StreamTexture : public StreamTextureSharedImageInterface,
   THREAD_CHECKER(gpu_main_thread_checker_);
 
   base::WeakPtrFactory<StreamTexture> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(StreamTexture);
 };
 
 }  // namespace gpu

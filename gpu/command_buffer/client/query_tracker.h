@@ -205,6 +205,10 @@ class GLES2_IMPL_EXPORT QueryTracker {
   };
 
   explicit QueryTracker(MappedMemoryManager* manager);
+
+  QueryTracker(const QueryTracker&) = delete;
+  QueryTracker& operator=(const QueryTracker&) = delete;
+
   ~QueryTracker();
 
   Query* CreateQuery(GLuint id, GLenum target);
@@ -241,8 +245,6 @@ class GLES2_IMPL_EXPORT QueryTracker {
   uint32_t disjoint_count_sync_shm_offset_;
   DisjointValueSync* disjoint_count_sync_;
   uint32_t local_disjoint_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryTracker);
 };
 
 }  // namespace gles2

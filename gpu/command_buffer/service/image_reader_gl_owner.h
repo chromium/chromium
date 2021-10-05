@@ -30,6 +30,9 @@ namespace gpu {
 // data present in the surface.
 class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
  public:
+  ImageReaderGLOwner(const ImageReaderGLOwner&) = delete;
+  ImageReaderGLOwner& operator=(const ImageReaderGLOwner&) = delete;
+
   gl::GLContext* GetContext() const override;
   gl::GLSurface* GetSurface() const override;
   void SetFrameAvailableCallback(
@@ -120,6 +123,10 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
   // is automatically released once the ref-count is 0.
   struct ImageRef {
     ImageRef();
+
+    ImageRef(const ImageRef&) = delete;
+    ImageRef& operator=(const ImageRef&) = delete;
+
     ~ImageRef();
 
     ImageRef(ImageRef&& other);
@@ -127,8 +134,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
 
     size_t count = 0u;
     base::ScopedFD release_fence_fd;
-
-    DISALLOW_COPY_AND_ASSIGN(ImageRef);
   };
   using AImageRefMap = base::flat_map<AImage*, ImageRef>;
   AImageRefMap image_refs_ GUARDED_BY(lock_);
@@ -152,8 +157,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
 
   // This class is created on gpu main thread.
   THREAD_CHECKER(gpu_main_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ImageReaderGLOwner);
 };
 
 }  // namespace gpu

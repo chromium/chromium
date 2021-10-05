@@ -77,6 +77,9 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
                PassthroughDiscardableManager* passthrough_discardable_manager,
                SharedImageManager* shared_image_manager);
 
+  ContextGroup(const ContextGroup&) = delete;
+  ContextGroup& operator=(const ContextGroup&) = delete;
+
   // This should only be called by a DecoderContext. This must be paired with a
   // call to destroy if it succeeds.
   gpu::ContextResult Initialize(DecoderContext* decoder,
@@ -336,8 +339,6 @@ class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
       shared_image_representation_factory_;
 
   gpu::SharedImageManager* shared_image_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextGroup);
 };
 
 }  // namespace gles2
