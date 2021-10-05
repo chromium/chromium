@@ -19,7 +19,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
-#include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "url/url_constants.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 
 #include "base/json/values_util.h"
 #include "base/logging.h"

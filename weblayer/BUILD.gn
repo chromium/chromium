@@ -467,6 +467,7 @@ source_set("weblayer_lib_base") {
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/renderer:throttles",
     "//components/safe_browsing/content/renderer/phishing_classifier",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common",
     "//components/security_interstitials/content:security_interstitial_page",

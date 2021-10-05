@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include <memory>
 #include <utility>
 
@@ -15,7 +15,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -72,7 +71,7 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
   }
 
   std::unique_ptr<SafeBrowsingMetricsCollector> metrics_collector_;
-  content::BrowserTaskEnvironment task_environment_{
+  base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
 

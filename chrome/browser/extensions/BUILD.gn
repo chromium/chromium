@@ -801,6 +801,7 @@ static_library("extensions") {
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/web_applications",
     "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/webapps/browser",
 

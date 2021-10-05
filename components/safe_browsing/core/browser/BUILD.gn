@@ -138,3 +138,30 @@ source_set("token_fetcher_unit_tests") {
 source_set("download_check_result") {
   sources = [ "download_check_result.h" ]
 }
+
+source_set("safe_browsing_metrics_collector") {
+  sources = [
+    "safe_browsing_metrics_collector.cc",
+    "safe_browsing_metrics_collector.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+  ]
+}
+
+source_set("safe_browsing_metrics_collector_unittest") {
+  testonly = true
+  sources = [ "safe_browsing_metrics_collector_unittest.cc" ]
+  deps = [
+    ":safe_browsing_metrics_collector",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//testing/gtest",
+  ]
+}
