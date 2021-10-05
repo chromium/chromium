@@ -59,8 +59,9 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest, OpenNewTab) {
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_MAC)
 // TODO(crbug.com/1248523): Does not work for Wayland-based tests.
+// TODO(crbug.com/1256480): Disabled on Mac due to flakyness.
 #define MAYBE_PromoCodeOffer DISABLED_PromoCodeOffer
 #else
 #define MAYBE_PromoCodeOffer PromoCodeOffer
