@@ -13,6 +13,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/base_tracing.h"
 
+// TODO(bikineev): Temporarily disable *Scan in MemoryReclaimer as it seems to
+// cause significant jank.
+#define PA_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM 0
+
 namespace base {
 
 namespace {
@@ -132,6 +136,7 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
   //
   // Lastly decommit empty slot spans and lastly try to discard unused pages at
   // the end of the remaining active slots.
+#if PA_STARSCAN_ENABLE_STARSCAN_ON_RECLAIM
   {
     using PCScan = internal::PCScan;
     const auto invocation_mode = flags & PartitionPurgeAggressiveReclaim
@@ -139,6 +144,7 @@ void PartitionAllocMemoryReclaimer::Reclaim(int flags) {
                                      : PCScan::InvocationMode::kBlocking;
     PCScan::PerformScanIfNeeded(invocation_mode);
   }
+#endif
 
 #if defined(PA_THREAD_CACHE_SUPPORTED)
   // Don't completely empty the thread cache outside of low memory situations,
