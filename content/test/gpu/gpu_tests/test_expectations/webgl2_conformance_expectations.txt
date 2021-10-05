@@ -669,6 +669,9 @@ crbug.com/1152588 [ linux amd-0x7340 ] conformance2/rendering/multisampling-frag
 crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] conformance2/state/gl-get-calls.html [ Failure ]
 crbug.com/1152590 [ linux amd-0x7340 no-passthrough ] deqp/functional/gles3/integerstatequery.html [ Failure ]
 
+# Linux Intel
+crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
+
 ####################
 # Android failures #
 ####################
