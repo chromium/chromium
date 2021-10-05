@@ -11,7 +11,7 @@ for details.
 `raw_ptr<T>` (formerly `CheckedPtr<T>`) is a smart-pointer-like templated class
 that wraps a raw pointer, protecting it with one of the `MiraclePtr` algorithms
 from being exploited via UaF. The class name came from the first algorithm that
-we evaluated, and is sujbect to change. `BackupRefPtr` is one of the
+we evaluated, and is subject to change. `BackupRefPtr` is one of the
 `MiraclePtr` algorithms, based on reference counting, that disarms UaFs by
 quarantining allocations that have known pointers. It was deemed the most
 promising one and is the only one under consideration at the moment.
