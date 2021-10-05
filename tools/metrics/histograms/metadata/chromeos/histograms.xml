@@ -57,47 +57,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     <owner>hansenmichael@google.com</owner>
     <owner>nearby-share-chromeos-eng@google.com</owner>
   </variant>
-  <variant name="NumberpadDynamicActivations"
-      summary="Turning on number pad mode for a dynamic numberpad.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
-  <variant name="NumberpadDynamicCancellations"
-      summary="Turning off number pad mode for a dynamic numberpad, without
-               having used a number-pad key.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
-  <variant name="NumberpadDynamicEnterKeystrokes"
-      summary="Pressing enter on dynamic number pad.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
-  <variant name="NumberpadDynamicNonEnterKeystrokes"
-      summary="Pressing key other than enter on dynamic number pad.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
-  <variant name="NumberpadExternalEnterKeystrokes"
-      summary="Pressing number pad enter on external keyboard.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
-  <variant name="NumberpadExternalNonEnterKeystrokes"
-      summary="Pressing number pad key other than enter on external keyboard.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
-  <variant name="NumberpadInternalEnterKeystrokes"
-      summary="Pressing enter on number pad on internal keyboard.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
-  <variant name="NumberpadInternalNonEnterKeystrokes"
-      summary="Pressing number pad key other than enter on internal keyboard.">
-    <owner>kenalba@google.com</owner>
-    <owner>chromeos-tango@google.com</owner>
-  </variant>
   <variant name="SmartLock" summary="Smart Lock">
     <owner>hansberry@chromium.org</owner>
     <owner>chromeos-cross-device-eng@google.com</owner>
