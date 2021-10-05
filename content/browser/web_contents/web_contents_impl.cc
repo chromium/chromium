@@ -204,14 +204,6 @@ base::LazyInstance<std::vector<
     WebContentsImpl::FriendWrapper::CreatedCallback>>::DestructorAtExit
     g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
 
-bool HasMatchingProcess(FrameTree* tree, int render_process_id) {
-  for (FrameTreeNode* node : tree->Nodes()) {
-    if (node->current_frame_host()->GetProcess()->GetID() == render_process_id)
-      return true;
-  }
-  return false;
-}
-
 bool HasMatchingWidgetHost(FrameTree* tree, RenderWidgetHost* host) {
   // This method scans the frame tree rather than checking whether
   // host->delegate() == this, which allows it to return false when the host
@@ -3870,14 +3862,6 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::CreateNewPopupWidget",
                         "route_id", route_id);
   RenderProcessHost* process = agent_scheduling_group.GetProcess();
-  // A message to create a new widget can only come from an active process for
-  // this WebContentsImpl instance. If any other process sends the request,
-  // it is invalid and the process must be terminated.
-  if (!HasMatchingProcess(&frame_tree_, process->GetID())) {
-    ReceivedBadMessage(process, bad_message::WCI_NEW_WIDGET_PROCESS_MISMATCH);
-    return nullptr;
-  }
-
   RenderWidgetHostImpl* widget_host = RenderWidgetHostImpl::CreateSelfOwned(
       &frame_tree_, this, agent_scheduling_group, route_id, IsHidden(),
       std::make_unique<FrameTokenMessageQueue>());

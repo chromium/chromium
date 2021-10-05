@@ -7759,7 +7759,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="191" label="ARH_UNEXPECTED_BITSTREAM"/>
   <int value="192" label="RDH_NULL_CLIENT"/>
   <int value="193" label="RVH_WEB_UI_BINDINGS_MISMATCH"/>
-  <int value="194" label="WCI_NEW_WIDGET_PROCESS_MISMATCH"/>
+  <int value="194" label="OBSOLETE_WCI_NEW_WIDGET_PROCESS_MISMATCH"/>
   <int value="195" label="AUTH_INVALID_EFFECTIVE_DOMAIN"/>
   <int value="196" label="AUTH_INVALID_RELYING_PARTY"/>
   <int value="197" label="RWH_COPY_REQUEST_ATTEMPT"/>
