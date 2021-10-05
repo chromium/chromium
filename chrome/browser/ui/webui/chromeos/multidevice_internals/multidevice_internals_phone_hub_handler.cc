@@ -572,6 +572,15 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
   CHECK(camera_roll_dict->GetInteger("numberOfThumbnails",
                                      &number_of_thumbnails));
 
+  int file_type_as_int;
+  CHECK(camera_roll_dict->GetInteger("fileType", &file_type_as_int));
+  const char* file_type;
+  if (file_type_as_int == 0) {
+    file_type = "image/jpeg";
+  } else {
+    file_type = "video/mp4";
+  }
+
   if (number_of_thumbnails == 0) {
     fake_phone_hub_manager_->fake_camera_roll_manager()->ClearCurrentItems();
   } else {
@@ -580,13 +589,14 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
     for (int i = number_of_thumbnails; i > 0; --i) {
       phonehub::proto::CameraRollItemMetadata metadata;
       metadata.set_key(base::NumberToString(i));
-      metadata.set_mime_type("image/jpeg");
+      metadata.set_mime_type(file_type);
       metadata.set_last_modified_millis(1577865600 + i);
       metadata.set_file_size_bytes(123456);
       metadata.set_file_name("fake_file_" + base::NumberToString(i) + ".jpg");
 
-      gfx::Image thumbnail = gfx::Image::CreateFrom1xBitmap(
-          RGB_Bitmap(255 - i * 12, 63 + i * 12, 255, kCameraRollThumbnailSize));
+      gfx::Image thumbnail = gfx::Image::CreateFrom1xBitmap(RGB_Bitmap(
+          255 - i * 192 / number_of_thumbnails,
+          63 + i * 192 / number_of_thumbnails, 255, kCameraRollThumbnailSize));
 
       items.emplace_back(metadata, thumbnail);
     }
@@ -594,7 +604,7 @@ void MultidevicePhoneHubHandler::HandleSetCameraRoll(
   }
 
   PA_LOG(VERBOSE) << "Setting Camera Roll to " << number_of_thumbnails
-                  << " thumbnails";
+                  << " thumbnails\nFile Type: " << file_type;
 }
 
 }  // namespace multidevice

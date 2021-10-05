@@ -7,23 +7,27 @@
 
 #include "ash/ash_export.h"
 #include "chromeos/components/phonehub/camera_roll_item.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/gfx/canvas.h"
+#include "ui/views/controls/button/image_button.h"
 
 namespace ash {
 
-class ASH_EXPORT CameraRollThumbnail : public views::Button {
+class ASH_EXPORT CameraRollThumbnail : public views::ImageButton {
  public:
   CameraRollThumbnail(const chromeos::phonehub::CameraRollItem& item);
   ~CameraRollThumbnail() override;
   CameraRollThumbnail(CameraRollThumbnail&) = delete;
   CameraRollThumbnail operator=(CameraRollThumbnail&) = delete;
 
+  // views::ImageButton:
+  void PaintButtonContents(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
 
  private:
   void ButtonPressed();
 
   const std::string key_;
+  bool video_type_ = false;
 };
 
 }  // namespace ash

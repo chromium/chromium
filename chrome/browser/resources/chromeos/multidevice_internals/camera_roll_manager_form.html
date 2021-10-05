@@ -13,6 +13,11 @@
     flex: 2;
     flex-wrap: wrap;
   }
+
+  select {
+    margin-bottom: 10px;
+    width: 100%;
+  }
 </style>
 
 <div class="column">
@@ -34,5 +39,15 @@
         on-change="onNumberOfThumbnailsChanged_"
         auto-validate error-message="Must be [0, 16]">
     </cr-input>
+  </div>
+  <div class="camera-roll-property">
+    <div class="label">
+      File type
+    </div>
+    <select id="fileTypeList" class="md-select" on-change="onFileTypeSelected_">
+      <template is="dom-repeat" items="[[fileTypeList_]]">
+        <option>[[getFileTypeName_(item)]]</option>
+      </template>
+    </select>
   </div>
 </div>
