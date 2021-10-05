@@ -622,6 +622,24 @@
             ]
         }
     ],
+    "AndroidScrollCapture": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210928",
+                    "params": {
+                        "in_memory_capture": "false"
+                    },
+                    "enable_features": [
+                        "ScrollCapture"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSwitchToTab": [
         {
             "platforms": [
