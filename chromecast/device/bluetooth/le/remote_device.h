@@ -35,6 +35,9 @@ class RemoteDevice : public base::RefCountedThreadSafe<RemoteDevice> {
   using StatusCallback = base::OnceCallback<void(bool)>;
   using ConnectCallback = base::OnceCallback<void(ConnectStatus)>;
 
+  RemoteDevice(const RemoteDevice&) = delete;
+  RemoteDevice& operator=(const RemoteDevice&) = delete;
+
   // Initiate a connection to this device. Callback will return |true| if
   // connected successfully, otherwise false. Only one pending call is allowed
   // at a time.
@@ -106,9 +109,6 @@ class RemoteDevice : public base::RefCountedThreadSafe<RemoteDevice> {
 
   RemoteDevice() = default;
   virtual ~RemoteDevice() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteDevice);
 };
 
 }  // namespace bluetooth

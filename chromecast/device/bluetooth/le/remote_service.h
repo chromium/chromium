@@ -25,6 +25,9 @@ class RemoteDevice;
 // specified, all callbacks are run on the caller's thread.
 class RemoteService : public base::RefCountedThreadSafe<RemoteService> {
  public:
+  RemoteService(const RemoteService&) = delete;
+  RemoteService& operator=(const RemoteService&) = delete;
+
   // Returns a list of characteristics in this service.
   virtual std::vector<scoped_refptr<RemoteCharacteristic>>
   GetCharacteristics() = 0;
@@ -41,9 +44,6 @@ class RemoteService : public base::RefCountedThreadSafe<RemoteService> {
 
   RemoteService() = default;
   virtual ~RemoteService() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteService);
 };
 
 }  // namespace bluetooth

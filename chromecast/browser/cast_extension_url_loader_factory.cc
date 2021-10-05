@@ -50,6 +50,9 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
                                      traffic_annotation, network_factory);
   }
 
+  CastExtensionURLLoader(const CastExtensionURLLoader&) = delete;
+  CastExtensionURLLoader& operator=(const CastExtensionURLLoader&) = delete;
+
  private:
   CastExtensionURLLoader(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
@@ -171,8 +174,6 @@ class CastExtensionURLLoader : public network::mojom::URLLoader,
 
   // This is the URLLoader from the network URLLoaderFactory.
   mojo::Remote<network::mojom::URLLoader> network_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionURLLoader);
 };
 
 }  // namespace

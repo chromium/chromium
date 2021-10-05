@@ -21,6 +21,9 @@ class RemoteDeviceImpl;
 
 class RemoteDescriptorImpl : public RemoteDescriptor {
  public:
+  RemoteDescriptorImpl(const RemoteDescriptorImpl&) = delete;
+  RemoteDescriptorImpl& operator=(const RemoteDescriptorImpl&) = delete;
+
   // RemoteDescriptor implementation:
   void ReadAuth(bluetooth_v2_shlib::Gatt::Client::AuthReq auth_req,
                 ReadCallback callback) override;
@@ -58,8 +61,6 @@ class RemoteDescriptorImpl : public RemoteDescriptor {
   // All bluetooth_v2_shlib calls are run on this task_runner. All members must
   // be accessed on this task_runner.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDescriptorImpl);
 };
 
 }  // namespace bluetooth

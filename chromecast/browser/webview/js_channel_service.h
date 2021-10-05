@@ -59,6 +59,9 @@ class JsClientInstance {
 
   static JsClientInstance* Find(int process_id, int routing_id);
 
+  JsClientInstance(const JsClientInstance&) = delete;
+  JsClientInstance& operator=(const JsClientInstance&) = delete;
+
   static void AddObserver(Observer* observer);
   static void RemoveObserver(Observer* observer);
 
@@ -73,8 +76,6 @@ class JsClientInstance {
 
   mojo::Remote<mojom::JsChannelClient> client_;
   mojo::UniqueReceiverSet<mojom::JsChannel> channels_;
-
-  DISALLOW_COPY_AND_ASSIGN(JsClientInstance);
 };
 
 }  // namespace chromecast

@@ -39,6 +39,9 @@ class CastCdm : public ::media::ContentDecryptionModule {
  public:
   explicit CastCdm(MediaResourceTracker* media_resource_tracker);
 
+  CastCdm(const CastCdm&) = delete;
+  CastCdm& operator=(const CastCdm&) = delete;
+
   void Initialize(
       const ::media::SessionMessageCB& session_message_cb,
       const ::media::SessionClosedCB& session_closed_cb,
@@ -109,8 +112,6 @@ class CastCdm : public ::media::ContentDecryptionModule {
       event_callbacks_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCdm);
 };
 
 }  // namespace media

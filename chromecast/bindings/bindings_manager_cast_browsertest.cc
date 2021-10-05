@@ -124,6 +124,12 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
 // Test class
 // =============================================================================
 class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
+ public:
+  BindingsManagerCastBrowserTest(const BindingsManagerCastBrowserTest&) =
+      delete;
+  BindingsManagerCastBrowserTest& operator=(
+      const BindingsManagerCastBrowserTest&) = delete;
+
  protected:
   BindingsManagerCastBrowserTest() = default;
   ~BindingsManagerCastBrowserTest() override = default;
@@ -177,9 +183,6 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
   std::unique_ptr<CastWebContentsImpl> cast_web_contents_;
 
   std::unique_ptr<bindings::BindingsManagerCast> bindings_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BindingsManagerCastBrowserTest);
 };
 
 // Handles connected ports from the NamedMessagePortConnector and

@@ -94,6 +94,9 @@ class LoopbackHandler::ExternalLoopbackHandler
     ExternalAudioPipelineShlib::AddExternalLoopbackAudioObserver(this);
   }
 
+  ExternalLoopbackHandler(const ExternalLoopbackHandler&) = delete;
+  ExternalLoopbackHandler& operator=(const ExternalLoopbackHandler&) = delete;
+
   void Destroy() {
     {
       base::AutoLock lock(lock_);
@@ -135,8 +138,6 @@ class LoopbackHandler::ExternalLoopbackHandler
 
   base::Lock lock_;
   bool destroyed_ GUARDED_BY(lock_) = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalLoopbackHandler);
 };
 
 void LoopbackHandler::ExternalDeleter::operator()(

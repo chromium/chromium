@@ -31,6 +31,10 @@ class CastExtensionMessageFilter : public content::BrowserMessageFilter {
   CastExtensionMessageFilter(int render_process_id,
                              content::BrowserContext* context);
 
+  CastExtensionMessageFilter(const CastExtensionMessageFilter&) = delete;
+  CastExtensionMessageFilter& operator=(const CastExtensionMessageFilter&) =
+      delete;
+
   // content::BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() const override;
@@ -54,8 +58,6 @@ class CastExtensionMessageFilter : public content::BrowserMessageFilter {
   content::BrowserContext* context_;
 
   scoped_refptr<extensions::InfoMap> extension_info_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionMessageFilter);
 };
 
 #endif  // CHROMECAST_BROWSER_CAST_EXTENSION_MESSAGE_FILTER_H_

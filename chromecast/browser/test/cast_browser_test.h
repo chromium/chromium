@@ -30,6 +30,10 @@ namespace shell {
 // fewer test cases with more assertions are preferable.
 class CastBrowserTest : public content::BrowserTestBase,
                         public CastWebView::Delegate {
+ public:
+  CastBrowserTest(const CastBrowserTest&) = delete;
+  CastBrowserTest& operator=(const CastBrowserTest&) = delete;
+
  protected:
   CastBrowserTest();
   ~CastBrowserTest() override;
@@ -58,7 +62,6 @@ class CastBrowserTest : public content::BrowserTestBase,
   CastWebView::Scoped cast_web_view_;
 
   base::WeakPtrFactory<CastBrowserTest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserTest);
 };
 
 }  // namespace shell

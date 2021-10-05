@@ -89,6 +89,11 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   MediaPipelineBackendManager(
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
       MediaResourceTracker* media_resource_tracker);
+
+  MediaPipelineBackendManager(const MediaPipelineBackendManager&) = delete;
+  MediaPipelineBackendManager& operator=(const MediaPipelineBackendManager&) =
+      delete;
+
   ~MediaPipelineBackendManager() override;
 
   // media::CmaBackendFactory implementation:
@@ -192,8 +197,6 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   int mixer_sfx_stream_count_ = 0;
 
   base::WeakPtrFactory<MediaPipelineBackendManager> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPipelineBackendManager);
 };
 
 }  // namespace media

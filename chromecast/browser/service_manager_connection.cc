@@ -54,6 +54,9 @@ class ServiceManagerConnection::IOThreadContext
     io_thread_checker_.DetachFromThread();
   }
 
+  IOThreadContext(const IOThreadContext&) = delete;
+  IOThreadContext& operator=(const IOThreadContext&) = delete;
+
   // Safe to call from any thread.
   void Start() {
     DCHECK(!started_);
@@ -176,8 +179,6 @@ class ServiceManagerConnection::IOThreadContext
   MessageLoopObserver* message_loop_observer_ = nullptr;
 
   base::WeakPtrFactory<IOThreadContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IOThreadContext);
 };
 
 // static

@@ -41,6 +41,11 @@ int WriteFakeDumpStateFile(const std::string& path) {
 }  // namespace
 
 class CastCrashReporterClientTest : public testing::Test {
+ public:
+  CastCrashReporterClientTest(const CastCrashReporterClientTest&) = delete;
+  CastCrashReporterClientTest& operator=(const CastCrashReporterClientTest&) =
+      delete;
+
  protected:
   CastCrashReporterClientTest() {}
   ~CastCrashReporterClientTest() override {}
@@ -117,8 +122,6 @@ class CastCrashReporterClientTest : public testing::Test {
   base::ScopedTempDir fake_home_dir_;
   ScopedTempFile minidump_;
   std::unique_ptr<base::ScopedPathOverride> home_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCrashReporterClientTest);
 };
 
 TEST_F(CastCrashReporterClientTest, EndToEndTestOnIORestrictedThread) {

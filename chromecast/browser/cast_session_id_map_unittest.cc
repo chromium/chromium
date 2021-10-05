@@ -25,6 +25,9 @@ class CastSessionIdMapTest : public content::RenderViewHostTestHarness {
  public:
   CastSessionIdMapTest() : task_runner_(new base::TestSimpleTaskRunner) {}
 
+  CastSessionIdMapTest(const CastSessionIdMapTest&) = delete;
+  CastSessionIdMapTest& operator=(const CastSessionIdMapTest&) = delete;
+
   void SetUp() override {
     // Required for creating TestWebContents.
     gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -39,9 +42,6 @@ class CastSessionIdMapTest : public content::RenderViewHostTestHarness {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<content::TestContentClientInitializer> initializer_;
   CastSessionIdMap* cast_session_id_map_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastSessionIdMapTest);
 };
 
 TEST_F(CastSessionIdMapTest, DefaultsToEmptyString) {

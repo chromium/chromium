@@ -60,6 +60,9 @@ class LeScanManager {
       BluetoothManagerPlatform* bluetooth_manager,
       bluetooth_v2_shlib::LeScannerImpl* le_scanner);
 
+  LeScanManager(const LeScanManager&) = delete;
+  LeScanManager& operator=(const LeScanManager&) = delete;
+
   virtual ~LeScanManager() = default;
 
   virtual void Initialize(
@@ -93,9 +96,6 @@ class LeScanManager {
 
  protected:
   LeScanManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LeScanManager);
 };
 
 }  // namespace bluetooth

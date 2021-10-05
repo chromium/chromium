@@ -26,6 +26,9 @@ class RemoteDeviceImpl;
 // specified, all callbacks are run on the caller's thread.
 class RemoteCharacteristicImpl : public RemoteCharacteristic {
  public:
+  RemoteCharacteristicImpl(const RemoteCharacteristicImpl&) = delete;
+  RemoteCharacteristicImpl& operator=(const RemoteCharacteristicImpl&) = delete;
+
   // RemoteCharacteristic impl:
   std::vector<scoped_refptr<RemoteDescriptor>> GetDescriptors() override;
   scoped_refptr<RemoteDescriptor> GetDescriptorByUuid(
@@ -92,8 +95,6 @@ class RemoteCharacteristicImpl : public RemoteCharacteristic {
       uuid_to_descriptor_;
 
   std::atomic<bool> notification_enabled_{false};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCharacteristicImpl);
 };
 
 }  // namespace bluetooth

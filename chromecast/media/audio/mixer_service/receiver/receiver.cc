@@ -42,6 +42,9 @@ class LocalReceiverInstance {
  public:
   LocalReceiverInstance() = default;
 
+  LocalReceiverInstance(const LocalReceiverInstance&) = delete;
+  LocalReceiverInstance& operator=(const LocalReceiverInstance&) = delete;
+
   void SetInstance(Receiver* receiver) {
     base::AutoLock lock(lock_);
     receiver_ = receiver;
@@ -63,8 +66,6 @@ class LocalReceiverInstance {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(LocalReceiverInstance);
-
   base::Lock lock_;
   Receiver* receiver_ = nullptr;
 };

@@ -376,6 +376,10 @@ std::string DeathRegex(const std::string& regex) {
 }  // namespace
 
 class StreamMixerTest : public testing::Test {
+ public:
+  StreamMixerTest(const StreamMixerTest&) = delete;
+  StreamMixerTest& operator=(const StreamMixerTest&) = delete;
+
  protected:
   StreamMixerTest() {
     auto output = std::make_unique<NiceMock<MockMixerOutput>>();
@@ -484,8 +488,6 @@ class StreamMixerTest : public testing::Test {
   MockMixerOutput* mock_output_;
   std::unique_ptr<StreamMixer> mixer_;
   MockPostProcessorFactory* pp_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMixerTest);
 };
 
 TEST_F(StreamMixerTest, AddSingleInput) {

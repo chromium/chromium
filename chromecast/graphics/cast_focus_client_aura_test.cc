@@ -22,14 +22,15 @@ class TestWindow {
     window_.Show();
   }
 
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
+
   aura::test::TestWindowDelegate* delegate() { return &delegate_; }
   aura::Window* window() { return &window_; }
 
  private:
   aura::test::TestWindowDelegate delegate_;
   aura::Window window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
 };
 
 }  // namespace

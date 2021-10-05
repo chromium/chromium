@@ -144,6 +144,11 @@ class TouchExplorationControllerTestApi {
     touch_exploration_controller_.reset(touch_exploration_controller);
   }
 
+  TouchExplorationControllerTestApi(const TouchExplorationControllerTestApi&) =
+      delete;
+  TouchExplorationControllerTestApi& operator=(
+      const TouchExplorationControllerTestApi&) = delete;
+
   void CallTapTimerNowForTesting() {
     DCHECK(touch_exploration_controller_->tap_timer_.IsRunning());
     touch_exploration_controller_->tap_timer_.Stop();
@@ -222,8 +227,6 @@ class TouchExplorationControllerTestApi {
 
  private:
   std::unique_ptr<TouchExplorationController> touch_exploration_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationControllerTestApi);
 };
 
 class TouchExplorationTest : public aura::test::AuraTestBase {

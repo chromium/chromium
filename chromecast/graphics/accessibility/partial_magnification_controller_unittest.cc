@@ -38,6 +38,10 @@ class PartialMagnificationControllerTestApi {
   explicit PartialMagnificationControllerTestApi(
       PartialMagnificationController* controller)
       : controller_(controller) {}
+
+  PartialMagnificationControllerTestApi& operator=(
+      const PartialMagnificationControllerTestApi&) = delete;
+
   ~PartialMagnificationControllerTestApi() = default;
 
   bool is_enabled() const { return controller_->is_enabled_; }
@@ -51,8 +55,6 @@ class PartialMagnificationControllerTestApi {
 
  private:
   PartialMagnificationController* controller_;
-
-  DISALLOW_ASSIGN(PartialMagnificationControllerTestApi);
 };
 
 class PartialMagnificationControllerTest : public views::ViewsTestBase {

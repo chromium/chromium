@@ -16,10 +16,11 @@ namespace chromecast {
 // JNI wrapper for DumpstateWriter.java.
 class DumpstateWriter {
  public:
-  static void AddDumpValue(const std::string& name, const std::string& value);
+  DumpstateWriter() = delete;
+  DumpstateWriter(const DumpstateWriter&) = delete;
+  DumpstateWriter& operator=(const DumpstateWriter&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DumpstateWriter);
+  static void AddDumpValue(const std::string& name, const std::string& value);
 };
 
 }  // namespace chromecast

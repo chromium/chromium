@@ -41,6 +41,9 @@ class IOBufferPool::Internal {
  public:
   Internal(size_t buffer_size, size_t max_buffers, bool threadsafe);
 
+  Internal(const Internal&) = delete;
+  Internal& operator=(const Internal&) = delete;
+
   size_t num_allocated() const {
     base::AutoLockMaybe lock(lock_ptr_);
     return num_allocated_;
@@ -81,21 +84,20 @@ class IOBufferPool::Internal {
   size_t num_free_;
 
   int refs_;
-
-  DISALLOW_COPY_AND_ASSIGN(Internal);
 };
 
 class IOBufferPool::Internal::Buffer : public net::IOBuffer {
  public:
   explicit Buffer(char* data) : net::IOBuffer(data) {}
 
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
  private:
   friend class Wrapper;
 
   ~Buffer() override { data_ = nullptr; }
   static void operator delete(void* ptr);
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 class IOBufferPool::Internal::Wrapper {

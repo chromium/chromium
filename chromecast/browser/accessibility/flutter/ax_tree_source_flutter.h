@@ -104,6 +104,10 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
         content::WebContents* web_contents,
         chromecast::accessibility::AXTreeSourceFlutter* ax_tree_source);
 
+    AXTreeWebContentsObserver(const AXTreeWebContentsObserver&) = delete;
+    AXTreeWebContentsObserver& operator=(const AXTreeWebContentsObserver&) =
+        delete;
+
     void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                                 content::RenderFrameHost* new_host) override;
 
@@ -111,8 +115,6 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
 
    private:
     chromecast::accessibility::AXTreeSourceFlutter* ax_tree_source_;
-
-    DISALLOW_COPY_AND_ASSIGN(AXTreeWebContentsObserver);
   };
 
   using AXTreeFlutterSerializer = ui::AXTreeSerializer<FlutterSemanticsNode*>;

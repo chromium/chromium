@@ -36,6 +36,10 @@ class CastSessionIdMap : public media::CastAudioManagerHelper::Delegate {
   // This must be called for the first time on the browser main thread.
   static CastSessionIdMap* GetInstance(
       base::SequencedTaskRunner* task_runner = nullptr);
+
+  CastSessionIdMap(const CastSessionIdMap&) = delete;
+  CastSessionIdMap& operator=(const CastSessionIdMap&) = delete;
+
   // Map a session id to a particular group id in the provided WebContents.
   // Record whether the session is an audio only session.
   // Can be called on any thread.
@@ -92,8 +96,6 @@ class CastSessionIdMap : public media::CastAudioManagerHelper::Delegate {
       group_info_mapping_;
   base::SequencedTaskRunner* const task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CastSessionIdMap);
 };
 
 }  // namespace shell

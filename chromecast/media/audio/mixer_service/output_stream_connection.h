@@ -69,6 +69,10 @@ class OutputStreamConnection : public MixerConnection,
   };
 
   OutputStreamConnection(Delegate* delegate, const OutputStreamParams& params);
+
+  OutputStreamConnection(const OutputStreamConnection&) = delete;
+  OutputStreamConnection& operator=(const OutputStreamConnection&) = delete;
+
   ~OutputStreamConnection() override;
 
   // Connects to the mixer. After this is called, delegate methods may start
@@ -145,8 +149,6 @@ class OutputStreamConnection : public MixerConnection,
   bool sent_eos_ = false;
 
   bool dropping_audio_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputStreamConnection);
 };
 
 }  // namespace mixer_service

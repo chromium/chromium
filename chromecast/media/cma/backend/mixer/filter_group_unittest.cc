@@ -166,6 +166,10 @@ std::unique_ptr<::media::AudioBus> GetTestData() {
 }
 
 class FilterGroupTest : public testing::Test {
+ public:
+  FilterGroupTest(const FilterGroupTest&) = delete;
+  FilterGroupTest& operator=(const FilterGroupTest&) = delete;
+
  protected:
   using RenderingDelay = MixerInput::RenderingDelay;
   FilterGroupTest() : source_(kInputSampleRate) {
@@ -215,9 +219,6 @@ class FilterGroupTest : public testing::Test {
   std::unique_ptr<FilterGroup> filter_group_;
   std::unique_ptr<MixerInput> input_;
   MockPostProcessingPipeline* post_processor_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FilterGroupTest);
 };
 
 TEST_F(FilterGroupTest, Passthrough) {

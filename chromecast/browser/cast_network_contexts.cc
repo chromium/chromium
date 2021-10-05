@@ -63,6 +63,10 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  URLLoaderFactoryForSystem(const URLLoaderFactoryForSystem&) = delete;
+  URLLoaderFactoryForSystem& operator=(const URLLoaderFactoryForSystem&) =
+      delete;
+
   // mojom::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
@@ -102,8 +106,6 @@ class CastNetworkContexts::URLLoaderFactoryForSystem
 
   SEQUENCE_CHECKER(sequence_checker_);
   CastNetworkContexts* network_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryForSystem);
 };
 
 CastNetworkContexts::CastNetworkContexts(

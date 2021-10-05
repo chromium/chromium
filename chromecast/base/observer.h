@@ -133,6 +133,8 @@ class Observer {
  public:
   Observer(const Observer& other);
 
+  Observer& operator=(const Observer&) = delete;
+
   ~Observer();
 
   void SetOnUpdateCallback(base::RepeatingClosure callback) {
@@ -158,8 +160,6 @@ class Observer {
   const T& value_;
   base::RepeatingClosure on_update_callback_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_ASSIGN(Observer);
 };
 
 template <typename T>
@@ -171,6 +171,10 @@ class Observable {
 
  public:
   explicit Observable(const T& initial_value);
+
+  Observable(const Observable&) = delete;
+  Observable& operator=(const Observable&) = delete;
+
   Observer<T> Observe();
 
   void SetValue(const T& new_value);
@@ -181,8 +185,6 @@ class Observable {
   // By using a refcounted object to store the value and observer list, we can
   // avoid tying the lifetime of Observable to its Observers or vice versa.
   const scoped_refptr<subtle::ObservableInternals<T>> internals_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observable);
 };
 
 namespace subtle {
@@ -193,6 +195,9 @@ class ObservableInternals
  public:
   explicit ObservableInternals(const T& initial_value)
       : value_(initial_value) {}
+
+  ObservableInternals(const ObservableInternals&) = delete;
+  ObservableInternals& operator=(const ObservableInternals&) = delete;
 
   void SetValue(const T& new_value) {
     base::AutoLock lock(lock_);
@@ -259,6 +264,9 @@ class ObservableInternals
    public:
     explicit SequenceOwnedInfo(const T& value) : value_(value) {}
 
+    SequenceOwnedInfo(const SequenceOwnedInfo&) = delete;
+    SequenceOwnedInfo& operator=(const SequenceOwnedInfo&) = delete;
+
     const T& value() const {
       DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
       return value_;
@@ -301,8 +309,6 @@ class ObservableInternals
     std::vector<Observer<T>*> observers_;
     T value_;
     SEQUENCE_CHECKER(sequence_checker_);
-
-    DISALLOW_COPY_AND_ASSIGN(SequenceOwnedInfo);
   };
 
   class PerSequenceInfo {
@@ -371,8 +377,6 @@ class ObservableInternals
   mutable base::Lock lock_;
   T value_;
   std::vector<PerSequenceInfo> per_sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObservableInternals);
 };
 
 }  // namespace subtle

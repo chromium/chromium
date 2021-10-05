@@ -37,6 +37,9 @@ class RemoteDeviceImpl : public RemoteDevice {
   // device.
   static constexpr base::TimeDelta kCommandTimeout = base::Seconds(30);
 
+  RemoteDeviceImpl(const RemoteDeviceImpl&) = delete;
+  RemoteDeviceImpl& operator=(const RemoteDeviceImpl&) = delete;
+
   // RemoteDevice implementation
   void Connect(ConnectCallback cb, bluetooth_v2_shlib::Gatt::Client::Transport transport) override;
   void Disconnect(StatusCallback cb) override;
@@ -190,8 +193,6 @@ class RemoteDeviceImpl : public RemoteDevice {
       handle_to_descriptor_read_cbs_;
   std::map<uint16_t, std::queue<RemoteDescriptor::StatusCallback>>
       handle_to_descriptor_write_cbs_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceImpl);
 };
 
 }  // namespace bluetooth

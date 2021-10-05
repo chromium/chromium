@@ -60,6 +60,9 @@ class CastCdmContextForTest : public CastCdmContext {
  public:
   CastCdmContextForTest() : license_installed_(false) {}
 
+  CastCdmContextForTest(const CastCdmContextForTest&) = delete;
+  CastCdmContextForTest& operator=(const CastCdmContextForTest&) = delete;
+
   void SetLicenseInstalled() {
     license_installed_ = true;
     event_callbacks_.Notify(
@@ -92,8 +95,6 @@ class CastCdmContextForTest : public CastCdmContext {
   bool license_installed_;
   ::media::CallbackRegistry<::media::CdmContext::EventCB::RunType>
       event_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCdmContextForTest);
 };
 
 // Helper class for managing pipeline setup, teardown, feeding data, stop/start
@@ -109,6 +110,9 @@ class PipelineHelper {
         pipeline_backend_(nullptr),
         audio_decoder_delegate_(nullptr),
         video_decoder_delegate_(nullptr) {}
+
+  PipelineHelper(const PipelineHelper&) = delete;
+  PipelineHelper& operator=(const PipelineHelper&) = delete;
 
   void Setup() {
     if (encrypted_) {
@@ -271,8 +275,6 @@ class PipelineHelper {
   CmaBackend::Decoder::Delegate* audio_decoder_delegate_;
   CmaBackend::Decoder::Delegate* video_decoder_delegate_;
   std::unique_ptr<MediaPipelineImpl> media_pipeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineHelper);
 };
 
 using AudioVideoTuple = ::testing::tuple<bool, bool>;
@@ -281,6 +283,10 @@ class AudioVideoPipelineImplTest
     : public ::testing::TestWithParam<AudioVideoTuple> {
  public:
   AudioVideoPipelineImplTest() {}
+
+  AudioVideoPipelineImplTest(const AudioVideoPipelineImplTest&) = delete;
+  AudioVideoPipelineImplTest& operator=(const AudioVideoPipelineImplTest&) =
+      delete;
 
  protected:
   void SetUp() override {
@@ -291,8 +297,6 @@ class AudioVideoPipelineImplTest
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PipelineHelper> pipeline_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioVideoPipelineImplTest);
 };
 
 static void VerifyPlay(PipelineHelper* pipeline_helper) {
@@ -374,6 +378,10 @@ class EncryptedAVPipelineImplTest : public ::testing::Test {
  public:
   EncryptedAVPipelineImplTest() {}
 
+  EncryptedAVPipelineImplTest(const EncryptedAVPipelineImplTest&) = delete;
+  EncryptedAVPipelineImplTest& operator=(const EncryptedAVPipelineImplTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     pipeline_helper_.reset(new PipelineHelper(true, true, true));
@@ -382,8 +390,6 @@ class EncryptedAVPipelineImplTest : public ::testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PipelineHelper> pipeline_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncryptedAVPipelineImplTest);
 };
 
 // Sets a CDM with license already installed before starting the pipeline.

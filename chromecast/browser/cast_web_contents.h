@@ -143,6 +143,10 @@ class CastWebContents : public mojom::CastWebContents {
   static CastWebContents* FromWebContents(content::WebContents* web_contents);
 
   CastWebContents();
+
+  CastWebContents(const CastWebContents&) = delete;
+  CastWebContents& operator=(const CastWebContents&) = delete;
+
   ~CastWebContents() override;
 
   // Tab identifier for the WebContents, mainly used by the tabs extension API.
@@ -281,8 +285,6 @@ class CastWebContents : public mojom::CastWebContents {
   // valid sequence, enforced via SequenceChecker.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  DISALLOW_COPY_AND_ASSIGN(CastWebContents);
 };
 
 }  // namespace chromecast

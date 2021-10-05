@@ -26,6 +26,10 @@ class SequencedTaskRunnerNoDelay : public base::SequencedTaskRunner {
  public:
   SequencedTaskRunnerNoDelay() {}
 
+  SequencedTaskRunnerNoDelay(const SequencedTaskRunnerNoDelay&) = delete;
+  SequencedTaskRunnerNoDelay& operator=(const SequencedTaskRunnerNoDelay&) =
+      delete;
+
   // base::SequencedTaskRunner implementation:
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -44,8 +48,6 @@ class SequencedTaskRunnerNoDelay : public base::SequencedTaskRunner {
 
  private:
   ~SequencedTaskRunnerNoDelay() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(SequencedTaskRunnerNoDelay);
 };
 
 class TimeChangeObserver : public SystemTimeChangeNotifier::Observer {

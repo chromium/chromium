@@ -16,6 +16,9 @@ class FakeConnectivityChecker : public ConnectivityChecker {
  public:
   FakeConnectivityChecker();
 
+  FakeConnectivityChecker(const FakeConnectivityChecker&) = delete;
+  FakeConnectivityChecker& operator=(const FakeConnectivityChecker&) = delete;
+
   // ConnectivityChecker implementation:
   bool Connected() const override;
   void Check() override;
@@ -29,8 +32,6 @@ class FakeConnectivityChecker : public ConnectivityChecker {
  private:
   friend class base::RefCountedThreadSafe<FakeConnectivityChecker>;
   bool connected_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectivityChecker);
 };
 
 }  // namespace chromecast

@@ -235,6 +235,11 @@ class TestMessageReceiver : public blink::WebMessagePort::MessageReceiver {
 // =============================================================================
 class CastWebContentsBrowserTest : public content::BrowserTestBase,
                                    public content::WebContentsObserver {
+ public:
+  CastWebContentsBrowserTest(const CastWebContentsBrowserTest&) = delete;
+  CastWebContentsBrowserTest& operator=(const CastWebContentsBrowserTest&) =
+      delete;
+
  protected:
   CastWebContentsBrowserTest() = default;
   ~CastWebContentsBrowserTest() override = default;
@@ -300,9 +305,6 @@ class CastWebContentsBrowserTest : public content::BrowserTestBase,
   std::unique_ptr<base::RunLoop> run_loop_;
 
   base::flat_set<content::RenderFrameHost*> render_frames_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastWebContentsBrowserTest);
 };
 
 MATCHER_P2(CheckPageState, cwc_ptr, expected_state, "") {

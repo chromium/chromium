@@ -46,13 +46,14 @@ class TestWindow {
     window_.SetBounds(gfx::Rect(0, 0, 1280, 720));
   }
 
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
+
   aura::Window* window() { return &window_; }
 
  private:
   CastTestWindowDelegate delegate_;
   aura::Window window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
 };
 
 }  // namespace

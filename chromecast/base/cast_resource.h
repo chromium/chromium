@@ -69,6 +69,9 @@ class CastResource {
     virtual ~Client() {}
   };
 
+  CastResource(const CastResource&) = delete;
+  CastResource& operator=(const CastResource&) = delete;
+
   // Sets the Client for the CastResource to respond to when it is done with
   // Acquire/ReleaseResource.
   void SetCastResourceClient(Client* client);
@@ -95,8 +98,6 @@ class CastResource {
 
  private:
   Client* client_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastResource);
 };
 
 }  // namespace chromecast

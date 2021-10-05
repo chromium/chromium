@@ -30,15 +30,15 @@ class ConnectivityChecker
  public:
   class ConnectivityObserver {
    public:
+    ConnectivityObserver(const ConnectivityObserver&) = delete;
+    ConnectivityObserver& operator=(const ConnectivityObserver&) = delete;
+
     // Will be called when internet connectivity changes.
     virtual void OnConnectivityChanged(bool connected) = 0;
 
    protected:
     ConnectivityObserver() {}
     virtual ~ConnectivityObserver() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ConnectivityObserver);
   };
 
   static scoped_refptr<ConnectivityChecker> Create(
@@ -47,6 +47,9 @@ class ConnectivityChecker
           pending_url_loader_factory,
       network::NetworkConnectionTracker* network_connection_tracker,
       TimeSyncTracker* time_sync_tracker = nullptr);
+
+  ConnectivityChecker(const ConnectivityChecker&) = delete;
+  ConnectivityChecker& operator=(const ConnectivityChecker&) = delete;
 
   void AddConnectivityObserver(ConnectivityObserver* observer);
   void RemoveConnectivityObserver(ConnectivityObserver* observer);
@@ -71,8 +74,6 @@ class ConnectivityChecker
 
   const scoped_refptr<base::ObserverListThreadSafe<ConnectivityObserver>>
       connectivity_observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectivityChecker);
 };
 
 }  // namespace chromecast

@@ -62,6 +62,10 @@ class SmallMessageSocket {
   };
 
   SmallMessageSocket(Delegate* delegate, std::unique_ptr<net::Socket> socket);
+
+  SmallMessageSocket(const SmallMessageSocket&) = delete;
+  SmallMessageSocket& operator=(const SmallMessageSocket&) = delete;
+
   virtual ~SmallMessageSocket();
 
   net::Socket* socket() const { return socket_.get(); }
@@ -155,8 +159,6 @@ class SmallMessageSocket {
   bool in_message_ = false;
 
   base::WeakPtrFactory<SmallMessageSocket> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmallMessageSocket);
 };
 
 }  // namespace chromecast

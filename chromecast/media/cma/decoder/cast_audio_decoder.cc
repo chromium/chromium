@@ -94,6 +94,9 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
     // (the pipeline status callback is posted to the task runner).
   }
 
+  CastAudioDecoderImpl(const CastAudioDecoderImpl&) = delete;
+  CastAudioDecoderImpl& operator=(const CastAudioDecoderImpl&) = delete;
+
   // CastAudioDecoder implementation:
   const AudioConfig& GetOutputConfig() const override { return output_config_; }
 
@@ -305,8 +308,6 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
 
   base::WeakPtr<CastAudioDecoderImpl> weak_this_;
   base::WeakPtrFactory<CastAudioDecoderImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioDecoderImpl);
 };
 
 }  // namespace

@@ -84,6 +84,11 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
         sample_counter_(0),
         task_runner_(task_runner) {}
 
+  RateLimitedSetVideoPlaneGeometry(const RateLimitedSetVideoPlaneGeometry&) =
+      delete;
+  RateLimitedSetVideoPlaneGeometry& operator=(
+      const RateLimitedSetVideoPlaneGeometry&) = delete;
+
   void SetGeometry(const chromecast::RectF& display_rect,
                    VideoPlane::Transform transform) {
     DCHECK(task_runner_->BelongsToCurrentThread());
@@ -160,8 +165,6 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
   size_t sample_counter_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RateLimitedSetVideoPlaneGeometry);
 };
 
 VideoPlaneController::VideoPlaneController(

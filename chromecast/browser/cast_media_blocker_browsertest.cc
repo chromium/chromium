@@ -29,6 +29,10 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
  public:
   CastMediaBlockerBrowserTest() {}
 
+  CastMediaBlockerBrowserTest(const CastMediaBlockerBrowserTest&) = delete;
+  CastMediaBlockerBrowserTest& operator=(const CastMediaBlockerBrowserTest&) =
+      delete;
+
  protected:
   // CastBrowserTest implementation.
   void TearDownOnMainThread() override {
@@ -85,8 +89,6 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
  private:
   content::WebContents* web_contents_;
   std::unique_ptr<CastMediaBlocker> blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaBlockerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest, Audio_BlockUnblock) {

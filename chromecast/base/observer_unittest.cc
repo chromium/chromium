@@ -35,6 +35,9 @@ class ThreadedObservable {
     thread_.Start();
   }
 
+  ThreadedObservable(const ThreadedObservable&) = delete;
+  ThreadedObservable& operator=(const ThreadedObservable&) = delete;
+
   Observer<int> Observe() { return value_.Observe(); }
 
   void SetValue(int value) {
@@ -51,8 +54,6 @@ class ThreadedObservable {
 
   base::Thread thread_;
   Observable<int> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedObservable);
 };
 
 class ThreadedObserver {

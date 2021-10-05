@@ -230,6 +230,11 @@ class ServiceManagerContext::InProcessServiceManagerContext
       : service_manager_thread_task_runner_(
             service_manager_thread_task_runner) {}
 
+  InProcessServiceManagerContext(const InProcessServiceManagerContext&) =
+      delete;
+  InProcessServiceManagerContext& operator=(
+      const InProcessServiceManagerContext&) = delete;
+
   void Start(std::vector<service_manager::Manifest> manifests,
              mojo::PendingRemote<service_manager::mojom::Service> system_remote,
              ServiceRequestHandler request_handler) {
@@ -294,8 +299,6 @@ class ServiceManagerContext::InProcessServiceManagerContext
   const scoped_refptr<base::SingleThreadTaskRunner>
       service_manager_thread_task_runner_;
   std::unique_ptr<service_manager::ServiceManager> service_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessServiceManagerContext);
 };
 
 ServiceManagerContext::ServiceManagerContext(

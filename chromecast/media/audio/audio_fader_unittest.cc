@@ -41,6 +41,9 @@ class TestFaderSource : public AudioProvider {
         last_requested_frames_(0),
         last_filled_frames_(0) {}
 
+  TestFaderSource(const TestFaderSource&) = delete;
+  TestFaderSource& operator=(const TestFaderSource&) = delete;
+
   // AudioProvider implementation:
   int FillFrames(int num_frames,
                  int64_t playout_timestamp,
@@ -71,8 +74,6 @@ class TestFaderSource : public AudioProvider {
   int total_requested_frames_;
   int last_requested_frames_;
   int last_filled_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFaderSource);
 };
 
 }  // namespace
