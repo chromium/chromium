@@ -339,9 +339,21 @@ message ParkableStringUnpark {
   optional int32 time_since_last_disk_write_sec = 2;
 }
 
+message ChromeSamplingProfilerSampleCollected {
+  optional int32 frame_count = 1;
+
+  enum WriteStatus {
+    WRITE_STATUS_NONE = 0;
+    WRITE_STATUS_BUFFERING_SAMPLE = 1;
+    WRITE_STATUS_WRITING_BUFFERED = 2;
+    WRITE_STATUS_WRITING_TO_TRACE = 3;
+  }
+  optional WriteStatus write_status = 2;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1025
+  // Next ID: 1026
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -394,5 +406,8 @@ message ChromeTrackEvent {
     optional ParkableStringCompressInBackground
         parkable_string_compress_in_background = 1023;
     optional ParkableStringUnpark parkable_string_unpark = 1024;
+
+    optional ChromeSamplingProfilerSampleCollected
+        chrome_sampling_profiler_sample_completed = 1025;
   }
 }
