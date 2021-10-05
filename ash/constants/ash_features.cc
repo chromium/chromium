@@ -216,7 +216,7 @@ const base::Feature kManagedTermsOfService{"ManagedTermsOfService",
 // Enable display of button on Arc provisioning failure dialog for network
 // tests.
 const base::Feature kButtonARCNetworkDiagnostics{
-    "ButtonARCNetworkDiagnostics", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ButtonARCNetworkDiagnostics", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable calendar view from the system tray.
 const base::Feature kCalendarView{"CalendarView",
