@@ -179,7 +179,7 @@ class AppBrowserController : public TabStripModelObserver,
 
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* handle) override;
-  void ReadyToCommitNavigation(
+  void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidChangeThemeColor() override;

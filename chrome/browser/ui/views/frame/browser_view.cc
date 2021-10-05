@@ -636,6 +636,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   if (browser_->app_controller()) {
     tab_menu_model_factory =
         browser_->app_controller()->GetTabMenuModelFactory();
+
+    UpdateWindowControlsOverlayEnabled();
   }
   // TabStrip takes ownership of the controller.
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
@@ -1622,12 +1624,8 @@ void BrowserView::UpdateToolbar(content::WebContents* contents) {
 }
 
 void BrowserView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
-  if (toolbar_) {
+  if (toolbar_)
     toolbar_->UpdateCustomTabBarVisibility(visible, animate);
-
-    if (AppUsesWindowControlsOverlay())
-      frame_->GetFrameView()->SetWindowControlsOverlayToggleVisible(!visible);
-  }
 }
 
 void BrowserView::ResetToolbarTabState(content::WebContents* contents) {
@@ -1676,6 +1674,13 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
     contents_web_view_->InvalidateLayout();
     contents_container_->Layout();
   }
+
+  // Web apps that use Window Controls Overlay (WCO) revert back to the
+  // standalone style title bar when infobars are visible. Update the enabled
+  // state of WCO when the size of the toolbar changes since this indicates
+  // that the visibility of the infobar may have changed.
+  if (AppUsesWindowControlsOverlay())
+    UpdateWindowControlsOverlayEnabled();
 }
 
 void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
@@ -1710,18 +1715,52 @@ bool BrowserView::AppUsesWindowControlsOverlay() const {
 }
 
 bool BrowserView::IsWindowControlsOverlayEnabled() const {
-  if (toolbar_->custom_tab_bar() && toolbar_->custom_tab_bar()->GetVisible())
-    return false;
+  return window_controls_overlay_enabled_;
+}
 
-  return browser()->app_controller() &&
-         browser()->app_controller()->IsWindowControlsOverlayEnabled();
+void BrowserView::UpdateWindowControlsOverlayEnabled() {
+  UpdateWindowControlsOverlayToggleVisible();
+
+  // If the toggle is not visible, we can assume that Window Controls Overlay
+  // is not enabled.
+  bool enabled = should_show_window_controls_overlay_toggle_ &&
+                 browser()->app_controller() &&
+                 browser()->app_controller()->IsWindowControlsOverlayEnabled();
+
+  if (enabled == window_controls_overlay_enabled_)
+    return;
+
+  window_controls_overlay_enabled_ = enabled;
+
+  // Clear the title-bar-area rect when window controls overlay is disabled.
+  if (!window_controls_overlay_enabled_)
+    GetActiveWebContents()->UpdateWindowControlsOverlay(gfx::Rect());
+
+  if (frame_ && frame_->GetFrameView())
+    frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
+}
+
+void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
+  bool should_show = AppUsesWindowControlsOverlay();
+
+  if ((toolbar_ && toolbar_->custom_tab_bar() &&
+       toolbar_->custom_tab_bar()->GetVisible()) ||
+      (infobar_container_ && infobar_container_->GetVisible())) {
+    should_show = false;
+  }
+
+  if (should_show == should_show_window_controls_overlay_toggle_)
+    return;
+
+  should_show_window_controls_overlay_toggle_ = should_show;
+
+  if (frame_ && frame_->GetFrameView())
+    frame_->GetFrameView()->SetWindowControlsOverlayToggleVisible(should_show);
 }
 
 void BrowserView::ToggleWindowControlsOverlayEnabled() {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
-  frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
-  if (!browser()->app_controller()->IsWindowControlsOverlayEnabled())
-    GetActiveWebContents()->UpdateWindowControlsOverlay(gfx::Rect());
+  UpdateWindowControlsOverlayEnabled();
 }
 
 void BrowserView::FocusBookmarksToolbar() {

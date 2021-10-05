@@ -288,7 +288,7 @@ void AppBrowserController::DidStartNavigation(
   SetInitialURL(navigation_handle->GetURL());
 }
 
-void AppBrowserController::ReadyToCommitNavigation(
+void AppBrowserController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame())
     return;
