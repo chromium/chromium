@@ -23,6 +23,10 @@ class SmartLockFeatureUsageMetrics
   explicit SmartLockFeatureUsageMetrics(
       chromeos::multidevice_setup::MultiDeviceSetupClient*
           multi_device_setup_client);
+  SmartLockFeatureUsageMetrics(SmartLockFeatureUsageMetrics&) = delete;
+  SmartLockFeatureUsageMetrics& operator=(SmartLockFeatureUsageMetrics&) =
+      delete;
+  ~SmartLockFeatureUsageMetrics() override;
 
   // To be called by the owner of this SmartLockFeatureUsageMetrics
   // instance when the user uses the feature.

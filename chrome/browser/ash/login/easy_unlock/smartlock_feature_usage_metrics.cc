@@ -21,6 +21,8 @@ SmartLockFeatureUsageMetrics::SmartLockFeatureUsageMetrics(
     : multi_device_setup_client_(multi_device_setup_client),
       feature_usage_metrics_(kFeatureName, this) {}
 
+SmartLockFeatureUsageMetrics::~SmartLockFeatureUsageMetrics() = default;
+
 void SmartLockFeatureUsageMetrics::RecordUsage(bool success) {
   feature_usage_metrics_.RecordUsage(success);
 }

@@ -17,6 +17,10 @@ class FastInitiationScannerFeatureUsageMetrics final
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
   explicit FastInitiationScannerFeatureUsageMetrics(PrefService* pref_service);
+  FastInitiationScannerFeatureUsageMetrics(
+      FastInitiationScannerFeatureUsageMetrics&) = delete;
+  FastInitiationScannerFeatureUsageMetrics& operator=(
+      FastInitiationScannerFeatureUsageMetrics&) = delete;
   ~FastInitiationScannerFeatureUsageMetrics() final;
 
   // feature_usage::FeatureUsageMetrics::Delegate:

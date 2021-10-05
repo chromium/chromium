@@ -15,6 +15,9 @@ class NearbyShareFeatureUsageMetrics final
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
   explicit NearbyShareFeatureUsageMetrics(PrefService* pref_service);
+  NearbyShareFeatureUsageMetrics(NearbyShareFeatureUsageMetrics&) = delete;
+  NearbyShareFeatureUsageMetrics& operator=(NearbyShareFeatureUsageMetrics&) =
+      delete;
   ~NearbyShareFeatureUsageMetrics() override;
 
   // feature_usage::FeatureUsageMetrics::Delegate:
