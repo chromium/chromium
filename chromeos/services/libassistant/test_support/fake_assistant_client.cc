@@ -5,6 +5,10 @@
 #include "chromeos/services/libassistant/test_support/fake_assistant_client.h"
 
 #include "base/callback.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
+#include "chromeos/assistant/internal/test_support/fake_alarm_timer_manager.h"
+#include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -98,6 +102,52 @@ std::string FakeAssistantClient::GetDeviceId() {
 void FakeAssistantClient::SetDeviceAttributes(bool enable_dark_mode) {}
 
 void FakeAssistantClient::EnableListening(bool listening_enabled) {}
+
+void FakeAssistantClient::AddTimeToTimer(const std::string& id,
+                                         const base::TimeDelta& duration) {
+  fake_alarm_timer_manager()->AddTimeToTimer(id, duration.InSeconds());
+}
+
+void FakeAssistantClient::PauseTimer(const std::string& timer_id) {
+  fake_alarm_timer_manager()->PauseTimer(timer_id);
+}
+
+void FakeAssistantClient::RemoveTimer(const std::string& timer_id) {
+  fake_alarm_timer_manager()->RemoveEvent(timer_id);
+}
+
+void FakeAssistantClient::ResumeTimer(const std::string& timer_id) {
+  fake_alarm_timer_manager()->ResumeTimer(timer_id);
+}
+
+std::vector<assistant::AssistantTimer> FakeAssistantClient::GetTimers() {
+  return GetAllCurrentTimersFromEvents(
+      fake_alarm_timer_manager()->GetAllEvents());
+}
+
+void FakeAssistantClient::RegisterAlarmTimerEventObserver(
+    base::WeakPtr<
+        GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+        observer) {
+  fake_alarm_timer_manager()->RegisterRingingStateListener(
+      [observer = observer, this]() {
+        observer->OnGrpcMessage(
+            CreateOnAlarmTimerEventRequestProtoForV1(GetTimers()));
+      });
+
+  fake_alarm_timer_manager()->RegisterAlarmActionListener(
+      [observer = observer,
+       this](assistant_client::AlarmTimerManager::EventActionType ignore) {
+        observer->OnGrpcMessage(
+            CreateOnAlarmTimerEventRequestProtoForV1(GetTimers()));
+      });
+}
+
+assistant::FakeAlarmTimerManager*
+FakeAssistantClient::fake_alarm_timer_manager() {
+  return reinterpret_cast<assistant::FakeAlarmTimerManager*>(
+      assistant_manager_internal()->GetAlarmTimerManager());
+}
 
 }  // namespace libassistant
 }  // namespace chromeos

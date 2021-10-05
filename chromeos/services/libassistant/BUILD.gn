@@ -225,6 +225,7 @@ source_set("test_support") {
     ":libassistant",
     "//base/test:test_support",
     "//chromeos/assistant/internal:test_support",
+    "//chromeos/assistant/internal/proto:assistant",
     "//chromeos/services/libassistant/grpc:assistant_client",
     "//chromeos/services/libassistant/public/mojom",
     "//services/network:test_support",

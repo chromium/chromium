@@ -153,6 +153,16 @@ auto BindToCurrentSequence(Functor&& functor, Args&&... args) {
   return BindToCurrentSequence(std::move(callback));
 }
 
+// Binds a repeating callback to the current sequence.
+// This is a convenience version, that allows you to use the same simplified
+// style noted above on a repeating callback.
+template <typename Functor, typename... Args>
+auto BindToCurrentSequenceRepeating(Functor&& functor, Args&&... args) {
+  auto callback = base::BindRepeating(std::forward<Functor>(functor),
+                                      std::forward<Args>(args)...);
+  return BindToCurrentSequenceRepeating(callback);
+}
+
 }  // namespace libassistant
 }  // namespace chromeos
 

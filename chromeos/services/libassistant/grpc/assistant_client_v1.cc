@@ -9,7 +9,10 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
@@ -24,6 +27,9 @@
 #include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/media_status_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
+#include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
+#include "libassistant/shared/internal_api/alarm_timer_manager.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/internal_api/display_connection.h"
 #include "libassistant/shared/internal_api/fuchsia_api_helper.h"
@@ -32,12 +38,21 @@
 #include "libassistant/shared/public/device_state_listener.h"
 #include "libassistant/shared/public/media_manager.h"
 
+#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
+#include "libassistant/shared/internal_api/alarm_timer_types.h"
+#endif  // BUILD_LIBASSISTANT_146S
+
+#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
+#include "libassistant/shared/public/alarm_timer_types.h"
+#endif  // BUILD_LIBASSISTANT_152S
+
 namespace chromeos {
 namespace libassistant {
 
 namespace {
 
 using ::assistant::api::GetAssistantSettingsResponse;
+using ::assistant::api::OnAlarmTimerEventRequest;
 using ::assistant::api::OnDeviceStateEventRequest;
 using ::assistant::api::OnSpeakerIdEnrollmentEventRequest;
 using ::assistant::api::UpdateAssistantSettingsResponse;
@@ -468,6 +483,72 @@ std::string AssistantClientV1::GetDeviceId() {
 
 void AssistantClientV1::EnableListening(bool listening_enabled) {
   assistant_manager()->EnableListening(listening_enabled);
+}
+
+void AssistantClientV1::AddTimeToTimer(const std::string& id,
+                                       const base::TimeDelta& duration) {
+  if (alarm_timer_manager())
+    alarm_timer_manager()->AddTimeToTimer(id, duration.InSeconds());
+}
+
+void AssistantClientV1::PauseTimer(const std::string& timer_id) {
+  if (alarm_timer_manager())
+    alarm_timer_manager()->PauseTimer(timer_id);
+}
+
+void AssistantClientV1::RemoveTimer(const std::string& timer_id) {
+  if (alarm_timer_manager())
+    alarm_timer_manager()->RemoveEvent(timer_id);
+}
+
+void AssistantClientV1::ResumeTimer(const std::string& timer_id) {
+  if (alarm_timer_manager())
+    alarm_timer_manager()->ResumeTimer(timer_id);
+}
+
+std::vector<assistant::AssistantTimer> AssistantClientV1::GetTimers() {
+  if (alarm_timer_manager())
+    return GetAllCurrentTimersFromEvents(alarm_timer_manager()->GetAllEvents());
+
+  return std::vector<assistant::AssistantTimer>();
+}
+
+void AssistantClientV1::RegisterAlarmTimerEventObserver(
+    base::WeakPtr<GrpcServicesObserver<OnAlarmTimerEventRequest>> observer) {
+  // We always want to know when a timer has started ringing.
+  alarm_timer_manager()->RegisterRingingStateListener(
+      ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
+          [](const base::WeakPtr<
+                 GrpcServicesObserver<OnAlarmTimerEventRequest>>& observer,
+             const base::WeakPtr<AssistantClientV1>& self) {
+            if (self && observer) {
+              observer->OnGrpcMessage(
+                  CreateOnAlarmTimerEventRequestProtoForV1(self->GetTimers()));
+            }
+          },
+          observer, weak_factory_.GetWeakPtr())));
+
+  // In timers v2, we also want to know when timers are scheduled,
+  // updated, and/or removed so that we can represent those states
+  // in UI.
+  alarm_timer_manager()->RegisterTimerActionListener(
+      ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
+          [](const base::WeakPtr<
+                 GrpcServicesObserver<OnAlarmTimerEventRequest>>& observer,
+             const base::WeakPtr<AssistantClientV1>& self,
+             const assistant_client::AlarmTimerManager::EventActionType&
+                 ignore) {
+            if (self && observer) {
+              observer->OnGrpcMessage(
+                  CreateOnAlarmTimerEventRequestProtoForV1(self->GetTimers()));
+            }
+          },
+          observer, weak_factory_.GetWeakPtr())));
+}
+
+assistant_client::AlarmTimerManager* AssistantClientV1::alarm_timer_manager() {
+  DCHECK(assistant_manager_internal());
+  return assistant_manager_internal()->GetAlarmTimerManager();
 }
 
 }  // namespace libassistant

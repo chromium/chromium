@@ -82,6 +82,18 @@ class FakeAssistantClient : public AssistantClient {
   void SetDeviceAttributes(bool enable_dark_mode) override;
   std::string GetDeviceId() override;
   void EnableListening(bool listening_enabled) override;
+  void AddTimeToTimer(const std::string& id,
+                      const base::TimeDelta& duration) override;
+  void PauseTimer(const std::string& timer_id) override;
+  void RemoveTimer(const std::string& timer_id) override;
+  void ResumeTimer(const std::string& timer_id) override;
+  std::vector<assistant::AssistantTimer> GetTimers() override;
+  void RegisterAlarmTimerEventObserver(
+      base::WeakPtr<
+          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+          observer) override;
+
+  assistant::FakeAlarmTimerManager* fake_alarm_timer_manager();
 };
 
 }  // namespace libassistant

@@ -12,6 +12,10 @@
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace assistant_client {
+class AlarmTimerManager;
+}  // namespace assistant_client
+
 namespace chromeos {
 namespace libassistant {
 
@@ -76,6 +80,16 @@ class AssistantClientV1 : public AssistantClient {
   void SetDeviceAttributes(bool enable_dark_mode) override;
   std::string GetDeviceId() override;
   void EnableListening(bool listening_enabled) override;
+  void AddTimeToTimer(const std::string& id,
+                      const base::TimeDelta& duration) override;
+  void PauseTimer(const std::string& timer_id) override;
+  void RemoveTimer(const std::string& timer_id) override;
+  void ResumeTimer(const std::string& timer_id) override;
+  std::vector<assistant::AssistantTimer> GetTimers() override;
+  void RegisterAlarmTimerEventObserver(
+      base::WeakPtr<
+          GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
+          observer) override;
 
  private:
   class DeviceStateListener;
@@ -89,9 +103,12 @@ class AssistantClientV1 : public AssistantClient {
   void OnSpeakerIdEnrollmentUpdate(
       const assistant_client::SpeakerIdEnrollmentUpdate& update);
 
+  assistant_client::AlarmTimerManager* alarm_timer_manager();
+
   absl::optional<bool> dark_mode_enabled_;
 
   std::unique_ptr<DeviceStateListener> device_state_listener_;
+
   std::unique_ptr<DisplayConnectionImpl> display_connection_;
   std::unique_ptr<MediaManagerListener> media_manager_listener_;
 
