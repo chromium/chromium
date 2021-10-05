@@ -162,7 +162,8 @@ TEST_P(CSSAnimationsTest, IncompatibleRetargetedTransition) {
   AdvanceClockSeconds(0.003);
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1.0 * (1 - 0.003) + 0.2 * 0.003, GetSaturateFilterAmount(element));
+  EXPECT_DOUBLE_EQ(1.0 * (1 - 0.003) + 0.2 * 0.003,
+                   GetSaturateFilterAmount(element));
 
   // Now we start a contrast filter. Since it will try to combine with
   // the in progress saturate filter, and be incompatible, there should
