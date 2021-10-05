@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- TODO(crbug.com/1252182): Add android:contentDescription="@string/foo" attributes -->
+<org.chromium.chrome.browser.content_creation.reactions.scene.ReactionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        tools:ignore="ContentDescription"
+        android:id="@+id/reaction_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp"
+        android:background="@drawable/border_inset"/>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/delete_button"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:src="@drawable/lr_delete" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/copy_button"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/lr_copy" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/adjust_button"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:src="@drawable/lr_resize"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true" />
+
+</org.chromium.chrome.browser.content_creation.reactions.scene.ReactionLayout>

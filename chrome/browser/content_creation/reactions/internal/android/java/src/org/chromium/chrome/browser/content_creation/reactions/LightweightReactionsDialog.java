@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
 import org.chromium.chrome.browser.content_creation.reactions.internal.R;
+import org.chromium.chrome.browser.content_creation.reactions.scene.SceneCoordinator;
 
 /**
  * Dialog for the reactions creation.
@@ -28,17 +29,18 @@ public class LightweightReactionsDialog extends DialogFragment {
 
     private View mContentView;
     private Bitmap mScreenshot;
-    private LightweightReactionsSceneCoordinator mSceneCoordinator;
+    private SceneCoordinator mSceneCoordinator;
     private ReactionsDialogObserver mDialogObserver;
 
     /**
      * Initialize the dialog outside of the constructor as fragments require default constructor.
-     *
      * @param screenshot A {@link Bitmap} of the screenshot of the page to set as the background.
+     * @param sceneCoordinator A {@link SceneCoordinator} for coordinating with the scene.
      * @param obs A class implementing the {@link ReactionsDialogObserver} interface.
      */
-    void init(Bitmap screenshot, ReactionsDialogObserver obs) {
+    void init(Bitmap screenshot, SceneCoordinator sceneCoordinator, ReactionsDialogObserver obs) {
         mScreenshot = screenshot;
+        mSceneCoordinator = sceneCoordinator;
         mDialogObserver = obs;
     }
 
@@ -47,10 +49,12 @@ public class LightweightReactionsDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder =
                 new AlertDialog.Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        mSceneCoordinator = new LightweightReactionsSceneCoordinator();
 
         mContentView = getActivity().getLayoutInflater().inflate(R.layout.reactions_dialog, null);
         setBackgroundImage();
+        mSceneCoordinator.setSceneBackground(
+                mContentView.findViewById(R.id.lightweight_reactions_scene));
+        mSceneCoordinator.addReaction();
         builder.setView(mContentView);
 
         if (mDialogObserver != null) {

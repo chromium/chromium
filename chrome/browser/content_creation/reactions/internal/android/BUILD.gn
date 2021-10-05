@@ -10,13 +10,15 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
-    "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsSceneCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/ReactionLayout.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneCoordinator.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarControlsDelegate.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarCoordinator.java",
   ]
 
   deps = [
     ":java_resources",
+    "//base:base_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/content_creation/reactions/android:public_java",
     "//chrome/browser/share:java",
@@ -25,7 +27,9 @@ android_library("java") {
     "//components/browser_ui/styles/android:java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   resources_package =
@@ -35,9 +39,17 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/border.xml",
+    "java/res/drawable/border_inset.xml",
+    "java/res/drawable/lr_copy.xml",
+    "java/res/drawable/lr_delete.xml",
+    "java/res/drawable/lr_resize.xml",
+    "java/res/drawable/resize_icon.xml",
+    "java/res/layout/reaction_layout.xml",
     "java/res/layout/reactions_dialog.xml",
     "java/res/layout/scene.xml",
     "java/res/layout/toolbar.xml",
+    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
 }

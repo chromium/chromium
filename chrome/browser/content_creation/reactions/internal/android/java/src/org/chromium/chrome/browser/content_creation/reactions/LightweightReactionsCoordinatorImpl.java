@@ -9,6 +9,7 @@ import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.chrome.browser.content_creation.reactions.scene.SceneCoordinator;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarControlsDelegate;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarCoordinator;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
@@ -22,6 +23,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinator
         implements LightweightReactionsCoordinator, ToolbarControlsDelegate {
     private final LightweightReactionsDialog mDialog;
+    private final SceneCoordinator mSceneCoordinator;
+
     private ToolbarCoordinator mToolbarCoordinator;
 
     /**
@@ -39,6 +42,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
             BottomSheetController sheetController) {
         super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
         mDialog = new LightweightReactionsDialog();
+        mSceneCoordinator = new SceneCoordinator(activity);
     }
 
     /**
@@ -59,7 +63,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     // BaseScreenshotCoordinator implementation.
     @Override
     protected void handleScreenshot() {
-        mDialog.init(mScreenshot, this::onViewCreated);
+        mDialog.init(mScreenshot, mSceneCoordinator, this::onViewCreated);
         showDialog();
     }
 
