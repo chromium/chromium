@@ -1,11 +1,8 @@
 This is a testharness.js-based test.
-Found 52 tests; 16 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface CSSRule: original interface defined
 PASS Partial interface CSSRule: member names are unique
-PASS Partial interface CSSRule[2]: original interface defined
-PASS Partial interface CSSRule[2]: member names are unique
 PASS CSSFontFaceRule interface: existence and properties of interface object
 PASS CSSFontFaceRule interface object length
 PASS CSSFontFaceRule interface object name
@@ -17,7 +14,6 @@ PASS CSSFontFaceRule must be primary interface of cssFontFaceRule
 PASS Stringification of cssFontFaceRule
 PASS CSSFontFaceRule interface: cssFontFaceRule must inherit property "style" with the proper type
 FAIL CSSRule interface: cssFontFaceRule must inherit property "FONT_FEATURE_VALUES_RULE" with the proper type assert_inherits: property "FONT_FEATURE_VALUES_RULE" not found in prototype chain
-FAIL CSSRule interface: cssFontFaceRule must inherit property "FONT_PALETTE_VALUES_RULE" with the proper type assert_inherits: property "FONT_PALETTE_VALUES_RULE" not found in prototype chain
 FAIL CSSFontFeatureValuesRule interface: existence and properties of interface object assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
 FAIL CSSFontFeatureValuesRule interface object length assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
 FAIL CSSFontFeatureValuesRule interface object name assert_own_property: self does not have own property "CSSFontFeatureValuesRule" expected property "CSSFontFeatureValuesRule" missing
@@ -44,13 +40,12 @@ FAIL CSSFontPaletteValuesRule interface object name assert_own_property: self do
 FAIL CSSFontPaletteValuesRule interface: existence and properties of interface prototype object assert_own_property: self does not have own property "CSSFontPaletteValuesRule" expected property "CSSFontPaletteValuesRule" missing
 FAIL CSSFontPaletteValuesRule interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "CSSFontPaletteValuesRule" expected property "CSSFontPaletteValuesRule" missing
 FAIL CSSFontPaletteValuesRule interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "CSSFontPaletteValuesRule" expected property "CSSFontPaletteValuesRule" missing
+FAIL CSSFontPaletteValuesRule interface: attribute name assert_own_property: self does not have own property "CSSFontPaletteValuesRule" expected property "CSSFontPaletteValuesRule" missing
 FAIL CSSFontPaletteValuesRule interface: attribute fontFamily assert_own_property: self does not have own property "CSSFontPaletteValuesRule" expected property "CSSFontPaletteValuesRule" missing
 FAIL CSSFontPaletteValuesRule interface: attribute basePalette assert_own_property: self does not have own property "CSSFontPaletteValuesRule" expected property "CSSFontPaletteValuesRule" missing
+FAIL CSSFontPaletteValuesRule interface: attribute overrideColors assert_own_property: self does not have own property "CSSFontPaletteValuesRule" expected property "CSSFontPaletteValuesRule" missing
 FAIL CSSRule interface: constant FONT_FEATURE_VALUES_RULE on interface object assert_own_property: expected property "FONT_FEATURE_VALUES_RULE" missing
 FAIL CSSRule interface: constant FONT_FEATURE_VALUES_RULE on interface prototype object assert_own_property: expected property "FONT_FEATURE_VALUES_RULE" missing
-FAIL CSSRule interface: constant FONT_PALETTE_VALUES_RULE on interface object assert_own_property: expected property "FONT_PALETTE_VALUES_RULE" missing
-FAIL CSSRule interface: constant FONT_PALETTE_VALUES_RULE on interface prototype object assert_own_property: expected property "FONT_PALETTE_VALUES_RULE" missing
 FAIL CSSRule interface: cssRule must inherit property "FONT_FEATURE_VALUES_RULE" with the proper type assert_inherits: property "FONT_FEATURE_VALUES_RULE" not found in prototype chain
-FAIL CSSRule interface: cssRule must inherit property "FONT_PALETTE_VALUES_RULE" with the proper type assert_inherits: property "FONT_PALETTE_VALUES_RULE" not found in prototype chain
 Harness: the test ran to completion.
 

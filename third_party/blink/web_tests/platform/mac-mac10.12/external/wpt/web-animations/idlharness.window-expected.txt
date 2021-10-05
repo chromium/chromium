@@ -168,18 +168,6 @@ FAIL AnimationEffect interface: calling after(AnimationEffect...) on new Keyfram
 FAIL AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "replace(AnimationEffect...)" with the proper type assert_inherits: property "replace" not found in prototype chain
 FAIL AnimationEffect interface: calling replace(AnimationEffect...) on new KeyframeEffect(null, null) with too few arguments must throw TypeError assert_inherits: property "replace" not found in prototype chain
 FAIL AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "remove()" with the proper type assert_inherits: property "remove" not found in prototype chain
-PASS AnimationPlaybackEvent interface: existence and properties of interface object
-PASS AnimationPlaybackEvent interface object length
-PASS AnimationPlaybackEvent interface object name
-PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object
-PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS AnimationPlaybackEvent interface: attribute currentTime
-PASS AnimationPlaybackEvent interface: attribute timelineTime
-PASS AnimationPlaybackEvent must be primary interface of new AnimationPlaybackEvent("cancel")
-PASS Stringification of new AnimationPlaybackEvent("cancel")
-PASS AnimationPlaybackEvent interface: new AnimationPlaybackEvent("cancel") must inherit property "currentTime" with the proper type
-PASS AnimationPlaybackEvent interface: new AnimationPlaybackEvent("cancel") must inherit property "timelineTime" with the proper type
 FAIL GroupEffect interface: existence and properties of interface object assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
 FAIL GroupEffect interface object length assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
 FAIL GroupEffect interface object name assert_own_property: self does not have own property "GroupEffect" expected property "GroupEffect" missing
@@ -207,6 +195,18 @@ FAIL SequenceEffect interface: existence and properties of interface prototype o
 FAIL SequenceEffect interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
 FAIL SequenceEffect interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
 FAIL SequenceEffect interface: operation clone() assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+PASS AnimationPlaybackEvent interface: existence and properties of interface object
+PASS AnimationPlaybackEvent interface object length
+PASS AnimationPlaybackEvent interface object name
+PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object
+PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS AnimationPlaybackEvent interface: attribute currentTime
+PASS AnimationPlaybackEvent interface: attribute timelineTime
+PASS AnimationPlaybackEvent must be primary interface of new AnimationPlaybackEvent("cancel")
+PASS Stringification of new AnimationPlaybackEvent("cancel")
+PASS AnimationPlaybackEvent interface: new AnimationPlaybackEvent("cancel") must inherit property "currentTime" with the proper type
+PASS AnimationPlaybackEvent interface: new AnimationPlaybackEvent("cancel") must inherit property "timelineTime" with the proper type
 PASS Document interface: attribute timeline
 PASS Document interface: operation getAnimations()
 PASS Document interface: document must inherit property "timeline" with the proper type
