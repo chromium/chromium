@@ -7,6 +7,10 @@
 
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
 
+#include <libinput.h>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace ui {
 
 class EventDeviceInfo;
@@ -18,7 +22,38 @@ class EventDeviceInfo;
 // implementation only attaches one device per libinput context.
 class LibInputEventConverter : public EventConverterEvdev {
  public:
-  LibInputEventConverter(int fd,
+  // This class wraps the libinput struct from libinput library. Any operations
+  // that uses libinput struct are implemented here.
+  class LibInputContext {
+   public:
+    static absl::optional<LibInputContext> Create();
+    LibInputContext(LibInputContext&& other);
+    LibInputContext(const LibInputContext& other) = delete;
+    LibInputContext& operator=(const LibInputContext& other) = delete;
+    ~LibInputContext();
+
+    int Fd();
+
+   private:
+    explicit LibInputContext(libinput* const li);
+
+    static int OpenRestricted(const char* path, int flags, void* user_data);
+    static void CloseRestricted(int fd, void* user_data);
+    static void LogHandler(libinput* libinput,
+                           enum libinput_log_priority priority,
+                           const char* format,
+                           va_list args);
+
+    static constexpr libinput_interface interface_ = {OpenRestricted,
+                                                      CloseRestricted};
+
+    libinput* li_;
+  };
+
+  static std::unique_ptr<LibInputEventConverter>
+  Create(const base::FilePath& path, int id, const EventDeviceInfo& devinfo);
+
+  LibInputEventConverter(LibInputEventConverter::LibInputContext&& ctx,
                          const base::FilePath& path,
                          int id,
                          const EventDeviceInfo& devinfo);
@@ -36,10 +71,14 @@ class LibInputEventConverter : public EventConverterEvdev {
   bool HasTouchscreen() const final;
 
  private:
+  void OnFileCanReadWithoutBlocking(int fd) final;
+
   const bool has_keyboard_;
   const bool has_mouse_;
   const bool has_touchpad_;
   const bool has_touchscreen_;
+
+  const LibInputContext context_;
 };
 
 }  // namespace ui
