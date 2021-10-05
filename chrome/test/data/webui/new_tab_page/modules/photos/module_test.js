@@ -6,7 +6,6 @@ import {$$, photosDescriptor, PhotosProxy} from 'chrome://new-tab-page/new_tab_p
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.js';
 import {isVisible} from 'chrome://test/test_util.js';
@@ -15,14 +14,10 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
   /** @type {!TestBrowserProxy} */
   let handler;
 
-  /** @type {!MetricsTracker} */
-  let metrics;
-
   setup(() => {
     document.body.innerHTML = '';
     handler =
         installMock(photos.mojom.PhotosHandlerRemote, PhotosProxy.setHandler);
-    metrics = fakeMetricsPrivate();
   });
 
   test('module appears on render', async () => {
@@ -48,10 +43,6 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
-    assertEquals(
-        0,
-        metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', false));
-    module.dispatchEvent(new Event('detect-impression'));
 
     // Assert.
     const items =
@@ -63,9 +54,6 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
         'Title 1', items[0].querySelector('.memory-title').textContent);
     assertEquals(
         'Title 2', items[1].querySelector('.memory-title').textContent);
-    assertEquals(
-        1,
-        metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', false));
   });
 
   test('module does not show without data', async () => {
@@ -271,14 +259,9 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
-    assertEquals(
-        0, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
-    module.dispatchEvent(new Event('detect-impression'));
 
     // Asserts.
     assertTrue(!!$$(module, '#optInCard'));
-    assertEquals(
-        1, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
 
     // Act.
     const disable = {event: null};
@@ -293,7 +276,6 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
             'disableModuleToastMessage',
             loadTimeData.getString('modulesPhotosMemoriesDisabled')),
         disable.event.detail.message);
-    assertEquals(1, metrics.count('NewTabPage.Photos.UserOptIn', false));
   });
 
   test('UI is updated and backend notified when user opt in', async () => {
@@ -312,14 +294,9 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     document.body.append(module);
     await handler.whenCalled('getMemories');
     await handler.whenCalled('shouldShowOptInScreen');
-    assertEquals(
-        0, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
-    module.dispatchEvent(new Event('detect-impression'));
 
     // Asserts.
     assertTrue(!!$$(module, '#optInCard'));
-    assertEquals(
-        1, metrics.count('NewTabPage.Photos.ModuleShownWithOptInScreen', true));
 
     // Act.
     $$(module, '#optInButton').click();
@@ -334,32 +311,5 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     const items =
         Array.from(module.shadowRoot.querySelectorAll('#memories > .memory'));
     assertEquals(1, items.length);
-    assertEquals(1, metrics.count('NewTabPage.Photos.UserOptIn', true));
-  });
-
-  test('click on memory trigger proper logging', async () => {
-    // Arrange.
-    const data = {
-      memories: [{
-        title: 'Title 1',
-        id: 'key1',
-        coverUrl: {url: 'https://fakeurl.com/1?token=foo'}
-      }]
-    };
-    handler.setResultFor('getMemories', Promise.resolve(data));
-    handler.setResultFor(
-        'shouldShowOptInScreen', Promise.resolve({showOptInScreen: false}));
-    const module = assert(await photosDescriptor.initialize(0));
-    document.body.append(module);
-    await handler.whenCalled('getMemories');
-    await handler.whenCalled('shouldShowOptInScreen');
-
-    // Act.
-    const usage = {event: null};
-    module.addEventListener('usage', (e) => usage.event = e);
-    $$(module, '#memories > .memory').click();
-
-    // Assert.
-    assertTrue(!!usage.event);
   });
 });

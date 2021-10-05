@@ -9,10 +9,8 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
-import {recordOccurence} from '../../metrics_utils.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
-
 import {PhotosProxy} from './photos_module_proxy.js';
 
 /**
@@ -55,15 +53,6 @@ class PhotosModuleElement extends mixinBehaviors
       headerChipText_:
           {type: Boolean, computed: 'computeHeaderChipText_(showOptInScreen)'},
     };
-  }
-
-  /** @override */
-  ready() {
-    super.ready();
-    this.addEventListener('detect-impression', e => {
-      chrome.metricsPrivate.recordBoolean(
-          'NewTabPage.Photos.ModuleShownWithOptInScreen', this.showOptInScreen);
-    });
   }
 
   /**
@@ -116,33 +105,16 @@ class PhotosModuleElement extends mixinBehaviors
   }
 
   /** @private */
-  onImageLoadError_() {
-    chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.ImageLoad', false);
-  }
-
-  /** @private */
-  onImageLoadSuccess_() {
-    chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.ImageLoad', true);
-  }
-
-  /** @private */
   onOptInClick_() {
-    chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.UserOptIn', true);
     PhotosProxy.getHandler().onUserOptIn(true);
     this.showOptInScreen = false;
   }
 
   /** @private */
   onOptOutClick_() {
-    chrome.metricsPrivate.recordBoolean('NewTabPage.Photos.UserOptIn', false);
     PhotosProxy.getHandler().onUserOptIn(false);
     // Disable the module when user opt out.
     this.onDisableButtonClick_();
-  }
-
-  /** @private */
-  onMemoryClick_() {
-    this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
   }
 
   /**

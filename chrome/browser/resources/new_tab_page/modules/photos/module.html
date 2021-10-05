@@ -362,19 +362,15 @@
   </template>
   <template id="memoriesElement" is="dom-if" if="[[!showOptInScreen]]">
     <template id="memoryRepeat" is="dom-repeat" items="[[memories]]">
-      <a class="memory card" href="[[item.itemUrl.url]]"
-          on-click="onMemoryClick_">
+      <a class="memory card" href="[[item.itemUrl.url]]">
         <img class="memory-img" is="cr-auto-img"
-            on-load="onImageLoadSuccess_"
-            on-error="onImageLoadError_"
             auto-src="[[resizeImageUrl_(item.coverUrl.url, memories.length)]]"
             draggable="false"></img>
         <div class="memory-title" dir="auto">[[item.title]]</div>
       </a>
     </template>
     <template id="exploreCardElement" is="dom-if" if="[[showExploreMore_]]">
-      <a href="https://photos.google.com?referrer=CHROME_NTP" class="card"
-          on-click="onMemoryClick_" target="_blank" id="exploreCard">
+      <a href="https://photos.google.com" target="_blank" id="exploreCard" class="card">
         <div id="exploreIconContainer">
           <div id="exploreIcon"></div>
         </div>
