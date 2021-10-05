@@ -30,9 +30,8 @@ constexpr char kFirstLoginTime[] = "first_login_time";
 constexpr char kWasLauncherShown[] = "was_launcher_shown";
 
 // Constants for launcher nudge controller.
-constexpr base::TimeDelta kFirstTimeShowNudgeInterval =
-    base::TimeDelta::FromDays(1);
-constexpr base::TimeDelta kShowNudgeInterval = base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kFirstTimeShowNudgeInterval = base::Days(1);
+constexpr base::TimeDelta kShowNudgeInterval = base::Days(1);
 
 // Returns the last active user pref service.
 PrefService* GetPrefs() {

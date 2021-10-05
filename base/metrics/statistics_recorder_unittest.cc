@@ -333,7 +333,7 @@ TEST_P(StatisticsRecorderTest, RegisterHistogramWithMacros) {
   ASSERT_EQ(1u, registered_histograms.size());
   EXPECT_EQ(histogram, registered_histograms[0]);
 
-  LOCAL_HISTOGRAM_TIMES("TestHistogramTimes", TimeDelta::FromDays(1));
+  LOCAL_HISTOGRAM_TIMES("TestHistogramTimes", Days(1));
   LOCAL_HISTOGRAM_ENUMERATION("TestHistogramEnumeration", 20, 200);
 
   EXPECT_THAT(StatisticsRecorder::GetHistograms(), SizeIs(3));

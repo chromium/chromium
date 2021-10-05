@@ -561,12 +561,12 @@ INSTANTIATE_TEST_SUITE_P(
                 {kOptimizedRealtimeThreadingMacBusy.name, "1.0"},
                 {kOptimizedRealtimeThreadingMacBusyLimit.name, "1.0"}}),
         testing::Values(TimeDelta(),
-                        TimeDelta::FromSecondsD(256.0 / 48000),
-                        TimeDelta::FromMilliseconds(5),
-                        TimeDelta::FromMilliseconds(10),
-                        TimeDelta::FromSecondsD(1024.0 / 44100)
+                        Seconds(256.0 / 48000),
+                        Milliseconds(5),
+                        Milliseconds(10),
+                        Seconds(1024.0 / 44100)
                         // TODO(crbug.com/1256631): Fix and enable.
-                        // TimeDelta::FromSecondsD(1024.0 / 16000)
+                        // Seconds(1024.0 / 16000)
                         )));
 
 }  // namespace

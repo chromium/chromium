@@ -33,13 +33,13 @@ class BasicLockTestThread : public PlatformThread::Delegate {
     for (int i = 0; i < 10; i++) {
       lock_->Acquire();
       acquired_++;
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(rand() % 20));
+      PlatformThread::Sleep(Milliseconds(rand() % 20));
       lock_->Release();
     }
     for (int i = 0; i < 10; i++) {
       if (lock_->Try()) {
         acquired_++;
-        PlatformThread::Sleep(TimeDelta::FromMilliseconds(rand() % 20));
+        PlatformThread::Sleep(Milliseconds(rand() % 20));
         lock_->Release();
       }
     }
@@ -68,20 +68,20 @@ TEST(LockTest, Basic) {
   for (int i = 0; i < 10; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(rand() % 20));
+    PlatformThread::Sleep(Milliseconds(rand() % 20));
     lock.Release();
   }
   for (int i = 0; i < 10; i++) {
     if (lock.Try()) {
       acquired++;
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(rand() % 20));
+      PlatformThread::Sleep(Milliseconds(rand() % 20));
       lock.Release();
     }
   }
   for (int i = 0; i < 5; i++) {
     lock.Acquire();
     acquired++;
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(rand() % 20));
+    PlatformThread::Sleep(Milliseconds(rand() % 20));
     lock.Release();
   }
 
@@ -210,7 +210,7 @@ class MutexLockTestThread : public PlatformThread::Delegate {
     for (int i = 0; i < 40; i++) {
       lock->Acquire();
       int v = *value;
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(rand() % 10));
+      PlatformThread::Sleep(Milliseconds(rand() % 10));
       *value = v + 1;
       lock->Release();
     }

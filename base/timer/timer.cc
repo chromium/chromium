@@ -161,7 +161,7 @@ void TimerBase::Reset() {
     }
 
     // Set the new |desired_run_time_|.
-    if (delay_ > TimeDelta::FromMicroseconds(0))
+    if (delay_ > Microseconds(0))
       desired_run_time_ = Now() + delay_;
     else
       desired_run_time_ = TimeTicks();
@@ -186,7 +186,7 @@ void TimerBase::ScheduleNewTask(TimeDelta delay) {
   auto task_destruction_detector =
       std::make_unique<TaskDestructionDetector>(this);
   task_destruction_detector_ = task_destruction_detector.get();
-  if (delay > TimeDelta::FromMicroseconds(0)) {
+  if (delay > Microseconds(0)) {
     GetTaskRunner()->PostDelayedTask(
         posted_from_,
         BindOnce(&TimerBase::OnScheduledTaskInvoked,

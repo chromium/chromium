@@ -298,7 +298,7 @@ std::vector<Frame> SampleScenario(UnwindScenario* scenario,
                                   ModuleCache* module_cache,
                                   UnwinderFactory aux_unwinder_factory) {
   StackSamplingProfiler::SamplingParams params;
-  params.sampling_interval = TimeDelta::FromMilliseconds(0);
+  params.sampling_interval = Milliseconds(0);
   params.samples_per_profile = 1;
 
   std::vector<Frame> sample;

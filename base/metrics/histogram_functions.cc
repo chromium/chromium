@@ -145,43 +145,35 @@ void UmaHistogramCustomTimes(const char* name,
 }
 
 void UmaHistogramTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromSeconds(10), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Seconds(10), 50);
 }
 
 void UmaHistogramTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromSeconds(10), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Seconds(10), 50);
 }
 
 void UmaHistogramMediumTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromMinutes(3), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Minutes(3), 50);
 }
 
 void UmaHistogramMediumTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromMinutes(3), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Minutes(3), 50);
 }
 
 void UmaHistogramLongTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 50);
 }
 
 void UmaHistogramLongTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 50);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 50);
 }
 
 void UmaHistogramLongTimes100(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 100);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
 }
 
 void UmaHistogramLongTimes100(const char* name, TimeDelta sample) {
-  UmaHistogramCustomTimes(name, sample, TimeDelta::FromMilliseconds(1),
-                          TimeDelta::FromHours(1), 100);
+  UmaHistogramCustomTimes(name, sample, Milliseconds(1), Hours(1), 100);
 }
 
 void UmaHistogramCustomMicrosecondsTimes(const std::string& name,
@@ -205,15 +197,13 @@ void UmaHistogramCustomMicrosecondsTimes(const char* name,
 }
 
 void UmaHistogramMicrosecondsTimes(const std::string& name, TimeDelta sample) {
-  UmaHistogramCustomMicrosecondsTimes(name, sample,
-                                      TimeDelta::FromMicroseconds(1),
-                                      TimeDelta::FromSeconds(10), 50);
+  UmaHistogramCustomMicrosecondsTimes(name, sample, Microseconds(1),
+                                      Seconds(10), 50);
 }
 
 void UmaHistogramMicrosecondsTimes(const char* name, TimeDelta sample) {
-  UmaHistogramCustomMicrosecondsTimes(name, sample,
-                                      TimeDelta::FromMicroseconds(1),
-                                      TimeDelta::FromSeconds(10), 50);
+  UmaHistogramCustomMicrosecondsTimes(name, sample, Microseconds(1),
+                                      Seconds(10), 50);
 }
 
 void UmaHistogramMemoryKB(const std::string& name, int sample) {

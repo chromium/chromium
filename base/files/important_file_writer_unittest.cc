@@ -258,7 +258,7 @@ TEST_F(ImportantFileWriterTest, CallbackRunsOnWriterThread) {
 }
 
 TEST_F(ImportantFileWriterTest, ScheduleWrite) {
-  constexpr TimeDelta kCommitInterval = TimeDelta::FromSeconds(12345);
+  constexpr TimeDelta kCommitInterval = Seconds(12345);
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, ThreadTaskRunnerHandle::Get(),
                              kCommitInterval);
@@ -364,7 +364,7 @@ TEST_F(ImportantFileWriterTest, ScheduleWriteWithBackgroundDataSerializer) {
   base::HistogramTester histogram_tester;
   base::Thread file_writer_thread("ImportantFileWriter test thread");
   file_writer_thread.Start();
-  constexpr TimeDelta kCommitInterval = TimeDelta::FromSeconds(12345);
+  constexpr TimeDelta kCommitInterval = Seconds(12345);
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, file_writer_thread.task_runner(),
                              kCommitInterval);
@@ -400,7 +400,7 @@ TEST_F(ImportantFileWriterTest,
   base::HistogramTester histogram_tester;
   base::Thread file_writer_thread("ImportantFileWriter test thread");
   file_writer_thread.Start();
-  constexpr TimeDelta kCommitInterval = TimeDelta::FromSeconds(12345);
+  constexpr TimeDelta kCommitInterval = Seconds(12345);
   MockOneShotTimer timer;
   ImportantFileWriter writer(file_, file_writer_thread.task_runner(),
                              kCommitInterval);

@@ -20,7 +20,6 @@ using base::CommandLine;
 using base::OnceClosure;
 using base::RunLoop;
 using base::StringPiece;
-using base::TimeDelta;
 using base::trace_event::TraceConfig;
 using content::TracingController;
 using content::WebContents;
@@ -49,14 +48,14 @@ void MetricIntegrationTest::SetUpOnMainThread() {
 
 void MetricIntegrationTest::ServeDelayed(const std::string& url,
                                          const std::string& content,
-                                         TimeDelta delay) {
+                                         base::TimeDelta delay) {
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&HandleRequest, url, content, delay));
 }
 
 void MetricIntegrationTest::Serve(const std::string& url,
                                   const std::string& content) {
-  ServeDelayed(url, content, TimeDelta());
+  ServeDelayed(url, content, base::TimeDelta());
 }
 
 void MetricIntegrationTest::Start() {
@@ -119,7 +118,7 @@ void MetricIntegrationTest::SetUpCommandLine(CommandLine* command_line) {
 std::unique_ptr<HttpResponse> MetricIntegrationTest::HandleRequest(
     const std::string& relative_url,
     const std::string& content,
-    TimeDelta delay,
+    base::TimeDelta delay,
     const HttpRequest& request) {
   if (request.relative_url != relative_url)
     return nullptr;

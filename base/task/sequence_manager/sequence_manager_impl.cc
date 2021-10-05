@@ -90,8 +90,7 @@ using TimeRecordingPolicy =
 
 namespace {
 
-constexpr TimeDelta kLongTaskTraceEventThreshold =
-    TimeDelta::FromMilliseconds(50);
+constexpr TimeDelta kLongTaskTraceEventThreshold = Milliseconds(50);
 // Proportion of tasks which will record thread time for metrics.
 const double kTaskSamplingRateForRecordingCPUTime = 0.01;
 // Proprortion of SequenceManagers which will record thread time for each task,

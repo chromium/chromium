@@ -108,8 +108,7 @@ class TaskQueueSelectorTest : public testing::Test {
 
  protected:
   void SetUp() final {
-    time_domain_ = std::make_unique<MockTimeDomain>(TimeTicks() +
-                                                    TimeDelta::FromSeconds(1));
+    time_domain_ = std::make_unique<MockTimeDomain>(TimeTicks() + Seconds(1));
     for (size_t i = 0; i < kTaskQueueCount; i++) {
       std::unique_ptr<TaskQueueImpl> task_queue =
           std::make_unique<TaskQueueImpl>(nullptr, time_domain_.get(),

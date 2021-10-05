@@ -319,8 +319,7 @@ void LogFileDeleteRetryCount(int attempt) {
 void DeleteFileWithRetry(int attempt, const FilePath& file_path) {
   // Retry every 250ms for up to two seconds. These values were pulled out of
   // thin air, and may be adjusted in the future based on the metrics collected.
-  static constexpr TimeDelta kDeleteFileRetryDelay =
-      TimeDelta::FromMilliseconds(250);
+  static constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
 
   if (DeleteFile(file_path)) {
     // Log how many times we had to retry the RetryDeleteFile operation before

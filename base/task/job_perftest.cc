@@ -244,7 +244,7 @@ class JobPerfTest : public testing::Test {
 
     // Post extra tasks to disrupt Job execution and cause workers to yield.
     if (disruptive_post_tasks)
-      DisruptivePostTasks(10, TimeDelta::FromMilliseconds(1));
+      DisruptivePostTasks(10, Milliseconds(1));
 
     const TimeTicks job_run_start = TimeTicks::Now();
 
@@ -290,7 +290,7 @@ class JobPerfTest : public testing::Test {
 
     // Post extra tasks to disrupt Job execution and cause workers to yield.
     if (disruptive_post_tasks)
-      DisruptivePostTasks(10, TimeDelta::FromMilliseconds(1));
+      DisruptivePostTasks(10, Milliseconds(1));
 
     const TimeTicks job_run_start = TimeTicks::Now();
 
@@ -349,7 +349,7 @@ class JobPerfTest : public testing::Test {
 
     // Post extra tasks to disrupt Job execution and cause workers to yield.
     if (disruptive_post_tasks)
-      DisruptivePostTasks(10, TimeDelta::FromMilliseconds(1));
+      DisruptivePostTasks(10, Milliseconds(1));
 
     const TimeTicks job_run_start = TimeTicks::Now();
 
@@ -409,8 +409,7 @@ TEST_F(JobPerfTest, NoOpWorkNaiveAssignment) {
 }
 
 TEST_F(JobPerfTest, BusyWaitNaiveAssignment) {
-  RepeatingCallback<void(size_t)> callback =
-      BusyWaitCallback(TimeDelta::FromMicroseconds(5));
+  RepeatingCallback<void(size_t)> callback = BusyWaitCallback(Microseconds(5));
   RunJobWithNaiveAssignment(kStoryBusyWaitNaive, 500000, std::move(callback));
 }
 
@@ -424,14 +423,12 @@ TEST_F(JobPerfTest, NoOpDisruptedWorkAtomicAssignment) {
 }
 
 TEST_F(JobPerfTest, BusyWaitAtomicAssignment) {
-  RepeatingCallback<void(size_t)> callback =
-      BusyWaitCallback(TimeDelta::FromMicroseconds(5));
+  RepeatingCallback<void(size_t)> callback = BusyWaitCallback(Microseconds(5));
   RunJobWithAtomicAssignment(kStoryBusyWaitAtomic, 500000, std::move(callback));
 }
 
 TEST_F(JobPerfTest, BusyWaitDisruptedWorkAtomicAssignment) {
-  RepeatingCallback<void(size_t)> callback =
-      BusyWaitCallback(TimeDelta::FromMicroseconds(5));
+  RepeatingCallback<void(size_t)> callback = BusyWaitCallback(Microseconds(5));
   RunJobWithAtomicAssignment(kStoryBusyWaitAtomicDisrupted, 500000,
                              std::move(callback), true);
 }
@@ -446,15 +443,13 @@ TEST_F(JobPerfTest, NoOpDisruptedWorkDynamicAssignment) {
 }
 
 TEST_F(JobPerfTest, BusyWaitWorkDynamicAssignment) {
-  RepeatingCallback<void(size_t)> callback =
-      BusyWaitCallback(TimeDelta::FromMicroseconds(5));
+  RepeatingCallback<void(size_t)> callback = BusyWaitCallback(Microseconds(5));
   RunJobWithDynamicAssignment(kStoryBusyWaitDynamic, 500000,
                               std::move(callback));
 }
 
 TEST_F(JobPerfTest, BusyWaitDisruptedWorkDynamicAssignment) {
-  RepeatingCallback<void(size_t)> callback =
-      BusyWaitCallback(TimeDelta::FromMicroseconds(5));
+  RepeatingCallback<void(size_t)> callback = BusyWaitCallback(Microseconds(5));
   RunJobWithDynamicAssignment(kStoryBusyWaitDynamicDisrupted, 500000,
                               std::move(callback), true);
 }
@@ -469,14 +464,12 @@ TEST_F(JobPerfTest, NoOpDisruptedWorkLoopAround) {
 }
 
 TEST_F(JobPerfTest, BusyWaitWorkLoopAround) {
-  RepeatingCallback<void(size_t)> callback =
-      BusyWaitCallback(TimeDelta::FromMicroseconds(5));
+  RepeatingCallback<void(size_t)> callback = BusyWaitCallback(Microseconds(5));
   RunJobWithLoopAround(kStoryBusyWaitLoopAround, 500000, std::move(callback));
 }
 
 TEST_F(JobPerfTest, BusyWaitDisruptedWorkLoopAround) {
-  RepeatingCallback<void(size_t)> callback =
-      BusyWaitCallback(TimeDelta::FromMicroseconds(5));
+  RepeatingCallback<void(size_t)> callback = BusyWaitCallback(Microseconds(5));
   RunJobWithLoopAround(kStoryBusyWaitLoopAroundDisrupted, 500000,
                        std::move(callback), true);
 }

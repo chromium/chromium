@@ -13,7 +13,6 @@
 #include "components/policy/core/common/policy_bundle.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace policy {
 
@@ -22,11 +21,11 @@ namespace {
 // Amount of time to wait for the files on disk to settle before trying to load
 // them. This alleviates the problem of reading partially written files and
 // makes it possible to batch quasi-simultaneous changes.
-constexpr TimeDelta kSettleInterval = TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kSettleInterval = base::Seconds(5);
 
 // The time interval for rechecking policy. This is the fallback in case the
 // implementation never detects changes.
-constexpr TimeDelta kReloadInterval = TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kReloadInterval = base::Minutes(15);
 
 }  // namespace
 
@@ -54,7 +53,7 @@ Time AsyncPolicyLoader::LastModificationTime() {
 void AsyncPolicyLoader::Reload(bool force) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  TimeDelta delay;
+  base::TimeDelta delay;
   Time now = Time::Now();
   // Check if there was a recent modification to the underlying files.
   if (!force && !IsSafeToReload(now, &delay)) {
@@ -128,7 +127,7 @@ void AsyncPolicyLoader::RefreshPolicies(scoped_refptr<SchemaMap> schema_map) {
   Reload(true);
 }
 
-void AsyncPolicyLoader::ScheduleNextReload(TimeDelta delay) {
+void AsyncPolicyLoader::ScheduleNextReload(base::TimeDelta delay) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   weak_factory_.InvalidateWeakPtrs();
   task_runner_->PostDelayedTask(
@@ -138,7 +137,8 @@ void AsyncPolicyLoader::ScheduleNextReload(TimeDelta delay) {
       delay);
 }
 
-bool AsyncPolicyLoader::IsSafeToReload(const Time& now, TimeDelta* delay) {
+bool AsyncPolicyLoader::IsSafeToReload(const Time& now,
+                                       base::TimeDelta* delay) {
   Time last_modification = LastModificationTime();
   if (last_modification.is_null())
     return true;
@@ -152,7 +152,7 @@ bool AsyncPolicyLoader::IsSafeToReload(const Time& now, TimeDelta* delay) {
   }
 
   // Check whether the settle interval has elapsed.
-  const TimeDelta age = now - last_modification_clock_;
+  const base::TimeDelta age = now - last_modification_clock_;
   if (age < kSettleInterval) {
     *delay = kSettleInterval - age;
     return false;

@@ -623,7 +623,7 @@ bool CPU::GetCumulativeCoreIdleTimes(CoreIdleTimes& idle_times) {
       if (!ReadFileToString(FilePath(path), &content))
         break;
       StringToUint64(content, &idle_state_time);
-      idle_time += TimeDelta::FromMicroseconds(idle_state_time);
+      idle_time += Microseconds(idle_state_time);
     }
 
     idle_times.push_back(idle_time);

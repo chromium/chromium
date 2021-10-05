@@ -62,7 +62,6 @@ namespace {
 
 using absl::optional;
 using base::DictionaryValue;
-using base::TimeDelta;
 using base::Value;
 
 bool skip_origin_check_for_testing_ = false;
@@ -103,15 +102,13 @@ optional<DailyInteraction> DictToRecord(const std::string& url,
   optional<int> foreground_duration_sec =
       record_dict.FindIntKey(kForegroundDurationSec);
   if (foreground_duration_sec) {
-    record.foreground_duration =
-        TimeDelta::FromSeconds(*foreground_duration_sec);
+    record.foreground_duration = base::Seconds(*foreground_duration_sec);
   }
 
   optional<int> background_duration_sec =
       record_dict.FindIntKey(kBackgroundDurationSec);
   if (background_duration_sec) {
-    record.background_duration =
-        TimeDelta::FromSeconds(*background_duration_sec);
+    record.background_duration = base::Seconds(*background_duration_sec);
   }
 
   optional<int> num_sessions = record_dict.FindIntKey(kNumSessions);

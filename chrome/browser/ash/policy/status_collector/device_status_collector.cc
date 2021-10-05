@@ -110,7 +110,6 @@
 #include "ui/gfx/geometry/rect.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace em = enterprise_management;
 
@@ -120,10 +119,10 @@ namespace {
 const int kIdleStateThresholdSeconds = 300;
 
 // How much time in the past to store active periods for.
-constexpr TimeDelta kMaxStoredPastActivityInterval = TimeDelta::FromDays(30);
+constexpr base::TimeDelta kMaxStoredPastActivityInterval = base::Days(30);
 
 // How much time in the future to store active periods for.
-constexpr TimeDelta kMaxStoredFutureActivityInterval = TimeDelta::FromDays(2);
+constexpr base::TimeDelta kMaxStoredFutureActivityInterval = base::Days(2);
 
 // How often, in seconds, to sample the hardware resource usage.
 const unsigned int kResourceUsageSampleIntervalSeconds = 120;
@@ -156,7 +155,7 @@ const char kPathFirmware[] = "/var/log/bios_info.txt";
 const unsigned int kZeroCInDeciKelvin = 2731;
 
 // The duration for crash report collection.
-constexpr TimeDelta kCrashReportInfoDuration = TimeDelta::FromDays(1);
+constexpr base::TimeDelta kCrashReportInfoDuration = base::Days(1);
 
 // The sources of crash report leads to device restart.
 const char kCrashReportSourceKernel[] = "kernel";
@@ -1535,11 +1534,11 @@ DeviceStatusCollector::DeviceStatusCollector(
   idle_poll_timer_.Start(FROM_HERE, kIdlePollInterval, this,
                          &DeviceStatusCollector::CheckIdleState);
   cpu_usage_sampling_timer_.Start(
-      FROM_HERE, TimeDelta::FromSeconds(kResourceUsageSampleIntervalSeconds),
-      this, &DeviceStatusCollector::SampleCpuUsage);
+      FROM_HERE, base::Seconds(kResourceUsageSampleIntervalSeconds), this,
+      &DeviceStatusCollector::SampleCpuUsage);
   memory_usage_sampling_timer_.Start(
-      FROM_HERE, TimeDelta::FromSeconds(kResourceUsageSampleIntervalSeconds),
-      this, &DeviceStatusCollector::SampleMemoryUsage);
+      FROM_HERE, base::Seconds(kResourceUsageSampleIntervalSeconds), this,
+      &DeviceStatusCollector::SampleMemoryUsage);
 
   // Watch for changes to the individual policies that control what the status
   // reports contain.
@@ -1833,7 +1832,7 @@ void DeviceStatusCollector::ProcessIdleState(ui::IdleState state) {
     // If it's been too long since the last report, or if the activity is
     // negative (which can happen when the clock changes), assume a single
     // interval of activity.
-    TimeDelta active_seconds = now - last_idle_check_;
+    base::TimeDelta active_seconds = now - last_idle_check_;
     Time start;
     if (active_seconds < base::Seconds(0) ||
         active_seconds >= 2 * kIdlePollInterval || last_idle_check_.is_null()) {

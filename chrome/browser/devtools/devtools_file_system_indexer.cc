@@ -28,7 +28,6 @@
 using base::FileEnumerator;
 using base::FilePath;
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 using content::BrowserThread;
 using std::map;
@@ -442,7 +441,7 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReportWorked() {
   TimeTicks current_time = TimeTicks::Now();
   bool should_send_worked_nitification = true;
   if (!last_worked_notification_time_.is_null()) {
-    TimeDelta delta = current_time - last_worked_notification_time_;
+    base::TimeDelta delta = current_time - last_worked_notification_time_;
     if (delta.InMilliseconds() < kMinTimeoutBetweenWorkedNitification)
       should_send_worked_nitification = false;
   }

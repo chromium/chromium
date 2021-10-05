@@ -296,7 +296,7 @@ void DebugBreak() {
 #else
     volatile int go = 0;
     while (!go)
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+      PlatformThread::Sleep(Milliseconds(100));
 #endif
   }
 }

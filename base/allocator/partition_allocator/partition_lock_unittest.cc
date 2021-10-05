@@ -90,7 +90,7 @@ TEST(PartitionAllocSpinLockTest, SlowThreads) {
       lock.Lock();
       counter++;
       // Hold the lock for a while, to force futex()-based locks to sleep.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+      PlatformThread::Sleep(Milliseconds(1));
       lock.Unlock();
     }
   })};

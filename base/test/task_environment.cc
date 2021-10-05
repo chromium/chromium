@@ -582,7 +582,7 @@ void TaskEnvironment::RunUntilIdle() {
   //       base::RunLoop().RunUntilIdle();
   //       // Avoid busy-looping.
   //       if (task_tracker_->HasIncompleteTasks())
-  //         PlatformThread::Sleep(TimeDelta::FromMilliSeconds(1));
+  //         PlatformThread::Sleep(Milliseconds(1));
   //     }
   // Update: This can likely be done now that MessageLoop::IsIdleForTesting()
   // checks all queues.
@@ -777,7 +777,7 @@ bool TaskEnvironment::TestTaskTracker::DisallowRunTasks() {
     // Attempt to wait a bit so that the caller doesn't busy-loop with the same
     // set of pending work. A short wait is required to avoid deadlock
     // scenarios. See DisallowRunTasks()'s declaration for more details.
-    task_completed_cv_.TimedWait(TimeDelta::FromMilliseconds(1));
+    task_completed_cv_.TimedWait(Milliseconds(1));
     return false;
   }
 

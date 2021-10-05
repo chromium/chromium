@@ -572,7 +572,7 @@ class A {
     // The timer is stopped automatically when it is deleted.
   }
   void StartDoingStuff() {
-    timer_.Start(FROM_HERE, TimeDelta::FromSeconds(1),
+    timer_.Start(FROM_HERE, Seconds(1),
                  this, &A::DoStuff);
   }
   void StopDoingStuff() {

@@ -57,7 +57,6 @@
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #endif
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace net {
@@ -164,8 +163,8 @@ class DefaultPollPolicy
   DefaultPollPolicy() = default;
 
   Mode GetNextDelay(int initial_error,
-                    TimeDelta current_delay,
-                    TimeDelta* next_delay) const override {
+                    base::TimeDelta current_delay,
+                    base::TimeDelta* next_delay) const override {
     if (initial_error != OK) {
       // Re-try policy for failures.
       const int kDelay1Seconds = 8;
@@ -174,24 +173,24 @@ class DefaultPollPolicy
       const int kDelay4Seconds = 4 * 60 * 60;  // 4 Hours
 
       // Initial poll.
-      if (current_delay < TimeDelta()) {
-        *next_delay = TimeDelta::FromSeconds(kDelay1Seconds);
+      if (current_delay < base::TimeDelta()) {
+        *next_delay = base::Seconds(kDelay1Seconds);
         return MODE_USE_TIMER;
       }
       switch (current_delay.InSeconds()) {
         case kDelay1Seconds:
-          *next_delay = TimeDelta::FromSeconds(kDelay2Seconds);
+          *next_delay = base::Seconds(kDelay2Seconds);
           return MODE_START_AFTER_ACTIVITY;
         case kDelay2Seconds:
-          *next_delay = TimeDelta::FromSeconds(kDelay3Seconds);
+          *next_delay = base::Seconds(kDelay3Seconds);
           return MODE_START_AFTER_ACTIVITY;
         default:
-          *next_delay = TimeDelta::FromSeconds(kDelay4Seconds);
+          *next_delay = base::Seconds(kDelay4Seconds);
           return MODE_START_AFTER_ACTIVITY;
       }
     } else {
       // Re-try policy for succeses.
-      *next_delay = TimeDelta::FromHours(12);
+      *next_delay = base::Hours(12);
       return MODE_START_AFTER_ACTIVITY;
     }
   }
@@ -433,7 +432,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
             DhcpPacFileFetcher* dhcp_pac_file_fetcher,
             NetLog* net_log,
             const ProxyConfigWithAnnotation& config,
-            TimeDelta wait_delay,
+            base::TimeDelta wait_delay,
             CompletionOnceCallback callback) {
     DCHECK_EQ(State::kNone, next_state_);
     proxy_resolver_ = proxy_resolver;
@@ -594,7 +593,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
   ProxyConfigWithAnnotation config_;
   ProxyConfigWithAnnotation effective_config_;
   PacFileDataWithSource script_data_;
-  TimeDelta wait_delay_;
+  base::TimeDelta wait_delay_;
   std::unique_ptr<PacFileDecider> decider_;
   ProxyResolverFactory* proxy_resolver_factory_;
   std::unique_ptr<ProxyResolverFactory::Request> create_resolver_request_;
@@ -656,7 +655,7 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
         net_log_(net_log) {
     // Set the initial poll delay.
     next_poll_mode_ = poll_policy()->GetNextDelay(
-        last_error_, TimeDelta::FromSeconds(-1), &next_poll_delay_);
+        last_error_, base::Seconds(-1), &next_poll_delay_);
     TryToStartNextPoll(false);
   }
 
@@ -703,7 +702,7 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
 
       case PacPollPolicy::MODE_START_AFTER_ACTIVITY:
         if (triggered_by_activity && !decider_.get()) {
-          TimeDelta elapsed_time = TimeTicks::Now() - last_poll_time_;
+          base::TimeDelta elapsed_time = TimeTicks::Now() - last_poll_time_;
           if (elapsed_time >= next_poll_delay_)
             DoPoll();
         }
@@ -719,7 +718,7 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
         pac_file_fetcher_, dhcp_pac_file_fetcher_, net_log_);
     decider_->set_quick_check_enabled(quick_check_enabled_);
     int result = decider_->Start(
-        config_, TimeDelta(), proxy_resolver_expects_pac_bytes_,
+        config_, base::TimeDelta(), proxy_resolver_expects_pac_bytes_,
         base::BindOnce(&PacFileDeciderPoller::OnPacFileDeciderCompleted,
                        base::Unretained(this)));
 
@@ -794,7 +793,7 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
   PacFileDataWithSource last_script_data_;
 
   std::unique_ptr<PacFileDecider> decider_;
-  TimeDelta next_poll_delay_;
+  base::TimeDelta next_poll_delay_;
   PacPollPolicy::Mode next_poll_mode_;
 
   TimeTicks last_poll_time_;
@@ -833,7 +832,7 @@ ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
       permanent_error_(OK),
       net_log_(net_log),
       stall_proxy_auto_config_delay_(
-          TimeDelta::FromMilliseconds(kDelayAfterNetworkChangesMs)),
+          base::Milliseconds(kDelayAfterNetworkChangesMs)),
       quick_check_enabled_(quick_check_enabled) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddDNSObserver(this);
@@ -1520,7 +1519,7 @@ void ConfiguredProxyResolutionService::InitializeUsingLastFetchedConfig() {
   current_state_ = STATE_WAITING_FOR_INIT_PROXY_RESOLVER;
 
   // If we changed networks recently, we should delay running proxy auto-config.
-  TimeDelta wait_delay = stall_proxy_autoconfig_until_ - TimeTicks::Now();
+  base::TimeDelta wait_delay = stall_proxy_autoconfig_until_ - TimeTicks::Now();
 
   init_proxy_resolver_ = std::make_unique<InitProxyResolver>();
   init_proxy_resolver_->set_quick_check_enabled(quick_check_enabled_);

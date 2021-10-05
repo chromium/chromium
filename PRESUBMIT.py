@@ -478,7 +478,7 @@ _BANNED_CPP_FUNCTIONS = (
         'being done on time values. For interfacing with platform/library',
         'APIs, use FromMicroseconds() or InMicroseconds(), or one of the other',
         'type converter methods instead. For faking TimeXXX values (for unit',
-        'testing only), use TimeXXX() + TimeDelta::FromMicroseconds(N). For',
+        'testing only), use TimeXXX() + Microseconds(N). For',
         'other use cases, please contact base/time/OWNERS.',
       ),
       False,

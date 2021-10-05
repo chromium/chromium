@@ -41,7 +41,6 @@
 #include "extensions/common/permissions/permissions_info.h"
 
 using base::Time;
-using base::TimeDelta;
 using extensions::mojom::APIPermissionID;
 using extensions::mojom::ManifestLocation;
 
@@ -87,8 +86,8 @@ void ExtensionPrefsTest::TearDown() {
 class ExtensionPrefsLastPingDay : public ExtensionPrefsTest {
  public:
   ExtensionPrefsLastPingDay()
-      : extension_time_(Time::Now() - TimeDelta::FromHours(4)),
-        blocklist_time_(Time::Now() - TimeDelta::FromHours(2)) {}
+      : extension_time_(Time::Now() - base::Hours(4)),
+        blocklist_time_(Time::Now() - base::Hours(2)) {}
 
   void Initialize() override {
     extension_id_ = prefs_.AddExtensionAndReturnId("last_ping_day");

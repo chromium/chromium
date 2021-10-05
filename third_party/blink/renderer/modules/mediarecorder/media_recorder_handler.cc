@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace blink {

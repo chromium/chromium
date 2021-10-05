@@ -36,7 +36,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using content::BrowserThread;
 
@@ -85,8 +84,8 @@ class CustomThreadWatcher : public ThreadWatcher {
 
   CustomThreadWatcher(const BrowserThread::ID thread_id,
                       const std::string thread_name,
-                      const TimeDelta& sleep_time,
-                      const TimeDelta& unresponsive_time)
+                      const base::TimeDelta& sleep_time,
+                      const base::TimeDelta& unresponsive_time)
       : ThreadWatcher(WatchingParams(thread_id,
                                      thread_name,
                                      sleep_time,
@@ -171,7 +170,8 @@ class CustomThreadWatcher : public ThreadWatcher {
     OnStateChanged();
   }
 
-  void WaitForWaitStateChange(TimeDelta wait_time, WaitState expected_state) {
+  void WaitForWaitStateChange(base::TimeDelta wait_time,
+                              WaitState expected_state) {
     DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
     base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
@@ -198,7 +198,7 @@ class CustomThreadWatcher : public ThreadWatcher {
   }
 
   // May be called on any thread other than the WatchDogThread.
-  void BusyWaitForWaitStateChange(TimeDelta wait_time,
+  void BusyWaitForWaitStateChange(base::TimeDelta wait_time,
                                   WaitState expected_state) {
     DCHECK(!WatchDogThread::CurrentlyOnWatchDogThread());
     TimeTicks end_time = TimeTicks::Now() + wait_time;
@@ -209,7 +209,7 @@ class CustomThreadWatcher : public ThreadWatcher {
     }
   }
 
-  void VeryLongMethod(TimeDelta wait_time) {
+  void VeryLongMethod(base::TimeDelta wait_time) {
     DCHECK(!WatchDogThread::CurrentlyOnWatchDogThread());
     // ThreadWatcher tasks should not be allowed to execute while we're waiting,
     // so hog the thread until the state changes.
@@ -219,7 +219,8 @@ class CustomThreadWatcher : public ThreadWatcher {
                                        base::Unretained(this), ALL_DONE));
   }
 
-  State WaitForStateChange(const TimeDelta& wait_time, State expected_state) {
+  State WaitForStateChange(const base::TimeDelta& wait_time,
+                           State expected_state) {
     DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
     UpdateWaitState(STARTED_WAITING);
 
@@ -251,7 +252,7 @@ class CustomThreadWatcher : public ThreadWatcher {
     return exit_state;
   }
 
-  CheckResponseState WaitForCheckResponse(const TimeDelta& wait_time,
+  CheckResponseState WaitForCheckResponse(const base::TimeDelta& wait_time,
                                           CheckResponseState expected_state) {
     DCHECK(WatchDogThread::CurrentlyOnWatchDogThread());
     UpdateWaitState(STARTED_WAITING);
@@ -293,9 +294,8 @@ class CustomThreadWatcher : public ThreadWatcher {
 
 class ThreadWatcherTest : public ::testing::Test {
  public:
-  static constexpr TimeDelta kSleepTime = TimeDelta::FromMilliseconds(50);
-  static constexpr TimeDelta kUnresponsiveTime =
-      TimeDelta::FromMilliseconds(500);
+  static constexpr base::TimeDelta kSleepTime = base::Milliseconds(50);
+  static constexpr base::TimeDelta kUnresponsiveTime = base::Milliseconds(500);
   static constexpr char kIOThreadName[] = "IO";
   static constexpr char kUIThreadName[] = "UI";
   static constexpr char kCrashOnHangThreadNames[] = "UI,IO";
@@ -324,7 +324,7 @@ class ThreadWatcherTest : public ::testing::Test {
         FROM_HERE, base::BindRepeating(&ThreadWatcherTest::SetUpObjects,
                                        base::Unretained(this)));
 
-    WaitForSetUp(TimeDelta::FromMinutes(1));
+    WaitForSetUp(base::Minutes(1));
   }
 
   void SetUpObjects() {
@@ -358,7 +358,7 @@ class ThreadWatcherTest : public ::testing::Test {
     setup_complete_.Signal();
   }
 
-  void WaitForSetUp(TimeDelta wait_time) {
+  void WaitForSetUp(base::TimeDelta wait_time) {
     DCHECK(!WatchDogThread::CurrentlyOnWatchDogThread());
     TimeTicks end_time = TimeTicks::Now() + wait_time;
     {
@@ -475,8 +475,8 @@ class ThreadWatcherTestOnWatchDogThread : public ThreadWatcherTest {
 };
 
 // Declare storage for ThreadWatcherTest's static constants.
-constexpr TimeDelta ThreadWatcherTest::kSleepTime;
-constexpr TimeDelta ThreadWatcherTest::kUnresponsiveTime;
+constexpr base::TimeDelta ThreadWatcherTest::kSleepTime;
+constexpr base::TimeDelta ThreadWatcherTest::kUnresponsiveTime;
 constexpr char ThreadWatcherTest::kIOThreadName[];
 constexpr char ThreadWatcherTest::kUIThreadName[];
 constexpr char ThreadWatcherTest::kCrashOnHangThreadNames[];
@@ -585,7 +585,7 @@ class ThreadWatcherTestThreadResponding
 
     // Activate would have started ping/pong messaging. Expect at least one
     // ping/pong messaging sequence to happen.
-    io_watcher_->WaitForStateChange(kSleepTime + TimeDelta::FromMinutes(1),
+    io_watcher_->WaitForStateChange(kSleepTime + base::Minutes(1),
                                     RECEIVED_PONG);
     EXPECT_GT(io_watcher_->ping_sent_, static_cast<uint64_t>(0));
     EXPECT_GT(io_watcher_->pong_received_, static_cast<uint64_t>(0));
@@ -595,8 +595,8 @@ class ThreadWatcherTestThreadResponding
               static_cast<uint64_t>(0));
 
     // Verify watched thread is responding with ping/pong messaging.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(io_watcher_->success_response_, 0);
     EXPECT_EQ(io_watcher_->failed_response_, 0);
 
@@ -630,8 +630,8 @@ class ThreadWatcherTestThreadNotResponding
     io_watcher_->ActivateThreadWatching();
 
     // Verify watched thread is not responding for ping messages.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), FAILED);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      FAILED);
     EXPECT_EQ(io_watcher_->success_response_, 0);
     EXPECT_GT(io_watcher_->failed_response_, 0);
 
@@ -659,8 +659,8 @@ class ThreadWatcherTestMultipleThreadsResponding
     io_watcher_->ActivateThreadWatching();
 
     // Verify UI thread is responding with ping/pong messaging.
-    ui_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    ui_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(ui_watcher_->ping_sent_, static_cast<uint64_t>(0));
     EXPECT_GT(ui_watcher_->pong_received_, static_cast<uint64_t>(0));
     EXPECT_GE(ui_watcher_->ping_sequence_number(), static_cast<uint64_t>(0));
@@ -668,8 +668,8 @@ class ThreadWatcherTestMultipleThreadsResponding
     EXPECT_EQ(ui_watcher_->failed_response_, 0);
 
     // Verify IO thread is responding with ping/pong messaging.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(io_watcher_->ping_sent_, static_cast<uint64_t>(0));
     EXPECT_GT(io_watcher_->pong_received_, static_cast<uint64_t>(0));
     EXPECT_GE(io_watcher_->ping_sequence_number(), static_cast<uint64_t>(0));
@@ -707,14 +707,14 @@ class ThreadWatcherTestMultipleThreadsNotResponding
     io_watcher_->ActivateThreadWatching();
 
     // Verify UI thread is responding with ping/pong messaging.
-    ui_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), SUCCESSFUL);
+    ui_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      SUCCESSFUL);
     EXPECT_GT(ui_watcher_->success_response_, 0);
     EXPECT_EQ(ui_watcher_->failed_response_, 0);
 
     // Verify IO thread is not responding for ping messages.
-    io_watcher_->WaitForCheckResponse(
-        kUnresponsiveTime + TimeDelta::FromMinutes(1), FAILED);
+    io_watcher_->WaitForCheckResponse(kUnresponsiveTime + base::Minutes(1),
+                                      FAILED);
     EXPECT_EQ(io_watcher_->success_response_, 0);
     EXPECT_GT(io_watcher_->failed_response_, 0);
 

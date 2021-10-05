@@ -42,7 +42,6 @@
 
 using base::ScopedTempDir;
 using base::Time;
-using base::TimeDelta;
 using base::UTF8ToUTF16;
 using sync_pb::AutofillSpecifics;
 using sync_pb::EntityMetadata;

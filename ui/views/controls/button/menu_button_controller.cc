@@ -24,7 +24,6 @@
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace views {

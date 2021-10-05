@@ -46,7 +46,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using sync_pb::EntityMetadata;
 using sync_pb::ModelTypeState;
 using syncer::EntityMetadataMap;
@@ -326,7 +325,7 @@ TEST_F(AutofillTableTest, Autofill_GetCountOfValuesContainedBetween) {
   // Make sure we use timestamps rounded to a second.
   Time begin = Time::FromTimeT(AutofillClock::Now().ToTimeT());
   Time now = begin;
-  TimeDelta second = TimeDelta::FromSeconds(1);
+  base::TimeDelta second = base::Seconds(1);
 
   struct Entry {
     const char16_t* name;
@@ -385,7 +384,7 @@ TEST_F(AutofillTableTest, Autofill_GetCountOfValuesContainedBetween) {
 }
 
 TEST_F(AutofillTableTest, Autofill_RemoveBetweenChanges) {
-  TimeDelta one_day(TimeDelta::FromDays(1));
+  base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
 
@@ -413,7 +412,7 @@ TEST_F(AutofillTableTest, Autofill_RemoveBetweenChanges) {
 }
 
 TEST_F(AutofillTableTest, Autofill_AddChanges) {
-  TimeDelta one_day(TimeDelta::FromDays(1));
+  base::TimeDelta one_day(base::Days(1));
   Time t1 = AutofillClock::Now();
   Time t2 = t1 + one_day;
 

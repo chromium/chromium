@@ -88,8 +88,8 @@ class BASE_EXPORT IOJankMonitoringWindow
     scoped_refptr<IOJankMonitoringWindow> assigned_jank_window_;
   };
 
-  static constexpr TimeDelta kIOJankInterval = TimeDelta::FromSeconds(1);
-  static constexpr TimeDelta kMonitoringWindow = TimeDelta::FromMinutes(1);
+  static constexpr TimeDelta kIOJankInterval = Seconds(1);
+  static constexpr TimeDelta kMonitoringWindow = Minutes(1);
   static constexpr TimeDelta kTimeDiscrepancyTimeout = kIOJankInterval * 10;
   static constexpr int kNumIntervals = kMonitoringWindow / kIOJankInterval;
 

@@ -24,7 +24,7 @@ constexpr int kFingerprintIconSizeDp = 28;
 constexpr int kFingerprintFailedAnimationDurationMs = 700;
 constexpr int kFingerprintFailedAnimationNumFrames = 45;
 constexpr base::TimeDelta kResetToDefaultMessageDelayMs =
-    base::TimeDelta::FromMilliseconds(3000);
+    base::Milliseconds(3000);
 constexpr int kResetToDefaultIconDelayMs = 1300;
 
 }  // namespace
@@ -54,11 +54,10 @@ void FingerprintAuthModel::NotifyFingerprintAuthResult(bool result) {
   if (!result) {
     // Clear failed auth attempt after a delay to allow retry. base::Unretained
     // is safe because |reset_state_| is owned by |this|.
-    reset_state_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kResetToDefaultIconDelayMs),
-        base::BindOnce(&FingerprintAuthModel::OnResetState,
-                       base::Unretained(this)));
+    reset_state_.Start(FROM_HERE,
+                       base::Milliseconds(kResetToDefaultIconDelayMs),
+                       base::BindOnce(&FingerprintAuthModel::OnResetState,
+                                      base::Unretained(this)));
   }
 }
 
@@ -135,8 +134,7 @@ void FingerprintAuthModel::UpdateIcon(AuthIconView* icon_view) {
           std::make_unique<HorizontalImageSequenceAnimationDecoder>(
               *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                   IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
-              base::TimeDelta::FromMilliseconds(
-                  kFingerprintFailedAnimationDurationMs),
+              base::Milliseconds(kFingerprintFailedAnimationDurationMs),
               kFingerprintFailedAnimationNumFrames),
           AnimatedRoundedImageView::Playback::kSingle);
     }
@@ -163,8 +161,7 @@ void FingerprintAuthModel::UpdateIcon(AuthIconView* icon_view) {
           std::make_unique<HorizontalImageSequenceAnimationDecoder>(
               *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
                   IDR_LOGIN_FINGERPRINT_UNLOCK_SPINNER),
-              base::TimeDelta::FromMilliseconds(
-                  kFingerprintFailedAnimationDurationMs),
+              base::Milliseconds(kFingerprintFailedAnimationDurationMs),
               kFingerprintFailedAnimationNumFrames),
           AnimatedRoundedImageView::Playback::kSingle);
       break;

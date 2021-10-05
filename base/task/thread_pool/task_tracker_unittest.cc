@@ -609,16 +609,14 @@ TEST_P(ThreadPoolTaskTrackerTest, ThreadTaskRunnerHandleIsSetOnSingleThreaded) {
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, FlushPendingDelayedTask) {
-  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(),
-                    TimeDelta::FromDays(1));
+  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), Days(1));
   tracker_.WillPostTask(&delayed_task, GetParam());
   // FlushForTesting() should return even if the delayed task didn't run.
   tracker_.FlushForTesting();
 }
 
 TEST_P(ThreadPoolTaskTrackerTest, FlushAsyncForTestingPendingDelayedTask) {
-  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(),
-                    TimeDelta::FromDays(1));
+  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), Days(1));
   tracker_.WillPostTask(&delayed_task, GetParam());
   // FlushAsyncForTesting() should callback even if the delayed task didn't run.
   bool called_back = false;
@@ -722,8 +720,7 @@ TEST_P(ThreadPoolTaskTrackerTest, PostTaskDuringFlushAsyncForTesting) {
 
 TEST_P(ThreadPoolTaskTrackerTest, RunDelayedTaskDuringFlush) {
   // Simulate posting a delayed and an undelayed task.
-  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(),
-                    TimeDelta::FromDays(1));
+  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), Days(1));
   auto delayed_sequence =
       WillPostTaskAndQueueTaskSource(std::move(delayed_task), {GetParam()});
   Task undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta());
@@ -752,8 +749,7 @@ TEST_P(ThreadPoolTaskTrackerTest, RunDelayedTaskDuringFlush) {
 
 TEST_P(ThreadPoolTaskTrackerTest, RunDelayedTaskDuringFlushAsyncForTesting) {
   // Simulate posting a delayed and an undelayed task.
-  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(),
-                    TimeDelta::FromDays(1));
+  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), Days(1));
   auto delayed_sequence =
       WillPostTaskAndQueueTaskSource(std::move(delayed_task), {GetParam()});
   Task undelayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), TimeDelta());
@@ -897,8 +893,7 @@ TEST_P(ThreadPoolTaskTrackerTest, PostTasksDoNotBlockShutdown) {
 // of its shutdown behavior.
 TEST_P(ThreadPoolTaskTrackerTest, DelayedRunTasks) {
   // Simulate posting a delayed task.
-  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(),
-                    TimeDelta::FromDays(1));
+  Task delayed_task(FROM_HERE, DoNothing(), TimeTicks::Now(), Days(1));
   auto sequence =
       WillPostTaskAndQueueTaskSource(std::move(delayed_task), {GetParam()});
   EXPECT_TRUE(sequence);

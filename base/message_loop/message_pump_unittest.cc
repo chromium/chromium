@@ -175,8 +175,8 @@ TEST_P(MessagePumpTest, YieldToNativeRequestedSmokeTest) {
   EXPECT_CALL(delegate, DoWork).WillOnce(Invoke([this] {
     message_pump_->Quit();
     auto now = TimeTicks::Now();
-    return MessagePump::Delegate::NextWorkInfo{
-        now + TimeDelta::FromMilliseconds(1), now, true};
+    return MessagePump::Delegate::NextWorkInfo{now + Milliseconds(1), now,
+                                               true};
   }));
   EXPECT_CALL(delegate, DoIdleWork()).Times(AnyNumber());
 
@@ -193,8 +193,7 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
     // We first schedule a delayed task far in the future with maximum timer
     // slack.
     message_pump_->SetTimerSlack(TIMER_SLACK_MAXIMUM);
-    message_pump_->ScheduleDelayedWork(TimeTicks::Now() +
-                                       TimeDelta::FromHours(1));
+    message_pump_->ScheduleDelayedWork(TimeTicks::Now() + Hours(1));
 
     // Since we have no other work pending, the pump will initially be idle.
     action_.store(NONE);
@@ -215,7 +214,7 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
         // up shortly, finishing the test.
         action_.store(QUIT);
         TimeTicks now = TimeTicks::Now();
-        return {now + TimeDelta::FromMilliseconds(50), now};
+        return {now + Milliseconds(50), now};
       }
       case QUIT:
         message_pump_->Quit();
@@ -266,7 +265,7 @@ TEST_P(MessagePumpTest, TimerSlackWithLongDelays) {
   thread.task_runner()->PostDelayedTask(
       FROM_HERE,
       BindLambdaForTesting([&delegate] { delegate.WakeUpFromOtherThread(); }),
-      TimeDelta::FromSeconds(2));
+      Seconds(2));
 
   message_pump_->Run(&delegate);
 }

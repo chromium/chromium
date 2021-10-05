@@ -14,13 +14,12 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace password_manager {
 
 namespace {
 constexpr size_t kMaxNumberOfCharactersToStore = 45;
-constexpr TimeDelta kMaxInactivityTime = TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kMaxInactivityTime = base::Seconds(10);
 }  // namespace
 
 PasswordReuseDetectionManager::PasswordReuseDetectionManager(

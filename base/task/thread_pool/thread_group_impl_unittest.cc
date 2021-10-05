@@ -65,8 +65,7 @@ constexpr size_t kNumTasksPostedPerThread = 150;
 // This can't be lower because Windows' TestWaitableEvent wakes up too early
 // when a small timeout is used. This results in many spurious wake ups before a
 // worker is allowed to cleanup.
-constexpr TimeDelta kReclaimTimeForCleanupTests =
-    TimeDelta::FromMilliseconds(500);
+constexpr TimeDelta kReclaimTimeForCleanupTests = Milliseconds(500);
 constexpr size_t kLargeNumber = 512;
 
 class ThreadGroupImplImplTestBase : public ThreadGroup::Delegate {
@@ -1973,8 +1972,7 @@ INSTANTIATE_TEST_SUITE_P(WillBlock,
 // test for https://crbug.com/810464.
 TEST_F(ThreadGroupImplImplStartInBodyTest, RacyCleanup) {
   constexpr size_t kLocalMaxTasks = 256;
-  constexpr TimeDelta kReclaimTimeForRacyCleanupTest =
-      TimeDelta::FromMilliseconds(10);
+  constexpr TimeDelta kReclaimTimeForRacyCleanupTest = Milliseconds(10);
 
   thread_group_->Start(kLocalMaxTasks, kLocalMaxTasks,
                        kReclaimTimeForRacyCleanupTest,

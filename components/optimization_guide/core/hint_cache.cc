@@ -349,8 +349,7 @@ bool HintCache::ProcessAndCacheHints(
 
     base::Time expiry_time =
         hint.has_max_cache_duration()
-            ? clock_->Now() + base::TimeDelta().FromSeconds(
-                                  hint.max_cache_duration().seconds())
+            ? clock_->Now() + base::Seconds(hint.max_cache_duration().seconds())
             : clock_->Now() + features::URLKeyedHintValidCacheDuration();
 
     switch (hint.key_representation()) {

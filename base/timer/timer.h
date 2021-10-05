@@ -22,7 +22,7 @@
 //   class MyClass {
 //    public:
 //     void StartDoingStuff() {
-//       timer_.Start(FROM_HERE, TimeDelta::FromSeconds(1),
+//       timer_.Start(FROM_HERE, Seconds(1),
 //                    this, &MyClass::DoStuff);
 //     }
 //     void StopDoingStuff() {

@@ -92,9 +92,9 @@ class BASE_EXPORT ThreadPoolInstance {
     // *TaskLatencyMicroseconds.Renderer* histograms.
     TimeDelta suggested_reclaim_time =
 #if defined(OS_ANDROID)
-        TimeDelta::FromMinutes(5);
+        Minutes(5);
 #else
-        TimeDelta::FromSeconds(30);
+        Seconds(30);
 #endif
   };
 

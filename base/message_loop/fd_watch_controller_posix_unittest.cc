@@ -547,7 +547,7 @@ TEST_F(FdWatchControllerPosixTest, TimerThenIoEvent) {
   env.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&FdWatchControllerPosixTest::TriggerReadEvent, Unretained(this)),
-      TimeDelta::FromMilliseconds(1));
+      Milliseconds(1));
 
   RunLoop run_loop;
   CallClosureHandler handler(run_loop.QuitClosure(), OnceClosure());

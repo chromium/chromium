@@ -649,7 +649,7 @@ bool CheckEvent(const FilePath& signal_dir, const char* signal_file) {
 // Busy-wait for an event to be signaled.
 void WaitForEvent(const FilePath& signal_dir, const char* signal_file) {
   while (!CheckEvent(signal_dir, signal_file))
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+    PlatformThread::Sleep(Milliseconds(10));
 }
 
 // Subprocess to test the number of open file descriptors.
@@ -676,7 +676,7 @@ MULTIPROCESS_TEST_MAIN(ChildMain) {
 
   // Wait to be terminated.
   while (true)
-    PlatformThread::Sleep(TimeDelta::FromSeconds(1));
+    PlatformThread::Sleep(Seconds(1));
 }
 
 }  // namespace

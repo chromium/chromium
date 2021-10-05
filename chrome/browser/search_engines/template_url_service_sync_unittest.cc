@@ -35,7 +35,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using testing::NotNull;
 
 namespace {
@@ -2171,7 +2170,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngineWithChangedKeyword) {
   // Now Sync data comes in changing the keyword.
   TemplateURLData changed_data(default_data);
   changed_data.SetKeyword(u"new_kw");
-  changed_data.last_modified += TimeDelta::FromMinutes(10);
+  changed_data.last_modified += base::Minutes(10);
   // It's important to set |safe_for_autoreplace| to false, which marks the
   // update as a manual user update. Without this,
   // TemplateURLService::UpdateTemplateURLIfPrepopulated would reset changes to
@@ -2236,7 +2235,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Change_Add) {
 
   TemplateURLData changed_data(default_data);
   changed_data.SetKeyword(u"new_kw");
-  changed_data.last_modified += TimeDelta::FromMinutes(10);
+  changed_data.last_modified += base::Minutes(10);
   // It's important to set |safe_for_autoreplace| to false, which marks the
   // update as a manual user update. Without this,
   // TemplateURLService::UpdateTemplateURLIfPrepopulated would reset changes to
@@ -2304,7 +2303,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Pref_Add_Change) {
 
   TemplateURLData changed_data(default_data);
   changed_data.SetKeyword(u"new_kw");
-  changed_data.last_modified += TimeDelta::FromMinutes(10);
+  changed_data.last_modified += base::Minutes(10);
   // It's important to set |safe_for_autoreplace| to false, which marks the
   // update as a manual user update. Without this,
   // TemplateURLService::UpdateTemplateURLIfPrepopulated would reset changes to
@@ -2368,7 +2367,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Change_Add_Pref) {
 
   TemplateURLData changed_data(default_data);
   changed_data.SetKeyword(u"new_kw");
-  changed_data.last_modified += TimeDelta::FromMinutes(10);
+  changed_data.last_modified += base::Minutes(10);
   // It's important to set |safe_for_autoreplace| to false, which marks the
   // update as a manual user update. Without this,
   // TemplateURLService::UpdateTemplateURLIfPrepopulated would reset changes to
@@ -2436,7 +2435,7 @@ TEST_F(TemplateURLServiceSyncTest, MergePrepopulatedEngine_Add_Change_Pref) {
 
   TemplateURLData changed_data(default_data);
   changed_data.SetKeyword(u"new_kw");
-  changed_data.last_modified += TimeDelta::FromMinutes(10);
+  changed_data.last_modified += base::Minutes(10);
   // It's important to set |safe_for_autoreplace| to false, which marks the
   // update as a manual user update. Without this,
   // TemplateURLService::UpdateTemplateURLIfPrepopulated would reset changes to

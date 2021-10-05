@@ -33,7 +33,6 @@
 
 using base::Time;
 using base::TimeTicks;
-using base::TimeDelta;
 
 namespace ssl_errors {
 namespace {

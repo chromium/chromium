@@ -72,7 +72,6 @@ namespace web_request = extensions::api::web_request;
 using base::DictionaryValue;
 using base::ListValue;
 using base::Time;
-using base::TimeDelta;
 using base::Value;
 using helpers::CalculateOnAuthRequiredDelta;
 using helpers::CalculateOnBeforeRequestDelta;
@@ -1118,7 +1117,7 @@ std::string GetCookieExpirationDate(int delta_secs) {
   };
 
   Time::Exploded exploded_time;
-  (Time::Now() + TimeDelta::FromSeconds(delta_secs)).UTCExplode(&exploded_time);
+  (Time::Now() + base::Seconds(delta_secs)).UTCExplode(&exploded_time);
 
   return base::StringPrintf("%s, %d %s %d %.2d:%.2d:%.2d GMT",
                             kWeekDays[exploded_time.day_of_week],

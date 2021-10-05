@@ -88,7 +88,7 @@ std::unique_ptr<wchar_t[]> ToCStr(const std::basic_string<wchar_t>& str) {
 bool DieFileDie(const FilePath& file, bool recurse) {
   // It turns out that to not induce flakiness a long timeout is needed.
   const int kIterations = 25;
-  const TimeDelta kTimeout = TimeDelta::FromSeconds(10) / kIterations;
+  const TimeDelta kTimeout = Seconds(10) / kIterations;
 
   if (!PathExists(file))
     return true;

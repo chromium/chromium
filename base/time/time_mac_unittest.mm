@@ -74,7 +74,7 @@ TEST(TimeMacTest, MachTimeToMicrosecondsIntelTimebase) {
   TimeDelta result = TimeDelta::FromMachTime(kArbitraryTicks);
 
   // With Intel the output should be the input.
-  EXPECT_EQ(TimeDelta::FromNanoseconds(kArbitraryTicks), result);
+  EXPECT_EQ(Nanoseconds(kArbitraryTicks), result);
 }
 
 TEST(TimeMacTest, MachTimeToMicrosecondsM1Timebase) {
@@ -86,7 +86,7 @@ TEST(TimeMacTest, MachTimeToMicrosecondsM1Timebase) {
 
   const uint64_t kExpectedResult =
       kArbitraryTicks * kM1Timebase.numer / kM1Timebase.denom;
-  EXPECT_EQ(TimeDelta::FromNanoseconds(kExpectedResult), result);
+  EXPECT_EQ(Nanoseconds(kExpectedResult), result);
 }
 
 // Tests MachTimeToMicroseconds when
@@ -102,7 +102,7 @@ TEST(TimeMacTest, MachTimeToMicrosecondsEqualTimebaseMembers) {
   TimeDelta result = TimeDelta::FromMachTime(kArbitraryTicks);
 
   // With a unity timebase the output should be the input.
-  EXPECT_EQ(TimeDelta::FromNanoseconds(kArbitraryTicks), result);
+  EXPECT_EQ(Nanoseconds(kArbitraryTicks), result);
 }
 
 TEST(TimeMacTest, MachTimeToMicrosecondsOverflowDetection) {

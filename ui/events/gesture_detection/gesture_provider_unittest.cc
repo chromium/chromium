@@ -25,7 +25,6 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using ui::test::MockMotionEvent;
 
@@ -34,9 +33,9 @@ namespace {
 
 const float kFakeCoordX = 42.f;
 const float kFakeCoordY = 24.f;
-const TimeDelta kOneSecond = TimeDelta::FromSeconds(1);
-const TimeDelta kOneMicrosecond = TimeDelta::FromMicroseconds(1);
-const TimeDelta kDeltaTimeForFlingSequences = TimeDelta::FromMilliseconds(5);
+const base::TimeDelta kOneSecond = base::Seconds(1);
+const base::TimeDelta kOneMicrosecond = base::Microseconds(1);
+const base::TimeDelta kDeltaTimeForFlingSequences = base::Milliseconds(5);
 const float kMockTouchRadius = MockMotionEvent::TOUCH_MAJOR / 2;
 const float kMaxTwoFingerTapSeparation = 300;
 

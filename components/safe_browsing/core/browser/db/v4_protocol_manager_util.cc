@@ -22,7 +22,6 @@
 #include "url/url_util.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace safe_browsing {
 

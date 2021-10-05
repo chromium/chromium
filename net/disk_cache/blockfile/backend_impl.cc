@@ -46,7 +46,6 @@
 #define CACHE_UMA_BACKEND_IMPL_OBJ this
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace {
@@ -318,7 +317,7 @@ int BackendImpl::SyncInit() {
     DCHECK(background_queue_.BackgroundIsCurrentSequence());
     int timer_delay = unit_test_ ? 1000 : 30000;
     timer_ = std::make_unique<base::RepeatingTimer>();
-    timer_->Start(FROM_HERE, TimeDelta::FromMilliseconds(timer_delay), this,
+    timer_->Start(FROM_HERE, base::Milliseconds(timer_delay), this,
                   &BackendImpl::OnStatsTimer);
   }
 

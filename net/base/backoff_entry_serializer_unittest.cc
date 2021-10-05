@@ -17,7 +17,6 @@ namespace net {
 namespace {
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 const Time kParseTime =
@@ -161,8 +160,8 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
 // This test induces backoff_duration to be a nonzero duration and directly sets
 // original_time as a large value, such that their addition will overflow.
 TEST(BackoffEntrySerializerTest, SerializeFiniteReleaseTime) {
-  const TimeTicks release_time = TimeTicks() + TimeDelta::FromMicroseconds(5);
-  const Time original_time = Time::Max() - TimeDelta::FromMicroseconds(4);
+  const TimeTicks release_time = TimeTicks() + base::Microseconds(5);
+  const Time original_time = Time::Max() - base::Microseconds(4);
 
   TestTickClock original_ticks;
   original_ticks.set_now(TimeTicks());
@@ -224,7 +223,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
   {
     // Test deserialization when wall clock has advanced but TimeTicks::Now()
     // hasn't (e.g. device was rebooted).
-    Time later_time = original_time + TimeDelta::FromDays(1);
+    Time later_time = original_time + base::Days(1);
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(
             serialized, &base_policy, &original_ticks, later_time);
@@ -235,7 +234,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // will decrease accordingly.
     EXPECT_GT(original.GetTimeUntilRelease(),
               deserialized->GetTimeUntilRelease());
-    EXPECT_EQ(original.GetReleaseTime() - TimeDelta::FromDays(1),
+    EXPECT_EQ(original.GetReleaseTime() - base::Days(1),
               deserialized->GetReleaseTime());
   }
 
@@ -243,7 +242,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // Test deserialization when TimeTicks::Now() has advanced but wall clock
     // hasn't (e.g. it's an hour later, but a DST change cancelled that out).
     TestTickClock later_ticks;
-    later_ticks.set_now(TimeTicks() + TimeDelta::FromDays(1));
+    later_ticks.set_now(TimeTicks() + base::Days(1));
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(
             serialized, &base_policy, &later_ticks, original_time);
@@ -258,7 +257,7 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // be somewhat marginal.
     EXPECT_EQ(original.GetTimeUntilRelease(),
               deserialized->GetTimeUntilRelease());
-    EXPECT_EQ(original.GetReleaseTime() + TimeDelta::FromDays(1),
+    EXPECT_EQ(original.GetReleaseTime() + base::Days(1),
               deserialized->GetReleaseTime());
   }
 
@@ -266,8 +265,8 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
     // Test deserialization when both wall clock and TimeTicks::Now() have
     // advanced (e.g. it's just later than it used to be).
     TestTickClock later_ticks;
-    later_ticks.set_now(TimeTicks() + TimeDelta::FromDays(1));
-    Time later_time = original_time + TimeDelta::FromDays(1);
+    later_ticks.set_now(TimeTicks() + base::Days(1));
+    Time later_time = original_time + base::Days(1);
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(serialized, &base_policy,
                                                      &later_ticks, later_time);
@@ -284,8 +283,8 @@ TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {
   {
     // Test deserialization when wall clock has gone backwards but TimeTicks
     // haven't (e.g. the system clock was fast but they fixed it).
-    EXPECT_LT(TimeDelta::FromSeconds(1), original.GetTimeUntilRelease());
-    Time earlier_time = original_time - TimeDelta::FromSeconds(1);
+    EXPECT_LT(base::Seconds(1), original.GetTimeUntilRelease());
+    Time earlier_time = original_time - base::Seconds(1);
     std::unique_ptr<BackoffEntry> deserialized =
         BackoffEntrySerializer::DeserializeFromValue(
             serialized, &base_policy, &original_ticks, earlier_time);

@@ -280,7 +280,7 @@ TEST_P(HintsFetcherTest, FetchInProgress_HostsHintsRefreshed) {
   // refreshed.
   test_clock.Advance(features::StoredFetchedHintsFreshnessDuration() -
                      features::GetHostHintsFetchRefreshDuration() -
-                     base::TimeDelta().FromHours(1));
+                     base::Hours(1));
 
   EXPECT_FALSE(FetchHints({"foo.com"}, {} /* urls */));
   EXPECT_FALSE(FetchHints({"bar.com"}, {} /* urls */));
@@ -486,8 +486,7 @@ TEST_P(HintsFetcherTest, HintsFetcherHostsCovered) {
     return;
 
   std::vector<std::string> hosts{"host1.com", "host2.com"};
-  base::Time host_invalid_time =
-      base::Time::Now() + base::TimeDelta().FromHours(1);
+  base::Time host_invalid_time = base::Time::Now() + base::Hours(1);
 
   SeedCoveredHosts(hosts, host_invalid_time);
 
@@ -498,8 +497,7 @@ TEST_P(HintsFetcherTest, HintsFetcherHostsCovered) {
 TEST_P(HintsFetcherTest, HintsFetcherCoveredHostExpired) {
   std::string response_content;
   std::vector<std::string> hosts{"host1.com", "host2.com"};
-  base::Time host_invalid_time =
-      GetMockClock()->Now() - base::TimeDelta().FromHours(1);
+  base::Time host_invalid_time = GetMockClock()->Now() - base::Hours(1);
 
   SeedCoveredHosts(hosts, host_invalid_time);
 
@@ -532,8 +530,7 @@ TEST_P(HintsFetcherTest, HintsFetcherCoveredHostExpired) {
 
 TEST_P(HintsFetcherTest, HintsFetcherHostNotCovered) {
   std::vector<std::string> hosts{"host1.com", "host2.com"};
-  base::Time host_invalid_time =
-      base::Time::Now() + base::TimeDelta().FromHours(1);
+  base::Time host_invalid_time = base::Time::Now() + base::Hours(1);
 
   SeedCoveredHosts(hosts, host_invalid_time);
   DictionaryPrefUpdate hosts_fetched(
@@ -551,8 +548,7 @@ TEST_P(HintsFetcherTest, HintsFetcherRemoveExpiredOnSuccessfullyFetched) {
 
   std::string response_content;
   std::vector<std::string> hosts_expired{"host1.com", "host2.com"};
-  base::Time host_invalid_time =
-      GetMockClock()->Now() - base::TimeDelta().FromHours(1);
+  base::Time host_invalid_time = GetMockClock()->Now() - base::Hours(1);
 
   SeedCoveredHosts(hosts_expired, host_invalid_time);
 
@@ -587,8 +583,7 @@ TEST_P(HintsFetcherTest, HintsFetcherSuccessfullyFetchedHostsFull) {
   for (size_t i = 0; i < max_hosts - 1; ++i) {
     hosts.push_back("host" + base::NumberToString(i) + ".com");
   }
-  base::Time host_expiry_time =
-      GetMockClock()->Now() + base::TimeDelta().FromHours(1);
+  base::Time host_expiry_time = GetMockClock()->Now() + base::Hours(1);
 
   SeedCoveredHosts(hosts, host_expiry_time);
 

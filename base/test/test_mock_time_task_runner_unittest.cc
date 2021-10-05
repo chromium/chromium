@@ -43,22 +43,22 @@ TEST(TestMockTimeTaskRunnerTest, Basic) {
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 256; },
                        Unretained(&counter)),
-        TimeDelta::FromSeconds(3));
+        Seconds(3));
     mock_time_task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 64; },
                        Unretained(&counter)),
-        TimeDelta::FromSeconds(1));
+        Seconds(1));
     mock_time_task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 1024; },
                        Unretained(&counter)),
-        TimeDelta::FromMinutes(20));
+        Minutes(20));
     mock_time_task_runner->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 4096; },
                        Unretained(&counter)),
-        TimeDelta::FromDays(20));
+        Days(20));
 
     int expected_value = 0;
     EXPECT_EQ(expected_value, counter);
@@ -70,11 +70,11 @@ TEST(TestMockTimeTaskRunnerTest, Basic) {
     mock_time_task_runner->RunUntilIdle();
     EXPECT_EQ(expected_value, counter);
 
-    mock_time_task_runner->FastForwardBy(TimeDelta::FromSeconds(1));
+    mock_time_task_runner->FastForwardBy(Seconds(1));
     expected_value += 64;
     EXPECT_EQ(expected_value, counter);
 
-    mock_time_task_runner->FastForwardBy(TimeDelta::FromSeconds(5));
+    mock_time_task_runner->FastForwardBy(Seconds(5));
     expected_value += 256;
     EXPECT_EQ(expected_value, counter);
 
@@ -108,22 +108,22 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 256; },
                      Unretained(&counter)),
-      TimeDelta::FromSeconds(3));
+      Seconds(3));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 64; },
                      Unretained(&counter)),
-      TimeDelta::FromSeconds(1));
+      Seconds(1));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 1024; },
                      Unretained(&counter)),
-      TimeDelta::FromMinutes(20));
+      Minutes(20));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 4096; },
                      Unretained(&counter)),
-      TimeDelta::FromDays(20));
+      Days(20));
 
   int expected_value = 0;
   EXPECT_EQ(expected_value, counter);
@@ -138,12 +138,12 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
   {
     RunLoop run_loop;
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TimeDelta::FromSeconds(1));
+        FROM_HERE, run_loop.QuitClosure(), Seconds(1));
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 8192; },
                        Unretained(&counter)),
-        TimeDelta::FromSeconds(1));
+        Seconds(1));
 
     // The QuitClosure() should be ordered between the 64 and the 8192
     // increments and should preempt the latter.
@@ -161,12 +161,12 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
   {
     RunLoop run_loop;
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitWhenIdleClosure(), TimeDelta::FromSeconds(5));
+        FROM_HERE, run_loop.QuitWhenIdleClosure(), Seconds(5));
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce([](int* counter) { *counter += 16384; },
                        Unretained(&counter)),
-        TimeDelta::FromSeconds(5));
+        Seconds(5));
 
     // The QuitWhenIdleClosure() shouldn't preempt equally delayed tasks and as
     // such the 16384 increment should be processed before quitting.
@@ -182,7 +182,7 @@ TEST(TestMockTimeTaskRunnerTest, RunLoopDriveableWhenBound) {
   // RunLoop approach).
   RunLoop run_loop;
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitWhenIdleClosure(), TimeDelta::FromDays(50));
+      FROM_HERE, run_loop.QuitWhenIdleClosure(), Days(50));
 
   run_loop.Run();
   expected_value += 1024;
@@ -244,29 +244,25 @@ TEST(TestMockTimeTaskRunnerTest, TakePendingTasks) {
 TEST(TestMockTimeTaskRunnerTest, CancelPendingTask) {
   auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
   CancelableOnceClosure task1(DoNothing());
-  task_runner->PostDelayedTask(FROM_HERE, task1.callback(),
-                               TimeDelta::FromSeconds(1));
+  task_runner->PostDelayedTask(FROM_HERE, task1.callback(), Seconds(1));
   EXPECT_TRUE(task_runner->HasPendingTask());
   EXPECT_EQ(1u, task_runner->GetPendingTaskCount());
-  EXPECT_EQ(TimeDelta::FromSeconds(1), task_runner->NextPendingTaskDelay());
+  EXPECT_EQ(Seconds(1), task_runner->NextPendingTaskDelay());
   task1.Cancel();
   EXPECT_FALSE(task_runner->HasPendingTask());
 
   CancelableOnceClosure task2(DoNothing());
-  task_runner->PostDelayedTask(FROM_HERE, task2.callback(),
-                               TimeDelta::FromSeconds(1));
+  task_runner->PostDelayedTask(FROM_HERE, task2.callback(), Seconds(1));
   task2.Cancel();
   EXPECT_EQ(0u, task_runner->GetPendingTaskCount());
 
   CancelableOnceClosure task3(DoNothing());
-  task_runner->PostDelayedTask(FROM_HERE, task3.callback(),
-                               TimeDelta::FromSeconds(1));
+  task_runner->PostDelayedTask(FROM_HERE, task3.callback(), Seconds(1));
   task3.Cancel();
   EXPECT_EQ(TimeDelta::Max(), task_runner->NextPendingTaskDelay());
 
   CancelableOnceClosure task4(DoNothing());
-  task_runner->PostDelayedTask(FROM_HERE, task4.callback(),
-                               TimeDelta::FromSeconds(1));
+  task_runner->PostDelayedTask(FROM_HERE, task4.callback(), Seconds(1));
   task4.Cancel();
   EXPECT_TRUE(task_runner->TakePendingTasks().empty());
 }
@@ -275,9 +271,8 @@ TEST(TestMockTimeTaskRunnerTest, NoFastForwardToCancelledTask) {
   auto task_runner = MakeRefCounted<TestMockTimeTaskRunner>();
   TimeTicks start_time = task_runner->NowTicks();
   CancelableOnceClosure task(DoNothing());
-  task_runner->PostDelayedTask(FROM_HERE, task.callback(),
-                               TimeDelta::FromSeconds(1));
-  EXPECT_EQ(TimeDelta::FromSeconds(1), task_runner->NextPendingTaskDelay());
+  task_runner->PostDelayedTask(FROM_HERE, task.callback(), Seconds(1));
+  EXPECT_EQ(Seconds(1), task_runner->NextPendingTaskDelay());
   task.Cancel();
   task_runner->FastForwardUntilNoTasksRemain();
   EXPECT_EQ(start_time, task_runner->NowTicks());
@@ -288,10 +283,10 @@ TEST(TestMockTimeTaskRunnerTest, AdvanceMockTickClockDoesNotRunTasks) {
   TimeTicks start_time = task_runner->NowTicks();
   task_runner->PostTask(FROM_HERE, BindOnce([]() { ADD_FAILURE(); }));
   task_runner->PostDelayedTask(FROM_HERE, BindOnce([]() { ADD_FAILURE(); }),
-                               TimeDelta::FromSeconds(1));
+                               Seconds(1));
 
-  task_runner->AdvanceMockTickClock(TimeDelta::FromSeconds(3));
-  EXPECT_EQ(start_time + TimeDelta::FromSeconds(3), task_runner->NowTicks());
+  task_runner->AdvanceMockTickClock(Seconds(3));
+  EXPECT_EQ(start_time + Seconds(3), task_runner->NowTicks());
   EXPECT_EQ(2u, task_runner->GetPendingTaskCount());
 }
 
@@ -315,22 +310,22 @@ TEST(TestMockTimeTaskRunnerTest, ProcessNextNTasks) {
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 256; },
                      Unretained(&counter)),
-      TimeDelta::FromSeconds(3));
+      Seconds(3));
   mock_time_task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 64; },
                      Unretained(&counter)),
-      TimeDelta::FromSeconds(1));
+      Seconds(1));
   mock_time_task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 1024; },
                      Unretained(&counter)),
-      TimeDelta::FromMinutes(20));
+      Minutes(20));
   mock_time_task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce([](int* counter) { *counter += 4096; },
                      Unretained(&counter)),
-      TimeDelta::FromDays(20));
+      Days(20));
   task1.Cancel();
 
   int expected_value = 0;

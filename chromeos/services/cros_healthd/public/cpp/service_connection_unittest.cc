@@ -532,7 +532,7 @@ TEST_F(CrosHealthdServiceConnectionTest, RunDiskReadRoutine) {
   auto response = MakeRunRoutineResponse();
   FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
   base::RunLoop run_loop;
-  base::TimeDelta exec_duration = base::TimeDelta().FromSeconds(10);
+  base::TimeDelta exec_duration = base::Seconds(10);
   ServiceConnection::GetInstance()->RunDiskReadRoutine(
       mojom::DiskReadRoutineTypeEnum::kLinearRead,
       /*exec_duration=*/exec_duration, /*file_size_mb=*/1024,

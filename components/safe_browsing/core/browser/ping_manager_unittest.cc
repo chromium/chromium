@@ -15,7 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using safe_browsing::HitReport;
 using safe_browsing::ThreatSource;
 

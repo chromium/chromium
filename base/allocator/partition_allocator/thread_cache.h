@@ -155,8 +155,8 @@ class BASE_EXPORT ThreadCacheRegistry {
 
   void ResetForTesting();
 
-  static constexpr TimeDelta kMinPurgeInterval = TimeDelta::FromSeconds(1);
-  static constexpr TimeDelta kMaxPurgeInterval = TimeDelta::FromMinutes(1);
+  static constexpr TimeDelta kMinPurgeInterval = Seconds(1);
+  static constexpr TimeDelta kMaxPurgeInterval = Minutes(1);
   static constexpr TimeDelta kDefaultPurgeInterval = 2 * kMinPurgeInterval;
   static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 

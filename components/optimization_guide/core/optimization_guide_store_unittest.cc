@@ -1840,7 +1840,7 @@ TEST_F(OptimizationGuideStoreTest, FetchedHintsLoadExpiredHint) {
   fetched_hint1.set_key("host.domain2.org");
   fetched_hint1.set_key_representation(proto::HOST);
   fetched_hint1.mutable_max_cache_duration()->set_seconds(
-      base::TimeDelta().FromDays(-10).InSeconds());
+      base::Days(-10).InSeconds());
   update_data->MoveHintIntoUpdateData(std::move(fetched_hint1));
   proto::Hint fetched_hint2;
   fetched_hint2.set_key("domain3.org");
@@ -1905,7 +1905,7 @@ TEST_F(OptimizationGuideStoreTest, FetchedHintsLoadPopulatesExpiryTime) {
   fetched_hint1.set_key("host.domain2.org");
   fetched_hint1.set_key_representation(proto::HOST);
   fetched_hint1.mutable_max_cache_duration()->set_seconds(
-      base::TimeDelta().FromDays(10).InSeconds());
+      base::Days(10).InSeconds());
   update_data->MoveHintIntoUpdateData(std::move(fetched_hint1));
   proto::Hint fetched_hint2;
   fetched_hint2.set_key("domain3.org");

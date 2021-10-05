@@ -43,11 +43,10 @@ PolicyStatisticsCollector::~PolicyStatisticsCollector() {
 
 void PolicyStatisticsCollector::Initialize() {
   using base::Time;
-  using base::TimeDelta;
 
-  TimeDelta update_rate = TimeDelta::FromMilliseconds(kStatisticsUpdateRate);
+  base::TimeDelta update_rate = base::Milliseconds(kStatisticsUpdateRate);
   Time last_update = prefs_->GetTime(policy_prefs::kLastPolicyStatisticsUpdate);
-  TimeDelta delay = std::max(Time::Now() - last_update, TimeDelta::FromDays(0));
+  base::TimeDelta delay = std::max(Time::Now() - last_update, base::Days(0));
   if (delay >= update_rate)
     CollectStatistics();
   else

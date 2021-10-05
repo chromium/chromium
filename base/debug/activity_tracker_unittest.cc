@@ -320,11 +320,11 @@ TEST_F(ActivityTrackerTest, LockTest) {
   lock.Acquire();
   t2.Start();
   while (!t2.IsRunning())
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+    PlatformThread::Sleep(Milliseconds(10));
   // t2 can't join until the lock is released but have to give time for t2 to
   // actually block on the lock before releasing it or the results will not
   // be correct.
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(200));
+  PlatformThread::Sleep(Milliseconds(200));
   lock.Release();
   // Now the results will be valid.
   t2.Join();

@@ -41,7 +41,6 @@
 
 using base::ASCIIToUTF16;
 using base::Time;
-using base::TimeDelta;
 using base::WaitableEvent;
 using testing::_;
 using testing::DoDefault;
@@ -146,7 +145,7 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
   WebDataServiceAutofillTest()
       : unique_id1_(1),
         unique_id2_(2),
-        test_timeout_(TimeDelta::FromSeconds(kWebDataServiceTimeoutSeconds)),
+        test_timeout_(base::Seconds(kWebDataServiceTimeoutSeconds)),
         done_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                     base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
@@ -190,7 +189,7 @@ class WebDataServiceAutofillTest : public WebDataServiceTest {
   std::u16string value1_;
   std::u16string value2_;
   int unique_id1_, unique_id2_;
-  const TimeDelta test_timeout_;
+  const base::TimeDelta test_timeout_;
   testing::NiceMock<MockAutofillWebDataServiceObserver> observer_;
   WaitableEvent done_event_;
 };
@@ -250,7 +249,7 @@ TEST_F(WebDataServiceAutofillTest, FormFillRemoveOne) {
 }
 
 TEST_F(WebDataServiceAutofillTest, FormFillRemoveMany) {
-  TimeDelta one_day(TimeDelta::FromDays(1));
+  base::TimeDelta one_day(base::Days(1));
   Time t = AutofillClock::Now();
 
   EXPECT_CALL(observer_, AutofillEntriesChanged(_))

@@ -108,7 +108,7 @@ bool WaitForProcessesToExit(const FilePath::StringType& executable_name,
       result = true;
       break;
     }
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+    PlatformThread::Sleep(Milliseconds(100));
   } while ((end_time - TimeTicks::Now()) > TimeDelta());
 
   return result;
@@ -159,7 +159,7 @@ void EnsureProcessTerminated(Process process) {
     return;
 
   PlatformThread::CreateNonJoinable(
-      0, new BackgroundReaper(std::move(process), TimeDelta::FromSeconds(2)));
+      0, new BackgroundReaper(std::move(process), Seconds(2)));
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)

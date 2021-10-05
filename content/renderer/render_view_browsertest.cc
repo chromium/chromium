@@ -143,7 +143,6 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
-using base::TimeDelta;
 using blink::TestWebFrameContentDumper;
 using blink::WebFrame;
 using blink::WebGestureEvent;
@@ -226,7 +225,7 @@ blink::mojom::FrameReplicationStatePtr ReconstructReplicationStateForTesting(
 // Returns mojom::CommonNavigationParams for a normal navigation to a data: url,
 // with navigation_start set to Now() plus the given offset.
 blink::mojom::CommonNavigationParamsPtr MakeCommonNavigationParams(
-    TimeDelta navigation_start_offset) {
+    base::TimeDelta navigation_start_offset) {
   auto params = blink::CreateCommonNavigationParams();
   params->url = GURL("data:text/html,<div>Page</div>");
   params->navigation_start = base::TimeTicks::Now() + navigation_start_offset;
@@ -2706,7 +2705,7 @@ TEST_F(RenderViewImplTest, RendererNavigationStartTransmittedToBrowser) {
 // This test assumes that |frame()| contains an unaccessed initial document at
 // start.
 TEST_F(RenderViewImplTest, BrowserNavigationStart) {
-  auto common_params = MakeCommonNavigationParams(-TimeDelta::FromSeconds(1));
+  auto common_params = MakeCommonNavigationParams(-base::Seconds(1));
 
   FrameLoadWaiter waiter(frame());
   frame()->Navigate(common_params.Clone(), DummyCommitNavigationParams());
@@ -2724,7 +2723,7 @@ TEST_F(RenderViewImplTest, BrowserNavigationStartSanitized) {
   // Verify that a navigation that claims to have started in the future - 42
   // days from now is *not* reported as one that starts in the future; as we
   // sanitize the override allowing a maximum of ::Now().
-  auto late_common_params = MakeCommonNavigationParams(TimeDelta::FromDays(42));
+  auto late_common_params = MakeCommonNavigationParams(base::Days(42));
   late_common_params->method = "POST";
 
   frame()->Navigate(late_common_params.Clone(), DummyCommitNavigationParams());
@@ -2744,7 +2743,7 @@ TEST_F(RenderViewImplTest, NavigationStartWhenInitialDocumentWasAccessed) {
   // Trigger a didAccessInitialDocument notification.
   ExecuteJavaScriptForTests("document.title = 'Hi!';");
 
-  auto common_params = MakeCommonNavigationParams(-TimeDelta::FromSeconds(1));
+  auto common_params = MakeCommonNavigationParams(-base::Seconds(1));
   FrameLoadWaiter waiter(frame());
   frame()->Navigate(common_params.Clone(), DummyCommitNavigationParams());
   waiter.Wait();
@@ -2821,7 +2820,7 @@ TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
 }
 
 TEST_F(RenderViewImplTest, NavigationStartForCrossProcessHistoryNavigation) {
-  auto common_params = MakeCommonNavigationParams(-TimeDelta::FromSeconds(1));
+  auto common_params = MakeCommonNavigationParams(-base::Seconds(1));
   common_params->transition = ui::PAGE_TRANSITION_FORWARD_BACK;
   common_params->navigation_type =
       blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;

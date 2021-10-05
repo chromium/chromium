@@ -60,9 +60,8 @@ class Receiver {
 class OneShotTimerTesterBase {
  public:
   // |did_run|, if provided, will be signaled when Run() fires.
-  explicit OneShotTimerTesterBase(
-      WaitableEvent* did_run = nullptr,
-      const TimeDelta& delay = TimeDelta::FromMilliseconds(10))
+  explicit OneShotTimerTesterBase(WaitableEvent* did_run = nullptr,
+                                  const TimeDelta& delay = Milliseconds(10))
       : did_run_(did_run), delay_(delay) {}
 
   OneShotTimerTesterBase(const OneShotTimerTesterBase&) = delete;
@@ -101,9 +100,8 @@ class OneShotTimerTesterBase {
 class OneShotTimerTester : public OneShotTimerTesterBase {
  public:
   // |did_run|, if provided, will be signaled when Run() fires.
-  explicit OneShotTimerTester(
-      WaitableEvent* did_run = nullptr,
-      const TimeDelta& delay = TimeDelta::FromMilliseconds(10))
+  explicit OneShotTimerTester(WaitableEvent* did_run = nullptr,
+                              const TimeDelta& delay = Milliseconds(10))
       : OneShotTimerTesterBase(did_run, delay),
         quit_closure_(run_loop_.QuitClosure()) {}
 
@@ -305,7 +303,7 @@ void RunTest_DelayTimer_NoCall(
 
   // If Delay is never called, the timer shouldn't go off.
   DelayTimerTarget target;
-  DelayTimer timer(FROM_HERE, TimeDelta::FromMilliseconds(1), &target,
+  DelayTimer timer(FROM_HERE, Milliseconds(1), &target,
                    &DelayTimerTarget::Signal);
 
   OneShotTimerTester tester;
@@ -320,11 +318,11 @@ void RunTest_DelayTimer_OneCall(
   test::TaskEnvironment task_environment(main_thread_type);
 
   DelayTimerTarget target;
-  DelayTimer timer(FROM_HERE, TimeDelta::FromMilliseconds(1), &target,
+  DelayTimer timer(FROM_HERE, Milliseconds(1), &target,
                    &DelayTimerTarget::Signal);
   timer.Reset();
 
-  OneShotTimerTester tester(nullptr, TimeDelta::FromMilliseconds(100));
+  OneShotTimerTester tester(nullptr, Milliseconds(100));
   tester.Start();
   tester.WaitAndConfirmTimerFiredAfterDelay();
 
@@ -351,7 +349,7 @@ void RunTest_DelayTimer_Reset(
 
   // If Delay is never called, the timer shouldn't go off.
   DelayTimerTarget target;
-  DelayTimer timer(FROM_HERE, TimeDelta::FromMilliseconds(50), &target,
+  DelayTimer timer(FROM_HERE, Milliseconds(50), &target,
                    &DelayTimerTarget::Signal);
   timer.Reset();
 
@@ -359,11 +357,11 @@ void RunTest_DelayTimer_Reset(
 
   OneShotTimer timers[20];
   for (size_t i = 0; i < base::size(timers); ++i) {
-    timers[i].Start(FROM_HERE, TimeDelta::FromMilliseconds(i * 10),
-                    &reset_helper, &ResetHelper::Reset);
+    timers[i].Start(FROM_HERE, Milliseconds(i * 10), &reset_helper,
+                    &ResetHelper::Reset);
   }
 
-  OneShotTimerTester tester(nullptr, TimeDelta::FromMilliseconds(300));
+  OneShotTimerTester tester(nullptr, Milliseconds(300));
   tester.Start();
   tester.WaitAndConfirmTimerFiredAfterDelay();
 
@@ -384,14 +382,14 @@ void RunTest_DelayTimer_Deleted(
   DelayTimerFatalTarget target;
 
   {
-    DelayTimer timer(FROM_HERE, TimeDelta::FromMilliseconds(50), &target,
+    DelayTimer timer(FROM_HERE, Milliseconds(50), &target,
                      &DelayTimerFatalTarget::Signal);
     timer.Reset();
   }
 
   // When the timer is deleted, the DelayTimerFatalTarget should never be
   // called.
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+  PlatformThread::Sleep(Milliseconds(100));
 }
 
 }  // namespace
@@ -426,7 +424,7 @@ TEST(TimerTest, OneShotTimer_CustomTaskRunner) {
 
   // The timer will use the TestSimpleTaskRunner to schedule its delays.
   timer.SetTaskRunner(task_runner);
-  timer.Start(FROM_HERE, TimeDelta::FromDays(1),
+  timer.Start(FROM_HERE, Days(1),
               BindLambdaForTesting([&]() { task_ran = true; }));
 
   EXPECT_FALSE(task_ran);
@@ -442,26 +440,26 @@ TEST(TimerTest, OneShotTimerWithTickClock) {
       test::TaskEnvironment::TimeSource::MOCK_TIME);
   Receiver receiver;
   OneShotTimer timer(task_environment.GetMockTickClock());
-  timer.Start(FROM_HERE, TimeDelta::FromSeconds(1),
+  timer.Start(FROM_HERE, Seconds(1),
               BindOnce(&Receiver::OnCalled, Unretained(&receiver)));
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(1));
+  task_environment.FastForwardBy(Seconds(1));
   EXPECT_TRUE(receiver.WasCalled());
 }
 
 TEST_P(TimerTestWithThreadType, RepeatingTimer) {
-  RunTest_RepeatingTimer(GetParam(), TimeDelta::FromMilliseconds(10));
+  RunTest_RepeatingTimer(GetParam(), Milliseconds(10));
 }
 
 TEST_P(TimerTestWithThreadType, RepeatingTimer_Cancel) {
-  RunTest_RepeatingTimer_Cancel(GetParam(), TimeDelta::FromMilliseconds(10));
+  RunTest_RepeatingTimer_Cancel(GetParam(), Milliseconds(10));
 }
 
 TEST_P(TimerTestWithThreadType, RepeatingTimerZeroDelay) {
-  RunTest_RepeatingTimer(GetParam(), TimeDelta::FromMilliseconds(0));
+  RunTest_RepeatingTimer(GetParam(), Milliseconds(0));
 }
 
 TEST_P(TimerTestWithThreadType, RepeatingTimerZeroDelay_Cancel) {
-  RunTest_RepeatingTimer_Cancel(GetParam(), TimeDelta::FromMilliseconds(0));
+  RunTest_RepeatingTimer_Cancel(GetParam(), Milliseconds(0));
 }
 
 TEST(TimerTest, RepeatingTimerWithTickClock) {
@@ -470,9 +468,9 @@ TEST(TimerTest, RepeatingTimerWithTickClock) {
   Receiver receiver;
   const int expected_times_called = 10;
   RepeatingTimer timer(task_environment.GetMockTickClock());
-  timer.Start(FROM_HERE, TimeDelta::FromSeconds(1),
+  timer.Start(FROM_HERE, Seconds(1),
               BindRepeating(&Receiver::OnCalled, Unretained(&receiver)));
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(expected_times_called));
+  task_environment.FastForwardBy(Seconds(expected_times_called));
   timer.Stop();
   EXPECT_EQ(expected_times_called, receiver.TimesCalled());
 }
@@ -498,15 +496,15 @@ TEST(TimerTest, DelayTimerWithTickClock) {
   test::TaskEnvironment task_environment(
       test::TaskEnvironment::TimeSource::MOCK_TIME);
   Receiver receiver;
-  DelayTimer timer(FROM_HERE, TimeDelta::FromSeconds(1), &receiver,
-                   &Receiver::OnCalled, task_environment.GetMockTickClock());
-  task_environment.FastForwardBy(TimeDelta::FromMilliseconds(999));
+  DelayTimer timer(FROM_HERE, Seconds(1), &receiver, &Receiver::OnCalled,
+                   task_environment.GetMockTickClock());
+  task_environment.FastForwardBy(Milliseconds(999));
   EXPECT_FALSE(receiver.WasCalled());
   timer.Reset();
-  task_environment.FastForwardBy(TimeDelta::FromMilliseconds(999));
+  task_environment.FastForwardBy(Milliseconds(999));
   EXPECT_FALSE(receiver.WasCalled());
   timer.Reset();
-  task_environment.FastForwardBy(TimeDelta::FromSeconds(1));
+  task_environment.FastForwardBy(Seconds(1));
   EXPECT_TRUE(receiver.WasCalled());
 }
 
@@ -547,7 +545,7 @@ class OneShotSelfOwningTimerTester
   void StartTimer() {
     // Start timer with long delay in order to test the timer getting destroyed
     // while a timer task is still pending.
-    timer_.Start(FROM_HERE, TimeDelta::FromDays(1),
+    timer_.Start(FROM_HERE, Days(1),
                  BindOnce(&OneShotSelfOwningTimerTester::Run, this));
   }
 
@@ -586,8 +584,7 @@ TEST(TimerTest, NonRepeatIsRunning) {
     test::TaskEnvironment task_environment;
     OneShotTimer timer;
     EXPECT_FALSE(timer.IsRunning());
-    timer.Start(FROM_HERE, TimeDelta::FromDays(1),
-                BindOnce(&TimerTestCallback));
+    timer.Start(FROM_HERE, Days(1), BindOnce(&TimerTestCallback));
     EXPECT_TRUE(timer.IsRunning());
     timer.Stop();
     EXPECT_FALSE(timer.IsRunning());
@@ -597,8 +594,7 @@ TEST(TimerTest, NonRepeatIsRunning) {
     RetainingOneShotTimer timer;
     test::TaskEnvironment task_environment;
     EXPECT_FALSE(timer.IsRunning());
-    timer.Start(FROM_HERE, TimeDelta::FromDays(1),
-                BindRepeating(&TimerTestCallback));
+    timer.Start(FROM_HERE, Days(1), BindRepeating(&TimerTestCallback));
     EXPECT_TRUE(timer.IsRunning());
     timer.Stop();
     EXPECT_FALSE(timer.IsRunning());
@@ -613,8 +609,7 @@ TEST(TimerTest, NonRepeatTaskEnvironmentDeath) {
   {
     test::TaskEnvironment task_environment;
     EXPECT_FALSE(timer.IsRunning());
-    timer.Start(FROM_HERE, TimeDelta::FromDays(1),
-                BindOnce(&TimerTestCallback));
+    timer.Start(FROM_HERE, Days(1), BindOnce(&TimerTestCallback));
     EXPECT_TRUE(timer.IsRunning());
   }
   EXPECT_FALSE(timer.IsRunning());
@@ -622,8 +617,7 @@ TEST(TimerTest, NonRepeatTaskEnvironmentDeath) {
 
 TEST(TimerTest, RetainRepeatIsRunning) {
   test::TaskEnvironment task_environment;
-  RepeatingTimer timer(FROM_HERE, TimeDelta::FromDays(1),
-                       BindRepeating(&TimerTestCallback));
+  RepeatingTimer timer(FROM_HERE, Days(1), BindRepeating(&TimerTestCallback));
   EXPECT_FALSE(timer.IsRunning());
   timer.Reset();
   EXPECT_TRUE(timer.IsRunning());
@@ -635,7 +629,7 @@ TEST(TimerTest, RetainRepeatIsRunning) {
 
 TEST(TimerTest, RetainNonRepeatIsRunning) {
   test::TaskEnvironment task_environment;
-  RetainingOneShotTimer timer(FROM_HERE, TimeDelta::FromDays(1),
+  RetainingOneShotTimer timer(FROM_HERE, Days(1),
                               BindRepeating(&TimerTestCallback));
   EXPECT_FALSE(timer.IsRunning());
   timer.Reset();
@@ -675,11 +669,9 @@ TEST(TimerTest, ContinuationStopStart) {
     ClearAllCallbackHappened();
     test::TaskEnvironment task_environment;
     OneShotTimer timer;
-    timer.Start(FROM_HERE, TimeDelta::FromMilliseconds(10),
-                BindOnce(&SetCallbackHappened1));
+    timer.Start(FROM_HERE, Milliseconds(10), BindOnce(&SetCallbackHappened1));
     timer.Stop();
-    timer.Start(FROM_HERE, TimeDelta::FromMilliseconds(40),
-                BindOnce(&SetCallbackHappened2));
+    timer.Start(FROM_HERE, Milliseconds(40), BindOnce(&SetCallbackHappened2));
     RunLoop().Run();
     EXPECT_FALSE(g_callback_happened1);
     EXPECT_TRUE(g_callback_happened2);
@@ -691,8 +683,7 @@ TEST(TimerTest, ContinuationReset) {
     ClearAllCallbackHappened();
     test::TaskEnvironment task_environment;
     OneShotTimer timer;
-    timer.Start(FROM_HERE, TimeDelta::FromMilliseconds(10),
-                BindOnce(&SetCallbackHappened1));
+    timer.Start(FROM_HERE, Milliseconds(10), BindOnce(&SetCallbackHappened1));
     timer.Reset();
     // // Since Reset happened before task ran, the user_task must not be
     // cleared: ASSERT_FALSE(timer.user_task().is_null());
@@ -707,7 +698,7 @@ TEST(TimerTest, AbandonedTaskIsCancelled) {
   OneShotTimer timer;
 
   // Start a timer. There will be a pending task on the current sequence.
-  timer.Start(FROM_HERE, TimeDelta::FromSeconds(5), base::DoNothing());
+  timer.Start(FROM_HERE, Seconds(5), base::DoNothing());
   EXPECT_EQ(1u, task_environment.GetPendingMainThreadTaskCount());
 
   // After AbandonAndStop(), the task is correctly treated as cancelled.

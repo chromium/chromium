@@ -14,7 +14,7 @@ namespace base {
 namespace {
 
 constexpr int kWarmupRuns = 1;
-constexpr TimeDelta kTimeLimit = TimeDelta::FromSeconds(1);
+constexpr TimeDelta kTimeLimit = Seconds(1);
 constexpr int kTimeCheckInterval = 100000;
 
 constexpr char kMetricPrefixLock[] = "Lock.";

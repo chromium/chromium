@@ -57,7 +57,6 @@
 namespace net {
 
 using base::Time;
-using base::TimeDelta;
 using net::test::IsError;
 using net::test::IsOk;
 
@@ -1329,7 +1328,7 @@ TEST_F(URLFetcherTest, ProtectTestPassedThrough) {
 
   // The request should not have been retried at all.  If it had attempted all
   // 11 retries, that should have taken 2.5 minutes.
-  EXPECT_TRUE(Time::Now() - start_time < TimeDelta::FromMinutes(1));
+  EXPECT_TRUE(Time::Now() - start_time < base::Minutes(1));
 }
 
 // Used to check if a callback has been invoked.

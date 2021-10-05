@@ -28,7 +28,6 @@
 #define CACHE_UMA_BACKEND_IMPL_OBJ backend_
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace {

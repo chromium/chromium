@@ -113,7 +113,7 @@ const int kExpectedStillRunningExitCode = 0;
 void WaitToDie(const char* filename) {
   FILE* fp;
   do {
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+    PlatformThread::Sleep(Milliseconds(10));
     fp = fopen(filename, "r");
   } while (!fp);
   fclose(fp);
@@ -134,7 +134,7 @@ TerminationStatus WaitForChildTermination(ProcessHandle handle,
                                           int* exit_code) {
   // Now we wait until the result is something other than STILL_RUNNING.
   TerminationStatus status = TERMINATION_STATUS_STILL_RUNNING;
-  const TimeDelta kInterval = TimeDelta::FromMilliseconds(20);
+  const TimeDelta kInterval = Milliseconds(20);
   TimeDelta waited;
   do {
     status = GetTerminationStatus(handle, exit_code);
@@ -794,7 +794,7 @@ TEST_F(ProcessUtilTest, EnsureTerminationUndying) {
 
 MULTIPROCESS_TEST_MAIN(process_util_test_never_die) {
   while (1) {
-    PlatformThread::Sleep(TimeDelta::FromSeconds(500));
+    PlatformThread::Sleep(Seconds(500));
   }
 }
 
@@ -1096,9 +1096,9 @@ int ProcessUtilTest::CountOpenFDsInChild() {
 
 #if defined(THREAD_SANITIZER)
   // Compiler-based ThreadSanitizer makes this test slow.
-  TimeDelta timeout = TimeDelta::FromSeconds(3);
+  TimeDelta timeout = Seconds(3);
 #else
-  TimeDelta timeout = TimeDelta::FromSeconds(1);
+  TimeDelta timeout = Seconds(1);
 #endif
   int exit_code;
   CHECK(process.WaitForExitWithTimeout(timeout, &exit_code));
@@ -1198,8 +1198,7 @@ TEST_F(ProcessUtilTest, FDRemappingIncludesStdio) {
   ASSERT_EQ(0, result);
 
   int exit_code;
-  ASSERT_TRUE(
-      process.WaitForExitWithTimeout(TimeDelta::FromSeconds(5), &exit_code));
+  ASSERT_TRUE(process.WaitForExitWithTimeout(Seconds(5), &exit_code));
   EXPECT_EQ(0, exit_code);
 }
 

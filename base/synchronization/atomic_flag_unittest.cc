@@ -75,7 +75,7 @@ TEST(AtomicFlagTest, ReadFromDifferentThread) {
   // To verify that IsSet() fetches the flag's value from memory every time it
   // is called (not just the first time that it is called on a thread), sleep
   // before setting the flag.
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(20));
+  PlatformThread::Sleep(Milliseconds(20));
 
   // |expected_after_flag| is used to verify that all memory operations
   // performed before |tested_flag| is Set() are visible to threads that can see
@@ -85,7 +85,7 @@ TEST(AtomicFlagTest, ReadFromDifferentThread) {
 
   // Sleep again to give the busy loop time to observe the flag and verify
   // expectations.
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(20));
+  PlatformThread::Sleep(Milliseconds(20));
 
   // Use |reset_flag| to confirm that the above completed (which the rest of
   // this test assumes).
@@ -104,7 +104,7 @@ TEST(AtomicFlagTest, ReadFromDifferentThread) {
                                  BindOnce(&BusyWaitUntilFlagIsSet, &tested_flag,
                                           &expected_after_flag, nullptr));
 
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(20));
+  PlatformThread::Sleep(Milliseconds(20));
 
   expected_after_flag = true;
   tested_flag.Set();

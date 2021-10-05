@@ -14,7 +14,6 @@
 #include "media/gpu/android/mock_promotion_hint_aggregator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 using testing::_;
 using testing::AtLeast;
 
@@ -36,7 +35,7 @@ class SurfaceChooserHelperTest : public testing::Test {
                      bool promote_secure_only,
                      bool always_use_texture_owner = false) {
     // Advance the clock so that time 0 isn't recent.
-    tick_clock_.Advance(TimeDelta::FromSeconds(10000));
+    tick_clock_.Advance(base::Seconds(10000));
 
     std::unique_ptr<MockAndroidVideoSurfaceChooser> chooser =
         std::make_unique<MockAndroidVideoSurfaceChooser>();

@@ -29,7 +29,7 @@ TEST(ValuesUtilTest, BasicInt64Limits) {
   };
   for (const auto& test_case : kTestCases) {
     int64_t input = test_case.input;
-    TimeDelta time_delta_input = TimeDelta::FromMicroseconds(input);
+    TimeDelta time_delta_input = Microseconds(input);
     Time time_input = Time::FromDeltaSinceWindowsEpoch(time_delta_input);
     Value expected(test_case.expected);
     SCOPED_TRACE(testing::Message()

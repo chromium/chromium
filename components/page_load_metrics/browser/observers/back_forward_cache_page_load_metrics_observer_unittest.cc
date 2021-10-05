@@ -252,7 +252,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        TestBasicForegroundLogging) {
   base::TimeTicks navigation_start =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
+      base::TimeTicks() + base::Milliseconds(100);
 
   auto in_foreground_bf_state =
       PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
@@ -261,8 +261,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   // Set up timing so that foreground duration will be 200ms (but will then be
   // bucketed)
   fake_delegate_->page_end_reason_ = page_load_metrics::END_OTHER;
-  fake_delegate_->page_end_time_ =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(300);
+  fake_delegate_->page_end_time_ = base::TimeTicks() + base::Milliseconds(300);
 
   InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
                                   /*simulate_app_backgrounding=*/false);
@@ -276,8 +275,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   EXPECT_EQ(200, result_metrics.begin()->begin()->second);
 
   // Check that another metric can be logged with different times.
-  fake_delegate_->page_end_time_ =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(1000);
+  fake_delegate_->page_end_time_ = base::TimeTicks() + base::Milliseconds(1000);
   InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
                                   /*simulate_app_backgrounding=*/false);
 
@@ -294,13 +292,12 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   // actually supposed to be used in the calculations. It's just set here to
   // make sure that it isn't used.
   base::TimeTicks navigation_start =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
+      base::TimeTicks() + base::Milliseconds(100);
 
   auto in_foreground_bf_state =
       PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
           /*was_in_foreground=*/true, navigation_start);
-  in_foreground_bf_state.first_background_time =
-      base::TimeDelta::FromMilliseconds(400);
+  in_foreground_bf_state.first_background_time = base::Milliseconds(400);
   fake_delegate_->AddBackForwardCacheRestore(in_foreground_bf_state);
 
   fake_delegate_->page_end_reason_ = page_load_metrics::END_NONE;
@@ -329,7 +326,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        DISABLED_TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
   base::TimeTicks navigation_start =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(100);
+      base::TimeTicks() + base::Milliseconds(100);
   auto in_foreground_bf_state =
       PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
           /*was_in_foreground=*/true, navigation_start);

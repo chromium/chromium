@@ -247,7 +247,6 @@
 #endif
 
 using base::Time;
-using base::TimeDelta;
 using blink::ContextMenuData;
 using blink::WebContentDecryptionModule;
 using blink::WebData;

@@ -206,8 +206,8 @@ TEST_F(LazilyDeallocatedDequeTest, MaybeShrinkQueueRateLimiting) {
   EXPECT_EQ(600u, d.max_size());
 
   // After time passes we re-sample max_size.
-  clock.Advance(TimeDelta::FromSeconds(
-      LazilyDeallocatedDeque<int>::kMinimumShrinkIntervalInSeconds));
+  clock.Advance(
+      Seconds(LazilyDeallocatedDeque<int>::kMinimumShrinkIntervalInSeconds));
   d.MaybeShrinkQueue();
   EXPECT_EQ(601u, d.capacity());
   EXPECT_EQ(500u, d.max_size());

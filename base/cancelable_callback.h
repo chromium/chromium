@@ -36,7 +36,7 @@
 // CancelableOnceClosure timeout(
 //     base::BindOnce(&TimeoutCallback, "Test timed out."));
 // ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, timeout.callback(),
-//                                                TimeDelta::FromSeconds(4));
+//                                                Seconds(4));
 // RunIntensiveTest();
 // run_loop.Run();
 // timeout.Cancel();  // Hopefully this is hit before the timeout callback runs.

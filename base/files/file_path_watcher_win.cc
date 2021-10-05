@@ -177,7 +177,7 @@ void FilePathWatcherImpl::OnObjectSignaled(HANDLE object) {
     // clock has advanced one second from the initial notification. After that
     // interval, client code is guaranteed to having seen the current revision
     // of the file.
-    if (Time::Now() - first_notification_ > TimeDelta::FromSeconds(1)) {
+    if (Time::Now() - first_notification_ > Seconds(1)) {
       // Stop further notifications for this |last_modification_| time stamp.
       first_notification_ = Time();
     }

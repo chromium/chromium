@@ -172,18 +172,15 @@ void File::Info::FromStat(const stat_wrapper_t& stat_info) {
 
   last_modified =
       Time::FromTimeT(last_modified_sec) +
-      TimeDelta::FromMicroseconds(last_modified_nsec /
-                                  Time::kNanosecondsPerMicrosecond);
+      Microseconds(last_modified_nsec / Time::kNanosecondsPerMicrosecond);
 
   last_accessed =
       Time::FromTimeT(last_accessed_sec) +
-      TimeDelta::FromMicroseconds(last_accessed_nsec /
-                                  Time::kNanosecondsPerMicrosecond);
+      Microseconds(last_accessed_nsec / Time::kNanosecondsPerMicrosecond);
 
   creation_time =
       Time::FromTimeT(creation_time_sec) +
-      TimeDelta::FromMicroseconds(creation_time_nsec /
-                                  Time::kNanosecondsPerMicrosecond);
+      Microseconds(creation_time_nsec / Time::kNanosecondsPerMicrosecond);
 }
 
 bool File::IsValid() const {

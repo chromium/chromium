@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "ui/events/gesture_detection/motion_event.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace ui {
@@ -610,7 +609,7 @@ bool LeastSquaresVelocityTrackerStrategy::GetEstimator(
       break;
 
     first_movement = &movement;
-    TimeDelta age = newest_movement.event_time - movement.event_time;
+    base::TimeDelta age = newest_movement.event_time - movement.event_time;
     if (age > horizon)
       break;
 
@@ -799,7 +798,7 @@ void IntegratingVelocityTrackerStrategy::UpdateState(
     const TimeTicks& event_time,
     float xpos,
     float ypos) const {
-  const base::TimeDelta MIN_TIME_DELTA = TimeDelta::FromMicroseconds(2);
+  const base::TimeDelta MIN_TIME_DELTA = base::Microseconds(2);
   const float FILTER_TIME_CONSTANT = 0.010f;  // 10 milliseconds
 
   if (event_time <= state.update_time + MIN_TIME_DELTA)

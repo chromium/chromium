@@ -11,7 +11,6 @@
 
 namespace {
 
-using base::TimeDelta;
 using base::TimeTicks;
 using blink::CanvasRenderingContext;
 using blink::CanvasResourceProvider;
@@ -174,7 +173,7 @@ void CanvasPerformanceMonitor::WillProcessTask(TimeTicks start_time) {
 void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,
                                              TimeTicks end_time) {
   TRACE_EVENT0("blink", "CanvasPerformanceMonitor::RecordMetrics");
-  TimeDelta elapsed_time = end_time - start_time;
+  base::TimeDelta elapsed_time = end_time - start_time;
   constexpr size_t kKiloByte = 1024;
   size_t partition_alloc_kb = WTF::Partitions::TotalActiveBytes() / kKiloByte;
   size_t blink_gc_alloc_kb =

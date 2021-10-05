@@ -10,7 +10,6 @@
 #include "base/strings/string_piece.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 
-using base::TimeDelta;
 
 namespace password_manager {
 

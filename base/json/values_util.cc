@@ -63,7 +63,7 @@ absl::optional<TimeDelta> ValueToTimeDelta(const Value& value) {
   absl::optional<int64_t> integer = ValueToInt64(value);
   if (!integer)
     return absl::nullopt;
-  return TimeDelta::FromMicroseconds(*integer);
+  return Microseconds(*integer);
 }
 
 Value TimeToValue(Time time) {

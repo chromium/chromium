@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
-using base::TimeDelta;
 using download::DownloadItem;
 using MixedContentStatus = download::DownloadItem::MixedContentStatus;
 using safe_browsing::DownloadFileType;

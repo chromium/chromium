@@ -58,8 +58,8 @@ class AnimationObserver;
 //        // This will seek to the 1st second of the animation and from there
 //        // play it for 5 seconds.
 //        Animation animation_ = Animation(data);
-//        animation_.Start(TimeDelta::FromSeconds(1),
-//                         TimeDelta::FromSeconds(5));
+//        animation_.Start(Seconds(1),
+//                         Seconds(5));
 //      }
 //
 //      // overrides cc::CompositorAnimationObserver

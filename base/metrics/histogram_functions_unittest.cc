@@ -106,17 +106,17 @@ TEST(HistogramFunctionsTest, Counts) {
 TEST(HistogramFunctionsTest, Times) {
   std::string histogram("Testing.UMA.HistogramTimes");
   HistogramTester tester;
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(1));
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(1), 1);
+  UmaHistogramTimes(histogram, Seconds(1));
+  tester.ExpectTimeBucketCount(histogram, Seconds(1), 1);
   tester.ExpectTotalCount(histogram, 1);
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(9));
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(9), 1);
+  UmaHistogramTimes(histogram, Seconds(9));
+  tester.ExpectTimeBucketCount(histogram, Seconds(9), 1);
   tester.ExpectTotalCount(histogram, 2);
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(10));  // Overflows
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(10), 1);
-  UmaHistogramTimes(histogram, TimeDelta::FromSeconds(20));  // Overflows.
+  UmaHistogramTimes(histogram, Seconds(10));  // Overflows
+  tester.ExpectTimeBucketCount(histogram, Seconds(10), 1);
+  UmaHistogramTimes(histogram, Seconds(20));  // Overflows.
   // Check the value by picking any overflow time.
-  tester.ExpectTimeBucketCount(histogram, TimeDelta::FromSeconds(11), 2);
+  tester.ExpectTimeBucketCount(histogram, Seconds(11), 2);
   tester.ExpectTotalCount(histogram, 4);
 }
 

@@ -283,7 +283,6 @@
 #include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #endif  // BUILDFLAG(ENABLE_SIDE_SEARCH)
 
-using base::TimeDelta;
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::WebContents;
@@ -1183,8 +1182,7 @@ void BrowserView::UpdateLoadingAnimations(bool should_animate) {
 #endif
       // Loads are happening, and the timer isn't running, so start it.
       loading_animation_start_ = base::TimeTicks::Now();
-      loading_animation_timer_.Start(FROM_HERE, TimeDelta::FromMilliseconds(30),
-                                     this,
+      loading_animation_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
                                      &BrowserView::LoadingAnimationCallback);
     }
   } else {

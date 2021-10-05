@@ -102,7 +102,6 @@
 #endif
 
 using base::Time;
-using base::TimeDelta;
 using content::BrowserThread;
 using extensions::mojom::ManifestLocation;
 using testing::_;
@@ -2221,21 +2220,19 @@ class ExtensionUpdaterTest : public testing::Test {
     const std::string& id = tmp[0]->id();
     Time now = Time::Now();
     if (rollcall_ping_days == 0) {
-      prefs->SetLastPingDay(id, now - TimeDelta::FromSeconds(15));
+      prefs->SetLastPingDay(id, now - base::Seconds(15));
     } else if (rollcall_ping_days > 0) {
-      Time last_ping_day = now -
-                           TimeDelta::FromDays(rollcall_ping_days) -
-                           TimeDelta::FromSeconds(15);
+      Time last_ping_day =
+          now - base::Days(rollcall_ping_days) - base::Seconds(15);
       prefs->SetLastPingDay(id, last_ping_day);
     }
 
     // Store a value for the last day we sent an active ping.
     if (active_ping_days == 0) {
-      prefs->SetLastActivePingDay(id, now - TimeDelta::FromSeconds(15));
+      prefs->SetLastActivePingDay(id, now - base::Seconds(15));
     } else if (active_ping_days > 0) {
-      Time last_active_ping_day = now -
-                                  TimeDelta::FromDays(active_ping_days) -
-                                  TimeDelta::FromSeconds(15);
+      Time last_active_ping_day =
+          now - base::Days(active_ping_days) - base::Seconds(15);
       prefs->SetLastActivePingDay(id, last_active_ping_day);
     }
     if (active_bit)

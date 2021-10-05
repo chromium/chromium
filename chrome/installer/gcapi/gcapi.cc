@@ -51,7 +51,6 @@
 #include "google_update/google_update_idl.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::win::RegKey;
 using base::win::ScopedCOMInitializer;
 using base::win::ScopedHandle;
@@ -579,10 +578,10 @@ int __stdcall GoogleChromeDaysSinceLastRun() {
                                  &last_run) == ERROR_SUCCESS &&
           base::StringToInt64(last_run, &last_run_value)) {
         Time last_run_time = Time::FromInternalValue(last_run_value);
-        TimeDelta difference = Time::NowFromSystemTime() - last_run_time;
+        base::TimeDelta difference = Time::NowFromSystemTime() - last_run_time;
 
         // We can end up with negative numbers here, given changes in system
-        // clock time or due to TimeDelta's int64_t -> int truncation.
+        // clock time or due to base::TimeDelta's int64_t -> int truncation.
         int new_days_since_last_run = difference.InDays();
         if (new_days_since_last_run >= 0 &&
             new_days_since_last_run < days_since_last_run) {

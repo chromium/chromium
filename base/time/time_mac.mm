@@ -174,8 +174,8 @@ Time Time::FromCFAbsoluteTime(CFAbsoluteTime t) {
     return Time();  // Consider 0 as a null Time.
   return (t == std::numeric_limits<CFAbsoluteTime>::infinity())
              ? Max()
-             : (UnixEpoch() + TimeDelta::FromSecondsD(double{
-                                  t + kCFAbsoluteTimeIntervalSince1970}));
+             : (UnixEpoch() +
+                Seconds(double{t + kCFAbsoluteTimeIntervalSince1970}));
 }
 
 CFAbsoluteTime Time::ToCFAbsoluteTime() const {
@@ -203,7 +203,7 @@ NSDate* Time::ToNSDate() const {
 #if defined(OS_MAC)
 // static
 TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
-  return TimeDelta::FromMicroseconds(MachTimeToMicroseconds(mach_time));
+  return Microseconds(MachTimeToMicroseconds(mach_time));
 }
 #endif  // defined(OS_MAC)
 
@@ -211,7 +211,7 @@ TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
 
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
-  return TimeTicks() + TimeDelta::FromMicroseconds(ComputeCurrentTicks());
+  return TimeTicks() + Microseconds(ComputeCurrentTicks());
 }
 }  // namespace subtle
 
@@ -250,7 +250,7 @@ TimeTicks::Clock TimeTicks::GetClock() {
 
 namespace subtle {
 ThreadTicks ThreadTicksNowIgnoringOverride() {
-  return ThreadTicks() + TimeDelta::FromMicroseconds(ComputeThreadTicks());
+  return ThreadTicks() + Microseconds(ComputeThreadTicks());
 }
 }  // namespace subtle
 

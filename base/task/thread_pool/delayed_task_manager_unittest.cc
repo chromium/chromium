@@ -25,8 +25,8 @@ namespace base {
 namespace internal {
 namespace {
 
-constexpr TimeDelta kLongerDelay = TimeDelta::FromHours(3);
-constexpr TimeDelta kLongDelay = TimeDelta::FromHours(1);
+constexpr TimeDelta kLongerDelay = Hours(3);
+constexpr TimeDelta kLongDelay = Hours(1);
 
 class MockCallback {
  public:
@@ -191,19 +191,16 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTasksRunAfterDelay) {
   delayed_task_manager_.Start(service_thread_task_runner_);
 
   testing::StrictMock<MockCallback> mock_callback_a;
-  Task task_a = ConstructMockedTask(mock_callback_a,
-                                    service_thread_task_runner_->NowTicks(),
-                                    TimeDelta::FromHours(1));
+  Task task_a = ConstructMockedTask(
+      mock_callback_a, service_thread_task_runner_->NowTicks(), Hours(1));
 
   testing::StrictMock<MockCallback> mock_callback_b;
-  Task task_b = ConstructMockedTask(mock_callback_b,
-                                    service_thread_task_runner_->NowTicks(),
-                                    TimeDelta::FromHours(2));
+  Task task_b = ConstructMockedTask(
+      mock_callback_b, service_thread_task_runner_->NowTicks(), Hours(2));
 
   testing::StrictMock<MockCallback> mock_callback_c;
-  Task task_c = ConstructMockedTask(mock_callback_c,
-                                    service_thread_task_runner_->NowTicks(),
-                                    TimeDelta::FromHours(1));
+  Task task_c = ConstructMockedTask(
+      mock_callback_c, service_thread_task_runner_->NowTicks(), Hours(1));
 
   // Send tasks to the DelayedTaskManager.
   delayed_task_manager_.AddDelayedTask(std::move(task_a),
@@ -221,13 +218,13 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, DelayedTasksRunAfterDelay) {
   // |task_target_|.
   EXPECT_CALL(mock_callback_a, Run());
   EXPECT_CALL(mock_callback_c, Run());
-  service_thread_task_runner_->FastForwardBy(TimeDelta::FromHours(1));
+  service_thread_task_runner_->FastForwardBy(Hours(1));
   testing::Mock::VerifyAndClear(&mock_callback_a);
   testing::Mock::VerifyAndClear(&mock_callback_c);
 
   // Fast-forward time. Expect |task_b| to be forwarded to PostTaskNow().
   EXPECT_CALL(mock_callback_b, Run());
-  service_thread_task_runner_->FastForwardBy(TimeDelta::FromHours(1));
+  service_thread_task_runner_->FastForwardBy(Hours(1));
   testing::Mock::VerifyAndClear(&mock_callback_b);
 }
 

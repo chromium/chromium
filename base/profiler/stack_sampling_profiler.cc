@@ -549,7 +549,7 @@ void StackSamplingProfiler::SamplingThread::ScheduleShutdownIfIdle() {
   GetTaskRunnerOnSamplingThread()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&SamplingThread::ShutdownTask, Unretained(this), add_events),
-      TimeDelta::FromSeconds(60));
+      Seconds(60));
 }
 
 void StackSamplingProfiler::SamplingThread::AddAuxUnwinderTask(

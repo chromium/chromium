@@ -150,7 +150,7 @@ TEST_P(HistogramTest, BasicTest) {
   already_run = true;
 
   // Use standard macros (but with fixed samples)
-  LOCAL_HISTOGRAM_TIMES("Test2Histogram", TimeDelta::FromDays(1));
+  LOCAL_HISTOGRAM_TIMES("Test2Histogram", Days(1));
   LOCAL_HISTOGRAM_COUNTS("Test3Histogram", 30);
 
   LOCAL_HISTOGRAM_ENUMERATION("Test6Histogram", 129, 130);

@@ -3436,7 +3436,6 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
 TEST_F(WallpaperControllerWallpaperWebUiTest,
        UpdateDailyRefreshWallpaper_TimerStartsOnPrefServiceChange) {
   using base::Time;
-  using base::TimeDelta;
 
   SimulateUserLogin(account_id_1);
 
@@ -3451,21 +3450,18 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
 
   Time run_time =
       controller_->GetDailyRefreshTimerForTesting().desired_run_time();
-  TimeDelta delta = run_time.ToDeltaSinceWindowsEpoch();
+  base::TimeDelta delta = run_time.ToDeltaSinceWindowsEpoch();
 
-  TimeDelta update_time =
-      Time::Now().LocalMidnight().ToDeltaSinceWindowsEpoch() +
-      TimeDelta::FromDays(1);
+  base::TimeDelta update_time =
+      Time::Now().LocalMidnight().ToDeltaSinceWindowsEpoch() + base::Days(1);
 
-  ASSERT_GE(delta, update_time - TimeDelta::FromMinutes(1));
-  ASSERT_LE(delta,
-            update_time + TimeDelta::FromHours(1) + TimeDelta::FromMinutes(1));
+  ASSERT_GE(delta, update_time - base::Minutes(1));
+  ASSERT_LE(delta, update_time + base::Hours(1) + base::Minutes(1));
 }
 
 TEST_F(WallpaperControllerWallpaperWebUiTest,
        UpdateDailyRefreshWallpaper_RetryTimerTriggersOnFailedFetchInfo) {
   using base::Time;
-  using base::TimeDelta;
 
   client_.set_fetch_daily_refresh_info_fails(true);
 
@@ -3480,18 +3476,17 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   controller_->UpdateDailyRefreshWallpaperForTesting();
   Time run_time =
       controller_->GetDailyRefreshTimerForTesting().desired_run_time();
-  TimeDelta delay = run_time - Time::Now();
+  base::TimeDelta delay = run_time - Time::Now();
 
-  TimeDelta one_hour = TimeDelta::FromHours(1);
+  base::TimeDelta one_hour = base::Hours(1);
   // Lave a little wiggle room.
-  ASSERT_GE(delay, one_hour - TimeDelta::FromMinutes(1));
-  ASSERT_LE(delay, one_hour + TimeDelta::FromMinutes(1));
+  ASSERT_GE(delay, one_hour - base::Minutes(1));
+  ASSERT_LE(delay, one_hour + base::Minutes(1));
 }
 
 TEST_F(WallpaperControllerWallpaperWebUiTest,
        UpdateDailyRefreshWallpaper_RetryTimerTriggersOnFailedFetchData) {
   using base::Time;
-  using base::TimeDelta;
 
   SimulateUserLogin(account_id_1);
 
@@ -3509,12 +3504,12 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
 
   Time run_time =
       controller_->GetDailyRefreshTimerForTesting().desired_run_time();
-  TimeDelta delay = run_time - Time::Now();
+  base::TimeDelta delay = run_time - Time::Now();
 
-  TimeDelta one_hour = TimeDelta::FromHours(1);
+  base::TimeDelta one_hour = base::Hours(1);
   // Lave a little wiggle room.
-  ASSERT_GE(delay, one_hour - TimeDelta::FromMinutes(1));
-  ASSERT_LE(delay, one_hour + TimeDelta::FromMinutes(1));
+  ASSERT_GE(delay, one_hour - base::Minutes(1));
+  ASSERT_LE(delay, one_hour + base::Minutes(1));
 }
 
 TEST_F(WallpaperControllerWallpaperWebUiTest, MigrateCustomWallpaper) {

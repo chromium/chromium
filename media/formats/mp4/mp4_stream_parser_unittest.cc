@@ -40,7 +40,6 @@
 
 using ::testing::InSequence;
 using ::testing::StrictMock;
-using base::TimeDelta;
 
 namespace media {
 namespace mp4 {

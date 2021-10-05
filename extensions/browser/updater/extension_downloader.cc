@@ -52,7 +52,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::Time;
-using base::TimeDelta;
 using update_client::UpdateQueryParams;
 
 namespace extensions {
@@ -851,7 +850,7 @@ void ExtensionDownloader::HandleManifestResults(
   if (fetch_data->base_url().DomainIs(kGoogleDotCom) &&
       results->daystart_elapsed_seconds >= 0) {
     Time day_start =
-        Time::Now() - TimeDelta::FromSeconds(results->daystart_elapsed_seconds);
+        Time::Now() - base::Seconds(results->daystart_elapsed_seconds);
 
     for (const ExtensionId& id : extension_ids) {
       ExtensionDownloaderDelegate::PingResult& result = ping_results_[id];

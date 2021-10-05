@@ -27,7 +27,6 @@
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace cloud_print {
 
@@ -311,7 +310,7 @@ CloudPrintURLFetcherOverloadTest::HandleRawData(
     const net::URLFetcher* source,
     const GURL& url,
     const std::string& data) {
-  const TimeDelta one_second = TimeDelta::FromMilliseconds(1000);
+  const base::TimeDelta one_second = base::Milliseconds(1000);
   response_count_++;
   if (response_count_ < 20) {
     fetcher_->StartGetRequest(url, this, max_retries_);
@@ -337,7 +336,7 @@ CloudPrintURLFetcherRetryBackoffTest::HandleRawData(
 
 void CloudPrintURLFetcherRetryBackoffTest::OnRequestGiveUp() {
   // It takes more than 200 ms to finish all 11 requests.
-  EXPECT_TRUE(Time::Now() - start_time_ >= TimeDelta::FromMilliseconds(200));
+  EXPECT_TRUE(Time::Now() - start_time_ >= base::Milliseconds(200));
   std::move(quit_run_loop_).Run();
 }
 

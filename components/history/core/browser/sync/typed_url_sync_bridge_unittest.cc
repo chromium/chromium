@@ -33,7 +33,6 @@ namespace history {
 namespace {
 
 using base::Time;
-using base::TimeDelta;
 using sync_pb::TypedUrlSpecifics;
 using syncer::DataBatch;
 using syncer::EntityChange;
@@ -99,7 +98,7 @@ MATCHER(IsValidStorageKey, "") {
 
 Time SinceEpoch(int64_t microseconds_since_epoch) {
   return Time::FromDeltaSinceWindowsEpoch(
-      TimeDelta::FromMicroseconds(microseconds_since_epoch));
+      base::Microseconds(microseconds_since_epoch));
 }
 
 bool URLsEqual(const URLRow& row, const sync_pb::TypedUrlSpecifics& specifics) {

@@ -601,7 +601,7 @@ TEST_P(HintCacheTest, ParseEmptyFetchedHints) {
   const int kMemoryCacheSize = 5;
   CreateAndInitializeHintCache(kMemoryCacheSize);
 
-  base::Time stored_time = base::Time().Now() + base::TimeDelta().FromDays(1);
+  base::Time stored_time = base::Time().Now() + base::Days(1);
   std::unique_ptr<proto::GetHintsResponse> get_hints_response =
       std::make_unique<proto::GetHintsResponse>();
 
@@ -741,7 +741,7 @@ TEST_P(HintCacheTest, URLKeyedHintExpired) {
 
   EXPECT_TRUE(hint_cache()->GetURLKeyedHint(url));
 
-  MoveClockForwardBy(base::TimeDelta().FromSeconds(cache_duration_in_secs + 1));
+  MoveClockForwardBy(base::Seconds(cache_duration_in_secs + 1));
   EXPECT_FALSE(hint_cache()->GetURLKeyedHint(url));
 }
 
@@ -786,7 +786,7 @@ TEST_P(HintCacheTest, PurgeExpiredFetchedHints) {
   EXPECT_TRUE(hint_cache()->HasHint("shouldpurge.com"));
   EXPECT_TRUE(hint_cache()->HasHint("notpurged.com"));
 
-  MoveClockForwardBy(base::TimeDelta().FromSeconds(cache_duration_in_secs + 1));
+  MoveClockForwardBy(base::Seconds(cache_duration_in_secs + 1));
 
   hint_cache()->PurgeExpiredFetchedHints();
   RunUntilIdle();

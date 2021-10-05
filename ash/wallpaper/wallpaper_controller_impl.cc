@@ -2595,15 +2595,14 @@ void WallpaperControllerImpl::OnSetDailyWallpaper(
 
 void WallpaperControllerImpl::StartDailyRefreshTimer() {
   using base::Time;
-  using base::TimeDelta;
 
-  TimeDelta daily_refresh_delay = GetTimeToNextDailyRefreshUpdate();
+  base::TimeDelta daily_refresh_delay = GetTimeToNextDailyRefreshUpdate();
 
   // Add random delay within 1 hour, to prevent hot spotting, and reduce
   // multiple wallpaper transitions for sync users with multiple devices
-  auto random_delay = TimeDelta::FromMillisecondsD(
-      base::RandDouble() * Time::kMillisecondsPerSecond *
-      Time::kSecondsPerHour);
+  auto random_delay =
+      base::Milliseconds(base::RandDouble() * Time::kMillisecondsPerSecond *
+                         Time::kSecondsPerHour);
   daily_refresh_delay += random_delay;
 
   StartDailyRefreshTimer(daily_refresh_delay);

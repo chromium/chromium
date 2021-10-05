@@ -49,7 +49,7 @@ void RunNestedLoopTask(int* counter) {
                           Unretained(counter)));
 
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   nested_run_loop.Run();
 
@@ -253,7 +253,7 @@ TEST_P(RunLoopTest, QuitWhenIdle) {
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                           MakeExpectedRunClosure(FROM_HERE));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   run_loop_.Run();
   EXPECT_EQ(1, counter);
@@ -269,7 +269,7 @@ TEST_P(RunLoopTest, QuitWhenIdleNestedLoop) {
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                           MakeExpectedRunClosure(FROM_HERE));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   run_loop_.Run();
   EXPECT_EQ(3, counter);
@@ -281,7 +281,7 @@ TEST_P(RunLoopTest, QuitWhenIdleClosure) {
   ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                           MakeExpectedRunClosure(FROM_HERE));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), TimeDelta::FromDays(1));
+      FROM_HERE, MakeExpectedNotRunClosure(FROM_HERE), Days(1));
 
   run_loop_.Run();
 }

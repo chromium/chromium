@@ -82,7 +82,6 @@
 #include "content/public/common/profiling_utils.h"
 #endif
 
-using base::TimeDelta;
 
 namespace browser_shutdown {
 namespace {
@@ -333,7 +332,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
     // Measure total shutdown time as late in the process as possible
     // and then write it to a file to be read at startup.
     // We can't use prefs since all services are shutdown at this point.
-    TimeDelta shutdown_delta = base::Time::Now() - *g_shutdown_started;
+    base::TimeDelta shutdown_delta = base::Time::Now() - *g_shutdown_started;
     std::string shutdown_ms =
         base::NumberToString(shutdown_delta.InMilliseconds());
     int len = static_cast<int>(shutdown_ms.length()) + 1;
@@ -396,9 +395,9 @@ void ReadLastShutdownFile(ShutdownType type,
     return;
 
   base::UmaHistogramMediumTimes(time2_metric_name,
-                                TimeDelta::FromMilliseconds(shutdown_ms));
+                                base::Milliseconds(shutdown_ms));
   base::UmaHistogramTimes(per_proc_metric_name,
-                          TimeDelta::FromMilliseconds(shutdown_ms / num_procs));
+                          base::Milliseconds(shutdown_ms / num_procs));
   base::UmaHistogramCounts100("Shutdown.renderers.total", num_procs);
   base::UmaHistogramCounts100("Shutdown.renderers.slow", num_procs_slow);
 }

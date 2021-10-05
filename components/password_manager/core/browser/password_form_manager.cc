@@ -52,7 +52,6 @@ using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
 using autofill::SINGLE_USERNAME;
 using autofill::password_generation::PasswordGenerationType;
-using base::TimeDelta;
 using base::TimeTicks;
 
 using Logger = autofill::SavePasswordProgressLogger;
@@ -63,8 +62,8 @@ bool PasswordFormManager::wait_for_server_predictions_for_filling_ = true;
 
 namespace {
 
-constexpr TimeDelta kMaxFillingDelayForServerPredictions =
-    TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kMaxFillingDelayForServerPredictions =
+    base::Milliseconds(500);
 
 // Returns bit masks with differences in forms attributes which are important
 // for parsing. Bits are set according to enum FormDataDifferences.

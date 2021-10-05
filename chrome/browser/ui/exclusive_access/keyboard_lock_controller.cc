@@ -19,7 +19,6 @@
 #include "content/public/common/content_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using content::WebContents;
 
@@ -32,10 +31,10 @@ const char kForcedBubbleReshowsHistogramName[] =
     "ExclusiveAccess.BubbleReshowsPerSession.KeyboardLockForced";
 
 // Amount of time the user must hold ESC to exit full screen.
-constexpr TimeDelta kHoldEscapeTime = TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kHoldEscapeTime = base::Milliseconds(1500);
 
 // Amount of time to look for ESC key presses to reshow the exit instructions.
-constexpr TimeDelta kDefaultEscRepeatWindow = TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kDefaultEscRepeatWindow = base::Seconds(1);
 
 // Number of times ESC must be pressed within |kDefaultEscRepeatWindow| to
 // trigger the exit instructions to be shown again.

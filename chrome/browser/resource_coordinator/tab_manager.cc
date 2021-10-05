@@ -74,7 +74,6 @@
 #include "chrome/browser/resource_coordinator/tab_manager_delegate_chromeos.h"
 #endif
 
-using base::TimeDelta;
 using base::TimeTicks;
 using content::BrowserThread;
 using content::WebContents;

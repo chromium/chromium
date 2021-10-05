@@ -63,7 +63,6 @@
 #endif
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 using favicon::FaviconBitmap;
 using favicon::FaviconBitmapID;
@@ -536,7 +535,7 @@ void HistoryBackend::UpdateVisitDuration(VisitID visit_id, const Time end_ts) {
     // We should never have a negative duration time even when time is skewed.
     visit_row.visit_duration = end_ts > visit_row.visit_time
                                    ? end_ts - visit_row.visit_time
-                                   : TimeDelta::FromMicroseconds(0);
+                                   : base::Microseconds(0);
     db_->UpdateVisitRow(visit_row);
   }
 }
@@ -916,7 +915,7 @@ void HistoryBackend::InitImpl(
   db_->GetStartDate(&first_recorded_time_);
 
   // Start expiring old stuff.
-  expirer_.StartExpiringOldStuff(TimeDelta::FromDays(kExpireDaysThreshold));
+  expirer_.StartExpiringOldStuff(base::Days(kExpireDaysThreshold));
 
   LOCAL_HISTOGRAM_TIMES("History.InitTime", TimeTicks::Now() - beginning_time);
 }

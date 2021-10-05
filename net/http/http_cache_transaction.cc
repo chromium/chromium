@@ -54,7 +54,6 @@
 #include "net/ssl/ssl_config_service.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace net {
@@ -63,7 +62,7 @@ using CacheEntryStatus = HttpResponseInfo::CacheEntryStatus;
 
 namespace {
 
-constexpr TimeDelta kStaleRevalidateTimeout = TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kStaleRevalidateTimeout = base::Seconds(60);
 
 // From http://tools.ietf.org/html/draft-ietf-httpbis-p6-cache-21#section-6
 //      a "non-error response" is one with a 2xx (Successful) or 3xx
@@ -1361,7 +1360,7 @@ void HttpCache::Transaction::AddCacheLockTimeoutHandler(ActiveEntry* entry) {
         FROM_HERE,
         base::BindOnce(&HttpCache::Transaction::OnCacheLockTimeout,
                        weak_factory_.GetWeakPtr(), entry_lock_waiting_since_),
-        TimeDelta::FromMilliseconds(timeout_milliseconds));
+        base::Milliseconds(timeout_milliseconds));
   }
 }
 
@@ -1369,7 +1368,7 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
   TRACE_EVENT0("io", "HttpCacheTransaction::DoAddToEntryComplete");
   net_log_.EndEventWithNetErrorCode(NetLogEventType::HTTP_CACHE_ADD_TO_ENTRY,
                                     result);
-  const TimeDelta entry_lock_wait =
+  const base::TimeDelta entry_lock_wait =
       TimeTicks::Now() - entry_lock_waiting_since_;
   UMA_HISTOGRAM_TIMES("HttpCache.EntryLockWait", entry_lock_wait);
 
@@ -2712,12 +2711,12 @@ ValidationType HttpCache::Transaction::RequiresValidation() {
   if (effective_load_flags_ & LOAD_SKIP_CACHE_VALIDATION)
     return VALIDATION_NONE;
 
-  TimeDelta response_time_in_cache =
+  base::TimeDelta response_time_in_cache =
       cache_->clock_->Now() - response_.response_time;
   if (response_.unused_since_prefetch &&
       !(effective_load_flags_ & LOAD_PREFETCH) &&
-      (response_time_in_cache < TimeDelta::FromMinutes(kPrefetchReuseMins)) &&
-      (response_time_in_cache >= TimeDelta())) {
+      (response_time_in_cache < base::Minutes(kPrefetchReuseMins)) &&
+      (response_time_in_cache >= base::TimeDelta())) {
     // The first use of a resource after prefetch within a short window skips
     // validation.
     return VALIDATION_NONE;
@@ -3496,7 +3495,7 @@ void HttpCache::Transaction::RecordHistograms() {
   DCHECK(!first_cache_access_since_.is_null());
 
   base::TimeTicks now = base::TimeTicks::Now();
-  TimeDelta total_time = now - first_cache_access_since_;
+  base::TimeDelta total_time = now - first_cache_access_since_;
 
   UMA_HISTOGRAM_TIMES("HttpCache.AccessToDone", total_time);
 
@@ -3517,8 +3516,9 @@ void HttpCache::Transaction::RecordHistograms() {
     return;
   }
 
-  TimeDelta before_send_time = send_request_since_ - first_cache_access_since_;
-  TimeDelta after_send_time = now - send_request_since_;
+  base::TimeDelta before_send_time =
+      send_request_since_ - first_cache_access_since_;
+  base::TimeDelta after_send_time = now - send_request_since_;
 
   UMA_HISTOGRAM_TIMES("HttpCache.AccessToDone.SentRequest", total_time);
   UMA_HISTOGRAM_TIMES("HttpCache.BeforeSend", before_send_time);

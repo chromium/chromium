@@ -71,7 +71,6 @@
 #include "url/url_util.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace net {
 
@@ -427,7 +426,7 @@ Time CanonicalCookie::CanonExpiration(const ParsedCookie& pc,
         return Time::Min();
       // "... Otherwise, let the expiry-time be the current date and time plus
       // delta-seconds seconds."
-      return current + TimeDelta::FromSeconds(max_age);
+      return current + base::Seconds(max_age);
     } else {
       // If the conversion wasn't perfect, but the best-effort conversion
       // resulted in an overflow/underflow, use the min/max representable time.

@@ -79,14 +79,14 @@ class BASE_EXPORT StackSamplingProfiler {
   // Represents parameters that configure the sampling.
   struct BASE_EXPORT SamplingParams {
     // Time to delay before first samples are taken.
-    TimeDelta initial_delay = TimeDelta::FromMilliseconds(0);
+    TimeDelta initial_delay = Milliseconds(0);
 
     // Number of samples to record per profile.
     int samples_per_profile = 300;
 
     // Interval between samples during a sampling profile. This is the desired
     // duration from the start of one sample to the start of the next sample.
-    TimeDelta sampling_interval = TimeDelta::FromMilliseconds(100);
+    TimeDelta sampling_interval = Milliseconds(100);
   };
 
   // Returns true if the profiler is supported on the current platform

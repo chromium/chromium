@@ -17,7 +17,6 @@
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 using ::testing::A;
 using ::testing::AtLeast;
 using ::testing::InSequence;
@@ -219,7 +218,7 @@ TEST_F(DialRegistryTest, TestDeviceExpires) {
   EXPECT_CALL(mock_observer_,
               OnDialDeviceEvent(list_with_first_second_devices_));
 
-  AdvanceTime(TimeDelta::FromSeconds(100));
+  AdvanceTime(base::Seconds(100));
   DialDeviceData second_device_discovered_later = second_device_;
   second_device_discovered_later.set_response_time(Now());
 
@@ -233,7 +232,7 @@ TEST_F(DialRegistryTest, TestDeviceExpires) {
   EXPECT_CALL(registry_->mock_service(), Discover());
   EXPECT_CALL(mock_observer_, OnDialDeviceEvent(list_with_second_device_));
 
-  AdvanceTime(TimeDelta::FromSeconds(200));
+  AdvanceTime(base::Seconds(200));
   registry_->DoDiscovery();
   registry_->OnDiscoveryRequest(nullptr);
   registry_->OnDiscoveryFinished(nullptr);
@@ -243,7 +242,7 @@ TEST_F(DialRegistryTest, TestDeviceExpires) {
   EXPECT_CALL(registry_->mock_service(), Discover());
   EXPECT_CALL(mock_observer_, OnDialDeviceEvent(empty_list_));
 
-  AdvanceTime(TimeDelta::FromSeconds(200));
+  AdvanceTime(base::Seconds(200));
   registry_->DoDiscovery();
   registry_->OnDiscoveryRequest(nullptr);
   registry_->OnDiscoveryFinished(nullptr);
@@ -272,14 +271,14 @@ TEST_F(DialRegistryTest, TestExpiredDeviceIsRediscovered) {
   registry_->OnDiscoveryFinished(nullptr);
 
   // Will expire "first" device as it is not discovered this time.
-  AdvanceTime(TimeDelta::FromSeconds(300));
+  AdvanceTime(base::Seconds(300));
   registry_->DoDiscovery();
   registry_->OnDiscoveryRequest(nullptr);
   registry_->OnDiscoveryFinished(nullptr);
 
   // "first" device is rediscovered 300 seconds later.  We pass a device object
   // with a newer discovery time so it is not pruned immediately.
-  AdvanceTime(TimeDelta::FromSeconds(300));
+  AdvanceTime(base::Seconds(300));
   DialDeviceData rediscovered_device = first_device_;
   rediscovered_device.set_response_time(Now());
 

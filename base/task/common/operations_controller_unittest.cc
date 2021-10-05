@@ -156,7 +156,7 @@ TEST(OperationsControllerTest, BeginsFromMultipleThreads) {
     }
 
     // Wait a bit before starting to try to introduce races.
-    constexpr TimeDelta kRaceInducingTimeout = TimeDelta::FromMicroseconds(50);
+    constexpr TimeDelta kRaceInducingTimeout = Microseconds(50);
     PlatformThread::Sleep(kRaceInducingTimeout);
 
     ref_controller.StartAcceptingOperations();
@@ -164,7 +164,7 @@ TEST(OperationsControllerTest, BeginsFromMultipleThreads) {
     started.store(true, std::memory_order_relaxed);
 
     // Let the test run for a while before shuting down.
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(5));
+    PlatformThread::Sleep(Milliseconds(5));
     ref_controller.ShutdownAndWaitForZeroOperations();
     for (const auto& t : threads) {
       t->Join();

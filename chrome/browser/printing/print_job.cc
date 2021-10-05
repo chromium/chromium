@@ -37,7 +37,6 @@
 #include "printing/printing_features.h"
 #endif
 
-using base::TimeDelta;
 
 namespace printing {
 

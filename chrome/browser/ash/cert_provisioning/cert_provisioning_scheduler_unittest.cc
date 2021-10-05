@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::test::ParseJson;
 using testing::_;
 using testing::AtLeast;
@@ -47,7 +46,7 @@ constexpr char kWifiServiceGuid[] = "wifi_guid";
 constexpr char kCertProfileId[] = "cert_profile_id_1";
 constexpr char kCertProfileName[] = "Certificate Profile 1";
 constexpr char kCertProfileVersion[] = "cert_profile_version_1";
-constexpr TimeDelta kCertProfileRenewalPeriod = TimeDelta::FromSeconds(0);
+constexpr base::TimeDelta kCertProfileRenewalPeriod = base::Seconds(0);
 
 void VerifyDeleteKeysByPrefixCalledOnce(CertScope cert_scope) {
   const std::vector<::attestation::DeleteKeysRequest> delete_keys_history =
@@ -124,7 +123,7 @@ class CertProvisioningSchedulerTest : public testing::Test {
     AddOnlineWifiNetwork();
   }
 
-  void FastForwardBy(TimeDelta delta) {
+  void FastForwardBy(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
   }
 
@@ -199,7 +198,7 @@ TEST_F(CertProvisioningSchedulerTest, Success) {
       std::move(mock_invalidation_factory_obj));
 
   // The policy is empty, so no workers should be created yet.
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
 
   EXPECT_CALL(*mock_invalidation_factory, Create)
@@ -245,7 +244,7 @@ TEST_F(CertProvisioningSchedulerTest, Success) {
   // do so).
   scheduler.UpdateAllCerts();
 
-  FastForwardBy(TimeDelta::FromSeconds(100));
+  FastForwardBy(base::Seconds(100));
 }
 
 TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
@@ -258,7 +257,7 @@ TEST_F(CertProvisioningSchedulerTest, WorkerFailed) {
       MakeFakeInvalidationFactory());
 
   // The policy is empty, so no workers should be created yet.
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
 
   // From CertProvisioningScheduler::CleanVaKeysIfIdle.
@@ -329,7 +328,7 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
                           cert_profile);
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 
   // Emulate callback from the worker.
@@ -341,7 +340,7 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
       base::Contains(scheduler.GetFailedCertProfileIds(), kCertProfileId));
 
   // No workers should be created yet.
-  FastForwardBy(TimeDelta::FromHours(20));
+  FastForwardBy(base::Hours(20));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
 
   // From CertProvisioningSchedulerImpl::CleanVaKeysIfIdle.
@@ -353,7 +352,7 @@ TEST_F(CertProvisioningSchedulerTest, InitialAndDailyUpdates) {
       mock_factory_.ExpectCreateReturnMock(kCertScope, cert_profile);
   worker2->SetExpectations(/*do_step_times=*/AtLeast(1), /*is_waiting=*/false,
                            cert_profile);
-  FastForwardBy(TimeDelta::FromHours(5));
+  FastForwardBy(base::Hours(5));
   ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 
   // Emulate callback from the worker.
@@ -374,7 +373,7 @@ TEST_F(CertProvisioningSchedulerTest, MultipleWorkers) {
       MakeFakeInvalidationFactory());
 
   // The policy is empty, so no workers should be created yet.
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
 
   // From CertProvisioningScheduler::CleanVaKeysIfIdle.
@@ -487,7 +486,7 @@ TEST_F(CertProvisioningSchedulerTest, RemoveCertWithoutPolicy) {
                         /*callback=*/_))
       .Times(1);
 
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
@@ -536,7 +535,7 @@ TEST_F(CertProvisioningSchedulerTest, DeserializeWorkers) {
       MakeFakeInvalidationFactory());
 
   // Now one worker should be created.
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 }
 
@@ -553,7 +552,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
       MakeFakeInvalidationFactory());
 
   // The policy is empty, so no workers should be created yet.
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
 
   // From CertProvisioningScheduler::CleanVaKeysIfIdle.
@@ -595,7 +594,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
                           cert_profile_v1);
 
   // After some delay a new worker should be created to try again.
-  FastForwardBy(TimeDelta::FromSeconds(31));
+  FastForwardBy(base::Seconds(31));
   EXPECT_EQ(scheduler.GetWorkers().size(), 1U);
 
   // Emulate callback from the worker.
@@ -645,7 +644,7 @@ TEST_F(CertProvisioningSchedulerTest, InconsistentDataErrorHandling) {
   pref_service_.Set(GetPrefNameForCertProfiles(kCertScope), config);
 
   // Emulate that after some time the worker reports back to scheduler.
-  FastForwardBy(TimeDelta::FromSeconds(10));
+  FastForwardBy(base::Seconds(10));
   scheduler.OnProfileFinished(
       cert_profile_v1, CertProvisioningWorkerState::kInconsistentDataError);
   EXPECT_EQ(scheduler.GetWorkers().size(), 0U);
@@ -673,7 +672,7 @@ TEST_F(CertProvisioningSchedulerTest, RetryAfterNoInternetConnection) {
       network_state_test_helper_.network_state_handler(),
       MakeFakeInvalidationFactory());
 
-  FastForwardBy(TimeDelta::FromHours(72));
+  FastForwardBy(base::Hours(72));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
 
   // From CertProvisioningScheduler::CleanVaKeysIfIdle.
@@ -721,7 +720,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteWorkerWithoutPolicy) {
   pref_service_.Set(GetPrefNameForCertProfiles(kCertScope), config);
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
 
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   EXPECT_EQ(scheduler.GetWorkers().size(), 1U);
 
   EXPECT_CALL(*worker, Stop(CertProvisioningWorkerState::kCanceled));
@@ -729,7 +728,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteWorkerWithoutPolicy) {
   config = ParseJson("[]");
   pref_service_.Set(GetPrefNameForCertProfiles(kCertScope), config);
 
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   // Emulate callback from the worker.
   scheduler.OnProfileFinished(cert_profile,
                               CertProvisioningWorkerState::kCanceled);
@@ -750,7 +749,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
         network_state_test_helper_.network_state_handler(),
         MakeFakeInvalidationFactory());
 
-    FastForwardBy(TimeDelta::FromSeconds(1));
+    FastForwardBy(base::Seconds(1));
 
     // From CertProvisioningScheduler::CleanVaKeysIfIdle.
     VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
@@ -797,7 +796,7 @@ TEST_F(CertProvisioningSchedulerTest, DeleteVaKeysOnIdle) {
         network_state_test_helper_.network_state_handler(),
         MakeFakeInvalidationFactory());
 
-    FastForwardBy(TimeDelta::FromSeconds(1));
+    FastForwardBy(base::Seconds(1));
 
     ExpectDeleteKeysByPrefixNeverCalled();
   }
@@ -816,14 +815,14 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
                            kCertProfileVersion,
                            /*is_va_enabled=*/true, kCertProfileRenewalPeriod);
 
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
 
   // From CertProvisioningScheduler::CleanVaKeysIfIdle.
   VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // There is no policies yet, |kCertProfileId| will not be found.
   scheduler.UpdateOneCert(kCertProfileId);
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   ASSERT_TRUE(scheduler.GetWorkers().empty());
 
   MockCertProvisioningWorker* worker =
@@ -839,7 +838,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
            "policy_version":"cert_profile_version_1",
            "key_algorithm":"rsa"}])");
   pref_service_.Set(GetPrefNameForCertProfiles(kCertScope), config);
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
 
   // If worker is waiting, it should be continued.
   {
@@ -847,7 +846,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
                             /*is_waiting=*/true, cert_profile);
 
     scheduler.UpdateOneCert(kCertProfileId);
-    FastForwardBy(TimeDelta::FromSeconds(1));
+    FastForwardBy(base::Seconds(1));
     ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
   }
 
@@ -857,7 +856,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
                             /*is_waiting=*/false, cert_profile);
 
     scheduler.UpdateOneCert(kCertProfileId);
-    FastForwardBy(TimeDelta::FromSeconds(1));
+    FastForwardBy(base::Seconds(1));
     ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
   }
 
@@ -870,7 +869,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
                             /*is_waiting=*/true, cert_profile);
 
     scheduler.UpdateOneCert(kCertProfileId);
-    FastForwardBy(TimeDelta::FromSeconds(1));
+    FastForwardBy(base::Seconds(1));
     ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 
     worker->SetExpectations(/*do_step_times=*/Exactly(1),
@@ -882,7 +881,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
   // Emulate callback from the worker.
   scheduler.OnProfileFinished(cert_profile,
                               CertProvisioningWorkerState::kSucceeded);
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   ASSERT_TRUE(scheduler.GetWorkers().empty());
 
   certificate_helper_->AddCert(kCertScope, kCertProfileId);
@@ -890,7 +889,7 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
   {
     // If a certificate already exists, a new worker should not be created.
     scheduler.UpdateOneCert(kCertProfileId);
-    FastForwardBy(TimeDelta::FromSeconds(1));
+    FastForwardBy(base::Seconds(1));
     ASSERT_TRUE(scheduler.GetWorkers().empty());
   }
 }
@@ -898,14 +897,14 @@ TEST_F(CertProvisioningSchedulerTest, UpdateOneCert) {
 TEST_F(CertProvisioningSchedulerTest, CertRenewal) {
   const CertScope kCertScope = CertScope::kUser;
   // 1 day == 86400 seconds.
-  const TimeDelta kRenewalPeriod = TimeDelta::FromDays(1);
+  const base::TimeDelta kRenewalPeriod = base::Days(1);
 
   CertProfile cert_profile(kCertProfileId, kCertProfileName,
                            kCertProfileVersion,
                            /*is_va_enabled=*/true, kRenewalPeriod);
 
-  const Time t1 = Time::Now() - TimeDelta::FromDays(1);
-  const Time t2 = Time::Now() + TimeDelta::FromDays(7);
+  const Time t1 = Time::Now() - base::Days(1);
+  const Time t2 = Time::Now() + base::Days(7);
   certificate_helper_->AddCert(kCertScope, kCertProfileId,
                                chromeos::platform_keys::Status::kSuccess,
                                /*nat_valid_before=*/t1, /*not_valid_after=*/t2);
@@ -928,14 +927,14 @@ TEST_F(CertProvisioningSchedulerTest, CertRenewal) {
 
   // The certificate already exists, nothing should happen on scheduler
   // creation.
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
 
   // From CertProvisioningScheduler::CleanVaKeysIfIdle.
   VerifyDeleteKeysByPrefixCalledOnce(kCertScope);
 
   // Also nothing should happen in the next ~6 days.
-  FastForwardBy(TimeDelta::FromDays(5) + TimeDelta::FromHours(23));
+  FastForwardBy(base::Days(5) + base::Hours(23));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
 
   MockCertProvisioningWorker* worker =
@@ -945,7 +944,7 @@ TEST_F(CertProvisioningSchedulerTest, CertRenewal) {
 
   // One day (according to the policy) before the certificate expires, scheduler
   // should create a new worker to provision a replacement.
-  FastForwardBy(TimeDelta::FromHours(1));
+  FastForwardBy(base::Hours(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 1U);
 }
 
@@ -1013,7 +1012,7 @@ TEST_F(CertProvisioningSchedulerTest, StateChangeNotifications) {
   scheduler.AddObserver(&observer);
 
   // The policy is empty, so no workers should be created yet.
-  FastForwardBy(TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   ASSERT_EQ(scheduler.GetWorkers().size(), 0U);
 
   // From CertProvisioningScheduler::CleanVaKeysIfIdle.

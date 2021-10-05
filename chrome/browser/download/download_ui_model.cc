@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/note_taking_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using base::TimeDelta;
 using download::DownloadItem;
 using offline_items_collection::FailState;
 using safe_browsing::DownloadFileType;
@@ -666,7 +665,7 @@ std::u16string DownloadUIModel::GetInProgressStatusText() const {
   DCHECK_EQ(DownloadItem::IN_PROGRESS, GetState());
   const auto web_drive = GetWebDriveName();
 
-  TimeDelta time_remaining;
+  base::TimeDelta time_remaining;
   // time_remaining is only known if the download isn't paused, and it isn't
   // going to be rerouted to a web drive.
   bool time_remaining_known =

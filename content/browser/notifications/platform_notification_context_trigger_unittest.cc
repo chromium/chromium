@@ -23,7 +23,6 @@
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace content {
 
@@ -134,11 +133,11 @@ class PlatformNotificationContextTriggerTest : public ::testing::Test {
 };
 
 TEST_F(PlatformNotificationContextTriggerTest, TriggerInFuture) {
-  WriteNotificationData("1", Time::Now() + TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() + base::Seconds(10));
   ASSERT_EQ(0u, GetDisplayedNotifications().size());
 
   // Wait until the trigger timestamp is reached.
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // This gets called by the notification scheduling system.
   TriggerNotifications();
@@ -148,7 +147,7 @@ TEST_F(PlatformNotificationContextTriggerTest, TriggerInFuture) {
 
 TEST_F(PlatformNotificationContextTriggerTest, TriggerInPast) {
   // Trigger timestamp in the past should immediately trigger.
-  WriteNotificationData("1", Time::Now() - TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() - base::Seconds(10));
 
   // This gets called by the notification scheduling system.
   TriggerNotifications();
@@ -158,19 +157,19 @@ TEST_F(PlatformNotificationContextTriggerTest, TriggerInPast) {
 
 TEST_F(PlatformNotificationContextTriggerTest,
        OverwriteExistingTriggerInFuture) {
-  WriteNotificationData("1", Time::Now() + TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() + base::Seconds(10));
   ASSERT_EQ(0u, GetDisplayedNotifications().size());
 
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
   ASSERT_EQ(0u, GetDisplayedNotifications().size());
 
   // Overwrites the scheduled notifications with a new trigger timestamp.
-  WriteNotificationData("1", Time::Now() + TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() + base::Seconds(10));
 
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
   ASSERT_EQ(0u, GetDisplayedNotifications().size());
 
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   // This gets called by the notification scheduling system.
   TriggerNotifications();
@@ -179,13 +178,13 @@ TEST_F(PlatformNotificationContextTriggerTest,
 }
 
 TEST_F(PlatformNotificationContextTriggerTest, OverwriteExistingTriggerToPast) {
-  WriteNotificationData("1", Time::Now() + TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() + base::Seconds(10));
   ASSERT_EQ(0u, GetDisplayedNotifications().size());
 
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   // Overwrites the scheduled notifications with a new trigger timestamp.
-  WriteNotificationData("1", Time::Now() - TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() - base::Seconds(10));
 
   // This gets called by the notification scheduling system.
   TriggerNotifications();
@@ -195,11 +194,11 @@ TEST_F(PlatformNotificationContextTriggerTest, OverwriteExistingTriggerToPast) {
 
 TEST_F(PlatformNotificationContextTriggerTest,
        OverwriteDisplayedNotificationToPast) {
-  WriteNotificationData("1", Time::Now() + TimeDelta::FromSeconds(10));
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() + base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // Overwrites a displayed notification with a trigger timestamp in the past.
-  WriteNotificationData("1", Time::Now() - TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() - base::Seconds(10));
 
   // This gets called by the notification scheduling system.
   TriggerNotifications();
@@ -209,19 +208,19 @@ TEST_F(PlatformNotificationContextTriggerTest,
 
 TEST_F(PlatformNotificationContextTriggerTest,
        OverwriteDisplayedNotificationToFuture) {
-  WriteNotificationData("1", Time::Now() + TimeDelta::FromSeconds(10));
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() + base::Seconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // This gets called by the notification scheduling system.
   TriggerNotifications();
 
   // Overwrites a displayed notification which hides it until the trigger
   // timestamp is reached.
-  WriteNotificationData("1", Time::Now() + TimeDelta::FromSeconds(10));
+  WriteNotificationData("1", Time::Now() + base::Seconds(10));
 
   ASSERT_EQ(0u, GetDisplayedNotifications().size());
 
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(10));
+  task_environment_.FastForwardBy(base::Seconds(10));
 
   // This gets called by the notification scheduling system.
   TriggerNotifications();
@@ -232,27 +231,25 @@ TEST_F(PlatformNotificationContextTriggerTest,
 TEST_F(PlatformNotificationContextTriggerTest,
        LimitsNumberOfScheduledNotificationsPerOrigin) {
   for (int i = 1; i <= kMaximumScheduledNotificationsPerOrigin; ++i) {
-    WriteNotificationData(std::to_string(i),
-                          Time::Now() + TimeDelta::FromSeconds(i));
+    WriteNotificationData(std::to_string(i), Time::Now() + base::Seconds(i));
   }
 
   ASSERT_FALSE(TryWriteNotificationData(
       "https://example.com",
       std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
       Time::Now() +
-          TimeDelta::FromSeconds(kMaximumScheduledNotificationsPerOrigin + 1)));
+          base::Seconds(kMaximumScheduledNotificationsPerOrigin + 1)));
 
   ASSERT_TRUE(TryWriteNotificationData(
       "https://example2.com",
       std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
       Time::Now() +
-          TimeDelta::FromSeconds(kMaximumScheduledNotificationsPerOrigin + 1)));
+          base::Seconds(kMaximumScheduledNotificationsPerOrigin + 1)));
 }
 
 TEST_F(PlatformNotificationContextTriggerTest, EnforcesLimitOnUpdate) {
   for (int i = 1; i <= kMaximumScheduledNotificationsPerOrigin; ++i) {
-    WriteNotificationData(std::to_string(i),
-                          Time::Now() + TimeDelta::FromSeconds(i));
+    WriteNotificationData(std::to_string(i), Time::Now() + base::Seconds(i));
   }
 
   ASSERT_TRUE(TryWriteNotificationData(
@@ -264,13 +261,13 @@ TEST_F(PlatformNotificationContextTriggerTest, EnforcesLimitOnUpdate) {
       "https://example.com",
       std::to_string(kMaximumScheduledNotificationsPerOrigin + 1),
       Time::Now() +
-          TimeDelta::FromSeconds(kMaximumScheduledNotificationsPerOrigin + 1)));
+          base::Seconds(kMaximumScheduledNotificationsPerOrigin + 1)));
 }
 
 TEST_F(PlatformNotificationContextTriggerTest, RecordDisplayDelay) {
   base::HistogramTester histogram_tester;
-  base::TimeDelta trigger_delay = TimeDelta::FromSeconds(10);
-  base::TimeDelta display_delay = TimeDelta::FromSeconds(8);
+  base::TimeDelta trigger_delay = base::Seconds(10);
+  base::TimeDelta display_delay = base::Seconds(8);
 
   WriteNotificationData("1", Time::Now() + trigger_delay);
   ASSERT_EQ(0u, GetDisplayedNotifications().size());

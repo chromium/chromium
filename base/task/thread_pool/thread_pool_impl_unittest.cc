@@ -298,7 +298,7 @@ class ThreadPoolImplTestBase : public testing::Test {
 
   void StartThreadPool(
       int max_num_foreground_threads = kMaxNumForegroundThreads,
-      TimeDelta reclaim_time = TimeDelta::FromSeconds(30)) {
+      TimeDelta reclaim_time = Seconds(30)) {
     SetupFeatures();
 
     ThreadPoolInstance::InitParams init_params(max_num_foreground_threads);

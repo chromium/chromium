@@ -53,7 +53,6 @@
 #include "ui/wm/public/activation_client.h"
 
 using base::ProcessHandle;
-using base::TimeDelta;
 using base::TimeTicks;
 using content::BrowserThread;
 
@@ -300,9 +299,8 @@ void TabManagerDelegate::OnWindowActivated(
     // If the timer is already running (possibly for a tab), it'll be reset
     // here.
     focus_process_score_adjust_timer_.Start(
-        FROM_HERE,
-        TimeDelta::FromMilliseconds(kFocusedProcessScoreAdjustIntervalMs), this,
-        &TabManagerDelegate::ScheduleEarlyOomPrioritiesAdjustment);
+        FROM_HERE, base::Milliseconds(kFocusedProcessScoreAdjustIntervalMs),
+        this, &TabManagerDelegate::ScheduleEarlyOomPrioritiesAdjustment);
   }
   if (ash::IsArcWindow(lost_active)) {
     // Do not bother adjusting OOM score if the ARC window is deactivated
@@ -401,9 +399,8 @@ void TabManagerDelegate::AdjustFocusedTabScore(base::ProcessHandle pid) {
     // If there's an existing running timer (could be for ARC app), it
     // would be replaced by a new task.
     focus_process_score_adjust_timer_.Start(
-        FROM_HERE,
-        TimeDelta::FromMilliseconds(kFocusedProcessScoreAdjustIntervalMs), this,
-        &TabManagerDelegate::OnFocusTabScoreAdjustmentTimeout);
+        FROM_HERE, base::Milliseconds(kFocusedProcessScoreAdjustIntervalMs),
+        this, &TabManagerDelegate::OnFocusTabScoreAdjustmentTimeout);
   }
 }
 
@@ -629,7 +626,7 @@ void TabManagerDelegate::LowMemoryKillImpl(
         << "Unable to kill enough candidates to meet target_memory_to_free_kb ";
   }
   if (!first_kill_time.is_null()) {
-    TimeDelta delta = first_kill_time - start_time;
+    base::TimeDelta delta = first_kill_time - start_time;
     MEMORY_LOG(ERROR) << "Time to first kill " << delta;
     UMA_HISTOGRAM_MEDIUM_TIMES("Memory.LowMemoryKiller.FirstKillLatency",
                                delta);

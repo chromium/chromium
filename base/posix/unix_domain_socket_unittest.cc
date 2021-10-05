@@ -77,7 +77,7 @@ TEST(UnixDomainSocketTest, SendRecvMsgAbortOnReplyFDClose) {
                       WaitableEvent::InitialState::NOT_SIGNALED);
   message_thread.task_runner()->PostTask(
       FROM_HERE, BindOnce(&WaitableEvent::Signal, Unretained(&event)));
-  ASSERT_TRUE(event.TimedWait(TimeDelta::FromMilliseconds(5000)));
+  ASSERT_TRUE(event.TimedWait(Milliseconds(5000)));
 }
 
 TEST(UnixDomainSocketTest, SendRecvMsgAvoidsSIGPIPE) {

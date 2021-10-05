@@ -18,7 +18,6 @@ namespace {
 
 using base::Location;
 using base::OnceClosure;
-using base::TimeDelta;
 
 class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
   ~TestSingleThreadTaskRunner() override = default;
@@ -29,12 +28,12 @@ class TestSingleThreadTaskRunner : public base::SingleThreadTaskRunner {
   }
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
-                       TimeDelta delay) override {
+                       base::TimeDelta delay) override {
     return true;
   }
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
-                                  TimeDelta delay) override {
+                                  base::TimeDelta delay) override {
     return true;
   }
   bool RunsTasksInCurrentSequence() const override { return true; }
@@ -436,7 +435,7 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest,
   auto mem = client->AllocateLockedDiscardableMemory(200);
   auto mem2 = client->AllocateLockedDiscardableMemory(100);
 
-  task_env_.FastForwardBy(TimeDelta::FromSeconds(0));
+  task_env_.FastForwardBy(base::Seconds(0));
   EXPECT_TRUE(client->IsPurgeScheduled());
 
   client->ReleaseFreeMemory();

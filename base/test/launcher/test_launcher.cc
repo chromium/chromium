@@ -122,7 +122,7 @@ const char kUnreliableResultsTag[] = "UNRELIABLE_RESULTS";
 // the test launcher to people looking at the output (no output for a long
 // time is mysterious and gives no info about what is happening) 3) help
 // debugging in case the process hangs anyway.
-constexpr TimeDelta kOutputTimeout = TimeDelta::FromSeconds(15);
+constexpr TimeDelta kOutputTimeout = Seconds(15);
 
 // Limit of output snippet lines when printing to stdout.
 // Avoids flooding the logs with amount of output that gums up
@@ -198,7 +198,7 @@ void KillSpawnedTestProcesses() {
           "done.\nGiving processes a chance to terminate cleanly... ");
   fflush(stdout);
 
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(500));
+  PlatformThread::Sleep(Milliseconds(500));
 
   fprintf(stdout, "done.\n");
   fflush(stdout);

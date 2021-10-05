@@ -80,7 +80,7 @@ void JNI_PostTask_PostDelayedTask(
       BindOnce(&PostTaskAndroid::RunJavaTask,
                base::android::ScopedJavaGlobalRef<jobject>(task),
                android::ConvertJavaStringToUTF8(runnable_class_name)),
-      TimeDelta::FromMilliseconds(delay));
+      Milliseconds(delay));
 }
 
 // static

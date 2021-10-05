@@ -20,7 +20,6 @@
 namespace syncer {
 namespace {
 
-using base::TimeDelta;
 
 class BlockingHttpPost : public HttpPostProviderInterface {
  public:

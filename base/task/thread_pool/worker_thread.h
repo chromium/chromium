@@ -92,8 +92,7 @@ class BASE_EXPORT WorkerThread : public RefCountedThreadSafe<WorkerThread>,
     // TaskTracker after calling OnMainExit() on the Delegate.
     virtual void OnMainExit(WorkerThread* worker) {}
 
-    static constexpr TimeDelta kPurgeThreadCacheIdleDelay =
-        TimeDelta::FromSeconds(1);
+    static constexpr TimeDelta kPurgeThreadCacheIdleDelay = Seconds(1);
   };
 
   // Creates a WorkerThread that runs Tasks from TaskSources returned by

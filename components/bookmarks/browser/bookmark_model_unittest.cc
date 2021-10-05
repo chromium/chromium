@@ -44,7 +44,6 @@
 
 using base::ASCIIToUTF16;
 using base::Time;
-using base::TimeDelta;
 
 namespace bookmarks {
 namespace {
@@ -592,7 +591,7 @@ TEST_F(BookmarkModelTest, AddURLWithCreationTimeAndMetaInfo) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const std::u16string title(u"foo");
   const GURL url("http://foo.com");
-  const Time time = Time::Now() - TimeDelta::FromDays(1);
+  const Time time = Time::Now() - base::Days(1);
   BookmarkNode::MetaInfoMap meta_info;
   meta_info["foo"] = "bar";
 
@@ -620,7 +619,7 @@ TEST_F(BookmarkModelTest, AddURLWithGUID) {
   const BookmarkNode* root = model_->bookmark_bar_node();
   const std::u16string title(u"foo");
   const GURL url("http://foo.com");
-  const Time time = Time::Now() - TimeDelta::FromDays(1);
+  const Time time = Time::Now() - base::Days(1);
   BookmarkNode::MetaInfoMap meta_info;
   const base::GUID guid = base::GUID::GenerateRandomV4();
 
@@ -1170,10 +1169,10 @@ TEST_F(BookmarkModelTest, MostRecentlyAddedEntries) {
       model_->bookmark_bar_node(), 2, u"blah", GURL("http://foo.com/2")));
   BookmarkNode* n4 = AsMutable(model_->AddURL(
       model_->bookmark_bar_node(), 3, u"blah", GURL("http://foo.com/3")));
-  n1->set_date_added(base_time + TimeDelta::FromDays(4));
-  n2->set_date_added(base_time + TimeDelta::FromDays(3));
-  n3->set_date_added(base_time + TimeDelta::FromDays(2));
-  n4->set_date_added(base_time + TimeDelta::FromDays(1));
+  n1->set_date_added(base_time + base::Days(4));
+  n2->set_date_added(base_time + base::Days(3));
+  n3->set_date_added(base_time + base::Days(2));
+  n4->set_date_added(base_time + base::Days(1));
 
   // Make sure order is honored.
   std::vector<const BookmarkNode*> recently_added;
@@ -1203,8 +1202,8 @@ TEST_F(BookmarkModelTest, GetMostRecentlyAddedUserNodeForURL) {
       AsMutable(model_->AddURL(model_->bookmark_bar_node(), 0, u"blah", url));
   BookmarkNode* n2 =
       AsMutable(model_->AddURL(model_->bookmark_bar_node(), 1, u"blah", url));
-  n1->set_date_added(base_time + TimeDelta::FromDays(4));
-  n2->set_date_added(base_time + TimeDelta::FromDays(3));
+  n1->set_date_added(base_time + base::Days(4));
+  n2->set_date_added(base_time + base::Days(3));
 
   // Make sure order is honored.
   ASSERT_EQ(n1, model_->GetMostRecentlyAddedUserNodeForURL(url));

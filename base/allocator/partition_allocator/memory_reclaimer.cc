@@ -95,7 +95,7 @@ void PartitionAllocMemoryReclaimer::Start(
   // seconds is useful. Since this is meant to run during idle time only, it is
   // a reasonable starting point balancing effectivenes vs cost. See
   // crbug.com/942512 for details and experimental results.
-  constexpr TimeDelta kInterval = TimeDelta::FromSeconds(4);
+  constexpr TimeDelta kInterval = Seconds(4);
 
   timer_ = std::make_unique<RepeatingTimer>();
   timer_->SetTaskRunner(task_runner);

@@ -44,7 +44,6 @@
 #endif
 
 using base::Time;
-using base::TimeDelta;
 using content::BrowserThread;
 using net::HttpResponseHeaders;
 using net::HttpUtil;
@@ -380,11 +379,10 @@ DialServiceImpl::DialServiceImpl(net::NetLog* net_log)
       discovery_active_(false),
       num_requests_sent_(0),
       max_requests_(kDialMaxRequests),
-      finish_delay_(TimeDelta::FromMilliseconds((kDialMaxRequests - 1) *
-                                                kDialRequestIntervalMillis) +
-                    TimeDelta::FromSeconds(kDialResponseTimeoutSecs)),
-      request_interval_(
-          TimeDelta::FromMilliseconds(kDialRequestIntervalMillis)) {
+      finish_delay_(base::Milliseconds((kDialMaxRequests - 1) *
+                                       kDialRequestIntervalMillis) +
+                    base::Seconds(kDialResponseTimeoutSecs)),
+      request_interval_(base::Milliseconds(kDialRequestIntervalMillis)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   IPAddress address;
   bool success = address.AssignFromIPLiteral(kDialRequestAddress);
@@ -487,7 +485,7 @@ void DialServiceImpl::DiscoverOnAddresses(
   }
 
   // Schedule a timer to finish the discovery process (and close the sockets).
-  if (finish_delay_ > TimeDelta::FromSeconds(0)) {
+  if (finish_delay_ > base::Seconds(0)) {
     finish_timer_.Start(FROM_HERE, finish_delay_, this,
                         &DialServiceImpl::FinishDiscovery);
   }

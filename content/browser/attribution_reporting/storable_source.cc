@@ -30,7 +30,7 @@ StorableSource::StorableSource(uint64_t impression_data,
       attribution_logic_(attribution_logic),
       impression_id_(impression_id) {
   // 30 days is the max allowed expiry for an impression.
-  DCHECK_GE(base::TimeDelta::FromDays(30), expiry_time - impression_time);
+  DCHECK_GE(base::Days(30), expiry_time - impression_time);
   // The impression must expire strictly after it occurred.
   DCHECK_GT(expiry_time, impression_time);
   DCHECK(!impression_origin.opaque());

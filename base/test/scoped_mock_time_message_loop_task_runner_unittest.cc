@@ -85,12 +85,12 @@ TEST_F(ScopedMockTimeMessageLoopTaskRunnerTest,
   OnceClosure task_10 = BindOnce(&AssignTrue, &task_10_has_run);
   OnceClosure task_11 = BindOnce(&AssignTrue, &task_11_has_run);
 
-  constexpr TimeDelta task_1_delay = TimeDelta::FromSeconds(1);
-  constexpr TimeDelta task_2_delay = TimeDelta::FromSeconds(2);
-  constexpr TimeDelta task_10_delay = TimeDelta::FromSeconds(10);
-  constexpr TimeDelta task_11_delay = TimeDelta::FromSeconds(11);
+  constexpr TimeDelta task_1_delay = Seconds(1);
+  constexpr TimeDelta task_2_delay = Seconds(2);
+  constexpr TimeDelta task_10_delay = Seconds(10);
+  constexpr TimeDelta task_11_delay = Seconds(11);
 
-  constexpr TimeDelta step_time_by = TimeDelta::FromSeconds(5);
+  constexpr TimeDelta step_time_by = Seconds(5);
 
   GetCurrentTaskRunner()->PostDelayedTask(FROM_HERE, std::move(task_1),
                                           task_1_delay);

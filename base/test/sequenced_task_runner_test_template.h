@@ -138,8 +138,7 @@ TYPED_TEST_P(SequencedTaskRunnerTest, SequentialNonNestable) {
       this->delegate_.GetTaskRunner();
 
   this->task_tracker_->PostWrappedNonNestableTask(
-      task_runner.get(),
-      BindOnce(&PlatformThread::Sleep, TimeDelta::FromSeconds(1)));
+      task_runner.get(), BindOnce(&PlatformThread::Sleep, Seconds(1)));
   for (int i = 1; i < kTaskCount; ++i) {
     this->task_tracker_->PostWrappedNonNestableTask(task_runner.get(),
                                                     OnceClosure());
@@ -162,8 +161,7 @@ TYPED_TEST_P(SequencedTaskRunnerTest, SequentialNestable) {
       this->delegate_.GetTaskRunner();
 
   this->task_tracker_->PostWrappedNestableTask(
-      task_runner.get(),
-      BindOnce(&PlatformThread::Sleep, TimeDelta::FromSeconds(1)));
+      task_runner.get(), BindOnce(&PlatformThread::Sleep, Seconds(1)));
   for (int i = 1; i < kTaskCount; ++i) {
     this->task_tracker_->PostWrappedNestableTask(task_runner.get(),
                                                  OnceClosure());
@@ -188,8 +186,7 @@ TYPED_TEST_P(SequencedTaskRunnerTest, SequentialDelayedNonNestable) {
 
   for (int i = 0; i < kTaskCount; ++i) {
     this->task_tracker_->PostWrappedDelayedNonNestableTask(
-        task_runner.get(), OnceClosure(),
-        TimeDelta::FromMilliseconds(kDelayIncrementMs * i));
+        task_runner.get(), OnceClosure(), Milliseconds(kDelayIncrementMs * i));
   }
 
   this->task_tracker_->WaitForCompletedTasks(kTaskCount);
@@ -234,7 +231,7 @@ TYPED_TEST_P(SequencedTaskRunnerTest, NonNestablePostFromNonNestableTask) {
 // specify the desired run time.
 TYPED_TEST_P(SequencedTaskRunnerTest, DelayedTasksSameDelay) {
   const int kTaskCount = 2;
-  const TimeDelta kDelay = TimeDelta::FromMilliseconds(100);
+  const TimeDelta kDelay = Milliseconds(100);
 
   this->delegate_.StartTaskRunner();
   const scoped_refptr<SequencedTaskRunner> task_runner =
@@ -263,9 +260,9 @@ TYPED_TEST_P(SequencedTaskRunnerTest, DelayedTaskAfterLongTask) {
 
   this->task_tracker_->PostWrappedNonNestableTask(
       task_runner.get(),
-      base::BindOnce(&PlatformThread::Sleep, TimeDelta::FromMilliseconds(50)));
+      base::BindOnce(&PlatformThread::Sleep, Milliseconds(50)));
   this->task_tracker_->PostWrappedDelayedNonNestableTask(
-      task_runner.get(), OnceClosure(), TimeDelta::FromMilliseconds(10));
+      task_runner.get(), OnceClosure(), Milliseconds(10));
   this->task_tracker_->WaitForCompletedTasks(kTaskCount);
   this->delegate_.StopTaskRunner();
 
@@ -284,11 +281,11 @@ TYPED_TEST_P(SequencedTaskRunnerTest, DelayedTaskAfterManyLongTasks) {
 
   for (int i = 0; i < kTaskCount - 1; i++) {
     this->task_tracker_->PostWrappedNonNestableTask(
-        task_runner.get(), base::BindOnce(&PlatformThread::Sleep,
-                                          TimeDelta::FromMilliseconds(50)));
+        task_runner.get(),
+        base::BindOnce(&PlatformThread::Sleep, Milliseconds(50)));
   }
   this->task_tracker_->PostWrappedDelayedNonNestableTask(
-      task_runner.get(), OnceClosure(), TimeDelta::FromMilliseconds(10));
+      task_runner.get(), OnceClosure(), Milliseconds(10));
   this->task_tracker_->WaitForCompletedTasks(kTaskCount);
   this->delegate_.StopTaskRunner();
 

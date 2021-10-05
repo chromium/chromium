@@ -148,7 +148,7 @@ Time Time::FromDeltaSinceWindowsEpoch(TimeDelta delta) {
 }
 
 TimeDelta Time::ToDeltaSinceWindowsEpoch() const {
-  return TimeDelta::FromMicroseconds(us_);
+  return Microseconds(us_);
 }
 
 // static
@@ -157,7 +157,7 @@ Time Time::FromTimeT(time_t tt) {
     return Time();  // Preserve 0 so we can tell it doesn't exist.
   return (tt == std::numeric_limits<time_t>::max())
              ? Max()
-             : (UnixEpoch() + TimeDelta::FromSeconds(tt));
+             : (UnixEpoch() + Seconds(tt));
 }
 
 time_t Time::ToTimeT() const {
@@ -173,9 +173,7 @@ time_t Time::ToTimeT() const {
 // static
 Time Time::FromDoubleT(double dt) {
   // Preserve 0 so we can tell it doesn't exist.
-  return (dt == 0 || std::isnan(dt))
-             ? Time()
-             : (UnixEpoch() + TimeDelta::FromSecondsD(dt));
+  return (dt == 0 || std::isnan(dt)) ? Time() : (UnixEpoch() + Seconds(dt));
 }
 
 double Time::ToDoubleT() const {
@@ -199,7 +197,7 @@ Time Time::FromTimeSpec(const timespec& ts) {
 Time Time::FromJsTime(double ms_since_epoch) {
   // The epoch is a valid time, so this constructor doesn't interpret 0 as the
   // null time.
-  return UnixEpoch() + TimeDelta::FromMillisecondsD(ms_since_epoch);
+  return UnixEpoch() + Milliseconds(ms_since_epoch);
 }
 
 double Time::ToJsTime() const {
@@ -216,7 +214,7 @@ double Time::ToJsTimeIgnoringNull() const {
 }
 
 Time Time::FromJavaTime(int64_t ms_since_epoch) {
-  return UnixEpoch() + TimeDelta::FromMilliseconds(ms_since_epoch);
+  return UnixEpoch() + Milliseconds(ms_since_epoch);
 }
 
 int64_t Time::ToJavaTime() const {
@@ -272,7 +270,7 @@ bool Time::FromStringInternal(const char* time_string,
   if (result != PR_SUCCESS)
     return false;
 
-  *parsed_time = UnixEpoch() + TimeDelta::FromMicroseconds(result_time);
+  *parsed_time = UnixEpoch() + Microseconds(result_time);
   return true;
 }
 

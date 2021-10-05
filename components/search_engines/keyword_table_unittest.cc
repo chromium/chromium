@@ -19,7 +19,6 @@
 
 using base::ASCIIToUTF16;
 using base::Time;
-using base::TimeDelta;
 
 class KeywordTableTest : public testing::Test {
  public:

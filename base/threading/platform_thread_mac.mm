@@ -155,8 +155,7 @@ TimeDelta GetCurrentThreadRealtimePeriod() {
   NSNumber* period = mac::ObjCCast<NSNumber>(
       [[NSThread currentThread] threadDictionary][kRealtimePeriodNsKey]);
 
-  return period ? TimeDelta::FromNanoseconds(period.longLongValue)
-                : TimeDelta();
+  return period ? Nanoseconds(period.longLongValue) : TimeDelta();
 }
 
 // Calculates time constrints for THREAD_TIME_CONSTRAINT_POLICY.

@@ -26,7 +26,6 @@
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/stream_monitor.h"
 
-using base::TimeDelta;
 
 namespace audio {
 
@@ -75,7 +74,7 @@ OutputController::ErrorStatisticsTracker::ErrorStatisticsTracker(
   // WedgeCheck() will look to see if |on_more_io_data_called_| is true after
   // the timeout expires and log this as a UMA stat. If the stream is
   // paused/closed before the timer fires, nothing is logged.
-  wedge_timer_.Start(FROM_HERE, TimeDelta::FromSeconds(5), this,
+  wedge_timer_.Start(FROM_HERE, base::Seconds(5), this,
                      &ErrorStatisticsTracker::WedgeCheck);
 }
 
@@ -133,9 +132,8 @@ OutputController::OutputController(
       volume_(1.0),
       state_(kEmpty),
       sync_reader_(sync_reader),
-      power_monitor_(
-          params.sample_rate(),
-          TimeDelta::FromMilliseconds(kPowerMeasurementTimeConstantMillis)) {
+      power_monitor_(params.sample_rate(),
+                     base::Milliseconds(kPowerMeasurementTimeConstantMillis)) {
   DCHECK(audio_manager);
   DCHECK(handler_);
   DCHECK(activity_monitor_);

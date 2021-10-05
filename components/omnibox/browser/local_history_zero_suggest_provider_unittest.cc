@@ -34,7 +34,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold;
 
 namespace {
@@ -161,7 +160,7 @@ void LocalHistoryZeroSuggestProviderTest::LoadURLs(
                                                             search_terms_data);
     client_->GetHistoryService()->AddPageWithDetails(
         GURL(search_url), base::UTF8ToUTF16(entry.title), entry.visit_count,
-        entry.typed_count, now - TimeDelta::FromSeconds(entry.age_in_seconds),
+        entry.typed_count, now - base::Seconds(entry.age_in_seconds),
         entry.hidden, history::SOURCE_BROWSED);
     client_->GetHistoryService()->SetKeywordSearchTermsForURL(
         GURL(search_url), entry.search_provider->id(),

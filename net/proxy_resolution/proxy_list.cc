@@ -16,7 +16,6 @@
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace net {
@@ -165,7 +164,7 @@ bool ProxyList::Fallback(ProxyRetryInfoMap* proxy_retry_info,
     return false;
   }
   // By default, proxies are not retried for 5 minutes.
-  UpdateRetryInfoOnFallback(proxy_retry_info, TimeDelta::FromMinutes(5), true,
+  UpdateRetryInfoOnFallback(proxy_retry_info, base::Minutes(5), true,
                             std::vector<ProxyServer>(), net_error, net_log);
 
   // Remove this proxy from our list.

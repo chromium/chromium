@@ -263,7 +263,6 @@
 #include "chrome/browser/spellchecker/spellcheck_service.h"
 #endif
 
-using base::TimeDelta;
 using bookmarks::BookmarkModel;
 using content::BrowserThread;
 using content::DownloadManagerDelegate;
@@ -272,8 +271,8 @@ namespace {
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 // Delay before we explicitly create the SessionService.
-static constexpr TimeDelta kCreateSessionServiceDelay =
-    TimeDelta::FromMilliseconds(500);
+static constexpr base::TimeDelta kCreateSessionServiceDelay =
+    base::Milliseconds(500);
 #endif
 
 // Gets the creation time for |path|, returning base::Time::Now() on failure.

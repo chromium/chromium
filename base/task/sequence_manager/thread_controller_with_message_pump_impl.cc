@@ -34,7 +34,7 @@ namespace {
 // event) and 99% of completed sleeps are the ones scheduled for <= 1 second.
 // Details @ https://crrev.com/c/1142589.
 TimeTicks CapAtOneDay(TimeTicks next_run_time, LazyNow* lazy_now) {
-  return std::min(next_run_time, lazy_now->Now() + TimeDelta::FromDays(1));
+  return std::min(next_run_time, lazy_now->Now() + Days(1));
 }
 
 }  // namespace

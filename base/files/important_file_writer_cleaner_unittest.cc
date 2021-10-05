@@ -28,7 +28,7 @@ class ImportantFileWriterCleanerTest : public ::testing::Test {
   ImportantFileWriterCleanerTest()
       : old_file_time_(ImportantFileWriterCleaner::GetInstance()
                            .GetUpperBoundTimeForTest() -
-                       TimeDelta::FromMilliseconds(1)) {}
+                       Milliseconds(1)) {}
 
  protected:
   // Initializes and Starts the global cleaner at construction and Stops it

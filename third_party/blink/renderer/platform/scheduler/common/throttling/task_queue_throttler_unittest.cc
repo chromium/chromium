@@ -28,7 +28,6 @@ namespace scheduler {
 namespace task_queue_throttler_unittest {
 
 using base::TestMockTimeTaskRunner;
-using base::TimeDelta;
 using base::TimeTicks;
 using base::sequence_manager::LazyNow;
 using base::sequence_manager::TaskQueue;

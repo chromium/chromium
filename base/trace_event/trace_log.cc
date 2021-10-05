@@ -1437,7 +1437,7 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
         FROM_HERE,
         BindOnce(&TraceLog::OnFlushTimeout, Unretained(this), gen,
                  discard_events),
-        TimeDelta::FromMilliseconds(kThreadFlushTimeoutMs));
+        Milliseconds(kThreadFlushTimeoutMs));
     return;
   }
 

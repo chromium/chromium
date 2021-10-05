@@ -41,7 +41,6 @@
 
 using base::ASCIIToUTF16;
 using base::Time;
-using base::TimeDelta;
 
 namespace {
 
@@ -304,7 +303,7 @@ void HistoryURLProviderTest::FillData() {
     const GURL current_url(cur.url);
     client_->GetHistoryService()->AddPageWithDetails(
         current_url, base::UTF8ToUTF16(cur.title), cur.visit_count,
-        cur.typed_count, now - TimeDelta::FromDays(cur.age_in_days), cur.hidden,
+        cur.typed_count, now - base::Days(cur.age_in_days), cur.hidden,
         history::SOURCE_BROWSED);
   }
 }

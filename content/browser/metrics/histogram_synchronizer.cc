@@ -25,7 +25,6 @@
 namespace content {
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace {

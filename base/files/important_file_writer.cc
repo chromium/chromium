@@ -41,7 +41,7 @@ namespace base {
 
 namespace {
 
-constexpr auto kDefaultCommitInterval = TimeDelta::FromSeconds(10);
+constexpr auto kDefaultCommitInterval = Seconds(10);
 #if defined(OS_WIN)
 // This is how many times we will retry ReplaceFile on Windows.
 constexpr int kReplaceRetries = 5;
@@ -49,7 +49,7 @@ constexpr int kReplaceRetries = 5;
 // It should stay constant even if we change kReplaceRetries.
 constexpr int kReplaceRetryFailure = 10;
 static_assert(kReplaceRetryFailure > kReplaceRetries, "No overlap allowed");
-constexpr auto kReplacePauseInterval = TimeDelta::FromMilliseconds(100);
+constexpr auto kReplacePauseInterval = Milliseconds(100);
 #endif
 
 void UmaHistogramTimesWithSuffix(const char* histogram_name,
@@ -92,7 +92,7 @@ void DeleteTmpFileWithRetry(File tmp_file,
   // point to access denied. The ImportantFileWriterCleaner should clean these
   // up in the next process.
   constexpr int kMaxDeleteAttempts = 8;
-  constexpr TimeDelta kDeleteFileRetryDelay = TimeDelta::FromMilliseconds(250);
+  constexpr TimeDelta kDeleteFileRetryDelay = Milliseconds(250);
 
   if (!DeleteFile(tmp_file_path) && ++attempt < kMaxDeleteAttempts &&
       SequencedTaskRunnerHandle::IsSet()) {

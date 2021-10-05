@@ -46,7 +46,7 @@ TimeDelta TimeUntilCondition(ProceduralBlock action,
     action();
   if (timeout.is_zero())
     timeout = TestTimeouts::action_timeout();
-  const TimeDelta spin_delay(TimeDelta::FromMilliseconds(10));
+  const TimeDelta spin_delay(Milliseconds(10));
   bool condition_evaluation_result = false;
   while (timer.Elapsed() < timeout &&
          (!condition || !(condition_evaluation_result = condition()))) {
@@ -82,7 +82,7 @@ void SpinRunLoopWithMaxDelay(TimeDelta max_delay) {
 void SpinRunLoopWithMinDelay(TimeDelta min_delay) {
   ElapsedTimer timer;
   while (timer.Elapsed() < min_delay) {
-    SpinRunLoopWithMaxDelay(TimeDelta::FromMilliseconds(10));
+    SpinRunLoopWithMaxDelay(Milliseconds(10));
   }
 }
 

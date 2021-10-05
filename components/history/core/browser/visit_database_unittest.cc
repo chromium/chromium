@@ -18,7 +18,6 @@
 #include "url/origin.h"
 
 using base::Time;
-using base::TimeDelta;
 using testing::AllOf;
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -75,12 +74,12 @@ TEST_F(VisitDatabaseTest, Add) {
 
   // Add second visit for the same page.
   VisitRow visit_info2(visit_info1.url_id,
-                       visit_info1.visit_time + TimeDelta::FromSeconds(1), 1,
+                       visit_info1.visit_time + base::Seconds(1), 1,
                        ui::PAGE_TRANSITION_TYPED, 0, true, 0);
   EXPECT_TRUE(AddVisit(&visit_info2, SOURCE_BROWSED));
 
   // Add third visit for a different page.
-  VisitRow visit_info3(2, visit_info1.visit_time + TimeDelta::FromSeconds(2), 0,
+  VisitRow visit_info3(2, visit_info1.visit_time + base::Seconds(2), 0,
                        ui::PAGE_TRANSITION_LINK, 0, false, 0);
   EXPECT_TRUE(AddVisit(&visit_info3, SOURCE_BROWSED));
 
@@ -144,7 +143,7 @@ TEST_F(VisitDatabaseTest, Update) {
   VisitRow modification(original);
   modification.url_id = 2;
   modification.transition = ui::PAGE_TRANSITION_TYPED;
-  modification.visit_time = Time::Now() + TimeDelta::FromDays(1);
+  modification.visit_time = Time::Now() + base::Days(1);
   modification.referring_visit = 9292;
   UpdateVisitRow(modification);
 
@@ -165,7 +164,7 @@ std::vector<VisitRow> GetTestVisitRows() {
 
   // Add one visit.
   VisitRow visit_info1(
-      1, base_time + TimeDelta::FromMinutes(1), 0,
+      1, base_time + base::Minutes(1), 0,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_CHAIN_START |
                                 ui::PAGE_TRANSITION_CHAIN_END),
@@ -174,7 +173,7 @@ std::vector<VisitRow> GetTestVisitRows() {
 
   // Add second visit for the same page.
   VisitRow visit_info2(
-      visit_info1.url_id, visit_info1.visit_time + TimeDelta::FromSeconds(1), 1,
+      visit_info1.url_id, visit_info1.visit_time + base::Seconds(1), 1,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_CHAIN_START |
                                 ui::PAGE_TRANSITION_CHAIN_END),
@@ -183,7 +182,7 @@ std::vector<VisitRow> GetTestVisitRows() {
 
   // Add third visit for a different page.
   VisitRow visit_info3(
-      2, visit_info1.visit_time + TimeDelta::FromSeconds(2), 0,
+      2, visit_info1.visit_time + base::Seconds(2), 0,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_CHAIN_START),
       0, false, 0);
@@ -191,8 +190,7 @@ std::vector<VisitRow> GetTestVisitRows() {
 
   // Add a redirect visit from the last page.
   VisitRow visit_info4(
-      3, visit_info1.visit_time + TimeDelta::FromSeconds(3),
-      visit_info3.visit_id,
+      3, visit_info1.visit_time + base::Seconds(3), visit_info3.visit_id,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_SERVER_REDIRECT |
                                 ui::PAGE_TRANSITION_CHAIN_END),
       0, false, 0);
@@ -200,8 +198,7 @@ std::vector<VisitRow> GetTestVisitRows() {
 
   // Add a subframe visit.
   VisitRow visit_info5(
-      4, visit_info1.visit_time + TimeDelta::FromSeconds(4),
-      visit_info4.visit_id,
+      4, visit_info1.visit_time + base::Seconds(4), visit_info4.visit_id,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_SUBFRAME |
                                 ui::PAGE_TRANSITION_CHAIN_START |
                                 ui::PAGE_TRANSITION_CHAIN_END),
@@ -211,7 +208,7 @@ std::vector<VisitRow> GetTestVisitRows() {
   // Add third visit for the same URL as visit 1 and 2, but exactly a day
   // later than visit 2.
   VisitRow visit_info6(
-      visit_info1.url_id, visit_info2.visit_time + TimeDelta::FromDays(1), 1,
+      visit_info1.url_id, visit_info2.visit_time + base::Days(1), 1,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_CHAIN_START |
                                 ui::PAGE_TRANSITION_CHAIN_END),
@@ -434,8 +431,8 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   // DST shifts.
   Time today;
   ASSERT_TRUE(Time::FromString("2015-07-07", &today));
-  Time yesterday = today - TimeDelta::FromDays(1);
-  Time two_days_ago = yesterday - TimeDelta::FromDays(1);
+  Time yesterday = today - base::Days(1);
+  Time two_days_ago = yesterday - base::Days(1);
   Time now = two_days_ago;
 
   ui::PageTransition standard_transition = ui::PageTransitionFromInt(
@@ -447,27 +444,27 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   VisitRow first_day_1(1, now, 0, standard_transition, 0, true, 0);
   first_day_1.visit_id = 1;
   AddVisit(&first_day_1, SOURCE_BROWSED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   VisitRow first_day_2(2, now, 0, standard_transition, 0, true, 0);
   first_day_2.visit_id = 2;
   AddVisit(&first_day_2, SOURCE_BROWSED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   VisitRow first_day_3(1, now, 0, standard_transition, 0, true, 0);
   first_day_3.visit_id = 3;
   AddVisit(&first_day_3, SOURCE_SYNCED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   VisitRow first_day_4(3, now, 0, standard_transition, 0, true, 0);
   first_day_4.visit_id = 4;
   AddVisit(&first_day_4, SOURCE_SYNCED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   VisitRow first_day_5(2, now, 0, standard_transition, 0, true, 0);
   first_day_5.visit_id = 5;
   AddVisit(&first_day_5, SOURCE_BROWSED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   // Add 4 more visits for yesterday. One of them is invalid, as it's not
   // a user-visible navigation. Of the remaining 3, only 2 are unique.
@@ -476,23 +473,23 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   VisitRow second_day_1(1, now, 0, standard_transition, 0, true, 0);
   second_day_1.visit_id = 6;
   AddVisit(&second_day_1, SOURCE_BROWSED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   VisitRow second_day_2(1, now, 0, standard_transition, 0, true, 0);
   second_day_2.visit_id = 7;
   AddVisit(&second_day_2, SOURCE_BROWSED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   VisitRow second_day_3(2, now, 0, ui::PAGE_TRANSITION_AUTO_SUBFRAME, 0, false,
                         0);
   second_day_3.visit_id = 8;
   AddVisit(&second_day_3, SOURCE_BROWSED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   VisitRow second_day_4(3, now, 0, standard_transition, 0, true, 0);
   second_day_4.visit_id = 9;
   AddVisit(&second_day_4, SOURCE_BROWSED);
-  now += TimeDelta::FromHours(1);
+  now += base::Hours(1);
 
   int result;
 
@@ -511,30 +508,29 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
 
   // Narrowing the range to exclude `first_day_1` will still return 5,
   // because `first_day_1` is not unique.
-  EXPECT_TRUE(
-      GetHistoryCount(two_days_ago + TimeDelta::FromHours(2), today, &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago + base::Hours(2), today, &result));
   EXPECT_EQ(5, result);
 
   // Narrowing the range to exclude `second_day_4` will return 4,
   // because `second_day_4` is unique.
-  EXPECT_TRUE(GetHistoryCount(two_days_ago, yesterday + TimeDelta::FromHours(3),
-                              &result));
+  EXPECT_TRUE(
+      GetHistoryCount(two_days_ago, yesterday + base::Hours(3), &result));
   EXPECT_EQ(4, result);
 
   // Narrowing the range to exclude both `first_day_1` and `second_day_4` will
   // still return 4.
-  EXPECT_TRUE(GetHistoryCount(two_days_ago + TimeDelta::FromHours(2),
-                              yesterday + TimeDelta::FromHours(3), &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago + base::Hours(2),
+                              yesterday + base::Hours(3), &result));
   EXPECT_EQ(4, result);
 
   // A range that contains no visits will return 0.
-  EXPECT_TRUE(GetHistoryCount(two_days_ago + TimeDelta::FromMicroseconds(1),
-                              two_days_ago + TimeDelta::FromHours(1), &result));
+  EXPECT_TRUE(GetHistoryCount(two_days_ago + base::Microseconds(1),
+                              two_days_ago + base::Hours(1), &result));
   EXPECT_EQ(0, result);
 
   // If this timezone uses DST, test the behavior on days when the time
   // is shifted forward and backward. Note that in this case we cannot use
-  // TimeDelta::FromDays(1) to move one day, as this simply removes 24 hours and
+  // base::Days(1) to move one day, as this simply removes 24 hours and
   // thus does not work correctly with DST shifts. Instead, we'll go back
   // 1 second (i.e. somewhere in the middle of the previous day), and use
   // `LocalMidnight()` to round down to the beginning of the day in the local
@@ -543,10 +539,10 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
   // in SQL.
   Time shift_forward;
   Time shift_backward;
-  Time current_day = (two_days_ago - TimeDelta::FromSeconds(1)).LocalMidnight();
+  Time current_day = (two_days_ago - base::Seconds(1)).LocalMidnight();
   for (int i = 0; i < 366; i++) {
-    current_day = (current_day - TimeDelta::FromSeconds(1)).LocalMidnight();
-    Time after_24_hours = current_day + TimeDelta::FromHours(24);
+    current_day = (current_day - base::Seconds(1)).LocalMidnight();
+    Time after_24_hours = current_day + base::Hours(24);
 
     if (current_day == after_24_hours.LocalMidnight()) {
       // More than 24 hours. Shift backward.
@@ -568,13 +564,13 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
     backward_1.visit_id = 10;
     AddVisit(&backward_1, SOURCE_BROWSED);
 
-    VisitRow backward_2(1, shift_backward + TimeDelta::FromHours(24), 0,
+    VisitRow backward_2(1, shift_backward + base::Hours(24), 0,
                         standard_transition, 0, true, 0);
     backward_2.visit_id = 11;
     AddVisit(&backward_2, SOURCE_BROWSED);
 
-    EXPECT_TRUE(GetHistoryCount(
-        shift_backward, shift_backward + TimeDelta::FromHours(25), &result));
+    EXPECT_TRUE(GetHistoryCount(shift_backward,
+                                shift_backward + base::Hours(25), &result));
     EXPECT_EQ(1, result);
   }
 
@@ -587,15 +583,15 @@ TEST_F(VisitDatabaseTest, GetHistoryCount) {
     forward_1.visit_id = 12;
     AddVisit(&forward_1, SOURCE_BROWSED);
 
-    Time almost_24_hours_later = shift_forward + TimeDelta::FromHours(24) -
-                                 TimeDelta::FromMicroseconds(1);
+    Time almost_24_hours_later =
+        shift_forward + base::Hours(24) - base::Microseconds(1);
     VisitRow forward_2(1, almost_24_hours_later, 0, standard_transition, 0,
                        true, 0);
     forward_2.visit_id = 13;
     AddVisit(&forward_2, SOURCE_BROWSED);
 
-    EXPECT_TRUE(GetHistoryCount(
-        shift_forward, shift_forward + TimeDelta::FromHours(24), &result));
+    EXPECT_TRUE(GetHistoryCount(shift_forward, shift_forward + base::Hours(24),
+                                &result));
     EXPECT_EQ(2, result);
   }
 }

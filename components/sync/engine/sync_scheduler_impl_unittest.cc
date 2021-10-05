@@ -35,7 +35,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 using testing::_;
 using testing::AtLeast;
@@ -241,7 +240,10 @@ class SyncSchedulerImplTest : public testing::Test {
     MockDelayProvider()
         : BackoffDelayProvider(kInitialBackoffRetryTime,
                                kInitialBackoffImmediateRetryTime) {}
-    MOCK_METHOD(TimeDelta, GetDelay, (const TimeDelta&), (override));
+    MOCK_METHOD(base::TimeDelta,
+                GetDelay,
+                (const base::TimeDelta&),
+                (override));
   };
 
   void SetUp() override {
@@ -292,9 +294,9 @@ class SyncSchedulerImplTest : public testing::Test {
   MockSyncer* syncer() { return syncer_; }
   MockDelayProvider* delay() { return delay_; }
   MockConnectionManager* connection() { return connection_.get(); }
-  TimeDelta default_delay() { return TimeDelta::FromSeconds(0); }
-  TimeDelta long_delay() { return TimeDelta::FromSeconds(60); }
-  TimeDelta timeout() { return TestTimeouts::action_timeout(); }
+  base::TimeDelta default_delay() { return base::Seconds(0); }
+  base::TimeDelta long_delay() { return base::Seconds(60); }
+  base::TimeDelta timeout() { return TestTimeouts::action_timeout(); }
 
   void TearDown() override {
     PumpLoop();
@@ -312,7 +314,7 @@ class SyncSchedulerImplTest : public testing::Test {
   void AnalyzePollRun(const SyncShareTimes& times,
                       size_t min_num_samples,
                       const TimeTicks& optimal_start,
-                      const TimeDelta& poll_interval) {
+                      const base::TimeDelta& poll_interval) {
     EXPECT_GE(times.size(), min_num_samples);
     for (size_t i = 0; i < times.size(); i++) {
       SCOPED_TRACE(testing::Message() << "SyncShare # (" << i << ")");
@@ -383,7 +385,7 @@ class SyncSchedulerImplTest : public testing::Test {
     return scheduler_->nudge_tracker_.IsAnyTypeBlocked();
   }
 
-  TimeDelta GetRetryTimerDelay() {
+  base::TimeDelta GetRetryTimerDelay() {
     EXPECT_TRUE(scheduler_->retry_timer_.IsRunning());
     return scheduler_->retry_timer_.GetCurrentDelay();
   }
@@ -394,7 +396,7 @@ class SyncSchedulerImplTest : public testing::Test {
     return MockInvalidation::Build(version, payload);
   }
 
-  TimeDelta GetTypeBlockingTime(ModelType type) {
+  base::TimeDelta GetTypeBlockingTime(ModelType type) {
     NudgeTracker::TypeTrackerMap::const_iterator tracker_it =
         scheduler_->nudge_tracker_.type_trackers_.find(type);
     DCHECK(tracker_it != scheduler_->nudge_tracker_.type_trackers_.end());
@@ -424,7 +426,7 @@ class SyncSchedulerImplTest : public testing::Test {
     return scheduler_->pending_wakeup_timer_.IsRunning();
   }
 
-  TimeDelta GetPendingWakeupTimerDelay() {
+  base::TimeDelta GetPendingWakeupTimerDelay() {
     EXPECT_TRUE(scheduler_->pending_wakeup_timer_.IsRunning());
     return scheduler_->pending_wakeup_timer_.GetCurrentDelay();
   }
@@ -559,7 +561,7 @@ TEST_F(SyncSchedulerImplTest, Config) {
 TEST_F(SyncSchedulerImplTest, ConfigWithBackingOff) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromMilliseconds(20)));
+      .WillRepeatedly(Return(base::Milliseconds(20)));
 
   StartSyncConfiguration();
 
@@ -593,7 +595,7 @@ TEST_F(SyncSchedulerImplTest, ConfigWithBackingOff) {
 TEST_F(SyncSchedulerImplTest, ConfigWithStop) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromMilliseconds(20)));
+      .WillRepeatedly(Return(base::Milliseconds(20)));
 
   StartSyncConfiguration();
 
@@ -650,7 +652,7 @@ TEST_F(SyncSchedulerImplTest, ConfigNoAccessTokenLocalSync) {
 TEST_F(SyncSchedulerImplTest, NudgeWithConfigWithBackingOff) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromMilliseconds(50)));
+      .WillRepeatedly(Return(base::Milliseconds(50)));
 
   StartSyncConfiguration();
 
@@ -730,9 +732,9 @@ TEST_F(SyncSchedulerImplTest, NudgeCoalescingWithDifferentTimings) {
           DoAll(Invoke(SimulateNormalSuccess), RecordSyncShare(&times, true)));
 
   // Create a huge time delay.
-  TimeDelta delay = TimeDelta::FromDays(1);
+  base::TimeDelta delay = base::Days(1);
 
-  std::map<ModelType, TimeDelta> delay_map;
+  std::map<ModelType, base::TimeDelta> delay_map;
   delay_map[THEMES] = delay;
   scheduler()->OnReceivedCustomNudgeDelays(delay_map);
   scheduler()->ScheduleLocalNudge(THEMES);
@@ -783,7 +785,7 @@ TEST_F(SyncSchedulerImplTest, Polling) {
           DoAll(Invoke(SimulatePollSuccess),
                 RecordSyncShareMultiple(&times, kMinNumSamples, true)));
 
-  TimeDelta poll_interval(TimeDelta::FromMilliseconds(30));
+  base::TimeDelta poll_interval(base::Milliseconds(30));
   scheduler()->OnReceivedPollIntervalUpdate(poll_interval);
 
   TimeTicks optimal_start = TimeTicks::Now() + poll_interval;
@@ -798,7 +800,7 @@ TEST_F(SyncSchedulerImplTest, Polling) {
 
 // Test that polling gets the intervals from the provided context.
 TEST_F(SyncSchedulerImplTest, ShouldUseInitialPollIntervalFromContext) {
-  TimeDelta poll_interval(TimeDelta::FromMilliseconds(30));
+  base::TimeDelta poll_interval(base::Milliseconds(30));
   context()->set_poll_interval(poll_interval);
   RebuildScheduler();
 
@@ -832,7 +834,7 @@ TEST_F(SyncSchedulerImplTest, PollingPersistence) {
 
   // Use a large poll interval that wouldn't normally get hit on its own for
   // some time yet.
-  TimeDelta poll_interval(TimeDelta::FromMilliseconds(500));
+  base::TimeDelta poll_interval(base::Milliseconds(500));
   scheduler()->OnReceivedPollIntervalUpdate(poll_interval);
 
   // Set the start time to now, as the poll was overdue.
@@ -856,12 +858,12 @@ TEST_F(SyncSchedulerImplTest, PollingPersistenceBadClock) {
           DoAll(Invoke(SimulatePollSuccess),
                 RecordSyncShareMultiple(&times, kMinNumSamples, true)));
 
-  TimeDelta poll_interval(TimeDelta::FromMilliseconds(30));
+  base::TimeDelta poll_interval(base::Milliseconds(30));
   scheduler()->OnReceivedPollIntervalUpdate(poll_interval);
 
   // Set the start time to |poll_interval| in the future.
   TimeTicks optimal_start = TimeTicks::Now() + poll_interval;
-  StartSyncScheduler(base::Time::Now() + TimeDelta::FromMinutes(10));
+  StartSyncScheduler(base::Time::Now() + base::Minutes(10));
 
   // Run again to wait for polling.
   RunLoop();
@@ -873,8 +875,8 @@ TEST_F(SyncSchedulerImplTest, PollingPersistenceBadClock) {
 // Test that polling intervals are updated when needed.
 TEST_F(SyncSchedulerImplTest, PollIntervalUpdate) {
   SyncShareTimes times;
-  TimeDelta poll1(TimeDelta::FromMilliseconds(120));
-  TimeDelta poll2(TimeDelta::FromMilliseconds(30));
+  base::TimeDelta poll1(base::Milliseconds(120));
+  base::TimeDelta poll2(base::Milliseconds(30));
   scheduler()->OnReceivedPollIntervalUpdate(poll1);
   EXPECT_CALL(*syncer(), PollSyncShare)
       .Times(AtLeast(kMinNumSamples))
@@ -896,8 +898,8 @@ TEST_F(SyncSchedulerImplTest, PollIntervalUpdate) {
 
 // Test that no syncing occurs when throttled.
 TEST_F(SyncSchedulerImplTest, ThrottlingDoesThrottle) {
-  TimeDelta poll(TimeDelta::FromMilliseconds(20));
-  TimeDelta throttle(TimeDelta::FromMinutes(10));
+  base::TimeDelta poll(base::Milliseconds(20));
+  base::TimeDelta throttle(base::Minutes(10));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   EXPECT_CALL(*syncer(), ConfigureSyncShare)
@@ -920,8 +922,8 @@ TEST_F(SyncSchedulerImplTest, ThrottlingDoesThrottle) {
 }
 
 TEST_F(SyncSchedulerImplTest, ThrottlingExpiresFromPoll) {
-  TimeDelta poll(TimeDelta::FromMilliseconds(15));
-  TimeDelta throttle1(TimeDelta::FromMilliseconds(150));
+  base::TimeDelta poll(base::Milliseconds(15));
+  base::TimeDelta throttle1(base::Milliseconds(150));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   ::testing::InSequence seq;
@@ -945,8 +947,8 @@ TEST_F(SyncSchedulerImplTest, ThrottlingExpiresFromPoll) {
 }
 
 TEST_F(SyncSchedulerImplTest, ThrottlingExpiresFromNudge) {
-  TimeDelta poll(TimeDelta::FromDays(1));
-  TimeDelta throttle1(TimeDelta::FromMilliseconds(150));
+  base::TimeDelta poll(base::Days(1));
+  base::TimeDelta throttle1(base::Milliseconds(150));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   ::testing::InSequence seq;
@@ -969,13 +971,12 @@ TEST_F(SyncSchedulerImplTest, ThrottlingExpiresFromNudge) {
 }
 
 TEST_F(SyncSchedulerImplTest, ThrottlingExpiresFromConfigure) {
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromDays(1));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
   ::testing::InSequence seq;
   EXPECT_CALL(*syncer(), ConfigureSyncShare)
-      .WillOnce(
-          DoAll(WithArg<2>(SimulateThrottled(TimeDelta::FromMilliseconds(150))),
-                Return(false)))
+      .WillOnce(DoAll(WithArg<2>(SimulateThrottled(base::Milliseconds(150))),
+                      Return(false)))
       .RetiresOnSaturation();
   EXPECT_CALL(*syncer(), ConfigureSyncShare)
       .WillOnce(
@@ -998,8 +999,8 @@ TEST_F(SyncSchedulerImplTest, ThrottlingExpiresFromConfigure) {
 }
 
 TEST_F(SyncSchedulerImplTest, TypeThrottlingBlocksNudge) {
-  TimeDelta poll(TimeDelta::FromDays(1));
-  TimeDelta throttle1(TimeDelta::FromSeconds(60));
+  base::TimeDelta poll(base::Days(1));
+  base::TimeDelta throttle1(base::Seconds(60));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   const ModelType type = THEMES;
@@ -1029,7 +1030,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffBlocksNudge) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(long_delay()));
 
-  TimeDelta poll(TimeDelta::FromDays(1));
+  base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   const ModelType type = THEMES;
@@ -1058,7 +1059,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffWillExpire) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(default_delay()));
 
-  TimeDelta poll(TimeDelta::FromDays(1));
+  base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   const ModelType type = THEMES;
@@ -1093,7 +1094,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndThrottling) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(long_delay()));
 
-  TimeDelta poll(TimeDelta::FromDays(1));
+  base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   const ModelType type = THEMES;
@@ -1112,7 +1113,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndThrottling) {
   EXPECT_FALSE(scheduler()->IsGlobalBackoff());
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
 
-  TimeDelta throttle1(TimeDelta::FromMilliseconds(150));
+  base::TimeDelta throttle1(base::Milliseconds(150));
 
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(DoAll(WithArg<2>(SimulateThrottled(throttle1)), Return(false)))
@@ -1144,8 +1145,8 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingBackingOffBlocksNudge) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(long_delay()));
 
-  TimeDelta poll(TimeDelta::FromDays(1));
-  TimeDelta throttle(TimeDelta::FromSeconds(60));
+  base::TimeDelta poll(base::Days(1));
+  base::TimeDelta throttle(base::Seconds(60));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   const ModelType throttled_type = THEMES;
@@ -1194,8 +1195,8 @@ TEST_F(SyncSchedulerImplTest, TypeThrottlingDoesBlockOtherSources) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(default_delay()));
 
-  TimeDelta poll(TimeDelta::FromDays(1));
-  TimeDelta throttle1(TimeDelta::FromSeconds(60));
+  base::TimeDelta poll(base::Days(1));
+  base::TimeDelta throttle1(base::Seconds(60));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   const ModelType throttled_type = THEMES;
@@ -1242,7 +1243,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffDoesBlockOtherSources) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(long_delay()));
 
-  TimeDelta poll(TimeDelta::FromDays(1));
+  base::TimeDelta poll(base::Days(1));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   const ModelType backed_off_type = THEMES;
@@ -1286,7 +1287,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffDoesBlockOtherSources) {
 
 // Test nudges / polls don't run in config mode and config tasks do.
 TEST_F(SyncSchedulerImplTest, ConfigurationMode) {
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromMilliseconds(15));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Milliseconds(15));
 
   StartSyncConfiguration();
 
@@ -1307,7 +1308,7 @@ TEST_F(SyncSchedulerImplTest, ConfigurationMode) {
   Mock::VerifyAndClearExpectations(syncer());
 
   // Switch to NORMAL_MODE to ensure NUDGES were properly saved and run.
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromDays(1));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
   SyncShareTimes times2;
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(
@@ -1324,7 +1325,7 @@ class BackoffTriggersSyncSchedulerImplTest : public SyncSchedulerImplTest {
     SyncSchedulerImplTest::SetUp();
     UseMockDelayProvider();
     EXPECT_CALL(*delay(), GetDelay)
-        .WillRepeatedly(Return(TimeDelta::FromMilliseconds(10)));
+        .WillRepeatedly(Return(base::Milliseconds(10)));
   }
 
   void TearDown() override {
@@ -1389,7 +1390,7 @@ TEST_F(BackoffTriggersSyncSchedulerImplTest, FailGetEncryptionKey) {
 
 // Test that no polls or extraneous nudges occur when in backoff.
 TEST_F(SyncSchedulerImplTest, BackoffDropsJobs) {
-  TimeDelta poll(TimeDelta::FromMilliseconds(10));
+  base::TimeDelta poll(base::Milliseconds(10));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
   UseMockDelayProvider();
 
@@ -1397,8 +1398,7 @@ TEST_F(SyncSchedulerImplTest, BackoffDropsJobs) {
   EXPECT_CALL(*syncer(), NormalSyncShare)
       .WillOnce(DoAll(Invoke(SimulateCommitFailed),
                       RecordSyncShareMultiple(&times, 1U, false)));
-  EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromDays(1)));
+  EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(base::Days(1)));
 
   StartSyncScheduler(base::Time());
 
@@ -1442,12 +1442,12 @@ TEST_F(SyncSchedulerImplTest, BackoffElevation) {
           DoAll(Invoke(SimulateCommitFailed),
                 RecordSyncShareMultiple(&times, kMinNumSamples, false)));
 
-  const TimeDelta first = kInitialBackoffRetryTime;
-  const TimeDelta second = TimeDelta::FromMilliseconds(20);
-  const TimeDelta third = TimeDelta::FromMilliseconds(30);
-  const TimeDelta fourth = TimeDelta::FromMilliseconds(40);
-  const TimeDelta fifth = TimeDelta::FromMilliseconds(50);
-  const TimeDelta sixth = TimeDelta::FromDays(1);
+  const base::TimeDelta first = kInitialBackoffRetryTime;
+  const base::TimeDelta second = base::Milliseconds(20);
+  const base::TimeDelta third = base::Milliseconds(30);
+  const base::TimeDelta fourth = base::Milliseconds(40);
+  const base::TimeDelta fifth = base::Milliseconds(50);
+  const base::TimeDelta sixth = base::Days(1);
 
   EXPECT_CALL(*delay(), GetDelay(first))
       .WillOnce(Return(second))
@@ -1480,7 +1480,7 @@ TEST_F(SyncSchedulerImplTest, BackoffElevation) {
 TEST_F(SyncSchedulerImplTest, BackoffRelief) {
   UseMockDelayProvider();
 
-  const TimeDelta backoff = TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta backoff = base::Milliseconds(10);
   EXPECT_CALL(*delay(), GetDelay).WillOnce(Return(backoff));
 
   // Optimal start for the post-backoff poll party.
@@ -1514,7 +1514,7 @@ TEST_F(SyncSchedulerImplTest, BackoffRelief) {
       .WillRepeatedly(
           DoAll(Invoke(SimulatePollSuccess),
                 RecordSyncShareMultiple(&times, kMinNumSamples, true)));
-  const TimeDelta poll(TimeDelta::FromMilliseconds(10));
+  const base::TimeDelta poll(base::Milliseconds(10));
   scheduler()->OnReceivedPollIntervalUpdate(poll);
 
   // The new optimal time is now, since the desired poll should have happened
@@ -1535,10 +1535,9 @@ TEST_F(SyncSchedulerImplTest, BackoffRelief) {
 // Test that poll failures are treated like any other failure. They should
 // result in retry with backoff.
 TEST_F(SyncSchedulerImplTest, TransientPollFailure) {
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromMilliseconds(10));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Milliseconds(10));
   UseMockDelayProvider();  // Will cause test failure if backoff is initiated.
-  EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromMilliseconds(0)));
+  EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(base::Milliseconds(0)));
 
   SyncShareTimes times;
   EXPECT_CALL(*syncer(), PollSyncShare)
@@ -1604,8 +1603,7 @@ TEST_F(SyncSchedulerImplTest, SyncShareNotCalledWhenDisconnected) {
 
 TEST_F(SyncSchedulerImplTest, ServerConnectionChangeDuringBackoff) {
   UseMockDelayProvider();
-  EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromMilliseconds(0)));
+  EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(base::Milliseconds(0)));
 
   StartSyncScheduler(base::Time());
   connection()->SetServerNotReachable();
@@ -1633,8 +1631,7 @@ TEST_F(SyncSchedulerImplTest, ServerConnectionChangeDuringBackoff) {
 // the connection change canary synchronous, this is no longer possible.
 TEST_F(SyncSchedulerImplTest, ConnectionChangeCanaryPreemptedByNudge) {
   UseMockDelayProvider();
-  EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromMilliseconds(0)));
+  EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(base::Milliseconds(0)));
 
   StartSyncScheduler(base::Time());
   connection()->SetServerNotReachable();
@@ -1683,7 +1680,7 @@ TEST_F(SyncSchedulerImplTest, DoubleCanaryInConfigure) {
 }
 
 TEST_F(SyncSchedulerImplTest, PollFromCanaryAfterAuthError) {
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromMilliseconds(15));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Milliseconds(15));
 
   SyncShareTimes times;
   ::testing::InSequence seq;
@@ -1714,7 +1711,7 @@ TEST_F(SyncSchedulerImplTest, PollFromCanaryAfterAuthError) {
 TEST_F(SyncSchedulerImplTest, SuccessfulRetry) {
   StartSyncScheduler(base::Time());
 
-  TimeDelta delay = TimeDelta::FromMilliseconds(10);
+  base::TimeDelta delay = base::Milliseconds(10);
   scheduler()->OnReceivedGuRetryDelay(delay);
   EXPECT_EQ(delay, GetRetryTimerDelay());
 
@@ -1732,11 +1729,11 @@ TEST_F(SyncSchedulerImplTest, SuccessfulRetry) {
 TEST_F(SyncSchedulerImplTest, FailedRetry) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay)
-      .WillRepeatedly(Return(TimeDelta::FromMilliseconds(10)));
+      .WillRepeatedly(Return(base::Milliseconds(10)));
 
   StartSyncScheduler(base::Time());
 
-  TimeDelta delay = TimeDelta::FromMilliseconds(10);
+  base::TimeDelta delay = base::Milliseconds(10);
   scheduler()->OnReceivedGuRetryDelay(delay);
 
   SyncShareTimes times;
@@ -1765,8 +1762,8 @@ ACTION_P2(VerifyRetryTimerDelay, scheduler_test, expected_delay) {
 TEST_F(SyncSchedulerImplTest, ReceiveNewRetryDelay) {
   StartSyncScheduler(base::Time());
 
-  TimeDelta delay1 = TimeDelta::FromMilliseconds(100);
-  TimeDelta delay2 = TimeDelta::FromMilliseconds(200);
+  base::TimeDelta delay1 = base::Milliseconds(100);
+  base::TimeDelta delay2 = base::Milliseconds(200);
 
   scheduler()->ScheduleLocalNudge(THEMES);
   scheduler()->OnReceivedGuRetryDelay(delay1);
@@ -1793,7 +1790,7 @@ TEST_F(SyncSchedulerImplTest, ReceiveNewRetryDelay) {
 }
 
 TEST_F(SyncSchedulerImplTest, PartialFailureWillExponentialBackoff) {
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromDays(1));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
   const ModelType type = THEMES;
 
@@ -1810,7 +1807,7 @@ TEST_F(SyncSchedulerImplTest, PartialFailureWillExponentialBackoff) {
   EXPECT_TRUE(GetBackedOffTypes().Has(type));
   EXPECT_FALSE(scheduler()->IsGlobalBackoff());
   EXPECT_FALSE(scheduler()->IsGlobalThrottle());
-  TimeDelta first_blocking_time = GetTypeBlockingTime(THEMES);
+  base::TimeDelta first_blocking_time = GetTypeBlockingTime(THEMES);
 
   SetTypeBlockingMode(THEMES,
                       WaitInterval::BlockingMode::kExponentialBackoffRetrying);
@@ -1818,7 +1815,7 @@ TEST_F(SyncSchedulerImplTest, PartialFailureWillExponentialBackoff) {
   scheduler()->ScheduleLocalNudge(type);
   PumpLoop();
   PumpLoop();
-  TimeDelta second_blocking_time = GetTypeBlockingTime(THEMES);
+  base::TimeDelta second_blocking_time = GetTypeBlockingTime(THEMES);
 
   // The Exponential backoff should be between previous backoff 1.5 and 2.5
   // times.
@@ -1838,7 +1835,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackoffAndSuccessfulSync) {
   UseMockDelayProvider();
   EXPECT_CALL(*delay(), GetDelay).WillRepeatedly(Return(long_delay()));
 
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromDays(1));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
   const ModelType type = THEMES;
 
@@ -1885,7 +1882,7 @@ TEST_F(SyncSchedulerImplTest, TypeBackingOffAndFailureSync) {
       .WillOnce(Return(long_delay()))
       .RetiresOnSaturation();
 
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromDays(1));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
   // Set a backoff datatype.
   const ModelType backed_off_type = THEMES;
@@ -1949,7 +1946,7 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   EXPECT_CALL(*delay(), GetDelay)
       .WillOnce(Return(long_delay()))
       .RetiresOnSaturation();
-  scheduler()->OnReceivedPollIntervalUpdate(TimeDelta::FromDays(1));
+  scheduler()->OnReceivedPollIntervalUpdate(base::Days(1));
 
   StartSyncScheduler(base::Time());
   scheduler()->ScheduleLocalNudge(THEMES);
@@ -1961,7 +1958,7 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   // get onto the |pending_wakeup_timer_|, should be scheduled with no delay.
   scheduler()->ScheduleLocalNudge(TYPED_URLS);
   EXPECT_TRUE(BlockTimerIsRunning());
-  EXPECT_EQ(TimeDelta(), GetPendingWakeupTimerDelay());
+  EXPECT_EQ(base::TimeDelta(), GetPendingWakeupTimerDelay());
   EXPECT_FALSE(scheduler()->IsGlobalBackoff());
 
   // Setup mock as we're about to attempt to sync.
@@ -1974,7 +1971,7 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   // a smaller delay. We verify this by making sure the delay is still zero.
   PumpLoop();
   EXPECT_TRUE(BlockTimerIsRunning());
-  EXPECT_EQ(TimeDelta(), GetPendingWakeupTimerDelay());
+  EXPECT_EQ(base::TimeDelta(), GetPendingWakeupTimerDelay());
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
 
   // Triggers TYPED_URLS PerformDelayedNudge(), which should no-op, because
@@ -1983,7 +1980,7 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   // seconds, so verifying it's greater than 50 should be safe.
   PumpLoop();
   EXPECT_TRUE(BlockTimerIsRunning());
-  EXPECT_LT(TimeDelta::FromSeconds(50), GetPendingWakeupTimerDelay());
+  EXPECT_LT(base::Seconds(50), GetPendingWakeupTimerDelay());
   EXPECT_TRUE(scheduler()->IsGlobalBackoff());
 }
 

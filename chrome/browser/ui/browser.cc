@@ -288,7 +288,6 @@
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #endif
 
-using base::TimeDelta;
 using base::UserMetricsAction;
 using content::NativeWebKeyboardEvent;
 using content::NavigationController;
@@ -308,7 +307,7 @@ using web_modal::WebContentsModalDialogManager;
 namespace {
 
 // How long we wait before updating the browser chrome while loading a page.
-constexpr TimeDelta kUIUpdateCoalescingTime = TimeDelta::FromMilliseconds(200);
+constexpr base::TimeDelta kUIUpdateCoalescingTime = base::Milliseconds(200);
 
 BrowserWindow* CreateBrowserWindow(std::unique_ptr<Browser> browser,
                                    bool user_gesture,

@@ -28,7 +28,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace {
 
@@ -528,7 +527,7 @@ void V4GetHashProtocolManager::GetHashUrlAndHeaders(
 
 void V4GetHashProtocolManager::HandleGetHashError(const Time& now) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TimeDelta next = V4ProtocolManagerUtil::GetNextBackOffInterval(
+  base::TimeDelta next = V4ProtocolManagerUtil::GetNextBackOffInterval(
       &gethash_error_count_, &gethash_back_off_mult_);
   next_gethash_time_ = now + next;
 }
@@ -565,13 +564,13 @@ bool V4GetHashProtocolManager::ParseHashResponse(
   // Seconds resolution is good enough so we ignore the nanos field.
   *negative_cache_expire =
       clock_->Now() +
-      TimeDelta::FromSeconds(response.negative_cache_duration().seconds());
+      base::Seconds(response.negative_cache_duration().seconds());
 
   if (response.has_minimum_wait_duration()) {
     // Seconds resolution is good enough so we ignore the nanos field.
     next_gethash_time_ =
         clock_->Now() +
-        TimeDelta::FromSeconds(response.minimum_wait_duration().seconds());
+        base::Seconds(response.minimum_wait_duration().seconds());
   }
 
   for (const ThreatMatch& match : response.matches()) {
@@ -605,8 +604,8 @@ bool V4GetHashProtocolManager::ParseHashResponse(
     base::Time positive_expiry;
     if (match.has_cache_duration()) {
       // Seconds resolution is good enough so we ignore the nanos field.
-      positive_expiry = clock_->Now() + TimeDelta::FromSeconds(
-                                            match.cache_duration().seconds());
+      positive_expiry =
+          clock_->Now() + base::Seconds(match.cache_duration().seconds());
     } else {
       positive_expiry = clock_->Now() - base::Seconds(1);
     }

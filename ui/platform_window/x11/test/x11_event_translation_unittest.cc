@@ -124,7 +124,6 @@ TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
 // Ensure XEvents with bogus timestamps are properly handled when translated
 // into ui::*Events.
 TEST(XEventTranslationTest, BogusTimestampCorrection) {
-  using base::TimeDelta;
   using base::TimeTicks;
 
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
@@ -133,7 +132,7 @@ TEST(XEventTranslationTest, BogusTimestampCorrection) {
   x11::Event* xev = scoped_xev;
 
   test::ScopedEventTestTickClock test_clock;
-  test_clock.Advance(TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
 
   // Set initial time as 1000ms
   TimeTicks now_ticks = EventTimeForNow();
@@ -145,7 +144,7 @@ TEST(XEventTranslationTest, BogusTimestampCorrection) {
   xev->As<x11::KeyEvent>()->time = static_cast<x11::Time>(500);
   auto keyev = ui::BuildKeyEventFromXEvent(*xev);
   EXPECT_TRUE(keyev);
-  EXPECT_EQ(now_ticks - TimeDelta::FromMilliseconds(500), keyev->time_stamp());
+  EXPECT_EQ(now_ticks - base::Milliseconds(500), keyev->time_stamp());
 
   // Emulate XEvent generated 1000ms ahead in time (bogus timestamp) and verify
   // the translated Event's timestamp is fixed using (i.e: EventTimeForNow()
@@ -160,7 +159,7 @@ TEST(XEventTranslationTest, BogusTimestampCorrection) {
   // instead of the original XEvent's time). To emulate such scenario, we
   // advance the clock by 5 minutes and set the XEvent's time to 1min, so delta
   // is 4min 1sec.
-  test_clock.Advance(TimeDelta::FromMinutes(5));
+  test_clock.Advance(base::Minutes(5));
   xev->As<x11::KeyEvent>()->time = static_cast<x11::Time>(1000 * 60);
   auto keyev3 = ui::BuildKeyEventFromXEvent(*xev);
   EXPECT_TRUE(keyev3);
@@ -200,8 +199,6 @@ TEST(XEventTranslationTest, ChangedMouseButtonFlags) {
 // their counterparts are mixed. Ensures regressions like crbug.com/1069690
 // are not reintroduced in the future.
 TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
-  using base::TimeDelta;
-
   // Use a TestTickClock so we have the power to control the time :)
   test::ScopedEventTestTickClock test_clock;
 
@@ -214,15 +211,15 @@ TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
   EXPECT_FALSE(keyev_shift_l_pressed->is_repeat());
 
   // Create a few more ShiftLeft key events and ensure 'repeat' flag is set.
-  test_clock.Advance(TimeDelta::FromMilliseconds(100));
+  test_clock.Advance(base::Milliseconds(100));
   keyev_shift_l_pressed = BuildKeyEventFromXEvent(*shift_l_pressed);
   EXPECT_TRUE(keyev_shift_l_pressed->is_repeat());
 
-  test_clock.Advance(TimeDelta::FromMilliseconds(200));
+  test_clock.Advance(base::Milliseconds(200));
   keyev_shift_l_pressed = BuildKeyEventFromXEvent(*shift_l_pressed);
   EXPECT_TRUE(keyev_shift_l_pressed->is_repeat());
 
-  test_clock.Advance(TimeDelta::FromMilliseconds(500));
+  test_clock.Advance(base::Milliseconds(500));
   keyev_shift_l_pressed = BuildKeyEventFromXEvent(*shift_l_pressed);
   EXPECT_TRUE(keyev_shift_l_pressed->is_repeat());
 
@@ -232,7 +229,7 @@ TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
   ui::ScopedXI2Event shift_r_pressed;
   shift_r_pressed.InitKeyEvent(ET_KEY_PRESSED, VKEY_RSHIFT, EF_SHIFT_DOWN);
 
-  test_clock.Advance(TimeDelta::FromSeconds(1));
+  test_clock.Advance(base::Seconds(1));
   auto keyev_shift_r_pressed = BuildKeyEventFromXEvent(*shift_r_pressed);
   EXPECT_FALSE(keyev_shift_r_pressed->is_repeat());
   EXPECT_EQ(ET_KEY_PRESSED, keyev_shift_r_pressed->type());
@@ -241,7 +238,7 @@ TEST(XEventTranslationTest, KeyModifiersCounterpartRepeat) {
   ui::ScopedXI2Event shift_r_released;
   shift_r_released.InitKeyEvent(ET_KEY_RELEASED, VKEY_RSHIFT, EF_SHIFT_DOWN);
 
-  test_clock.Advance(TimeDelta::FromMilliseconds(300));
+  test_clock.Advance(base::Milliseconds(300));
   auto keyev_shift_r_released = BuildKeyEventFromXEvent(*shift_r_released);
   EXPECT_FALSE(keyev_shift_r_released->is_repeat());
   EXPECT_EQ(ET_KEY_RELEASED, keyev_shift_r_released->type());

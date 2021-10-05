@@ -73,7 +73,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
-using base::TimeDelta;
 using ui::OSExchangeData;
 
 namespace views {
@@ -379,7 +378,7 @@ class MenuController::MenuScrollTask {
     is_scrolling_up_ = new_is_up;
 
     if (!scrolling_timer_.IsRunning()) {
-      scrolling_timer_.Start(FROM_HERE, TimeDelta::FromMilliseconds(30), this,
+      scrolling_timer_.Start(FROM_HERE, base::Milliseconds(30), this,
                              &MenuScrollTask::Run);
     }
   }
@@ -2277,9 +2276,9 @@ void MenuController::BuildMenuItemPath(MenuItemView* item,
 }
 
 void MenuController::StartShowTimer() {
-  show_timer_.Start(
-      FROM_HERE, TimeDelta::FromMilliseconds(MenuConfig::instance().show_delay),
-      this, &MenuController::CommitPendingSelection);
+  show_timer_.Start(FROM_HERE,
+                    base::Milliseconds(MenuConfig::instance().show_delay), this,
+                    &MenuController::CommitPendingSelection);
 }
 
 void MenuController::StopShowTimer() {
@@ -2288,7 +2287,7 @@ void MenuController::StopShowTimer() {
 
 void MenuController::StartCancelAllTimer() {
   cancel_all_timer_.Start(
-      FROM_HERE, TimeDelta::FromMilliseconds(kCloseOnExitTime),
+      FROM_HERE, base::Milliseconds(kCloseOnExitTime),
       base::BindOnce(&MenuController::Cancel, base::Unretained(this),
                      ExitType::kAll));
 }

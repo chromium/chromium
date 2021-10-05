@@ -193,8 +193,7 @@ class BASE_EXPORT SequenceManagerImpl
   WeakPtr<SequenceManagerImpl> GetWeakPtr();
 
   // How frequently to perform housekeeping tasks (sweeping canceled tasks etc).
-  static constexpr TimeDelta kReclaimMemoryInterval =
-      TimeDelta::FromSeconds(30);
+  static constexpr TimeDelta kReclaimMemoryInterval = Seconds(30);
 
  protected:
   static std::unique_ptr<ThreadControllerImpl>

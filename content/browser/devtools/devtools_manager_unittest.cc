@@ -31,7 +31,6 @@
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::TimeDelta;
 
 namespace content {
 namespace {

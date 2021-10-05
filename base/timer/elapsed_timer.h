@@ -58,8 +58,7 @@ class BASE_EXPORT ElapsedThreadTimer {
 // records timing histograms. It enables such tests to observe reliable timings.
 class BASE_EXPORT ScopedMockElapsedTimersForTest {
  public:
-  static constexpr TimeDelta kMockElapsedTime =
-      TimeDelta::FromMilliseconds(1337);
+  static constexpr TimeDelta kMockElapsedTime = Milliseconds(1337);
 
   // ScopedMockElapsedTimersForTest is not thread-safe (it must be instantiated
   // in a test before other threads begin using ElapsedTimers; and it must

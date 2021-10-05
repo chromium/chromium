@@ -32,7 +32,6 @@
 #include "components/guest_view/browser/guest_view_base.h"  // nogncheck
 #endif
 
-using base::TimeDelta;
 using base::TimeTicks;
 using content::RenderViewHost;
 using content::SessionStorageNamespace;
@@ -231,7 +230,7 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
        pending_triggers) {
     LinkTrigger* pending_trigger = it->get();
 
-    TimeDelta trigger_age = now - pending_trigger->creation_time;
+    base::TimeDelta trigger_age = now - pending_trigger->creation_time;
     if (trigger_age >= manager_->config().max_wait_to_launch) {
       // This trigger waited too long in the queue before launching.
       triggers_.erase(it);

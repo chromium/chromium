@@ -22,7 +22,6 @@
 
 namespace media {
 
-using base::TimeDelta;
 
 class ChunkDemuxerStream;
 class FrameProcessor;
@@ -68,22 +67,24 @@ class MEDIA_EXPORT SourceBufferState {
   // AppendChunks appends the provided BufferQueue.
   bool Append(const uint8_t* data,
               size_t length,
-              TimeDelta append_window_start,
-              TimeDelta append_window_end,
-              TimeDelta* timestamp_offset);
+              base::TimeDelta append_window_start,
+              base::TimeDelta append_window_end,
+              base::TimeDelta* timestamp_offset);
   bool AppendChunks(std::unique_ptr<StreamParser::BufferQueue> buffer_queue,
-                    TimeDelta append_window_start,
-                    TimeDelta append_window_end,
-                    TimeDelta* timestamp_offset);
+                    base::TimeDelta append_window_start,
+                    base::TimeDelta append_window_end,
+                    base::TimeDelta* timestamp_offset);
 
   // Aborts the current append sequence and resets the parser.
-  void ResetParserState(TimeDelta append_window_start,
-                        TimeDelta append_window_end,
-                        TimeDelta* timestamp_offset);
+  void ResetParserState(base::TimeDelta append_window_start,
+                        base::TimeDelta append_window_end,
+                        base::TimeDelta* timestamp_offset);
 
   // Calls Remove(|start|, |end|, |duration|) on all
   // ChunkDemuxerStreams managed by this object.
-  void Remove(TimeDelta start, TimeDelta end, TimeDelta duration);
+  void Remove(base::TimeDelta start,
+              base::TimeDelta end,
+              base::TimeDelta duration);
 
   // If the buffer is full, attempts to try to free up space, as specified in
   // the "Coded Frame Eviction Algorithm" in the Media Source Extensions Spec.
@@ -121,24 +122,25 @@ class MEDIA_EXPORT SourceBufferState {
   // Returns the range of buffered data in this source, capped at |duration|.
   // |ended| - Set to true if end of stream has been signaled and the special
   // end of stream range logic needs to be executed.
-  Ranges<TimeDelta> GetBufferedRanges(TimeDelta duration, bool ended) const;
+  Ranges<base::TimeDelta> GetBufferedRanges(base::TimeDelta duration,
+                                            bool ended) const;
 
   // Returns the highest PTS of currently buffered frames in this source, or
   // base::TimeDelta() if none of the streams contain buffered data.
-  TimeDelta GetHighestPresentationTimestamp() const;
+  base::TimeDelta GetHighestPresentationTimestamp() const;
 
   // Returns the highest buffered duration across all streams managed
   // by this object.
-  // Returns TimeDelta() if none of the streams contain buffered data.
-  TimeDelta GetMaxBufferedDuration() const;
+  // Returns base::TimeDelta() if none of the streams contain buffered data.
+  base::TimeDelta GetMaxBufferedDuration() const;
 
   // Helper methods that call methods with similar names on all the
   // ChunkDemuxerStreams managed by this object.
   void StartReturningData();
   void AbortReads();
-  void Seek(TimeDelta seek_time);
+  void Seek(base::TimeDelta seek_time);
   void CompletePendingReadIfPossible();
-  void OnSetDuration(TimeDelta duration);
+  void OnSetDuration(base::TimeDelta duration);
   void MarkEndOfStream();
   void UnmarkEndOfStream();
   void Shutdown();
@@ -148,8 +150,8 @@ class MEDIA_EXPORT SourceBufferState {
   void SetMemoryLimits(DemuxerStream::Type type, size_t memory_limit);
   bool IsSeekWaitingForData() const;
 
-  using RangesList = std::vector<Ranges<TimeDelta>>;
-  static Ranges<TimeDelta> ComputeRangesIntersection(
+  using RangesList = std::vector<Ranges<base::TimeDelta>>;
+  static Ranges<base::TimeDelta> ComputeRangesIntersection(
       const RangesList& active_ranges,
       bool ended);
 
@@ -221,13 +223,13 @@ class MEDIA_EXPORT SourceBufferState {
   // timestamp offset then |*timestamp_offset_during_append_| is also updated
   // so Append()'s caller can know the new offset. This pointer is only non-NULL
   // during the lifetime of an Append() call.
-  TimeDelta* timestamp_offset_during_append_;
+  base::TimeDelta* timestamp_offset_during_append_;
 
   // During Append(), coded frame processing triggered by OnNewBuffers()
   // requires these two attributes. These are only valid during the lifetime of
   // an Append() call.
-  TimeDelta append_window_start_during_append_;
-  TimeDelta append_window_end_during_append_;
+  base::TimeDelta append_window_start_during_append_;
+  base::TimeDelta append_window_end_during_append_;
 
   // Keeps track of whether a media segment is being parsed.
   bool parsing_media_segment_;

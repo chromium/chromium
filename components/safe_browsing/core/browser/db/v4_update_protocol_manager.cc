@@ -27,7 +27,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace {
 
@@ -362,8 +361,7 @@ void V4UpdateProtocolManager::IssueUpdateRequest() {
   request_ = std::move(loader);
 
   // Begin the update request timeout.
-  timeout_timer_.Start(FROM_HERE,
-                       TimeDelta::FromSeconds(kV4TimerUpdateWaitSecMax), this,
+  timeout_timer_.Start(FROM_HERE, base::Seconds(kV4TimerUpdateWaitSecMax), this,
                        &V4UpdateProtocolManager::HandleTimeout);
 }
 

@@ -20,7 +20,6 @@
 #include "testing/perf/perf_result_reporter.h"
 #include "url/gurl.h"
 
-using base::TimeDelta;
 
 namespace visitedlink {
 

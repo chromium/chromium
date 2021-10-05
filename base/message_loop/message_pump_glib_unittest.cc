@@ -119,7 +119,7 @@ class EventInjector {
     else
       last_time = Time::NowFromSystemTime();
 
-    Time future = last_time + TimeDelta::FromMilliseconds(delay_ms);
+    Time future = last_time + Milliseconds(delay_ms);
     EventInjector::Event event = {future, std::move(callback), std::move(task)};
     events_.push_back(std::move(event));
   }
@@ -259,8 +259,7 @@ TEST_F(MessagePumpGLibTest, TestWorkWhileWaitingForEvents) {
   task_count = 0;
   for (int i = 0; i < 10; ++i) {
     ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, BindOnce(&IncrementInt, &task_count),
-        TimeDelta::FromMilliseconds(10 * i));
+        FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(10 * i));
   }
   // After all the previous tasks have executed, enqueue an event that will
   // quit.
@@ -272,7 +271,7 @@ TEST_F(MessagePumpGLibTest, TestWorkWhileWaitingForEvents) {
         FROM_HERE,
         BindOnce(&EventInjector::AddEvent, Unretained(injector()), 0,
                  run_loop.QuitClosure()),
-        TimeDelta::FromMilliseconds(150));
+        Milliseconds(150));
     run_loop.Run();
   }
   ASSERT_EQ(10, task_count);
@@ -468,11 +467,9 @@ void TestGLibLoopInternal(EventInjector* injector, OnceClosure done) {
   injector->AddDummyEvent(10);
   // Delayed work
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&IncrementInt, &task_count),
-      TimeDelta::FromMilliseconds(30));
+      FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(30));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner),
-      TimeDelta::FromMilliseconds(40));
+      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner), Milliseconds(40));
 
   // Run a nested, straight GLib message loop.
   {
@@ -502,11 +499,9 @@ void TestGtkLoopInternal(EventInjector* injector, OnceClosure done) {
   injector->AddDummyEvent(10);
   // Delayed work
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&IncrementInt, &task_count),
-      TimeDelta::FromMilliseconds(30));
+      FROM_HERE, BindOnce(&IncrementInt, &task_count), Milliseconds(30));
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner),
-      TimeDelta::FromMilliseconds(40));
+      FROM_HERE, BindOnce(&GLibLoopRunner::Quit, runner), Milliseconds(40));
 
   // Run a nested, straight Gtk message loop.
   {

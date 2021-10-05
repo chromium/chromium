@@ -18,7 +18,6 @@
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 
-using base::TimeDelta;
 using base::win::ScopedHandle;
 
 const net::BackoffEntry::Policy kDefaultBackoffPolicy = {

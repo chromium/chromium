@@ -319,7 +319,7 @@ bool Process::Terminate(int exit_code, bool wait) const {
   bool did_terminate = kill(process_, SIGTERM) == 0;
 
   if (wait && did_terminate) {
-    if (WaitForExitWithTimeout(TimeDelta::FromSeconds(60), nullptr))
+    if (WaitForExitWithTimeout(Seconds(60), nullptr))
       return true;
     did_terminate = kill(process_, SIGKILL) == 0;
     if (did_terminate)

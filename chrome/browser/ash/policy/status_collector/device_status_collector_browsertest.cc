@@ -110,7 +110,6 @@
 #include "ui/aura/test/test_windows.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::test::ScopedChromeOSVersionInfo;
 using chromeos::disks::DiskMountManager;
 using ::testing::Return;
@@ -258,7 +257,7 @@ constexpr uint32_t kFakeNumConnectedBluetoothDevices = 7;
 constexpr char kFakeTpmDidVid[] = "fake_tpm_did_vid";
 
 // Time delta representing 1 hour time interval.
-constexpr TimeDelta kHour = TimeDelta::FromHours(1);
+constexpr base::TimeDelta kHour = base::Hours(1);
 
 const int64_t kMillisecondsPerDay = Time::kMicrosecondsPerDay / 1000;
 const char kKioskAccountId[] = "kiosk_user@localhost";
@@ -362,11 +361,11 @@ class TestingDeviceStatusCollector : public policy::DeviceStatusCollector {
     }
   }
 
-  void set_max_stored_past_activity_interval(TimeDelta value) {
+  void set_max_stored_past_activity_interval(base::TimeDelta value) {
     max_stored_past_activity_interval_ = value;
   }
 
-  void set_max_stored_future_activity_interval(TimeDelta value) {
+  void set_max_stored_future_activity_interval(base::TimeDelta value) {
     max_stored_future_activity_interval_ = value;
   }
 
@@ -1355,9 +1354,8 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
       chromeos::kReportDeviceActivityTimes, true);
   status_collector_->set_max_stored_past_activity_interval(
-      TimeDelta::FromDays(kMaxDays - 1));
-  status_collector_->set_max_stored_future_activity_interval(
-      TimeDelta::FromDays(1));
+      base::Days(kMaxDays - 1));
+  status_collector_->set_max_stored_future_activity_interval(base::Days(1));
   test_clock_.SetNow(Time::Now().LocalMidnight());
 
   // Simulate 12 active periods.
@@ -1365,7 +1363,7 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
     status_collector_->Simulate(test_states,
                                 sizeof(test_states) / sizeof(ui::IdleState));
     // Advance the simulated clock by a day.
-    test_clock_.Advance(TimeDelta::FromDays(1));
+    test_clock_.Advance(base::Days(1));
   }
 
   // Check that we don't exceed the max number of periods.
@@ -1377,10 +1375,10 @@ TEST_F(DeviceStatusCollectorTest, MaxStoredPeriods) {
     status_collector_->Simulate(test_states,
                                 sizeof(test_states) / sizeof(ui::IdleState));
     // Advance the simulated clock by a day.
-    test_clock_.Advance(TimeDelta::FromDays(1));
+    test_clock_.Advance(base::Days(1));
   }
   // Set the clock back so the previous simulated times are in the future.
-  test_clock_.Advance(-TimeDelta::FromDays(20));
+  test_clock_.Advance(-base::Days(20));
 
   // Collect one more data point to trigger pruning.
   status_collector_->Simulate(test_states, 1);
@@ -1422,7 +1420,7 @@ TEST_F(DeviceStatusCollectorTest, ActivityCrossingMidnight) {
       chromeos::kReportDeviceActivityTimes, true);
 
   // Set the baseline time to 20 seconds before midnight.
-  test_clock_.SetNow(Time::Now().LocalMidnight() - TimeDelta::FromSeconds(20));
+  test_clock_.SetNow(Time::Now().LocalMidnight() - base::Seconds(20));
 
   status_collector_->Simulate(test_states, 1);
   GetStatus();

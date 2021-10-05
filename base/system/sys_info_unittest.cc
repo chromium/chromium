@@ -175,7 +175,7 @@ TEST_F(SysInfoTest, Uptime) {
   TimeDelta up_time_1 = SysInfo::Uptime();
   // UpTime() is implemented internally using TimeTicks::Now(), which documents
   // system resolution as being 1-15ms. Sleep a little longer than that.
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(20));
+  PlatformThread::Sleep(Milliseconds(20));
   TimeDelta up_time_2 = SysInfo::Uptime();
   EXPECT_GT(up_time_1.InMicroseconds(), 0);
   EXPECT_GT(up_time_2.InMicroseconds(), up_time_1.InMicroseconds());

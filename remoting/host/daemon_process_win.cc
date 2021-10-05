@@ -49,7 +49,6 @@
 #include "remoting/host/win/worker_process_launcher.h"
 
 using base::win::ScopedHandle;
-using base::TimeDelta;
 
 namespace {
 

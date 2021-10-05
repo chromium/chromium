@@ -22,7 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using ::testing::A;
 using ::testing::AtLeast;
 using ::testing::Return;
@@ -73,8 +72,8 @@ class DialServiceTest : public testing::Test {
 TEST_F(DialServiceTest, TestSendMultipleRequests) {
   // Setting the finish delay to zero disables the timer that invokes
   // FinishDiscovery().
-  dial_service_.finish_delay_ = TimeDelta::FromSeconds(0);
-  dial_service_.request_interval_ = TimeDelta::FromSeconds(0);
+  dial_service_.finish_delay_ = base::Seconds(0);
+  dial_service_.request_interval_ = base::Seconds(0);
   dial_service_.max_requests_ = 4;
   dial_service_.discovery_active_ = true;
   EXPECT_CALL(mock_observer_, OnDiscoveryRequest(A<DialService*>())).Times(4);
@@ -89,8 +88,8 @@ TEST_F(DialServiceTest, TestSendMultipleRequests) {
 TEST_F(DialServiceTest, TestMultipleNetworkInterfaces) {
   // Setting the finish delay to zero disables the timer that invokes
   // FinishDiscovery().
-  dial_service_.finish_delay_ = TimeDelta::FromSeconds(0);
-  dial_service_.request_interval_ = TimeDelta::FromSeconds(0);
+  dial_service_.finish_delay_ = base::Seconds(0);
+  dial_service_.request_interval_ = base::Seconds(0);
   dial_service_.max_requests_ = 4;
   dial_service_.discovery_active_ = true;
   net::NetworkInterfaceList interface_list;

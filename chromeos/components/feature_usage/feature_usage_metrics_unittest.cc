@@ -21,7 +21,7 @@ namespace {
 const char kTestFeature[] = "TestFeature";
 const char kTestMetric[] = "ChromeOS.FeatureUsage.TestFeature";
 const char kTestUsetimeMetric[] = "ChromeOS.FeatureUsage.TestFeature.Usetime";
-constexpr base::TimeDelta kDefaultUseTime = base::TimeDelta::FromMinutes(10);
+constexpr base::TimeDelta kDefaultUseTime = base::Minutes(10);
 
 }  // namespace
 

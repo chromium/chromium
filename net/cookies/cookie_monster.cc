@@ -82,7 +82,6 @@
 #include "url/url_canon.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 using TimeRange = net::CookieDeletionInfo::TimeRange;
 
@@ -818,9 +817,9 @@ void CookieMonster::OnLoaded(
     std::vector<std::unique_ptr<CanonicalCookie>> cookies) {
   DCHECK(thread_checker_.CalledOnValidThread());
   StoreLoadedCookies(std::move(cookies));
-  base::UmaHistogramCustomTimes(
-      "Cookie.TimeBlockedOnLoad", base::TimeTicks::Now() - beginning_time,
-      TimeDelta::FromMilliseconds(1), TimeDelta::FromMinutes(1), 50);
+  base::UmaHistogramCustomTimes("Cookie.TimeBlockedOnLoad",
+                                base::TimeTicks::Now() - beginning_time,
+                                base::Milliseconds(1), base::Minutes(1), 50);
 
   // Invoke the task queue of cookie request.
   InvokeQueue();
@@ -1756,7 +1755,7 @@ size_t CookieMonster::GarbageCollect(const Time& current,
   DCHECK(thread_checker_.CalledOnValidThread());
 
   size_t num_deleted = 0;
-  Time safe_date(Time::Now() - TimeDelta::FromDays(kSafeFromGlobalPurgeDays));
+  Time safe_date(Time::Now() - base::Days(kSafeFromGlobalPurgeDays));
 
   // Collect garbage for this key, minding cookie priorities.
   if (cookies_.count(key) > kDomainMaxCookies) {

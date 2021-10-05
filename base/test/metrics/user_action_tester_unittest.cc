@@ -60,11 +60,11 @@ TEST(UserActionTesterTest, GetActionTimesWhenActionsHaveBeenRecorded) {
 
   TimeTicks t1 = TimeTicks::Now();
   RecordAction(kUserAction1);
-  clock.Advance(TimeDelta::FromMinutes(10));
+  clock.Advance(Minutes(10));
 
   TimeTicks t2 = TimeTicks::Now();
   RecordAction(kUserAction2);
-  clock.Advance(TimeDelta::FromMinutes(20));
+  clock.Advance(Minutes(20));
 
   TimeTicks t3 = TimeTicks::Now();
   RecordAction(kUserAction3);
@@ -146,7 +146,7 @@ TEST(UserActionTesterTest,
      VerifyUserActionTesterListensForComputedUserActionAt) {
   UserActionTester user_action_tester;
 
-  TimeTicks time = TimeTicks::Now() - TimeDelta::FromMinutes(10);
+  TimeTicks time = TimeTicks::Now() - Minutes(10);
   base::RecordComputedActionAt(kUserAction1, time);
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(kUserAction1));
@@ -162,8 +162,8 @@ TEST(UserActionTesterTest,
   UserActionTester user_action_tester;
 
   TimeTicks time = TimeTicks::Now();
-  base::RecordComputedActionSince(kUserAction1, TimeDelta::FromMinutes(20));
-  TimeTicks expected_time = time - TimeDelta::FromMinutes(20);
+  base::RecordComputedActionSince(kUserAction1, Minutes(20));
+  TimeTicks expected_time = time - Minutes(20);
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(kUserAction1));
   EXPECT_THAT(user_action_tester.GetActionTimes(kUserAction1),

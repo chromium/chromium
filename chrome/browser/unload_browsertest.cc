@@ -35,7 +35,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-using base::TimeDelta;
 using content::BrowserThread;
 
 const char NOLISTENERS_HTML[] =

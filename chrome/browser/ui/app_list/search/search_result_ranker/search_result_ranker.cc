@@ -39,11 +39,10 @@ namespace app_list {
 namespace {
 
 using base::Time;
-using base::TimeDelta;
 using file_manager::file_tasks::FileTasksObserver;
 
 // Limits how frequently models are queried for ranking results.
-constexpr TimeDelta kMinSecondsBetweenFetches = TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kMinSecondsBetweenFetches = base::Seconds(1);
 
 constexpr char kLogFileOpenType[] = "RecurrenceRanker.LogFileOpenType";
 

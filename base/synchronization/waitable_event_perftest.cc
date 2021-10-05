@@ -178,7 +178,7 @@ TEST(WaitableEventPerfTest, Throughput) {
   SignalerThread thread(nullptr, &event);
   thread.Start();
 
-  const TimeTicks end_time = TimeTicks::Now() + TimeDelta::FromSeconds(1);
+  const TimeTicks end_time = TimeTicks::Now() + Seconds(1);
   size_t count = 0;
   while (event.TimedWaitUntil(end_time)) {
     ++count;

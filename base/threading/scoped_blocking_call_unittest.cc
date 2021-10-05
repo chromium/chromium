@@ -260,7 +260,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, NestedDoesntMatter) {
 TEST_F(ScopedBlockingCallIOJankMonitoringTest, ManyInAWindow) {
   constexpr auto kJankTiming =
       internal::IOJankMonitoringWindow::kIOJankInterval * 7;
-  constexpr auto kIdleTiming = TimeDelta::FromSeconds(3);
+  constexpr auto kIdleTiming = Seconds(3);
 
   for (int i = 0; i < 3; ++i) {
     {
@@ -414,8 +414,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, NoJankMidInterval) {
   {
     ScopedBlockingCall non_janky(FROM_HERE, BlockingType::MAY_BLOCK);
     task_environment_.FastForwardBy(
-        internal::IOJankMonitoringWindow::kIOJankInterval -
-        TimeDelta::FromMilliseconds(1));
+        internal::IOJankMonitoringWindow::kIOJankInterval - Milliseconds(1));
   }
 
   // No janks reported before the monitoring window completes.
@@ -576,7 +575,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
   // interval 9/60 in this case)).
   task_environment_.AdvanceClock(
       internal::IOJankMonitoringWindow::kTimeDiscrepancyTimeout -
-      TimeDelta::FromMilliseconds(1));
+      Milliseconds(1));
 
   // [10-70]s
   base::ThreadPool::PostTask(FROM_HERE, {MayBlock()},
@@ -646,11 +645,10 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, CancellationAcrossSleep) {
   // The second window should be independent and need a full kMonitoringWindow
   // to elapse before reporting.
   task_environment_.FastForwardBy(
-      internal::IOJankMonitoringWindow::kMonitoringWindow -
-      TimeDelta::FromSeconds(1));
+      internal::IOJankMonitoringWindow::kMonitoringWindow - Seconds(1));
   EXPECT_THAT(reports_, ElementsAre());
 
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(Seconds(1));
   EXPECT_THAT(reports_, ElementsAre(std::make_pair(0, 0)));
 }
 
@@ -661,13 +659,11 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, SleepWithLongJank) {
 
     // Fast-forward 2 full windows and almost to the end of the 3rd.
     task_environment_.FastForwardBy(
-        internal::IOJankMonitoringWindow::kMonitoringWindow * 3 -
-        TimeDelta::FromSeconds(1));
+        internal::IOJankMonitoringWindow::kMonitoringWindow * 3 - Seconds(1));
 
     // Simulate a "sleep" over the timeout threshold.
     task_environment_.AdvanceClock(
-        TimeDelta::FromSeconds(1) +
-        internal::IOJankMonitoringWindow::kTimeDiscrepancyTimeout);
+        Seconds(1) + internal::IOJankMonitoringWindow::kTimeDiscrepancyTimeout);
   }
 
   // Two full jank windows are reported when the ScopedBlokcingCall unwinds but
@@ -678,13 +674,12 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest, SleepWithLongJank) {
   // The 4th window has a new |start_time| so completing the "remaining delta"
   // doesn't cause a report from the cancelled 3rd window.
   task_environment_.FastForwardBy(
-      internal::IOJankMonitoringWindow::kMonitoringWindow -
-      TimeDelta::FromSeconds(1));
+      internal::IOJankMonitoringWindow::kMonitoringWindow - Seconds(1));
   EXPECT_THAT(reports_,
               ElementsAre(std::make_pair(60, 60), std::make_pair(60, 60)));
 
   // Completing the whole 4th window generates a report.
-  task_environment_.FastForwardBy(TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(Seconds(1));
   EXPECT_THAT(reports_,
               ElementsAre(std::make_pair(60, 60), std::make_pair(60, 60),
                           std::make_pair(0, 0)));
@@ -858,7 +853,7 @@ TEST_F(ScopedBlockingCallIOJankMonitoringTest,
 // Regression test for crbug.com/1209622
 TEST_F(ScopedBlockingCallIOJankMonitoringTest,
        RacySampleNearMonitoringWindowBoundary) {
-  constexpr auto kDeltaFromBoundary = TimeDelta::FromMilliseconds(1);
+  constexpr auto kDeltaFromBoundary = Milliseconds(1);
   const int kNumBlockedIntervals = 7;
   constexpr auto kBlockedTiming =
       internal::IOJankMonitoringWindow::kIOJankInterval * kNumBlockedIntervals;

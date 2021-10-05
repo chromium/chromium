@@ -129,7 +129,7 @@ void SpinningMutex::LockSlowSpinLock() {
       // thread that is unavailable to finish its work because of higher
       // priority threads spinning here. Sleeping should ensure that they make
       // progress.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(1));
+      PlatformThread::Sleep(Milliseconds(1));
     }
   } while (!TrySpinLock());
 }

@@ -26,7 +26,6 @@
 #include "url/gurl.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace history {
 
@@ -193,8 +192,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   // before Time::UnixEpoch() that cannot be represented. By adding 1 day we
   // ensure all test data is after Time::UnixEpoch().
   BrowsingHistoryServiceTest()
-      : baseline_time_(Time::UnixEpoch().LocalMidnight() +
-                       TimeDelta::FromDays(1)),
+      : baseline_time_(Time::UnixEpoch().LocalMidnight() + base::Days(1)),
         driver_(&web_history_) {
     EXPECT_TRUE(history_dir_.CreateUniqueTempDir());
     local_history_ = CreateHistoryService(history_dir_.GetPath(), true);
@@ -216,7 +214,7 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
   }
 
   Time OffsetToTime(int64_t hour_offset) {
-    return baseline_time_ + TimeDelta::FromHours(hour_offset);
+    return baseline_time_ + base::Hours(hour_offset);
   }
 
   void AddHistory(const std::vector<TestResult>& data,

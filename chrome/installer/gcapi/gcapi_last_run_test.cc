@@ -18,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using base::win::RegKey;
 
 class GCAPILastRunTest : public ::testing::Test {
@@ -70,7 +69,7 @@ class GCAPILastRunTest : public ::testing::Test {
 };
 
 TEST_F(GCAPILastRunTest, Basic) {
-  Time last_run = Time::NowFromSystemTime() - TimeDelta::FromDays(10);
+  Time last_run = Time::NowFromSystemTime() - base::Days(10);
   EXPECT_TRUE(SetLastRunTime(last_run.ToInternalValue()));
 
   int days_since_last_run = GoogleChromeDaysSinceLastRun();
@@ -89,7 +88,7 @@ TEST_F(GCAPILastRunTest, InvalidLastRun) {
 }
 
 TEST_F(GCAPILastRunTest, OutOfRangeLastRun) {
-  Time last_run = Time::NowFromSystemTime() - TimeDelta::FromDays(-42);
+  Time last_run = Time::NowFromSystemTime() - base::Days(-42);
   EXPECT_TRUE(SetLastRunTime(last_run.ToInternalValue()));
 
   int days_since_last_run = GoogleChromeDaysSinceLastRun();

@@ -17,7 +17,6 @@
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "url/gurl.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace net {

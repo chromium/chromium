@@ -27,7 +27,6 @@
 #include "testing/platform_test.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace safe_browsing {
 

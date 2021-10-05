@@ -31,7 +31,6 @@ namespace app_list {
 namespace {
 
 using base::Time;
-using base::TimeDelta;
 
 // A predictor may return scores for target IDs that have been deleted. If less
 // than this proportion of IDs are valid, the ranker triggers a cleanup of the
@@ -157,7 +156,7 @@ RecurrenceRanker::RecurrenceRanker(const std::string& model_identifier,
       config_hash_(base::PersistentHash(config.SerializeAsString())),
       is_ephemeral_user_(is_ephemeral_user),
       min_seconds_between_saves_(
-          TimeDelta::FromSeconds(config.min_seconds_between_saves())),
+          base::Seconds(config.min_seconds_between_saves())),
       time_of_last_save_(Time::Now()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(

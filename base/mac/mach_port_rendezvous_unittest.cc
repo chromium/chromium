@@ -161,7 +161,7 @@ TEST_F(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
       break;
     // Sleep is fine because dispatch will process the notification on one of
     // its workers.
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(10));
+    PlatformThread::Sleep(Milliseconds(10));
   } while ((TimeTicks::Now() - start) < TestTimeouts::action_timeout());
 
   EXPECT_EQ(0u, client_data().size());
