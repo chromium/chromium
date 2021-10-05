@@ -192,6 +192,9 @@ LibInputEventConverter::LibInputEventConverter(
 
 LibInputEventConverter::~LibInputEventConverter() {}
 
+void LibInputEventConverter::ApplyDeviceSettings(
+    const InputDeviceSettingsEvdev& settings) {}
+
 bool LibInputEventConverter::HasKeyboard() const {
   return has_keyboard_;
 }

@@ -88,6 +88,8 @@ class LibInputEventConverter : public EventConverterEvdev {
       delete;
   ~LibInputEventConverter() override;
 
+  void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings) final;
+
   bool HasKeyboard() const final;
 
   bool HasMouse() const final;

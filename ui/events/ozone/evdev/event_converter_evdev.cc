@@ -51,6 +51,9 @@ EventConverterEvdev::EventConverterEvdev(int fd,
 EventConverterEvdev::~EventConverterEvdev() {
 }
 
+void EventConverterEvdev::ApplyDeviceSettings(
+    const InputDeviceSettingsEvdev& settings) {}
+
 void EventConverterEvdev::Start() {
   base::CurrentUIThread::Get()->WatchFileDescriptor(
       fd_, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);

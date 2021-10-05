@@ -25,6 +25,7 @@ struct input_event;
 
 namespace ui {
 enum class DomCode;
+struct InputDeviceSettingsEvdev;
 
 class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
     : public base::MessagePumpForUI::FdWatcher {
@@ -51,6 +52,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   InputDeviceType type() const { return input_device_.type; }
 
   const InputDevice& input_device() const { return input_device_; }
+
+  // Update device settings. The default implementation doesn't do
+  // anything
+  virtual void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings);
 
   // Start reading events.
   void Start();
