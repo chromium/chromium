@@ -18,6 +18,7 @@ class PersonalizationSystemAppDelegate : public web_app::SystemWebAppDelegate {
   std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool IsAppEnabled() const override;
+  bool ShouldShowInLauncher() const override;
 };
 
 // Return a WebApplicationInfo used to install the app.
