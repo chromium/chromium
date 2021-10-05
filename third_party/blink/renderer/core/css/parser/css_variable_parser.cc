@@ -92,15 +92,34 @@ bool IsValidVariableReference(CSSParserTokenRange range) {
 
 bool IsValidEnvVariableReference(CSSParserTokenRange range) {
   range.ConsumeWhitespace();
-  if (range.ConsumeIncludingWhitespace().GetType() !=
-      CSSParserTokenType::kIdentToken)
+  auto token = range.ConsumeIncludingWhitespace();
+  if (token.GetType() != CSSParserTokenType::kIdentToken)
     return false;
   if (range.AtEnd())
     return true;
 
-  if (range.Consume().GetType() != kCommaToken)
-    return false;
-  if (range.AtEnd())
+  if (RuntimeEnabledFeatures::CSSFoldablesEnabled()) {
+    // Consume any number of integer values that indicate the indices for a
+    // multi-dimensional variable.
+    token = range.ConsumeIncludingWhitespace();
+    while (token.GetType() == kNumberToken) {
+      if (token.GetNumericValueType() != kIntegerValueType)
+        return false;
+      if (token.NumericValue() < 0.)
+        return false;
+      token = range.ConsumeIncludingWhitespace();
+    }
+
+    // If that's all we had (either ident then integers or just the ident) then
+    // the env() is valid.
+    if (token.GetType() == kEOFToken)
+      return true;
+  } else {
+    token = range.Consume();
+  }
+
+  // Otherwise we need a comma followed by an optional fallback value.
+  if (token.GetType() != kCommaToken)
     return false;
 
   bool has_references = false;

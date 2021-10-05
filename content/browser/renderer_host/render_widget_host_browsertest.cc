@@ -717,15 +717,35 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
   const char kTestPageURL[] =
       R"HTML(data:text/html,<!DOCTYPE html>
       <style>
-        div {
-          margin: env(fold-top, 1px) env(fold-right, 1px)
-                  env(fold-bottom, 1px) env(fold-left, 1px);
-          width: env(fold-width, 1px);
-          height: env(fold-height, 1px);
+      /* The following styles set the margin top/left/bottom/right to the
+         values where the display feature between segments is, and the width and
+         height of the div to the width and height of the display feature */
+        @media (horizontal-viewport-segments: 2) {
+          div {
+            margin: env(viewport-segment-top 0 0, 10px)
+                    env(viewport-segment-left 1 0, 10px)
+                    env(viewport-segment-bottom 0 0, 10px)
+                    env(viewport-segment-right 0 0, 10px);
+            width: calc(env(viewport-segment-left 1 0, 10px) -
+                        env(viewport-segment-right 0 0, 0px));
+            height: env(viewport-segment-height 0 0, 10px);
+          }
+        }
+
+        @media (vertical-viewport-segments: 2) {
+          div {
+            margin: env(viewport-segment-bottom 0 0, 11px)
+                    env(viewport-segment-right 0 1, 11px)
+                    env(viewport-segment-top 0 1, 11px)
+                    env(viewport-segment-left 0 0, 11px);
+            width: env(viewport-segment-width 0 0, 11px);
+            height: calc(env(viewport-segment-top 0 1, 11px) -
+                         env(viewport-segment-bottom 0 0, 0px));
+          }
         }
         @media (horizontal-viewport-segments: 1) and
                (vertical-viewport-segments: 1) {
-          div { opacity: 0.1; }
+          div { opacity: 0.1; margin: 1px; width: 1px; height: 1px; }
         }
         @media (horizontal-viewport-segments: 2) and
                (vertical-viewport-segments: 1) {
@@ -857,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostFoldableCSSTest,
       <style>
         @media (horizontal-viewport-segments: 2) and
                (vertical-viewport-segments: 1) {
-          div { margin-left: env(fold-left, 10px); }
+          div { margin-left: env(viewport-segment-right 0 0, 10px); }
         }
       </style>
       <div id='target'></div>)HTML";

@@ -309,6 +309,30 @@ RemoteFrame* SourceFrameForOptionalToken(
   return RemoteFrame::FromFrameToken(source_frame_token.value());
 }
 
+void SetViewportSegmentVariablesForRect(StyleEnvironmentVariables& vars,
+                                        gfx::Rect segment_rect,
+                                        unsigned first_dimension,
+                                        unsigned second_dimension) {
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentTop,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.y()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentRight,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.right()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentBottom,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.bottom()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentLeft,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.x()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentWidth,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.width()));
+  vars.SetVariable(UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
+                   first_dimension, second_dimension,
+                   StyleEnvironmentVariables::FormatPx(segment_rect.height()));
+}
+
 }  // namespace
 
 template class CORE_TEMPLATE_EXPORT Supplement<LocalFrame>;
@@ -1293,10 +1317,10 @@ void LocalFrame::WindowSegmentsChanged(
   MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange::kOther);
 
   // Also need to update the environment variables related to window segments.
-  UpdateCSSFoldEnvironmentVariables(window_segments);
+  UpdateViewportSegmentCSSEnvironmentVariables(window_segments);
 }
 
-void LocalFrame::UpdateCSSFoldEnvironmentVariables(
+void LocalFrame::UpdateViewportSegmentCSSEnvironmentVariables(
     const WebVector<gfx::Rect>& window_segments) {
   DCHECK(RuntimeEnabledFeatures::CSSFoldablesEnabled());
 
@@ -1305,49 +1329,45 @@ void LocalFrame::UpdateCSSFoldEnvironmentVariables(
   StyleEnvironmentVariables& vars =
       StyleEnvironmentVariables::GetRootInstance();
 
-  // CSS environment variables related to window segments currently only
-  // expose values for a single fold (i.e. if there are two segments). In all
-  // other cases, these variables will not be defined - see the else clause for
-  // where these are unset.
-  if (window_segments.size() == 2) {
-    // We need to determine the rectangle between the two segments, which
-    // describes the fold area (note that this may have a zero width or height,
-    // but not negative).
-    gfx::Rect fold_rect;
-    if (window_segments[0].y() == window_segments[1].y()) {
-      int fold_width = window_segments[1].x() - window_segments[0].width();
-      DCHECK_GE(fold_width, 0);
-      fold_rect.SetRect(window_segments[0].width(), window_segments[0].y(),
-                        fold_width, window_segments[0].height());
-    } else if (window_segments[0].x() == window_segments[1].x()) {
-      int fold_height = window_segments[1].y() - window_segments[0].height();
-      DCHECK_GE(fold_height, 0);
-      fold_rect.SetRect(window_segments[0].x(), window_segments[0].height(),
-                        window_segments[0].width(), fold_height);
-    }
+  // Unset all variables, since they will be set as a whole by the code below.
+  // Since the number and configurations of the segments can change, and
+  // removing variables clears all values that have previously been set,
+  // we will recalculate all the values on each change.
+  const UADefinedTwoDimensionalVariable vars_to_remove[] = {
+      UADefinedTwoDimensionalVariable::kViewportSegmentTop,
+      UADefinedTwoDimensionalVariable::kViewportSegmentRight,
+      UADefinedTwoDimensionalVariable::kViewportSegmentBottom,
+      UADefinedTwoDimensionalVariable::kViewportSegmentLeft,
+      UADefinedTwoDimensionalVariable::kViewportSegmentWidth,
+      UADefinedTwoDimensionalVariable::kViewportSegmentHeight,
+  };
+  for (auto var : vars_to_remove) {
+    vars.RemoveVariable(var);
+  }
 
-    vars.SetVariable(UADefinedVariable::kFoldTop,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.y()));
-    vars.SetVariable(UADefinedVariable::kFoldRight,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.right()));
-    vars.SetVariable(UADefinedVariable::kFoldBottom,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.bottom()));
-    vars.SetVariable(UADefinedVariable::kFoldLeft,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.x()));
-    vars.SetVariable(UADefinedVariable::kFoldWidth,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.width()));
-    vars.SetVariable(UADefinedVariable::kFoldHeight,
-                     StyleEnvironmentVariables::FormatPx(fold_rect.height()));
-  } else {
-    // If there is not a single fold, we treat the variable as undefined
-    // (i.e. the fallback value specified in the env() function).
-    const UADefinedVariable vars_to_remove[] = {
-        UADefinedVariable::kFoldTop,    UADefinedVariable::kFoldRight,
-        UADefinedVariable::kFoldBottom, UADefinedVariable::kFoldLeft,
-        UADefinedVariable::kFoldWidth,  UADefinedVariable::kFoldHeight,
-    };
-    for (auto var : vars_to_remove) {
-      vars.RemoveVariable(var);
+  // Per [css-env-1], only set the segment variables if there is more than one.
+  if (window_segments.size() >= 2) {
+    // Iterate the segments in row-major order, setting the segment variables
+    // based on x and y index.
+    int current_y_position = window_segments[0].y();
+    unsigned x_index = 0;
+    unsigned y_index = 0;
+    SetViewportSegmentVariablesForRect(vars, window_segments[0], x_index,
+                                       y_index);
+    for (size_t i = 1; i < window_segments.size(); i++) {
+      if (window_segments[i].y() == current_y_position) {
+        x_index++;
+        SetViewportSegmentVariablesForRect(vars, window_segments[i], x_index,
+                                           y_index);
+      } else {
+        // If there is a different y value, this is the next row so increase
+        // y index and start again from 0 for x.
+        y_index++;
+        x_index = 0;
+        current_y_position = window_segments[i].y();
+        SetViewportSegmentVariablesForRect(vars, window_segments[i], x_index,
+                                           y_index);
+      }
     }
   }
 }

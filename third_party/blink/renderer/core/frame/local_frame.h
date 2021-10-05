@@ -359,7 +359,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
   void MediaQueryAffectingValueChangedForLocalSubtree(MediaValueChange);
 
   void WindowSegmentsChanged(const WebVector<gfx::Rect>& window_segments);
-  void UpdateCSSFoldEnvironmentVariables(
+  void UpdateViewportSegmentCSSEnvironmentVariables(
       const WebVector<gfx::Rect>& window_segments);
 
   device::mojom::blink::DevicePostureType GetDevicePosture();
