@@ -284,9 +284,9 @@ def RePackFromDataPackStrings(inputs,
     duplicate_keys = set(input_resources.keys()) & set(resources.keys())
     if duplicate_keys:
       raise KeyError(
-        'Duplicate resource IDs: ' + str(list(duplicate_keys)) + '. '
-        'This is likely because the reserved ID ranges defined in' +
-        'tools/gritsettings/resource_ids.spec have been exhausted.')
+          'Duplicate resource IDs: ' + str(list(duplicate_keys)) + '. '
+          'This is likely because the reserved ID ranges defined in ' +
+          'tools/gritsettings/resource_ids.spec have been exhausted.')
 
     # Make sure encoding is consistent.
     if encoding in (None, BINARY):
