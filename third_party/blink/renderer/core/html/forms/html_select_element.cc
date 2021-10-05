@@ -993,10 +993,14 @@ void HTMLSelectElement::ParseMultipleAttribute(const AtomicString& value) {
     // Preserving the first selection is compatible with Firefox and
     // WebKit. However Edge seems to "ask for a reset" simply.  As of 2016
     // March, the HTML specification says nothing about this.
-    if (old_selected_option)
+    if (old_selected_option) {
+      // Clear last_on_change_option_ in order to disable an optimization in
+      // DeselectItemsWithoutValidation().
+      last_on_change_option_ = nullptr;
       SelectOption(old_selected_option, kDeselectOtherOptionsFlag);
-    else
+    } else {
       ResetToDefaultSelection();
+    }
   }
   select_type_->UpdateTextStyleAndContent();
 }
