@@ -2153,6 +2153,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-in-menu.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityInputRadioWrappedLabel) {
+  RunHtmlTest(FILE_PATH_LITERAL("input-radio-wrapped-label.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputRange) {
   RunHtmlTest(FILE_PATH_LITERAL("input-range.html"));
 }

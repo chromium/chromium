@@ -1463,6 +1463,7 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
 
 bool AXNode::IsIgnoredContainerForOrderedSet() const {
   return IsIgnored() || IsEmbeddedGroup() ||
+         GetRole() == ax::mojom::Role::kLabelText ||
          GetRole() == ax::mojom::Role::kListItem ||
          GetRole() == ax::mojom::Role::kGenericContainer ||
          GetRole() == ax::mojom::Role::kUnknown;
