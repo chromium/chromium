@@ -261,6 +261,7 @@ RestrictedCookieManager::RestrictedCookieManager(
   DCHECK(cookie_store);
   CHECK(origin_ == isolation_info_.frame_origin().value() ||
         role_ != mojom::RestrictedCookieManagerRole::SCRIPT);
+  ComputeCookiePartitionKey();
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
@@ -273,6 +274,13 @@ RestrictedCookieManager::~RestrictedCookieManager() {
     // The entire list is going away, no need to remove nodes from it.
     delete listener_reference;
   }
+}
+
+void RestrictedCookieManager::ComputeCookiePartitionKey() {
+  cookie_partition_key_ = net::CookiePartitionKey::FromNetworkIsolationKey(
+      isolation_info_.network_isolation_key());
+  cookie_partition_keychain_ =
+      net::CookiePartitionKeychain::FromOptional(cookie_partition_key_);
 }
 
 void RestrictedCookieManager::GetAllForUrl(
@@ -298,7 +306,7 @@ void RestrictedCookieManager::GetAllForUrl(
   net_options.set_return_excluded_cookies();
 
   cookie_store_->GetCookieListWithOptionsAsync(
-      url, net_options, CookiePartitionKey(),
+      url, net_options, cookie_partition_keychain_,
       base::BindOnce(&RestrictedCookieManager::CookieListToGetAllForUrlCallback,
                      weak_ptr_factory_.GetWeakPtr(), url, site_for_cookies,
                      top_frame_origin, net_options, std::move(options),
@@ -499,7 +507,7 @@ void RestrictedCookieManager::AddChangeListener(
       cookie_store_->cookie_access_delegate());
   auto listener = std::make_unique<Listener>(
       cookie_store_, this, url, site_for_cookies, top_frame_origin,
-      CookiePartitionKey(), net_options, std::move(mojo_listener));
+      cookie_partition_key_, net_options, std::move(mojo_listener));
 
   listener->mojo_listener().set_disconnect_handler(
       base::BindOnce(&RestrictedCookieManager::RemoveChangeListener,

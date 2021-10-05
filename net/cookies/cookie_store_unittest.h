@@ -144,46 +144,49 @@ class CookieStoreTest : public testing::Test {
   std::string GetCookies(
       CookieStore* cs,
       const GURL& url,
-      absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
+      const CookiePartitionKeychain& cookie_partition_keychain =
+          CookiePartitionKeychain()) {
     DCHECK(cs);
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-    return GetCookiesWithOptions(cs, url, options, cookie_partition_key);
+    return GetCookiesWithOptions(cs, url, options, cookie_partition_keychain);
   }
 
-  std::string GetCookiesWithOptions(CookieStore* cs,
-                                    const GURL& url,
-                                    const CookieOptions& options,
-                                    const absl::optional<CookiePartitionKey>&
-                                        cookie_partition_key = absl::nullopt) {
+  std::string GetCookiesWithOptions(
+      CookieStore* cs,
+      const GURL& url,
+      const CookieOptions& options,
+      const CookiePartitionKeychain& cookie_partition_keychain =
+          CookiePartitionKeychain()) {
     return CanonicalCookie::BuildCookieLine(
-        GetCookieListWithOptions(cs, url, options, cookie_partition_key));
+        GetCookieListWithOptions(cs, url, options, cookie_partition_keychain));
   }
 
   CookieList GetCookieListWithOptions(
       CookieStore* cs,
       const GURL& url,
       const CookieOptions& options,
-      const absl::optional<CookiePartitionKey>& cookie_partition_key =
-          absl::nullopt) {
+      const CookiePartitionKeychain& cookie_partition_keychain =
+          CookiePartitionKeychain()) {
     DCHECK(cs);
     GetCookieListCallback callback;
-    cs->GetCookieListWithOptionsAsync(url, options, cookie_partition_key,
+    cs->GetCookieListWithOptionsAsync(url, options, cookie_partition_keychain,
                                       callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.cookies();
   }
 
   // This does not update the access time on the cookies.
-  CookieList GetAllCookiesForURL(CookieStore* cs,
-                                 const GURL& url,
-                                 const absl::optional<CookiePartitionKey>&
-                                     cookie_partition_key = absl::nullopt) {
+  CookieList GetAllCookiesForURL(
+      CookieStore* cs,
+      const GURL& url,
+      const CookiePartitionKeychain& cookie_partition_keychain =
+          CookiePartitionKeychain()) {
     return GetCookieListWithOptions(cs, url, CookieOptions::MakeAllInclusive(),
-                                    cookie_partition_key);
+                                    cookie_partition_keychain);
   }
 
   // This does not update the access time on the cookies.
@@ -193,9 +196,8 @@ class CookieStoreTest : public testing::Test {
     GetCookieListCallback callback;
     CookieOptions options = CookieOptions::MakeAllInclusive();
     options.set_return_excluded_cookies();
-    cs->GetCookieListWithOptionsAsync(url, options,
-                                      absl::nullopt /*cookie_partition_key*/,
-                                      callback.MakeCallback());
+    cs->GetCookieListWithOptionsAsync(
+        url, options, CookiePartitionKeychain::Todo(), callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.excluded_cookies();
   }

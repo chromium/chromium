@@ -97,9 +97,9 @@ void CookieManager::GetCookieList(const GURL& url,
     base::Process::TerminateCurrentProcessImmediately(1);
 #endif
 
-  cookie_store_->GetCookieListWithOptionsAsync(url, cookie_options,
-                                               net::CookiePartitionKey::Todo(),
-                                               std::move(callback));
+  cookie_store_->GetCookieListWithOptionsAsync(
+      url, cookie_options, net::CookiePartitionKeychain::Todo(),
+      std::move(callback));
 }
 
 void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,

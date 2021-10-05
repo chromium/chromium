@@ -282,7 +282,7 @@ void CookieStoreIOS::SetCanonicalCookieAsync(
 void CookieStoreIOS::GetCookieListWithOptionsAsync(
     const GURL& url,
     const net::CookieOptions& options,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    const net::CookiePartitionKeychain& cookie_partition_keychain,
     GetCookieListCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -671,7 +671,7 @@ void CookieStoreIOS::UpdateCachesFromCookieMonster() {
         &CookieStoreIOS::GotCookieListFor, weak_factory_.GetWeakPtr(), key);
     cookie_monster_->GetCookieListWithOptionsAsync(
         key.first, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKey::Todo(), std::move(callback));
+        net::CookiePartitionKeychain::Todo(), std::move(callback));
   }
 }
 

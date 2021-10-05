@@ -621,10 +621,13 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
             request_site, request_->isolation_info(), delegate,
             request_->force_ignore_top_frame_party_for_cookies()));
 
+    absl::optional<CookiePartitionKey> cookie_partition_key =
+        CookiePartitionKey::FromNetworkIsolationKey(
+            request_->isolation_info().network_isolation_key());
+
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
-        CookiePartitionKey::FromNetworkIsolationKey(
-            request_->isolation_info().network_isolation_key()),
+        CookiePartitionKeychain::FromOptional(cookie_partition_key),
         base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                        weak_factory_.GetWeakPtr(), options));
   } else {

@@ -490,7 +490,7 @@ TEST_F(ReportingUploaderTest, DontSaveCookies) {
   GetCookieListCallback cookie_callback;
   context_.cookie_store()->GetCookieListWithOptionsAsync(
       server_.GetURL("/"), CookieOptions::MakeAllInclusive(),
-      absl::nullopt /*cookie_partition_key*/,
+      CookiePartitionKeychain(),
       base::BindOnce(&GetCookieListCallback::Run,
                      base::Unretained(&cookie_callback)));
   cookie_callback.WaitUntilDone();

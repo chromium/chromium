@@ -153,9 +153,9 @@ class CookieStoreIOSTest : public PlatformTest {
   void GetCookies(net::CookieStore::GetCookieListCallback callback) {
     net::CookieOptions options;
     options.set_include_httponly();
-    store_->GetCookieListWithOptionsAsync(
-        kTestCookieURLFooBar, options, /*cookie_partition_key=*/absl::nullopt,
-        std::move(callback));
+    store_->GetCookieListWithOptionsAsync(kTestCookieURLFooBar, options,
+                                          net::CookiePartitionKeychain(),
+                                          std::move(callback));
   }
 
   // Sets a cookie.
@@ -349,7 +349,7 @@ TEST_F(CookieStoreIOSTest, GetAllCookies) {
   GetAllCookiesHelperCallback callback;
   cookie_store->GetCookieListWithOptionsAsync(
       kTestCookieURLFooBar, net::CookieOptions::MakeAllInclusive(),
-      /*cookie_partition_key=*/absl::nullopt,
+      net::CookiePartitionKeychain(),
       base::BindOnce(&GetAllCookiesHelperCallback::Run,
                      base::Unretained(&callback)));
   base::RunLoop().RunUntilIdle();

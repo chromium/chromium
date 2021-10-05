@@ -401,7 +401,7 @@ void CookieMonster::SetCanonicalCookieAsync(
 void CookieMonster::GetCookieListWithOptionsAsync(
     const GURL& url,
     const CookieOptions& options,
-    const absl::optional<CookiePartitionKey>& cookie_partition_key,
+    const CookiePartitionKeychain& cookie_partition_keychain,
     GetCookieListCallback callback) {
   DoCookieCallbackForURL(
       base::BindOnce(
@@ -409,7 +409,7 @@ void CookieMonster::GetCookieListWithOptionsAsync(
           // the callback on |*this|, so the callback will not outlive
           // the object.
           &CookieMonster::GetCookieListWithOptions, base::Unretained(this), url,
-          options, std::move(cookie_partition_key), std::move(callback)),
+          options, cookie_partition_keychain, std::move(callback)),
       url);
 }
 
@@ -596,7 +596,7 @@ void CookieMonster::AttachAccessSemanticsListForCookieList(
 void CookieMonster::GetCookieListWithOptions(
     const GURL& url,
     const CookieOptions& options,
-    const absl::optional<CookiePartitionKey>& cookie_partition_key,
+    const CookiePartitionKeychain& cookie_partition_keychain,
     GetCookieListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -605,12 +605,23 @@ void CookieMonster::GetCookieListWithOptions(
   if (HasCookieableScheme(url)) {
     std::vector<CanonicalCookie*> cookie_ptrs =
         FindCookiesForRegistryControlledHost(url);
-    if (cookie_partition_key) {
-      std::vector<CanonicalCookie*> partitioned_cookie_ptrs =
-          FindPartitionedCookiesForRegistryControlledHost(
-              cookie_partition_key.value(), url);
-      cookie_ptrs.insert(cookie_ptrs.end(), partitioned_cookie_ptrs.begin(),
-                         partitioned_cookie_ptrs.end());
+    if (!cookie_partition_keychain.IsEmpty()) {
+      if (cookie_partition_keychain.ContainsAllKeys()) {
+        for (const auto& it : partitioned_cookies_) {
+          std::vector<CanonicalCookie*> partitioned_cookie_ptrs =
+              FindPartitionedCookiesForRegistryControlledHost(it.first, url);
+          cookie_ptrs.insert(cookie_ptrs.end(), partitioned_cookie_ptrs.begin(),
+                             partitioned_cookie_ptrs.end());
+        }
+      } else {
+        for (const CookiePartitionKey& key :
+             cookie_partition_keychain.PartitionKeys()) {
+          std::vector<CanonicalCookie*> partitioned_cookie_ptrs =
+              FindPartitionedCookiesForRegistryControlledHost(key, url);
+          cookie_ptrs.insert(cookie_ptrs.end(), partitioned_cookie_ptrs.begin(),
+                             partitioned_cookie_ptrs.end());
+        }
+      }
     }
     std::sort(cookie_ptrs.begin(), cookie_ptrs.end(), CookieSorter);
 

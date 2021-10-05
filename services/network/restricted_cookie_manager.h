@@ -71,6 +71,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   void OverrideIsolationInfoForTesting(
       const net::IsolationInfo& new_isolation_info) {
     isolation_info_ = new_isolation_info;
+    ComputeCookiePartitionKey();
   }
 
   const CookieSettings& cookie_settings() const { return cookie_settings_; }
@@ -112,6 +113,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
  private:
   // The state associated with a CookieChangeListener.
   class Listener;
+
+  // Computes the cookie partition key that this instance will have access to.
+  // Should only be called in the constructor or in ...ForTesting methods.
+  void ComputeCookiePartitionKey();
 
   // Feeds a net::CookieList to a GetAllForUrl() callback.
   void CookieListToGetAllForUrlCallback(
@@ -160,11 +165,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     return isolation_info_.top_frame_origin().value();
   }
 
-  const absl::optional<net::CookiePartitionKey> CookiePartitionKey() const {
-    return net::CookiePartitionKey::FromNetworkIsolationKey(
-        isolation_info_.network_isolation_key());
-  }
-
   const mojom::RestrictedCookieManagerRole role_;
   net::CookieStore* const cookie_store_;
   const CookieSettings& cookie_settings_;
@@ -181,6 +181,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   base::LinkedList<Listener> listeners_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Cookie partition key that the instance of RestrictedCookieManager will have
+  // access to.
+  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
+  // CookiePartitionKeychain that is either empty if `cookie_partition_key_` is
+  // nullopt. If `cookie_partition_key_` is not null, the keychain contains its
+  // value.
+  net::CookiePartitionKeychain cookie_partition_keychain_;
 
   base::WeakPtrFactory<RestrictedCookieManager> weak_ptr_factory_{this};
 };

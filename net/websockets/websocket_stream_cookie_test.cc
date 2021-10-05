@@ -211,7 +211,7 @@ TEST_P(WebSocketStreamServerSetCookieTest, ServerSetCookie) {
   base::RunLoop run_loop;
   store->GetCookieListWithOptionsAsync(
       cookie_url, net::CookieOptions::MakeAllInclusive(),
-      absl::nullopt /*cookie_partition_key*/,
+      CookiePartitionKeychain(),
       base::BindOnce(&GetCookieListHelperFunction, run_loop.QuitClosure(),
                      weak_is_called.GetWeakPtr(),
                      weak_get_cookie_list_result.GetWeakPtr()));
