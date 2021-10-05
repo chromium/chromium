@@ -12,7 +12,8 @@ import './bluetooth_pairing_device_selection_page.js';
 import './bluetooth_pairing_request_code_page.js';
 
 import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from '../../../js/assert.m.js';
+import {assert, assertNotReached} from '../../../js/assert.m.js';
+import {PairingAuthType} from './bluetooth_types.js';
 import {getBluetoothConfig} from './cros_bluetooth_config.js';
 
 /** @enum {string} */
@@ -21,6 +22,14 @@ const BluetoothPairingSubpageId = {
   DEVICE_SELECTION_PAGE: 'deviceSelectionPage',
   DEVICE_REQUEST_CODE_PAGE: 'deviceRequestCodePage',
 };
+
+/**
+ * @typedef {{
+ *  resolve: ?function(string),
+ *  reject: ?function(),
+ * }}
+ */
+let RequestCodeCallback;
 
 /**
  * @implements {chromeos.bluetoothConfig.mojom.BluetoothDiscoveryDelegateInterface}
@@ -63,6 +72,12 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
         value: null,
       },
 
+      /** @private {?PairingAuthType} */
+      pairingAuthType_: {
+        type: Object,
+        value: null,
+      },
+
       /**
        * Used to access |BluetoothPairingSubpageId| type in HTML.
        * @private {!BluetoothPairingSubpageId}
@@ -92,6 +107,9 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
      * @private {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver}
      */
     this.pairingDelegateReceiver_ = null;
+
+    /** @private {?RequestCodeCallback} */
+    this.requestCodeCallback_ = null;
   }
 
   ready() {
@@ -130,8 +148,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.pairingDelegateReceiver_ =
         new chromeos.bluetoothConfig.mojom.DevicePairingDelegateReceiver(this);
 
-    // TODO(crbug.com/1010321): Add test for |devicePendingPairing_| when
-    // request code page UI is added.
     this.devicePendingPairing_ = event.detail.device;
     assert(this.devicePendingPairing_);
 
@@ -149,8 +165,9 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    * @private
    */
   handlePairDeviceResult_(result) {
-    this.pairingDelegateReceiver_ = null;
     this.devicePendingPairing_ = null;
+    this.pairingDelegateReceiver_.$.close();
+    this.pairingDelegateReceiver_ = null;
 
     if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
       this.dispatchEvent(new CustomEvent('finished', {
@@ -159,20 +176,64 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       }));
       return;
     }
-    // TODO(crbug.com/1010321): Pass pairing result to child elements and add
-    // test for pairing failure.
+
+    this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE;
+    // TODO(crbug.com/1010321): Pass pairing result to subpages.
   }
 
   /** @override */
-  async requestPinCode() {
-    // TODO(crbug.com/1010321): Implement this function.
-    return {pinCode: ''};
+  requestPinCode() {
+    return this.requestCode_(PairingAuthType.REQUEST_PIN_CODE);
   }
 
   /** @override */
-  async requestPasskey() {
-    // TODO(crbug.com/1010321): Implement this function.
-    return {passkey: ''};
+  requestPasskey() {
+    return this.requestCode_(PairingAuthType.REQUEST_PASSKEY);
+  }
+
+  /**
+   * @param {!PairingAuthType} authType
+   * @return {!Promise<{pinCode: !string}> | !Promise<{passkey: !string}>}
+   * @private
+   */
+  requestCode_(authType) {
+    this.pairingAuthType_ = authType;
+    this.selectedPageId_ = BluetoothPairingSubpageId.DEVICE_REQUEST_CODE_PAGE;
+
+    this.requestCodeCallback_ = {
+      reject: null,
+      resolve: null,
+    };
+
+    const promise = new Promise((resolve, reject) => {
+      this.requestCodeCallback_.resolve = (code) => {
+        if (authType === PairingAuthType.REQUEST_PIN_CODE) {
+          resolve({'pinCode': code});
+          return;
+        }
+
+        if (authType === PairingAuthType.REQUEST_PASSKEY) {
+          resolve({'passkey': code});
+          return;
+        }
+
+        assertNotReached();
+      };
+      this.requestCodeCallback_.reject = reject;
+    });
+
+    return promise;
+  }
+
+  /**
+   * @param {!CustomEvent<!{code: string}>} event
+   * @private
+   */
+  onRequestCodeEntered_(event) {
+    event.stopPropagation();
+    assert(this.pairingAuthType_);
+    assert(this.requestCodeCallback_.resolve);
+    this.requestCodeCallback_.resolve(event.detail.code);
   }
 
   /** @override */
@@ -204,6 +265,39 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
    */
   shouldShowSubpage_(subpageId) {
     return this.selectedPageId_ === subpageId;
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
+  onCancelClick_(event) {
+    event.stopPropagation();
+    if (this.pairingDelegateReceiver_) {
+      this.pairingDelegateReceiver_.$.close();
+    }
+
+    // Canceling from any page other than |DEVICE_SELECTION_PAGE| should
+    // return back to |DEVICE_SELECTION_PAGE|. This case is handled when
+    // pairDevice promise is returned in handlePairDeviceResult_().
+    // pairDevice promise is returned when close() is called above. If we are
+    // on |DEVICE_SELECTION_PAGE|, canceling closses pairing dialog.
+    if (this.selectedPageId_ ===
+        BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE) {
+      this.dispatchEvent(new CustomEvent('finished', {
+        bubbles: true,
+        composed: true,
+      }));
+      return;
+    }
+
+    if (this.requestCodeCallback_) {
+      // |requestCodeCallback_| promise is held by FakeDevicePairingHandler
+      // in test. This does not get resolved for the test case where user
+      // cancels request while in request code page. Calling reject is
+      // necessary here to make sure the promise is resolved.
+      this.requestCodeCallback_.reject();
+    }
   }
 }
 

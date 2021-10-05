@@ -12,8 +12,6 @@
   </bluetooth-dialog>
 </template>
 <template is="dom-if" if="[[isBluetoothRevampEnabled_]]" restamp>
-  <!-- TODO(crbug.com/1010321): Unify on-cancel and on-finished flows
-    into on-finished. -->
-  <bluetooth-pairing-ui on-cancel="closeDialog_" on-finished="closeDialog_">
+  <bluetooth-pairing-ui on-finished="closeDialog_">
   </bluetooth-pairing-ui>
 </template>

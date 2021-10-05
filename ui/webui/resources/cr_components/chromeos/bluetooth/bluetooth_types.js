@@ -22,3 +22,19 @@ export const ButtonName = {
  * }}
  */
 export let ButtonBarState;
+
+/**
+ * Device pairing authentication type. During device pairing, a device might
+ * require additional authentication before pairing can be completed. This
+ * is used to define which type of authentication is required.
+ * @enum {number}
+ */
+export const PairingAuthType = {
+  NONE: 1,
+  REQUEST_PIN_CODE: 2,
+  REQUEST_PASSKEY: 3,
+  DISPLAY_PIN_CODE: 4,
+  DISPLAY_PASSKEY: 5,
+  CONFIRM_PASSKEY: 6,
+  AUTHORIZE_PAIRING: 7,
+};

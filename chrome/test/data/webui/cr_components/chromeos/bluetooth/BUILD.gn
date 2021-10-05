@@ -81,6 +81,7 @@ js_library("bluetooth_pairing_request_code_page_test") {
   deps = [
     "../../..:chai_assert",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_pairing_request_code_page",
+    "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_types",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

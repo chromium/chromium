@@ -18,6 +18,7 @@ js_type_check("closure_compile_module") {
     ":bluetooth_metrics_utils",
     ":bluetooth_pairing_device_item",
     ":bluetooth_pairing_device_selection_page",
+    ":bluetooth_pairing_request_code_page",
     ":bluetooth_pairing_ui",
     ":bluetooth_types",
     ":bluetooth_utils",

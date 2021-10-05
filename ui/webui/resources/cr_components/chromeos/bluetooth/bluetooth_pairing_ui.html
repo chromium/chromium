@@ -6,9 +6,10 @@
 <div id="container">
   <iron-pages
       attr-for-selected="id"
+      on-cancel="onCancelClick_"
       selected="[[selectedPageId_]]">
     <template is="dom-if" if="[[shouldShowSubpage_(
-        SubpageId.DEVICE_SELECTION_PAGE, selectedPageId_)]]" restamp>
+        SubpageId.DEVICE_SELECTION_PAGE, selectedPageId_)]]">
       <bluetooth-pairing-device-selection-page
           devices="[[discoveredDevices_]]"
           on-pair-device="onPairDevice_"
@@ -18,7 +19,9 @@
     <template is="dom-if" if="[[shouldShowSubpage_(
         SubpageId.DEVICE_REQUEST_CODE_PAGE, selectedPageId_)]]" restamp>
       <bluetooth-pairing-request-code-page
-          device="[[selectedDevice_]]"
+          auth-type="pairingAuthType_"
+          on-request-code-entered="onRequestCodeEntered_"
+          device="[[devicePendingPairing_]]"
           id="deviceRequestCodePage">
       </bluetooth-pairing-request-code-page>
     </template>

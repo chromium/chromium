@@ -35,7 +35,7 @@ suite('OsBluetoothPairingDialogTest', function() {
     Polymer.dom.flush();
   });
 
-  test('Cancel event is fired on close', async function() {
+  test('Finished event is fired on close', async function() {
     const pairingDialog =
         bluetoothPairingDialog.shadowRoot.querySelector('bluetooth-pairing-ui');
     assertTrue(!!pairingDialog);
@@ -43,7 +43,7 @@ suite('OsBluetoothPairingDialogTest', function() {
     const closeBluetoothPairingUiPromise =
         test_util.eventToPromise('close', bluetoothPairingDialog);
 
-    pairingDialog.dispatchEvent(new CustomEvent('cancel'));
+    pairingDialog.dispatchEvent(new CustomEvent('finished'));
 
     await closeBluetoothPairingUiPromise;
   });

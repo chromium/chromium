@@ -14,13 +14,21 @@
     width: 336px;
   }
 </style>
-<bluetooth-base-page button-bar-state="[[buttonBarState_]]">
+<bluetooth-base-page
+    on-pair="onPairClicked_"
+    button-bar-state="[[buttonBarState_]]">
   <div slot="page-body" id="pageBody">
     <div id="message">
       [[getMessage_(device.*)]]
     </div>
-    <cr-input id="pin" minlength="1" maxlength="16" type="text"
-        auto-validate value="{{pinCode_}}">
+    <cr-input
+        id="pin"
+        minlength="1"
+        maxlength="[[getMaxlength_(authType)]]"
+        type="text"
+        aria-label="[[getMessage_(device.*)]]"
+        value="{{pinCode_}}"
+        auto-validate >
     </cr-input>
   </div>
 </bluetooth-base-page>
