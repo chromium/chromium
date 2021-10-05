@@ -142,6 +142,30 @@ TEST(LookalikeUrlUtilTest, EditDistanceExcludesCommonFalsePositives) {
   }
 }
 
+TEST(LookalikeUrlUtilTest, CharacterSwapExcludesCommonFalsePositives) {
+  const struct TestCase {
+    const char* domain;
+    const char* top_domain;
+    bool is_likely_false_positive;
+  } kTestCases[] = {
+      {"abcde.com", "abced.com", false},
+      // Only differs by registry:
+      {"abcde.sr", "abcde.rs", true},
+  };
+  for (const TestCase& test_case : kTestCases) {
+    auto navigated =
+        GetDomainInfo(GURL(std::string(url::kHttpsScheme) +
+                           url::kStandardSchemeSeparator + test_case.domain));
+    auto matched = GetDomainInfo(GURL(std::string(url::kHttpsScheme) +
+                                      url::kStandardSchemeSeparator +
+                                      test_case.top_domain));
+    bool result = IsLikelyCharacterSwapFalsePositive(navigated, matched);
+    EXPECT_EQ(test_case.is_likely_false_positive, result)
+        << "when comparing " << test_case.domain << " with "
+        << test_case.top_domain;
+  }
+}
+
 bool IsGoogleScholar(const std::string& hostname) {
   return hostname == "scholar.google.com";
 }

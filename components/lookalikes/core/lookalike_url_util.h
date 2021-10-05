@@ -147,6 +147,13 @@ bool IsEditDistanceAtMostOne(const std::u16string& str1,
 bool IsLikelyEditDistanceFalsePositive(const DomainInfo& navigated_domain,
                                        const DomainInfo& matched_domain);
 
+// Returns whether |navigated_domain| and |matched_domain| are likely to be
+// character swap false positives, and thus the user should *not* be warned.
+//
+// Assumes |navigated_domain| and |matched_domain| are within 1 character swap.
+bool IsLikelyCharacterSwapFalsePositive(const DomainInfo& navigated_domain,
+                                        const DomainInfo& matched_domain);
+
 // Returns true if the domain given by |domain_info| is a top domain.
 bool IsTopDomain(const DomainInfo& domain_info);
 
