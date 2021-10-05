@@ -249,6 +249,10 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2000],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/support_tool/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2010],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/tab_search/tab_search_resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [2020],

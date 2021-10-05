@@ -2027,6 +2027,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/webui/settings/settings_clear_browsing_data_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_secure_dns_handler_browsertest.cc",
       "../browser/ui/webui/settings/settings_ui_browsertest.cc",
+      "../browser/ui/webui/support_tool_ui_browsertest.cc",
       "../browser/ui/webui/tab_search/tab_search_ui_browsertest.cc",
       "../browser/ui/webui/webui_load_timer_browsertest.cc",
       "../browser/ui/webui/webui_webview_browsertest.cc",

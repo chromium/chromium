@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/webui/predictors/predictors_ui.h"
 #include "chrome/browser/ui/webui/quota_internals/quota_internals_ui.h"
 #include "chrome/browser/ui/webui/signin_internals_ui.h"
+#include "chrome/browser/ui/webui/support_tool_ui.h"
 #include "chrome/browser/ui/webui/sync_internals/sync_internals_ui.h"
 #include "chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals_ui.h"
@@ -663,6 +664,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SignInInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISupervisedUserPassphrasePageHost)
     return &NewWebUI<ConstrainedWebDialogUI>;
+  if (base::FeatureList::IsEnabled(features::kSupportTool) &&
+      url.host_piece() == chrome::kChromeUISupportToolHost)
+    return &NewWebUI<SupportToolUI>;
   if (url.host_piece() == chrome::kChromeUISyncInternalsHost)
     return &NewWebUI<SyncInternalsUI>;
   if (url.host_piece() == chrome::kChromeUITranslateInternalsHost)

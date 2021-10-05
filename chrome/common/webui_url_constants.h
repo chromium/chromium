@@ -170,6 +170,7 @@ extern const char kChromeUISiteDataDeprecatedPath[];
 extern const char kChromeUISiteDetailsPrefixURL[];
 extern const char kChromeUISiteEngagementHost[];
 extern const char kChromeUISupervisedUserPassphrasePageHost[];
+extern const char kChromeUISupportToolHost[];
 extern const char kChromeUISyncConfirmationHost[];
 extern const char kChromeUISyncConfirmationLoadingPath[];
 extern const char kChromeUISyncConfirmationURL[];
