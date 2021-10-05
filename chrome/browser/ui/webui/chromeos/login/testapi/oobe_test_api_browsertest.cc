@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "content/public/test/browser_test.h"
 
@@ -24,6 +25,12 @@ class OobeTestApiTest : public OobeBaseTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableOobeTestAPI);
     OobeBaseTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    OobeBaseTest::SetUpOnMainThread();
+    // Ensure WebUI is loaded to allow Javascript execution.
+    LoginDisplayHost::default_host()->GetWizardController();
   }
 };
 
