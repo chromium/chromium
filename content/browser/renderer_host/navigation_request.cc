@@ -975,7 +975,8 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     navigation_params->skip_service_worker = true;
   }
 
-  RenderFrameHostImpl* rfh_restored_from_back_forward_cache = nullptr;
+  base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache =
+      nullptr;
   if (entry && !frame_tree_node->navigator()
                     .GetDelegate()
                     ->IsActivationNavigationDisallowedForBug1234857()) {
@@ -987,7 +988,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateBrowserInitiated(
     if (restored_entry) {
       if (frame_tree_node->IsMainFrame()) {
         rfh_restored_from_back_forward_cache =
-            restored_entry->render_frame_host();
+            restored_entry->render_frame_host()->GetWeakPtr();
       } else {
         // We have a matching BFCache entry for a subframe navigation. This
         // shouldn't happen as we should've triggered deletion of BFCache
@@ -1306,7 +1307,7 @@ NavigationRequest::NavigationRequest(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
-    RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
+    base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache,
     int initiator_process_id,
     bool was_opener_suppressed,
     bool is_pdf)
@@ -1336,6 +1337,7 @@ NavigationRequest::NavigationRequest(
       web_bundle_handle_tracker_(std::move(web_bundle_handle_tracker)),
       rfh_restored_from_back_forward_cache_(
           rfh_restored_from_back_forward_cache),
+      is_back_forward_cache_restore_(!!rfh_restored_from_back_forward_cache),
       // Store the old RenderFrameHost id at request creation to be used later.
       previous_render_frame_host_id_(GlobalRenderFrameHostId(
           frame_tree_node->current_frame_host()->GetProcess()->GetID(),
@@ -1355,6 +1357,9 @@ NavigationRequest::NavigationRequest(
   // Navigations can't be a replacement and a reload at the same time.
   DCHECK(!common_params_->should_replace_current_entry ||
          !NavigationTypeUtils::IsReload(common_params_->navigation_type));
+  // If `rfh_restored_from_back_forward_cache` was set, it should not be
+  // invalidated yet at this point.
+  CHECK(!rfh_restored_from_back_forward_cache.WasInvalidated());
   ScopedCrashKeys crash_keys(*this);
 
   // There should be no navigations to about:newtab, about:version or other
@@ -2142,7 +2147,7 @@ void NavigationRequest::StartNavigation() {
   // to restore an entry from the back-forward cache, we need to ensure that
   // the is_overriding_user_agent used in the RenderFrameHost to restore matches
   // the value set in CommitNavigationParams.
-  if (IsServedFromBackForwardCache() &&
+  if (rfh_restored_from_back_forward_cache_ &&
       rfh_restored_from_back_forward_cache_->is_overriding_user_agent() !=
           commit_params_->is_overriding_user_agent) {
     // Trigger an eviction, which will cancel this navigation and trigger a new
@@ -3121,19 +3126,18 @@ void NavigationRequest::OnResponseStarted(
   if (IsServedFromBackForwardCache()) {
     // If the current navigation is being restarted, it should not try to make
     // any further progress.
-    DCHECK(!restarting_back_forward_cached_navigation_);
-
+    CHECK(!restarting_back_forward_cached_navigation_);
+    if (!rfh_restored_from_back_forward_cache_) {
+      // The RenderFrameHost to restore has been evicted and deleted. We should
+      // stop processing this back/forward cache restore navigation, as the
+      // navigation will soon be restarted as a normal history navigation.
+      return;
+    }
     NavigationControllerImpl* controller = GetNavigationController();
-    render_frame_host_ = controller->GetBackForwardCache()
-                             .GetEntry(nav_entry_id_)
-                             ->render_frame_host();
-    // The only time GetEntry can return nullptr here, is if the document was
-    // evicted from the BackForwardCache since this navigation started.
-    //
-    // If the document was evicted, the navigation should have been re-issued
-    // (deleting the URL loader and eventually this NavigationRequest), so we
-    // should never reach this point without the document still present in the
-    // BackForwardCache.
+    BackForwardCacheImpl::Entry* entry =
+        controller->GetBackForwardCache().GetEntry(nav_entry_id_);
+    CHECK(entry);
+    render_frame_host_ = entry->render_frame_host();
     CHECK(render_frame_host_);
   } else if (IsPrerenderedPageActivation()) {
     // Prerendering requires changing pages starting at the root node.
@@ -3779,8 +3783,13 @@ void NavigationRequest::OnStartChecksComplete(
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
   network::mojom::URLResponseHeadPtr cached_response_head = nullptr;
   if (IsServedFromBackForwardCache()) {
+    if (restarting_back_forward_cached_navigation_) {
+      // Do not continue the back/forward cache restore navigation, as it will
+      // soon be restarted as a normal history navigation.
+      return;
+    }
+    CHECK(rfh_restored_from_back_forward_cache_);
     loader_type = NavigationURLLoader::LoaderType::kNoopForBackForwardCache;
-    DCHECK(rfh_restored_from_back_forward_cache_);
     cached_response_head =
         rfh_restored_from_back_forward_cache_->last_response_head()->Clone();
   } else if (IsPrerenderedPageActivation()) {
@@ -6535,9 +6544,10 @@ void NavigationRequest::RestartBackForwardCachedNavigation() {
 void NavigationRequest::RestartBackForwardCachedNavigationImpl() {
   TRACE_EVENT0("navigation",
                "NavigationRequest::RestartBackForwardCachedNavigationImpl");
-  RenderFrameHostImpl* rfh = rfh_restored_from_back_forward_cache();
-  CHECK(rfh);
-  CHECK_EQ(rfh->frame_tree_node()->navigation_request(), this);
+  CHECK(IsServedFromBackForwardCache());
+  if (RenderFrameHostImpl* rfh = rfh_restored_from_back_forward_cache()) {
+    CHECK_EQ(rfh->frame_tree_node()->navigation_request(), this);
+  }
 
   NavigationControllerImpl* controller = GetNavigationController();
   int nav_index = controller->GetEntryIndexWithUniqueID(nav_entry_id());
@@ -7041,7 +7051,7 @@ void NavigationRequest::RenderFallbackContentForObjectTag() {
 }
 
 bool NavigationRequest::IsServedFromBackForwardCache() const {
-  return rfh_restored_from_back_forward_cache_ != nullptr;
+  return is_back_forward_cache_restore_;
 }
 
 bool NavigationRequest::IsPageActivation() const {
