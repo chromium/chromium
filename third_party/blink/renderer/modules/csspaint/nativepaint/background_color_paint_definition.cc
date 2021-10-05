@@ -76,7 +76,7 @@ class BackgroundColorPaintWorkletInput : public PaintWorkletInput {
 
 // TODO(crbug.com/1163949): Support animation keyframes without 0% or 100%.
 // Returns false if we cannot successfully get the animated color.
-void GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
+bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
                            const KeyframeEffectModelBase* model,
                            Vector<Color>* animated_colors,
                            const Element* element) {
@@ -87,7 +87,9 @@ void GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
         CSSPropertyName(CSSPropertyID::kBackgroundColor);
     const CSSValue* computed_value = StyleResolver::ComputeValue(
         const_cast<Element*>(element), property_name, *value);
-    DCHECK(computed_value->IsColorValue());
+    // TODO(crbug.com/1255912): handle system color.
+    if (!computed_value->IsColorValue())
+      return false;
     const cssvalue::CSSColor* color_value =
         static_cast<const cssvalue::CSSColor*>(computed_value);
     animated_colors->push_back(color_value->Value());
@@ -102,6 +104,7 @@ void GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
     Color rgba = CSSColorInterpolationType::GetRGBA(*(list.Get(0)));
     animated_colors->push_back(rgba);
   }
+  return true;
 }
 
 bool CanGetValueFromKeyframe(const PropertySpecificKeyframe* frame,
@@ -146,7 +149,8 @@ bool GetBGColorPaintWorkletParamsInternal(
       model->GetPropertySpecificKeyframes(
           PropertyHandle(GetCSSPropertyBackgroundColor()));
   for (const auto& frame : *frames) {
-    GetColorsFromKeyframe(frame, model, animated_colors, element);
+    if (!GetColorsFromKeyframe(frame, model, animated_colors, element))
+      return false;
     GetCompositorKeyframeOffset(frame, offsets);
   }
   *progress = compositable_animation->effect()->Progress();
