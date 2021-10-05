@@ -1293,7 +1293,8 @@ void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
   // handlers but gets deleted by reset directly in kSpeculative state.
   if (speculative_render_frame_host_->lifecycle_state() ==
       LifecycleStateImpl::kPendingCommit) {
-    speculative_render_frame_host_->SetLifecycleStateToReadyToBeDeleted();
+    speculative_render_frame_host_->SetLifecycleState(
+        LifecycleStateImpl::kReadyToBeDeleted);
   }
   // TODO(dcheng): Figure out why `RenderFrameDeleted()` doesn't seem to be
   // called on child `RenderFrameHost`s at shutdown. This is currently limited
@@ -3546,11 +3547,13 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   if (render_frame_host_) {
     if (frame_tree->is_prerendering()) {
       if (render_frame_host_->lifecycle_state() ==
-          LifecycleStateImpl::kPendingCommit)
-        render_frame_host_->SetLifecycleStateToPrerendering();
+          LifecycleStateImpl::kPendingCommit) {
+        render_frame_host_->SetLifecycleState(
+            LifecycleStateImpl::kPrerendering);
+      }
     } else {
       if (render_frame_host_->lifecycle_state() != LifecycleStateImpl::kActive)
-        render_frame_host_->SetLifecycleStateToActive();
+        render_frame_host_->SetLifecycleState(LifecycleStateImpl::kActive);
     }
   }
 

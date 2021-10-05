@@ -5627,7 +5627,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     // RenderFrameHosts whereas SameDocument, BackForwardCache and
     // PrerenderedActivation navigations don't.
     DCHECK(!IsSameDocument() && !IsPageActivation());
-    render_frame_host_->SetLifecycleStateToPendingCommit();
+    render_frame_host_->SetLifecycleState(
+        RenderFrameHostImpl::LifecycleStateImpl::kPendingCommit);
   }
 
   // Reset the source location information, which is not needed anymore. This

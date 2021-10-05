@@ -1037,12 +1037,15 @@ class CONTENT_EXPORT RenderFrameHostImpl
     kReadyToBeDeleted,
   };
   LifecycleStateImpl lifecycle_state() const { return lifecycle_state_; }
-  // TODO(https://crbug.com/1192600): Add a better way to set lifecycle state
-  // and cleanup existing methods.
-  void SetLifecycleStateToActive();
-  void SetLifecycleStateToPrerendering();
-  void SetLifecycleStateToPendingCommit();
-  void SetLifecycleStateToReadyToBeDeleted();
+
+  // Updates the `lifecycle_state_`. This will also notify the delegate
+  // about `RenderFrameHostStateChanged` when the old and new
+  // `RenderFrameHost::LifecycleState` changes.
+  //
+  // When the `new_state == LifecycleStateImpl::kActive`, LifecycleStateImpl of
+  // RenderFrameHost and all its children are also updated to
+  // `LifecycleStateImpl::kActive`.
+  void SetLifecycleState(LifecycleStateImpl new_state);
 
   // Sets |has_pending_lifecycle_state_update_| to true for this
   // RenderFrameHost and its children. Called when this RenderFrameHost stops
@@ -3074,10 +3077,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return has_unload_handler_ || has_pagehide_handler_ ||
            has_visibilitychange_handler_ || do_not_delete_for_testing_;
   }
-
-  // Updates the |lifecycle_state_|. Called when there is a change in the
-  // RenderFrameHost LifecycleStateImpl.
-  void SetLifecycleState(LifecycleStateImpl state);
 
   // Converts a content-internal RenderFrameHostImpl::LifecycleStateImpl into a
   // coarser-grained RenderFrameHost::LifecycleState which can be exposed

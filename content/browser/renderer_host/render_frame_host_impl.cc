@@ -12108,53 +12108,12 @@ bool RenderFrameHostImpl::IsPendingDeletion() const {
          lifecycle_state() == LifecycleStateImpl::kReadyToBeDeleted;
 }
 
-void RenderFrameHostImpl::SetLifecycleStateToPendingCommit() {
-  // Update the |lifecycle_state_| to kPendingCommit when navigation
-  // commits in the renderer process and this is when the speculative
-  // RenderFrameHost is associated with the navigation for the first time and is
-  // not considered speculative anymore.
-  DCHECK(children_.empty());
-  SetLifecycleState(LifecycleStateImpl::kPendingCommit);
-}
-
-void RenderFrameHostImpl::SetLifecycleStateToReadyToBeDeleted() {
-  SetLifecycleState(LifecycleStateImpl::kReadyToBeDeleted);
-}
-
-void RenderFrameHostImpl::SetLifecycleStateToActive() {
-  // If the RenderFrameHost is restored from BackForwardCache or is part of a
-  // prerender activation, update states of all the children to kActive. This is
-  // called from RenderFrameHostManager::SetRenderFrameHost which happens after
-  // commit.
-  if (IsInBackForwardCache() ||
-      lifecycle_state() == LifecycleStateImpl::kPrerendering) {
-    for (auto& child : children_) {
-      DCHECK_EQ(lifecycle_state_,
-                child->current_frame_host()->lifecycle_state_);
-      child->current_frame_host()->SetLifecycleStateToActive();
-    }
-  }
-
-  if (IsInBackForwardCache())
-    was_restored_from_back_forward_cache_for_debugging_ = true;
-
-  SetLifecycleState(LifecycleStateImpl::kActive);
-}
-
-void RenderFrameHostImpl::SetLifecycleStateToPrerendering() {
-  // Update the |lifecycle_state_| to kPrerendering on navigation commit
-  // when a speculative RenderFrameHost is created for navigation is in pending
-  // commit state inside prerendered frame tree. This should happen before
-  // activation.
-  DCHECK(frame_tree()->is_prerendering());
-  DCHECK(children_.empty());
-  SetLifecycleState(LifecycleStateImpl::kPrerendering);
-}
-
-void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl state) {
-  TRACE_EVENT2("content", "RenderFrameHostImpl::SetLifecycleStateImpl",
+void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
+  TRACE_EVENT2("content", "RenderFrameHostImpl::SetLifecycleState",
                "render_frame_host", this, "new_state",
-               LifecycleStateImplToString(state));
+               LifecycleStateImplToString(new_state));
+// TODO(crbug.com/1256898): Consider associating expectations with each
+// transitions.
 #if DCHECK_IS_ON()
   static const base::NoDestructor<StateTransitions<LifecycleStateImpl>>
       allowed_transitions(
@@ -12194,16 +12153,45 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl state) {
           }));
   DCHECK_STATE_TRANSITION(allowed_transitions,
                           /*old_state=*/lifecycle_state_,
-                          /*new_state=*/state);
+                          /*new_state=*/new_state);
 #endif  // DCHECK_IS_ON()
 
+  // TODO(crbug.com/1256896): Use switch-case to make this more readable.
+  // If the RenderFrameHost is restored from BackForwardCache or is part of a
+  // prerender activation, update states of all the children to kActive.
+  if (new_state == LifecycleStateImpl::kActive) {
+    if (lifecycle_state_ == LifecycleStateImpl::kPendingCommit ||
+        lifecycle_state_ == LifecycleStateImpl::kSpeculative) {
+      // Newly-created documents shouldn't have children, as child creation
+      // happens after commit.
+      DCHECK(children_.empty());
+    }
+    if (lifecycle_state() == LifecycleStateImpl::kInBackForwardCache ||
+        lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+      for (auto& child : children_) {
+        DCHECK_EQ(child->current_frame_host()->lifecycle_state(),
+                  lifecycle_state_);
+        child->current_frame_host()->SetLifecycleState(new_state);
+      }
+    }
+  }
+
+  if (lifecycle_state() == LifecycleStateImpl::kInBackForwardCache)
+    was_restored_from_back_forward_cache_for_debugging_ = true;
+
+  if (new_state == LifecycleStateImpl::kPendingCommit ||
+      new_state == LifecycleStateImpl::kPrerendering) {
+    DCHECK(children_.empty());
+  }
+
   LifecycleStateImpl old_state = lifecycle_state_;
-  lifecycle_state_ = state;
+  lifecycle_state_ = new_state;
 
   // Unset the |has_pending_lifecycle_state_update_| value once the
   // LifecycleStateImpl is updated.
   if (has_pending_lifecycle_state_update_) {
-    DCHECK(IsInBackForwardCache() || IsPendingDeletion() ||
+    DCHECK(lifecycle_state() == LifecycleStateImpl::kInBackForwardCache ||
+           IsPendingDeletion() ||
            old_state == LifecycleStateImpl::kPrerendering)
         << "Transitioned to unexpected state with resetting "
            "|has_pending_lifecycle_state_update_|\n ";
