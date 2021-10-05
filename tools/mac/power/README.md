@@ -1,5 +1,10 @@
 # Mac power measurement
 
+This directory contains the tools necessary to run different browsers and usage scenarios and measuring their
+performance impact. For Chromium it's also possible to generate profiles of CPU use. See `benchmark.py` for
+running the full suite. See `collapse_profile.py` for generating profiles.
+
+
 ## Setting Up
 
 ### Python Virtual Environment
@@ -68,6 +73,22 @@ A tool that allow you to run different browsers under specific usage scenarios a
 ./benchmark.py ./profile --profile_mode cpu_time
 ```
 
+## collapse_profile.py
+
+A tool that converts the DTrace results created by benchmark.py into a format suitable for 
+FlameGraph generation and analysis. It also applies some Chromium specific filtering and enhancements.
+
+```
+./collapse_profile.py ./profile --profile_mode cpu_time
+```
+
+This command will produce a file at `./samples/samples.collapsed.cpu_time`.
+
+This file can be used with tools such as:
+
+* [FlameGraph](https://github.com/brendangregg/FlameGraph)
+* [SpeedScope](https://www.speedscope.app/)
+
 ## Usage scenario scripts
 
 This directory contains the necessary files to make Chromium based browsers and Safari
@@ -109,3 +130,7 @@ jinja2 templates that need to be rendered into usable Applescript.
 
 Files in `driver_script_templates/` that end in .scpt are already working
 Applescript and will be copied as is to `driver_script/`.
+
+# Tests
+
+Unit tests can be run using `run_tests.py`.

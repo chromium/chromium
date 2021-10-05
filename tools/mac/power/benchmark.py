@@ -21,7 +21,6 @@ import generate_scripts
 def SignalHandler(sig, frame, driver):
   """Handle the run being aborted.
   """
-  #TODO: Use driver to quit everything that was started.
   driver.Teardown()
   sys.exit(0)
 
