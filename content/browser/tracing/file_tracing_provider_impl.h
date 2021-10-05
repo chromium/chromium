@@ -12,8 +12,6 @@
 
 namespace content {
 
-extern const char kFileTracingEventCategoryGroup[];
-
 class FileTracingProviderImpl : public base::FileTracing::Provider {
  public:
   FileTracingProviderImpl();
