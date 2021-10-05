@@ -73,6 +73,8 @@ source_set("quiche") {
     "src/http2/adapter/window_manager.cc",
     "src/http2/adapter/window_manager.h",
     "src/http2/core/http2_priority_write_scheduler.h",
+    "src/http2/core/http2_trace_logging.cc",
+    "src/http2/core/http2_trace_logging.h",
     "src/http2/core/priority_write_scheduler.h",
     "src/http2/core/write_scheduler.h",
     "src/http2/decoder/decode_buffer.cc",
