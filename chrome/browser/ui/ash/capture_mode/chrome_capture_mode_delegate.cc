@@ -161,7 +161,9 @@ void ChromeCaptureModeDelegate::StartObservingRestrictedContent(
 
 void ChromeCaptureModeDelegate::StopObservingRestrictedContent() {
   interrupt_video_recording_callback_.Reset();
-  policy::DlpContentManager::Get()->OnVideoCaptureStopped();
+  // TODO(https://crbug.com/1256711): Pass a proper callback to save/delete
+  // recording
+  policy::DlpContentManager::Get()->CheckStoppedVideoCapture(base::DoNothing());
 }
 
 mojo::Remote<recording::mojom::RecordingService>

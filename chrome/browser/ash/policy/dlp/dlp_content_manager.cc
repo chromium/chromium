@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -100,8 +99,7 @@ DlpContentRestrictionSet DlpContentManager::GetOnScreenPresentRestrictions()
   return on_screen_restrictions_;
 }
 
-bool DlpContentManager::IsScreenshotRestricted(
-    const ScreenshotArea& area) const {
+bool DlpContentManager::IsScreenshotRestricted(const ScreenshotArea& area) {
   const RestrictionLevelAndUrl restriction_info =
       GetAreaRestrictionInfo(area, DlpContentRestriction::kScreenshot);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kScreenshot);
@@ -109,8 +107,7 @@ bool DlpContentManager::IsScreenshotRestricted(
   return IsBlocked(restriction_info);
 }
 
-bool DlpContentManager::IsScreenshotApiRestricted(
-    const ScreenshotArea& area) const {
+bool DlpContentManager::IsScreenshotApiRestricted(const ScreenshotArea& area) {
   const RestrictionLevelAndUrl restriction_info =
       GetAreaRestrictionInfo(area, DlpContentRestriction::kScreenshot);
 
@@ -130,8 +127,7 @@ void DlpContentManager::CheckScreenshotRestriction(
   CheckScreenCaptureRestriction(restriction_info, std::move(callback));
 }
 
-bool DlpContentManager::IsVideoCaptureRestricted(
-    const ScreenshotArea& area) const {
+bool DlpContentManager::IsVideoCaptureRestricted(const ScreenshotArea& area) {
   const RestrictionLevelAndUrl restriction_info =
       GetAreaRestrictionInfo(area, DlpContentRestriction::kVideoCapture);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kScreenshot);
@@ -152,7 +148,7 @@ void DlpContentManager::CheckVideoCaptureRestriction(
 }
 
 bool DlpContentManager::IsPrintingRestricted(
-    content::WebContents* web_contents) const {
+    content::WebContents* web_contents) {
   const RestrictionLevelAndUrl restriction_info =
       GetPrintingRestrictionInfo(web_contents);
   MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kPrinting);
@@ -161,14 +157,14 @@ bool DlpContentManager::IsPrintingRestricted(
 }
 
 bool DlpContentManager::ShouldWarnBeforePrinting(
-    content::WebContents* web_contents) const {
+    content::WebContents* web_contents) {
   const RestrictionLevelAndUrl restriction_info =
       GetPrintingRestrictionInfo(web_contents);
   return IsWarn(restriction_info);
 }
 
 bool DlpContentManager::IsScreenCaptureRestricted(
-    const content::DesktopMediaID& media_id) const {
+    const content::DesktopMediaID& media_id) {
   const RestrictionLevelAndUrl restriction_info =
       GetScreenCaptureRestrictionInfo(media_id);
   MaybeReportEvent(restriction_info,
@@ -182,15 +178,26 @@ void DlpContentManager::OnVideoCaptureStarted(const ScreenshotArea& area) {
     ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
     return;
   }
-  DCHECK(!running_video_capture_area_.has_value());
-  running_video_capture_area_.emplace(area);
+  DCHECK(!running_video_capture_info_.has_value());
+  running_video_capture_info_.emplace(area);
 }
 
-void DlpContentManager::OnVideoCaptureStopped() {
-  running_video_capture_area_.reset();
+void DlpContentManager::CheckStoppedVideoCapture(
+    OnDlpRestrictionChecked callback) {
+  if (!running_video_capture_info_.has_value())
+    return;
+
+  if (running_video_capture_info_->confidential_content_observed_) {
+    // TODO(crbug.com/1254312): Simplify creating the dialog
+    auto split = base::SplitOnceCallback(std::move(callback));
+    ShowDlpVideoCaptureWarningDialog(
+        base::BindOnce(std::move(split.first), true),
+        base::BindOnce(std::move(split.second), false));
+  }
+  running_video_capture_info_.reset();
 }
 
-bool DlpContentManager::IsCaptureModeInitRestricted() const {
+bool DlpContentManager::IsCaptureModeInitRestricted() {
   const RestrictionLevelAndUrl screenshot_restriction_info =
       GetOnScreenPresentRestrictions().GetRestrictionLevelAndUrl(
           DlpContentRestriction::kScreenshot);
@@ -300,6 +307,10 @@ bool DlpContentManager::ScreenCaptureInfo::operator!=(
     const DlpContentManager::ScreenCaptureInfo& other) const {
   return !(*this == other);
 }
+
+DlpContentManager::VideoCaptureInfo::VideoCaptureInfo(
+    const ScreenshotArea& area)
+    : area_(area) {}
 
 DlpContentManager::DlpContentManager() = default;
 
@@ -549,21 +560,20 @@ RestrictionLevelAndUrl DlpContentManager::GetScreenCaptureRestrictionInfo(
 }
 
 void DlpContentManager::CheckRunningVideoCapture() {
-  if (!running_video_capture_area_.has_value())
+  if (!running_video_capture_info_.has_value())
     return;
   const RestrictionLevelAndUrl restriction_info = GetAreaRestrictionInfo(
-      *running_video_capture_area_, DlpContentRestriction::kVideoCapture);
-  if (restriction_info.level == DlpRulesManager::Level::kBlock) {
+      running_video_capture_info_->area_, DlpContentRestriction::kVideoCapture);
+  MaybeReportEvent(restriction_info, DlpRulesManager::Restriction::kScreenshot);
+  if (IsBlocked(restriction_info)) {
     DlpBooleanHistogram(dlp::kVideoCaptureInterruptedUMA, true);
     ChromeCaptureModeDelegate::Get()->InterruptVideoRecordingIfAny();
-    running_video_capture_area_.reset();
+    running_video_capture_info_.reset();
   }
-  if (restriction_info.level == DlpRulesManager::Level::kBlock ||
-      restriction_info.level == DlpRulesManager::Level::kReport) {
-    if (reporting_manager_)
-      ReportEvent(restriction_info.url,
-                  DlpRulesManager::Restriction::kScreenshot,
-                  restriction_info.level, reporting_manager_);
+  if (IsWarn(restriction_info)) {
+    // If there is confidential content during the recording, we inform the user
+    // about it after the recording is finished.
+    running_video_capture_info_->confidential_content_observed_ = true;
   }
 }
 
@@ -669,14 +679,12 @@ void DlpContentManager::CheckScreenCaptureRestriction(
 
 void DlpContentManager::MaybeReportEvent(
     const RestrictionLevelAndUrl& restriction_info,
-    DlpRulesManager::Restriction restriction) const {
+    DlpRulesManager::Restriction restriction) {
   // TODO(crbug.com/1247190): Add reporting and metrics for screenshot WARN
   // TODO(crbug.com/1227700): Add reporting and metrics for printing WARN
-  if (IsReported(restriction_info)) {
-    if (reporting_manager_) {
-      ReportEvent(restriction_info.url, restriction, restriction_info.level,
-                  reporting_manager_);
-    }
+  if (IsReported(restriction_info) && reporting_manager_) {
+    ReportEvent(restriction_info.url, restriction, restriction_info.level,
+                reporting_manager_);
   }
 }
 
