@@ -225,12 +225,14 @@ TransformOperations TransformBuilder::CreateTransformOperations(
       }
       case TransformOperation::kRotateX:
       case TransformOperation::kRotateY:
-      case TransformOperation::kRotateZ: {
+      case TransformOperation::kRotateZ:
+      case TransformOperation::kRotate: {
         double angle = first_value.ComputeDegrees();
         if (transform_value->length() == 1) {
           double x = transform_type == TransformOperation::kRotateX;
           double y = transform_type == TransformOperation::kRotateY;
-          double z = transform_type == TransformOperation::kRotateZ;
+          double z = transform_type == TransformOperation::kRotateZ ||
+                     transform_type == TransformOperation::kRotate;
           operations.Operations().push_back(
               RotateTransformOperation::Create(x, y, z, angle, transform_type));
         } else {

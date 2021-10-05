@@ -306,6 +306,7 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
                             candidates, &num_candidates);
       break;
     case TransformOperation::kRotateZ:
+    case TransformOperation::kRotate:
       FindCandidatesInPlane(point.X(), point.Y(), from_transform.Z(),
                             candidates, &num_candidates);
       break;
@@ -436,10 +437,11 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
         bounds->ExpandTo(to_box);
         continue;
       }
-      case TransformOperation::kRotate:  // This is also RotateZ
+      case TransformOperation::kRotate:
       case TransformOperation::kRotate3D:
       case TransformOperation::kRotateX:
-      case TransformOperation::kRotateY: {
+      case TransformOperation::kRotateY:
+      case TransformOperation::kRotateZ: {
         scoped_refptr<RotateTransformOperation> identity_rotation;
         const RotateTransformOperation* from_rotation = nullptr;
         const RotateTransformOperation* to_rotation = nullptr;

@@ -290,7 +290,11 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValueID CSSValueIDForScaleOperation(
       const TransformOperation::OperationType);
   // Returns the CSSValueID for a translate transform operation.
+
   static CSSValueID CSSValueIDForTranslateOperation(
+      const TransformOperation::OperationType);
+  // Returns the CSSValueID for a rotate transform operation.
+  static CSSValueID CSSValueIDForRotateOperation(
       const TransformOperation::OperationType);
 };
 

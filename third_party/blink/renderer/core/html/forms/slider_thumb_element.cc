@@ -406,7 +406,8 @@ bool SliderContainerElement::CanSlide() {
   int transform_size = transforms.size();
   if (transform_size > 0) {
     for (int i = 0; i < transform_size; ++i) {
-      if (transforms.at(i)->GetType() == TransformOperation::kRotate) {
+      if (transforms.at(i)->GetType() == TransformOperation::kRotate ||
+          transforms.at(i)->GetType() == TransformOperation::kRotateZ) {
         return true;
       }
     }

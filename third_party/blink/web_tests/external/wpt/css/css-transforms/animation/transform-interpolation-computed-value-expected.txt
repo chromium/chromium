@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 102 tests; 69 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 102 tests; 74 PASS, 28 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL Interpolation between translateX(0px) and translateX(50px) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "translateX(25px)" but got "translate(25px, 0px)"
 FAIL Interpolation between translateX(0px) and translateX(50px) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "translateX(25px)" but got "translate(25px, 0px)"
 PASS Interpolation between translateX(0px) and translateX(50px) gives the correct computed value halfway according to commitStyles.
@@ -39,15 +39,15 @@ FAIL Interpolation between translate(50px, 0px) and translate(100px, 0px) gives 
 PASS Interpolation between rotate(30deg) and rotate(90deg) gives the correct computed value halfway according to computedStyleMap.
 PASS Interpolation between rotate(30deg) and rotate(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active.
 PASS Interpolation between rotate(30deg) and rotate(90deg) gives the correct computed value halfway according to commitStyles.
-FAIL Interpolation between rotateZ(30deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "rotateZ(60deg)" but got "rotate(60deg)"
-FAIL Interpolation between rotateZ(30deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "rotateZ(60deg)" but got "rotate(60deg)"
-FAIL Interpolation between rotateZ(30deg) and rotateZ(90deg) gives the correct computed value halfway according to commitStyles. assert_equals: The value at 50% progress is as expected expected "rotateZ(60deg)" but got "rotate(60deg)"
-FAIL Interpolation between rotate(0deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "rotate3d(0, 0, 1, 45deg)" but got "rotate(45deg)"
-FAIL Interpolation between rotate(0deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "rotate3d(0, 0, 1, 45deg)" but got "rotate(45deg)"
-FAIL Interpolation between rotate(0deg) and rotateZ(90deg) gives the correct computed value halfway according to commitStyles. assert_equals: The value at 50% progress is as expected expected "rotate3d(0, 0, 1, 45deg)" but got "rotate(45deg)"
+FAIL Interpolation between rotateZ(30deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "rotateZ(60deg)" but got "rotate3d(0, 0, 1, 60deg)"
+FAIL Interpolation between rotateZ(30deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "rotateZ(60deg)" but got "rotate3d(0, 0, 1, 60deg)"
+PASS Interpolation between rotateZ(30deg) and rotateZ(90deg) gives the correct computed value halfway according to commitStyles.
+PASS Interpolation between rotate(0deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap.
+PASS Interpolation between rotate(0deg) and rotateZ(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active.
+PASS Interpolation between rotate(0deg) and rotateZ(90deg) gives the correct computed value halfway according to commitStyles.
 FAIL Interpolation between rotateX(0deg) and rotateX(90deg) gives the correct computed value halfway according to computedStyleMap. assert_equals: The value at 50% progress is as expected expected "rotateX(45deg)" but got "rotate3d(1, 0, 0, 45deg)"
 FAIL Interpolation between rotateX(0deg) and rotateX(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active. assert_equals: The value at 50% progress is as expected expected "rotateX(45deg)" but got "rotate3d(1, 0, 0, 45deg)"
-FAIL Interpolation between rotateX(0deg) and rotateX(90deg) gives the correct computed value halfway according to commitStyles. assert_equals: The value at 50% progress is as expected expected "rotateX(45deg)" but got "rotate3d(1, 0, 0, 45deg)"
+PASS Interpolation between rotateX(0deg) and rotateX(90deg) gives the correct computed value halfway according to commitStyles.
 PASS Interpolation between rotate(0deg) and rotateX(90deg) gives the correct computed value halfway according to computedStyleMap.
 PASS Interpolation between rotate(0deg) and rotateX(90deg) gives the correct computed value halfway according to computedStyleMap with zoom active.
 PASS Interpolation between rotate(0deg) and rotateX(90deg) gives the correct computed value halfway according to commitStyles.

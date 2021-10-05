@@ -1833,6 +1833,22 @@ CSSValueID ComputedStyleUtils::CSSValueIDForTranslateOperation(
   }
 }
 
+CSSValueID ComputedStyleUtils::CSSValueIDForRotateOperation(
+    const TransformOperation::OperationType type) {
+  switch (type) {
+    case TransformOperation::kRotateX:
+      return CSSValueID::kRotateX;
+    case TransformOperation::kRotateY:
+      return CSSValueID::kRotateY;
+    case TransformOperation::kRotateZ:
+      return CSSValueID::kRotateZ;
+    case TransformOperation::kRotate3D:
+      return CSSValueID::kRotate3d;
+    default:
+      return CSSValueID::kRotate;
+  }
+}
+
 // We collapse functions like translateX into translate, since we will reify
 // them as a translate anyway.
 CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
@@ -1896,24 +1912,21 @@ CSSFunctionValue* ComputedStyleUtils::ValueForTransformOperation(
     }
     case TransformOperation::kRotateX:
     case TransformOperation::kRotateY:
-    case TransformOperation::kRotate3D: {
-      const auto& rotate = To<RotateTransformOperation>(operation);
-      CSSFunctionValue* result =
-          MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kRotate3d);
-      result->Append(*CSSNumericLiteralValue::Create(
-          rotate.X(), CSSPrimitiveValue::UnitType::kNumber));
-      result->Append(*CSSNumericLiteralValue::Create(
-          rotate.Y(), CSSPrimitiveValue::UnitType::kNumber));
-      result->Append(*CSSNumericLiteralValue::Create(
-          rotate.Z(), CSSPrimitiveValue::UnitType::kNumber));
-      result->Append(*CSSNumericLiteralValue::Create(
-          rotate.Angle(), CSSPrimitiveValue::UnitType::kDegrees));
-      return result;
-    }
+    case TransformOperation::kRotateZ:
+    case TransformOperation::kRotate3D:
     case TransformOperation::kRotate: {
       const auto& rotate = To<RotateTransformOperation>(operation);
-      auto* result =
-          MakeGarbageCollected<CSSFunctionValue>(CSSValueID::kRotate);
+      CSSValueID id = CSSValueIDForRotateOperation(operation.GetType());
+
+      CSSFunctionValue* result = MakeGarbageCollected<CSSFunctionValue>(id);
+      if (id == CSSValueID::kRotate3d) {
+        result->Append(*CSSNumericLiteralValue::Create(
+            rotate.X(), CSSPrimitiveValue::UnitType::kNumber));
+        result->Append(*CSSNumericLiteralValue::Create(
+            rotate.Y(), CSSPrimitiveValue::UnitType::kNumber));
+        result->Append(*CSSNumericLiteralValue::Create(
+            rotate.Z(), CSSPrimitiveValue::UnitType::kNumber));
+      }
       result->Append(*CSSNumericLiteralValue::Create(
           rotate.Angle(), CSSPrimitiveValue::UnitType::kDegrees));
       return result;
