@@ -222,6 +222,8 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   auto preview = std::make_unique<views::ImageView>();
   preview->SetVisible(false);
   preview->SetSize(desktopcapture::kPreviewSize);
+  preview->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_DESKTOP_MEDIA_PICKER_PREVIEW_ACCESSIBLE_NAME));
   preview_ = preview_wrapper->AddChildView(std::move(preview));
 
   auto empty_preview_label = std::make_unique<views::Label>();
