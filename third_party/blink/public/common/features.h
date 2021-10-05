@@ -463,6 +463,9 @@ BLINK_COMMON_EXPORT extern const base::Feature
 BLINK_COMMON_EXPORT extern const base::Feature
     kIncludeInitiallyInvisibleImagesInLCP;
 
+// When enabled, this includes SVG background images in LCP calculation.
+BLINK_COMMON_EXPORT extern const base::Feature kIncludeBackgroundSVGInLCP;
+
 // Number of the requests that can be handled in the tight mode.
 BLINK_COMMON_EXPORT
 extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;

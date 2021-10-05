@@ -7076,6 +7076,10 @@ crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/storage/indexed
 crbug.com/1250457 [ Mac ] external/wpt/html/syntax/speculative-parsing/generated/document-write/meta-viewport-link-stylesheet-media.tentative.sub.html [ Failure ]
 
 crbug.com/1249622 external/wpt/largest-contentful-paint/initially-invisible-images.html [ Failure ]
+crbug.com/959296 external/wpt/largest-contentful-paint/observe-svg-background-image.html [ Failure ]
+crbug.com/959296 virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/observe-svg-background-image.html [ Pass ]
+crbug.com/959296 external/wpt/largest-contentful-paint/observe-svg-data-uri-background-image.html [ Failure ]
+crbug.com/959296 virtual/background-svg-in-lcp/external/wpt/largest-contentful-paint/observe-svg-data-uri-background-image.html [ Pass ]
 
 # FileSystemHandle::move() is temporarily disabled outside of the Origin Private File System
 crbug.com/1247850 external/wpt/file-system-access/local_FileSystemFileHandle-move-manual.https.html [ Failure ]

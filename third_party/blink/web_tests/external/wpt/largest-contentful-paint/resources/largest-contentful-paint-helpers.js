@@ -6,12 +6,16 @@
 // * 'sizeLowerBound': the |expectedSize| is only a lower bound on the size attribute value.
 //     When not present, |expectedSize| must be exactly equal to the size attribute value.
 function checkImage(entry, expectedUrl, expectedID, expectedSize, timeLowerBound, options = []) {
-  assert_equals(entry.name, '');
-  assert_equals(entry.entryType, 'largest-contentful-paint');
-  assert_equals(entry.duration, 0);
-  assert_equals(entry.url, expectedUrl);
-  assert_equals(entry.id, expectedID);
-  assert_equals(entry.element, document.getElementById(expectedID));
+  assert_equals(entry.name, '', "Entry name should be the empty string");
+  assert_equals(entry.entryType, 'largest-contentful-paint',
+    "Entry type should be largest-contentful-paint");
+  assert_equals(entry.duration, 0, "Entry duration should be 0");
+  // The entry's url can be truncated.
+  assert_equals(expectedUrl.substr(0, 100), entry.url.substr(0, 100),
+    `Expected URL ${expectedUrl} should at least start with the entry's URL ${entry.url}`);
+  assert_equals(entry.id, expectedID, "Entry ID matches expected one");
+  assert_equals(entry.element, document.getElementById(expectedID),
+    "Entry element is expected one");
   if (options.includes('renderTimeIs0')) {
     assert_equals(entry.renderTime, 0, 'renderTime should be 0');
     assert_between_exclusive(entry.loadTime, timeLowerBound, performance.now(),

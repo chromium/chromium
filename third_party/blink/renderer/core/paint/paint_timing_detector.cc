@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -53,12 +54,18 @@ bool IsBackgroundImageContentful(const LayoutObject& object,
       object.IsDocumentElement()) {
     return false;
   }
+
   // Generated images are excluded here, as they are likely to serve for
   // background purpose.
-  if (!IsA<BitmapImage>(image) && !IsA<StaticBitmapImage>(image) &&
-      !IsA<SVGImage>(image) && !image.IsPlaceholderImage())
-    return false;
-  return true;
+
+  // TODO(yoav): Instead of verifying through negating all the other types, it'd
+  // be more readable and safer to verify against generated images directly. Add
+  // `IsGeneratedImage` and test for it directly.
+  DCHECK(!image.IsSVGImage());
+  return (image.IsBitmapImage() || image.IsStaticBitmapImage() ||
+          image.IsPlaceholderImage() ||
+          (base::FeatureList::IsEnabled(features::kIncludeBackgroundSVGInLCP) &&
+           image.IsSVGImageForContainer()));
 }
 
 }  // namespace

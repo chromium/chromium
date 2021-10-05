@@ -1109,6 +1109,11 @@
     "args": [ "--enable-features=IncludeInitiallyInvisibleImagesInLCP"]
   },
   {
+    "prefix": "background-svg-in-lcp",
+    "bases": ["external/wpt/largest-contentful-paint/"],
+    "args": [ "--enable-features=IncludeBackgroundSVGInLCP"]
+  },
+  {
     "prefix": "css-highlight-inheritance",
     "bases": [
       "external/wpt/css/css-pseudo",
