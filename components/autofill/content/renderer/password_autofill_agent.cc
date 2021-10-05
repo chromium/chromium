@@ -96,6 +96,7 @@ const size_t kMaximumTextSizeForAutocomplete = 1000;
 const char kDebugAttributeForFormSignature[] = "form_signature";
 const char kDebugAttributeForFieldSignature[] = "field_signature";
 const char kDebugAttributeForParserAnnotations[] = "pm_parser_annotation";
+const char kDebugAttributeForVisibility[] = "visibility_annotation";
 
 // Maps element names to the actual elements to simplify form filling.
 typedef std::map<std::u16string, WebInputElement> FormInputElementMap;
@@ -279,8 +280,8 @@ void SetAttributeAsync(blink::WebElement target,
                                            attribute_utf8, value_utf8));
 }
 
-// Annotate |fields| with field signatures and form signature as HTML
-// attributes.
+// Annotate |fields| with field signatures, form signature and visibility state
+// as HTML attributes.
 void AnnotateFieldsWithSignatures(
     std::vector<blink::WebFormControlElement>& fields,
     const std::string& form_signature) {
@@ -292,6 +293,9 @@ void AnnotateFieldsWithSignatures(
                       base::NumberToString(field_signature.value()));
     SetAttributeAsync(control_element, kDebugAttributeForFormSignature,
                       form_signature);
+    SetAttributeAsync(
+        control_element, kDebugAttributeForVisibility,
+        form_util::IsWebElementVisible(control_element) ? "true" : "false");
   }
 }
 
