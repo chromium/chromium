@@ -1846,6 +1846,9 @@ bool NativeViewGLSurfaceEGL::Resize(const gfx::Size& size,
     return false;
   }
   SetVSyncEnabled(vsync_enabled_);
+  if (use_egl_timestamps_) {
+    eglSurfaceAttrib(GetDisplay(), surface_, EGL_TIMESTAMPS_ANDROID, EGL_TRUE);
+  }
   return true;
 }
 
@@ -1868,6 +1871,9 @@ bool NativeViewGLSurfaceEGL::Recreate() {
     return false;
   }
   SetVSyncEnabled(vsync_enabled_);
+  if (use_egl_timestamps_) {
+    eglSurfaceAttrib(GetDisplay(), surface_, EGL_TIMESTAMPS_ANDROID, EGL_TRUE);
+  }
   return true;
 }
 
