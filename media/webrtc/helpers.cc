@@ -86,12 +86,6 @@ void ConfigAgc2AdaptiveDigitalForHybridExperiment(
   config.max_output_noise_level_dbfs =
       static_cast<float>(base::GetFieldTrialParamByFeatureAsDouble(
           ::features::kWebRtcHybridAgc, "max_output_noise_level_dbfs", -50));
-  config.sse2_allowed = base::GetFieldTrialParamByFeatureAsBool(
-      ::features::kWebRtcHybridAgc, "sse2_allowed", true);
-  config.avx2_allowed = base::GetFieldTrialParamByFeatureAsBool(
-      ::features::kWebRtcHybridAgc, "avx2_allowed", true);
-  config.neon_allowed = base::GetFieldTrialParamByFeatureAsBool(
-      ::features::kWebRtcHybridAgc, "neon_allowed", true);
 }
 
 void ConfigAgc1AnalogForClippingControlExperiment(Agc1AnalagConfig& config) {

@@ -278,10 +278,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, EnableHybridAgc) {
                                    {"vad_reset_period_ms", "1230"},
                                    {"adjacent_speech_frames_threshold", "4"},
                                    {"max_gain_change_db_per_second", "5"},
-                                   {"max_output_noise_level_dbfs", "-6"},
-                                   {"sse2_allowed", "true"},
-                                   {"avx2_allowed", "true"},
-                                   {"neon_allowed", "true"}});
+                                   {"max_output_noise_level_dbfs", "-6"}});
 
   auto config = CreateApmGetConfig(
       /*settings=*/{.automatic_gain_control = true,
@@ -304,9 +301,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest, EnableHybridAgc) {
   EXPECT_EQ(agc2.adaptive_digital.adjacent_speech_frames_threshold, 4);
   EXPECT_FLOAT_EQ(agc2.adaptive_digital.max_gain_change_db_per_second, 5.0f);
   EXPECT_FLOAT_EQ(agc2.adaptive_digital.max_output_noise_level_dbfs, -6.0f);
-  EXPECT_TRUE(agc2.adaptive_digital.sse2_allowed);
-  EXPECT_TRUE(agc2.adaptive_digital.avx2_allowed);
-  EXPECT_TRUE(agc2.adaptive_digital.neon_allowed);
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest, EnableHybridAgcDryRun) {
@@ -348,36 +342,6 @@ TEST(CreateWebRtcAudioProcessingModuleTest,
                     .experimental_automatic_gain_control = false});
   EXPECT_FALSE(config.gain_controller2.enabled);
   EXPECT_FALSE(config.gain_controller2.adaptive_digital.enabled);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, CheckHybridAgcSimdSse2Disabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kWebRtcHybridAgc,
-                                                  {{"sse2_allowed", "false"}});
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  EXPECT_FALSE(config.gain_controller2.adaptive_digital.sse2_allowed);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, CheckHybridAgcSimdAvx2Disabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kWebRtcHybridAgc,
-                                                  {{"avx2_allowed", "false"}});
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  EXPECT_FALSE(config.gain_controller2.adaptive_digital.avx2_allowed);
-}
-
-TEST(CreateWebRtcAudioProcessingModuleTest, CheckHybridAgcSimdNeonDisabled) {
-  ::base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(features::kWebRtcHybridAgc,
-                                                  {{"neon_allowed", "false"}});
-  auto config = CreateApmGetConfig(
-      /*settings=*/{.automatic_gain_control = true,
-                    .experimental_automatic_gain_control = true});
-  EXPECT_FALSE(config.gain_controller2.adaptive_digital.neon_allowed);
 }
 
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
