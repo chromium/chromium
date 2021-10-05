@@ -577,8 +577,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 28
-// Next id: 28
+// Next version: 29
+// Next id: 29
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -745,6 +745,10 @@ struct BrowserInitParams {
   // When this flag is |true|, Lacros is the only browser.
   [MinVersion=27]
   bool standalone_browser_is_only_browser@27;
+
+  // When this flag is set, lacros will publish chrome apps to the app service.
+  [MinVersion=28]
+  bool publish_chrome_apps@28;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

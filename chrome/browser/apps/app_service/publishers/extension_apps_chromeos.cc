@@ -26,9 +26,11 @@
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
+#include "chrome/browser/apps/app_service/publishers/extension_apps_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/policy/handlers/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/browser_process.h"
@@ -651,7 +653,15 @@ bool ExtensionAppsChromeOs::ShouldShownInLauncher(
 apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
     const extensions::Extension* extension,
     apps::mojom::Readiness readiness) {
-  const bool is_app_disabled = base::Contains(disabled_apps_, extension->id());
+  // If Lacros is publishing chrome apps, then by default ash chrome apps should
+  // be disabled. There is a keep-list that serves as the exception.
+  const bool disable_for_lacros =
+      extension->is_platform_app() &&
+      crosapi::browser_util::IsLacrosChromeAppsEnabled() &&
+      !apps::ExtensionAppRunsInAsh(extension->id());
+  const bool is_app_disabled =
+      base::Contains(disabled_apps_, extension->id()) || disable_for_lacros;
+
   apps::mojom::AppPtr app = ConvertImpl(
       extension,
       is_app_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
@@ -665,7 +675,8 @@ apps::mojom::AppPtr ExtensionAppsChromeOs::Convert(
   app->paused = paused ? apps::mojom::OptionalBool::kTrue
                        : apps::mojom::OptionalBool::kFalse;
 
-  if (is_app_disabled && is_disabled_apps_mode_hidden_) {
+  if (is_app_disabled &&
+      (is_disabled_apps_mode_hidden_ || disable_for_lacros)) {
     app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
     app->show_in_search = apps::mojom::OptionalBool::kFalse;
     app->show_in_shelf = apps::mojom::OptionalBool::kFalse;

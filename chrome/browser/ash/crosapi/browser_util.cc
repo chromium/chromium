@@ -481,6 +481,10 @@ const auto lacros_stability_channel_to_component_info =
 const base::Feature kLacrosAllowOnStableChannel{
     "LacrosAllowOnStableChannel", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// A kill switch for lacros chrome apps.
+const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When this feature is enabled, Lacros is allowed to roll out by policy to
 // Googlers.
 const base::Feature kLacrosGooglePolicyRollout{
@@ -697,6 +701,18 @@ bool IsLacrosAllowedToLaunch() {
   return user_manager::UserManager::Get()->GetLoggedInUsers().size() <= 1;
 }
 
+bool IsLacrosChromeAppsEnabled() {
+  if (base::FeatureList::IsEnabled(kLacrosDisableChromeApps))
+    return false;
+
+  if (!IsLacrosPrimaryBrowser())
+    return false;
+
+  // Always return false for now as the feature isn't ready. Once the feature is
+  // ready this will be flipped to true.
+  return false;
+}
+
 bool IsLacrosWindow(const aura::Window* window) {
   const std::string* app_id = exo::GetShellApplicationId(window);
   if (!app_id)
@@ -851,6 +867,7 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->build_flags = std::move(build_flags);
 
   params->standalone_browser_is_only_browser = !IsAshWebBrowserEnabled();
+  params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
   return params;
 }
 

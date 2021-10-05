@@ -4,7 +4,6 @@
 
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 
-#include "base/feature_list.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
@@ -18,14 +17,7 @@
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
 #include "chrome/browser/metrics/structured/chrome_structured_metrics_recorder.h"
-
-namespace {
-
-// The name of the Finch study that turns on the experiment.
-const base::Feature kLacrosChromeApps{"LacrosChromeApps",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
-}  // namespace
+#include "chromeos/lacros/lacros_service.h"
 
 ChromeBrowserMainExtraPartsLacros::ChromeBrowserMainExtraPartsLacros() =
     default;
@@ -51,7 +43,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
         monitor->CreateVoter()));
   }
 
-  if (base::FeatureList::IsEnabled(kLacrosChromeApps)) {
+  if (chromeos::LacrosService::Get()->init_params()->publish_chrome_apps) {
     extension_apps_publisher_ =
         std::make_unique<LacrosExtensionAppsPublisher>();
     extension_apps_publisher_->Initialize();
