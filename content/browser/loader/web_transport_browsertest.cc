@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, MAYBE_ReceiveStream) {
 
 // This is flaky on all platforms. https://crbug.com/1254667
 // TODO(ricea): Fix it and re-enable.
-IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, DISABLED_BidirectionalStream) {
+IN_PROC_BROWSER_TEST_F(WebTransportBrowserTest, BidirectionalStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
