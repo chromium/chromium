@@ -15,6 +15,7 @@ def session_established(session):
     session.dict_for_handlers['token'] = token
     session.create_bidirectional_stream()
 
+
 def stream_reset(session, stream_id: int, error_code: int) -> None:
     token = session.dict_for_handlers['token']
     data = session.stash.take(key=token) or {}
@@ -24,6 +25,20 @@ def stream_reset(session, stream_id: int, error_code: int) -> None:
         'code': error_code
     }
     session.stash.put(key=token, value=data)
+
+
+def stream_data_received(session,
+                         stream_id: int,
+                         data: bytes,
+                         stream_ended: bool):
+    if stream_ended:
+        token = session.dict_for_handlers['token']
+        stashed_data = session.stash.take(key=token) or {}
+        stashed_data['stream-close-info'] = {
+            'source': 'FIN',
+        }
+        session.stash.put(key=token, value=stashed_data)
+
 
 def session_closed(
         session, close_info: Optional[Tuple[int, bytes]], abruptly: bool) -> None:

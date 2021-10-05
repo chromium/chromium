@@ -16,6 +16,65 @@ promise_test(async t => {
   const bidi_stream = await wt.createBidirectionalStream();
 
   const writable = bidi_stream.writable;
+  writable.close();
+
+  await wait(10);
+  const data = await query(id);
+
+  assert_own_property(data, 'stream-close-info');
+  const info = data['stream-close-info'];
+
+  assert_equals(info.source, 'FIN', 'source');
+}, 'Close outgoing stream / bidi-1');
+
+promise_test(async t => {
+  const id = token();
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const streams_reader = wt.incomingBidirectionalStreams.getReader();
+  const {value: bidi} = await streams_reader.read();
+
+  const writable = bidi.writable;
+  writable.close();
+
+  await wait(10);
+  const data = await query(id);
+
+  assert_own_property(data, 'stream-close-info');
+  const info = data['stream-close-info'];
+
+  assert_equals(info.source, 'FIN', 'source');
+}, 'Close outgoing stream / bidi-2');
+
+promise_test(async t => {
+  const id = token();
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const writable = await wt.createUnidirectionalStream();
+  writable.close();
+
+  await wait(10);
+  const data = await query(id);
+
+  assert_own_property(data, 'stream-close-info');
+  const info = data['stream-close-info'];
+
+  assert_equals(info.source, 'FIN', 'source');
+}, 'Close outgoing stream / uni');
+
+promise_test(async t => {
+  const id = token();
+  const wt = new WebTransport(webtransport_url(`client-close.py?token=${id}`));
+  add_completion_callback(() => wt.close());
+  await wt.ready;
+
+  const bidi_stream = await wt.createBidirectionalStream();
+
+  const writable = bidi_stream.writable;
 
   const WT_CODE = 139;
   const HTTP_CODE = webtransport_code_to_http_code(WT_CODE);
