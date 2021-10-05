@@ -18800,7 +18800,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
-    expires_after="M97">
+    expires_after="M108">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -18812,7 +18812,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
-    expires_after="M97">
+    expires_after="M108">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -18826,7 +18826,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
-    expires_after="M97">
+    expires_after="M108">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
