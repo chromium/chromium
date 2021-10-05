@@ -1568,6 +1568,56 @@ ci.chromium_builder(
     schedule = "triggered",
     triggered_by = [],
     execution_timeout = 7 * time.hour,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "archive_datas": [
+                {
+                    "files": [
+                        "chrome",
+                        "chrome-wrapper",
+                        "chrome_100_percent.pak",
+                        "chrome_200_percent.pak",
+                        "chrome_sandbox",
+                        "chrome_crashpad_handler",
+                        "icudtl.dat",
+                        "locales",
+                        "product_logo_48.png",
+                        "resources",
+                        "resources.pak",
+                        "v8_context_snapshot.bin",
+                        "xdg-mime",
+                        "xdg-settings",
+                        "ClearKeyCdm",
+                        "libGLESv2.so",
+                        "libEGL.so",
+                        "libvulkan.so.1",
+                        "swiftshader/libGLESv2.so",
+                        "swiftshader/libEGL.so",
+                        "vk_swiftshader_icd.json",
+                        "libvk_swiftshader.so",
+                        "nacl_irt_x86_64.nexe",
+                        "nacl_helper",
+                        "nacl_helper_bootstrap",
+                        "nacl_helper_nonsfi",
+                        "MEIPreload/manifest.json",
+                        "MEIPreload/preloaded_data.pb",
+                    ],
+                    "gcs_bucket": "chromium-browser-versioned",
+                    "gcs_path": "experimental/Linux_x64_Tagged/{$chromium_version%}/chrome-linux.zip",
+                    "archive_type": "ARCHIVE_TYPE_ZIP",
+                },
+                {
+                    "files": [
+                        "chromedriver",
+                    ],
+                    "gcs_bucket": "chromium-browser-versioned",
+                    "gcs_path": "experimental/Linux_x64_Tagged/{$chromium_version%}/chromedriver_linux64.zip",
+                    "archive_type": "ARCHIVE_TYPE_ZIP",
+                },
+            ],
+        },
+    },
 )
 
 ci.chromium_builder(
