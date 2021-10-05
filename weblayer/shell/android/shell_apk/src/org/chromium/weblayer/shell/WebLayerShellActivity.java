@@ -49,6 +49,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowsingDataType;
 import org.chromium.weblayer.ContextMenuParams;
@@ -940,7 +941,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
         Point point = new Point();
         WindowManager windowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            Rect rect = windowManager.getMaximumWindowMetrics().getBounds();
+            Rect rect = ApiHelperForR.getMaximumWindowMetricsBounds(windowManager);
             point.set(rect.width(), rect.height());
         } else {
             Display display = windowManager.getDefaultDisplay();
