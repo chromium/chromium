@@ -418,15 +418,15 @@ ArcSupportHost::Error GetSupportHostError(const ArcProvisioningResult& result) {
 }
 
 bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
-  // For GMS signin errors
   if (result.gms_sign_in_error() ==
           mojom::GMSSignInError::GMS_SIGN_IN_TIMEOUT ||
       result.gms_sign_in_error() ==
-          mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE) {
+          mojom::GMSSignInError::GMS_SIGN_IN_SERVICE_UNAVAILABLE ||
+      result.gms_sign_in_error() ==
+          mojom::GMSSignInError::GMS_SIGN_IN_NETWORK_ERROR) {
     return true;
   }
 
-  // For GMS checkin errors
   if (result.gms_check_in_error() ==
           mojom::GMSCheckInError::GMS_CHECK_IN_FAILED ||
       result.gms_check_in_error() ==
@@ -434,7 +434,6 @@ bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
     return true;
   }
 
-  // For Cloud Provision Flow errors
   if (result.cloud_provision_flow_error() ==
           mojom::CloudProvisionFlowError::ERROR_SERVER_TRANSIENT_ERROR ||
       result.cloud_provision_flow_error() ==
@@ -446,7 +445,6 @@ bool ShouldShowNetworkTests(const ArcProvisioningResult& result) {
     return true;
   }
 
-  // For General signin errors
   if (result.general_error() ==
           mojom::GeneralSignInError::GENERIC_PROVISIONING_TIMEOUT ||
       result.general_error() ==
@@ -1695,7 +1693,7 @@ void ArcSessionManager::OnSendFeedbackClicked() {
   DCHECK(support_host_);
   chrome::OpenFeedbackDialog(nullptr, chrome::kFeedbackSourceArcApp);
 
-  // If network-related error occured, collect UMA stats on user action.
+  // If network-related error occurred, collect UMA stats on user action.
   if (support_host_->GetShouldShowRunNetworkTests())
     UpdateOptInNetworkErrorActionUMA(
         arc::OptInNetworkErrorActionType::SEND_FEEDBACK);
