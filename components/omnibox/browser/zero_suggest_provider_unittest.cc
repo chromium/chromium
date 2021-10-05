@@ -303,7 +303,15 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
   on_clobber_input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
 
   const ZeroSuggestProvider::ResultType kDefaultContextualWebResultType =
+#if defined(OS_ANDROID)
+      ZeroSuggestProvider::ResultType::REMOTE_SEND_URL;
+#else  // !OS_ANDROID
       ZeroSuggestProvider::ResultType::NONE;
+#endif
+
+  const ZeroSuggestProvider::ResultType
+      kDefaultContextualWebResultTypeOnClobber =
+          ZeroSuggestProvider::ResultType::NONE;
 
   // Disable on-clobber.
   {
@@ -314,7 +322,7 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
     EXPECT_EQ(kDefaultContextualWebResultType,
               ZeroSuggestProvider::TypeOfResultToRun(
                   client_.get(), on_focus_input, suggest_url));
-    EXPECT_EQ(kDefaultContextualWebResultType,
+    EXPECT_EQ(kDefaultContextualWebResultTypeOnClobber,
               ZeroSuggestProvider::TypeOfResultToRun(
                   client_.get(), on_clobber_input, suggest_url));
   }
@@ -330,7 +338,7 @@ TEST_F(ZeroSuggestProviderTest, TypeOfResultToRunForContextualWeb) {
     EXPECT_EQ(ZeroSuggestProvider::ResultType::REMOTE_SEND_URL,
               ZeroSuggestProvider::TypeOfResultToRun(
                   client_.get(), on_focus_input, suggest_url));
-    EXPECT_EQ(kDefaultContextualWebResultType,
+    EXPECT_EQ(kDefaultContextualWebResultTypeOnClobber,
               ZeroSuggestProvider::TypeOfResultToRun(
                   client_.get(), on_clobber_input, suggest_url));
   }

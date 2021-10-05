@@ -8,28 +8,28 @@
 
 namespace omnibox {
 
-const auto enabled_by_default_desktop_only =
+constexpr auto enabled_by_default_desktop_only =
 #if defined(OS_ANDROID) || defined(OS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_android_only =
+constexpr auto enabled_by_default_android_only =
 #if defined(OS_ANDROID)
     base::FEATURE_ENABLED_BY_DEFAULT;
 #else
     base::FEATURE_DISABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_desktop_android =
+constexpr auto enabled_by_default_desktop_android =
 #if defined(OS_IOS)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-const auto enabled_by_default_desktop_ios =
+constexpr auto enabled_by_default_desktop_ios =
 #if defined(OS_ANDROID)
     base::FEATURE_DISABLED_BY_DEFAULT;
 #else
@@ -148,7 +148,7 @@ const base::Feature kOnFocusSuggestionsContextualWebAllowSRP{
     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnFocusSuggestionsContextualWebOnContent{
     "OmniboxOnFocusSuggestionsContextualWebOnContent",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    enabled_by_default_android_only};
 
 // Allows the LocalHistoryZeroSuggestProvider to use local search history.
 const base::Feature kLocalHistoryZeroSuggest{
@@ -214,7 +214,7 @@ const base::Feature kClipboardSuggestionContentHidden = {
 // If enabled, frequently visited sites are presented in form of a single row
 // with a carousel of tiles, instead of one URL per row.
 extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             enabled_by_default_android_only};
 
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
