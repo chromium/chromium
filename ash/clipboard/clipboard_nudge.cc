@@ -128,4 +128,9 @@ const gfx::VectorIcon& ClipboardNudge::GetIcon() const {
   return nudge_type_ == kZeroStateNudge ? kClipboardEmptyIcon : kClipboardIcon;
 }
 
+std::u16string ClipboardNudge::GetAccessibilityText() const {
+  // TODO(crbug.com/1256854): Calculate text for screen readers.
+  return u"";
+}
+
 }  // namespace ash

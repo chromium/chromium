@@ -19,6 +19,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
@@ -120,6 +121,10 @@ void SystemNudge::Show() {
       std::make_unique<SystemNudgeView>(CreateLabelView(), GetIcon()));
   CalculateAndSetWidgetBounds();
   widget_->Show();
+
+  const std::u16string accessibility_text = GetAccessibilityText();
+  if (!accessibility_text.empty())
+    nudge_view_->GetViewAccessibility().AnnounceText(accessibility_text);
 }
 
 void SystemNudge::Close() {

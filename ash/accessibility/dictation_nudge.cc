@@ -51,13 +51,7 @@ std::unique_ptr<views::View> DictationNudge::CreateLabelView() const {
       AshColorProvider::ContentLayerType::kTextColorPrimary));
   label->SetAutoColorReadabilityEnabled(false);
 
-  const std::u16string language_name = l10n_util::GetDisplayNameForLocale(
-      controller_->dictation_locale(), controller_->application_locale(),
-      /*is_for_ui=*/true);
-
-  const std::u16string label_text = l10n_util::GetStringFUTF16(
-      IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE, language_name);
-  label->SetText(label_text);
+  label->SetText(GetAccessibilityText());
   label->SetMultiLine(true);
   label->SizeToFit(kMinLabelWidth);
 
@@ -66,6 +60,15 @@ std::unique_ptr<views::View> DictationNudge::CreateLabelView() const {
 
 const gfx::VectorIcon& DictationNudge::GetIcon() const {
   return kDictationOffNewuiIcon;
+}
+
+std::u16string DictationNudge::GetAccessibilityText() const {
+  const std::u16string language_name = l10n_util::GetDisplayNameForLocale(
+      controller_->dictation_locale(), controller_->application_locale(),
+      /*is_for_ui=*/true);
+
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_DICTATION_LANGUAGE_SUPPORTED_OFFLINE_NUDGE, language_name);
 }
 
 }  // namespace ash

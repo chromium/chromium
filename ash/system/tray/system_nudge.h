@@ -63,6 +63,10 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   // Gets the VectorIcon shown to the side of the label for the nudge.
   virtual const gfx::VectorIcon& GetIcon() const = 0;
 
+  // Gets the string to announce for accessibility. This will be used if a
+  // screen reader is enabled when the view is shown.
+  virtual std::u16string GetAccessibilityText() const = 0;
+
  private:
   class SystemNudgeView;
 

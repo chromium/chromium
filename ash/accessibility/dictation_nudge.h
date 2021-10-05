@@ -28,6 +28,7 @@ class ASH_EXPORT DictationNudge : public SystemNudge {
   // SystemNudge:
   std::unique_ptr<views::View> CreateLabelView() const override;
   const gfx::VectorIcon& GetIcon() const override;
+  std::u16string GetAccessibilityText() const override;
 
  private:
   friend class DictationNudgeControllerTest;
