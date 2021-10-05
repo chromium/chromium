@@ -11726,9 +11726,18 @@ class BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported
   }
 };
 
+// This test is flaky on Linux.
+// See https://crbug.com/1253200
+#if defined(OS_LINUX)
+#define MAYBE_CacheWhenMediaSessionServiceIsNotUsed \
+  DISABLED_CacheWhenMediaSessionServiceIsNotUsed
+#else
+#define MAYBE_CacheWhenMediaSessionServiceIsNotUsed \
+  CacheWhenMediaSessionServiceIsNotUsed
+#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestWithMediaSessionPlaybackStateChangeSupported,
-    CacheWhenMediaSessionServiceIsNotUsed) {
+    MAYBE_CacheWhenMediaSessionServiceIsNotUsed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page using MediaSession.
