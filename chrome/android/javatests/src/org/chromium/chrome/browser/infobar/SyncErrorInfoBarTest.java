@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils;
+import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils.SyncErrorPromptType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -77,7 +78,6 @@ public class SyncErrorInfoBarTest {
     }
 
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
-    private InfoBarContainer mInfoBarContainer;
     private SyncErrorInfoBarContainerObserver mInfoBarObserver;
 
     @Rule
@@ -97,7 +97,6 @@ public class SyncErrorInfoBarTest {
         SyncErrorPromptUtils.resetLastShownTime();
         mFakeSyncServiceImpl = (FakeSyncServiceImpl) mSyncTestRule.getSyncService();
         mInfoBarObserver = new SyncErrorInfoBarContainerObserver();
-        mInfoBarContainer = mSyncTestRule.getInfoBarContainer();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mSyncTestRule.getInfoBarContainer().addObserver(mInfoBarObserver));
     }
@@ -105,11 +104,12 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     public void testSyncErrorInfoBarShownForAuthError() throws Exception {
-        showSyncErrorInfoBarForAuthError();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
-        // Resolving the error should not show the infobar again.
-        SyncErrorPromptUtils.resetLastShownTime();
+        // Resolving the error should hide the infobar.
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.NONE);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -117,11 +117,11 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     public void testSyncErrorInfoBarShownForSyncSetupIncomplete() throws Exception {
-        showSyncErrorInfoBarForSyncSetupIncomplete();
+        mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
-        // Resolving the error should not show the infobar again.
-        SyncErrorPromptUtils.resetLastShownTime();
+        // Resolving the error should hide the infobar.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mFakeSyncServiceImpl.setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
         });
@@ -131,11 +131,13 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     public void testSyncErrorInfoBarShownForPassphraseRequired() throws Exception {
-        showSyncErrorInfoBarForPassphraseRequired();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
-        // Resolving the error should not show the infobar again.
-        SyncErrorPromptUtils.resetLastShownTime();
+        // Resolving the error should hide the infobar.
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -143,21 +145,25 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     public void testSyncErrorInfoBarShownForClientOutOfDate() throws Exception {
-        showSyncErrorInfoBarForClientOutOfDate();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
-        // Not possible to resolve this error from within chrome unlike the other SyncErrorInfoBar
-        // types.
+        // Not possible to resolve this error from within chrome unlike the other
+        // SyncErrorPromptType-s.
     }
 
     @Test
     @LargeTest
     public void testSyncErrorInfoBarShownForTrustedVaultKeyRequired() throws Exception {
-        showSyncErrorInfoBarForTrustedVaultKeyRequired();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
-        // Resolving the error should not show the infobar again.
-        SyncErrorPromptUtils.resetLastShownTime();
+        // Resolving the error should hide the infobar.
         mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(false);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -165,11 +171,13 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     public void testSyncErrorInfoBarShownForTrustedVaultRecoverabilityDegraded() throws Exception {
-        showSyncErrorInfoBarForTrustedVaultRecoverabilityDegraded();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
-        // Resolving the error should not show the infobar again.
-        SyncErrorPromptUtils.resetLastShownTime();
+        // Resolving the error should hide the infobar.
         mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(false);
         mInfoBarObserver.waitUntilInfoBarDisappears();
     }
@@ -189,11 +197,9 @@ public class SyncErrorInfoBarTest {
             mFakeSyncServiceImpl.setFirstSetupComplete(SyncFirstSetupCompleteSource.BASIC_FLOW);
             return SyncSettingsUtils.getSyncError();
         });
-        // syncError should not equal to any of these errors that trigger the infobar.
-        Assert.assertTrue(syncError != SyncError.AUTH_ERROR);
-        Assert.assertTrue(syncError != SyncError.PASSPHRASE_REQUIRED);
-        Assert.assertTrue(syncError != SyncError.SYNC_SETUP_INCOMPLETE);
-        Assert.assertTrue(syncError != SyncError.CLIENT_OUT_OF_DATE);
+
+        Assert.assertEquals(
+                SyncErrorPromptType.NOT_SHOWN, SyncErrorPromptUtils.getSyncErrorUiType(syncError));
 
         mInfoBarObserver.waitUntilInfoBarAppears(false);
     }
@@ -201,7 +207,9 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     public void testSyncErrorInfoBarIsNotShownBeforeMinimalIntervalPassed() throws Exception {
-        showSyncErrorInfoBarForAuthError();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mInfoBarObserver.waitUntilInfoBarAppears(false);
 
         // Close the SyncErrorInfoBar and reload the page again.
@@ -222,7 +230,9 @@ public class SyncErrorInfoBarTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSyncErrorInfoBarForAuthErrorView() throws IOException {
-        showSyncErrorInfoBarForAuthError();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mRenderTestRule.render(mSyncTestRule.getInfoBarContainer().getContainerViewForTesting(),
                 "sync_error_infobar_auth_error");
     }
@@ -231,7 +241,8 @@ public class SyncErrorInfoBarTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSyncErrorInfoBarForSyncSetupIncompleteView() throws IOException {
-        showSyncErrorInfoBarForSyncSetupIncomplete();
+        mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mRenderTestRule.render(mSyncTestRule.getInfoBarContainer().getContainerViewForTesting(),
                 "sync_error_infobar_sync_setup_incomplete");
     }
@@ -240,7 +251,10 @@ public class SyncErrorInfoBarTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSyncErrorInfoBarForPassphraseRequiredView() throws IOException {
-        showSyncErrorInfoBarForPassphraseRequired();
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        mFakeSyncServiceImpl.setEngineInitialized(true);
+        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
+        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
         mRenderTestRule.render(mSyncTestRule.getInfoBarContainer().getContainerViewForTesting(),
                 "sync_error_infobar_passphrase_required");
     }
@@ -249,46 +263,10 @@ public class SyncErrorInfoBarTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSyncErrorInfoBarForClientOutOfDateView() throws IOException {
-        showSyncErrorInfoBarForClientOutOfDate();
-        mRenderTestRule.render(mSyncTestRule.getInfoBarContainer().getContainerViewForTesting(),
-                "sync_error_infobar_client_out_of_date");
-    }
-
-    private void showSyncErrorInfoBarForAuthError() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
-    }
-
-    private void showSyncErrorInfoBarForPassphraseRequired() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
-        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
-    }
-
-    private void showSyncErrorInfoBarForSyncSetupIncomplete() {
-        mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
-        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
-    }
-
-    private void showSyncErrorInfoBarForClientOutOfDate() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
         mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
-    }
-
-    private void showSyncErrorInfoBarForTrustedVaultKeyRequired() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultKeyRequiredForPreferredDataTypes(true);
-        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
-    }
-
-    private void showSyncErrorInfoBarForTrustedVaultRecoverabilityDegraded() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mFakeSyncServiceImpl.setEngineInitialized(true);
-        mFakeSyncServiceImpl.setTrustedVaultRecoverabilityDegraded(true);
-        mSyncTestRule.loadUrl(UrlConstants.CHROME_BLANK_URL);
+        mRenderTestRule.render(mSyncTestRule.getInfoBarContainer().getContainerViewForTesting(),
+                "sync_error_infobar_client_out_of_date");
     }
 }

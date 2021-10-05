@@ -136,6 +136,8 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
+import org.chromium.chrome.browser.sync.ui.SyncErrorMessage;
+import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
@@ -1806,13 +1808,19 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mTabModelSelectorTabObserver = new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
             public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-                if (navigation.hasCommitted() && navigation.isInPrimaryMainFrame()) {
-                    DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(ChromeTabbedActivity.this,
-                            tab.getWebContents(), navigation.getUrl(), tab.isShowingErrorPage(),
-                            navigation.isFragmentNavigation(), navigation.httpStatusCode());
-                    SyncErrorInfoBar.maybeLaunchSyncErrorInfoBar(tab.getWebContents());
-                    SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
+                if (!navigation.hasCommitted() || !navigation.isInPrimaryMainFrame()) {
+                    return;
                 }
+                DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(ChromeTabbedActivity.this,
+                        tab.getWebContents(), navigation.getUrl(), tab.isShowingErrorPage(),
+                        navigation.isFragmentNavigation(), navigation.httpStatusCode());
+                if (SyncErrorPromptUtils.isMessageUiEnabled()) {
+                    SyncErrorMessage.maybeShowMessageUi(
+                            getWindowAndroid(), ChromeTabbedActivity.this);
+                } else {
+                    SyncErrorInfoBar.maybeLaunchSyncErrorInfoBar(tab.getWebContents());
+                }
+                SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());
             }
         };
         mAppIndexingUtil = new AppIndexingUtil(mTabModelSelector);

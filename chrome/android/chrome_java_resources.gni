@@ -510,6 +510,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_storefront_blue.xml",
   "java/res/drawable/ic_sync_badge_error_20dp.xml",
   "java/res/drawable/ic_sync_error_48dp.xml",
+  "java/res/drawable/ic_sync_error_legacy_24dp.xml",
   "java/res/drawable/ic_sync_error_legacy_40dp.xml",
   "java/res/drawable/ic_sync_off_48dp.xml",
   "java/res/drawable/ic_sync_on_48dp.xml",

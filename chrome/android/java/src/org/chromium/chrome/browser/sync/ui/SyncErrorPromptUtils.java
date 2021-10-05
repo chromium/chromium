@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -32,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Shared code between the old {@link org.chromium.chrome.browser.infobar.SyncErrorInfobar}
- * and the new UI based on {@link org.chromium.components.messages.MessageDispatcher}.
+ * and the new UI based on {@link SyncErrorMessage}.
  *
  * TODO(crbug.com/1246073): make private as methods of message ui controller once the migration to
  *                          the new UI is completed.
@@ -165,6 +166,11 @@ public class SyncErrorPromptUtils {
 
     public static void resetLastShownTime() {
         SharedPreferencesManager.getInstance().removeKey(SYNC_ERROR_PROMPT_SHOWN_AT_TIME);
+    }
+
+    public static boolean isMessageUiEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SYNC_ERROR);
     }
 
     private static void openTrustedVaultKeyRetrievalActivity() {
