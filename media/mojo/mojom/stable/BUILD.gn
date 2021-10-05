@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("stable_video_decoder") {
+  sources = [
+    "stable_video_decoder.mojom",
+    "stable_video_decoder_types.mojom",
+  ]
+
+  public_deps = [
+    "//media/mojo/mojom",
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+  ]
+
+  cpp_proxy_target = "//media/mojo/services"
+  export_class_attribute = "MEDIA_MOJO_EXPORT"
+  export_define = "MEDIA_MOJO_IMPLEMENTATION"
+  export_header = "media/mojo/services/media_mojo_export.h"
+}

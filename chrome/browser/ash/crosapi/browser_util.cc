@@ -103,6 +103,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -387,6 +388,8 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::WebPageInfoFactory>(),
     MakeInterfaceVersionEntry<device::mojom::HidConnection>(),
     MakeInterfaceVersionEntry<device::mojom::HidManager>(),
+    MakeInterfaceVersionEntry<
+        media::stable::mojom::StableVideoDecoderFactory>(),
     MakeInterfaceVersionEntry<media_session::mojom::MediaControllerManager>(),
     MakeInterfaceVersionEntry<media_session::mojom::AudioFocusManager>(),
     MakeInterfaceVersionEntry<media_session::mojom::AudioFocusManagerDebug>(),
@@ -451,7 +454,7 @@ Channel GetChannelFromString(const std::string channel_str) {
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 51,
+    crosapi::mojom::Crosapi::Version_ == 52,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

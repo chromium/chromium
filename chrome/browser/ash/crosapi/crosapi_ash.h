@@ -17,6 +17,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
+namespace media {
+class StableVideoDecoderFactoryService;
+}  // namespace media
+
 namespace crosapi {
 
 class AutomationAsh;
@@ -152,6 +156,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindSensorHalClient(
       mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote)
       override;
+  void BindStableVideoDecoderFactory(
+      mojo::GenericPendingReceiver receiver) override;
   void BindHidManager(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;
@@ -266,6 +272,8 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ResourceManagerAsh> resource_manager_ash_;
   std::unique_ptr<ScreenManagerAsh> screen_manager_ash_;
   std::unique_ptr<SelectFileAsh> select_file_ash_;
+  std::unique_ptr<media::StableVideoDecoderFactoryService>
+      stable_video_decoder_factory_ash_;
   std::unique_ptr<StructuredMetricsServiceAsh> structured_metrics_service_ash_;
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;
   std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;

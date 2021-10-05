@@ -85,6 +85,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/mojo/services/stable_video_decoder_factory_service.h"
 
 namespace crosapi {
 namespace {
@@ -148,6 +150,8 @@ CrosapiAsh::CrosapiAsh()
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
+      stable_video_decoder_factory_ash_(
+          std::make_unique<media::StableVideoDecoderFactoryService>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       system_display_ash_(std::make_unique<SystemDisplayAsh>()),
@@ -417,6 +421,12 @@ void CrosapiAsh::BindSensorHalClient(
     mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient> remote) {
   chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
       std::move(remote));
+}
+
+void CrosapiAsh::BindStableVideoDecoderFactory(
+    mojo::GenericPendingReceiver receiver) {
+  if (auto r = receiver.As<media::stable::mojom::StableVideoDecoderFactory>())
+    stable_video_decoder_factory_ash_->BindReceiver(std::move(r));
 }
 
 void CrosapiAsh::BindPower(mojo::PendingReceiver<mojom::Power> receiver) {

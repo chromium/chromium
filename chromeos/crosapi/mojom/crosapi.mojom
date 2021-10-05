@@ -77,8 +77,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 52
-// Next method id: 56
+// Next version: 53
+// Next method id: 57
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -275,6 +275,16 @@ interface Crosapi {
   [MinVersion=14]
   BindSensorHalClient@19(
       pending_remote<chromeos.sensors.mojom.SensorHalClient> receiver);
+
+  // Binds the StableVideoDecoderFactory, which allows lacros-chrome to request
+  // hardware accelerated video decoding. We need to use a
+  // GenericPendingReceiver to avoid dependency circularities.
+  // TODO(b/202188196): split StableVideoDecoder API to try to avoid dependency
+  // issues.
+  // Added in M96.
+  [MinVersion=52]
+  BindStableVideoDecoderFactory@56(
+      mojo_base.mojom.GenericPendingReceiver receiver);
 
   // Binds the StructuredMetricsService interface to record events.
   // Added in M96.

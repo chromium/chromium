@@ -1,0 +1,113 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.stable.mojom;
+
+import "media/mojo/mojom/stable/stable_video_decoder_types.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// This API is a stable version of VideoDecoder. This is used both by LaCrOS and
+// by out-of-process video decoding to allow the GPU process to forward video
+// decoding requests to a video decoder process.
+// In order to avoid depending on unstable definitions or on components which
+// will cause cyclic dependencies, some similar but occasionally simplified
+// version of structures were used rather than directly depending on the
+// structures in other components.
+
+// Based on |media.mojom.MediaLog| but does not depend on
+// |media.mojom.MediaLogRecord|.
+// Next min method ID: 1
+[Stable, Uuid="2e4c1aed-fd62-40e6-8601-e5c4288246c0"]
+interface MediaLog {
+  // Adds a log record to a MediaLog service.
+  AddLogRecord@0(MediaLogRecord event);
+};
+
+// Based on |media.mojom.VideoFrameHandleReleaser| but does not depend on
+// |gpu.mojom.SyncToken|.
+// Next min method ID: 1
+[Stable, Uuid="8afdcf21-99d7-4864-a957-75d2a7e17da6"]
+interface VideoFrameHandleReleaser {
+  // Signals that the VideoFrame identified by |release_token| should be
+  // released.
+  ReleaseVideoFrame@0(mojo_base.mojom.UnguessableToken release_token);
+};
+
+// Based on |media.mojom.VideoDecoderClient| but does not depend on
+// |media.mojom.VideoFrame| or |media.mojom.WaitingReason|.
+// Next min method ID: 2
+[Stable, Uuid="8a6fce77-7fcc-42e1-ac74-443859039696"]
+interface VideoDecoderClient {
+  // Output a decoded frame. Frames are output in presentation order.
+  //
+  // When |can_read_without_stalling| is false, preroll should be disabled. This
+  // is necessary if the decoder cannot guarantee that it can output another
+  // frame, for example if output buffers are limited or configuration changes
+  // require the return of all outstanding frames.
+  //
+  // If |release_token| is provided, the client shall call
+  // VideoFrameHandleReleaser::Release() when it is finished using |frame|.
+  OnVideoFrameDecoded@0(VideoFrame frame,
+                      bool can_read_without_stalling,
+                      mojo_base.mojom.UnguessableToken? release_token);
+
+  // Called when the remote decoder is waiting because of |reason|, e.g. waiting
+  // for decryption key.
+  OnWaiting@1(WaitingReason reason);
+};
+
+// TODO(b/194429120): Implement when protected content support is integrated.
+[Stable, Uuid="33c7a00e-2970-41b3-8c7b-f1074a539740"]
+interface StableCdmContext {
+};
+
+// Based on |media.mojom.VideoDecoder|.
+// Next min method ID: 5
+[Stable, Uuid="85611470-3e87-43a9-ac75-a11a63e76415"]
+interface StableVideoDecoder {
+  // Returns a list of supported configs as well as the decoder ID for the
+  // decoder which supports them. It is expected that Initialize() will fail
+  // for any config that does not match an entry in this list.
+  //
+  // May be called before Construct().
+  GetSupportedConfigs@0() =>
+      (array<SupportedVideoDecoderConfig> supported_configs,
+       VideoDecoderType decoder_type);
+
+  // Initialize the decoder. This must be called before any method other than
+  // GetSupportedConfigs().
+  Construct@1(
+      pending_associated_remote<VideoDecoderClient> client,
+      pending_remote<MediaLog> media_log,
+      pending_receiver<VideoFrameHandleReleaser> video_frame_handle_releaser,
+      handle<data_pipe_consumer> decoder_buffer_pipe,
+      ColorSpace target_color_space);
+
+  // Configure (or reconfigure) the decoder. This must be called before decoding
+  // any frames, and must not be called while there are pending Initialize(),
+  // Decode(), or Reset() requests.
+  Initialize@2(VideoDecoderConfig config, bool low_delay,
+               pending_remote<StableCdmContext>? cdm_context)
+      => (Status status,
+          bool needs_bitstream_conversion,
+          int32 max_decode_requests,
+          VideoDecoderType decoder_type);
+
+  // Request decoding of exactly one frame or an EOS buffer. This must not be
+  // called while there are pending Initialize(), Reset(), or Decode(EOS)
+  // requests.
+  Decode@3(DecoderBuffer buffer) => (Status status);
+
+  // Reset the decoder. All ongoing Decode() requests must be completed or
+  // aborted before executing the callback. This must not be called while there
+  // is a pending Initialize() request.
+  Reset@4() => ();
+};
+
+// Next min method ID: 1
+[Stable, Uuid="d6047fd9-fffb-4e37-ad9b-383a1c9e1d2d"]
+interface StableVideoDecoderFactory {
+  // Used to create StableVideoDecoder interfaces.
+  CreateStableVideoDecoder@0(pending_receiver<StableVideoDecoder> receiver);
+};

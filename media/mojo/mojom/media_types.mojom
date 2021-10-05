@@ -121,6 +121,7 @@ enum MediaStatusState;
 
 // This defines a mojo transport format for media::EncryptionPattern
 // See media/base/encryption_pattern.h for description.
+[Stable]
 struct EncryptionPattern {
   uint32 crypt_byte_block;
   uint32 skip_byte_block;
