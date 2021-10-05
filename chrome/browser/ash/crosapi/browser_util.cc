@@ -708,9 +708,7 @@ bool IsLacrosChromeAppsEnabled() {
   if (!IsLacrosPrimaryBrowser())
     return false;
 
-  // Always return false for now as the feature isn't ready. Once the feature is
-  // ready this will be flipped to true.
-  return false;
+  return true;
 }
 
 bool IsLacrosWindow(const aura::Window* window) {
