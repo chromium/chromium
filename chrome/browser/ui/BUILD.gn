@@ -4716,6 +4716,13 @@ static_library("ui") {
       ]
     }
 
+    if (is_win || is_linux) {
+      sources += [
+        "views/bluetooth_device_credentials_view.cc",
+        "views/bluetooth_device_credentials_view.h",
+      ]
+    }
+
     if (is_mac) {
       sources += [
         "views/apps/app_window_native_widget_mac.h",

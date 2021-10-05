@@ -32,6 +32,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "components/device_event_log/device_event_log.h"
@@ -701,6 +702,7 @@ void BluetoothAdapterWinrt::InitForTests(
 // static
 BluetoothAdapterWinrt::StaticsInterfaces
 BluetoothAdapterWinrt::PerformSlowInitTasks() {
+  base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
   if (!ResolveCoreWinRT())
     return BluetoothAdapterWinrt::StaticsInterfaces();
 

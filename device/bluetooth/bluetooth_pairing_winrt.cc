@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
+#include "base/task/thread_pool.h"
+#include "base/win/com_init_util.h"
 #include "base/win/post_async_results.h"
 #include "base/win/scoped_hstring.h"
 #include "device/bluetooth/bluetooth_device_winrt.h"
@@ -19,6 +21,9 @@ namespace device {
 namespace {
 
 using ABI::Windows::Devices::Enumeration::DevicePairingKinds;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmOnly;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ConfirmPinMatch;
+using ABI::Windows::Devices::Enumeration::DevicePairingKinds_DisplayPin;
 using ABI::Windows::Devices::Enumeration::DevicePairingKinds_ProvidePin;
 using ABI::Windows::Devices::Enumeration::DevicePairingResult;
 using ABI::Windows::Devices::Enumeration::DevicePairingResultStatus;
@@ -38,6 +43,8 @@ using ABI::Windows::Devices::Enumeration::
     DevicePairingResultStatus_PairingCanceled;
 using ABI::Windows::Devices::Enumeration::
     DevicePairingResultStatus_RejectedByHandler;
+using CompletionCallback = base::OnceCallback<void(HRESULT hr)>;
+using ConnectErrorCode = BluetoothDevice::ConnectErrorCode;
 using ABI::Windows::Devices::Enumeration::IDeviceInformationCustomPairing;
 using ABI::Windows::Devices::Enumeration::IDevicePairingRequestedEventArgs;
 using ABI::Windows::Devices::Enumeration::IDevicePairingResult;
@@ -50,6 +57,17 @@ void PostTask(BluetoothPairingWinrt::ConnectCallback callback,
       FROM_HERE, base::BindOnce(std::move(callback), error_code));
 }
 
+HRESULT CompleteDeferral(
+    Microsoft::WRL::ComPtr<ABI::Windows::Foundation::IDeferral> deferral) {
+  // Apparently deferrals may be created (aka obtained) on the main thread
+  // initialized for STA, but must be completed on a thread with COM initialized
+  // for MTA. If the deferral is completed on the main thread then the
+  // Complete() call will succeed, i.e return S_OK, but the Windows Device
+  // Association Service will be hung and all Bluetooth association changes
+  // (system wide) will fail.
+  base::win::AssertComApartmentType(base::win::ComApartmentType::MTA);
+  return deferral->Complete();
+}
 }  // namespace
 
 BluetoothPairingWinrt::BluetoothPairingWinrt(
@@ -94,8 +112,10 @@ void BluetoothPairingWinrt::StartPairing() {
   }
 
   ComPtr<IAsyncOperation<DevicePairingResult*>> pair_op;
-  HRESULT hr =
-      custom_pairing_->PairAsync(DevicePairingKinds_ProvidePin, &pair_op);
+  HRESULT hr = custom_pairing_->PairAsync(
+      DevicePairingKinds_ConfirmOnly | DevicePairingKinds_ProvidePin |
+          DevicePairingKinds_ConfirmPinMatch,
+      &pair_op);
   if (FAILED(hr)) {
     DVLOG(2) << "DeviceInformationCustomPairing::PairAsync() failed: "
              << logging::SystemErrorCodeToString(hr);
@@ -122,6 +142,14 @@ bool BluetoothPairingWinrt::ExpectingPinCode() const {
   return expecting_pin_code_;
 }
 
+void BluetoothPairingWinrt::OnSetPinCodeDeferralCompletion(HRESULT hr) {
+  if (FAILED(hr)) {
+    DVLOG(2) << "Completing Deferred Pairing Request failed: "
+             << logging::SystemErrorCodeToString(hr);
+    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
+  }
+}
+
 void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "BluetoothPairingWinrt::SetPinCode(" << pin_code << ")";
@@ -138,35 +166,40 @@ void BluetoothPairingWinrt::SetPinCode(base::StringPiece pin_code) {
   }
 
   DCHECK(pairing_deferral_);
-  hr = pairing_deferral_->Complete();
-  if (FAILED(hr)) {
-    DVLOG(2) << "Completing Deferred Pairing Request failed: "
-             << logging::SystemErrorCodeToString(hr);
-    std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CompleteDeferral, std::move(pairing_deferral_)),
+      base::BindOnce(&BluetoothPairingWinrt::OnSetPinCodeDeferralCompletion,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BluetoothPairingWinrt::RejectPairing() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(2) << "BluetoothPairingWinrt::RejectPairing()";
-  DCHECK(pairing_deferral_);
-  HRESULT hr = pairing_deferral_->Complete();
+void BluetoothPairingWinrt::OnRejectPairing(HRESULT hr) {
   if (FAILED(hr)) {
     DVLOG(2) << "Completing Deferred Pairing Request failed: "
              << logging::SystemErrorCodeToString(hr);
     std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
   }
-
   std::move(callback_).Run(
       BluetoothDevice::ConnectErrorCode::ERROR_AUTH_REJECTED);
 }
 
-void BluetoothPairingWinrt::CancelPairing() {
+void BluetoothPairingWinrt::RejectPairing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(2) << "BluetoothPairingWinrt::CancelPairing()";
+  DVLOG(2) << "BluetoothPairingWinrt::RejectPairing()";
   DCHECK(pairing_deferral_);
-  HRESULT hr = pairing_deferral_->Complete();
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CompleteDeferral, std::move(pairing_deferral_)),
+      base::BindOnce(&BluetoothPairingWinrt::OnRejectPairing,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BluetoothPairingWinrt::OnCancelPairing(HRESULT hr) {
+  // This method is normally never called. Usually when CancelPairing() is
+  // invoked the deferral is completed, which immediately calls OnPair(), which
+  // runs |callback_| and destroys this object before this method can be
+  // executed. However, if the deferral fails to complete, this will be run.
   if (FAILED(hr)) {
     DVLOG(2) << "Completing Deferred Pairing Request failed: "
              << logging::SystemErrorCodeToString(hr);
@@ -176,6 +209,24 @@ void BluetoothPairingWinrt::CancelPairing() {
 
   std::move(callback_).Run(
       BluetoothDevice::ConnectErrorCode::ERROR_AUTH_CANCELED);
+}
+
+void BluetoothPairingWinrt::CancelPairing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(2) << "BluetoothPairingWinrt::CancelPairing()";
+  DCHECK(pairing_deferral_);
+  // There is no way to explicitly cancel an in-progress pairing as
+  // DevicePairingRequestedEventArgs has no Cancel() method. Our approach is to
+  // complete the deferral, without accepting, which results in a
+  // RejectedByHandler result status. |was_cancelled_| is set so that OnPair(),
+  // which is called when the deferral is completed, will know that cancellation
+  // was the actual result.
+  was_cancelled_ = true;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&CompleteDeferral, std::move(pairing_deferral_)),
+      base::BindOnce(&BluetoothPairingWinrt::OnCancelPairing,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BluetoothPairingWinrt::OnPairingRequested(
@@ -223,6 +274,12 @@ void BluetoothPairingWinrt::OnPair(
              << logging::SystemErrorCodeToString(hr);
     std::move(callback_).Run(BluetoothDevice::ConnectErrorCode::ERROR_FAILED);
     return;
+  }
+
+  if (was_cancelled_ && status == DevicePairingResultStatus_RejectedByHandler) {
+    // See comment in CancelPairing() for explanation of why was_cancelled_
+    // is used.
+    status = DevicePairingResultStatus_PairingCanceled;
   }
 
   DVLOG(2) << "Pairing Result Status: " << static_cast<int>(status);

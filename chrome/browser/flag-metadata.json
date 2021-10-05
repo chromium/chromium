@@ -529,6 +529,11 @@
     "expiry_milestone": 97
   },
   {
+    "name": "bluetooth-bond-on-demand",
+    "owners": [ "cmumford@chromium.org", "deviceapi-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "bluetooth-fix-a2dp-packet-size",
     "owners": [ "michaelfsun", "chromeos-bluetooth@google.com" ],
     "expiry_milestone": 86

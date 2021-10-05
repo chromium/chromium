@@ -13,7 +13,12 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/test/fake_device_information_pairing_winrt.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace device {
 
@@ -84,6 +89,8 @@ class FakeDeviceInformationCustomPairingWinrt
       ABI::Windows::Devices::Enumeration::DeviceInformationCustomPairing*,
       ABI::Windows::Devices::Enumeration::DevicePairingRequestedEventArgs*>>
       pairing_requested_handler_;
+
+  scoped_refptr<base::SequencedTaskRunner> pair_task_runner_;
 };
 
 }  // namespace device

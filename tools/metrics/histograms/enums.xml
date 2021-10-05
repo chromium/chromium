@@ -20554,6 +20554,7 @@ Called by update_debug_scenarios.py.-->
   <int value="109" label="File handling permission request"/>
   <int value="110" label="Enterprise confirmation"/>
   <int value="111" label="App Identity Update Confirmation"/>
+  <int value="112" label="Bluetooth device pairing credentials"/>
 </enum>
 
 <enum name="DialogOriginRelationship">
@@ -47961,6 +47962,7 @@ from previous Chrome versions.
   <int value="-1895719323" label="VrBrowsingTabsView:enabled"/>
   <int value="-1895050832" label="GlobalMediaControlsCastStartStop:disabled"/>
   <int value="-1894699049" label="AudioFocusEnforcement:disabled"/>
+  <int value="-1894576813" label="WebBluetoothBondOnDemand:enabled"/>
   <int value="-1894289914" label="IncognitoScreenshot:disabled"/>
   <int value="-1894054576" label="FontAccess:enabled"/>
   <int value="-1893668420"
@@ -51178,6 +51180,7 @@ from previous Chrome versions.
   <int value="600037637" label="AndroidSigninPromos:enabled"/>
   <int value="600643275" label="OobeRecommendAppsScreen:enabled"/>
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
+  <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>
   <int value="603988014" label="NetworkService:enabled"/>
   <int value="604334859" label="Prerender2:enabled"/>

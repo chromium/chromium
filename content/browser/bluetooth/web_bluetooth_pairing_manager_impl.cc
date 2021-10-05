@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
+#include "content/browser/bluetooth/web_bluetooth_pairing_manager_impl.h"
 
 #include <utility>
 
 #include "base/callback_helpers.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
-
 
 namespace content {
 
@@ -78,28 +77,46 @@ void OnPairForWriteDescriptorCallback(
   pairing_manager_delegate->RemoteDescriptorWriteValue(
       descriptor_instance_id, value, std::move(callback));
 }
+
+void OnPairCharacteristicStartNotifications(
+    const std::string& characteristic_instance_id,
+    mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
+        client,
+    WebBluetoothPairingManagerDelegate* pairing_manager_delegate,
+    WebBluetoothService::RemoteCharacteristicStartNotificationsCallback
+        callback,
+    absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
+  if (error_code) {
+    std::move(callback).Run(
+        WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(*error_code));
+    return;
+  }
+  pairing_manager_delegate->RemoteCharacteristicStartNotificationsInternal(
+      characteristic_instance_id, std::move(client), std::move(callback));
+}
+
 }  // namespace
 
-constexpr int WebBluetoothPairingManager::kMaxPairAttempts;
+constexpr int WebBluetoothPairingManagerImpl::kMaxPairAttempts;
 
 // TODO(960258): Ensure this delegate outlives any in-progress pairing operation
 // for which it is used. Additionally review use of WebBluetoothDeviceId vs.
 // BluetoothDevice as well as how to deal with simultaneous pairing requests
 // for the same device.
-WebBluetoothPairingManager::WebBluetoothPairingManager(
+WebBluetoothPairingManagerImpl::WebBluetoothPairingManagerImpl(
     WebBluetoothPairingManagerDelegate* pairing_manager_delegate)
     : pairing_manager_delegate_(pairing_manager_delegate) {
   DCHECK(pairing_manager_delegate_);
 }
 
-WebBluetoothPairingManager::~WebBluetoothPairingManager() {
+WebBluetoothPairingManagerImpl::~WebBluetoothPairingManagerImpl() {
   auto pending_pair_device_ids = std::move(pending_pair_device_ids_);
   for (const auto& device_id : pending_pair_device_ids) {
     pairing_manager_delegate_->CancelPairing(device_id);
   }
 }
 
-void WebBluetoothPairingManager::PairForCharacteristicReadValue(
+void WebBluetoothPairingManagerImpl::PairForCharacteristicReadValue(
     const std::string& characteristic_instance_id,
     WebBluetoothService::RemoteCharacteristicReadValueCallback read_callback) {
   blink::WebBluetoothDeviceId device_id =
@@ -120,7 +137,7 @@ void WebBluetoothPairingManager::PairForCharacteristicReadValue(
                      std::move(read_callback)));
 }
 
-void WebBluetoothPairingManager::PairForCharacteristicWriteValue(
+void WebBluetoothPairingManagerImpl::PairForCharacteristicWriteValue(
     const std::string& characteristic_instance_id,
     const std::vector<uint8_t>& value,
     blink::mojom::WebBluetoothWriteType write_type,
@@ -142,7 +159,7 @@ void WebBluetoothPairingManager::PairForCharacteristicWriteValue(
                      value, write_type, std::move(callback)));
 }
 
-void WebBluetoothPairingManager::PairForDescriptorReadValue(
+void WebBluetoothPairingManagerImpl::PairForDescriptorReadValue(
     const std::string& descriptor_instance_id,
     WebBluetoothService::RemoteDescriptorReadValueCallback read_callback) {
   blink::WebBluetoothDeviceId device_id =
@@ -161,7 +178,7 @@ void WebBluetoothPairingManager::PairForDescriptorReadValue(
                      pairing_manager_delegate_, std::move(read_callback)));
 }
 
-void WebBluetoothPairingManager::PairForDescriptorWriteValue(
+void WebBluetoothPairingManagerImpl::PairForDescriptorWriteValue(
     const std::string& descriptor_instance_id,
     const std::vector<uint8_t>& value,
     WebBluetoothService::RemoteDescriptorWriteValueCallback callback) {
@@ -180,7 +197,29 @@ void WebBluetoothPairingManager::PairForDescriptorWriteValue(
                             std::move(value), std::move(callback)));
 }
 
-void WebBluetoothPairingManager::PairDevice(
+void WebBluetoothPairingManagerImpl::PairForCharacteristicStartNotifications(
+    const std::string& characteristic_instance_id,
+    mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
+        client,
+    blink::mojom::WebBluetoothService::
+        RemoteCharacteristicStartNotificationsCallback callback) {
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetCharacteristicDeviceID(
+          characteristic_instance_id);
+  if (!device_id.IsValid()) {
+    std::move(callback).Run(
+        WebBluetoothServiceImpl::TranslateConnectErrorAndRecord(
+            BluetoothDevice::ConnectErrorCode::ERROR_UNKNOWN));
+    return;
+  }
+
+  PairDevice(device_id, /*num_pair_attempts=*/0,
+             base::BindOnce(&OnPairCharacteristicStartNotifications,
+                            characteristic_instance_id, std::move(client),
+                            pairing_manager_delegate_, std::move(callback)));
+}
+
+void WebBluetoothPairingManagerImpl::PairDevice(
     blink::WebBluetoothDeviceId device_id,
     int num_pair_attempts,
     device::BluetoothDevice::ConnectCallback callback) {
@@ -194,12 +233,12 @@ void WebBluetoothPairingManager::PairDevice(
 
   pairing_manager_delegate_->PairDevice(
       device_id, /*pairing_delegate=*/this,
-      base::BindOnce(&WebBluetoothPairingManager::OnPairDevice,
+      base::BindOnce(&WebBluetoothPairingManagerImpl::OnPairDevice,
                      weak_ptr_factory_.GetWeakPtr(), device_id,
                      num_pair_attempts + 1, std::move(callback)));
 }
 
-void WebBluetoothPairingManager::OnPairDevice(
+void WebBluetoothPairingManagerImpl::OnPairDevice(
     blink::WebBluetoothDeviceId device_id,
     int num_pair_attempts,
     BluetoothDevice::ConnectCallback callback,
@@ -217,40 +256,61 @@ void WebBluetoothPairingManager::OnPairDevice(
   std::move(callback).Run(error_code);
 }
 
-void WebBluetoothPairingManager::RequestPinCode(BluetoothDevice* device) {
-  NOTIMPLEMENTED();
-  // Upcoming CL will replace the hardcoded cancel with UI PIN prompt.
-  // Cancelling the pairing operation fails with:
-  // Unexpected failure: SecurityError: GATT operation not authorized.
+void WebBluetoothPairingManagerImpl::RequestPinCode(BluetoothDevice* device) {
+  blink::WebBluetoothDeviceId device_id =
+      pairing_manager_delegate_->GetWebBluetoothDeviceId(device->GetAddress());
+  pairing_manager_delegate_->PromptForBluetoothCredentials(
+      device->GetNameForDisplay(),
+      base::BindOnce(&WebBluetoothPairingManagerImpl::OnPinCodeResult,
+                     weak_ptr_factory_.GetWeakPtr(), device_id));
+}
+
+void WebBluetoothPairingManagerImpl::OnPinCodeResult(
+    blink::WebBluetoothDeviceId device_id,
+    WebBluetoothPairingManagerDelegate::CredentialPromptResult status,
+    const std::string& result) {
+  switch (status) {
+    case WebBluetoothPairingManagerDelegate::CredentialPromptResult::kCancelled:
+      pairing_manager_delegate_->CancelPairing(device_id);
+      break;
+    case WebBluetoothPairingManagerDelegate::CredentialPromptResult::kSuccess:
+      pairing_manager_delegate_->SetPinCode(device_id, result);
+      break;
+  }
+}
+
+void WebBluetoothPairingManagerImpl::RequestPasskey(BluetoothDevice* device) {
   device->CancelPairing();
+  NOTIMPLEMENTED() << "Passkey pairing not supported.";
 }
 
-void WebBluetoothPairingManager::RequestPasskey(BluetoothDevice* device) {
+void WebBluetoothPairingManagerImpl::DisplayPinCode(
+    BluetoothDevice* device,
+    const std::string& pincode) {
   device->CancelPairing();
-  NOTREACHED() << "Passkey pairing not supported.";
-}
-
-void WebBluetoothPairingManager::DisplayPinCode(BluetoothDevice* device,
-                                                const std::string& pincode) {
   NOTIMPLEMENTED();
 }
 
-void WebBluetoothPairingManager::DisplayPasskey(BluetoothDevice* device,
-                                                uint32_t passkey) {
+void WebBluetoothPairingManagerImpl::DisplayPasskey(BluetoothDevice* device,
+                                                    uint32_t passkey) {
+  device->CancelPairing();
   NOTIMPLEMENTED();
 }
 
-void WebBluetoothPairingManager::KeysEntered(BluetoothDevice* device,
-                                             uint32_t entered) {
+void WebBluetoothPairingManagerImpl::KeysEntered(BluetoothDevice* device,
+                                                 uint32_t entered) {
+  device->CancelPairing();
   NOTIMPLEMENTED();
 }
 
-void WebBluetoothPairingManager::ConfirmPasskey(BluetoothDevice* device,
-                                                uint32_t passkey) {
+void WebBluetoothPairingManagerImpl::ConfirmPasskey(BluetoothDevice* device,
+                                                    uint32_t passkey) {
+  device->CancelPairing();
   NOTIMPLEMENTED();
 }
 
-void WebBluetoothPairingManager::AuthorizePairing(BluetoothDevice* device) {
+void WebBluetoothPairingManagerImpl::AuthorizePairing(BluetoothDevice* device) {
+  device->CancelPairing();
   NOTIMPLEMENTED();
 }
 

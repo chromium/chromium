@@ -31,7 +31,7 @@ class MockBluetoothDevice : public BluetoothDevice {
                       uint32_t bluetooth_class,
                       const char* name,
                       const std::string& address,
-                      bool paired,
+                      bool initially_paired,
                       bool connected);
   ~MockBluetoothDevice() override;
 
@@ -165,12 +165,15 @@ class MockBluetoothDevice : public BluetoothDevice {
 
   void SetConnected(bool connected) { connected_ = connected; }
 
+  void SetPaired(bool paired) { paired_ = paired; }
+
  private:
   uint32_t bluetooth_class_;
   absl::optional<std::string> name_;
   std::string address_;
   BluetoothDevice::UUIDSet uuids_;
   bool connected_;
+  bool paired_;
 
   // Used by tests to save callbacks that will be run in the future.
   base::queue<base::OnceClosure> pending_callbacks_;

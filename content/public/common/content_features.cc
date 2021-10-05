@@ -977,6 +977,11 @@ const base::Feature kWebAuthConditionalUI{"WebAuthenticationConditionalUI",
 const base::Feature kWebBluetoothNewPermissionsBackend{
     "WebBluetoothNewPermissionsBackend", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether Web Bluetooth will automatically start the bonding process,
+// to allow access to characteristics requiring a secure connection.
+const base::Feature kWebBluetoothBondOnDemand{"WebBluetoothBondOnDemand",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether Web Bundles (Bundled HTTP Exchanges) is enabled.
 // https://wicg.github.io/webpackage/draft-yasskin-wpack-bundled-exchanges.html
 // When this feature is enabled, Chromium can load unsigned Web Bundles local

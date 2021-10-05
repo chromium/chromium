@@ -2774,6 +2774,21 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
+      <!-- Bluetooth Device Credentials (i.e. PIN/Passkey) dialog -->
+      <if expr="is_win or is_linux">
+        <message name="IDS_BLUETOOTH_DEVICE_CREDENTIALS_TITLE" desc="Title of the Bluetooth device credentials prompt dialog.">
+          Device Credentials
+        </message>
+        <!--
+          NOTE: As per Bluetooth v4.2 spec. (section 3.2.3.2):
+          > When the Bluetooth PIN is referred to on the UI level, the term
+          > 'Bluetooth Passkey' should be used."
+        -->
+        <message name="IDS_BLUETOOTH_DEVICE_CREDENTIALS_LABEL" desc="Label of the text prompt for Bluetooth device credentials.">
+          Enter Bluetooth Passkey for device <ph name="DEVICE">$1</ph>
+        </message>
+      </if>
+
       <!-- Content blocking strings -->
       <message name="IDS_MANAGE" desc="Text for a button on permission bubbles, which opens a more detailed content settings page where users can manage that particular setting.">
         Manage

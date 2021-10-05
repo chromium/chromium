@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/buildflags.h"
+#include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -118,6 +119,17 @@ void ShowCreateChromeAppShortcutsDialog(
     Profile* profile,
     const std::string& web_app_id,
     base::OnceCallback<void(bool /* created */)> close_callback);
+
+#if PAIR_BLUETOOTH_ON_DEMAND()
+// Shows the dialog to request the Bluetooth credentials for the device
+// identified by |device_identifier|. |device_identifier| is the most
+// appropriate string to display to the user for device identification
+// (e.g. name, MAC address).
+void ShowBluetoothDeviceCredentialsDialog(
+    content::WebContents* web_contents,
+    const std::u16string& device_identifier,
+    content::BluetoothDelegate::CredentialsCallback close_callback);
+#endif  // PAIR_BLUETOOTH_ON_DEMAND()
 
 // Callback used to indicate whether a user has accepted the installation of a
 // web app. The boolean parameter is true when the user accepts the dialog. The
@@ -379,6 +391,7 @@ enum class DialogIdentifier {
   FILE_HANDLING_PERMISSION_REQUEST = 109,
   SIGNIN_ENTERPRISE_INTERCEPTION = 110,
   APP_IDENTITY_UPDATE_CONFIRMATION = 111,
+  BLUETOOTH_DEVICE_CREDENTIALS = 112,
   // Add values above this line with a corresponding label in
   // tools/metrics/histograms/enums.xml
   MAX_VALUE

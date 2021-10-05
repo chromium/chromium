@@ -1951,6 +1951,7 @@ if (!is_android && !is_fuchsia) {
       "../browser/ui/toolbar/toolbar_actions_model_browsertest.cc",
       "../browser/ui/update_chrome_dialog_browsertest.cc",
       "../browser/ui/views/apps/app_info_dialog/app_info_dialog_views_browsertest.cc",
+      "../browser/ui/views/bluetooth_device_credentials_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
       "../browser/ui/views/content_setting_bubble_contents_browsertest.cc",

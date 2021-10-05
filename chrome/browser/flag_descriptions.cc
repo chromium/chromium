@@ -155,6 +155,12 @@ const char kEnableBluetoothSerialPortProfileInSerialApiDescription[] =
     "When enabled, Bluetooth Serial Port Profile devices will be enumerated "
     "for use with the Serial API.";
 
+const char kWebBluetoothBondOnDemandName[] =
+    "Enable on-demand Bluetooth device bonding";
+const char kWebBluetoothBondOnDemandDescription[] =
+    "When enabled, Bluetooth will start the bonding process, if necessary, "
+    "to access protected characteristics.";
+
 const char kEnableDrDcName[] =
     "Enables Display Compositor to use a new gpu thread.";
 const char kEnableDrDcDescription[] =
