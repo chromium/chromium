@@ -22,6 +22,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_model_utils.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -29,9 +30,13 @@ namespace {
 // TODO(crbug.com/1211608): Add this to AppListConfig.
 const int kVerticalTilePadding = 8;
 
-// Vertical margin in DIPs at top and bottom of scroll view where auto-scroll
-// will be triggered during drags.
-constexpr int kAutoScrollMargin = 32;
+// Vertical margin in DIPs inside the top and bottom of scroll view where
+// auto-scroll will be triggered during drags.
+constexpr int kAutoScrollViewMargin = 32;
+
+// Vertical margin in DIPs outside the top and bottom of the widget where
+// auto-scroll will trigger. Points outside this margin will not auto-scroll.
+constexpr int kAutoScrollWidgetMargin = 8;
 
 // How often to auto-scroll when the mouse is held in the auto-scroll margin.
 constexpr base::TimeDelta kAutoScrollInterval = base::Hertz(60.0);
@@ -235,11 +240,23 @@ bool ScrollableAppsGridView::IsPointInAutoScrollMargin(
       point_in_scroll_view.x() > scroll_view_->width()) {
     return false;
   }
-  if (point_in_scroll_view.y() < kAutoScrollMargin) {
+
+  // Points too far above or below the widget do not autoscroll. This helps
+  // prevent scrolling when the user is dragging into the shelf.
+  gfx::Point point_in_screen = point_in_grid_view;
+  ConvertPointToScreen(this, &point_in_screen);
+  gfx::Rect widget_bounds = GetWidget()->GetWindowBoundsInScreen();
+  if (point_in_screen.y() < widget_bounds.y() - kAutoScrollWidgetMargin ||
+      point_in_screen.y() > widget_bounds.bottom() + kAutoScrollWidgetMargin) {
+    return false;
+  }
+
+  if (point_in_scroll_view.y() < kAutoScrollViewMargin) {
     *direction = ScrollDirection::kUp;
     return true;
   }
-  if (point_in_scroll_view.y() > scroll_view_->height() - kAutoScrollMargin) {
+  const int view_bottom = scroll_view_->height();
+  if (point_in_scroll_view.y() > view_bottom - kAutoScrollViewMargin) {
     *direction = ScrollDirection::kDown;
     return true;
   }

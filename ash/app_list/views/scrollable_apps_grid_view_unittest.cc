@@ -31,6 +31,7 @@
 #include "base/test/task_environment.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -368,6 +369,47 @@ TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenDraggedToTheRight) {
   StartDragOnItemViewAt(0);
   gfx::Point point = scroll_view_->GetBoundsInScreen().bottom_right();
   point.Offset(10, 10);
+  GetEventGenerator()->MoveMouseTo(point);
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // View did not scroll.
+  int scroll_offset = scroll_view_->GetVisibleRect().y();
+  EXPECT_EQ(scroll_offset, 0);
+  EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
+}
+
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenAboveWidget) {
+  PopulateApps(30);
+  ShowAppList();
+
+  // Scroll the view to the bottom.
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 std::numeric_limits<int>::max());
+  int initial_scroll_offset = scroll_view_->GetVisibleRect().y();
+
+  // Drag an item above the widget scroll margin.
+  StartDragOnItemViewAt(29);
+  gfx::Point point =
+      scroll_view_->GetWidget()->GetWindowBoundsInScreen().top_center();
+  point.Offset(0, -10);
+  GetEventGenerator()->MoveMouseTo(point);
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+
+  // View did not scroll.
+  int scroll_offset = scroll_view_->GetVisibleRect().y();
+  EXPECT_EQ(scroll_offset, initial_scroll_offset);
+  EXPECT_FALSE(apps_grid_view_->auto_scroll_timer_for_test()->IsRunning());
+}
+
+TEST_F(ScrollableAppsGridViewTest, DoesNotAutoScrollWhenBelowWidget) {
+  PopulateApps(30);
+  ShowAppList();
+
+  // Drag an item below the widget scroll margin.
+  StartDragOnItemViewAt(0);
+  gfx::Point point =
+      scroll_view_->GetWidget()->GetWindowBoundsInScreen().bottom_center();
+  point.Offset(0, 10);
   GetEventGenerator()->MoveMouseTo(point);
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
