@@ -431,7 +431,7 @@ void WindowPerformance::ReportEventTimings(
   if (events_data_.IsEmpty())
     return;
 
-  if (!DomWindow())
+  if (!DomWindow() || !DomWindow()->document())
     return;
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
