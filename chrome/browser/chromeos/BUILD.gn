@@ -3264,6 +3264,8 @@ source_set("chromeos") {
     "extensions/file_manager/file_manager_private_api_functions.h",
     "extensions/file_manager/file_stream_md5_digester.cc",
     "extensions/file_manager/file_stream_md5_digester.h",
+    "extensions/file_manager/file_system_provider_metrics_util.cc",
+    "extensions/file_manager/file_system_provider_metrics_util.h",
     "extensions/file_manager/fmpi_get_volume_root_function.cc",
     "extensions/file_manager/fmpi_get_volume_root_function.h",
     "extensions/file_manager/logged_extension_function.cc",

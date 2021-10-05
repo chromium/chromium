@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RootPath, sendTestMessage} from '../test_util.js';
+import {getHistogramCount, RootPath, sendTestMessage} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -254,4 +254,36 @@ testcase.providerEject = async () => {
   // JS errors due to volume related actions performed while volume is
   // ejected.
   return IGNORE_APP_ERRORS;
+};
+
+/**
+ * Tests mounting a file system provider emits only a single UMA when running
+ * from either the SWA or Chrome app.
+ */
+testcase.deduplicatedUmaMetricForFileSystemProviders = async () => {
+  const umaMetricName = 'FileBrowser.FileSystemProviderMounted';
+  const testProviderMetricEnumValue = 0;  // UNKNOWN = 0.
+
+  let mountedVolumeCount = 0;
+  chrome.test.assertEq(
+      0, mountedVolumeCount, 'Unexpected value in UMA metric for mounted FSPs');
+
+  // Setup Files app before loading the File System Provider. When testing the
+  // SWA records only 1 mount event, if the FSP is loaded prior to the window
+  // starting, it will always miss the load event leading to a false positive
+  // test result.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Setup the FSP and wait for the volume to appear in the directory tree.
+  await sendTestMessage({
+    name: 'launchProviderExtension',
+    manifest: 'manifest_source_device.json'
+  });
+  await confirmVolume(appId, true /* ejectExpected */);
+
+  // Assert the histogram for an unknown FSP is incremented by 1.
+  mountedVolumeCount =
+      await getHistogramCount(umaMetricName, testProviderMetricEnumValue);
+  chrome.test.assertEq(
+      1, mountedVolumeCount, 'Unexpected value in UMA metric for mounted FSPs');
 };

@@ -11,11 +11,14 @@
 #include <utility>
 
 #include "ash/components/drivefs/drivefs_host.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -28,11 +31,13 @@
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chrome/browser/chromeos/extensions/file_manager/file_system_provider_metrics_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -432,6 +437,28 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
   const std::map<base::FilePath, std::unique_ptr<FileWatcher>>* const
       file_watchers_;
 };
+
+// Records mounted File System Provider type if known otherwise UNKNOWN.
+void RecordFileSystemProviderMountMetrics(const Volume& volume) {
+  const ash::file_system_provider::ProviderId& provider_id =
+      volume.provider_id();
+  if (provider_id.GetType() != ash::file_system_provider::ProviderId::INVALID) {
+    using FileSystemProviderMountedTypeMap =
+        std::unordered_map<std::string, FileSystemProviderMountedType>;
+
+    const std::string fsp_key = provider_id.ToString();
+    FileSystemProviderMountedTypeMap fsp_sample_map =
+        GetUmaForFileSystemProvider();
+    FileSystemProviderMountedTypeMap::iterator sample =
+        fsp_sample_map.find(fsp_key);
+    if (sample != fsp_sample_map.end())
+      UMA_HISTOGRAM_ENUMERATION(kFileSystemProviderMountedMetricName,
+                                sample->second);
+    else
+      UMA_HISTOGRAM_ENUMERATION(kFileSystemProviderMountedMetricName,
+                                FileSystemProviderMountedType::UNKNOWN);
+  }
+}
 
 }  // namespace
 
@@ -878,6 +905,11 @@ void EventRouter::OnVolumeMounted(chromeos::MountError error_code,
   DispatchMountCompletedEvent(
       file_manager_private::MOUNT_COMPLETED_EVENT_TYPE_MOUNT, error_code,
       volume);
+
+  // If the Files SWA is enabled, record the UMA metrics for mounted FSPs.
+  if (ash::features::IsFileManagerSwaEnabled()) {
+    RecordFileSystemProviderMountMetrics(volume);
+  }
 
   // TODO(mtomasz): Move VolumeManager and part of the event router outside of
   // file_manager, so there is no dependency between File System API and the

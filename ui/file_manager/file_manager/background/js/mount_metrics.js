@@ -69,6 +69,7 @@ export class MountMetrics {
  */
 MountMetrics.FileSystemProvidersForUMA = {
   UNKNOWN: 0,
+  ZIP_UNPACKER: 1,
   FILE_SYSTEM_FOR_DROPBOX: 2,
   FILE_SYSTEM_FOR_ONEDRIVE: 3,
   SFTP_FILE_SYSTEM: 4,
@@ -82,6 +83,7 @@ MountMetrics.FileSystemProvidersForUMA = {
   WICKED_GOOD_UNARCHIVER: 12,
   NETWORK_FILE_SHARE_FOR_CHROMEOS: 13,
   LAN_FOLDER: 14,
+  ZIP_PACKER: 15,
   SECURE_SHELL_APP: 16,
   NATIVE_NETWORK_SMB: 17,
 };
