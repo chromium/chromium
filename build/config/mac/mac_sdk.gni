@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/mac/mac_sdk_overrides.gni")
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
 assert(current_os == "mac" || current_toolchain == default_toolchain)
@@ -80,7 +81,7 @@ if (!use_system_xcode) {
 
 # Goma RBE requires paths relative to source directory. When using system
 # Xcode, this is done by creating symbolic links in root_build_dir.
-if (use_system_xcode && use_goma) {
+if (use_system_xcode && (use_goma || use_remotexec)) {
   sdk_info_args += [
     "--get_sdk_info",
     "--create_symlink_at",
@@ -92,7 +93,7 @@ sdk_info_args += [ mac_sdk_name ]
 _mac_sdk_result = exec_script(script_name, sdk_info_args, "scope")
 xcode_version = _mac_sdk_result.xcode_version
 xcode_build = _mac_sdk_result.xcode_build
-if (mac_sdk_path == "" && use_system_xcode && use_goma) {
+if (mac_sdk_path == "" && use_system_xcode && (use_goma || use_remoteexec)) {
   mac_sdk_path = _mac_sdk_result.sdk_path
 }
 
