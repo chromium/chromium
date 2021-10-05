@@ -84,7 +84,7 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerSettingsPrivacy, web_contents(), 20000,
-                  expected_product_specific_data, _, _))
+                  expected_product_specific_data, _, true))
       .Times(2);
   base::Value args(base::Value::Type::LIST);
   args.Append(
@@ -151,7 +151,7 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   EXPECT_CALL(*mock_hats_service_,
               LaunchDelayedSurveyForWebContents(
                   kHatsSurveyTriggerPrivacySandbox, web_contents(), 20000,
-                  expected_product_specific_data, _, _));
+                  expected_product_specific_data, _, true));
   base::Value args(base::Value::Type::LIST);
   args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));

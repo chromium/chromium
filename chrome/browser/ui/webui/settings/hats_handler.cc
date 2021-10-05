@@ -45,7 +45,9 @@ void LaunchHatsSurveyWithProductSpecificData(Profile* profile,
   hats_service->LaunchDelayedSurveyForWebContents(
       trigger, web_contents, 20000,
       {{"3P cookies blocked", third_party_cookies_blocked},
-       {"Privacy Sandbox enabled", privacy_sandbox_enabled}});
+       {"Privacy Sandbox enabled", privacy_sandbox_enabled}},
+      /*product_specific_string_data=*/{},
+      /*require_same_origin=*/true);
 }
 
 }  // namespace
