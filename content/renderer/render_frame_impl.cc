@@ -1931,15 +1931,9 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   initialized_ = true;
   is_main_frame_ = !parent;
 
-  bool is_tracing_rail = false;
-  bool is_tracing_navigation = false;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("navigation", &is_tracing_navigation);
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("rail", &is_tracing_rail);
-  if (is_tracing_rail || is_tracing_navigation) {
-    int parent_id = RenderFrame::GetRoutingIdForWebFrame(parent);
-    TRACE_EVENT2("navigation,rail", "RenderFrameImpl::Initialize", "id",
-                 routing_id_, "parent", parent_id);
-  }
+  TRACE_EVENT2("navigation,rail", "RenderFrameImpl::Initialize", "routing_id",
+               routing_id_, "parent_id",
+               RenderFrame::GetRoutingIdForWebFrame(parent));
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   new PepperBrowserConnection(this);
@@ -1947,9 +1941,12 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
 
   RegisterMojoInterfaces();
 
-  // We delay calling this until we have the WebFrame so that any observer or
-  // embedder can call GetWebFrame on any RenderFrame.
-  GetContentClient()->renderer()->RenderFrameCreated(this);
+  {
+    TRACE_EVENT("navigation", "ContentRendererClient::RenderFrameCreated");
+    // We delay calling this until we have the WebFrame so that any observer or
+    // embedder can call GetWebFrame on any RenderFrame.
+    GetContentClient()->renderer()->RenderFrameCreated(this);
+  }
 
   // blink::WebAudioOutputIPCFactory::io_task_runner_ may be null in tests.
   auto& factory = blink::WebAudioOutputIPCFactory::GetInstance();

@@ -275,9 +275,6 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   std::unique_ptr<WebContentSettingsClient> CreateWorkerContentSettingsClient()
       override;
 
-  std::unique_ptr<media::SpeechRecognitionClient> CreateSpeechRecognitionClient(
-      media::SpeechRecognitionClient::OnReadyCallback callback) override;
-
   void SetMouseCapture(bool capture) override;
 
   bool UsePrintingLayout() const override;

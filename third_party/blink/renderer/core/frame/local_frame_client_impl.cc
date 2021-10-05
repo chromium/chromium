@@ -1080,14 +1080,6 @@ LocalFrameClientImpl::CreateWorkerContentSettingsClient() {
   return web_frame_->Client()->CreateWorkerContentSettingsClient();
 }
 
-std::unique_ptr<media::SpeechRecognitionClient>
-LocalFrameClientImpl::CreateSpeechRecognitionClient(
-    media::SpeechRecognitionClient::OnReadyCallback callback) {
-  DCHECK(web_frame_->Client());
-  return web_frame_->Client()->CreateSpeechRecognitionClient(
-      std::move(callback));
-}
-
 void LocalFrameClientImpl::SetMouseCapture(bool capture) {
   web_frame_->LocalRoot()->FrameWidgetImpl()->SetMouseCapture(capture);
 }

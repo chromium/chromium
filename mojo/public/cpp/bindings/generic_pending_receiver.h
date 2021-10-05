@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
 
@@ -67,6 +68,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) GenericPendingReceiver {
   mojo::PendingReceiver<Interface> As() {
     return mojo::PendingReceiver<Interface>(PassPipeIfNameIs(Interface::Name_));
   }
+
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
 
  private:
   mojo::ScopedMessagePipeHandle PassPipeIfNameIs(const char* interface_name);
