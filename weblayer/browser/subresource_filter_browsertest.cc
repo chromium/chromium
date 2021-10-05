@@ -175,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
   EXPECT_TRUE(page_activation);
   EXPECT_EQ(subresource_filter::mojom::ActivationLevel::kEnabled,
             page_activation.value());
-  EXPECT_FALSE(console_observer.messages().empty());
+
+  console_observer.Wait();
 
   // ... but it should not have blocked the subframe from being loaded.
   EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
