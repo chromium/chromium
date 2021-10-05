@@ -4560,6 +4560,19 @@ ci.fyi_ios_builder(
 )
 
 ci.fyi_ios_builder(
+    name = "ios-reclient",
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS",
+        short_name = "re",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    description_html = "experiment reclient for ios. remove after the migration. crbug.com/1254986",
+)
+
+ci.fyi_ios_builder(
     name = "ios-simulator-cronet",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
