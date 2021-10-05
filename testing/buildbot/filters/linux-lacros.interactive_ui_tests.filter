@@ -15,6 +15,7 @@
 -ExtensionApiTest.WindowOpenFocus
 -MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
 -MenuViewDragAndDropTestTestInMenuDrag.TestInMenuDrag
+-OmniboxViewViewsTest.DefaultTypedNavigationsToHttps_ZeroSuggest_NoUpgrade
 -OmniboxViewViewsTest.SelectionClipboard
 -SameSiteSubframe*
 -SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
