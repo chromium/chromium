@@ -476,8 +476,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="M97">
-  <owner>kmilka@chromium.org</owner>
+    enum="SendTabToSelfNotificationStatus" expires_after="M100">
+  <owner>ellyjones@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
     Status of STTS notifications. Recorded whenever a target device is chosen, a
