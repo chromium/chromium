@@ -260,8 +260,8 @@ public class WebFeedFollowIntroController {
         Tab currentTab = mTabSupplier.get();
         FeedServiceBridge.reportOtherUserAction(
                 FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
-
-        WebFeedBridge.followFromId(recommendedInfo.webFeedId,
+        GURL url = currentTab.getUrl();
+        WebFeedBridge.followFromUrl(currentTab, url,
                 results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {
                     @Override
                     public void onShowLoadingUIComplete() {}
@@ -273,8 +273,8 @@ public class WebFeedFollowIntroController {
                             mWebFeedFollowIntroView.showFollowingBubble();
                         }
                         byte[] followId = results.metadata != null ? results.metadata.id : null;
-                        mWebFeedSnackbarController.showPostFollowHelp(currentTab, results, followId,
-                                recommendedInfo.url, recommendedInfo.title);
+                        mWebFeedSnackbarController.showPostFollowHelp(
+                                currentTab, results, followId, url, recommendedInfo.title);
                     }
                 }));
     }
