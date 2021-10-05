@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/note_taking_helper.h"
 
-#include <algorithm>
+#include <ostream>
 #include <utility>
 
 #include "apps/launcher.h"
@@ -13,45 +13,56 @@
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
+#include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/note_taking_controller_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
 #include "components/arc/metrics/arc_metrics_service.h"
 #include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/mojom/intent_common.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/connection_holder.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/cpp/types_util.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
-#include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace app_runtime = extensions::api::app_runtime;
@@ -62,17 +73,17 @@ namespace {
 // Pointer to singleton instance.
 NoteTakingHelper* g_helper = nullptr;
 
-// Allowed note-taking app IDs.
+// Allowed note-taking app IDs. These will be treated as note-taking apps
+// regardless of the app metadata, and will be shown in this order at the top of
+// the list of note-taking apps.
 const char* const kDefaultAllowedAppIds[] = {
     web_app::kCursiveAppId,
-    // TODO(jdufault): Remove dev version? See crbug.com/640828.
     NoteTakingHelper::kDevKeepExtensionId,
     NoteTakingHelper::kProdKeepExtensionId,
     NoteTakingHelper::kNoteTakingWebAppIdTest,
-    NoteTakingHelper::kNoteTakingWebAppIdDev,
 };
 
-// Returns whether |app_id| looks like it's probably an Android package name
+// Returns whether `app_id` looks like it's probably an Android package name
 // rather than a Chrome extension ID or web app ID.
 bool LooksLikeAndroidPackageName(const std::string& app_id) {
   // Android package names are required to contain at least one period (see
@@ -81,11 +92,18 @@ bool LooksLikeAndroidPackageName(const std::string& app_id) {
   return base::Contains(app_id, '.');
 }
 
-// Returns a |WebApp| that matches |app_id| if one exists, otherwise nullptr.
-const web_app::WebApp* GetWebApp(const std::string& app_id, Profile* profile) {
-  web_app::WebAppRegistrar& web_app_registrar =
-      web_app::WebAppProvider::GetDeprecated(profile)->registrar();
-  return web_app_registrar.GetAppById(app_id);
+bool IsInstalledWebApp(const std::string& app_id, Profile* profile) {
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  bool result = false;
+
+  cache->ForOneApp(app_id, [&result](const apps::AppUpdate& update) {
+    if (apps_util::IsInstalled(update.Readiness()) &&
+        update.AppType() == apps::mojom::AppType::kWeb) {
+      result = true;
+    }
+  });
+  return result;
 }
 
 // Creates a new Mojo IntentInfo struct for launching an Android note-taking app
@@ -98,34 +116,65 @@ arc::mojom::IntentInfoPtr CreateIntentInfo(const GURL& clip_data_uri) {
   return intent;
 }
 
-// Returns the name of the extension or web app with the given |app_id|.
-// |app_id| must be a valid extension or web app ID.
+// Returns the name of the installed app with the given `app_id`.
 std::string GetAppName(Profile* profile, const std::string& app_id) {
   DCHECK(!app_id.empty());
-  // Web App.
-  const web_app::WebApp* web_app = GetWebApp(app_id, profile);
-  if (web_app && web_app->is_locally_installed())
-    return web_app->name();
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  std::string name;
 
-  // Chrome App.
+  cache->ForOneApp(app_id, [&name](const apps::AppUpdate& update) {
+    if (apps_util::IsInstalled(update.Readiness()))
+      name = update.Name();
+  });
+
+  if (!name.empty())
+    return name;
+
+  // TODO (crbug.com/1225848): Use the name from App Service (and remove the
+  // code below) once Chrome Apps are published in App Service.
   const extensions::Extension* chrome_app =
       extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
           app_id, extensions::ExtensionRegistry::ENABLED);
   DCHECK(chrome_app) << "app_id must be a valid app";
-  return chrome_app->name();
+  name = chrome_app->name();
+
+  DCHECK(!name.empty()) << "app_id must be a valid app";
+  return name;
+}
+
+bool IsNoteTakingIntentFilter(const apps::mojom::IntentFilterPtr& filter) {
+  for (const auto& condition : filter->conditions) {
+    if (condition->condition_type != apps::mojom::ConditionType::kAction)
+      continue;
+
+    for (const auto& condition_value : condition->condition_values) {
+      if (condition_value->value == apps_util::kIntentActionCreateNote)
+        return true;
+    }
+  }
+  return false;
+}
+
+bool HasNoteTakingIntentFilter(
+    const std::vector<apps::mojom::IntentFilterPtr>& filters) {
+  for (const apps::mojom::IntentFilterPtr& filter : filters) {
+    if (IsNoteTakingIntentFilter(filter))
+      return true;
+  }
+  return false;
 }
 
 // Whether the app's manifest indicates that the app supports note taking on the
 // lock screen.
 // TODO(crbug.com/1006642): Move this to a lock-screen-specific place.
 bool IsLockScreenEnabled(Profile* profile, const std::string& app_id) {
-  const web_app::WebApp* web_app = GetWebApp(app_id, profile);
-  if (web_app) {
+  if (IsInstalledWebApp(app_id, profile)) {
     // TODO(crbug.com/1006642): Add lock screen web app support.
     return false;
   }
 
-  // |app_id| may be for a Chrome app.
+  // `app_id` may be for a Chrome app.
   const extensions::Extension* chrome_app =
       extensions::ExtensionRegistry::Get(profile)->GetExtensionById(
           app_id, extensions::ExtensionRegistry::ENABLED);
@@ -144,10 +193,10 @@ bool IsLockScreenEnabled(Profile* profile, const std::string& app_id) {
 
 // Gets the set of app IDs that are allowed to be launched on the lock screen,
 // if the feature is restricted using the
-// |prefs::kNoteTakingAppsLockScreenAllowlist| preference. If the pref is not
+// `prefs::kNoteTakingAppsLockScreenAllowlist` preference. If the pref is not
 // set, this method will return null (in which case the set should not be
 // checked).
-// Note that |prefs::kNoteTakingrAppsAllowedOnLockScreen| is currently only
+// Note that `prefs::kNoteTakingrAppsAllowedOnLockScreen` is currently only
 // expected to be set by policy (if it's set at all).
 std::unique_ptr<std::set<std::string>> GetAllowedLockScreenApps(
     PrefService* prefs) {
@@ -179,34 +228,38 @@ std::unique_ptr<std::set<std::string>> GetAllowedLockScreenApps(
   return allowed_apps;
 }
 
-NoteTakingHelper::LaunchResult LaunchWebAppInternal(
-    const web_app::WebApp* web_app,
-    Profile* profile) {
-  std::string app_id = web_app->app_id();
-  if (!web_app->is_locally_installed()) {
-    LOG(WARNING) << "Note-taking web app " << app_id << " not installed.";
-    return NoteTakingHelper::LaunchResult::WEB_APP_MISSING;
-  }
+NoteTakingHelper::LaunchResult LaunchWebAppInternal(const std::string& app_id,
+                                                    Profile* profile) {
+  DCHECK(IsInstalledWebApp(app_id, profile));
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
 
-  web_app::DisplayMode display_mode =
-      web_app::WebAppProvider::GetDeprecated(profile)
-          ->registrar()
-          .GetAppEffectiveDisplayMode(app_id);
+  auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
+  bool has_note_taking_intent_filter = false;
+  GURL start_url;
+  cache->ForOneApp(app_id, [&container, &has_note_taking_intent_filter,
+                            &start_url](const apps::AppUpdate& update) {
+    if (update.WindowMode() == apps::mojom::WindowMode::kBrowser)
+      container = apps::mojom::LaunchContainer::kLaunchContainerTab;
+    if (HasNoteTakingIntentFilter(update.IntentFilters()))
+      has_note_taking_intent_filter = true;
+    // Web apps use start_url as PublisherId.
+    start_url = GURL(update.PublisherId());
+  });
 
   apps::AppLaunchParams launch_params(
-      app_id, web_app::ConvertDisplayModeToAppLaunchContainer(display_mode),
-      WindowOpenDisposition::UNKNOWN,
+      app_id, container, WindowOpenDisposition::UNKNOWN,
       apps::mojom::AppLaunchSource::kSourceSystemTray);
-  // TODO(crbug.com/1185678): Remove hard-coded override URL once new-note URL
-  // is parsed from the manifest (|kWebAppNoteTaking| is always enabled).
-  if (app_id == NoteTakingHelper::kNoteTakingWebAppIdTest ||
-      app_id == NoteTakingHelper::kNoteTakingWebAppIdDev ||
-      app_id == web_app::kCursiveAppId) {
-    launch_params.override_url = web_app->start_url().Resolve("/new");
-  }
+
   if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking) &&
-      web_app->note_taking_new_note_url().is_valid()) {
-    launch_params.override_url = web_app->note_taking_new_note_url();
+      has_note_taking_intent_filter) {
+    launch_params.intent = apps_util::CreateCreateNoteIntent();
+  } else if (app_id == NoteTakingHelper::kNoteTakingWebAppIdTest ||
+             app_id == web_app::kCursiveAppId) {
+    DCHECK(start_url.is_valid());
+    // TODO(crbug.com/1185678): Remove hard-coded override URL once new-note URL
+    // is parsed from the manifest (when `kWebAppNoteTaking` is always enabled).
+    launch_params.override_url = start_url.Resolve("/new");
   }
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->BrowserAppLauncher()
@@ -218,16 +271,14 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(
 
 const char NoteTakingHelper::kIntentAction[] =
     "org.chromium.arc.intent.action.CREATE_NOTE";
+// ID of a Keep Chrome App used for dev and testing.
 const char NoteTakingHelper::kDevKeepExtensionId[] =
     "ogfjaccbdfhecploibfbhighmebiffla";
 const char NoteTakingHelper::kProdKeepExtensionId[] =
     "hmjkmjkepdijhoojdojkdfohbdgmmhki";
-// TODO(crbug.com/1185678): Update to real web app ID. Currently set to ID of a
-// test web app (https://yielding-large-chef.glitch.me/).
+// ID of a test web app (https://yielding-large-chef.glitch.me/).
 const char NoteTakingHelper::kNoteTakingWebAppIdTest[] =
     "clikhfibhokkkabhcgdhcccofienkkhj";
-const char NoteTakingHelper::kNoteTakingWebAppIdDev[] =
-    "fhapgmpiiiigioilnjmkiohjhlegnceb";
 const char NoteTakingHelper::kPreferredLaunchResultHistogramName[] =
     "Apps.NoteTakingApp.PreferredLaunchResult";
 const char NoteTakingHelper::kDefaultLaunchResultHistogramName[] =
@@ -306,8 +357,7 @@ NoteTakingHelper::GetPreferredLockScreenAppInfo(Profile* profile) {
   if (preferred_app_id.empty())
     preferred_app_id = kProdKeepExtensionId;
 
-  const web_app::WebApp* web_app = GetWebApp(preferred_app_id, profile);
-  if (web_app) {
+  if (IsInstalledWebApp(preferred_app_id, profile)) {
     // TODO(crbug.com/1006642): Add lock screen web app support.
     return nullptr;
   }
@@ -439,6 +489,14 @@ void NoteTakingHelper::OnProfileAdded(Profile* profile) {
   DCHECK(!extension_registry_observations_.IsObservingSource(registry));
   extension_registry_observations_.AddObservation(registry);
 
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile)
+                       ->AppRegistryCache();
+    DCHECK(cache);
+    DCHECK(!app_registry_observations_.IsObservingSource(cache));
+    app_registry_observations_.AddObservation(cache);
+  }
+
   // TODO(derat): Remove this once OnArcPlayStoreEnabledChanged() is always
   // called after an ARC-enabled user logs in: http://b/36655474
   if (!play_store_enabled_ && arc::IsArcPlayStoreEnabledForProfile(profile)) {
@@ -482,13 +540,23 @@ NoteTakingHelper::NoteTakingHelper()
       allowed_app_ids_.end(), kDefaultAllowedAppIds,
       kDefaultAllowedAppIds + base::size(kDefaultAllowedAppIds));
 
-  // Track profiles so we can observe their extension registries.
+  // Track profiles so we can observe their app registries.
   g_browser_process->profile_manager()->AddObserver(this);
   play_store_enabled_ = false;
   for (Profile* profile :
        g_browser_process->profile_manager()->GetLoadedProfiles()) {
+    // TODO(crbug.com/1225848): Remove extension_registry_observations once
+    // Chrome Apps are published in App Service.
     extension_registry_observations_.AddObservation(
         extensions::ExtensionRegistry::Get(profile));
+
+    if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+            profile)) {
+      auto* cache = &apps::AppServiceProxyFactory::GetForProfile(profile)
+                         ->AppRegistryCache();
+      app_registry_observations_.AddObservation(cache);
+    }
+
     // Check if the profile has already enabled Google Play Store.
     // IsArcPlayStoreEnabledForProfile() can return true only for the primary
     // profile.
@@ -545,22 +613,36 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
       extensions::ExtensionRegistry::Get(profile);
   const extensions::ExtensionSet& enabled_extensions =
       extension_registry->enabled_extensions();
+  auto* cache =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
 
   std::vector<std::string> app_ids;
   for (const auto& id : allowed_app_ids_) {
+    // TODO(crbug.com/1225848): Replace with a check for Chrome Apps in the
+    // block below after Chrome Apps are published to App Service.
     if (enabled_extensions.Contains(id)) {
       app_ids.push_back(id);
       continue;
     }
-    const web_app::WebApp* web_app = GetWebApp(id, profile);
-    if (web_app && web_app->is_locally_installed() &&
-        base::FeatureList::IsEnabled(features::kNoteTakingForEnabledWebApps)) {
-      app_ids.push_back(id);
-    }
+
+    cache->ForOneApp(id, [&app_ids](const apps::AppUpdate& update) {
+      if (!apps_util::IsInstalled(update.Readiness()))
+        return;
+      if (update.AppType() != apps::mojom::AppType::kWeb)
+        return;
+      if (!base::FeatureList::IsEnabled(
+              features::kNoteTakingForEnabledWebApps)) {
+        return;
+      }
+      DCHECK(!base::Contains(app_ids, update.AppId()));
+      app_ids.push_back(update.AppId());
+    });
   }
 
   // Add any Chrome Apps that have a "note" action in their manifest
   // "action_handler" entry.
+  // TODO(crbug.com/1225848): Remove when App Service publishes Chrome Apps
+  // including converting action handlers to intents.
   for (const auto& extension : enabled_extensions) {
     if (base::Contains(app_ids, extension.get()->id()))
       continue;
@@ -571,18 +653,18 @@ std::vector<std::string> NoteTakingHelper::GetNoteTakingAppIds(
     }
   }
 
-  auto* web_app_provider = web_app::WebAppProvider::GetDeprecated(profile);
-  web_app::WebAppRegistrar& web_app_registrar = web_app_provider->registrar();
   if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking)) {
-    for (const web_app::WebApp& web_app : web_app_registrar.GetApps()) {
-      if (base::Contains(app_ids, web_app.app_id()))
-        continue;
-
-      if (web_app.is_locally_installed() &&
-          web_app.note_taking_new_note_url().is_valid()) {
-        app_ids.push_back(web_app.app_id());
+    cache->ForEachApp([&app_ids](const apps::AppUpdate& update) {
+      if (!apps_util::IsInstalled(update.Readiness()))
+        return;
+      if (base::Contains(app_ids, update.AppId()))
+        return;
+      if (HasNoteTakingIntentFilter(update.IntentFilters())) {
+        // Currently only web apps are expected to have this intent set.
+        DCHECK(update.AppType() == apps::mojom::AppType::kWeb);
+        app_ids.push_back(update.AppId());
       }
-    }
+    });
   }
 
   return app_ids;
@@ -709,9 +791,8 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
   }
 
   // Web app.
-  const web_app::WebApp* web_app = GetWebApp(app_id, profile);
-  if (web_app)
-    return LaunchWebAppInternal(web_app, profile);
+  if (IsInstalledWebApp(app_id, profile))
+    return LaunchWebAppInternal(app_id, profile);
 
   // Chrome app.
   const extensions::ExtensionRegistry* extension_registry =
@@ -719,7 +800,7 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
   const extensions::Extension* app = extension_registry->GetExtensionById(
       app_id, extensions::ExtensionRegistry::ENABLED);
   if (!app) {
-    LOG(WARNING) << "Failed to find Chrome note-taking app " << app_id;
+    LOG(WARNING) << "Failed to find note-taking app " << app_id;
     return LaunchResult::CHROME_APP_MISSING;
   }
   auto action_data = std::make_unique<app_runtime::ActionData>();
@@ -728,7 +809,6 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
   return LaunchResult::CHROME_SUCCESS;
 }
 
-// TODO (crbug.com/1185678): Listen for Web App installs/uninstalls too.
 void NoteTakingHelper::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
@@ -754,6 +834,26 @@ void NoteTakingHelper::OnExtensionUnloaded(
 
 void NoteTakingHelper::OnShutdown(extensions::ExtensionRegistry* registry) {
   extension_registry_observations_.RemoveObservation(registry);
+}
+
+void NoteTakingHelper::OnAppUpdate(const apps::AppUpdate& update) {
+  bool is_web_app = update.AppType() == apps::mojom::AppType::kWeb;
+  bool is_chrome_app =
+      update.AppType() == apps::mojom::AppType::kStandaloneBrowserExtension;
+  if (!is_web_app && !is_chrome_app)
+    return;
+  // App was added, removed, enabled, or disabled.
+  if (!update.ReadinessChanged())
+    return;
+
+  // Ok to send false positive notifications to observers.
+  for (Observer& observer : observers_)
+    observer.OnAvailableNoteTakingAppsUpdated();
+}
+
+void NoteTakingHelper::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_observations_.RemoveObservation(cache);
 }
 
 // TODO(crbug.com/1006642): Move this to a lock-screen-specific place.

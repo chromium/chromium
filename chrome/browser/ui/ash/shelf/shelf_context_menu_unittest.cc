@@ -685,7 +685,6 @@ TEST_F(ShelfContextMenuTest, CrostiniNormalApp) {
               IsItemEnabledInMenu(menu.get(), ash::CROSTINI_USE_HIGH_DENSITY));
   EXPECT_FALSE(IsItemEnabledInMenu(menu.get(), ash::UNINSTALL));
   EXPECT_FALSE(IsItemEnabledInMenu(menu.get(), ash::SHOW_APP_INFO));
-  EXPECT_FALSE(IsItemEnabledInMenu(menu.get(), ash::UNINSTALL));
 }
 
 // Confirms the menu items for unregistered crostini apps (i.e. apps that do not
@@ -733,9 +732,9 @@ TEST_F(ShelfContextMenuTest, WebApp) {
   for (int i = 0; i < menu->GetItemCount(); ++i)
     EXPECT_FALSE(menu->GetIconAt(i).IsEmpty());
 
-  EXPECT_FALSE(IsItemEnabledInMenu(menu.get(), ash::UNINSTALL));
-  EXPECT_FALSE(IsItemEnabledInMenu(menu.get(), ash::SHOW_APP_INFO));
-  EXPECT_FALSE(IsItemEnabledInMenu(menu.get(), ash::UNINSTALL));
+  EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::UNINSTALL));
+  EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::SHOW_APP_INFO));
+  EXPECT_TRUE(IsItemEnabledInMenu(menu.get(), ash::MENU_PIN));
 }
 
 }  // namespace

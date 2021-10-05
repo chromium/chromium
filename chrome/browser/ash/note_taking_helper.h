@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -19,12 +20,16 @@
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
 #include "components/arc/mojom/intent_helper.mojom-forward.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/common/extension.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
+
+namespace apps {
+class AppUpdate;
+}
 
 namespace base {
 class FilePath;
@@ -89,6 +94,7 @@ struct NoteTakingAppInfo {
 class NoteTakingHelper : public arc::ArcIntentHelperObserver,
                          public arc::ArcSessionManagerObserver,
                          public extensions::ExtensionRegistryObserver,
+                         public apps::AppRegistryCache::Observer,
                          public ProfileManagerObserver {
  public:
   // Interface for observing changes to the list of available apps.
@@ -263,6 +269,11 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
                            extensions::UnloadedExtensionReason reason) override;
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
+  // apps::AppRegistryCache::Observer
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
   // Determines the state of the app's support for lock screen note taking using
   // installation information from |profile|.
   NoteTakingLockScreenSupport GetLockScreenSupportForAppId(
@@ -300,10 +311,15 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   std::vector<NoteTakingAppInfo> android_apps_;
 
   // Tracks ExtensionRegistry observation for different profiles.
+  // TODO(crbug.com/1225848): Remove when App Service publishes Chrome Apps.
   base::ScopedMultiSourceObservation<extensions::ExtensionRegistry,
                                      extensions::ExtensionRegistryObserver>
       extension_registry_observations_{this};
-  // TODO (crbug.com/1185678): Also track web app installs/uninstalls.
+
+  // Obseves App Registry for all profiles with an App Registry.
+  base::ScopedMultiSourceObservation<apps::AppRegistryCache,
+                                     apps::AppRegistryCache::Observer>
+      app_registry_observations_{this};
 
   // The profile for which lock screen apps are enabled,
   Profile* profile_with_enabled_lock_screen_apps_ = nullptr;

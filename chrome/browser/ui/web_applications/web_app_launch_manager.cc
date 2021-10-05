@@ -257,6 +257,11 @@ std::tuple<GURL, bool /*is_file_handling*/> LaunchProcess::GetLaunchUrl(
     const apps::ShareTarget* share_target) {
   GURL launch_url;
   bool is_file_handling = false;
+  bool is_note_taking_intent =
+      params_.intent &&
+      params_.intent->action == apps_util::kIntentActionCreateNote;
+  const WebApp* web_app = provider_.registrar().GetAppById(params_.app_id);
+  DCHECK(web_app);
 
   if (!params_.override_url.is_empty()) {
     launch_url = params_.override_url;
@@ -277,6 +282,10 @@ std::tuple<GURL, bool /*is_file_handling*/> LaunchProcess::GetLaunchUrl(
   } else if (share_target) {
     // Handle share_target launch.
     launch_url = share_target->action;
+  } else if (is_note_taking_intent &&
+             web_app->note_taking_new_note_url().is_valid()) {
+    // Handle Create Note launch.
+    launch_url = web_app->note_taking_new_note_url();
   } else {
     // This is a default launch.
     launch_url = provider_.registrar().GetAppLaunchUrl(params_.app_id);

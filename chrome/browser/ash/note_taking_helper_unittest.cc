@@ -8,15 +8,17 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/note_taking_client.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -24,21 +26,29 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/disks/disk.h"
+#include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/mojom/intent_common.mojom.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/connection_holder_util.h"
@@ -46,13 +56,13 @@
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/api/app_runtime.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/value_builder.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
@@ -845,20 +855,23 @@ TEST_F(NoteTakingHelperTest, LaunchChromeApp) {
       static_cast<int>(LaunchResult::CHROME_SUCCESS), 1);
 }
 
-TEST_F(NoteTakingHelperTest, LaunchWebApp) {
+TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
   Init(ENABLE_PALETTE);
+  GURL app_url("https://yielding-large-chef.glitch.me/");
   // Install a default-allowed web app corresponding to ID of
   // |NoteTakingHelper::kNoteTakingWebAppIdTest|.
   auto app_info = std::make_unique<WebApplicationInfo>();
-  app_info->start_url = GURL("https://yielding-large-chef.glitch.me/");
+  app_info->start_url = app_url;
   app_info->title = u"Default Allowed Web App";
   std::string app_id =
       web_app::test::InstallWebApp(profile(), std::move(app_info));
-  EXPECT_EQ(app_id, NoteTakingHelper::kNoteTakingWebAppIdTest);
+  ASSERT_EQ(app_id, NoteTakingHelper::kNoteTakingWebAppIdTest);
 
-  // Check the web app is launched with the correct parameters.
+  // Fire a "Create Note" action and check the app is launched.
   HistogramTester histogram_tester;
-  helper()->LaunchAppForNewNote(profile(), base::FilePath());
+  SetNoteTakingClientProfile(profile());
+  ash::NoteTakingClient::GetInstance()->CreateNote();
+
   // Web app, so no launched_chrome_apps.
   EXPECT_EQ(0u, launched_chrome_apps_.size());
 
@@ -868,6 +881,41 @@ TEST_F(NoteTakingHelperTest, LaunchWebApp) {
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kDefaultLaunchResultHistogramName,
       static_cast<int>(LaunchResult::WEB_APP_SUCCESS), 1);
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  GURL hardcoded_new_note_url("https://yielding-large-chef.glitch.me/new");
+  ASSERT_EQ(hardcoded_new_note_url, url);
+}
+
+TEST_F(NoteTakingHelperTest, LaunchWebApp) {
+  Init(ENABLE_PALETTE);
+  base::test::ScopedFeatureList features(blink::features::kWebAppNoteTaking);
+
+  // Install a web app with a note_taking_new_note_url.
+  GURL new_note_url("http://some.url/new-note");
+  auto app_info = std::make_unique<WebApplicationInfo>();
+  app_info->start_url = GURL("http://some.url");
+  app_info->scope = GURL("http://some.url");
+  app_info->title = u"Web App 2";
+  app_info->note_taking_new_note_url = new_note_url;
+  std::string app_id =
+      web_app::test::InstallWebApp(profile(), std::move(app_info));
+  ASSERT_EQ(helper()->GetAvailableApps(profile()).size(), 1);
+
+  // Fire a "Create Note" action and check the app is launched.
+  HistogramTester histogram_tester;
+  SetNoteTakingClientProfile(profile());
+  ash::NoteTakingClient::GetInstance()->CreateNote();
+
+  histogram_tester.ExpectUniqueSample(
+      NoteTakingHelper::kPreferredLaunchResultHistogramName,
+      static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
+  histogram_tester.ExpectUniqueSample(
+      NoteTakingHelper::kDefaultLaunchResultHistogramName,
+      static_cast<int>(LaunchResult::WEB_APP_SUCCESS), 1);
+  ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
+  GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
+  ASSERT_EQ(new_note_url, url);
 }
 
 TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
