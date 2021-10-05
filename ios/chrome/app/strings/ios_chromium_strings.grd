@@ -187,6 +187,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE" desc="Dialog title to invite the user to sign-in on the web, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL.">
         Sign In to Chromium
       </message>
+      <message name="IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_RESTRICTIONS_LABEL" desc="Dialog label to invite the user to sign-in on the web when account restrictions are enabled, related to IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE.">
+        Sign in to this site and Chromium. You can turn on sync later.
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_TITLE_CTA_EXPERIMENT_SWITCH" desc="Title of the default browser promotion modal. [iOS only]">
         Switch to Chromium
       </message>

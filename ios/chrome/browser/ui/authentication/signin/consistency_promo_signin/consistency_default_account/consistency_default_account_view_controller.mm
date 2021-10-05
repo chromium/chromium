@@ -147,8 +147,14 @@ constexpr CGFloat kContentSpacing = 16.;
   ]];
   // Add the label.
   UILabel* label = [[UILabel alloc] init];
-  label.text =
-      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+  if (self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts) {
+    label.text = l10n_util::GetNSString(
+        IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_RESTRICTIONS_LABEL);
+  } else {
+    label.text =
+        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+  }
+
   label.textColor = [UIColor colorNamed:kGrey700Color];
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   label.numberOfLines = 0;
