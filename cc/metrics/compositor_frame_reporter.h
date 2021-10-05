@@ -348,7 +348,6 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta time_delta) const;
 
   void ReportEventLatencyHistograms() const;
-
   void ReportCompositorLatencyTraceEvents() const;
   void ReportEventLatencyTraceEvents() const;
 

@@ -15,6 +15,8 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/frame_sequence_tracker.h"
@@ -1122,10 +1124,67 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents() const {
     DCHECK_GE(stage.end_time, stage.start_time);
     if (stage.start_time == stage.end_time)
       continue;
+
     const char* stage_name = GetStageName(stage_type_index);
-    TRACE_EVENT_BEGIN(
-        "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
-        perfetto::StaticString{stage_name}, trace_track, stage.start_time);
+
+    if (stage.stage_type == StageType::kSendBeginMainFrameToCommit) {
+      TRACE_EVENT_BEGIN(
+          "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
+          perfetto::StaticString{stage_name}, trace_track, stage.start_time,
+          [&](perfetto::EventContext context) {
+            DCHECK(processed_blink_breakdown_);
+            auto* reporter =
+                context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                    ->set_send_begin_mainframe_to_commit_breakdown();
+            for (auto it = processed_blink_breakdown_->CreateIterator();
+                 it.IsValid(); it.Advance()) {
+              int64_t latency = it.GetLatency().InMicroseconds();
+              int curr_breakdown = static_cast<int>(it.GetBreakdown());
+              switch (curr_breakdown) {
+                case static_cast<int>(BlinkBreakdown::kHandleInputEvents):
+                  reporter->set_handle_input_events_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kAnimate):
+                  reporter->set_animate_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kStyleUpdate):
+                  reporter->set_style_update_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kLayoutUpdate):
+                  reporter->set_layout_update_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kPrepaint):
+                  reporter->set_prepaint_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kCompositingInputs):
+                  reporter->set_compositing_inputs_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kCompositingAssignments):
+                  reporter->set_compositing_assignments_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kPaint):
+                  reporter->set_paint_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kCompositeCommit):
+                  reporter->set_composite_commit_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kUpdateLayers):
+                  reporter->set_update_layers_us(latency);
+                  break;
+                case static_cast<int>(BlinkBreakdown::kBeginMainSentToStarted):
+                  reporter->set_begin_main_sent_to_started_us(latency);
+                  break;
+                default:
+                  break;
+              }
+            }
+          });
+    } else {
+      TRACE_EVENT_BEGIN(
+          "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"),
+          perfetto::StaticString{stage_name}, trace_track, stage.start_time);
+    }
+
     if (stage.stage_type ==
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
       DCHECK(processed_viz_breakdown_);

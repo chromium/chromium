@@ -351,6 +351,43 @@ message ChromeSamplingProfilerSampleCollected {
   optional WriteStatus write_status = 2;
 }
 
+// Reports the latency caused by each breakdown in the
+// SendBeginMainFrameToCommit stage of the PipelineReporter.
+message SendBeginMainFrameToCommitBreakdown {
+  // Handle input events breakdown
+  optional uint64 handle_input_events_us = 1;
+
+  // Animate breakdown
+  optional uint64 animate_us = 2;
+
+  // Style update breakdown
+  optional uint64 style_update_us = 3;
+
+  // Layout update breakdown
+  optional uint64 layout_update_us = 4;
+
+  // Prepaint breakdown
+  optional uint64 prepaint_us = 5;
+
+  // Compositing inputs breakdown
+  optional uint64 compositing_inputs_us = 6;
+
+  // Compositing assignments breakdown
+  optional uint64 compositing_assignments_us = 7;
+
+  // Paint breakdown
+  optional uint64 paint_us = 8;
+
+  // Composite commit breakdown
+  optional uint64 composite_commit_us = 9;
+
+  // Update layers breakdown
+  optional uint64 update_layers_us = 10;
+
+  // Beginmainsenttostarted breakdown
+  optional uint64 begin_main_sent_to_started_us = 11;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
   // Next ID: 1026
@@ -409,5 +446,7 @@ message ChromeTrackEvent {
 
     optional ChromeSamplingProfilerSampleCollected
         chrome_sampling_profiler_sample_completed = 1025;
+    optional SendBeginMainFrameToCommitBreakdown
+        send_begin_mainframe_to_commit_breakdown = 1026;
   }
 }
