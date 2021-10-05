@@ -753,7 +753,7 @@ prefs when the profile is loaded.  -->
 
 <histogram name="Signin.IOSGaiaCookieStateOnSignedInNavigation"
     enum="GaiaCookieStateOnSignedInNavigation" expires_after="2022-02-06">
-  <owner>fernandex@chromium.org</owner>
+  <owner>jebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -767,9 +767,8 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSLoginMethodAndSyncState"
-    enum="SigninIOSLoginMethodAndSyncState" expires_after="2021-09-12">
+    enum="SigninIOSLoginMethodAndSyncState" expires_after="2022-04-01">
   <owner>jebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -786,8 +785,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSNumberOfDeviceAccounts" units="accounts"
-    expires_after="2021-11-07">
-  <owner>fernandex@chromium.org</owner>
+    expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -840,9 +838,10 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Count" units="identities"
-    expires_after="2021-10-25">
+    expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Counts the number of identities loaded by SSO library using the keychain
     API. The metric is recorded every time SSO updates the identity list (either
@@ -852,9 +851,10 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.Duration" units="ms"
-    expires_after="2021-10-25">
+    expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the time it takes to load identities by SSO library using the
     keychain API. The metric is recorded every time SSO updates the identity
@@ -864,9 +864,10 @@ the browser and content area. -->
 </histogram>
 
 <histogram name="Signin.LoadedIdentities.DurationPerIdentity" units="ms"
-    expires_after="2021-10-25">
+    expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the time it takes to load one identity in average by SSO library
     using the keychain API. This value is the total time taken by the keychain
@@ -1230,10 +1231,10 @@ OAuth Multilogin call. -->
 </histogram>
 
 <histogram name="Signin.SignedInAccountsViewImpression" enum="BooleanShown"
-    expires_after="2021-10-25">
-  <owner>fernandex@chromium.org</owner>
+    expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
   <summary>
     Track the number of times the view that displays the accounts that are
     signed is shown. This view only exists on iOS and is shown every time the
@@ -1311,7 +1312,7 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram name="Signin.SSOAuth.GetIdentities.ErrorCode"
-    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2021-10-25">
+    enum="SigninSSOAuthGetIdentitiesErrorCode" expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -1321,11 +1322,10 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram base="true" name="Signin.SSOIdentityListRequest.CacheState"
-    enum="SigninSSOIdentityListRequestCacheState" expires_after="2021-10-25">
+    enum="SigninSSOIdentityListRequestCacheState" expires_after="2022-04-01">
 <!-- Name completed by histogram_suffixes name="SigninSSOIdentityListRequestCacheRequestState" -->
 
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the SSO identity cache state before calling -[GCRSSOService
@@ -1335,11 +1335,10 @@ kept as long as profile signout is possible -->
 </histogram>
 
 <histogram base="true" name="Signin.SSOIdentityListRequest.Duration" units="ms"
-    expires_after="2021-10-25">
+    expires_after="2022-04-01">
 <!-- Name completed by histogram_suffixes name="SigninSSOIdentityListRequestDurationCacheState" -->
 
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the time it takes to call -[GCRSSOService identitiesWithError:] or
@@ -1349,9 +1348,8 @@ kept as long as profile signout is possible -->
 
 <histogram
     name="Signin.SSOIdentityListRequest.FetchIdentitiesWithCallback.Duration"
-    units="ms" expires_after="2021-11-14">
+    units="ms" expires_after="2022-04-01">
   <owner>jlebel@chromium.org</owner>
-  <owner>fernandex@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Tracks the time between -[GCRSSOService fetchIdentitiesWithCallback:] and
