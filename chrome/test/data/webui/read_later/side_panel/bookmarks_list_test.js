@@ -27,19 +27,23 @@ suite('SidePanelBookmarksListTest', () => {
   const folders = [
     {
       id: '0',
+      parentId: 'root',
       title: 'Bookmarks bar',
       children: [
         {
           id: '3',
+          parentId: '0',
           title: 'Child bookmark',
           url: 'http://child/bookmark/',
         },
         {
           id: '4',
+          parentId: '0',
           title: 'Child folder',
           children: [
             {
               id: '5',
+              parentId: '4',
               title: 'Nested bookmark',
               url: 'http://nested/bookmark/',
             },
@@ -49,6 +53,7 @@ suite('SidePanelBookmarksListTest', () => {
     },
     {
       id: '1',
+      parentId: 'root',
       title: 'Other bookmarks',
       children: [],
     },
@@ -293,5 +298,27 @@ suite('SidePanelBookmarksListTest', () => {
     // One ArrowUp to loop back to the second folder.
     dispatchArrowKey('ArrowUp');
     assertActiveElement(1);
+  });
+
+  test('CutsCopyPastesBookmark', async () => {
+    const folderElement = getFolderElements(bookmarksList)[0];
+    const bookmarkElement = getBookmarkElements(folderElement)[0];
+
+    bookmarkElement.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'x', ctrlKey: true, bubbles: true, composed: true}));
+    const cutId = await bookmarksApi.whenCalled('cutBookmark');
+    assertEquals('3', cutId);
+
+    bookmarkElement.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'c', ctrlKey: true, bubbles: true, composed: true}));
+    const copiedId = await bookmarksApi.whenCalled('copyBookmark');
+    assertEquals('3', copiedId);
+
+    bookmarkElement.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'v', ctrlKey: true, bubbles: true, composed: true}));
+    let [pastedId, pastedDestinationId] =
+        await bookmarksApi.whenCalled('pasteToBookmark');
+    assertEquals('0', pastedId);
+    assertEquals('3', pastedDestinationId);
   });
 });

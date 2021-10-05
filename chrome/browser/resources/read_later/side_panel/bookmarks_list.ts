@@ -5,7 +5,7 @@
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT} from './bookmark_folder.js';
+import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement, isBookmarkFolderElement} from './bookmark_folder.js';
 import {BookmarksApiProxy} from './bookmarks_api_proxy.js';
 import {BookmarksDragManager} from './bookmarks_drag_manager.js';
 
@@ -230,10 +230,37 @@ export class BookmarksListElement extends BookmarksListElementBase {
   }
 
   private onKeydown_(event: KeyboardEvent) {
-    if (!['ArrowDown', 'ArrowUp'].includes(event.key)) {
+    if (['ArrowDown', 'ArrowUp'].includes(event.key)) {
+      this.handleArrowKeyNavigation_(event);
       return;
     }
 
+    if (!event.ctrlKey && !event.metaKey) {
+      return;
+    }
+
+    event.preventDefault();
+    const eventTarget = event.composedPath()[0] as HTMLElement;
+    const bookmarkData = getBookmarkFromElement(eventTarget);
+    if (!bookmarkData) {
+      return;
+    }
+
+    if (event.key === 'x') {
+      this.bookmarksApi_.cutBookmark(bookmarkData.id);
+    } else if (event.key === 'c') {
+      this.bookmarksApi_.copyBookmark(bookmarkData.id);
+    } else if (event.key === 'v') {
+      if (isBookmarkFolderElement(eventTarget)) {
+        this.bookmarksApi_.pasteToBookmark(bookmarkData.id);
+      } else {
+        this.bookmarksApi_.pasteToBookmark(
+            bookmarkData.parentId!, bookmarkData.id);
+      }
+    }
+  }
+
+  private handleArrowKeyNavigation_(event: KeyboardEvent) {
     if (!(this.shadowRoot!.activeElement instanceof BookmarkFolderElement)) {
       // If the key event did not happen within a BookmarkFolderElement, do
       // not do anything.

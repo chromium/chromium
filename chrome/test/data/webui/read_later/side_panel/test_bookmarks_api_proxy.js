@@ -33,6 +33,9 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
     super([
       'getFolders',
       'openBookmark',
+      'cutBookmark',
+      'copyBookmark',
+      'pasteToBookmark',
     ]);
 
     this.callbackRouter = {
@@ -64,5 +67,23 @@ export class TestBookmarksApiProxy extends TestBrowserProxy {
   /** @param {!Array<!chrome.bookmarks.BookmarkTreeNode>} folders */
   setFolders(folders) {
     this.folders_ = folders;
+  }
+
+  /** @param {string} id */
+  copyBookmark(id) {
+    this.methodCalled('copyBookmark', id);
+  }
+
+  /** @param {string} id */
+  cutBookmark(id) {
+    this.methodCalled('cutBookmark', id);
+  }
+
+  /**
+   * @param {string} id
+   * @param {string=} destinationId
+   */
+  pasteToBookmark(id, destinationId) {
+    this.methodCalled('pasteToBookmark', id, destinationId);
   }
 }
