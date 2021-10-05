@@ -6,7 +6,7 @@
         message="Expected a color resource id (`R.color.`) but received an RGB integer">
         <location
             file="../../components/page_info/android/java/src/org/chromium/components/page_info/PageInfoPermissionsController.java"
-            line="66"/>
+            line="68"/>
     </issue>
 
     <issue
@@ -91,10 +91,34 @@
 
     <issue
         id="WrongConstant"
+        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
+            line="530"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_AUTO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_YES, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO, ViewCompat.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
+            line="531"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
         message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
             line="166"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/ClipDrawableProgressBar.java"
+            line="137"/>
     </issue>
 
     <issue
@@ -131,6 +155,14 @@
 
     <issue
         id="WrongConstant"
+        message="Must be one of: ViewCompat.ACCESSIBILITY_LIVE_REGION_NONE, ViewCompat.ACCESSIBILITY_LIVE_REGION_POLITE, ViewCompat.ACCESSIBILITY_LIVE_REGION_ASSERTIVE">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/infobar/DownloadProgressInfoBar.java"
+            line="132"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
         message="Must be one of: WebView.RENDERER_PRIORITY_WAIVED, WebView.RENDERER_PRIORITY_BOUND, WebView.RENDERER_PRIORITY_IMPORTANT">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/GlueApiHelperForO.java"
@@ -163,6 +195,14 @@
 
     <issue
         id="WrongConstant"
+        message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL">
+        <location
+            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialProgressBar.java"
+            line="235"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
         message="Must be one of: RetrieveMetricsTaskStatus.EXECUTION_EXCEPTION, RetrieveMetricsTaskStatus.INTERRUPTED_EXCEPTION">
         <location
             file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/services/MetricsBridgeService.java"
@@ -174,31 +214,7 @@
         message="Must be one of: PageTransition.FIRST, PageTransition.LINK, PageTransition.TYPED, PageTransition.AUTO_BOOKMARK, PageTransition.AUTO_SUBFRAME, PageTransition.MANUAL_SUBFRAME, PageTransition.GENERATED, PageTransition.AUTO_TOPLEVEL, PageTransition.FORM_SUBMIT, PageTransition.RELOAD, PageTransition.KEYWORD, PageTransition.KEYWORD_GENERATED, PageTransition.LAST_CORE, PageTransition.CORE_MASK, PageTransition.BLOCKED, PageTransition.FORWARD_BACK, PageTransition.FROM_ADDRESS_BAR, PageTransition.HOME_PAGE, PageTransition.FROM_API, PageTransition.CHAIN_START, PageTransition.CHAIN_END, PageTransition.CLIENT_REDIRECT, PageTransition.SERVER_REDIRECT, PageTransition.IS_REDIRECT_MASK, PageTransition.QUALIFIER_MASK">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeExperimentsUtil.java"
-            line="336"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ContentSettingsType.DEFAULT, ContentSettingsType.COOKIES, ContentSettingsType.IMAGES, ContentSettingsType.JAVASCRIPT, ContentSettingsType.POPUPS, ContentSettingsType.GEOLOCATION, ContentSettingsType.NOTIFICATIONS, ContentSettingsType.AUTO_SELECT_CERTIFICATE, ContentSettingsType.MIXEDSCRIPT, ContentSettingsType.MEDIASTREAM_MIC, ContentSettingsType.MEDIASTREAM_CAMERA, ContentSettingsType.PROTOCOL_HANDLERS, ContentSettingsType.PPAPI_BROKER, ContentSettingsType.AUTOMATIC_DOWNLOADS, ContentSettingsType.MIDI_SYSEX, ContentSettingsType.SSL_CERT_DECISIONS, ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, ContentSettingsType.APP_BANNER, ContentSettingsType.SITE_ENGAGEMENT, ContentSettingsType.DURABLE_STORAGE, ContentSettingsType.USB_CHOOSER_DATA, ContentSettingsType.BLUETOOTH_GUARD, ContentSettingsType.BACKGROUND_SYNC, ContentSettingsType.AUTOPLAY, ContentSettingsType.IMPORTANT_SITE_INFO, ContentSettingsType.PERMISSION_AUTOBLOCKER_DATA, ContentSettingsType.ADS, ContentSettingsType.ADS_DATA, ContentSettingsType.MIDI, ContentSettingsType.PASSWORD_PROTECTION, ContentSettingsType.MEDIA_ENGAGEMENT, ContentSettingsType.SOUND, ContentSettingsType.CLIENT_HINTS, ContentSettingsType.SENSORS, ContentSettingsType.ACCESSIBILITY_EVENTS, ContentSettingsType.PAYMENT_HANDLER, ContentSettingsType.USB_GUARD, ContentSettingsType.BACKGROUND_FETCH, ContentSettingsType.INTENT_PICKER_DISPLAY, ContentSettingsType.IDLE_DETECTION, ContentSettingsType.SERIAL_GUARD, ContentSettingsType.SERIAL_CHOOSER_DATA, ContentSettingsType.PERIODIC_BACKGROUND_SYNC, ContentSettingsType.BLUETOOTH_SCANNING, ContentSettingsType.HID_GUARD, ContentSettingsType.HID_CHOOSER_DATA, ContentSettingsType.WAKE_LOCK_SCREEN, ContentSettingsType.WAKE_LOCK_SYSTEM, ContentSettingsType.LEGACY_COOKIE_ACCESS, ContentSettingsType.FILE_SYSTEM_WRITE_GUARD, ContentSettingsType.INSTALLED_WEB_APP_METADATA, ContentSettingsType.NFC, ContentSettingsType.BLUETOOTH_CHOOSER_DATA, ContentSettingsType.CLIPBOARD_READ_WRITE, ContentSettingsType.CLIPBOARD_SANITIZED_WRITE, ContentSettingsType.SAFE_BROWSING_URL_CHECK_DATA, ContentSettingsType.VR, ContentSettingsType.AR, ContentSettingsType.FILE_SYSTEM_READ_GUARD, ContentSettingsType.STORAGE_ACCESS, ContentSettingsType.CAMERA_PAN_TILT_ZOOM, ContentSettingsType.WINDOW_PLACEMENT, ContentSettingsType.INSECURE_PRIVATE_NETWORK, ContentSettingsType.FONT_ACCESS, ContentSettingsType.PERMISSION_AUTOREVOCATION_DATA, ContentSettingsType.FILE_SYSTEM_LAST_PICKED_DIRECTORY, ContentSettingsType.DISPLAY_CAPTURE, ContentSettingsType.FILE_HANDLING, ContentSettingsType.FILE_SYSTEM_ACCESS_CHOOSER_DATA, ContentSettingsType.FEDERATED_IDENTITY_SHARING, ContentSettingsType.FEDERATED_IDENTITY_REQUEST, ContentSettingsType.JAVASCRIPT_JIT, ContentSettingsType.HTTP_ALLOWED, ContentSettingsType.FORMFILL_METADATA, ContentSettingsType.FEDERATED_IDENTITY_ACTIVE_SESSION, ContentSettingsType.AUTO_DARK_WEB_CONTENT, ContentSettingsType.NUM_TYPES">
-        <location
-            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="411"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ContentSettingsType.DEFAULT, ContentSettingsType.COOKIES, ContentSettingsType.IMAGES, ContentSettingsType.JAVASCRIPT, ContentSettingsType.POPUPS, ContentSettingsType.GEOLOCATION, ContentSettingsType.NOTIFICATIONS, ContentSettingsType.AUTO_SELECT_CERTIFICATE, ContentSettingsType.MIXEDSCRIPT, ContentSettingsType.MEDIASTREAM_MIC, ContentSettingsType.MEDIASTREAM_CAMERA, ContentSettingsType.PROTOCOL_HANDLERS, ContentSettingsType.PPAPI_BROKER, ContentSettingsType.AUTOMATIC_DOWNLOADS, ContentSettingsType.MIDI_SYSEX, ContentSettingsType.SSL_CERT_DECISIONS, ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, ContentSettingsType.APP_BANNER, ContentSettingsType.SITE_ENGAGEMENT, ContentSettingsType.DURABLE_STORAGE, ContentSettingsType.USB_CHOOSER_DATA, ContentSettingsType.BLUETOOTH_GUARD, ContentSettingsType.BACKGROUND_SYNC, ContentSettingsType.AUTOPLAY, ContentSettingsType.IMPORTANT_SITE_INFO, ContentSettingsType.PERMISSION_AUTOBLOCKER_DATA, ContentSettingsType.ADS, ContentSettingsType.ADS_DATA, ContentSettingsType.MIDI, ContentSettingsType.PASSWORD_PROTECTION, ContentSettingsType.MEDIA_ENGAGEMENT, ContentSettingsType.SOUND, ContentSettingsType.CLIENT_HINTS, ContentSettingsType.SENSORS, ContentSettingsType.ACCESSIBILITY_EVENTS, ContentSettingsType.PAYMENT_HANDLER, ContentSettingsType.USB_GUARD, ContentSettingsType.BACKGROUND_FETCH, ContentSettingsType.INTENT_PICKER_DISPLAY, ContentSettingsType.IDLE_DETECTION, ContentSettingsType.SERIAL_GUARD, ContentSettingsType.SERIAL_CHOOSER_DATA, ContentSettingsType.PERIODIC_BACKGROUND_SYNC, ContentSettingsType.BLUETOOTH_SCANNING, ContentSettingsType.HID_GUARD, ContentSettingsType.HID_CHOOSER_DATA, ContentSettingsType.WAKE_LOCK_SCREEN, ContentSettingsType.WAKE_LOCK_SYSTEM, ContentSettingsType.LEGACY_COOKIE_ACCESS, ContentSettingsType.FILE_SYSTEM_WRITE_GUARD, ContentSettingsType.INSTALLED_WEB_APP_METADATA, ContentSettingsType.NFC, ContentSettingsType.BLUETOOTH_CHOOSER_DATA, ContentSettingsType.CLIPBOARD_READ_WRITE, ContentSettingsType.CLIPBOARD_SANITIZED_WRITE, ContentSettingsType.SAFE_BROWSING_URL_CHECK_DATA, ContentSettingsType.VR, ContentSettingsType.AR, ContentSettingsType.FILE_SYSTEM_READ_GUARD, ContentSettingsType.STORAGE_ACCESS, ContentSettingsType.CAMERA_PAN_TILT_ZOOM, ContentSettingsType.WINDOW_PLACEMENT, ContentSettingsType.INSECURE_PRIVATE_NETWORK, ContentSettingsType.FONT_ACCESS, ContentSettingsType.PERMISSION_AUTOREVOCATION_DATA, ContentSettingsType.FILE_SYSTEM_LAST_PICKED_DIRECTORY, ContentSettingsType.DISPLAY_CAPTURE, ContentSettingsType.FILE_HANDLING, ContentSettingsType.FILE_SYSTEM_ACCESS_CHOOSER_DATA, ContentSettingsType.FEDERATED_IDENTITY_SHARING, ContentSettingsType.FEDERATED_IDENTITY_REQUEST, ContentSettingsType.JAVASCRIPT_JIT, ContentSettingsType.HTTP_ALLOWED, ContentSettingsType.FORMFILL_METADATA, ContentSettingsType.FEDERATED_IDENTITY_ACTIVE_SESSION, ContentSettingsType.AUTO_DARK_WEB_CONTENT, ContentSettingsType.NUM_TYPES">
-        <location
-            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="412"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ContentSettingsType.DEFAULT, ContentSettingsType.COOKIES, ContentSettingsType.IMAGES, ContentSettingsType.JAVASCRIPT, ContentSettingsType.POPUPS, ContentSettingsType.GEOLOCATION, ContentSettingsType.NOTIFICATIONS, ContentSettingsType.AUTO_SELECT_CERTIFICATE, ContentSettingsType.MIXEDSCRIPT, ContentSettingsType.MEDIASTREAM_MIC, ContentSettingsType.MEDIASTREAM_CAMERA, ContentSettingsType.PROTOCOL_HANDLERS, ContentSettingsType.PPAPI_BROKER, ContentSettingsType.AUTOMATIC_DOWNLOADS, ContentSettingsType.MIDI_SYSEX, ContentSettingsType.SSL_CERT_DECISIONS, ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, ContentSettingsType.APP_BANNER, ContentSettingsType.SITE_ENGAGEMENT, ContentSettingsType.DURABLE_STORAGE, ContentSettingsType.USB_CHOOSER_DATA, ContentSettingsType.BLUETOOTH_GUARD, ContentSettingsType.BACKGROUND_SYNC, ContentSettingsType.AUTOPLAY, ContentSettingsType.IMPORTANT_SITE_INFO, ContentSettingsType.PERMISSION_AUTOBLOCKER_DATA, ContentSettingsType.ADS, ContentSettingsType.ADS_DATA, ContentSettingsType.MIDI, ContentSettingsType.PASSWORD_PROTECTION, ContentSettingsType.MEDIA_ENGAGEMENT, ContentSettingsType.SOUND, ContentSettingsType.CLIENT_HINTS, ContentSettingsType.SENSORS, ContentSettingsType.ACCESSIBILITY_EVENTS, ContentSettingsType.PAYMENT_HANDLER, ContentSettingsType.USB_GUARD, ContentSettingsType.BACKGROUND_FETCH, ContentSettingsType.INTENT_PICKER_DISPLAY, ContentSettingsType.IDLE_DETECTION, ContentSettingsType.SERIAL_GUARD, ContentSettingsType.SERIAL_CHOOSER_DATA, ContentSettingsType.PERIODIC_BACKGROUND_SYNC, ContentSettingsType.BLUETOOTH_SCANNING, ContentSettingsType.HID_GUARD, ContentSettingsType.HID_CHOOSER_DATA, ContentSettingsType.WAKE_LOCK_SCREEN, ContentSettingsType.WAKE_LOCK_SYSTEM, ContentSettingsType.LEGACY_COOKIE_ACCESS, ContentSettingsType.FILE_SYSTEM_WRITE_GUARD, ContentSettingsType.INSTALLED_WEB_APP_METADATA, ContentSettingsType.NFC, ContentSettingsType.BLUETOOTH_CHOOSER_DATA, ContentSettingsType.CLIPBOARD_READ_WRITE, ContentSettingsType.CLIPBOARD_SANITIZED_WRITE, ContentSettingsType.SAFE_BROWSING_URL_CHECK_DATA, ContentSettingsType.VR, ContentSettingsType.AR, ContentSettingsType.FILE_SYSTEM_READ_GUARD, ContentSettingsType.STORAGE_ACCESS, ContentSettingsType.CAMERA_PAN_TILT_ZOOM, ContentSettingsType.WINDOW_PLACEMENT, ContentSettingsType.INSECURE_PRIVATE_NETWORK, ContentSettingsType.FONT_ACCESS, ContentSettingsType.PERMISSION_AUTOREVOCATION_DATA, ContentSettingsType.FILE_SYSTEM_LAST_PICKED_DIRECTORY, ContentSettingsType.DISPLAY_CAPTURE, ContentSettingsType.FILE_HANDLING, ContentSettingsType.FILE_SYSTEM_ACCESS_CHOOSER_DATA, ContentSettingsType.FEDERATED_IDENTITY_SHARING, ContentSettingsType.FEDERATED_IDENTITY_REQUEST, ContentSettingsType.JAVASCRIPT_JIT, ContentSettingsType.HTTP_ALLOWED, ContentSettingsType.FORMFILL_METADATA, ContentSettingsType.FEDERATED_IDENTITY_ACTIVE_SESSION, ContentSettingsType.AUTO_DARK_WEB_CONTENT, ContentSettingsType.NUM_TYPES">
-        <location
-            file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SiteDataCleaner.java"
-            line="34"/>
+            line="343"/>
     </issue>
 
     <issue
@@ -382,14 +398,6 @@
         message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
         <location
             file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinator.java"
-            line="406"/>
-    </issue>
-
-    <issue
-        id="QueryPermissionsNeeded"
-        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
-        <location
-            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinator.java"
             line="407"/>
     </issue>
 
@@ -397,8 +405,8 @@
         id="QueryPermissionsNeeded"
         message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
         <location
-            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
-            line="254"/>
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinator.java"
+            line="408"/>
     </issue>
 
     <issue
@@ -406,7 +414,15 @@
         message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
         <location
             file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
-            line="260"/>
+            line="256"/>
+    </issue>
+
+    <issue
+        id="QueryPermissionsNeeded"
+        message="Consider adding a `&lt;queries>` declaration to your manifest when calling this \&#xA;method; see https://g.co/dev/packagevisibility for details">
+        <location
+            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
+            line="262"/>
     </issue>
 
     <issue
@@ -439,6 +455,22 @@
         <location
             file="../../components/webapps/browser/android/java/src/org/chromium/components/webapps/WebappsUtils.java"
             line="132"/>
+    </issue>
+
+    <issue
+        id="UseSwitchCompatOrMaterialCode"
+        message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library">
+        <location
+            file="../../chrome/browser/signin/ui/android/java/src/org/chromium/chrome/browser/signin/ui/fre/FreUMADialogCoordinator.java"
+            line="71"/>
+    </issue>
+
+    <issue
+        id="UseSwitchCompatOrMaterialXml"
+        message="Use `SwitchCompat` from AppCompat or `SwitchMaterial` from Material library">
+        <location
+            file="../../chrome/browser/signin/ui/android/java/res/layout/fre_uma_dialog.xml"
+            line="25"/>
     </issue>
 
     <issue
@@ -1709,7 +1741,7 @@
         id="VectorRaster"
         message="">
         <location
-            file="../../chrome/android/java/res/drawable/ic_desktop_windows.xml"
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_desktop_windows.xml"
             line="14"/>
     </issue>
 
@@ -1870,7 +1902,15 @@
         message="">
         <location
             file="../../chrome/android/java/res/drawable/ic_forward_arrow_black_24dp.xml"
-            line="13"/>
+            line="11"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_forward_arrow_black_24dp.xml"
+            line="14"/>
     </issue>
 
     <issue
@@ -2261,16 +2301,8 @@
         id="VectorRaster"
         message="">
         <location
-            file="../../chrome/android/java/res/drawable/ic_remove_box_rounded_corner.xml"
-            line="14"/>
-    </issue>
-
-    <issue
-        id="VectorRaster"
-        message="">
-        <location
-            file="../../chrome/android/java/res/drawable/ic_remove_box_rounded_corner.xml"
-            line="18"/>
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_remove.xml"
+            line="12"/>
     </issue>
 
     <issue
@@ -2375,6 +2407,14 @@
         <location
             file="../../chrome/android/java/res/drawable/ic_site_timer.xml"
             line="15"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../chrome/android/java/res/drawable/ic_storefront_blue.xml"
+            line="13"/>
     </issue>
 
     <issue
@@ -2599,6 +2639,14 @@
         <location
             file="../../chrome/android/java/res/drawable/ic_widgets.xml"
             line="14"/>
+    </issue>
+
+    <issue
+        id="VectorRaster"
+        message="">
+        <location
+            file="../../components/browser_ui/styles/android/java/res/drawable/ic_zoom_in.xml"
+            line="12"/>
     </issue>
 
     <issue
@@ -3554,6 +3602,22 @@
     </issue>
 
     <issue
+        id="UnsafeOptInUsageError"
+        message="This declaration is opt-in and its usage should be marked with `@com.google.android.material.badge.ExperimentalBadgeUtils` or `@OptIn(markerClass = com.google.android.material.badge.ExperimentalBadgeUtils.class)`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/snippets/SectionHeaderView.java"
+            line="96"/>
+    </issue>
+
+    <issue
+        id="UnsafeOptInUsageError"
+        message="This declaration is opt-in and its usage should be marked with `@com.google.android.material.badge.ExperimentalBadgeUtils` or `@OptIn(markerClass = com.google.android.material.badge.ExperimentalBadgeUtils.class)`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/snippets/SectionHeaderView.java"
+            line="104"/>
+    </issue>
+
+    <issue
         id="UnsupportedChromeOsCameraSystemFeature"
         message="You should look for any camera available on the device, not just the rear">
         <location
@@ -3582,7 +3646,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../chrome/browser/ui/android/appmenu/internal/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java"
-            line="392"/>
+            line="380"/>
     </issue>
 
     <issue
@@ -3613,14 +3677,6 @@
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope">
         <location
-            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/generic_ui/AssistantViewInteractions.java"
-            line="108"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope">
-        <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/AuthenticatorNavigationInterceptorTabHelper.java"
             line="19"/>
     </issue>
@@ -3638,7 +3694,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="1451"/>
+            line="1453"/>
     </issue>
 
     <issue
@@ -3646,7 +3702,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="1968"/>
+            line="1971"/>
     </issue>
 
     <issue
@@ -3654,7 +3710,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="2946"/>
+            line="2949"/>
     </issue>
 
     <issue
@@ -3750,7 +3806,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="466"/>
+            line="457"/>
     </issue>
 
     <issue
@@ -3758,7 +3814,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="955"/>
+            line="946"/>
     </issue>
 
     <issue
@@ -3774,7 +3830,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="908"/>
+            line="912"/>
     </issue>
 
     <issue
@@ -4014,7 +4070,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java"
-            line="393"/>
+            line="400"/>
     </issue>
 
     <issue
@@ -4030,7 +4086,7 @@
         message="This method should only be accessed from tests or within private scope">
         <location
             file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
-            line="231"/>
+            line="233"/>
     </issue>
 
     <issue
@@ -4046,7 +4102,7 @@
         message="This method should only be accessed from tests or within package private scope">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="115"/>
+            line="111"/>
     </issue>
 
     <issue
@@ -4054,7 +4110,7 @@
         message="This method should only be accessed from tests or within package private scope">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java"
-            line="122"/>
+            line="118"/>
     </issue>
 
     <issue
@@ -4202,6 +4258,270 @@
     </issue>
 
     <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../chrome/android/java/res/layout/custom_tabs_handle_view.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../chrome/browser/ui/android/multiwindow/java/res/layout/instance_switcher_item.xml"
+            line="82"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_bitmap_view.xml"
+            line="109"/>
+    </issue>
+
+    <issue
+        id="UseAppTint"
+        message="Must use `app:tint` instead of `android:tint`">
+        <location
+            file="../../chrome/android/java/res/layout/search_widget_template.xml"
+            line="42"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `ResourcesCompat.getDrawable()`">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
+            line="364"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantActionsDecoration.java"
+            line="84"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/features/autofill_assistant/java/src/org/chromium/chrome/browser/autofill_assistant/user_data/AssistantPaymentMethodSection.java"
+            line="114"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
+            line="299"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
+            line="750"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/contextualsearch/ContextualSearchQuickActionControl.java"
+            line="311"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../android_webview/nonembedded/java/src/org/chromium/android_webview/devui/FlagsFragment.java"
+            line="157"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
+            line="139"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
+            line="162"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java"
+            line="229"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            line="393"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`">
+        <location
+            file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
+            line="2716"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
+            line="60"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/activity_main.xml"
+            line="70"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableEndCompat` instead of `android:drawableEnd`">
+        <location
+            file="../../chrome/android/java/res/layout/data_usage_breakdown.xml"
+            line="48"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../chrome/android/java/res/layout/data_usage_breakdown.xml"
+            line="58"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../chrome/android/java/res/layout/data_usage_breakdown.xml"
+            line="69"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableEndCompat` instead of `android:drawableEnd`">
+        <location
+            file="../../chrome/android/java/res/layout/os_version_unsupported_text.xml"
+            line="15"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../android_webview/nonembedded/java/res_devui/layout/persistent_error_message.xml"
+            line="26"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"
+            line="27"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="49"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="50"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="60"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="61"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="71"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="72"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTopCompat` instead of `android:drawableTop`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="82"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableTint` instead of `android:drawableTint`">
+        <location
+            file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
+            line="83"/>
+    </issue>
+
+    <issue
         id="UnspecifiedImmutableFlag"
         message="Missing `PendingIntent` mutability flag">
         <location
@@ -4238,7 +4558,7 @@
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="164"/>
+            line="174"/>
     </issue>
 
     <issue
@@ -4246,7 +4566,7 @@
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="315"/>
+            line="338"/>
     </issue>
 
     <issue
@@ -4254,7 +4574,7 @@
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="363"/>
+            line="386"/>
     </issue>
 
     <issue
@@ -4262,7 +4582,7 @@
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="376"/>
+            line="399"/>
     </issue>
 
     <issue
@@ -4342,15 +4662,7 @@
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="214"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
-        <location
-            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/followmanagement/FollowManagementMediator.java"
-            line="154"/>
+            line="245"/>
     </issue>
 
     <issue
@@ -4398,7 +4710,7 @@
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort.">
         <location
             file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java"
-            line="112"/>
+            line="122"/>
     </issue>
 
     <issue
@@ -4574,7 +4886,7 @@
         message="`onTouch` lambda should call `View#performClick` when a click is detected">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkItemsAdapter.java"
-            line="236"/>
+            line="256"/>
     </issue>
 
     <issue
@@ -4702,7 +5014,7 @@
         message="`onTouch` lambda should call `View#performClick` when a click is detected">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="208"/>
+            line="211"/>
     </issue>
 
     <issue
@@ -4710,7 +5022,7 @@
         message="Custom view ``Button`` has `setOnTouchListener` called on it but does not override `performClick`">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="238"/>
+            line="241"/>
     </issue>
 
     <issue
@@ -4718,7 +5030,7 @@
         message="Custom view ``Button`` has `setOnTouchListener` called on it but does not override `performClick`">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="240"/>
+            line="243"/>
     </issue>
 
     <issue
@@ -4805,32 +5117,8 @@
         id="KeyboardInaccessibleWidget"
         message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
         <location
-            file="../../chrome/android/features/autofill_assistant/java/res/layout/autofill_assistant_bottom_sheet_content.xml"
-            line="8"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
             file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
             line="49"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
-            line="49"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
-            line="73"/>
     </issue>
 
     <issue
@@ -4853,22 +5141,6 @@
         id="KeyboardInaccessibleWidget"
         message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
         <location
-            file="../../components/browser_ui/contacts_picker/android/java/res/layout/contacts_list_item_view.xml"
-            line="97"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"
-            line="41"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
             file="../../components/browser_ui/photo_picker/android/java/res/layout/photo_picker_dialog.xml"
             line="41"/>
     </issue>
@@ -4879,22 +5151,6 @@
         <location
             file="../../chrome/android/java/res/layout/search_activity.xml"
             line="28"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../chrome/android/java/res/layout/search_activity.xml"
-            line="28"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../chrome/browser/ui/android/toolbar/java/res/layout/start_top_toolbar.xml"
-            line="13"/>
     </issue>
 
     <issue
@@ -4918,31 +5174,7 @@
         message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
         <location
             file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
-            line="37"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
             line="99"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
-            line="99"/>
-    </issue>
-
-    <issue
-        id="KeyboardInaccessibleWidget"
-        message="&apos;clickable&apos; attribute found, please also add &apos;focusable&apos;">
-        <location
-            file="../../components/browser_ui/photo_picker/android/java/res/layout/video_player.xml"
-            line="124"/>
     </issue>
 
     <issue
