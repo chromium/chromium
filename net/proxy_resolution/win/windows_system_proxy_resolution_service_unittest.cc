@@ -21,6 +21,7 @@
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolution_request.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
+#include "net/proxy_resolution/win/winhttp_status.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,21 +40,22 @@ class MockRequest : public WindowsSystemProxyResolver::Request {
  public:
   MockRequest(WindowsSystemProxyResolutionRequest* callback_target,
               const ProxyList& proxy_list,
-              int net_error,
+              WinHttpStatus winhttp_status,
               int windows_error) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&MockRequest::DoCallback, weak_ptr_factory_.GetWeakPtr(),
-                       callback_target, proxy_list, net_error, windows_error));
+                       callback_target, proxy_list, winhttp_status,
+                       windows_error));
   }
   ~MockRequest() override = default;
 
  private:
   void DoCallback(WindowsSystemProxyResolutionRequest* callback_target,
                   const ProxyList& proxy_list,
-                  int net_error,
+                  WinHttpStatus winhttp_status,
                   int windows_error) {
-    callback_target->ProxyResolutionComplete(proxy_list, net_error,
+    callback_target->ProxyResolutionComplete(proxy_list, winhttp_status,
                                              windows_error);
   }
 
@@ -69,7 +71,9 @@ class MockWindowsSystemProxyResolver : public WindowsSystemProxyResolver {
     proxy_list_.AddProxyServer(proxy_server);
   }
 
-  void set_net_error(int net_error) { net_error_ = net_error; }
+  void set_winhttp_status(WinHttpStatus winhttp_status) {
+    winhttp_status_ = winhttp_status;
+  }
 
   void set_windows_error(int windows_error) { windows_error_ = windows_error; }
 
@@ -78,12 +82,12 @@ class MockWindowsSystemProxyResolver : public WindowsSystemProxyResolver {
       WindowsSystemProxyResolutionRequest* callback_target) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return std::make_unique<MockRequest>(callback_target, proxy_list_,
-                                         net_error_, windows_error_);
+                                         winhttp_status_, windows_error_);
   }
 
  private:
   ProxyList proxy_list_;
-  int net_error_ = OK;
+  WinHttpStatus winhttp_status_ = WinHttpStatus::kOk;
   int windows_error_ = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -151,7 +155,7 @@ TEST_F(WindowsSystemProxyResolutionServiceTest, CreateWithNullResolver) {
 }
 
 TEST_F(WindowsSystemProxyResolutionServiceTest, ResolveProxyFailed) {
-  resolver()->set_net_error(ERR_FAILED);
+  resolver()->set_winhttp_status(WinHttpStatus::kAborted);
 
   // Make sure there would be a proxy result on success.
   const ProxyServer proxy_server =

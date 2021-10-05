@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
+#include "net/proxy_resolution/win/winhttp_status.h"
 
 namespace net {
 
@@ -90,7 +91,7 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   int DidFinishResolvingProxy(const GURL& url,
                               const std::string& method,
                               ProxyInfo* result,
-                              int result_code,
+                              WinHttpStatus winhttp_status,
                               const NetLogWithSource& net_log);
 
   // Map of the known bad proxies and the information about the retry time.

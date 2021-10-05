@@ -60,8 +60,7 @@ WindowsSystemProxyResolutionService::~WindowsSystemProxyResolutionService() {
   // for-loop will not work.
   while (!pending_requests_.empty()) {
     WindowsSystemProxyResolutionRequest* req = *pending_requests_.begin();
-    ProxyList empty_list;
-    req->ProxyResolutionComplete(empty_list, ERR_ABORTED, 0);
+    req->ProxyResolutionComplete(ProxyList(), WinHttpStatus::kAborted, 0);
     pending_requests_.erase(req);
   }
 }
@@ -163,7 +162,7 @@ int WindowsSystemProxyResolutionService::DidFinishResolvingProxy(
     const GURL& url,
     const std::string& method,
     ProxyInfo* result,
-    int result_code,
+    WinHttpStatus winhttp_status,
     const NetLogWithSource& net_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -171,7 +170,7 @@ int WindowsSystemProxyResolutionService::DidFinishResolvingProxy(
   // TODO(https://crbug.com/1032820): Implement proxy delegate.
   // TODO(https://crbug.com/1032820): Implement proxy retry info.
 
-  if (result_code != OK)
+  if (winhttp_status != WinHttpStatus::kOk)
     result->UseDirect();
 
   net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);

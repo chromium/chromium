@@ -92,7 +92,7 @@ void WindowsSystemProxyResolutionRequest::CancelResolveRequest() {
 
 void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
     const ProxyList& proxy_list,
-    int net_error,
+    WinHttpStatus winhttp_status,
     int windows_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!was_completed());
@@ -102,8 +102,8 @@ void WindowsSystemProxyResolutionRequest::ProxyResolutionComplete(
   results_->UseProxyList(proxy_list);
 
   // Note that DidFinishResolvingProxy might modify |results_|.
-  net_error = service_->DidFinishResolvingProxy(url_, method_, results_,
-                                                net_error, net_log_);
+  int net_error = service_->DidFinishResolvingProxy(url_, method_, results_,
+                                                    winhttp_status, net_log_);
 
   // Make a note in the results which configuration was in use at the
   // time of the resolve.

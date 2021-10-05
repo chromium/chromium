@@ -15,6 +15,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_request.h"
 #include "net/proxy_resolution/win/windows_system_proxy_resolver.h"
+#include "net/proxy_resolution/win/winhttp_status.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -55,11 +56,11 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
 
   // Callback for when the cross-process proxy resolution has completed. The
   // |proxy_list| is the list of proxies returned by WinHttp translated into
-  // Chromium-friendly terms. The |net_error| describes the status of the proxy
-  // resolution request. If WinHttp fails for some reason, |windows_error|
+  // Chromium-friendly terms. The |winhttp_status| describes the status of the
+  // proxy resolution request. If WinHttp fails for some reason, |windows_error|
   // contains the specific error returned by WinHttp.
   virtual void ProxyResolutionComplete(const ProxyList& proxy_list,
-                                       int net_error,
+                                       WinHttpStatus winhttp_status,
                                        int windows_error);
 
  private:
