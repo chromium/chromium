@@ -23,6 +23,7 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "third_party/distributed_point_functions/src/dpf/distributed_point_function.h"
@@ -217,7 +218,10 @@ absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
     return absl::nullopt;
   }
 
-  // TODO(crbug.com/1254117): Move trustworthy origins check here.
+  if (!base::ranges::all_of(processing_origins,
+                            network::IsOriginPotentiallyTrustworthy)) {
+    return absl::nullopt;
+  }
 
   // Ensure the ordering of origins is deterministic. This is required for
   // AggregatableReport construction later.

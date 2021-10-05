@@ -45,10 +45,9 @@ class CONTENT_EXPORT AggregationServiceKeyFetcher {
 
   enum class PublicKeyFetchStatus {
     // TODO(crbug.com/1217823): Propagate up more granular errors.
-    kOk = 0,
-    kPublicKeyFetchFailed = 1,
-    kUntrustworthyOrigin = 2,
-    kMaxValue = kUntrustworthyOrigin,
+    kOk,
+    kPublicKeyFetchFailed,
+    kMaxValue = kPublicKeyFetchFailed,
   };
 
   using FetchCallback =

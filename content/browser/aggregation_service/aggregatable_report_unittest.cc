@@ -168,14 +168,11 @@ TEST(AggregatableReportTest, ValidRequest_ValidReportReturned) {
 }
 
 TEST(AggregatableReportTest, RequestCreated_RequiresRightNumberOfOrigins) {
-  AggregationServicePayloadContents payload_contents(
-      AggregationServicePayloadContents::Operation::kCountValueHistogram,
-      /*bucket=*/123, /*value=*/456,
-      AggregationServicePayloadContents::ProcessingType::kTwoParty,
-      url::Origin::Create(GURL("https://reporting.example")));
-  AggregatableReportSharedInfo shared_info(
-      /*scheduled_report_time=*/base::Time::Now(),
-      /*privacy_budget_key=*/"example_budget_key");
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  AggregatableReportSharedInfo shared_info = example_request.shared_info();
 
   absl::optional<AggregatableReportRequest> zero_origins =
       AggregatableReportRequest::Create({}, payload_contents, shared_info);
@@ -206,14 +203,11 @@ TEST(AggregatableReportTest, RequestCreated_RequiresRightNumberOfOrigins) {
 
 TEST(AggregatableReportTest,
      RequestCreatedWithSwappedOrigins_OrderingIsDeterminstic) {
-  AggregationServicePayloadContents payload_contents(
-      AggregationServicePayloadContents::Operation::kCountValueHistogram,
-      /*bucket=*/123, /*value=*/456,
-      AggregationServicePayloadContents::ProcessingType::kTwoParty,
-      url::Origin::Create(GURL("https://reporting.example")));
-  AggregatableReportSharedInfo shared_info(
-      /*scheduled_report_time=*/base::Time::Now(),
-      /*privacy_budget_key=*/"example_budget_key");
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  AggregatableReportSharedInfo shared_info = example_request.shared_info();
 
   absl::optional<AggregatableReportRequest> ordering_1 =
       AggregatableReportRequest::Create(
@@ -230,6 +224,38 @@ TEST(AggregatableReportTest,
   ASSERT_TRUE(ordering_1.has_value());
   ASSERT_TRUE(ordering_2.has_value());
   EXPECT_EQ(ordering_1->processing_origins(), ordering_2->processing_origins());
+}
+
+TEST(AggregatableReportTest, RequestCreatedWithInsecureOrigin_Failed) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(
+          {url::Origin::Create(GURL("http://a.example")),
+           url::Origin::Create(GURL("https://b.example"))},
+          payload_contents, shared_info);
+
+  EXPECT_FALSE(request.has_value());
+}
+
+TEST(AggregatableReportTest, RequestCreatedWithOpaqueOrigin_Failed) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(
+          {url::Origin::Create(GURL("about:blank")),
+           url::Origin::Create(GURL("https://b.example"))},
+          payload_contents, shared_info);
+
+  EXPECT_FALSE(request.has_value());
 }
 
 TEST(AggregatableReportTest, GetAsJson_ValidJsonReturned) {

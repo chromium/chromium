@@ -167,30 +167,6 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysFromStorage_Succeed) {
   EXPECT_EQ(network_fetcher_->num_fetches(), 0);
 }
 
-TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysInsecureOrigin_Failed) {
-  url::Origin origin = url::Origin::Create(GURL("http://a.com"));
-  GetPublicKey(origin);
-
-  ASSERT_TRUE(last_fetch_status_.has_value());
-  EXPECT_EQ(
-      last_fetch_status_.value(),
-      AggregationServiceKeyFetcher::PublicKeyFetchStatus::kUntrustworthyOrigin);
-  EXPECT_FALSE(last_fetched_key_.has_value());
-  EXPECT_EQ(num_callbacks_run_, 1);
-}
-
-TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysOpaqueOrigin_Failed) {
-  url::Origin origin = url::Origin::Create(GURL("about:blank"));
-  GetPublicKey(origin);
-
-  ASSERT_TRUE(last_fetch_status_.has_value());
-  EXPECT_EQ(
-      last_fetch_status_.value(),
-      AggregationServiceKeyFetcher::PublicKeyFetchStatus::kUntrustworthyOrigin);
-  EXPECT_FALSE(last_fetched_key_.has_value());
-  EXPECT_EQ(num_callbacks_run_, 1);
-}
-
 TEST_F(AggregationServiceKeyFetcherTest,
        GetPublicKeysWithNoKeysForOrigin_Failed) {
   url::Origin origin = url::Origin::Create(GURL(kExampleOrigin));

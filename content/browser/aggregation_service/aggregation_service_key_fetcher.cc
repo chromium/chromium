@@ -29,11 +29,7 @@ AggregationServiceKeyFetcher::~AggregationServiceKeyFetcher() = default;
 
 void AggregationServiceKeyFetcher::GetPublicKey(const url::Origin& origin,
                                                 FetchCallback callback) {
-  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
-    std::move(callback).Run(absl::nullopt,
-                            PublicKeyFetchStatus::kUntrustworthyOrigin);
-    return;
-  }
+  DCHECK(network::IsOriginPotentiallyTrustworthy(origin));
 
   base::circular_deque<FetchCallback>& pending_callbacks =
       origin_callbacks_[origin];
