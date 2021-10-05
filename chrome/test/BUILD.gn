@@ -6026,6 +6026,7 @@ test("unit_tests") {
       "../browser/commerce/coupons/coupon_service_unittest.cc",
       "../browser/new_tab_page/modules/drive/drive_service_unittest.cc",
       "../browser/new_tab_page/modules/photos/photos_service_unittest.cc",
+      "../browser/new_tab_page/modules/safe_browsing/safe_browsing_handler_unittest.cc",
       "../browser/new_tab_page/modules/task_module/task_module_service_unittest.cc",
       "../browser/search/ntp_features_unittest.cc",
 
@@ -6112,6 +6113,8 @@ test("unit_tests") {
       "//components/global_media_controls:test_support",
       "//components/media_message_center:test_support",
       "//components/permissions:test_support",
+      "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+      "//components/safe_browsing/core/common:safe_browsing_policy_handler",
       "//components/safety_check:test_support",
       "//components/send_tab_to_self:test_support",
       "//components/services/app_service:unit_tests",

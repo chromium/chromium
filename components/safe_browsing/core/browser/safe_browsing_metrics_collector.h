@@ -117,6 +117,10 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   // the |event_type| didn't happen in the past.
   absl::optional<base::Time> GetLatestEventTimestamp(EventType event_type);
 
+  // Gets the latest event timestamp for security sensitive events. Returns
+  // nullopt if a security sensitive event didn't happen in the past.
+  virtual absl::optional<base::Time> GetLatestSecuritySensitiveEventTimestamp();
+
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;

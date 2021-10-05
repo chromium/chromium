@@ -643,4 +643,30 @@ TEST_F(SafeBrowsingMetricsCollectorTest, GetLatestEventTimestamp) {
                 EventType::DATABASE_INTERSTITIAL_BYPASS));
 }
 
+TEST_F(SafeBrowsingMetricsCollectorTest,
+       GetLatestSecuritySensitiveEventTimestamp) {
+  EXPECT_EQ(absl::nullopt,
+            metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
+  // Timestamps are rounded to second when stored in prefs.
+  base::Time rounded_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
+          base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
+
+  // Add one security sensitive event.
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::SECURITY_SENSITIVE_DOWNLOAD);
+  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(1),
+            metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
+
+  // Add another security sensitive event.
+  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+                         EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION);
+  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(2),
+            metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
+
+  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(2),
+            metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
+}
+
 }  // namespace safe_browsing

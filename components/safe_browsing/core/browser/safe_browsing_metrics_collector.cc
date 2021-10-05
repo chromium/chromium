@@ -197,6 +197,27 @@ SafeBrowsingMetricsCollector::GetLatestEventTimestamp(EventType event_type) {
                : absl::nullopt;
 }
 
+absl::optional<base::Time>
+SafeBrowsingMetricsCollector::GetLatestSecuritySensitiveEventTimestamp() {
+  std::vector<absl::optional<base::Time>> security_sensitive_event_times{
+      GetLatestEventTimestamp(SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL),
+      GetLatestEventTimestamp(SECURITY_SENSITIVE_SSL_INTERSTITIAL),
+      GetLatestEventTimestamp(SECURITY_SENSITIVE_PASSWORD_PROTECTION),
+      GetLatestEventTimestamp(SECURITY_SENSITIVE_DOWNLOAD)};
+  absl::optional<base::Time> latest_event_time = absl::nullopt;
+  for (absl::optional<base::Time> security_sensitive_event_time :
+       security_sensitive_event_times) {
+    if (!security_sensitive_event_time) {
+      continue;
+    }
+    if (!latest_event_time ||
+        (latest_event_time.value() < security_sensitive_event_time.value())) {
+      latest_event_time = security_sensitive_event_time;
+    }
+  }
+  return latest_event_time;
+}
+
 void SafeBrowsingMetricsCollector::AddSafeBrowsingEventAndUserStateToPref(
     UserState user_state,
     EventType event_type) {
