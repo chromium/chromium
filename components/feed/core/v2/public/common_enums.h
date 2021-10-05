@@ -115,8 +115,10 @@ enum class FeedUserActionType {
   // After long-pressing on the feed and seeing the preview, the user tapped
   // on the preview.
   kTappedDiscoverFeedPreview = 39,
+  // User tapped "Settings" link to open feed autoplay settings.
+  kOpenedAutoplaySettings = 40,
 
-  kMaxValue = kTappedDiscoverFeedPreview,
+  kMaxValue = kOpenedAutoplaySettings,
 };
 
 // For testing and debugging only.

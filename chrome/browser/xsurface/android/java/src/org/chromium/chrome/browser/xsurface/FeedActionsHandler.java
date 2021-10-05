@@ -112,4 +112,9 @@ public interface FeedActionsHandler {
      * @param title The title of the page to be shared.
      */
     default void share(String url, String title) {}
+
+    /**
+     * Opens the settings to manager autoplay.
+     */
+    default void openAutoplaySettings() {}
 }

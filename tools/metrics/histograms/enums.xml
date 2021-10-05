@@ -35130,6 +35130,8 @@ Called by update_permissions_policy_enum.py.-->
   <int value="39"
       label="After long-pressing on the feed and seeing the preview, the user
              tapped on the preview."/>
+  <int value="40"
+      label="User tapped Settings link to open feed autoplay settings."/>
 </enum>
 
 <enum name="FeedUserCommandType">

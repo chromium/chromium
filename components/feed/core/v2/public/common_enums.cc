@@ -90,6 +90,8 @@ std::ostream& operator<<(std::ostream& out, FeedUserActionType value) {
       return out << "kTappedDismissPostFollowActiveHelp";
     case FeedUserActionType::kTappedDiscoverFeedPreview:
       return out << "kTappedDiscoverFeedPreview";
+    case FeedUserActionType::kOpenedAutoplaySettings:
+      return out << "kOpenedAutoplaySettings";
   }
 }
 

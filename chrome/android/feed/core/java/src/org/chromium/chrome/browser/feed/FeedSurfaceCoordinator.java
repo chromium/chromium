@@ -91,9 +91,10 @@ import java.util.List;
 /**
  * Provides a surface that displays an interest feed rendered list of content suggestions.
  */
-public class FeedSurfaceCoordinator
-        implements FeedSurfaceProvider, FeedBubbleDelegate, SwipeRefreshLayout.OnRefreshListener,
-                   BackToTopBubbleScrollListener.ResultHandler, SurfaceCoordinator {
+public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDelegate,
+                                               SwipeRefreshLayout.OnRefreshListener,
+                                               BackToTopBubbleScrollListener.ResultHandler,
+                                               SurfaceCoordinator, FeedAutoplaySettingsDelegate {
     @VisibleForTesting
     public static final String FEED_STREAM_CREATED_TIME_MS_UMA = "FeedStreamCreatedTime";
 
@@ -470,6 +471,7 @@ public class FeedSurfaceCoordinator
     }
 
     /** Launches autoplay settings activity. */
+    @Override
     public void launchAutoplaySettings() {
         SettingsLauncher launcher = new SettingsLauncherImpl();
         launcher.launchSettingsActivity(
@@ -680,7 +682,7 @@ public class FeedSurfaceCoordinator
     FeedStream createFeedStream(boolean isInterestFeed) {
         return new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
                 mBottomSheetController, mIsPlaceholderShownInitially, mWindowAndroid,
-                mShareSupplier, isInterestFeed);
+                mShareSupplier, isInterestFeed, this);
     }
 
     private void setHeaders(List<View> headerViews) {

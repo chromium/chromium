@@ -170,7 +170,8 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
                 mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
-                mShareDelegateSupplier, /* isInterestFeed= */ true);
+                mShareDelegateSupplier, /* isInterestFeed= */ true,
+                /* FeedAutoplaySettingsDelegate= */ null);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);

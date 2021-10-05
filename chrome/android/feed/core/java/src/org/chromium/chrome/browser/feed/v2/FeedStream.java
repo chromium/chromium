@@ -32,6 +32,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.CardMenuBottomSheetContent;
+import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSliceViewTracker;
@@ -336,6 +337,14 @@ public class FeedStream implements Stream {
                     mNativeFeedStream, FeedStream.this, FeedUserActionType.SHARE);
         }
 
+        @Override
+        public void openAutoplaySettings() {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportOtherUserAction(
+                    mNativeFeedStream, FeedStream.this, FeedUserActionType.OPENED_CONTEXT_MENU);
+            mFeedAutoplaySettingsDelegate.launchAutoplaySettings();
+        }
+
         // Since the XSurface client strings are slightly different than the Feed strings, convert
         // the name from the XSurface format to the format that can be handled by the feedback
         // system.  Any new strings that are added on the XSurface side will need a code change
@@ -395,6 +404,7 @@ public class FeedStream implements Stream {
     private SnackbarManager mSnackManager;
     private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     private WindowAndroid mWindowAndroid;
+    private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
 
     // For loading more content.
@@ -440,12 +450,13 @@ public class FeedStream implements Stream {
      * @param windowAndroid The {@link WindowAndroid} this is shown on.
      * @param shareDelegateSupplier The supplier for {@link ShareDelegate} for sharing actions.
      * @param isInterestFeed Whether this stream is for interest feed (true) or web feed (false).
+     * @param feedAutoplaySettingsDelegate The delegate to invoke autoplay settings.
      */
     public FeedStream(Activity activity, SnackbarManager snackbarManager,
             NativePageNavigationDelegate nativePageNavigationDelegate,
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
-            boolean isInterestFeed) {
+            boolean isInterestFeed, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate) {
         this.mActivity = activity;
         mIsInterestFeed = isInterestFeed;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
@@ -459,6 +470,7 @@ public class FeedStream implements Stream {
         mHelpAndFeedbackLauncher = HelpAndFeedbackLauncherImpl.getInstance();
         mIsPlaceholderShown = isPlaceholderShown;
         mWindowAndroid = windowAndroid;
+        mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
 
         mHandlersMap = new HashMap<>();

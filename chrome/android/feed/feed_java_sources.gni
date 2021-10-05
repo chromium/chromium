@@ -22,6 +22,7 @@ feed_deps = [
 feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/BackToTopBubble.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListener.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedAutoplaySettingsDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedBubbleDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedLaunchReliabilityLoggingState.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/FeedStreamViewResizer.java",
