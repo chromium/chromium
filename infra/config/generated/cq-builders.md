@@ -472,6 +472,9 @@ as required builders.
 * [linux-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-rts))
   * Experiment percentage: 5.0
 
+* [linux-wayland-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-wayland-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-wayland-rel))
+  * Experiment percentage: 1.0
+
 * [linux_chromium_asan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_asan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_asan_rel_ng_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_asan_rel_ng_rts))
   * Experiment percentage: 5.0
 
