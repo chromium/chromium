@@ -60,6 +60,9 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
 
   bool OutputScanlines();
   unsigned DesiredScaleNumerator() const;
+  static unsigned DesiredScaleNumerator(wtf_size_t max_decoded_bytes,
+                                        wtf_size_t original_bytes,
+                                        unsigned scale_denominator);
   bool ShouldGenerateAllSizes() const;
   void Complete();
 

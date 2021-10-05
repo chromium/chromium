@@ -413,6 +413,19 @@ TEST(JPEGImageDecoderTest, SupportedSizesTruncatedIfMemoryBound) {
   }
 }
 
+TEST(JPEGImageDecoderTest, SupportedScaleNumeratorBound) {
+  auto numerator_default = JPEGImageDecoder::DesiredScaleNumerator(10, 9, 8);
+  ASSERT_EQ(numerator_default, static_cast<unsigned>(8));
+
+  auto numerator_normal =
+      JPEGImageDecoder::DesiredScaleNumerator(1024, 2048, 8);
+  ASSERT_EQ(numerator_normal, static_cast<unsigned>(5));
+
+  auto numerator_overflow =
+      JPEGImageDecoder::DesiredScaleNumerator(0x4000000, 0x4100000, 8);
+  ASSERT_EQ(numerator_overflow, static_cast<unsigned>(7));
+}
+
 struct ColorSpaceTestParam {
   std::string file;
   bool expected_success = false;

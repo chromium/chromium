@@ -1107,16 +1107,22 @@ wtf_size_t JPEGImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
 unsigned JPEGImageDecoder::DesiredScaleNumerator() const {
   wtf_size_t original_bytes = Size().Width() * Size().Height() * 4;
 
-  if (original_bytes <= max_decoded_bytes_)
-    return g_scale_denominator;
+  return JPEGImageDecoder::DesiredScaleNumerator(
+      max_decoded_bytes_, original_bytes, g_scale_denominator);
+}
+
+// static
+unsigned JPEGImageDecoder::DesiredScaleNumerator(wtf_size_t max_decoded_bytes,
+                                                 wtf_size_t original_bytes,
+                                                 unsigned scale_denominator) {
+  if (original_bytes <= max_decoded_bytes)
+    return scale_denominator;
 
   // Downsample according to the maximum decoded size.
-  unsigned scale_numerator = static_cast<unsigned>(floor(sqrt(
+  return static_cast<unsigned>(floor(sqrt(
       // MSVC needs explicit parameter type for sqrt().
-      static_cast<float>(max_decoded_bytes_ * g_scale_denominator *
-                         g_scale_denominator / original_bytes))));
-
-  return scale_numerator;
+      static_cast<float>(max_decoded_bytes) / original_bytes *
+      scale_denominator * scale_denominator)));
 }
 
 bool JPEGImageDecoder::ShouldGenerateAllSizes() const {
