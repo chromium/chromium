@@ -354,7 +354,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
               SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
-  window_->SetDecorationInsets(&kDecorationInsets);
+  window_->SetDecorationInsets(kDecorationInsets);
   // Setting the decoration insets does not trigger the immediate update of the
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.
@@ -385,7 +385,7 @@ TEST_P(WaylandWindowTest, SetDecorationInsets) {
               SetWindowGeometry(bounds_with_insets.x(), bounds_with_insets.y(),
                                 bounds_with_insets.width(),
                                 bounds_with_insets.height()));
-  window_->SetDecorationInsets(&kDecorationInsets_2x);
+  window_->SetDecorationInsets(kDecorationInsets_2x);
   // Setting the decoration insets does not trigger the immediate update of the
   // window geometry.  Emulate updating the visual size (sending the frame
   // update) for that.
