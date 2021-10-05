@@ -11,12 +11,9 @@
   <permission android:name="$PACKAGE.permission.DEBUG" android:label="Debug web pages" android:protectionLevel="signature"/>
   <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
   <permission android:name="$PACKAGE.permission.TRANSLATE" android:protectionLevel="signature"/>
-  <queries>  # DIFF-ANCHOR: 5a71ec1f
-    <intent>  # DIFF-ANCHOR: 28c960ba
-      <action android:name="android.media.browse.MediaBrowserService"/>
-    </intent>  # DIFF-ANCHOR: 28c960ba
+  <queries>  # DIFF-ANCHOR: 9588fea7
     <package android:name="com.google.ar.core"/>
-  </queries>  # DIFF-ANCHOR: 5a71ec1f
+  </queries>  # DIFF-ANCHOR: 9588fea7
   <uses-feature android:glEsVersion="0x00020000"/>
   <uses-feature android:name="android.hardware.camera" android:required="false"/>
   <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
