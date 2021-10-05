@@ -12,15 +12,17 @@ const STORE_URL = '/wpt_internal/fenced_frame/resources/key-value-store.py';
 // otherwise interfere with each other's server state.
 const KEYS = {
   // This key is only used to test that the server-side stash works properly.
-  "dummy"             : "00000000-0000-0000-0000-000000000000",
+  "dummy"                 : "00000000-0000-0000-0000-000000000000",
 
-  // Add keys below this list, incrementing the key UUID in hexadecimal:
-  "document.referrer" : "00000000-0000-0000-0000-000000000001",
-  "navigate"          : "00000000-0000-0000-0000-000000000002",
-  "window.top"        : "00000000-0000-0000-0000-000000000003",
+  "document.referrer"     : "00000000-0000-0000-0000-000000000001",
+  "document.referrer ACK" : "00000000-0000-0000-0000-000000000002",
 
-  "window.parent"     : "00000000-0000-0000-0000-000000000004",
-  "window.parent ACK" : "00000000-0000-0000-0000-000000000005",
+  "navigate"              : "00000000-0000-0000-0000-000000000003",
+  "window.top"            : "00000000-0000-0000-0000-000000000004",
+
+  "window.parent"         : "00000000-0000-0000-0000-000000000005",
+  "window.parent ACK"     : "00000000-0000-0000-0000-000000000006",
+  // Add keys below this list, incrementing the key UUID in hexadecimal.
 }
 
 function attachFencedFrame(url) {
