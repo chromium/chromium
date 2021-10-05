@@ -5050,11 +5050,6 @@
           'scripts': 'chromium_linux_scripts',
         }
       },
-      'Linux Builder (Wayland)': {
-        'additional_compile_targets': [
-          'chrome'
-        ],
-      },
       'Linux Builder (dbg)': {
         'additional_compile_targets': [
           'all'
@@ -5122,19 +5117,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
           'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-        },
-      },
-      'Linux Tests (Wayland)': {
-        'mixins': [
-          'linux-bionic',
-         ],
-        'args': [
-          '--no-xvfb',
-          '--use-weston',
-          '--ozone-platform=wayland',
-        ],
-        'test_suites': {
-         'gtest_tests': 'chromium_linux_gtests',
         },
       },
       'Linux Tests (dbg)(1)': {
