@@ -112,6 +112,11 @@ public interface ProcessScopeDependencyProvider {
         return 100;
     }
 
+    /** Returns the percentage size that the bitmap pool is allowed to use. */
+    default int getBitmapPoolSizePercentage() {
+        return 100;
+    }
+
     /** Returns the signed-out session id */
     default String getSignedOutSessionId() {
         return "";

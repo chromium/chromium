@@ -151,6 +151,14 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     }
 
     @Override
+    public int getBitmapPoolSizePercentage() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.FEED_IMAGE_MEMORY_CACHE_SIZE_PERCENTAGE,
+                "bitmap_pool_size_percentage",
+                /*default=*/100);
+    }
+
+    @Override
     public String getAccountName() {
         // Don't return account name if there's a signed-out session ID.
         if (!getSignedOutSessionId().isEmpty()) {
