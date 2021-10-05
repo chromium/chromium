@@ -99,4 +99,17 @@ TEST(PageAdDensityTrackerTest, OverflowTotalAreaAndHeight) {
   EXPECT_EQ(tracker.MaxPageAdDensityByHeight(), -1);
 }
 
+// Regression test for crbug.com/1241038 (i.e. potential DCHECK failure if a
+// line segment starts at position -1).
+TEST(PageAdDensityTrackerTest, RectAtSpecialPosition) {
+  PageAdDensityTracker tracker;
+
+  tracker.UpdateMainFrameRect(gfx::Rect(0, 0, 100, 100));
+
+  tracker.AddRect(1 /* rect_id */, gfx::Rect(-1, -1, 1, 1));
+
+  EXPECT_EQ(tracker.MaxPageAdDensityByArea(), 0);
+  EXPECT_EQ(tracker.MaxPageAdDensityByHeight(), 1);
+}
+
 }  // namespace page_load_metrics
