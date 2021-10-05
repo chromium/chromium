@@ -8,6 +8,7 @@ window.onload = () => {
   let messageSource;
 
   const content = document.querySelector('#content');
+  let contentUrl;
 
   window.addEventListener('message', event => {
     if (event.origin !== FILES_APP_ORIGIN) {
@@ -15,16 +16,18 @@ window.onload = () => {
       return;
     }
 
+    // Release Object URLs generated with URL.createObjectURL.
+    URL.revokeObjectURL(contentUrl);
+    contentUrl = '';
+
     messageSource = event.source;
 
     const sourceContent = event.data.sourceContent;
-    let contentUrl;
     switch (sourceContent.dataType) {
       case 'url':
         contentUrl = sourceContent.data;
         break;
       case 'blob':
-        // TODO: work out when to call URL.revokeObjectURL on these contentURL.
         contentUrl = URL.createObjectURL(sourceContent.data);
         break;
       default:
