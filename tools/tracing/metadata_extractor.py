@@ -211,7 +211,7 @@ class MetadataExtractor:
         if ((row_name is None or row_name == '/missing')
             or (row_debug_id is None or row_debug_id == '/missing')):
           continue
-        module_map[row_name] = row_debug_id
+        module_map[row_name] = row_debug_id.upper()
 
       if not module_map:
         return None

@@ -124,6 +124,9 @@ class ExtractMetadataTestCase(unittest.TestCase):
           }, {
               'name': '/missing',
               'build_id': 'AB3288CDE3283'
+          }, {
+              'name': '/chrome.so',
+              'build_id': 'abcdef'
           }])
       return params[args]
 
@@ -137,7 +140,10 @@ class ExtractMetadataTestCase(unittest.TestCase):
     self.assertEqual(extractor.architecture, 'x86_64')
     self.assertEqual(extractor.bitness, '64')
     self.assertEqual(extractor.version_code, '857854')
-    self.assertEqual(extractor.modules, {'/libmonochrome.so': '3284389AB83CD'})
+    self.assertEqual(extractor.modules, {
+        '/libmonochrome.so': '3284389AB83CD',
+        '/chrome.so': 'ABCDEF'
+    })
 
   def testExtractMetadataEmptyList(self):
     def side_effect(*args):
