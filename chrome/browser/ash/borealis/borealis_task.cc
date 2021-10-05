@@ -4,16 +4,21 @@
 
 #include "chrome/browser/ash/borealis/borealis_task.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "base/callback_helpers.h"
+#include "base/files/file.h"
+#include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
+#include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -103,6 +108,14 @@ void CreateDiskImage::OnCreateDiskImage(
   Complete(BorealisStartupResult::kSuccess, "");
 }
 
+bool GetDeveloperMode() {
+  std::string output;
+  if (!base::GetAppOutput({"/usr/bin/crossystem", "cros_debug"}, &output)) {
+    return false;
+  }
+  return output == "1";
+}
+
 StartBorealisVm::StartBorealisVm() = default;
 StartBorealisVm::~StartBorealisVm() = default;
 
@@ -131,6 +144,23 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
                        chromeos::features::kExoPointerLock)
                        ? "enabled"
                        : "disabled");
+
+  if (GetDeveloperMode()) {
+    absl::optional<base::File> file =
+        borealis::BorealisService::GetForProfile(context->profile())
+            ->LaunchOptions()
+            .GetExtraDisk();
+
+    if (file) {
+      base::ScopedFD fd = base::ScopedFD(file->TakePlatformFile());
+      request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
+      chromeos::ConciergeClient::Get()->StartTerminaVmWithFd(
+          std::move(fd), std::move(request),
+          base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
+                         weak_factory_.GetWeakPtr(), context));
+      return;
+    }
+  }
   chromeos::ConciergeClient::Get()->StartTerminaVm(
       std::move(request), base::BindOnce(&StartBorealisVm::OnStartBorealisVm,
                                          weak_factory_.GetWeakPtr(), context));

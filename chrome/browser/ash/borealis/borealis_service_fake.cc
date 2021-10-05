@@ -52,6 +52,11 @@ BorealisInstaller& BorealisServiceFake::Installer() {
   return *installer_;
 }
 
+BorealisLaunchOptions& BorealisServiceFake::LaunchOptions() {
+  CHECK(launch_options_);
+  return *launch_options_;
+}
+
 BorealisShutdownMonitor& BorealisServiceFake::ShutdownMonitor() {
   CHECK(shutdown_monitor_);
   return *shutdown_monitor_;

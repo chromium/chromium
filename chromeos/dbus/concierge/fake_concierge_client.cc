@@ -218,6 +218,13 @@ void FakeConciergeClient::StartTerminaVm(
                                 std::move(vm_started_signal)));
 }
 
+void FakeConciergeClient::StartTerminaVmWithFd(
+    base::ScopedFD fd,
+    const vm_tools::concierge::StartVmRequest& request,
+    DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) {
+  StartTerminaVm(std::move(request), std::move(callback));
+}
+
 void FakeConciergeClient::NotifyTremplinStarted(
     const vm_tools::cicerone::TremplinStartedSignal& signal) {
   DCHECK(fake_cicerone_client_)

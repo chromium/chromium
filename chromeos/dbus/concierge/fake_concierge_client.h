@@ -75,6 +75,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeConciergeClient
   void StartTerminaVm(const vm_tools::concierge::StartVmRequest& request,
                       DBusMethodCallback<vm_tools::concierge::StartVmResponse>
                           callback) override;
+  void StartTerminaVmWithFd(
+      base::ScopedFD fd,
+      const vm_tools::concierge::StartVmRequest& request,
+      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback)
+      override;
   void StopVm(const vm_tools::concierge::StopVmRequest& request,
               DBusMethodCallback<vm_tools::concierge::StopVmResponse> callback)
       override;

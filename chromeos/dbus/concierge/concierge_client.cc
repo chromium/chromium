@@ -145,6 +145,15 @@ class ConciergeClientImpl : public ConciergeClient {
     CallMethod(concierge::kStartVmMethod, request, std::move(callback));
   }
 
+  void StartTerminaVmWithFd(
+      base::ScopedFD fd,
+      const vm_tools::concierge::StartVmRequest& request,
+      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback)
+      override {
+    CallMethodWithFd(concierge::kStartVmMethod, request, std::move(fd),
+                     std::move(callback));
+  }
+
   void StopVm(const concierge::StopVmRequest& request,
               DBusMethodCallback<concierge::StopVmResponse> callback) override {
     CallMethod(concierge::kStopVmMethod, request, std::move(callback));

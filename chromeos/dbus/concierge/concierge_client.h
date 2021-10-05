@@ -162,9 +162,17 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ConciergeClient : public DBusClient {
       DBusMethodCallback<vm_tools::concierge::ListVmDisksResponse>
           callback) = 0;
 
-  // Starts a Termina VM if there is not alread one running.
+  // Starts a Termina VM if there is not already one running.
   // |callback| is called after the method call finishes.
   virtual void StartTerminaVm(
+      const vm_tools::concierge::StartVmRequest& request,
+      DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
+
+  // Starts a Termina VM if there is not already one running.
+  // |fd| references an extra image for concierge to use.
+  // |callback| is called after the method call finishes.
+  virtual void StartTerminaVmWithFd(
+      base::ScopedFD fd,
       const vm_tools::concierge::StartVmRequest& request,
       DBusMethodCallback<vm_tools::concierge::StartVmResponse> callback) = 0;
 
