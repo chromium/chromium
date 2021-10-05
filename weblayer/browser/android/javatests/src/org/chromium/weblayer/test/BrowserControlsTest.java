@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -345,6 +346,7 @@ public class BrowserControlsTest {
 
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @DisabledTest(message = "https://crbug.com/1256861")
     @Test
     @SmallTest
     public void testOnlyExpandTopControlsAtPageTop() throws Exception {
