@@ -8,7 +8,6 @@ import android.net.Uri;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
@@ -429,16 +428,15 @@ public class Navigation extends IClientNavigation.Stub {
 
     /*
      * Returns the Page object this navigation is occurring for.
-     * This method may only be called in {@link NavigationCallback.onNavigationCompleted} or
-     * {@link NavigationCallback.onNavigationFailed} and only when {@link Navigation#getState}
-     * returns COMPLETE. It will return a non-null object in this case.
+     * This method may only be called in (1) {@link NavigationCallback.onNavigationCompleted} or
+     * (2) {@link NavigationCallback.onNavigationFailed} when {@link Navigation#isErrorPage}
+     * returns true. It will return a non-null object in these cases.
      *
-     * @throws IllegalStateException If called outside the completion or failure callbacks or if the
-     * state is not COMPLETE.
+     * @throws IllegalStateException if called outside the above circumstances.
      *
      * @since 90
      */
-    @Nullable
+    @NonNull
     public Page getPage() {
         ThreadCheck.ensureOnUiThread();
         if (WebLayer.getSupportedMajorVersionInternal() < 90) {

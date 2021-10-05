@@ -491,8 +491,6 @@ void NavigationControllerImpl::DidFinishNavigation(
   navigation->set_finished();
 
   if (navigation_handle->HasCommitted()) {
-    navigation->set_safe_to_get_page();
-
     // Set state on NavigationEntry user data if a per-navigation user agent was
     // specified. This can't be done earlier because a NavigationEntry might not
     // have existed at the time that SetUserAgentString was called.
@@ -506,8 +504,8 @@ void NavigationControllerImpl::DidFinishNavigation(
     }
 
     auto* rfh = navigation_handle->GetRenderFrameHost();
-    if (rfh)
-      PageImpl::GetOrCreateForPage(rfh->GetPage());
+    PageImpl::GetOrCreateForPage(rfh->GetPage());
+    navigation->set_safe_to_get_page();
   }
 
   // In some corner cases (e.g., a tab closing with an ongoing navigation)

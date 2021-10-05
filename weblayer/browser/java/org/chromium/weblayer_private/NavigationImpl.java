@@ -233,10 +233,13 @@ public final class NavigationImpl extends INavigation.Stub {
         if (mPage == null) {
             long nativePageImpl = NavigationImplJni.get().getPage(mNativeNavigationImpl);
             if (nativePageImpl == -1) {
-                throw new IllegalStateException("Using Navigation after native destroyed");
+                throw new IllegalStateException(
+                        "Invoking Navigation#getPage() outside of valid calling context");
             }
 
-            if (nativePageImpl == 0) return null;
+            // There should always be a Page associated with the navigation within the valid
+            // calling contexts for Navigation#getPage().
+            assert (nativePageImpl != 0);
 
             mPage = mNavigationController.getPage(nativePageImpl);
         }

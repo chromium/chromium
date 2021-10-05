@@ -654,6 +654,50 @@ public class NavigationTest {
     }
 
     /**
+     * This test verifies that calling getPage() from within onNavigationFailed for a
+     * navigation that results in an error page returns a non-null Page object, and that an
+     * onPageDestroyed() callback is triggered for that page when the user navigates away.
+     */
+    @MinWebLayerVersion(93)
+    @Test
+    @SmallTest
+    public void testPageCallbacksForNavigationResultingInErrorPage() throws Throwable {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(null);
+        CallbackHelper navigationFailedCallbackHelper = new CallbackHelper();
+        CallbackHelper pageDestroyedCallbackHelper = new CallbackHelper();
+        final Page[] pageForFailedNavigation = {null};
+        runOnUiThreadBlocking(() -> {
+            NavigationController navigationController = activity.getTab().getNavigationController();
+            navigationController.registerNavigationCallback(new NavigationCallback() {
+                @Override
+                public void onNavigationFailed(Navigation navigation) {
+                    assertTrue(navigation.isErrorPage());
+                    pageForFailedNavigation[0] = navigation.getPage();
+                    assertNotNull(pageForFailedNavigation[0]);
+                    navigationFailedCallbackHelper.notifyCalled();
+                }
+                @Override
+                public void onPageDestroyed(Page page) {
+                    assertEquals(pageForFailedNavigation[0], page);
+                    navigationController.unregisterNavigationCallback(this);
+                    pageDestroyedCallbackHelper.notifyCalled();
+                }
+            });
+        });
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Do a navigation that will result in an error page.
+            activity.getTab().getNavigationController().navigate(
+                    Uri.parse("http://localhost:7/non_existent"));
+        });
+        navigationFailedCallbackHelper.waitForFirst();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { activity.getTab().getNavigationController().navigate(Uri.parse(URL1)); });
+        pageDestroyedCallbackHelper.waitForFirst();
+    }
+
+    /**
      * This test verifies that initial renderer-initiated navigations to about:blank in WebLayer get
      * marked as failing due to the fact that such navigations are not committed within //content.
      * It additionally verifies that calling Navigation#getPage() on such a failed navigation raises
