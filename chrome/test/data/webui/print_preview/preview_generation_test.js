@@ -79,7 +79,7 @@ suite(preview_generation_test.suiteName, function() {
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
     nativeLayer.setPageCount(3);
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);

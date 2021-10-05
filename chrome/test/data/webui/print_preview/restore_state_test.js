@@ -90,7 +90,7 @@ suite(restore_state_test.suiteName, function() {
     nativeLayer.setLocalDestinationCapabilities(
         getCddTemplateWithAdvancedSettings(2, initialSettings.printerName));
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
 
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
@@ -314,7 +314,7 @@ suite(restore_state_test.suiteName, function() {
         [{deviceName: initialSettings.printerName, printerName: 'FooName'}]);
 
     const pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
     page = document.createElement('print-preview-app');
     document.body.appendChild(page);
     const previewArea =

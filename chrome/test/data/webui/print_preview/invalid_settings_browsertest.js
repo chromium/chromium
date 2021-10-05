@@ -92,7 +92,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
     nativeLayer.setLocalDestinations(localDestinationInfos);
     const pluginProxy = new TestPluginProxy();
     pluginProxy.setPluginCompatible(pluginCompatible);
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
 
     page = /** @type {!PrintPreviewAppElement} */ (
         document.createElement('print-preview-app'));
