@@ -111,6 +111,12 @@ RunLoop::~RunLoop() {
 
 void RunLoop::Run(const Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // "test" tracing category is used here because in regular scenarios RunLoop
+  // trace events are not useful (each process normally has one RunLoop covering
+  // its entire lifetime) and might be confusing (they make idle processes look
+  // non-idle). In tests, however, creating a RunLoop is a frequent and an
+  // explicit action making this trace event very useful.
+  TRACE_EVENT("test", "RunLoop::Run", "location", location);
 
   if (!BeforeRun())
     return;

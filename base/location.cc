@@ -18,6 +18,7 @@
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -103,6 +104,13 @@ std::string Location::ToString() const {
            NumberToString(line_number_);
   }
   return StringPrintf("pc:%p", program_counter_);
+}
+
+void Location::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("function_name", function_name_);
+  dict.Add("file_name", file_name_);
+  dict.Add("line_number", line_number_);
 }
 
 #if defined(COMPILER_MSVC)

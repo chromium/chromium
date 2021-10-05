@@ -6,8 +6,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
+#include "base/trace_event/base_tracing.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 namespace base {
 
@@ -39,5 +44,13 @@ TEST(LocationTest, CurrentYieldsCorrectValue) {
 #endif
   ALLOW_UNUSED_LOCAL(previous_line);
 }
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST(LocationTest, TracingSupport) {
+  EXPECT_EQ(perfetto::TracedValueToString(
+                Location("func", "file", 42, WhereAmI().program_counter())),
+            "{function_name:func,file_name:file,line_number:42}");
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 }  // namespace base

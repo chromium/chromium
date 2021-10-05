@@ -45,6 +45,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "base/trace_event/trace_log.h"  // nogncheck
+#endif                                   // BUILDFLAG(ENABLE_BASE_TRACING)
+
 namespace base {
 namespace test {
 
@@ -437,6 +441,12 @@ TaskEnvironment::TestTaskTracker* TaskEnvironment::CreateThreadPool() {
 }
 
 void TaskEnvironment::InitializeThreadPool() {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  // Force the creation of TraceLog instance before starting ThreadPool and
+  // creating additional threads to avoid race conditions.
+  trace_event::TraceLog::GetInstance();
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
   task_tracker_ = CreateThreadPool();
   if (mock_time_domain_) {
     mock_time_domain_->SetThreadPool(
