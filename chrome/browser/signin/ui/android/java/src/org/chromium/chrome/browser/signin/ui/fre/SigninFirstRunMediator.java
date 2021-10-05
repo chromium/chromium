@@ -114,7 +114,7 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
      */
     private void onContinueAsClicked() {
         if (!mModel.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
-            dismissWithoutSignin();
+            mListener.acceptTermsOfService();
             return;
         }
         if (mSelectedAccountName == null) {
@@ -161,19 +161,11 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                         .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             IdentityServicesProvider.get()
                     .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(SignoutReason.ABORT_SIGNIN, this::dismissWithoutSignin,
+                    .signOut(SignoutReason.ABORT_SIGNIN, mListener::acceptTermsOfService,
                             /* forceWipeUserData= */ false);
         } else {
-            dismissWithoutSignin();
+            mListener.acceptTermsOfService();
         }
-    }
-
-    /**
-     * Dismisses the sync consent screen if users do not sign in on welcome screen.
-     */
-    private void dismissWithoutSignin() {
-        mListener.acceptTermsOfService();
-        mListener.advanceToNextPage();
     }
 
     private void setSelectedAccountName(String accountName) {

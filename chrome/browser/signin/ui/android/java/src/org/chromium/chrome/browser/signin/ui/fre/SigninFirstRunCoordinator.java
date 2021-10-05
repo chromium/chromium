@@ -25,9 +25,6 @@ public class SigninFirstRunCoordinator {
 
         /** Notifies when the user accepts the terms of service. */
         void acceptTermsOfService();
-
-        /** Notifies when the user wants to advance to the next page. */
-        void advanceToNextPage();
     }
 
     private final SigninFirstRunMediator mMediator;

@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
@@ -35,6 +36,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 import java.util.List;
 
@@ -57,13 +59,24 @@ public abstract class FirstRunFlowSequencer  {
     @VisibleForTesting
     public static class FirstRunFlowSequencerDelegate {
         /** @return true if the sync consent promo page should be shown. */
-        @VisibleForTesting
-        public boolean shouldShowSyncConsentPage(Activity activity, List<Account> accounts) {
+        boolean shouldShowSyncConsentPage(Activity activity, List<Account> accounts) {
             // We show the sync consent page if sync is allowed, and not signed in, and
             // - "skip the first use hints" is not set, or
             // - "skip the first use hints" is set, but there is at least one account.
-            return isSyncAllowed() && !isSignedIn()
+            final IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(
+                            Profile.getLastUsedRegularProfile());
+            final boolean isSignedInWithSync = identityManager.hasPrimaryAccount(ConsentLevel.SYNC);
+            final boolean shouldShowSyncConsentPreMICe = isSyncAllowed() && !isSignedInWithSync
                     && (!shouldSkipFirstUseHints(activity) || !accounts.isEmpty());
+
+            if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
+                final boolean isSignedInWithoutSync =
+                        identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+                return shouldShowSyncConsentPreMICe && isSignedInWithoutSync;
+            } else {
+                return shouldShowSyncConsentPreMICe;
+            }
         }
 
         /** @return true if the Data Reduction promo page should be shown. */
@@ -81,14 +94,6 @@ public abstract class FirstRunFlowSequencer  {
             int searchPromoType = LocaleManager.getInstance().getSearchEnginePromoShowType();
             return searchPromoType == SearchEnginePromoType.SHOW_NEW
                     || searchPromoType == SearchEnginePromoType.SHOW_EXISTING;
-        }
-
-        /** @return true if the user is signed. */
-        @VisibleForTesting
-        protected boolean isSignedIn() {
-            return IdentityServicesProvider.get()
-                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                    .hasPrimaryAccount(ConsentLevel.SYNC);
         }
 
         /** @return true if Sync is allowed for the current user. */
@@ -161,8 +166,7 @@ public abstract class FirstRunFlowSequencer  {
         return mDelegate.shouldShowSearchEnginePage();
     }
 
-    @VisibleForTesting
-    protected boolean shouldShowSyncConsentPage() {
+    private boolean shouldShowSyncConsentPage() {
         return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts);
     }
 

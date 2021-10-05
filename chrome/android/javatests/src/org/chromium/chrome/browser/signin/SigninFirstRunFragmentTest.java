@@ -16,7 +16,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -92,7 +91,6 @@ public class SigninFirstRunFragmentTest {
     public static class CustomSigninFirstRunFragment extends SigninFirstRunFragment {
         private FirstRunPageDelegate mFirstRunPageDelegate;
         private boolean mIsAcceptTermsOfServiceCalled;
-        private boolean mIsAdvanceToNextPageCalled;
 
         @Override
         public FirstRunPageDelegate getPageDelegate() {
@@ -107,12 +105,6 @@ public class SigninFirstRunFragmentTest {
         public void acceptTermsOfService() {
             super.acceptTermsOfService();
             mIsAcceptTermsOfServiceCalled = true;
-        }
-
-        @Override
-        public void advanceToNextPage() {
-            super.advanceToNextPage();
-            mIsAdvanceToNextPageCalled = true;
         }
     }
 
@@ -251,9 +243,8 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(R.string.continue_button)).perform(click());
 
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAdvanceToNextPageCalled);
+        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -341,7 +332,6 @@ public class SigninFirstRunFragmentTest {
                 });
         Assert.assertEquals(primaryAccount, currentPrimaryAccount);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-        verify(mFirstRunPageDelegateMock, never()).advanceToNextPage();
     }
 
     @Test
@@ -362,7 +352,6 @@ public class SigninFirstRunFragmentTest {
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
         });
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -374,10 +363,9 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
 
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAdvanceToNextPageCalled);
+        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -395,7 +383,6 @@ public class SigninFirstRunFragmentTest {
         CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         Assert.assertNull(mAccountManagerTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-        verify(mFirstRunPageDelegateMock, never()).advanceToNextPage();
     }
 
     @Test
@@ -442,9 +429,8 @@ public class SigninFirstRunFragmentTest {
 
         onView(withText(R.string.signin_fre_dismiss_button)).perform(click());
 
-        CriteriaHelper.pollUiThread(() -> mFragment.mIsAdvanceToNextPageCalled);
+        CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
-        verify(mFirstRunPageDelegateMock).advanceToNextPage();
     }
 
     @Test
@@ -463,7 +449,6 @@ public class SigninFirstRunFragmentTest {
 
         CriteriaHelper.pollUiThread(() -> mFragment.mIsAcceptTermsOfServiceCalled);
         verify(mFirstRunPageDelegateMock).acceptTermsOfService(false);
-        verify(mFirstRunPageDelegateMock, never()).advanceToNextPage();
     }
 
     @Test
