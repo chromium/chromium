@@ -30,6 +30,7 @@ import org.chromium.base.test.params.SkipCommandLineParameterization;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -267,6 +268,7 @@ public class OmniboxTest {
     @Test
     @MediumTest
     @SkipCommandLineParameterization
+    @DisabledTest(message = "https://crbug.com/1195124")
     public void testSecurityIconOnHTTPSFocusAndBack() throws Exception {
         setNonDefaultSearchEngine();
 
