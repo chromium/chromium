@@ -49,8 +49,6 @@ namespace mojom = ::chromeos::ime::mojom;
 constexpr char kKoreanPrefsLayoutDubeolsik[] = "2 Set / 두벌식";
 constexpr char kKoreanPrefsLayoutDubeolsikOldHangeul[] =
     "2 Set (Old Hangul) / 두벌식 (옛글)";
-constexpr char kKoreanPrefsLayoutSebeolsikDubeol[] =
-    "3 Set (2 set) / 세벌식 (두벌)";
 constexpr char kKoreanPrefsLayoutSebeolsik390[] = "3 Set (390) / 세벌식 (390)";
 constexpr char kKoreanPrefsLayoutSebeolsikFinal[] =
     "3 Set (Final) / 세벌식 (최종)";
@@ -58,8 +56,6 @@ constexpr char kKoreanPrefsLayoutSebeolsikNoShift[] =
     "3 Set (No Shift) / 세벌식 (순아래)";
 constexpr char kKoreanPrefsLayoutSebeolsikOldHangeul[] =
     "3 Set (Old Hangul) / 세벌식 (옛글)";
-constexpr char kKoreanPrefsLayoutRomaja[] = "Romaja / 로마자";
-constexpr char kKoreanPrefsLayoutAhnmatae[] = "Ahnmatae / 안마태";
 
 // Returns the current input context. This may change during the session, even
 // if the IME engine does not change.
@@ -444,8 +440,6 @@ mojom::KoreanLayout KoreanLayoutToMojom(const std::string& layout) {
     return mojom::KoreanLayout::kDubeolsik;
   if (layout == kKoreanPrefsLayoutDubeolsikOldHangeul)
     return mojom::KoreanLayout::kDubeolsikOldHangeul;
-  if (layout == kKoreanPrefsLayoutSebeolsikDubeol)
-    return mojom::KoreanLayout::kSebeolsikDubeol;
   if (layout == kKoreanPrefsLayoutSebeolsik390)
     return mojom::KoreanLayout::kSebeolsik390;
   if (layout == kKoreanPrefsLayoutSebeolsikFinal)
@@ -454,10 +448,6 @@ mojom::KoreanLayout KoreanLayoutToMojom(const std::string& layout) {
     return mojom::KoreanLayout::kSebeolsikNoShift;
   if (layout == kKoreanPrefsLayoutSebeolsikOldHangeul)
     return mojom::KoreanLayout::kSebeolsikOldHangeul;
-  if (layout == kKoreanPrefsLayoutRomaja)
-    return mojom::KoreanLayout::kRomaja;
-  if (layout == kKoreanPrefsLayoutAhnmatae)
-    return mojom::KoreanLayout::kAhnmatae;
   return mojom::KoreanLayout::kDubeolsik;
 }
 

@@ -32,13 +32,10 @@ cr.define('settings.input_method_util', function() {
     ETEN26: 'Eten 26',
     SET2: '2 Set / 두벌식',
     SET2Y: '2 Set (Old Hangul) / 두벌식 (옛글)',
-    SET32: '3 Set (2 set) / 세벌식 (두벌)',
     SET390: '3 Set (390) / 세벌식 (390)',
     SET3_FINAL: '3 Set (Final) / 세벌식 (최종)',
     SET3_SUN: '3 Set (No Shift) / 세벌식 (순아래)',
     SET3_YET: '3 Set (Old Hangul) / 세벌식 (옛글)',
-    ROMAJA: 'Romaja / 로마자',
-    AHN: 'Ahnmatae / 안마태',
     XKB_US: 'US',
     XKB_DVORAK: 'Dvorak',
     XKB_COLEMAK: 'Colemak'
@@ -509,11 +506,8 @@ cr.define('settings.input_method_util', function() {
           {value: '3 Set (390) / 세벌식 (390)'},
           {value: '3 Set (Final) / 세벌식 (최종)'},
           {value: '3 Set (No Shift) / 세벌식 (순아래)'},
-          {value: 'Romaja / 로마자'},
-          {value: 'Ahnmatae / 안마태'},
           {value: '2 Set (Old Hangul) / 두벌식 (옛글)'},
           {value: '3 Set (Old Hangul) / 세벌식 (옛글)'},
-          {value: '3 Set (2 set) / 세벌식 (두벌)'},
         ];
       default:
         return [];
