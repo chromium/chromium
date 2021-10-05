@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
@@ -103,12 +104,17 @@ using signin_metrics::PromoAction;
       self.browser->GetBrowserState());
   self.mediator.commandHandler = self;
   self.mediator.syncErrorHandler = self;
+  self.mediator.forcedSigninEnabled = IsForceSignInEnabled();
   self.viewController = [[ManageSyncSettingsTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.title = self.delegate.manageSyncSettingsCoordinatorTitle;
   self.viewController.serviceDelegate = self.mediator;
   self.viewController.presentationDelegate = self;
   self.viewController.modelDelegate = self.mediator;
+  self.viewController.dispatcher = static_cast<
+      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
+      self.browser->GetCommandDispatcher());
+
   self.mediator.consumer = self.viewController;
   [self.baseNavigationController pushViewController:self.viewController
                                            animated:YES];

@@ -78,6 +78,27 @@
   return cell;
 }
 
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+
+  if (![self.tableViewModel footerForSection:section]) {
+    // Don't set up the footer view when there isn't a footer in the model.
+    return view;
+  }
+
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+
+  if (sectionIdentifier == SignOutSectionIdentifier) {
+    TableViewLinkHeaderFooterView* linkView =
+        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    linkView.delegate = self;
+  }
+
+  return view;
+}
+
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {

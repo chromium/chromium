@@ -58,6 +58,7 @@ source_set("google_services") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/icons",

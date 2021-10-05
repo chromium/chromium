@@ -229,6 +229,9 @@ locale.  The strings in this file are specific to iOS.
      <message name="IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE" desc="The information text on the disconnect footer describing signout for non-managed accounts [Length: 400em].">
        When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.
       </message>
+     <message name="IDS_IOS_ENTERPRISE_FORCED_SIGNIN_SYNC_SETTINGS_SIGNOUT_FOOTER" desc="The informational footer below the sign-out button item in sync settings when the forced sign-in policy is enabled. (Force Sign In) [iOS only]">
+       Your organization requires you to sign in to use Chrome. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>.
+     </message>
       <message name="IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT" desc="Text displayed in an alert when the user is signed out due to browser sign-in becoming disabled by policy. [iOS only]">
         Your administrator requires you to sign in with an organization account. Accounts that are restricted by your administrator are hidden.
       </message>

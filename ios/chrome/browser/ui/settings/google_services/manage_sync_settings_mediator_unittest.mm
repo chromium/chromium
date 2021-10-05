@@ -263,6 +263,33 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithTurnOffSync) {
   ASSERT_EQ(1UL, sign_out_items.count);
 }
 
+// Tests that the policy info is shown below the "Turn off Sync" item when the
+// forced sign-in policy is enabled.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncServiceEnabledWithTurnOffSyncWithForcedSigninPolicy) {
+  FirstSetupSyncOnWithConsentEnabled();
+  ON_CALL(*sync_setup_service_mock_, GetSyncServiceState())
+      .WillByDefault(Return(SyncSetupService::kNoSyncServiceError));
+
+  mediator_.forcedSigninEnabled = YES;
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // "Turn off Sync" item is shown.
+  NSArray* sign_out_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SignOutSectionIdentifier];
+  ASSERT_EQ(1UL, sign_out_items.count);
+
+  // The footer below "Turn off Sync" is shown.
+  ListItem* footer = [mediator_.consumer.tableViewModel
+      footerForSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                         SignOutSectionIdentifier];
+  TableViewLinkHeaderFooterItem* footerTextItem =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(footer);
+  ASSERT_GT([footerTextItem.text length], 0UL);
+}
+
 // Tests that a Sync error that occurs after the user has loaded the Settings
 // page once will update the full page.
 TEST_F(ManageSyncSettingsMediatorTest, SyncServiceSuccessThenDisabled) {
