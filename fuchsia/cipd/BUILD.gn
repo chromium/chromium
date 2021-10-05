@@ -12,6 +12,8 @@ import("//build/util/process_version.gni")
 import("//third_party/fuchsia-sdk/sdk/build/build_id_dir.gni")
 import("//third_party/fuchsia-sdk/sdk/build/cipd.gni")
 
+visibility = [ ":*" ]
+
 # gn binary location.
 if (host_os == "mac") {
   _gn_path = "//buildtools/mac/gn"
@@ -251,8 +253,6 @@ action("strip_chromedriver_binary") {
     rebase_path(_stripped_chromedriver_file, root_build_dir),
     rebase_path(prog_name, root_build_dir),
   ]
-
-  visibility = [ ":*" ]
 }
 
 cipd_archive("chromedriver") {
@@ -316,20 +316,9 @@ _debug_symbols_outdir =
     "${target_gen_dir}/${_debug_symbols_archive_name}/${_build_ids_target}"
 
 build_id_dir(_build_ids_target) {
-  testonly = true
-  build_id_dirs = [
-    "${root_gen_dir}/fuchsia/engine/web_engine",
-    "${root_gen_dir}/fuchsia/runners/cast_runner",
-    "${root_gen_dir}/fuchsia/runners/web_runner",
-  ]
-
+  testonly = true  # Some of the archives contain test packages.
   output_path = _debug_symbols_outdir
-  deps = [
-    ":test_packages_for_deps",
-    "//fuchsia/engine:web_engine",
-    "//fuchsia/runners:cast_runner_pkg",
-    "//fuchsia/runners:web_runner_pkg",
-  ]
+  deps = [ ":archives_with_symbols" ]
 }
 
 fuchsia_cipd_package(_debug_symbols_archive_name) {
@@ -346,27 +335,44 @@ fuchsia_cipd_package(_debug_symbols_archive_name) {
 }
 
 cipd_archive("clear_key_cdm") {
+  testonly = true
   package_basename = "libclearkeycdm"
   description = "Prebuilt libclearkeycdm.so binary for Fuchsia."
-
-  testonly = true
 
   deps = [ "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm" ]
 
   sources = [ "${root_out_dir}/lib/libclearkeycdm.so" ]
 }
 
-group("cipd") {
-  # Must be testonly because debug symbols depends on test package symbols.
-  testonly = true
+# A group for production archives to ensure nothing is testonly.
+group("production_archives") {
   deps = [
     ":castrunner",
+    ":webrunner",
+  ]
+}
+
+# Used by both the main group as well as :debug_symbols.
+group("archives_with_symbols") {
+  testonly = true  # tests and web_engine_shell are testonly.
+  deps = [
+    ":production_archives",
+    ":tests",
+    ":web_engine_shell",
+  ]
+}
+
+group("cipd") {
+  testonly = true  # Some archives are testonly.
+  deps = [
+    ":archives_with_symbols",
+
+    # Symbols are not uploaded for the following.
     ":chromedriver",
     ":clear_key_cdm",
     ":debug_symbols",
     ":http",
-    ":tests",
-    ":web_engine_shell",
-    ":webrunner",
   ]
+  visibility = []  # Required to replace the file default.
+  visibility = [ "//fuchsia:gn_all" ]
 }
