@@ -18,15 +18,11 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace {
-// The scope required for an access token in order to query Memories.
-constexpr char kPhotosScope[] =
-    "https://www.googleapis.com/auth/photos.firstparty.readonly";
-constexpr char kPhotosImgScope[] =
-    "https://www.googleapis.com/auth/photos.image.readonly";
 // Maximum accepted size of an API response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
 const char server_url[] =
@@ -146,8 +142,8 @@ void PhotosService::GetMemories(GetMemoriesCallback callback) {
   }
 
   signin::ScopeSet scopes;
-  scopes.insert(kPhotosScope);
-  scopes.insert(kPhotosImgScope);
+  scopes.insert(GaiaConstants::kPhotosModuleOAuth2Scope);
+  scopes.insert(GaiaConstants::kPhotosModuleImageOAuth2Scope);
   token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "ntp_photos_module", identity_manager_, scopes,
       base::BindOnce(&PhotosService::OnTokenReceived,

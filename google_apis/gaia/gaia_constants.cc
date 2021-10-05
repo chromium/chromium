@@ -153,6 +153,14 @@ const char kAccountCapabilitiesOAuth2Scope[] =
 const char kSupportContentOAuth2Scope[] =
     "https://www.googleapis.com/auth/supportcontent";
 
+// OAuth 2 scope for NTP Photos module API.
+const char kPhotosModuleOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.firstparty.readonly";
+
+// OAuth 2 scope for NTP Photos module image API.
+const char kPhotosModuleImageOAuth2Scope[] =
+    "https://www.googleapis.com/auth/photos.image.readonly";
+
 // Used to mint uber auth tokens when needed.
 const char kGaiaSid[] = "sid";
 const char kGaiaLsid[] = "lsid";
