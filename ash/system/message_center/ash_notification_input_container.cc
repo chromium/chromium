@@ -8,6 +8,8 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/message_center/message_center_constants.h"
+#include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/rrect_f.h"
 #include "ui/views/background.h"
@@ -110,7 +112,10 @@ int AshNotificationInputContainer::GetDefaultPlaceholderStringId() const {
   return IDS_ASH_NOTIFICATION_INLINE_REPLY_PLACEHOLDER;
 }
 
-void AshNotificationInputContainer::SetTextfieldBackground() {
+void AshNotificationInputContainer::StyleTextfield() {
+  textfield()->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                         kNotificationBodyFontWeight,
+                                         gfx::Font::Weight::MEDIUM));
   auto* color_provider = ash::AshColorProvider::Get();
   textfield()->SetBackground(views::CreateRoundedRectBackground(
       color_provider->GetControlsLayerColor(

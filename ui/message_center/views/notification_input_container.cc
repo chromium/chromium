@@ -62,7 +62,7 @@ void NotificationInputContainer::Init() {
 
   textfield_->set_controller(this);
   textfield_->SetBorder(views::CreateEmptyBorder(GetTextfieldPadding()));
-  SetTextfieldBackground();
+  StyleTextfield();
   AddChildView(textfield_);
   box_layout->SetFlexForView(textfield_, 1);
 
@@ -135,7 +135,7 @@ void NotificationInputContainer::OnThemeChanged() {
   const auto* color_provider = GetColorProvider();
   textfield_->SetTextColor(
       color_provider->GetColor(ui::kColorNotificationInputForeground));
-  SetTextfieldBackground();
+  StyleTextfield();
   if (ink_drop_container_)
     textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->set_placeholder_text_color(color_provider->GetColor(
@@ -207,7 +207,7 @@ int NotificationInputContainer::GetDefaultPlaceholderStringId() const {
   return IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER;
 }
 
-void NotificationInputContainer::SetTextfieldBackground() {
+void NotificationInputContainer::StyleTextfield() {
   // No background.
 }
 

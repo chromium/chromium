@@ -10,8 +10,6 @@
 
 namespace ash {
 
-constexpr char kGoogleSansFont[] = "Google Sans";
-
 constexpr int kMessagePopupCornerRadius = 16;
 constexpr int kMessageCenterNotificationCornerRadius = 2;
 
@@ -34,7 +32,9 @@ constexpr gfx::Size kNotificationExpandButtonWithLabelSize(40, 24);
 constexpr gfx::Insets kAppIconViewExpandedPadding(2, 0, 0, 0);
 constexpr gfx::Insets kAppIconViewCollapsedPadding(6, 0, 0, 0);
 
+constexpr char kGoogleSansFont[] = "Google Sans";
 constexpr int kHeaderViewLabelSize = 12;
+constexpr char kNotificationBodyFontWeight = 13;
 
 }  // namespace ash
 

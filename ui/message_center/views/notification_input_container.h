@@ -92,7 +92,7 @@ class MESSAGE_CENTER_EXPORT NotificationInputContainer
   virtual int GetDefaultPlaceholderStringId() const;
 
   // Sets the visible background of `textfield_`.
-  virtual void SetTextfieldBackground();
+  virtual void StyleTextfield();
 
   // Updates image and coloring for `button_`.
   virtual void UpdateButtonImage();

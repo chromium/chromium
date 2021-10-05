@@ -29,7 +29,7 @@ class ASH_EXPORT AshNotificationInputContainer
   views::InkDropContainerView* InstallInkDrop() override;
   gfx::Insets GetTextfieldPadding() const override;
   int GetDefaultPlaceholderStringId() const override;
-  void SetTextfieldBackground() override;
+  void StyleTextfield() override;
   gfx::Insets GetSendButtonPadding() const override;
   void SetSendButtonHighlightPath() override;
   void UpdateButtonImage() override;
