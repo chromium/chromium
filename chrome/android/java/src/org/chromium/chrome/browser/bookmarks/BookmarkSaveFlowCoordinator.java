@@ -12,12 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -32,6 +35,7 @@ public class BookmarkSaveFlowCoordinator {
             PropertyKey> mChangeProcessor;
     private final DestroyChecker mDestroyChecker;
 
+    private CallbackController mCallbackController = new CallbackController();
     private BottomSheetController mBottomSheetController;
     private BookmarkSaveFlowBottomSheetContent mBottomSheetContent;
     private BookmarkSaveFlowMediator mMediator;
@@ -70,6 +74,8 @@ public class BookmarkSaveFlowCoordinator {
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
         mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
         mMediator.show(bookmarkId);
+
+        setupAutodismiss();
     }
 
     private void close() {
@@ -77,6 +83,14 @@ public class BookmarkSaveFlowCoordinator {
 
         mClosedViaRunnable = true;
         mBottomSheetController.hideContent(mBottomSheetContent, true);
+    }
+
+    private void setupAutodismiss() {
+        if (!BookmarkFeatures.isImprovedSaveFlowAutodismissEnabled()) return;
+
+        PostTask.postDelayedTask(UiThreadTaskTraits.USER_VISIBLE,
+                mCallbackController.makeCancelable(this::close),
+                BookmarkFeatures.getImprovedSaveFlowAutodismissTimeMs());
     }
 
     private void destroy() {
@@ -87,6 +101,7 @@ public class BookmarkSaveFlowCoordinator {
         if (mClosedViaRunnable) {
             RecordUserAction.record("MobileBookmark.SaveFlow.ClosedWithoutEditAction");
         }
+        mCallbackController.destroy();
 
         mMediator.destroy();
         mMediator = null;
@@ -149,22 +164,22 @@ public class BookmarkSaveFlowCoordinator {
 
         @Override
         public int getSheetContentDescriptionStringId() {
-            return R.string.bookmarks_bottom_sheet_content_description;
-        }
-
-        @Override
-        public int getSheetHalfHeightAccessibilityStringId() {
-            return R.string.bookmarks_bottom_sheet_opened_half;
-        }
-
-        @Override
-        public int getSheetFullHeightAccessibilityStringId() {
-            return R.string.bookmarks_bottom_sheet_opened_full;
+            return R.string.bookmarks_save_flow_content_description;
         }
 
         @Override
         public int getSheetClosedAccessibilityStringId() {
-            return R.string.bookmarks_bottom_sheet_closed;
+            return R.string.bookmarks_save_flow_closed_description;
+        }
+
+        @Override
+        public int getSheetHalfHeightAccessibilityStringId() {
+            return R.string.bookmarks_save_flow_opened_half;
+        }
+
+        @Override
+        public int getSheetFullHeightAccessibilityStringId() {
+            return R.string.bookmarks_save_flow_opened_full;
         }
     }
 

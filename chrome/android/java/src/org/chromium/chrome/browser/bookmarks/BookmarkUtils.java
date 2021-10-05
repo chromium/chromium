@@ -92,7 +92,7 @@ public class BookmarkUtils {
         }
 
         // TODO(crbug.com/1252228): Reading list support needs some tests.
-        if (isImprovedSaveFlowEnabled()) {
+        if (BookmarkFeatures.isImprovedSaveFlowEnabled()) {
             BookmarkId newBookmarkId = addBookmarkAndShowSaveFlow(
                     activity, bookmarkModel, tab, bottomSheetController, bookmarkType);
             callback.onResult(newBookmarkId);
@@ -650,10 +650,5 @@ public class BookmarkUtils {
             SharedPreferencesManager.getInstance().removeKey(
                     ChromePreferenceKeys.BOOKMARKS_LAST_USED_URL);
         }
-    }
-
-    private static boolean isImprovedSaveFlowEnabled() {
-        return ChromeFeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_IMPROVED_SAVE_FLOW);
     }
 }
