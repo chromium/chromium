@@ -174,6 +174,24 @@ Polymer({
    * @private
    */
   onToggleButtonOrDropdownChange_(e) {
+    // e.model isn't correctly set for dependent options, due to nested
+    // dom-repeat, so figure out what option was actually set.
+    const option = e.model.dependant ? e.model.dependant : e.model.option;
+    // The value of dropdown is not updated immediately when the event is fired.
+    // Wait for the polymer state to update to make sure we write the latest
+    // to Cros Prefs.
+    Polymer.RenderStatus.afterNextRender(this, () => {
+      this.updatePref_(option.name, option.value);
+    });
+  },
+
+  /**
+   * Update an input method pref.
+   * @param {!settings.input_method_util.OptionType} optionName
+   * @param {*} newValue
+   * @private
+   */
+  updatePref_(optionName, newValue) {
     // Get the existing settings dictionary, in order to update it later.
     // |PrefsBehavior.setPrefValue| will update Cros Prefs only if the reference
     // of variable has changed, so we need to copy the current content into a
@@ -184,23 +202,14 @@ Polymer({
     if (!(prefix in updatedSettings)) {
       updatedSettings[prefix] = {};
     }
-    // e.model isn't correctly set for dependent options, due to nested
-    // dom-repeat, so figure out what option was actually set.
-    const option = e.model.dependant ? e.model.dependant : e.model.option;
-    // The value of dropdown is not updated immediately when the event is fired.
-    // Wait for the polymer state to update to make sure we write the latest
-    // to Cros Prefs.
-    Polymer.RenderStatus.afterNextRender(this, () => {
-      let newValue = option.value;
-      // The value of dropdown in html is always string, but some of the prefs
-      // values are used as integer or enum by IME, so we need to store numbers
-      // for them to function correctly.
-      if (settings.input_method_util.isNumberValue(option.name)) {
-        newValue = parseInt(newValue, 10);
-      }
-      updatedSettings[prefix][option.name] = newValue;
-      this.setPrefValue(this.PREFS_PATH, updatedSettings);
-    });
+    // The value of dropdown in html is always string, but some of the prefs
+    // values are used as integer or enum by IME, so we need to store numbers
+    // for them to function correctly.
+    if (settings.input_method_util.isNumberValue(optionName)) {
+      newValue = parseInt(newValue, 10);
+    }
+    updatedSettings[prefix][optionName] = newValue;
+    this.setPrefValue(this.PREFS_PATH, updatedSettings);
   },
 
   /**
