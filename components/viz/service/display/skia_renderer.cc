@@ -834,36 +834,36 @@ void SkiaRenderer::SwapBuffersSkipped() {
 }
 
 void SkiaRenderer::SwapBuffersComplete(gfx::GpuFenceHandle release_fence) {
+  auto& read_lock_release_fence_overlay_locks =
+      read_lock_release_fence_overlay_locks_.emplace_back();
+  auto read_fence_lock_iter = committed_overlay_locks_.end();
+
   if (!release_fence.is_null()) {
     // Set release fences for returning for last frame overlay resources.
     for (auto& lock : committed_overlay_locks_) {
       lock.SetReleaseFence(release_fence.Clone());
     }
-  }
-
-  // Right now, only macOS needs to return mailboxes of released overlays, so
-  // we should not release |committed_overlay_locks_| here. The resources in it
-  // will be released by DidReceiveReleasedOverlays() later.
-#if defined(OS_APPLE)
-  for (auto& lock : committed_overlay_locks_) {
-    awaiting_release_overlay_locks_.insert(std::move(lock));
-  }
-#endif  // defined(OS_APPLE)
-
-  // Find all locks that have a read-lock fence associated with them.
-  // If we have a release fence, it's not safe to release them here.
-  // Release them later in BuffersPresented.
-  auto& read_lock_release_fence_overlay_locks =
-      read_lock_release_fence_overlay_locks_.emplace_back();
-  if (!release_fence.is_null()) {
-    auto read_lock_iter = std::partition(
+    // Find all locks that have a read-lock fence associated with them.
+    // If we have a release fence, it's not safe to release them here.
+    // Release them later in BuffersPresented.
+    read_fence_lock_iter = std::partition(
         committed_overlay_locks_.begin(), committed_overlay_locks_.end(),
         [](auto& lock) { return !lock.HasReadLockFence(); });
     read_lock_release_fence_overlay_locks.insert(
         read_lock_release_fence_overlay_locks.end(),
-        std::make_move_iterator(read_lock_iter),
+        std::make_move_iterator(read_fence_lock_iter),
         std::make_move_iterator(committed_overlay_locks_.end()));
   }
+
+  // Right now, only macOS and Ozone need to return mailboxes of released
+  // overlays, so we should not release |committed_overlay_locks_| here. The
+  // resources in it will be released by DidReceiveReleasedOverlays() later.
+#if defined(OS_APPLE) || defined(USE_OZONE)
+  for (auto lock_iter = committed_overlay_locks_.begin();
+       lock_iter != read_fence_lock_iter; ++lock_iter) {
+    awaiting_release_overlay_locks_.insert(std::move(*lock_iter));
+  }
+#endif  // defined(OS_APPLE) || defined(USE_OZONE)
 
   committed_overlay_locks_.clear();
   std::swap(committed_overlay_locks_, pending_overlay_locks_.front());
@@ -877,8 +877,8 @@ void SkiaRenderer::BuffersPresented() {
 
 void SkiaRenderer::DidReceiveReleasedOverlays(
     const std::vector<gpu::Mailbox>& released_overlays) {
-  // This method is only called on macOS right now.
-#if defined(OS_APPLE)
+  // This method is only called on macOS and Ozone right now.
+#if defined(OS_APPLE) || defined(USE_OZONE)
   for (const auto& mailbox : released_overlays) {
     auto it = awaiting_release_overlay_locks_.find(mailbox);
     if (it == awaiting_release_overlay_locks_.end()) {
@@ -889,7 +889,7 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
   }
 #else
   NOTREACHED();
-#endif  // !defined(OS_APPLE)
+#endif  // !(defined(OS_APPLE) || defined (USE_OZONE))
 }
 
 bool SkiaRenderer::FlippedFramebuffer() const {
@@ -3162,7 +3162,7 @@ bool SkiaRenderer::UsingSkiaForDelegatedInk() const {
   return delegated_ink_handler_ && delegated_ink_handler_->GetInkRenderer();
 }
 
-#if defined(OS_APPLE)
+#if defined(OS_APPLE) || defined(USE_OZONE)
 bool SkiaRenderer::ScopedReadLockComparator::operator()(
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& lhs,
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
@@ -3180,6 +3180,6 @@ bool SkiaRenderer::ScopedReadLockComparator::operator()(
     const DisplayResourceProviderSkia::ScopedReadLockSharedImage& rhs) const {
   return lhs < rhs.mailbox();
 }
-#endif  // defined(OS_APPLE)
+#endif  // defined(OS_APPLE) || defined(USE_OZONE)
 
 }  // namespace viz
