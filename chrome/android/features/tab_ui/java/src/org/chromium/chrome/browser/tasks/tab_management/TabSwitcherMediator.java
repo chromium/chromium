@@ -853,6 +853,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             Tab newlySelectedTab =
                     TabModelUtils.getTabById(mTabModelSelector.getCurrentModel(), tabId);
             StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
+            if (mMode == TabListMode.CAROUSEL) {
+                StartSurfaceUserData.setOpenedFromStart(newlySelectedTab);
+            }
         }
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {

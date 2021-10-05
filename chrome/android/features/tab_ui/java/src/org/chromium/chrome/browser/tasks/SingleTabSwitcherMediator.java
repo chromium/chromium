@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
+import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator of the single tab tab switcher. */
@@ -66,6 +67,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             if (mTabSelectingListener != null
                     && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX) {
                 selectTheCurrentTab();
+                StartSurfaceUserData.setOpenedFromStart(mTabModelSelector.getCurrentTab());
             }
         });
 
