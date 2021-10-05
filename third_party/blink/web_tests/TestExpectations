@@ -6239,6 +6239,7 @@ crbug.com/1196317 [ Mac ] scrollbars/custom-scrollbar-thumb-width-changed-on-ina
 
 # Sheriff 2021-04-20
 crbug.com/1200671 [ Mac11.0 ] virtual/gpu-rasterization/images/color-profile-animate-rotate.html [ Failure Pass ]
+crbug.com/1200671 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-animate-rotate.html [ Failure Pass ]
 
 crbug.com/1197444 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/nested-scroll-overlay-scrollbar.html [ Crash Failure Pass ]
 # Sheriff 2021-04-21
@@ -6760,6 +6761,7 @@ crbug.com/1234619 external/wpt/screen-capture/permissions-policy-video.https.sub
 
 # Sheriff 2021-08-02
 crbug.com/1235685 [ Mac10.14 ] virtual/scroll-unification/plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
+crbug.com/1235685 [ Mac11-arm64 ] virtual/scroll-unification/plugins/focus-change-4-change-focus-and-blur.html [ Failure Pass ]
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
 # Sheriff 2021-08-04
@@ -7029,6 +7031,12 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/idle-detection/interceptor.https.
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/security/opened-document-security-origin-resets-on-navigation.html [ Timeout ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/runtime/runtime-install-binding.js [ Failure Pass ]
 
+# mac-arm CI 10-05-2021
+crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-image-object-fit.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/no-alloc-direct-call/fast/canvas/canvas-lost-gpu-context.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-svg.html [ Failure Pass ]
+
 crbug.com/1249176 [ Mac11-arm64 ] editing/selection/find-in-text-control.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-min-max-attribute.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html [ Crash ]
@@ -7172,6 +7180,7 @@ crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.
 # Sheriff 2021-10-05
 crbug.com/1256701 [ Debug Linux ] fast/forms/form-invalid-url.html [ Failure Pass ]
 crbug.com/1256755 [ Win ] http/tests/xmlhttprequest/cross-origin-unsupported-url.html [ Failure Pass ]
+crbug.com/1256755 [ Mac11-arm64 ] http/tests/xmlhttprequest/cross-origin-unsupported-url.html [ Failure Pass ]
 crbug.com/1256770 [ Mac ] svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
 crbug.com/1256763 [ Win ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1256763 [ Mac ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
