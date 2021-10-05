@@ -150,17 +150,10 @@ class WebTransport::Stream final {
   }
 
   void Abort(uint8_t code) {
-    // The type QuicRstStreamErrorCode is too small for the code once it has
-    // been translated into the WebTransport error space, so just used a fixed
-    // code instead.
-    // TODO(ricea): Use a different type once quiche supports it.
-    const auto quic_code = quic::QUIC_STREAM_UNKNOWN_APPLICATION_ERROR_CODE;
-    auto* stream = incoming_ ? incoming_ : outgoing_;
-    if (!stream) {
+    if (!outgoing_) {
       return;
     }
-    stream->ResetWithUserCode(quic_code);
-    incoming_ = nullptr;
+    outgoing_->ResetWithUserCode(code);
     outgoing_ = nullptr;
     readable_watcher_.Cancel();
     readable_.reset();
@@ -171,8 +164,10 @@ class WebTransport::Stream final {
     if (!incoming_) {
       return;
     }
-    NOTIMPLEMENTED() << "TODO(ricea): Pass this to Quiche";
+    incoming_->SendStopSending(code);
     incoming_ = nullptr;
+    writable_watcher_.Cancel();
+    writable_.reset();
     MayDisposeLater();
   }
 
