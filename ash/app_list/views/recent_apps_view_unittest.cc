@@ -67,16 +67,25 @@ void AddSearchResult(const std::string& id, AppListSearchResultType type) {
       std::move(result));
 }
 
-void ShowAppList() {
-  Shell::Get()->app_list_controller()->ShowAppList();
-}
-
-class RecentAppsViewTest : public AshTestBase {
+// Parameterized to test recent apps in the app list bubble and tablet mode.
+class RecentAppsViewTest : public AshTestBase,
+                           public testing::WithParamInterface<bool> {
  public:
   RecentAppsViewTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~RecentAppsViewTest() override = default;
+
+  // Whether we should run the test in tablet mode.
+  bool tablet_mode_param() { return GetParam(); }
+
+  void ShowAppList() {
+    if (tablet_mode_param()) {
+      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    } else {
+      Shell::Get()->app_list_controller()->ShowAppList();
+    }
+  }
 
   void RightClickOn(views::View* view) {
     GetEventGenerator()->MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
@@ -84,6 +93,8 @@ class RecentAppsViewTest : public AshTestBase {
   }
 
   RecentAppsView* GetRecentAppsView() {
+    if (tablet_mode_param())
+      return GetAppListTestHelper()->GetFullscreenRecentAppsView();
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
@@ -106,8 +117,9 @@ class RecentAppsViewTest : public AshTestBase {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+INSTANTIATE_TEST_SUITE_P(All, RecentAppsViewTest, testing::Bool());
 
-TEST_F(RecentAppsViewTest, CreatesIconsForApps) {
+TEST_P(RecentAppsViewTest, CreatesIconsForApps) {
   AddAppListItem("id1");
   AddSearchResult("id1", AppListSearchResultType::kInstalledApp);
   AddAppListItem("id2");
@@ -122,7 +134,7 @@ TEST_F(RecentAppsViewTest, CreatesIconsForApps) {
   EXPECT_EQ(GetAppListItemViews().size(), 4u);
 }
 
-TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith5Items) {
+TEST_P(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith5Items) {
   AddAppResults(5);
   ShowAppList();
 
@@ -139,7 +151,7 @@ TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith5Items) {
   }
 }
 
-TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith5Items) {
+TEST_P(RecentAppsViewTest, ResultItemsCoverWholeContainerWith5Items) {
   AddAppResults(5);
   ShowAppList();
 
@@ -153,7 +165,7 @@ TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith5Items) {
             items[4]->bounds().right_center());
 }
 
-TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith4Items) {
+TEST_P(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith4Items) {
   AddAppResults(4);
   ShowAppList();
 
@@ -170,7 +182,7 @@ TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith4Items) {
   }
 }
 
-TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith4Items) {
+TEST_P(RecentAppsViewTest, ResultItemsCoverWholeContainerWith4Items) {
   AddAppResults(4);
   ShowAppList();
 
@@ -184,7 +196,7 @@ TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith4Items) {
             items[3]->bounds().right_center());
 }
 
-TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith3Items) {
+TEST_P(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith3Items) {
   AddAppResults(3);
   ShowAppList();
 
@@ -201,7 +213,7 @@ TEST_F(RecentAppsViewTest, ItemsEvenlySpacedInTheViewWith3Items) {
   }
 }
 
-TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith3Items) {
+TEST_P(RecentAppsViewTest, ResultItemsCoverWholeContainerWith3Items) {
   AddAppResults(3);
   ShowAppList();
 
@@ -215,7 +227,7 @@ TEST_F(RecentAppsViewTest, ResultItemsCoverWholeContainerWith3Items) {
             items[2]->bounds().right_center());
 }
 
-TEST_F(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
+TEST_P(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
   AddSearchResult("id1", AppListSearchResultType::kAnswerCard);
   AddSearchResult("id2", AppListSearchResultType::kFileChip);
   AddSearchResult("id3", AppListSearchResultType::kAssistantText);
@@ -225,7 +237,7 @@ TEST_F(RecentAppsViewTest, DoesNotCreateIconsForNonApps) {
   EXPECT_EQ(GetAppListItemViews().size(), 0u);
 }
 
-TEST_F(RecentAppsViewTest, DoesNotCreateIconForMismatchedId) {
+TEST_P(RecentAppsViewTest, DoesNotCreateIconForMismatchedId) {
   AddAppListItem("id");
   AddSearchResult("bad id", AppListSearchResultType::kInstalledApp);
 
@@ -235,25 +247,31 @@ TEST_F(RecentAppsViewTest, DoesNotCreateIconForMismatchedId) {
   EXPECT_EQ(view->children().size(), 0u);
 }
 
-TEST_F(RecentAppsViewTest, ClickOnRecentApp) {
+TEST_P(RecentAppsViewTest, ClickOrTapOnRecentApp) {
   AddAppListItem("id");
   AddSearchResult("id", AppListSearchResultType::kInstalledApp);
 
   ShowAppList();
 
-  // Click on the first icon.
+  // Click or tap on the first icon.
   std::vector<AppListItemView*> items = GetAppListItemViews();
   ASSERT_FALSE(items.empty());
   views::View* icon = items[0];
-  GetEventGenerator()->MoveMouseTo(icon->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
+
+  if (tablet_mode_param()) {
+    // Tap an item and make sure the item activation is recorded.
+    GetEventGenerator()->GestureTapAt(icon->GetBoundsInScreen().CenterPoint());
+  } else {
+    GetEventGenerator()->MoveMouseTo(icon->GetBoundsInScreen().CenterPoint());
+    GetEventGenerator()->ClickLeftButton();
+  }
 
   // The item was activated.
   EXPECT_EQ(1, GetTestAppListClient()->activate_item_count());
   EXPECT_EQ("id", GetTestAppListClient()->activate_item_last_id());
 }
 
-TEST_F(RecentAppsViewTest, RightClickOpensContextMenu) {
+TEST_P(RecentAppsViewTest, RightClickOpensContextMenu) {
   AddAppListItem("id1");
   AddSearchResult("id1", AppListSearchResultType::kInstalledApp);
   ShowAppList();
@@ -275,7 +293,7 @@ TEST_F(RecentAppsViewTest, RightClickOpensContextMenu) {
   EXPECT_TRUE(root_bounds.Contains(menu_bounds));
 }
 
-TEST_F(RecentAppsViewTest, AppIconSelectedWhenMenuIsShown) {
+TEST_P(RecentAppsViewTest, AppIconSelectedWhenMenuIsShown) {
   // Show an app list with 2 recent apps.
   AddAppListItem("id1");
   AddSearchResult("id1", AppListSearchResultType::kInstalledApp);

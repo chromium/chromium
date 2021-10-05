@@ -279,17 +279,23 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view,
     separator_->SetPaintToLayer();
     separator_->layer()->SetFillsBoundsOpaquely(false);
   } else {
+    // Add child view at index 0 so focus traversal goes to suggestion chips
+    // before the views in the scrollable_container.
     suggestion_chip_container_view_ = AddChildViewAt(
         std::make_unique<SuggestionChipContainerView>(contents_view), 0);
   }
 
   AppListA11yAnnouncer* a11y_announcer =
       contents_view->app_list_view()->a11y_announcer();
-  apps_grid_view_ = scrollable_container_->AddChildView(
+  // Add `apps_grid_view_` at index 0 to put it at the back and ensure other
+  // views in the `scrollable_container` get events first, since the grid
+  // overlaps in bounds with these other views.
+  apps_grid_view_ = scrollable_container_->AddChildViewAt(
       std::make_unique<PagedAppsGridView>(contents_view, a11y_announcer,
                                           /*folder_delegate=*/nullptr,
                                           /*folder_controller=*/this,
-                                          /*container_delegate=*/this));
+                                          /*container_delegate=*/this),
+      0);
 
   const int preferred_rows = kPreferredGridRows;
   if (features::IsProductivityLauncherEnabled()) {

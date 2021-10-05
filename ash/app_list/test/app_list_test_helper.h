@@ -19,6 +19,7 @@ class AppListBubbleView;
 class AppListControllerImpl;
 class AppListFolderView;
 class AppListView;
+class AppsContainerView;
 class ContinueSectionView;
 class PagedAppsGridView;
 class RecentAppsView;
@@ -87,7 +88,9 @@ class AppListTestHelper {
 
   // Fullscreen/peeking launcher helpers.
   AppListView* GetAppListView();
+  AppsContainerView* GetAppsContainerView();
   AppListFolderView* GetFullscreenFolderView();
+  RecentAppsView* GetFullscreenRecentAppsView();
 
   // Paged launcher helpers.
   PagedAppsGridView* GetRootPagedAppsGridView();
