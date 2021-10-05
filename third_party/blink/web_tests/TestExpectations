@@ -123,6 +123,7 @@ crbug.com/1254937 http/tests/devtools/oopif/oopif-presentation-console-messages.
 crbug.com/1254937 http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure ]
 crbug.com/1254937 http/tests/inspector-protocol/issues/content-security-policy-issue-creation-img.js [ Failure ]
 crbug.com/1254937 http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Timeout Failure ]
+crbug.com/1256612 plugins/focus-change-3-change-blur.html [ Pass Failure ]
 
 # Timeouts
 crbug.com/1254938 http/tests/doc-write-intervention/doc-write-sync-third-party-script-block.html [ Timeout ]
