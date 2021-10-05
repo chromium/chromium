@@ -278,6 +278,9 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   // use.
   network::mojom::NetworkContextParamsPtr CreateNetworkContextParams();
 
+  // Logs metrics related to cookies.
+  void RecordCookieMetrics(Profile* profile);
+
   std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
 
   // This owns the URLRequestContext inside the network service. This is used by
