@@ -3242,12 +3242,8 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_MENU_REQUEST_DESKTOP_SITE_OFF" desc="Accessibility description for when Request Desktop Site is disabled.">
         Turn on Request desktop site
       </message>
-      <!-- TODO(https://crbug.com/1248537): Update the placeholders. -->
-      <message name="IDS_MENU_AUTO_DARK_WEB_CONTENTS_ON" translateable="false" desc="Accessibility description for when auto darken web content is enabled. [CHAR_LIMIT=27]">
-        Disable Auto-Dark for site
-      </message>
-      <message name="IDS_MENU_AUTO_DARK_WEB_CONTENTS_OFF" translateable="false" desc="Accessibility description for when auto darken web content is disabled. [CHAR_LIMIT=27]">
-        Enable Auto-Dark for site
+      <message name="IDS_MENU_AUTO_DARK_WEB_CONTENTS" desc="Menu item in Chrome's overflow/options menu. When Chrome's browser UI is set to dark theme and this option is checked, sites will have a dark theme automatically applied as well. [CHAR_LIMIT=24]">
+        Dark theme
       </message>
       <message name="IDS_MENU_READER_MODE_PREFS" desc="Menu item to show reader mode preferences pane, which allows users to change the appearance (font size, theme, etc.) of the page. [CHAR_LIMIT=27]">
         Appearance

@@ -105,9 +105,17 @@
                 android:checkable="true" />
           </menu>
         </item>
-        <item android:id="@+id/auto_dark_web_contents_id"
-            android:title="@string/menu_auto_dark_web_contents_off"
-            android:icon="@drawable/ic_brightness_medium_24dp" />
+        <item android:id="@+id/auto_dark_web_contents_row_menu_id"
+            android:title="@null">
+          <menu>
+              <item android:id="@+id/auto_dark_web_contents_id"
+                android:title="@string/menu_auto_dark_web_contents"
+                android:icon="@drawable/ic_brightness_medium_24dp" />
+              <item android:id="@+id/auto_dark_web_contents_check_id"
+                android:title="@null"
+                android:checkable="true" />
+          </menu>
+        </item>
         <item android:id="@+id/paint_preview_show_id"
             android:title="@string/menu_paint_preview_show"
             android:icon="@drawable/ic_photo_camera" />

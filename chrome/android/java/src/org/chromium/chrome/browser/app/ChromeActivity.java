@@ -2522,7 +2522,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             return true;
         }
 
-        if (id == R.id.auto_dark_web_contents_id) {
+        if (id == R.id.auto_dark_web_contents_id || id == R.id.auto_dark_web_contents_check_id) {
             // Get values needed to check/enable auto dark for the current site.
             Profile profile = getCurrentTabModel().getProfile();
             GURL url = currentTab.getUrl();
