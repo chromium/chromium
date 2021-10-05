@@ -7,6 +7,7 @@
 #
 # ninja -C out/Default tools/mac/power:all
 
+import("//build/config/mac/mac_sdk.gni")
 import("//testing/test.gni")
 
 # This file should only be included for macOS.
@@ -23,6 +24,8 @@ group("all") {
 
 static_library("power_sampler_lib") {
   sources = [
+    "power_sampler/backlight_level_sampler.cc",
+    "power_sampler/backlight_level_sampler.h",
     "power_sampler/monitor.cc",
     "power_sampler/monitor.h",
     "power_sampler/sampler.cc",
@@ -33,6 +36,11 @@ static_library("power_sampler_lib") {
     "power_sampler/user_idle_level_sampler.h",
   ]
   deps = [ "//base" ]
+  frameworks = [
+    # Used by the backlight sampler.
+    "DisplayServices.framework",
+  ]
+  framework_dirs = [ "$mac_sdk_path/System/Library/PrivateFrameworks" ]
 }
 
 executable("power_sampler") {
@@ -46,6 +54,7 @@ executable("power_sampler") {
 test("power_sampler_unittests") {
   testonly = true
   sources = [
+    "power_sampler/backlight_level_sampler_unittest.cc",
     "power_sampler/sampling_controller_unittest.cc",
     "power_sampler/user_idle_level_sampler_unittest.cc",
   ]
