@@ -245,12 +245,24 @@ class AuctionV8Helper
   void SetV8InspectorForTesting(
       std::unique_ptr<v8_inspector::V8Inspector> v8_inspector);
 
+  // Temporarily disables (and re-enables) script timeout for the currently
+  // running script. Total time elapsed when not paused will be kept track of.
+  //
+  // Must be called when within RunScript() only.
+  void PauseTimeoutTimer();
+  void ResumeTimeoutTimer();
+
+  // Returns the sequence where the timeout timer runs.
+  // This may be called on any thread.
+  scoped_refptr<base::SequencedTaskRunner> GetTimeoutTimerRunnerForTesting();
+
   // Helper for formatting script name for debug messages.
   std::string FormatScriptName(v8::Local<v8::UnboundScript> script);
 
  private:
   friend class base::RefCountedDeleteOnSequence<AuctionV8Helper>;
   friend class base::DeleteHelper<AuctionV8Helper>;
+  class ScriptTimeoutHelper;
 
   // Sets values of console_buffer() and console_script_name() to those
   // passed-in to its constructor for duration of its existence, and clears
@@ -278,6 +290,7 @@ class AuctionV8Helper
                                  v8::Local<v8::Value> val);
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
+  scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
   std::unique_ptr<gin::IsolateHolder> isolate_holder_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -292,6 +305,9 @@ class AuctionV8Helper
   std::vector<std::string>* console_buffer_
       GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
   std::string console_script_name_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  ScriptTimeoutHelper* timeout_helper_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      nullptr;
 
   int last_context_group_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 

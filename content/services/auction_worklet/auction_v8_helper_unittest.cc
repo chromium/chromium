@@ -33,7 +33,10 @@ namespace auction_worklet {
 
 class AuctionV8HelperTest : public testing::Test {
  public:
-  AuctionV8HelperTest() {
+  explicit AuctionV8HelperTest(
+      base::test::TaskEnvironment::TimeSource time_mode =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
+      : task_environment_(time_mode) {
     helper_ = AuctionV8Helper::Create(base::ThreadTaskRunnerHandle::Get());
     // Here since we're using the same thread for everything, we need to spin
     // the event loop to let AuctionV8Helper finish initializing "off-thread";
@@ -50,14 +53,15 @@ class AuctionV8HelperTest : public testing::Test {
       const std::string& function_name,
       const GURL& url,
       const std::string& body,
-      base::OnceClosure result_out_ready = base::OnceClosure(),
+      bool expect_success = true,
+      base::OnceClosure done = base::OnceClosure(),
       int* result_out = nullptr) {
     helper_->v8_runner()->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](scoped_refptr<AuctionV8Helper> helper, int context_group_id,
                std::string function_name, GURL url, std::string body,
-               base::OnceClosure result_out_ready, int* result_out) {
+               bool expect_success, base::OnceClosure done, int* result_out) {
               AuctionV8Helper::FullIsolateScope isolate_scope(helper.get());
               v8::Local<v8::UnboundScript> script;
               {
@@ -72,22 +76,30 @@ class AuctionV8HelperTest : public testing::Test {
               std::vector<std::string> error_msgs;
               v8::Context::Scope ctx(context);
               v8::Local<v8::Value> result;
-              ASSERT_TRUE(helper
-                              ->RunScript(context, script, context_group_id,
-                                          function_name,
-                                          base::span<v8::Local<v8::Value>>(),
-                                          error_msgs)
-                              .ToLocal(&result));
+              bool success = helper
+                                 ->RunScript(context, script, context_group_id,
+                                             function_name,
+                                             base::span<v8::Local<v8::Value>>(),
+                                             error_msgs)
+                                 .ToLocal(&result);
+              EXPECT_EQ(expect_success, success);
               if (result_out) {
-                ASSERT_TRUE(
-                    gin::ConvertFromV8(helper->isolate(), result, result_out));
-                // Notify the test that result actually got written out, since
-                // it happens after all the v8 debugger stuff it can wait for.
-                std::move(result_out_ready).Run();
+                // If the caller wants to look at *result_out (including to see
+                // if it's unchanged), the done callback must be used to be
+                // sure that the read is performed after this sequence is
+                // complete.
+                CHECK(!done.is_null());
+
+                if (success) {
+                  ASSERT_TRUE(gin::ConvertFromV8(helper->isolate(), result,
+                                                 result_out));
+                }
               }
+              if (!done.is_null())
+                std::move(done).Run();
             },
-            helper_, context_group_id, function_name, url, body,
-            std::move(result_out_ready), result_out));
+            helper_, context_group_id, function_name, url, body, expect_success,
+            std::move(done), result_out));
   }
 
   void ConnectToDevToolsAgent(
@@ -167,7 +179,7 @@ TEST_F(AuctionV8HelperTest, Timeout) {
         while(1);)",
        true}};
 
-  // Use a sorter timeout so test runs faster.
+  // Use a shorter timeout so test runs faster.
   const base::TimeDelta kScriptTimeout = base::Milliseconds(20);
   helper_->set_script_timeout_for_testing(kScriptTimeout);
 
@@ -651,9 +663,9 @@ TEST_F(AuctionV8HelperTest, DevToolsDebuggerBasics) {
 
     int result = -1;
     base::RunLoop result_run_loop;
-    CompileAndRunScriptOnV8Thread(id, "compute",
-                                  GURL("https://example.com/test.js"), kScript,
-                                  result_run_loop.QuitClosure(), &result);
+    CompileAndRunScriptOnV8Thread(
+        id, "compute", GURL("https://example.com/test.js"), kScript,
+        /*expect_success=*/true, result_run_loop.QuitClosure(), &result);
 
     // Eat completion from parsing.
     debug_client.WaitForMethodNotification("Runtime.executionContextDestroyed");
@@ -757,6 +769,155 @@ TEST_F(AuctionV8HelperTest, DevToolsDeleteSessionPipeLate) {
   FreeContextGroupIdAndWait(helper_, id);
   helper_.reset();
   task_environment_.RunUntilIdle();
+}
+
+class MockTimeAuctionV8HelperTest : public AuctionV8HelperTest {
+ public:
+  MockTimeAuctionV8HelperTest()
+      : AuctionV8HelperTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void Wait(base::TimeDelta wait_time) {
+    // We can't use TaskEnvironment::FastForwardBy since the v8 thread is
+    // blocked in debugger, so instead we post a task on the timer thread
+    // which then can be reasoned about with respect to the timeout.
+    base::RunLoop run_loop;
+    helper_->GetTimeoutTimerRunnerForTesting()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), wait_time);
+    task_environment_.AdvanceClock(wait_time);
+    run_loop.Run();
+  }
+};
+
+TEST_F(MockTimeAuctionV8HelperTest, TimelimitDebug) {
+  // Test that being paused on a breakpoint for a while doesn't trigger the
+  // execution time limit.
+
+  const char kSession[] = "123-456";
+  const char kScript[] = R"(
+    function compute() {
+      return 3;
+    }
+  )";
+
+  // Need to use a separate thread for debugger stuff.
+  v8_scope_.reset();
+  helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+
+  int id = AllocContextGroupIdAndWait(helper_);
+  mojo::Remote<blink::mojom::DevToolsAgent> agent_remote;
+  ConnectToDevToolsAgent(id, agent_remote.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug_client(std::move(agent_remote), kSession,
+                                       /*use_binary_protocol=*/true);
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  const char kBreakpointCommand[] = R"({
+        "id":3,
+        "method":"Debugger.setBreakpointByUrl",
+        "params": {
+          "lineNumber": 0,
+          "url": "https://example.com/test.js",
+          "columnNumber": 0,
+          "condition": ""
+        }})";
+
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      kBreakpointCommand);
+
+  int result = -1;
+  base::RunLoop result_run_loop;
+  CompileAndRunScriptOnV8Thread(
+      id, "compute", GURL("https://example.com/test.js"), kScript,
+      /*expect_success=*/true, result_run_loop.QuitClosure(), &result);
+  // Wait for breakpoint to hit.
+  TestDevToolsAgentClient::Event breakpoint_hit =
+      debug_client.WaitForMethodNotification("Debugger.paused");
+
+  // Make sure more time has happened than the timeout.
+  Wait(2 * AuctionV8Helper::kScriptTimeout);
+
+  // Resume the script, it should still finish.
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 10, "Debugger.resume",
+      R"({"id":10,"method":"Debugger.resume","params":{}})");
+
+  result_run_loop.Run();
+  EXPECT_EQ(3, result);
+
+  FreeContextGroupIdAndWait(helper_, id);
+}
+
+TEST_F(AuctionV8HelperTest, DebugTimeout) {
+  // Test that timeout still works after pausing in the debugger and resuming.
+
+  // Use a shorter timeout so test runs faster.
+  const base::TimeDelta kScriptTimeout = base::Milliseconds(20);
+  helper_->set_script_timeout_for_testing(kScriptTimeout);
+
+  const char kSession[] = "123-456";
+  const char kScript[] = R"(
+    var a = 42;
+    function compute() {
+      while (true) {}
+    }
+  )";
+  // Need to use a separate thread for debugger stuff.
+  v8_scope_.reset();
+  helper_ = AuctionV8Helper::Create(AuctionV8Helper::CreateTaskRunner());
+
+  int id = AllocContextGroupIdAndWait(helper_);
+  mojo::Remote<blink::mojom::DevToolsAgent> agent_remote;
+  ConnectToDevToolsAgent(id, agent_remote.BindNewPipeAndPassReceiver());
+
+  TestDevToolsAgentClient debug_client(std::move(agent_remote), kSession,
+                                       /*use_binary_protocol=*/false);
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 1, "Runtime.enable",
+      R"({"id":1,"method":"Runtime.enable","params":{}})");
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 2, "Debugger.enable",
+      R"({"id":2,"method":"Debugger.enable","params":{}})");
+
+  const char kBreakpointCommand[] = R"({
+        "id":3,
+        "method":"Debugger.setBreakpointByUrl",
+        "params": {
+          "lineNumber": 0,
+          "url": "https://example.com/test.js",
+          "columnNumber": 0,
+          "condition": ""
+        }})";
+
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kMain, 3, "Debugger.setBreakpointByUrl",
+      kBreakpointCommand);
+
+  int result = -1;
+  base::RunLoop result_run_loop;
+  CompileAndRunScriptOnV8Thread(
+      id, "compute", GURL("https://example.com/test.js"), kScript,
+      /*expect_success=*/false, result_run_loop.QuitClosure(), &result);
+  // Wait for breakpoint to hit.
+  TestDevToolsAgentClient::Event breakpoint_hit =
+      debug_client.WaitForMethodNotification("Debugger.paused");
+  EXPECT_FALSE(result_run_loop.AnyQuitCalled());
+
+  // Resume the script, it should still timeout.
+  debug_client.RunCommandAndWaitForResult(
+      TestDevToolsAgentClient::Channel::kIO, 10, "Debugger.resume",
+      R"({"id":10,"method":"Debugger.resume","params":{}})");
+
+  result_run_loop.Run();
+  EXPECT_EQ(-1, result);
+
+  FreeContextGroupIdAndWait(helper_, id);
 }
 
 }  // namespace auction_worklet

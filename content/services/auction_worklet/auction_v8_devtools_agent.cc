@@ -96,7 +96,9 @@ void AuctionV8DevToolsAgent::runMessageLoopOnPause(int context_group_id) {
   DCHECK(it != context_groups_.end());
 
   paused_context_group_queue_ = it->second.command_queue;
+  v8_helper_->PauseTimeoutTimer();
   paused_context_group_queue_->PauseForDebuggerAndRunCommands();
+  v8_helper_->ResumeTimeoutTimer();
   paused_context_group_queue_ = nullptr;
 }
 
