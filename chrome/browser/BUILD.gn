@@ -3388,6 +3388,8 @@ static_library("browser") {
       "//components/content_creation/notes/core:prefs",
       "//components/content_creation/notes/core/server",
       "//components/content_creation/notes/core/templates",
+      "//components/content_creation/reactions/android",
+      "//components/content_creation/reactions/core",
       "//components/content_creation/reactions/core:features",
       "//components/content_settings/android",
       "//components/crash/android:crash_android",

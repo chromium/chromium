@@ -15,6 +15,12 @@ ReactionMetadata::ReactionMetadata(ReactionType type,
       thumbnail_url_(thumbnail_url),
       asset_url_(asset_url) {}
 
+ReactionMetadata::ReactionMetadata(const ReactionMetadata& other)
+    : type_(other.type()),
+      localized_name_(other.localized_name()),
+      thumbnail_url_(other.thumbnail_url()),
+      asset_url_(other.asset_url()) {}
+
 ReactionMetadata::~ReactionMetadata() = default;
 
 }  // namespace content_creation

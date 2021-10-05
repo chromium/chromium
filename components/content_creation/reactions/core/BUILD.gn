@@ -8,11 +8,19 @@ if (is_android) {
 
 static_library("core") {
   sources = [
+    "reaction_list_factory.cc",
+    "reaction_list_factory.h",
     "reaction_metadata.cc",
     "reaction_metadata.h",
+    "reaction_service.cc",
+    "reaction_service.h",
   ]
 
-  deps = [ ":reaction_types" ]
+  deps = [
+    ":features",
+    ":reaction_types",
+    "//components/keyed_service/core",
+  ]
 }
 
 static_library("features") {
