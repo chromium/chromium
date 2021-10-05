@@ -2902,6 +2902,21 @@
             ]
         }
     ],
+    "DisableDiscoverFeedAppFlows": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "EnableDiscoverFeedAppFlows"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
