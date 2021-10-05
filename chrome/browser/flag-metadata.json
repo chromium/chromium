@@ -2125,7 +2125,7 @@
   {
     "name": "enable-magnifier-continuous-mouse-following-mode-setting",
     "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 98
   },
   {
     "name": "enable-magnifier-panning-improvements",
