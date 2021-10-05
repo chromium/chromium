@@ -96,7 +96,7 @@ class MockQuotaClient : public mojom::QuotaClient {
   std::set<std::pair<blink::StorageKey, blink::mojom::StorageType>>
       error_storage_keys_;
 
-  int mock_time_counter_;
+  int mock_time_counter_ = 0;
 
   base::WeakPtrFactory<MockQuotaClient> weak_factory_{this};
 };

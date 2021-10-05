@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -30,6 +31,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -238,23 +240,29 @@ class QuotaManagerImplTest : public testing::Test {
 
   void GetUsageInfo() {
     usage_info_.clear();
-    quota_manager_impl_->GetUsageInfo(base::BindOnce(
-        &QuotaManagerImplTest::DidGetUsageInfo, weak_factory_.GetWeakPtr()));
+    base::RunLoop run_loop;
+    quota_manager_impl_->GetUsageInfo(
+        base::BindOnce(&QuotaManagerImplTest::DidGetUsageInfo,
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void GetUsageAndQuotaForWebApps(const StorageKey& storage_key,
                                   StorageType type) {
+    base::RunLoop run_loop;
     quota_status_ = QuotaStatusCode::kUnknown;
     usage_ = -1;
     quota_ = -1;
     quota_manager_impl_->GetUsageAndQuotaForWebApps(
         storage_key, type,
         base::BindOnce(&QuotaManagerImplTest::DidGetUsageAndQuota,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void GetUsageAndQuotaWithBreakdown(const StorageKey& storage_key,
                                      StorageType type) {
+    base::RunLoop run_loop;
     quota_status_ = QuotaStatusCode::kUnknown;
     usage_ = -1;
     quota_ = -1;
@@ -262,18 +270,21 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->GetUsageAndQuotaWithBreakdown(
         storage_key, type,
         base::BindOnce(&QuotaManagerImplTest::DidGetUsageAndQuotaWithBreakdown,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void GetUsageAndQuotaForStorageClient(const StorageKey& storage_key,
                                         StorageType type) {
+    base::RunLoop run_loop;
     quota_status_ = QuotaStatusCode::kUnknown;
     usage_ = -1;
     quota_ = -1;
     quota_manager_impl_->GetUsageAndQuota(
         storage_key, type,
         base::BindOnce(&QuotaManagerImplTest::DidGetUsageAndQuota,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void SetQuotaSettings(int64_t pool_size,
@@ -316,17 +327,22 @@ class QuotaManagerImplTest : public testing::Test {
   void GetGlobalUsage(StorageType type) {
     usage_ = -1;
     unlimited_usage_ = -1;
+    base::RunLoop run_loop;
     quota_manager_impl_->GetGlobalUsage(
-        type, base::BindOnce(&QuotaManagerImplTest::DidGetGlobalUsage,
-                             weak_factory_.GetWeakPtr()));
+        type,
+        base::BindOnce(&QuotaManagerImplTest::DidGetGlobalUsage,
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void GetHostUsageWithBreakdown(const std::string& host, StorageType type) {
+    base::RunLoop run_loop;
     usage_ = -1;
     quota_manager_impl_->GetHostUsageWithBreakdown(
         host, type,
         base::BindOnce(&QuotaManagerImplTest::DidGetHostUsageBreakdown,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void RunAdditionalUsageAndQuotaTask(const StorageKey& storage_key,
@@ -468,19 +484,24 @@ class QuotaManagerImplTest : public testing::Test {
     std::move(quit_closure).Run();
   }
 
-  void DidGetUsageInfo(UsageInfoEntries entries) {
+  void DidGetUsageInfo(base::OnceClosure quit_closure,
+                       UsageInfoEntries entries) {
     usage_info_ = std::move(entries);
+    std::move(quit_closure).Run();
   }
 
-  void DidGetUsageAndQuota(QuotaStatusCode status,
+  void DidGetUsageAndQuota(base::OnceClosure quit_closure,
+                           QuotaStatusCode status,
                            int64_t usage,
                            int64_t quota) {
     quota_status_ = status;
     usage_ = usage;
     quota_ = quota;
+    std::move(quit_closure).Run();
   }
 
   void DidGetUsageAndQuotaWithBreakdown(
+      base::OnceClosure quit_closure,
       QuotaStatusCode status,
       int64_t usage,
       int64_t quota,
@@ -489,6 +510,7 @@ class QuotaManagerImplTest : public testing::Test {
     usage_ = usage;
     quota_ = quota;
     usage_breakdown_ = std::move(usage_breakdown);
+    std::move(quit_closure).Run();
   }
 
   void DidGetQuota(QuotaStatusCode status, int64_t quota) {
@@ -506,9 +528,12 @@ class QuotaManagerImplTest : public testing::Test {
     quota_ = quota;
   }
 
-  void DidGetGlobalUsage(int64_t usage, int64_t unlimited_usage) {
+  void DidGetGlobalUsage(base::OnceClosure quit_closure,
+                         int64_t usage,
+                         int64_t unlimited_usage) {
     usage_ = usage;
     unlimited_usage_ = unlimited_usage;
+    std::move(quit_closure).Run();
   }
 
   void DidGetHostUsage(int64_t usage) { usage_ = usage; }
@@ -526,10 +551,12 @@ class QuotaManagerImplTest : public testing::Test {
   }
 
   void DidGetHostUsageBreakdown(
+      base::OnceClosure quit_closure,
       int64_t usage,
       blink::mojom::UsageBreakdownPtr usage_breakdown) {
     usage_ = usage;
     usage_breakdown_ = std::move(usage_breakdown);
+    std::move(quit_closure).Run();
   }
 
   void DidGetEvictionRoundInfo(QuotaStatusCode status,
@@ -702,7 +729,6 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
                            blink::mojom::StorageType::kPersistent});
 
   GetUsageInfo();
-  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(usage_info(), testing::UnorderedElementsAre(
                                 UsageInfo("foo.com", kTemp, 10 + 15 + 30 + 35),
@@ -895,20 +921,17 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
                            blink::mojom::StorageType::kPersistent});
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(80, usage());
   EXPECT_EQ(0, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10, usage());
   EXPECT_LE(0, quota());
   int64_t quota_returned_for_foo = quota();
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://bar.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_EQ(quota_returned_for_foo, quota());
@@ -916,30 +939,24 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
 
 TEST_F(QuotaManagerImplTest, GetUsage_NoClient) {
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
   EXPECT_EQ(0, unlimited_usage());
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
   EXPECT_EQ(0, unlimited_usage());
 }
@@ -951,30 +968,24 @@ TEST_F(QuotaManagerImplTest, GetUsage_EmptyClient) {
                            blink::mojom::StorageType::kPersistent});
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
   EXPECT_EQ(0, unlimited_usage());
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
   EXPECT_EQ(0, unlimited_usage());
 }
@@ -995,7 +1006,6 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_MultiStorageKeys) {
   SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailableForSystem);
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20, usage());
 
@@ -1004,7 +1014,6 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_MultiStorageKeys) {
   EXPECT_EQ(kPerHostQuota, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://bar.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(5 + 7, usage());
   EXPECT_EQ(kPerHostQuota, quota());
@@ -1036,37 +1045,31 @@ TEST_F(QuotaManagerImplTest, GetUsage_MultipleClients) {
   SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailableForSystem);
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(1 + 128, usage());
   EXPECT_EQ(kPerHostQuota, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://bar.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(4, usage());
   EXPECT_EQ(0, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(512, usage());
   EXPECT_EQ(available_space() + usage(), quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(8, usage());
   EXPECT_EQ(available_space() + usage(), quota());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(1 + 2 + 128 + 512, usage());
   EXPECT_EQ(512, unlimited_usage());
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(4 + 8 + 256, usage());
   EXPECT_EQ(8, unlimited_usage());
@@ -1094,7 +1097,6 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
                           {blink::mojom::StorageType::kTemporary});
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(80, usage());
   usage_breakdown_expected.fileSystem = 80;
@@ -1103,7 +1105,6 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(1 + 4 + 8, usage());
   usage_breakdown_expected.fileSystem = 1;
@@ -1112,7 +1113,6 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://bar.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   usage_breakdown_expected.fileSystem = 0;
@@ -1126,24 +1126,20 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_NoClient) {
       blink::mojom::UsageBreakdown();
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 }
@@ -1161,14 +1157,12 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultiStorageKeys) {
                            blink::mojom::StorageType::kPersistent});
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20, usage());
   usage_breakdown_expected.fileSystem = 10 + 20;
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://bar.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(5 + 7, usage());
   usage_breakdown_expected.fileSystem = 5 + 7;
@@ -1198,7 +1192,6 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
                            blink::mojom::StorageType::kPersistent});
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(1 + 128, usage());
   usage_breakdown_expected.fileSystem = 1;
@@ -1206,7 +1199,6 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://bar.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(4, usage());
   usage_breakdown_expected.fileSystem = 4;
@@ -1214,7 +1206,6 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(512, usage());
   usage_breakdown_expected.fileSystem = 0;
@@ -1222,7 +1213,6 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
   EXPECT_TRUE(usage_breakdown_expected.Equals(usage_breakdown()));
 
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://unlimited/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(8, usage());
   usage_breakdown_expected.fileSystem = 8;
@@ -1239,7 +1229,6 @@ void QuotaManagerImplTest::GetUsage_WithModifyTestBody(const StorageType type) {
       CreateAndRegisterClient(data, QuotaClientType::kFileSystem, {type});
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), type);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20, usage());
 
@@ -1249,19 +1238,16 @@ void QuotaManagerImplTest::GetUsage_WithModifyTestBody(const StorageType type) {
   client->AddStorageKeyAndNotify(ToStorageKey("https://foo.com/"), type, 1);
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), type);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20 + 30 - 5 + 1, usage());
   int foo_usage = usage();
 
   client->AddStorageKeyAndNotify(ToStorageKey("http://bar.com/"), type, 40);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://bar.com/"), type);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(40, usage());
 
   GetGlobalUsage(type);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(foo_usage + 40, usage());
   EXPECT_EQ(0, unlimited_usage());
 }
@@ -1288,7 +1274,6 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_WithAdditionalTasks) {
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20, usage());
   EXPECT_EQ(kPerHostQuota, quota());
@@ -1319,6 +1304,7 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_NukeManager) {
   SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailableForSystem);
 
   set_additional_callback_count(0);
+
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
   RunAdditionalUsageAndQuotaTask(ToStorageKey("http://foo.com/"), kTemp);
   RunAdditionalUsageAndQuotaTask(ToStorageKey("http://bar.com/"), kTemp);
@@ -1352,19 +1338,16 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Overbudget) {
   EXPECT_LE(kMustRemainAvailableForSystem, available_space());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage1/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(1, usage());
   EXPECT_EQ(kPerHostQuota, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage10/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10, usage());
   EXPECT_EQ(kPerHostQuota, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage200/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(200, usage());
   EXPECT_EQ(kPerHostQuota, quota());  // should be clamped to the nominal quota
@@ -1385,30 +1368,25 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Unlimited) {
   const int kPerHostQuotaFor1000 = 200;
   SetQuotaSettings(1000, kPerHostQuotaFor1000, kMustRemainAvailableForSystem);
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(10 + 50 + 4000, usage());
   EXPECT_EQ(4000, unlimited_usage());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage10/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10, usage());
   EXPECT_EQ(kPerHostQuotaFor1000, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage50/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(50, usage());
   EXPECT_EQ(kPerHostQuotaFor1000, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(4000, usage());
   EXPECT_EQ(available_space() + usage(), quota());
 
   GetUsageAndQuotaForStorageClient(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_EQ(QuotaManagerImpl::kNoLimit, quota());
@@ -1418,25 +1396,21 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Unlimited) {
   SetQuotaSettings(100, kPerHostQuotaFor100, kMustRemainAvailableForSystem);
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage10/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10, usage());
   EXPECT_EQ(kPerHostQuotaFor100, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage50/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(50, usage());
   EXPECT_EQ(kPerHostQuotaFor100, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(4000, usage());
   EXPECT_EQ(available_space() + usage(), quota());
 
   GetUsageAndQuotaForStorageClient(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_EQ(QuotaManagerImpl::kNoLimit, quota());
@@ -1446,30 +1420,25 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Unlimited) {
   mock_special_storage_policy()->NotifyCleared();
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(10 + 50 + 4000, usage());
   EXPECT_EQ(0, unlimited_usage());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage10/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10, usage());
   EXPECT_EQ(kPerHostQuotaFor100, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://usage50/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(50, usage());
   EXPECT_EQ(kPerHostQuotaFor100, quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(4000, usage());
   EXPECT_EQ(kPerHostQuotaFor100, quota());
 
   GetUsageAndQuotaForStorageClient(ToStorageKey("http://unlimited/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(4000, usage());
   EXPECT_EQ(kPerHostQuotaFor100, quota());
@@ -1514,14 +1483,12 @@ TEST_F(QuotaManagerImplTest, GetAndSetPersistentUsageAndQuota) {
                            blink::mojom::StorageType::kPersistent});
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_EQ(0, quota());
 
   SetPersistentHostQuota("foo.com", 100);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_EQ(100, quota());
@@ -1530,13 +1497,11 @@ TEST_F(QuotaManagerImplTest, GetAndSetPersistentUsageAndQuota) {
   // quota.
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
   GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(available_space() + usage(), quota());
 
   // GetUsageAndQuotaForStorageClient should just return 0 usage and
   // kNoLimit quota.
   GetUsageAndQuotaForStorageClient(ToStorageKey("http://unlimited/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
   EXPECT_EQ(QuotaManagerImpl::kNoLimit, quota());
 }
@@ -1562,7 +1527,6 @@ TEST_F(QuotaManagerImplTest, GetQuotaLowAvailableDiskSpace) {
   SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailable);
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(100000, usage());
   EXPECT_EQ(kPerHostQuota, quota());
@@ -1587,7 +1551,6 @@ TEST_F(QuotaManagerImplTest, GetSyncableQuota) {
   // available disk space.
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
   GetUsageAndQuotaForWebApps(ToStorageKey("http://unlimited/"), kSync);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_EQ(QuotaManagerImpl::kSyncableStorageDefaultHostQuota, quota());
@@ -1606,7 +1569,6 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_MultiStorageKeys) {
 
   SetPersistentHostQuota("foo.com", 100);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20 + 13 + 19, usage());
   EXPECT_EQ(100, quota());
@@ -1631,7 +1593,6 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_WithAdditionalTasks) {
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20, usage());
   EXPECT_EQ(100, quota());
@@ -1659,14 +1620,22 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_NukeManager) {
   SetPersistentHostQuota("foo.com", 100);
 
   set_additional_callback_count(0);
-  GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
+
+  // Async GetUsageAndQuota call to test manager reset during call.
+  blink::mojom::QuotaStatusCode result_status;
+  quota_manager_impl()->GetUsageAndQuotaForWebApps(
+      ToStorageKey("http://foo.com/"), kPerm,
+      base::BindLambdaForTesting(
+          [&](QuotaStatusCode status, int64_t usage, int64_t quota) {
+            result_status = status;
+          }));
   RunAdditionalUsageAndQuotaTask(ToStorageKey("http://foo.com/"), kPerm);
   RunAdditionalUsageAndQuotaTask(ToStorageKey("http://bar.com/"), kPerm);
 
   // Nuke before waiting for callbacks.
   set_quota_manager_impl(nullptr);
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(QuotaStatusCode::kErrorAbort, status());
+  EXPECT_EQ(QuotaStatusCode::kErrorAbort, result_status);
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_Simple) {
@@ -1681,21 +1650,17 @@ TEST_F(QuotaManagerImplTest, GetUsage_Simple) {
                            blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 1 + 20 + 600000);
   EXPECT_EQ(0, unlimited_usage());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 300 + 4000 + 50000 + 7000000);
   EXPECT_EQ(0, unlimited_usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 1 + 20);
 
   GetHostUsageWithBreakdown("buz.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 4000 + 50000);
 }
 
@@ -1713,7 +1678,6 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
                                blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 1 + 20 + 600000);
   EXPECT_EQ(0, unlimited_usage());
 
@@ -1721,31 +1685,26 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
                                     80000000);
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 1 + 20 + 600000 + 80000000);
   EXPECT_EQ(0, unlimited_usage());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 300 + 4000 + 50000 + 7000000);
   EXPECT_EQ(0, unlimited_usage());
 
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://foo.com/"), kTemp, 1);
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 300 + 4000 + 50000 + 7000000 + 1);
   EXPECT_EQ(0, unlimited_usage());
 
   GetHostUsageWithBreakdown("buz.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 4000 + 50000);
 
   client->ModifyStorageKeyAndNotify(ToStorageKey("http://buz.com/"), kTemp,
                                     900000000);
 
   GetHostUsageWithBreakdown("buz.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 4000 + 50000 + 900000000);
 }
 
@@ -1762,15 +1721,12 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteStorageKey) {
                                blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_pers = usage();
 
   DeleteClientStorageKeyData(client, ToStorageKey("http://foo.com/"), kTemp);
@@ -1778,15 +1734,12 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteStorageKey) {
   EXPECT_EQ(QuotaStatusCode::kOk, status());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp - 1, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_tmp - 1, usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_pers, usage());
 }
 
@@ -1817,15 +1770,12 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
                            blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_pers = usage();
 
   for (const MockStorageKeyData& data : kData1) {
@@ -1855,15 +1805,12 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
   }
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp - (1 + 50000), usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_tmp - (1 + 50000), usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_pers, usage());
 }
 
@@ -1872,11 +1819,9 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
   CreateAndRegisterClient(kData, QuotaClientType::kFileSystem, {kTemp});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_tmp = usage();
 
   StorageKey storage_key = ToStorageKey("http://foo.com/");
@@ -1903,11 +1848,9 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
 
   // Evicting non-default bucket should not change usage.
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_tmp, usage());
 
   GetBucket(storage_key, kDefaultBucketName, kTemp);
@@ -1921,11 +1864,9 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
 
   // Evicting default bucket should remove usage.
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 0);
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(usage(), 0);
 }
 
@@ -1941,7 +1882,6 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
                               {blink::mojom::StorageType::kTemporary});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
 
   CreateBucketForTesting(kStorageKey, kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket_.ok());
@@ -1965,7 +1905,6 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
   task_environment_.RunUntilIdle();
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
 
   EvictBucketData(bucket_.value());
   task_environment_.RunUntilIdle();
@@ -1993,15 +1932,12 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
                                blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_pers = usage();
 
   for (const MockStorageKeyData& data : kData)
@@ -2053,15 +1989,12 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
   // Deleting buckets from the database should not affect the results of the
   // following checks.
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_tmp, usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_pers, usage());
 }
 
@@ -2105,15 +2038,12 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
                            blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   int64_t predelete_host_pers = usage();
 
   DeleteHostData(std::string(), kTemp, AllQuotaClientTypes());
@@ -2121,15 +2051,12 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
   EXPECT_EQ(QuotaStatusCode::kOk, status());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_tmp, usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_pers, usage());
 
   DeleteHostData("foo.com", kTemp, AllQuotaClientTypes());
@@ -2137,15 +2064,12 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
   EXPECT_EQ(QuotaStatusCode::kOk, status());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp - 1, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_tmp - 1, usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_host_pers, usage());
 }
 
@@ -2169,23 +2093,18 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
                            blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_pers = usage();
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_pers = usage();
 
   reset_status_callback_count();
@@ -2214,24 +2133,19 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
   }
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp - (1 + 20 + 4000 + 50000 + 6000 + 80 + 9),
             usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - (1 + 20 + 50000 + 6000 + 80), usage());
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_tmp - (4000 + 9), usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_pers, usage());
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_pers, usage());
 }
 
@@ -2255,27 +2169,21 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
                           {blink::mojom::StorageType::kTemporary});
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_tmp = usage();
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_pers = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_pers = usage();
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_pers = usage();
 
   reset_status_callback_count();
@@ -2303,27 +2211,21 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
   }
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp, usage());
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_tmp, usage());
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_pers - (1 + 10 + 1000), usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_pers - (1 + 10), usage());
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_pers - 1000, usage());
 }
 
@@ -2367,23 +2269,18 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
   BucketInfo bar_temp_bucket = bucket_.value();
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_pers = usage();
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_pers = usage();
 
   for (const MockStorageKeyData& data : kData1) {
@@ -2418,23 +2315,18 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
   }
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp - (1 + 4000 + 50000 + 9), usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - (1 + 50000), usage());
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_tmp - (4000 + 9), usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_pers, usage());
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_pers, usage());
 }
 
@@ -2468,27 +2360,21 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
   BucketInfo bar_perm_bucket = bucket_.value();
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_tmp = usage();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_tmp = usage();
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_pers = usage();
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_pers = usage();
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_bar_pers = usage();
 
   for (const MockStorageKeyData& data : kData1) {
@@ -2522,27 +2408,21 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
   }
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp, usage());
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_tmp, usage());
 
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_pers - (1 + 1000), usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_pers - 1, usage());
 
   GetHostUsageWithBreakdown("bar.com", kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_bar_pers - 1000, usage());
 }
 
@@ -2574,16 +2454,13 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketData) {
 
   // Check usage data before deletion.
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_global_tmp = usage();
   ASSERT_EQ((1 + 9 + 4000 + 50000), usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   ASSERT_EQ((1 + 50000), usage());
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   ASSERT_EQ((9 + 4000), usage());
 
   // Delete bucket for "http://foo.com/".
@@ -2596,11 +2473,9 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketData) {
   EXPECT_EQ(bucket_.error(), QuotaError::kNotFound);
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_global_tmp - (1 + 50000), usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
 
   // Delete bucket for "http://bar.com/".
@@ -2613,11 +2488,9 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketData) {
   EXPECT_EQ(bucket_.error(), QuotaError::kNotFound);
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
 
   GetHostUsageWithBreakdown("bar.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, usage());
 }
 
@@ -2638,17 +2511,14 @@ TEST_F(QuotaManagerImplTest, GetCachedStorageKeys) {
   EXPECT_TRUE(storage_keys.empty());
 
   GetHostUsageWithBreakdown("a.com", kTemp);
-  task_environment_.RunUntilIdle();
   storage_keys = GetCachedStorageKeys(kTemp);
   EXPECT_EQ(2U, storage_keys.size());
 
   GetHostUsageWithBreakdown("b.com", kTemp);
-  task_environment_.RunUntilIdle();
   storage_keys = GetCachedStorageKeys(kTemp);
   EXPECT_EQ(2U, storage_keys.size());
 
   GetHostUsageWithBreakdown("c.com", kTemp);
-  task_environment_.RunUntilIdle();
   storage_keys = GetCachedStorageKeys(kTemp);
   EXPECT_EQ(3U, storage_keys.size());
 
@@ -2656,7 +2526,6 @@ TEST_F(QuotaManagerImplTest, GetCachedStorageKeys) {
   EXPECT_TRUE(storage_keys.empty());
 
   GetGlobalUsage(kTemp);
-  task_environment_.RunUntilIdle();
   storage_keys = GetCachedStorageKeys(kTemp);
   EXPECT_THAT(storage_keys,
               testing::UnorderedElementsAre(ToStorageKey("http://a.com"),
@@ -2895,31 +2764,26 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
   BucketInfo foo_bucket = bucket_.value();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   DeleteBucketData(foo_bucket, {QuotaClientType::kFileSystem});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 1, usage());
 
   DeleteBucketData(foo_bucket, {QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
 
   DeleteBucketData(foo_bucket, {QuotaClientType::kDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
 
   DeleteBucketData(foo_bucket, {QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }
 
@@ -2946,31 +2810,26 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleHost) {
                           {blink::mojom::StorageType::kTemporary});
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   DeleteHostData("foo.com", kTemp, {QuotaClientType::kFileSystem});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 1, usage());
 
   DeleteHostData("foo.com", kTemp, {QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
 
   DeleteHostData("foo.com", kTemp, {QuotaClientType::kDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
 
   DeleteHostData("foo.com", kTemp, {QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }
 
@@ -3002,21 +2861,18 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
   BucketInfo foo_bucket = bucket_.value();
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   DeleteBucketData(foo_bucket,
                    {QuotaClientType::kFileSystem, QuotaClientType::kDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 4 - 1, usage());
 
   DeleteBucketData(foo_bucket, {QuotaClientType::kServiceWorkerCache,
                                 QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }
 
@@ -3043,7 +2899,6 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
                           {blink::mojom::StorageType::kTemporary});
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   const int64_t predelete_foo_tmp = usage();
 
   DeleteHostData(
@@ -3051,7 +2906,6 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
       {QuotaClientType::kFileSystem, QuotaClientType::kServiceWorkerCache});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
 
   DeleteHostData(
@@ -3059,7 +2913,6 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleHost) {
       {QuotaClientType::kDatabase, QuotaClientType::kIndexedDatabase});
   task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }
 
@@ -3077,10 +2930,8 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Incognito) {
   // Query global usage to warmup the usage tracker caching.
   GetGlobalUsage(kTemp);
   GetGlobalUsage(kPerm);
-  task_environment_.RunUntilIdle();
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(80, usage());
   EXPECT_EQ(0, quota());
@@ -3095,20 +2946,17 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Incognito) {
   EXPECT_EQ(kPoolSize - 80 - 10, available_space());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10, usage());
   EXPECT_LE(kPerHostQuota, quota());
 
   mock_special_storage_policy()->AddUnlimited(GURL("http://foo.com/"));
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(80, usage());
   EXPECT_EQ(available_space() + usage(), quota());
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10, usage());
   EXPECT_EQ(available_space() + usage(), quota());
@@ -3120,12 +2968,10 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_SessionOnly) {
       kEpheremalStorageKey.origin().GetURL());
 
   GetUsageAndQuotaForWebApps(kEpheremalStorageKey, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(quota_manager_impl()->settings().session_only_per_host_quota,
             quota());
 
   GetUsageAndQuotaForWebApps(kEpheremalStorageKey, kPerm);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(0, quota());
 }
 
@@ -3158,7 +3004,6 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey) {
   run_loop.Run();
 
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(0, usage());
   EXPECT_EQ(5000, quota());
@@ -3176,7 +3021,6 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey_Disable) {
   run_loop1.Run();
 
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(5000, quota());
 
@@ -3187,7 +3031,6 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey_Disable) {
   run_loop2.Run();
 
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(9000, quota());
 
@@ -3198,7 +3041,6 @@ TEST_F(QuotaManagerImplTest, OverrideQuotaForStorageKey_Disable) {
   run_loop3.Run();
 
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(kDefaultPerHostQuota, quota());
 }
@@ -3215,7 +3057,6 @@ TEST_F(QuotaManagerImplTest, WithdrawQuotaOverride) {
   run_loop1.Run();
 
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(5000, quota());
 
@@ -3226,7 +3067,6 @@ TEST_F(QuotaManagerImplTest, WithdrawQuotaOverride) {
   run_loop2.Run();
 
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(8000, quota());
 
@@ -3234,14 +3074,12 @@ TEST_F(QuotaManagerImplTest, WithdrawQuotaOverride) {
   // it's overrides
   handle2.reset();
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(8000, quota());
 
   handle1.reset();
   task_environment_.RunUntilIdle();
   GetUsageAndQuotaForWebApps(storage_key, kTemp);
-  task_environment_.RunUntilIdle();
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(kDefaultPerHostQuota, quota());
 }
