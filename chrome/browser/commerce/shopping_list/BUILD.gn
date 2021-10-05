@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 static_library("shopping_list") {
   sources = [
     "shopping_data_provider.cc",
@@ -18,6 +22,12 @@ static_library("shopping_list") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
   ]
+
+  if (is_android) {
+    sources += [ "android/shopping_data_provider_bridge.cc" ]
+
+    deps += [ ":jni_headers" ]
+  }
 }
 
 static_library("unit_tests") {
@@ -33,4 +43,10 @@ static_library("unit_tests") {
     "//content/public/browser",
     "//testing/gtest",
   ]
+}
+
+if (is_android) {
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/commerce/shopping_list/ShoppingDataProviderBridge.java" ]
+  }
 }
