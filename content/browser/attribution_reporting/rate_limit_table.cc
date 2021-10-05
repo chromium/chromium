@@ -20,7 +20,7 @@ namespace {
 
 using AttributionAllowedStatus =
     ::content::RateLimitTable::AttributionAllowedStatus;
-using AttributionType = ::content::ConversionStorage::AttributionType;
+using AttributionType = ::content::AttributionStorage::AttributionType;
 
 constexpr AttributionType kAttributionTypes[] = {
     AttributionType::kNavigation,
@@ -45,7 +45,7 @@ WARN_UNUSED_RESULT int SerializeAttributionType(
 
 }  // namespace
 
-RateLimitTable::RateLimitTable(const ConversionStorage::Delegate* delegate,
+RateLimitTable::RateLimitTable(const AttributionStorage::Delegate* delegate,
                                const base::Clock* clock)
     : delegate_(delegate), clock_(clock) {
   DCHECK(delegate_);
@@ -204,7 +204,7 @@ int64_t RateLimitTable::GetCapacity(
     const std::string& serialized_impression_site,
     const std::string& serialized_conversion_destination,
     base::Time now) {
-  const ConversionStorage::Delegate::RateLimitConfig rate_limits =
+  const AttributionStorage::Delegate::RateLimitConfig rate_limits =
       delegate_->GetRateLimits(attribution_type);
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
   DCHECK_GT(rate_limits.max_contributions_per_window, 0);

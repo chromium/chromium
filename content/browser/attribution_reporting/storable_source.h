@@ -136,7 +136,7 @@ class CONTENT_EXPORT StorableSource {
   absl::optional<Id> impression_id_;
 
   // Dedup keys associated with the impression. Only set in values returned from
-  // `ConversionStorage::GetActiveImpressions()`.
+  // `AttributionStorage::GetActiveImpressions()`.
   std::vector<int64_t> dedup_keys_;
 
   // When adding new members, the corresponding `operator==()` definition in

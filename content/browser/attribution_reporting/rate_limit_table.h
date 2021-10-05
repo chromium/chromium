@@ -13,7 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "content/browser/attribution_reporting/conversion_storage.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 
@@ -49,7 +49,7 @@ class CONTENT_EXPORT RateLimitTable {
     kError,
   };
 
-  RateLimitTable(const ConversionStorage::Delegate* delegate,
+  RateLimitTable(const AttributionStorage::Delegate* delegate,
                  const base::Clock* clock);
   RateLimitTable(const RateLimitTable& other) = delete;
   RateLimitTable& operator=(const RateLimitTable& other) = delete;
@@ -84,7 +84,7 @@ class CONTENT_EXPORT RateLimitTable {
       const std::vector<AggregateHistogramContribution>& contributions)
       WARN_UNUSED_RESULT;
 
-  // These should be 1:1 with |ConversionStorageSql|'s |ClearData| functions.
+  // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.
   bool ClearAllDataInRange(sql::Database* db,
                            base::Time delete_begin,
@@ -107,14 +107,14 @@ class CONTENT_EXPORT RateLimitTable {
   // `conversion_destination`, according to `delegate_->GetRateLimits()`.
   // Returns 0 if there is no capacity, -1 on error.
   int64_t GetCapacity(sql::Database* db,
-                      ConversionStorage::AttributionType attribution_type,
+                      AttributionStorage::AttributionType attribution_type,
                       const std::string& serialized_impression_site,
                       const std::string& serialized_conversion_destination,
                       base::Time now)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   bool AddRow(sql::Database* db,
-              ConversionStorage::AttributionType attribution_type,
+              AttributionStorage::AttributionType attribution_type,
               StorableSource::Id impression_id,
               const std::string& serialized_impression_site,
               const std::string& serialized_impression_origin,
@@ -130,11 +130,11 @@ class CONTENT_EXPORT RateLimitTable {
   // Returns false on failure.
   bool DeleteExpiredRateLimits(
       sql::Database* db,
-      ConversionStorage::AttributionType attribution_type)
+      AttributionStorage::AttributionType attribution_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Must outlive |this|.
-  const ConversionStorage::Delegate* delegate_
+  const AttributionStorage::Delegate* delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Must outlive |this|.

@@ -26,7 +26,7 @@ namespace {
 using AttributionAllowedStatus =
     ::content::RateLimitTable::AttributionAllowedStatus;
 using CreateReportStatus =
-    ::content::ConversionStorage::CreateReportResult::Status;
+    ::content::AttributionStorage::CreateReportResult::Status;
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
 const char kDefaultConversionOrigin[] = "https://sub.conversion.test/";
@@ -115,9 +115,9 @@ int ConfigurableStorageDelegate::GetMaxAttributionDestinationsPerEventSource()
   return max_attribution_destinations_per_event_source_;
 }
 
-ConversionStorage::Delegate::RateLimitConfig
+AttributionStorage::Delegate::RateLimitConfig
 ConfigurableStorageDelegate::GetRateLimits(
-    ConversionStorage::AttributionType attribution_type) const {
+    AttributionStorage::AttributionType attribution_type) const {
   return rate_limits_;
 }
 
@@ -168,7 +168,7 @@ void TestConversionManager::GetPendingReportsForWebUI(
   std::move(callback).Run(reports_);
 }
 
-const ConversionSessionStorage& TestConversionManager::GetSessionStorage()
+const AttributionSessionStorage& TestConversionManager::GetSessionStorage()
     const {
   return session_storage_;
 }
@@ -178,11 +178,11 @@ void TestConversionManager::SendReportsForWebUI(base::OnceClosure done) {
   std::move(done).Run();
 }
 
-ConversionSessionStorage& TestConversionManager::GetSessionStorage() {
+AttributionSessionStorage& TestConversionManager::GetSessionStorage() {
   return session_storage_;
 }
 
-const ConversionPolicy& TestConversionManager::GetConversionPolicy() const {
+const AttributionPolicy& TestConversionManager::GetAttributionPolicy() const {
   return policy_;
 }
 
@@ -292,52 +292,50 @@ StorableSource ImpressionBuilder::Build() const {
 }
 
 StorableTrigger DefaultConversion() {
-  return ConversionBuilder().Build();
+  return TriggerBuilder().Build();
 }
 
-ConversionBuilder::ConversionBuilder()
+TriggerBuilder::TriggerBuilder()
     : conversion_destination_(
           net::SchemefulSite(GURL(kDefaultConversionDestination))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
 
-ConversionBuilder::~ConversionBuilder() = default;
+TriggerBuilder::~TriggerBuilder() = default;
 
-ConversionBuilder& ConversionBuilder::SetConversionData(
-    uint64_t conversion_data) {
+TriggerBuilder& TriggerBuilder::SetConversionData(uint64_t conversion_data) {
   conversion_data_ = conversion_data;
   return *this;
 }
 
-ConversionBuilder& ConversionBuilder::SetEventSourceTriggerData(
+TriggerBuilder& TriggerBuilder::SetEventSourceTriggerData(
     uint64_t event_source_trigger_data) {
   event_source_trigger_data_ = event_source_trigger_data;
   return *this;
 }
 
-ConversionBuilder& ConversionBuilder::SetConversionDestination(
+TriggerBuilder& TriggerBuilder::SetConversionDestination(
     net::SchemefulSite conversion_destination) {
   conversion_destination_ = std::move(conversion_destination);
   return *this;
 }
 
-ConversionBuilder& ConversionBuilder::SetReportingOrigin(
+TriggerBuilder& TriggerBuilder::SetReportingOrigin(
     url::Origin reporting_origin) {
   reporting_origin_ = std::move(reporting_origin);
   return *this;
 }
 
-ConversionBuilder& ConversionBuilder::SetPriority(int64_t priority) {
+TriggerBuilder& TriggerBuilder::SetPriority(int64_t priority) {
   priority_ = priority;
   return *this;
 }
 
-ConversionBuilder& ConversionBuilder::SetDedupKey(
-    absl::optional<int64_t> dedup_key) {
+TriggerBuilder& TriggerBuilder::SetDedupKey(absl::optional<int64_t> dedup_key) {
   dedup_key_ = dedup_key;
   return *this;
 }
 
-StorableTrigger ConversionBuilder::Build() const {
+StorableTrigger TriggerBuilder::Build() const {
   return StorableTrigger(conversion_data_, conversion_destination_,
                          reporting_origin_, event_source_trigger_data_,
                          priority_, dedup_key_);
@@ -537,8 +535,8 @@ std::vector<AttributionReport> GetConversionsToReportForTesting(
     base::Time max_report_time) {
   base::RunLoop run_loop;
   std::vector<AttributionReport> conversion_reports;
-  manager->conversion_storage_
-      .AsyncCall(&ConversionStorage::GetConversionsToReport)
+  manager->attribution_storage_
+      .AsyncCall(&AttributionStorage::GetConversionsToReport)
       .WithArgs(max_report_time, /*limit=*/-1)
       .Then(base::BindOnce(base::BindLambdaForTesting(
           [&](std::vector<AttributionReport> reports) {

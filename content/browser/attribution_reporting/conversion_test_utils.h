@@ -13,12 +13,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_session_storage.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
-#include "content/browser/attribution_reporting/conversion_policy.h"
-#include "content/browser/attribution_reporting/conversion_session_storage.h"
-#include "content/browser/attribution_reporting/conversion_storage.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -77,12 +77,12 @@ class ConfigurableConversionTestBrowserClient
   absl::optional<url::Origin> blocked_reporting_origin_;
 };
 
-class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
+class ConfigurableStorageDelegate : public AttributionStorage::Delegate {
  public:
   ConfigurableStorageDelegate();
   ~ConfigurableStorageDelegate() override;
 
-  // ConversionStorage::Delegate
+  // AttributionStorage::Delegate
   base::Time GetReportTime(const StorableSource& impression,
                            base::Time conversion_time) const override;
   int GetMaxConversionsPerImpression(
@@ -90,7 +90,7 @@ class ConfigurableStorageDelegate : public ConversionStorage::Delegate {
   int GetMaxImpressionsPerOrigin() const override;
   int GetMaxConversionsPerOrigin() const override;
   RateLimitConfig GetRateLimits(
-      ConversionStorage::AttributionType attribution_type) const override;
+      AttributionStorage::AttributionType attribution_type) const override;
   int GetMaxAttributionDestinationsPerEventSource() const override;
   uint64_t GetFakeEventSourceTriggerData() const override;
   base::TimeDelta GetDeleteExpiredImpressionsFrequency() const override;
@@ -177,9 +177,9 @@ class TestConversionManager : public ConversionManager {
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<AttributionReport>)> callback,
       base::Time max_report_time) override;
-  const ConversionSessionStorage& GetSessionStorage() const override;
+  const AttributionSessionStorage& GetSessionStorage() const override;
   void SendReportsForWebUI(base::OnceClosure done) override;
-  const ConversionPolicy& GetConversionPolicy() const override;
+  const AttributionPolicy& GetAttributionPolicy() const override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,
                  base::RepeatingCallback<bool(const url::Origin&)> filter,
@@ -187,7 +187,7 @@ class TestConversionManager : public ConversionManager {
 
   void SetActiveImpressionsForWebUI(std::vector<StorableSource> impressions);
   void SetReportsForWebUI(std::vector<AttributionReport> reports);
-  ConversionSessionStorage& GetSessionStorage();
+  AttributionSessionStorage& GetSessionStorage();
 
   // Resets all counters on this.
   void Reset();
@@ -213,8 +213,8 @@ class TestConversionManager : public ConversionManager {
   }
 
  private:
-  ConversionPolicy policy_;
-  ConversionSessionStorage session_storage_{INT_MAX};
+  AttributionPolicy policy_;
+  AttributionSessionStorage session_storage_{INT_MAX};
   net::SchemefulSite last_conversion_destination_;
   absl::optional<StorableSource::SourceType> last_impression_source_type_;
   absl::optional<url::Origin> last_impression_origin_;
@@ -281,26 +281,26 @@ StorableTrigger DefaultConversion() WARN_UNUSED_RESULT;
 // Helper class to construct a StorableTrigger for tests using default data.
 // StorableTrigger members are not mutable after construction requiring a
 // builder pattern.
-class ConversionBuilder {
+class TriggerBuilder {
  public:
-  ConversionBuilder();
-  ~ConversionBuilder();
+  TriggerBuilder();
+  ~TriggerBuilder();
 
-  ConversionBuilder& SetConversionData(uint64_t conversion_data)
+  TriggerBuilder& SetConversionData(uint64_t conversion_data)
       WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetEventSourceTriggerData(
-      uint64_t event_source_trigger_data) WARN_UNUSED_RESULT;
+  TriggerBuilder& SetEventSourceTriggerData(uint64_t event_source_trigger_data)
+      WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetConversionDestination(
+  TriggerBuilder& SetConversionDestination(
       net::SchemefulSite conversion_destination) WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetReportingOrigin(url::Origin reporting_origin)
+  TriggerBuilder& SetReportingOrigin(url::Origin reporting_origin)
       WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
+  TriggerBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
-  ConversionBuilder& SetDedupKey(absl::optional<int64_t> dedup_key)
+  TriggerBuilder& SetDedupKey(absl::optional<int64_t> dedup_key)
       WARN_UNUSED_RESULT;
 
   StorableTrigger Build() const WARN_UNUSED_RESULT;
@@ -321,7 +321,7 @@ bool operator==(const AttributionReport& a, const AttributionReport& b);
 bool operator==(const SentReportInfo& a, const SentReportInfo& b);
 
 std::ostream& operator<<(std::ostream& out,
-                         ConversionStorage::CreateReportResult::Status status);
+                         AttributionStorage::CreateReportResult::Status status);
 
 std::ostream& operator<<(std::ostream& out,
                          RateLimitTable::AttributionAllowedStatus status);

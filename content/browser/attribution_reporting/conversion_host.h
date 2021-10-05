@@ -21,7 +21,7 @@
 
 namespace content {
 
-class ConversionPageMetrics;
+class AttributionPageMetrics;
 class WebContents;
 
 // Class responsible for listening to conversion events originating from blink,
@@ -120,7 +120,7 @@ class CONTENT_EXPORT ConversionHost
   // Logs metrics per top-level page load. Created for every top level
   // navigation that commits, as long as there is a ConversionManager.
   // Excludes the initial about:blank document.
-  std::unique_ptr<ConversionPageMetrics> conversion_page_metrics_;
+  std::unique_ptr<AttributionPageMetrics> conversion_page_metrics_;
 
   RenderFrameHostReceiverSet<blink::mojom::ConversionHost> receivers_;
 

@@ -24,8 +24,8 @@ class Origin;
 
 namespace content {
 
-class ConversionPolicy;
-class ConversionSessionStorage;
+class AttributionPolicy;
+class AttributionSessionStorage;
 class StorableTrigger;
 class StorableSource;
 class WebContents;
@@ -68,16 +68,16 @@ class CONTENT_EXPORT ConversionManager {
       base::OnceCallback<void(std::vector<AttributionReport>)> callback,
       base::Time max_report_time) = 0;
 
-  virtual const ConversionSessionStorage& GetSessionStorage() const
+  virtual const AttributionSessionStorage& GetSessionStorage() const
       WARN_UNUSED_RESULT = 0;
 
   // Sends all pending reports immediately, and runs |done| once they have all
   // been sent.
   virtual void SendReportsForWebUI(base::OnceClosure done) = 0;
 
-  // Returns the ConversionPolicy that is used to control API policies such
+  // Returns the AttributionPolicy that is used to control API policies such
   // as noise.
-  virtual const ConversionPolicy& GetConversionPolicy() const
+  virtual const AttributionPolicy& GetAttributionPolicy() const
       WARN_UNUSED_RESULT = 0;
 
   // Deletes all data in storage for URLs matching |filter|, between

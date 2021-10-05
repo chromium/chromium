@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/conversion_test_utils.h"
 #include "content/browser/attribution_reporting/sent_report_info.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -36,13 +37,13 @@ namespace content {
 namespace {
 
 using CreateReportStatus =
-    ::content::ConversionStorage::CreateReportResult::Status;
+    ::content::AttributionStorage::CreateReportResult::Status;
 
 using ::testing::ElementsAre;
 
 constexpr base::TimeDelta kExpiredReportOffset = base::Minutes(2);
 
-class ConstantStartupDelayPolicy : public ConversionPolicy {
+class ConstantStartupDelayPolicy : public AttributionPolicy {
  public:
   ConstantStartupDelayPolicy() = default;
   ~ConstantStartupDelayPolicy() override = default;
@@ -53,13 +54,13 @@ class ConstantStartupDelayPolicy : public ConversionPolicy {
 };
 
 // Mock reporter that tracks reports being queued by the ConversionManager.
-class TestConversionReporter
-    : public ConversionManagerImpl::ConversionReporter {
+class TestAttributionReporter
+    : public ConversionManagerImpl::AttributionReporter {
  public:
-  TestConversionReporter() = default;
-  ~TestConversionReporter() override = default;
+  TestAttributionReporter() = default;
+  ~TestAttributionReporter() override = default;
 
-  // ConversionManagerImpl::ConversionReporter
+  // ConversionManagerImpl::AttributionReporter
   void AddReportsToQueue(std::vector<AttributionReport> reports) override {
     num_reports_ += reports.size();
     last_report_time_ = reports.back().report_time;
@@ -136,7 +137,7 @@ class TestConversionReporter
 };
 
 // Time after impression that a conversion can first be sent. See
-// ConversionStorageDelegateImpl::GetReportTimeForConversion().
+// AttributionStorageDelegateImpl::GetReportTimeForConversion().
 constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
 
 // Give impressions a sufficiently long expiry.
@@ -157,7 +158,7 @@ class ConversionManagerImplTest : public testing::Test {
   }
 
   void CreateManager() {
-    auto reporter = std::make_unique<TestConversionReporter>();
+    auto reporter = std::make_unique<TestAttributionReporter>();
     test_reporter_ = reporter.get();
     conversion_manager_ = ConversionManagerImpl::CreateForTesting(
         std::move(reporter), std::make_unique<ConstantStartupDelayPolicy>(),
@@ -199,7 +200,7 @@ class ConversionManagerImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ConversionManagerImpl> conversion_manager_;
-  TestConversionReporter* test_reporter_ = nullptr;
+  TestAttributionReporter* test_reporter_ = nullptr;
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
 };
 
@@ -551,7 +552,7 @@ TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
   // a dropped report.
   for (int i = 1; i <= 3; i++) {
     conversion_manager_->HandleConversion(
-        ConversionBuilder().SetPriority(i).Build());
+        TriggerBuilder().SetPriority(i).Build());
     ExpectNumStoredReports(i);
     EXPECT_EQ(
         0u,
@@ -561,7 +562,7 @@ TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
   {
     // This should replace the report with priority 1.
     conversion_manager_->HandleConversion(
-        ConversionBuilder().SetPriority(4).Build());
+        TriggerBuilder().SetPriority(4).Build());
     ExpectNumStoredReports(3);
     const auto& dropped_reports =
         conversion_manager_->GetSessionStorage().GetDroppedReports();
@@ -575,7 +576,7 @@ TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
     // This should be dropped, as it has a lower priority than all stored
     // reports.
     conversion_manager_->HandleConversion(
-        ConversionBuilder().SetPriority(-5).Build());
+        TriggerBuilder().SetPriority(-5).Build());
     ExpectNumStoredReports(3);
     const auto& dropped_reports =
         conversion_manager_->GetSessionStorage().GetDroppedReports();
@@ -592,9 +593,9 @@ TEST_F(ConversionManagerImplTest, DroppedReport_StoresLastN) {
     // with priority 1 from the session storage, as only
     // `kMaxSentReportsToStore` should be stored.
     conversion_manager_->HandleConversion(
-        ConversionBuilder().SetPriority(5).Build());
+        TriggerBuilder().SetPriority(5).Build());
     conversion_manager_->HandleConversion(
-        ConversionBuilder().SetPriority(6).Build());
+        TriggerBuilder().SetPriority(6).Build());
     ExpectNumStoredReports(3);
     const auto& dropped_reports =
         conversion_manager_->GetSessionStorage().GetDroppedReports();
@@ -647,7 +648,7 @@ TEST_F(ConversionManagerImplTest, ExpiredReportsAtStartup_Queued) {
   EXPECT_EQ(2u, test_reporter_->num_reports());
 }
 
-// This functionality is tested more thoroughly in the ConversionStorageSql
+// This functionality is tested more thoroughly in the AttributionStorageSql
 // unit tests. Here, just test to make sure the basic control flow is working.
 TEST_F(ConversionManagerImplTest, ClearData) {
   for (bool match_url : {true, false}) {
@@ -826,11 +827,11 @@ TEST_F(ConversionManagerImplTest, ConversionPrioritization_OneReportSent) {
   ExpectNumStoredImpressions(1u);
 
   conversion_manager_->HandleConversion(
-      ConversionBuilder().SetPriority(1).Build());
+      TriggerBuilder().SetPriority(1).Build());
   conversion_manager_->HandleConversion(
-      ConversionBuilder().SetPriority(1).Build());
+      TriggerBuilder().SetPriority(1).Build());
   conversion_manager_->HandleConversion(
-      ConversionBuilder().SetPriority(1).Build());
+      TriggerBuilder().SetPriority(1).Build());
   ExpectNumStoredReports(3u);
 
   task_environment_.FastForwardBy(base::Days(7) - base::Minutes(30));
@@ -838,7 +839,7 @@ TEST_F(ConversionManagerImplTest, ConversionPrioritization_OneReportSent) {
 
   task_environment_.FastForwardBy(base::Minutes(5));
   conversion_manager_->HandleConversion(
-      ConversionBuilder().SetPriority(2).Build());
+      TriggerBuilder().SetPriority(2).Build());
   task_environment_.FastForwardBy(base::Hours(1));
   EXPECT_EQ(3u, test_reporter_->num_reports());
 }
@@ -849,7 +850,8 @@ TEST_F(ConversionManagerImplTest, HandleConversion_RecordsMetric) {
   ExpectNumStoredReports(0);
   histograms.ExpectUniqueSample(
       "Conversions.CreateReportStatus",
-      ConversionStorage::CreateReportResult::Status::kNoMatchingImpressions, 1);
+      AttributionStorage::CreateReportResult::Status::kNoMatchingImpressions,
+      1);
 }
 
 TEST_F(ConversionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
@@ -880,14 +882,14 @@ TEST_F(ConversionManagerImplTest, ClearData_RequeuesReports) {
                                             .SetReportingOrigin(origin_a)
                                             .Build());
   conversion_manager_->HandleConversion(
-      ConversionBuilder().SetReportingOrigin(origin_a).Build());
+      TriggerBuilder().SetReportingOrigin(origin_a).Build());
 
   conversion_manager_->HandleImpression(ImpressionBuilder(clock().Now())
                                             .SetExpiry(kImpressionExpiry)
                                             .SetReportingOrigin(origin_b)
                                             .Build());
   conversion_manager_->HandleConversion(
-      ConversionBuilder().SetReportingOrigin(origin_b).Build());
+      TriggerBuilder().SetReportingOrigin(origin_b).Build());
 
   EXPECT_EQ(0u, test_reporter_->num_reports());
 
@@ -916,7 +918,7 @@ TEST_F(ConversionManagerImplTest, ClearData_NoDeleteForRemovedFromQueue) {
                                             .SetReportingOrigin(origin_a)
                                             .Build());
   conversion_manager_->HandleConversion(
-      ConversionBuilder().SetReportingOrigin(origin_a).Build());
+      TriggerBuilder().SetReportingOrigin(origin_a).Build());
 
   ExpectNumStoredReports(1u);
 

@@ -4,7 +4,7 @@
 
 #include "content/browser/attribution_reporting/conversion_internals_ui.h"
 
-#include "content/browser/attribution_reporting/conversion_internals_handler_impl.h"
+#include "content/browser/attribution_reporting/attribution_internals_handler_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/grit/dev_ui_content_resources.h"
 #include "content/public/browser/render_frame_host.h"
@@ -50,7 +50,7 @@ void ConversionInternalsUI::WebUIRenderFrameCreated(RenderFrameHost* rfh) {
 
 void ConversionInternalsUI::BindInterface(
     mojo::PendingReceiver<mojom::ConversionInternalsHandler> receiver) {
-  ui_handler_ = std::make_unique<ConversionInternalsHandlerImpl>(
+  ui_handler_ = std::make_unique<AttributionInternalsHandlerImpl>(
       web_ui(), std::move(receiver));
 }
 

@@ -16,7 +16,7 @@
 
 namespace content {
 
-class ConversionInternalsHandlerImpl;
+class AttributionInternalsHandlerImpl;
 
 // WebUI which handles serving the chrome://conversion-internals page.
 class CONTENT_EXPORT ConversionInternalsUI : public WebUIController {
@@ -38,7 +38,7 @@ class CONTENT_EXPORT ConversionInternalsUI : public WebUIController {
       std::unique_ptr<ConversionManager::Provider> manager_provider);
 
  private:
-  std::unique_ptr<ConversionInternalsHandlerImpl> ui_handler_;
+  std::unique_ptr<AttributionInternalsHandlerImpl> ui_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

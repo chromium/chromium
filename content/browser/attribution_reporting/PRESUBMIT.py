@@ -10,12 +10,12 @@ for more details about the presubmit API built into depot_tools.
 
 USE_PYTHON3 = True
 
-def CheckConversionStorageSchemaModification(input_api, output_api):
+def CheckAttributionStorageSchemaModification(input_api, output_api):
   """ Checks the kCurrentVersionNumber is modified when necessary.
 
   Whenever any of the following files is changed:
-    - conversion_storage_sql.cc
-    - conversion_storage_sql_migrations.cc
+    - attribution_storage_sql.cc
+    - attribution_storage_sql_migrations.cc
     - rate_limit_table.cc
   and kCurrentVersionNumber stays intact, this check returns a
   presubmit warning to make sure the value is updated if necessary.
@@ -27,12 +27,12 @@ def CheckConversionStorageSchemaModification(input_api, output_api):
   for affected_file in input_api.AffectedFiles():
     basename = input_api.basename(affected_file.LocalPath())
 
-    if (basename == 'conversion_storage_sql_migrations.cc' or
-        basename == 'conversion_storage_sql.cc' or
+    if (basename == 'attribution_storage_sql_migrations.cc' or
+        basename == 'attribution_storage_sql.cc' or
         basename == 'rate_limit_table.cc'):
       database_files_changed = True
 
-    if basename == 'conversion_storage_sql.cc':
+    if basename == 'attribution_storage_sql.cc':
       for (_, line) in affected_file.ChangedContents():
         if 'const int kCurrentVersionNumber' in line:
           database_version_changed = True
@@ -43,9 +43,9 @@ def CheckConversionStorageSchemaModification(input_api, output_api):
     out.append(output_api.PresubmitPromptWarning(
         'Please make sure that the conversions database is properly versioned '
         'and migrated when making changes to schema or table contents. '
-        'kCurrentVersionNumber in conversion_storage_sql.cc '
+        'kCurrentVersionNumber in attribution_storage_sql.cc '
         'must be updated when doing a migration.'))
   return out
 
 def CheckChangeOnUpload(input_api, output_api):
-  return CheckConversionStorageSchemaModification(input_api, output_api)
+  return CheckAttributionStorageSchemaModification(input_api, output_api)

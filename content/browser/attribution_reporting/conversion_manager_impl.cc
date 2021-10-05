@@ -15,11 +15,11 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/default_clock.h"
+#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/conversion_policy.h"
-#include "content/browser/attribution_reporting/conversion_reporter_impl.h"
-#include "content/browser/attribution_reporting/conversion_storage_delegate_impl.h"
-#include "content/browser/attribution_reporting/conversion_storage_sql.h"
+#include "content/browser/attribution_reporting/attribution_reporter_impl.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/storage_partition_impl.h"
@@ -71,7 +71,7 @@ bool IsOriginSessionOnly(
 }
 
 void RecordCreateReportStatus(
-    ConversionStorage::CreateReportResult::Status status) {
+    AttributionStorage::CreateReportResult::Status status) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
 }
 
@@ -114,13 +114,13 @@ ConversionManager* ConversionManagerProviderImpl::GetManager(
 
 // static
 void ConversionManagerImpl::RunInMemoryForTesting() {
-  ConversionStorageSql::RunInMemoryForTesting();
+  AttributionStorageSql::RunInMemoryForTesting();
 }
 
 // static
 std::unique_ptr<ConversionManagerImpl> ConversionManagerImpl::CreateForTesting(
-    std::unique_ptr<ConversionReporter> reporter,
-    std::unique_ptr<ConversionPolicy> policy,
+    std::unique_ptr<AttributionReporter> reporter,
+    std::unique_ptr<AttributionPolicy> policy,
     const base::Clock* clock,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
@@ -135,14 +135,14 @@ ConversionManagerImpl::ConversionManagerImpl(
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : ConversionManagerImpl(
-          std::make_unique<ConversionReporterImpl>(
+          std::make_unique<AttributionReporterImpl>(
               storage_partition,
               base::DefaultClock::GetInstance(),
               // |reporter_| is owned by |this|, so `base::Unretained()` is safe
               // as the reporter and callbacks will be deleted first.
               base::BindRepeating(&ConversionManagerImpl::OnReportSent,
                                   base::Unretained(this))),
-          std::make_unique<ConversionPolicy>(
+          std::make_unique<AttributionPolicy>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
                   switches::kConversionsDebugMode)),
           base::DefaultClock::GetInstance(),
@@ -151,8 +151,8 @@ ConversionManagerImpl::ConversionManagerImpl(
           kMaxSentReportsToStore) {}
 
 ConversionManagerImpl::ConversionManagerImpl(
-    std::unique_ptr<ConversionReporter> reporter,
-    std::unique_ptr<ConversionPolicy> policy,
+    std::unique_ptr<AttributionReporter> reporter,
+    std::unique_ptr<AttributionPolicy> policy,
     const base::Clock* clock,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
@@ -161,13 +161,13 @@ ConversionManagerImpl::ConversionManagerImpl(
           switches::kConversionsDebugMode)),
       clock_(clock),
       reporter_(std::move(reporter)),
-      conversion_storage_(base::SequenceBound<ConversionStorageSql>(
+      attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
           user_data_directory,
-          std::make_unique<ConversionStorageDelegateImpl>(debug_mode_),
+          std::make_unique<AttributionStorageDelegateImpl>(debug_mode_),
           clock_)),
       session_storage_(max_sent_reports_to_store),
-      conversion_policy_(std::move(policy)),
+      attribution_policy_(std::move(policy)),
       special_storage_policy_(std::move(special_storage_policy)),
       weak_factory_(this) {
   // Once the database is loaded, get all reports that may have expired while
@@ -196,20 +196,20 @@ ConversionManagerImpl::~ConversionManagerImpl() {
   base::RepeatingCallback<bool(const url::Origin&)>
       session_only_origin_predicate = base::BindRepeating(
           &IsOriginSessionOnly, std::move(special_storage_policy_));
-  conversion_storage_.AsyncCall(&ConversionStorage::ClearData)
+  attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(base::Time::Min(), base::Time::Max(),
                 std::move(session_only_origin_predicate));
 }
 
 void ConversionManagerImpl::HandleImpression(StorableSource impression) {
   // Add the impression to storage.
-  conversion_storage_.AsyncCall(&ConversionStorage::StoreImpression)
+  attribution_storage_.AsyncCall(&AttributionStorage::StoreImpression)
       .WithArgs(std::move(impression));
 }
 
 void ConversionManagerImpl::HandleConversion(StorableTrigger conversion) {
-  conversion_storage_
-      .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReport)
+  attribution_storage_
+      .AsyncCall(&AttributionStorage::MaybeCreateAndStoreConversionReport)
       .WithArgs(std::move(conversion))
       .Then(base::BindOnce(&ConversionManagerImpl::OnReportStored,
                            weak_factory_.GetWeakPtr()));
@@ -221,7 +221,7 @@ void ConversionManagerImpl::HandleConversion(StorableTrigger conversion) {
 }
 
 void ConversionManagerImpl::OnReportStored(
-    ConversionStorage::CreateReportResult result) {
+    AttributionStorage::CreateReportResult result) {
   RecordCreateReportStatus(result.status());
   if (!result.dropped_report().has_value())
     return;
@@ -232,7 +232,7 @@ void ConversionManagerImpl::OnReportStored(
 void ConversionManagerImpl::GetActiveImpressionsForWebUI(
     base::OnceCallback<void(std::vector<StorableSource>)> callback) {
   const int kMaxImpressions = 1000;
-  conversion_storage_.AsyncCall(&ConversionStorage::GetActiveImpressions)
+  attribution_storage_.AsyncCall(&AttributionStorage::GetActiveImpressions)
       .WithArgs(kMaxImpressions)
       .Then(std::move(callback));
 }
@@ -244,7 +244,7 @@ void ConversionManagerImpl::GetPendingReportsForWebUI(
   GetAndHandleReports(std::move(callback), max_report_time, kMaxReports);
 }
 
-const ConversionSessionStorage& ConversionManagerImpl::GetSessionStorage()
+const AttributionSessionStorage& ConversionManagerImpl::GetSessionStorage()
     const {
   return session_storage_;
 }
@@ -256,8 +256,8 @@ void ConversionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
       base::Time::Max());
 }
 
-const ConversionPolicy& ConversionManagerImpl::GetConversionPolicy() const {
-  return *conversion_policy_;
+const AttributionPolicy& ConversionManagerImpl::GetAttributionPolicy() const {
+  return *attribution_policy_;
 }
 
 void ConversionManagerImpl::ClearData(
@@ -267,7 +267,7 @@ void ConversionManagerImpl::ClearData(
     base::OnceClosure done) {
   session_storage_.Reset();
   reporter_->RemoveAllReportsFromQueue();
-  conversion_storage_.AsyncCall(&ConversionStorage::ClearData)
+  attribution_storage_.AsyncCall(&AttributionStorage::ClearData)
       .WithArgs(delete_begin, delete_end, std::move(filter))
       .Then(base::BindOnce(
           [](base::OnceClosure done,
@@ -283,7 +283,7 @@ void ConversionManagerImpl::GetAndHandleReports(
     ReportsHandlerFunc handler_function,
     base::Time max_report_time,
     int limit) {
-  conversion_storage_.AsyncCall(&ConversionStorage::GetConversionsToReport)
+  attribution_storage_.AsyncCall(&AttributionStorage::GetConversionsToReport)
       .WithArgs(max_report_time, limit)
       .Then(std::move(handler_function));
 }
@@ -309,7 +309,7 @@ void ConversionManagerImpl::QueueReports(
       continue;
 
     report.report_time =
-        conversion_policy_->GetReportTimeForReportPastSendTime(current_time);
+        attribution_policy_->GetReportTimeForReportPastSendTime(current_time);
   }
 
   reporter_->AddReportsToQueue(std::move(reports));
@@ -335,7 +335,7 @@ void ConversionManagerImpl::HandleReportsSentFromWebUI(
   }
 
   // Reports may already be in the process of sending, but they will be
-  // deduplicated by `ConversionReporterImpl::AddReportsToQueue()`. In that
+  // deduplicated by `AttributionReporterImpl::AddReportsToQueue()`. In that
   // case, the callback will be invoked as a result of the in-process reports.
   pending_conversion_ids_for_internals_ui_ =
       base::flat_set<AttributionReport::Id>(std::move(conversion_ids));
@@ -355,7 +355,7 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   if (info.status == SentReportInfo::Status::kTransientFailure) {
     info.report.failed_send_attempts++;
     const absl::optional<base::TimeDelta> delay =
-        conversion_policy_->GetFailedReportDelay(
+        attribution_policy_->GetFailedReportDelay(
             info.report.failed_send_attempts);
     if (delay.has_value()) {
       should_retry = true;
@@ -368,8 +368,8 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
     // add it directly to the queue so that the retry is attempted as the new
     // report time is reached, rather than wait for the next DB-polling to
     // occur.
-    conversion_storage_
-        .AsyncCall(&ConversionStorage::UpdateReportForSendFailure)
+    attribution_storage_
+        .AsyncCall(&AttributionStorage::UpdateReportForSendFailure)
         .WithArgs(*info.report.conversion_id, info.report.report_time)
         .Then(base::BindOnce(
             [](base::WeakPtr<ConversionManagerImpl> manager,
@@ -382,7 +382,7 @@ void ConversionManagerImpl::OnReportSent(SentReportInfo info) {
   } else if (info.status != SentReportInfo::Status::kOffline &&
              info.status != SentReportInfo::Status::kRemovedFromQueue) {
     RecordDeleteEvent(DeleteEvent::kStarted);
-    conversion_storage_.AsyncCall(&ConversionStorage::DeleteConversion)
+    attribution_storage_.AsyncCall(&AttributionStorage::DeleteConversion)
         .WithArgs(*info.report.conversion_id)
         .Then(base::BindOnce([](bool succeeded) {
           RecordDeleteEvent(succeeded ? DeleteEvent::kSucceeded

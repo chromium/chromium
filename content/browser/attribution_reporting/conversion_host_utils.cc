@@ -8,8 +8,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
-#include "content/browser/attribution_reporting/conversion_policy.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/url_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -56,7 +56,7 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
 
   base::Time impression_time = base::Time::Now();
 
-  const ConversionPolicy& policy = conversion_manager.GetConversionPolicy();
+  const AttributionPolicy& policy = conversion_manager.GetAttributionPolicy();
   StorableSource storable_impression(
       policy.GetSanitizedImpressionData(impression.impression_data),
       impression_origin, impression.conversion_destination, reporting_origin,

@@ -12,11 +12,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_page_metrics.h"
+#include "content/browser/attribution_reporting/attribution_policy.h"
 #include "content/browser/attribution_reporting/conversion_host_utils.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
-#include "content/browser/attribution_reporting/conversion_page_metrics.h"
-#include "content/browser/attribution_reporting/conversion_policy.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -194,7 +194,7 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // We have a new cross-document navigation.
   last_navigation_allows_attribution_ = true;
 
-  conversion_page_metrics_ = std::make_unique<ConversionPageMetrics>();
+  conversion_page_metrics_ = std::make_unique<AttributionPageMetrics>();
   bool is_android_app_origin =
       IsAndroidAppOrigin(navigation_handle->GetInitiatorOrigin()) ||
       (pending_attribution &&
@@ -289,7 +289,7 @@ void ConversionHost::RegisterConversion(
 
   net::SchemefulSite conversion_destination(main_frame_origin);
 
-  if (!conversion_manager->GetConversionPolicy().IsConversionDataInRange(
+  if (!conversion_manager->GetAttributionPolicy().IsConversionDataInRange(
           conversion->conversion_data,
           StorableSource::SourceType::kNavigation)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
@@ -300,7 +300,7 @@ void ConversionHost::RegisterConversion(
         base::NumberToString(conversion->conversion_data));
   }
 
-  if (!conversion_manager->GetConversionPolicy().IsConversionDataInRange(
+  if (!conversion_manager->GetAttributionPolicy().IsConversionDataInRange(
           conversion->event_source_trigger_data,
           StorableSource::SourceType::kEvent)) {
     devtools_instrumentation::ReportAttributionReportingIssue(
@@ -312,10 +312,10 @@ void ConversionHost::RegisterConversion(
   }
 
   StorableTrigger storable_conversion(
-      conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
+      conversion_manager->GetAttributionPolicy().GetSanitizedConversionData(
           conversion->conversion_data, StorableSource::SourceType::kNavigation),
       conversion_destination, conversion->reporting_origin,
-      conversion_manager->GetConversionPolicy().GetSanitizedConversionData(
+      conversion_manager->GetAttributionPolicy().GetSanitizedConversionData(
           conversion->event_source_trigger_data,
           StorableSource::SourceType::kEvent),
       conversion->priority,
