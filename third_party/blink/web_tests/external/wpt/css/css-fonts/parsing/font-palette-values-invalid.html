@@ -84,13 +84,36 @@
     base-palette: -1;
     override-color: -1 #123;
 }
+
+/* 14 */
+@font-palette-values A {
+    font-family: "";
+}
+
+/* 15 */
+@font-palette-values A {
+    base-palette: initial;
+    override-color: initial;
+}
+
+/* 16 */
+@font-palette-values A {
+    base-palette: inherit;
+    override-color: inherit;
+}
+
+/* 17 */
+@font-palette-values A {
+    base-palette: unset;
+    override-color: unset;
+}
 </style>
 </head>
 <body>
 <script>
 let rules = document.getElementById("style").sheet.cssRules;
 test(function() {
-    assert_equals(rules.length, 14);
+    assert_equals(rules.length, 18);
 });
 
 test(function() {
@@ -187,6 +210,40 @@ test(function() {
 test(function() {
     let text = rules[13].cssText;
     let rule = rules[13];
+    assert_equals(text.indexOf("base-palette"), -1);
+    assert_equals(text.indexOf("override-color"), -1);
+    assert_equals(rule.size, 0);
+    assert_equals(rule.basePalette, "");
+});
+
+test(function() {
+    let text = rules[14].cssText;
+    let rule = rules[14];
+    // I see nothing in the spec that indicates an empty string is a parse error.
+    assert_not_equals(text.indexOf("font-family"), -1);
+});
+
+test(function() {
+    let text = rules[15].cssText;
+    let rule = rules[15];
+    assert_equals(text.indexOf("base-palette"), -1);
+    assert_equals(text.indexOf("override-color"), -1);
+    assert_equals(rule.size, 0);
+    assert_equals(rule.basePalette, "");
+});
+
+test(function() {
+    let text = rules[16].cssText;
+    let rule = rules[16];
+    assert_equals(text.indexOf("base-palette"), -1);
+    assert_equals(text.indexOf("override-color"), -1);
+    assert_equals(rule.size, 0);
+    assert_equals(rule.basePalette, "");
+});
+
+test(function() {
+    let text = rules[17].cssText;
+    let rule = rules[17];
     assert_equals(text.indexOf("base-palette"), -1);
     assert_equals(text.indexOf("override-color"), -1);
     assert_equals(rule.size, 0);

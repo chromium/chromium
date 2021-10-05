@@ -13,6 +13,10 @@
 # Tests that fail in legacy but pass in NG
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-add-2.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-delete-2.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-fonts/palette-values-rule-delete.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-sizing/dynamic-change-inline-size-002.html [ Failure ]
 
 

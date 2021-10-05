@@ -6,7 +6,7 @@
 // Test that drawing images with different bit depths and color profiles into
 // sRGB and Display P3 canvases works, by reading pixels with getImageData()
 // as sRGB and Display P3 values.
-for (let [filename, expectedPixels] of Object.entries(imageTests)) {
+for (let [filename, expectedPixels] of Object.entries({...imageTests, ...svgImageTests})) {
     for (let contextColorSpace of ["srgb", "display-p3"]) {
         for (let imageDataColorSpace of ["srgb", "display-p3"]) {
             for (let scaleImage of [false, true]) {

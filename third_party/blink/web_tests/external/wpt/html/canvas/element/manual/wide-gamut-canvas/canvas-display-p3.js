@@ -1,4 +1,4 @@
-// Each image:
+// Each PNG:
 //  * is 2x2 and has a single color
 //  * has a filename that indicates its contents:
 //      <embedded-profile>-<8-or-16-bit-color-value>.png
@@ -174,6 +174,36 @@ const imageTests = {
         "srgb display-p3": [201, 42, 29, 204],
         "display-p3 srgb": [219, 0, 1, 204],
         "display-p3 display-p3": [201, 42, 29, 204],
+    },
+};
+
+const svgImageTests = {
+    // SVG source images
+
+    "sRGB-FF0000.svg": {
+        "srgb srgb": [255, 0, 0, 255],
+        "srgb display-p3": [234, 51, 35, 255],
+        "display-p3 srgb": [255, 0, 0, 255],
+        "display-p3 display-p3": [234, 51, 35, 255],
+    },
+    "sRGB-BB0000.svg": {
+        "srgb srgb": [187, 0, 0, 255],
+        "srgb display-p3": [171, 35, 23, 255],
+        "display-p3 srgb": [187, 1, 0, 255],
+        "display-p3 display-p3": [171, 35, 23, 255],
+    },
+
+    "Display-P3-1-0-0.svg": {
+        "srgb srgb": [255, 0, 0, 255],
+        "srgb display-p3": [234, 51, 35, 255],
+        "display-p3 srgb": [255, 0, 0, 255],
+        "display-p3 display-p3": [255, 0, 0, 255],
+    },
+    "Display-P3-0.7333-0-0.svg": {
+        "srgb srgb": [205, 0, 0, 255],
+        "srgb display-p3": [188, 39, 26, 255],
+        "display-p3 srgb": [205, 0, 0, 255],
+        "display-p3 display-p3": [187, 0, 0, 255],
     },
 };
 

@@ -1,0 +1,79 @@
+This is a testharness.js-based test.
+Found 75 tests; 10 PASS, 65 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS script.setHTML should fail.
+PASS iframe.setHTML should fail.
+PASS object.setHTML should fail.
+PASS div.setHTML should pass.
+PASS Sanitizer: <div>.setHTML("<em>Hello</em>", ...) obeys parse context.
+PASS Sanitizer: <div>.setHTML("<td>data</td>", ...) obeys parse context.
+PASS Sanitizer: <template>.setHTML("<em>Hello</em>", ...) obeys parse context.
+PASS Sanitizer: <template>.setHTML("<td>data</td>", ...) obeys parse context.
+PASS Sanitizer: <table>.setHTML("<em>Hello</em>", ...) obeys parse context.
+PASS Sanitizer: <table>.setHTML("<td>data</td>", ...) obeys parse context.
+FAIL Sanitizer: Element.setHTML with config: string Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: html fragment Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: broken html Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: empty object Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: number Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: zeros Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: arithmetic Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: empty string Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: undefined Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: document Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: html without close tag Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: scripts for default configs Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: onclick scripts Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: plaintext Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: xmp Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: invalid config_input Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: empty dropElements list Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: test html without close tag with dropElements list ['div'] Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: default behavior for custom elements Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allow custom elements Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allow custom elements with allow elements Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: disallow custom elements Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allow custom elements with drop list contains ["custom-element"] Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: test script with ["script"] as dropElements list Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropElements list ["test-element", "i"]} Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropElements list ["I", "DL"]} Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropElements list ["dl", "p"]} Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropElements list with invalid values Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: blockElements list with invalid values Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allowElements list ["p"] Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allowElements list ["p", "test"] Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allowElements list has no influence to dropElements Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"style": ["p"]} with style attribute Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"*": ["a"]} with style attribute Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: empty dropAttributes list with id attribute Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"id": ["*"]} with id attribute Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"ID": ["*"]} with id attribute Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allowAttributes list {"id": ["div"]} with id attribute Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allowAttributes list {"*": ["a"]} with style attribute Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: allowAttributes list has no influence to dropAttributes Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: Template element Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLAnchorElement with javascript protocal Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLAnchorElement with javascript protocal start with space Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLAnchorElement Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLAreaElement with javascript protocal Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLAreaElement with javascript protocal start with space Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLAreaElement Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLFormElement with javascript action Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLFormElement with javascript action start with space Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLFormElement Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLInputElement with javascript formaction Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLInputElement with javascript formaction start with space Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLInputElement Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLButtonElement with javascript formaction Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLButtonElement with javascript formaction start with space Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTMLButtonElement Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: malformed HTML Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTML with comments; comments not allowed Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTML with comments; allowComments Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTML with comments; !allowComments Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree, allowComments Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+FAIL Sanitizer: Element.setHTML with config: HTML with comments deeper in the tree, !allowComments Failed to execute 'setHTML' on 'Element': parameter 2 is not of type 'Sanitizer'.
+Harness: the test ran to completion.
+

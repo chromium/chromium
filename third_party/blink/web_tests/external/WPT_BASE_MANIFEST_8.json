@@ -102987,6 +102987,19 @@
        {}
       ]
      ],
+     "font-face-unicode-range-nbsp.html": [
+      "39c8fb8206f4cd0bfd70ba923cdd58f8f9b5568e",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-face-unicode-range-nbsp-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "font-family-name-025.html": [
       "a4d5359fbfb4dff9ad27ccac73fa66a4ee5f5dc5",
       [
@@ -103193,6 +103206,500 @@
        [
         [
          "/css/css-fonts/font-language-override-02-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-10.html": [
+      "83b1dd917bd523b6d45949c98192cd5a54092b1b",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-10-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-11.html": [
+      "5c62968e86646037193cbbedb6811911ed034409",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-11-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-12.html": [
+      "be3a5935697c2dce87e0d5c0a2e4ee51fa23a3f4",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-12-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-13.html": [
+      "9d7cc21d9239a9e4dca8fb521c1909d508aec8af",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-13-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-14.html": [
+      "da3d3ebd1a12918a50cd18130a89cddc60261b3d",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-14-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-15.html": [
+      "2fb28993bc9d522398accd17633b0727627e4125",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-15-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-16.html": [
+      "a28ba4bb135ceaae3a7017d70e9039aa89ed0208",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-16-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-17.html": [
+      "dcc6aa5b2e1ef1b8a29b89a1956f9e00d25ad0b9",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-17-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-18.html": [
+      "441daebb9df2b54c0960110bb3dccc90978735fa",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-18-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-19.html": [
+      "abc70c9c3abf97e78675dc9c9ff675bfc0a1124a",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-19-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-2.html": [
+      "960c683ae1cb49b22f4c633c86bbb615ccf79e1b",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-20.html": [
+      "3fbdab80af8dfba404087179f4d0d02dd04a8775",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-20-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-21.html": [
+      "289f1bae06bc1835a03ade6c39d47732d218a6b8",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-21-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-22.html": [
+      "ca2457e0086f5713c186f086635d5f699bfb4f07",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-22-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-23.html": [
+      "1217b0fcaed9f4cfc1b58177a2d0d6ec643fe75e",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-23-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-24.html": [
+      "57607d9791e5dcfebf5545a81542235309cf79f5",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-24-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-25.html": [
+      "2c58fb95e74d33cbaee72c521676394b093ad305",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-25-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-26.html": [
+      "29b86e015d1ecaff82bbea4dd739bcf6e908f346",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-26-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-27.html": [
+      "928b9561670c108ab57fa1bf416cb39cf510cb20",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-27-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-28.html": [
+      "a0b638f4ff37b820f27a2edb62157c6210c097d0",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-27-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-29.html": [
+      "56e136f32dcc171a07dce966720cf31045e783f2",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-29-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-3.html": [
+      "9599b3cf845f2a239d6cfe05396caeedbf69dc44",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-3-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-30.html": [
+      "ea9c9076132ed9f7b5183777d846e527d9bb194f",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-30-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-31.html": [
+      "26f47a9ee6ef1e39446ef14eb03d05af05c7d722",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-31-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-4.html": [
+      "540ba2542190205fbebc43b3b90381ab19a07b5e",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-4-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-5.html": [
+      "7c5139daba70ec82fd738541d85ef4f232dee761",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-5-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-6.html": [
+      "947716ab6bdf370d0dd3a05636d5e8c491c559fb",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-6-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-7.html": [
+      "253c7f4dd678c8b346e236945c0539c35dea4495",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-7-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-8.html": [
+      "ce842ff794ec91b2cbe76154b15b12bd89f39877",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-8-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-9.html": [
+      "e5e3915bb6796eae776e1f7fc60a8b03194c48e6",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-9-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-add-2.html": [
+      "f0ea1b1f8850bc156c7304ec586c4d3eb1cd7e29",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-add-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-add.html": [
+      "8e175078928f506f999e69511f08855b54a7a49a",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-add-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-empty-font-family.html": [
+      "9aca16e79a24bbb483d5f4e3261e2c6df1daac34",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-empty-font-family-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-modify-2.html": [
+      "1a0d44cda97b03cc89036045ca8baed866dbb4cf",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-modify-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-modify.html": [
+      "b29345866efb209be4d9d14b7682d1934520206c",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-modify-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-remove-2.html": [
+      "141448a4ee1f7a4136eabb6ed228691550d7a2d5",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-remove-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette-remove.html": [
+      "7270f98de623725be3ab6aa61c3b28ac489aa163",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-remove-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-palette.html": [
+      "091df364319243d0c351ba5ac66047a4f8e3c263",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-palette-ref.html",
          "=="
         ]
        ],
@@ -104944,6 +105451,58 @@
         [
          "/css/css-fonts/metrics-override-normal-keyword-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "palette-values-rule-add-2.html": [
+      "918e5565be7d562db8899bf66559ba2e5255c88c",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/palette-values-rule-add-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "palette-values-rule-add.html": [
+      "19cef74f09c8d99d6e7e0bc263b8d088f781baf0",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/palette-values-rule-add-notref.html",
+         "!="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "palette-values-rule-delete-2.html": [
+      "9687302ca58764039667d4fbbe2d30ce78be59a8",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/palette-values-rule-delete-2-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "palette-values-rule-delete.html": [
+      "d675ca82d30804492e9c60ba779d21a8e71bc055",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/palette-values-rule-delete-notref.html",
+         "!="
         ]
        ],
        {}
@@ -144456,6 +145015,19 @@
        [
         [
          "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "inline-intrinsic-size-calc.html": [
+      "1e47bd9b04491fbe4f27d2e1814ccbb848559e19",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/inline-intrinsic-size-calc-ref.html",
          "=="
         ]
        ],
@@ -200842,7 +201414,7 @@
         ]
        ],
        "fieldset-overflow.html": [
-        "2599f2f0fa201c94234d172d06700c1a8ec19a65",
+        "feaa0b11e18cbd06746b8efa73aeaa3acd3c158b",
         [
          null,
          [
@@ -233983,6 +234555,10 @@
       "a338b8eb0f5acc25b7aa2590d96ba5e33c792111",
       []
      ],
+     "font-face-unicode-range-nbsp-ref.html": [
+      "d8c3f4b5f6847d5d72fd05e86971a00f7c2f77c2",
+      []
+     ],
      "font-family-name-016-ref.xht": [
       "084b13e3c585ab9d6325dfce409702a935b7f717",
       []
@@ -234061,6 +234637,158 @@
      ],
      "font-language-override-02-ref.html": [
       "77154ed49af72ea7d6e2a3ef2db6b5e611a53c0e",
+      []
+     ],
+     "font-palette-10-ref.html": [
+      "9d1454cc33a3b292e16dadaf6e2a8ef4ee802d4e",
+      []
+     ],
+     "font-palette-11-ref.html": [
+      "41ab181328ddc4a333121dce9305c8320f9fca30",
+      []
+     ],
+     "font-palette-12-ref.html": [
+      "a30cb3877844ace9f4692015078518f183e5cf28",
+      []
+     ],
+     "font-palette-13-notref.html": [
+      "7ff3f7d80b4260b2b4dad7f14ce21ab660d678a7",
+      []
+     ],
+     "font-palette-14-ref.html": [
+      "2c1f2a7faae65986ecac0bf35d8eab4a239dd8c3",
+      []
+     ],
+     "font-palette-15-ref.html": [
+      "ae75b37048c8d55016973509318a3f3c663b303a",
+      []
+     ],
+     "font-palette-16-notref.html": [
+      "a30cb3877844ace9f4692015078518f183e5cf28",
+      []
+     ],
+     "font-palette-17-notref.html": [
+      "7ff3f7d80b4260b2b4dad7f14ce21ab660d678a7",
+      []
+     ],
+     "font-palette-18-notref.html": [
+      "b584f25d6d27f9d719d38ed1457b43ecb8dff0ee",
+      []
+     ],
+     "font-palette-19-notref.html": [
+      "60e3437b4b9dce9a95110b18704f5701b1cb73af",
+      []
+     ],
+     "font-palette-2-ref.html": [
+      "1cb2fd3259a3871e7aa9f1e61a917259b060a7a9",
+      []
+     ],
+     "font-palette-20-ref.html": [
+      "2c1f2a7faae65986ecac0bf35d8eab4a239dd8c3",
+      []
+     ],
+     "font-palette-21-ref.html": [
+      "f7e3a7f4c1e24a39fb9fc0d1c36188c18673e533",
+      []
+     ],
+     "font-palette-22-notref.html": [
+      "e10d9ebb6472bd9d921b0182ee2e207e1f4ea81d",
+      []
+     ],
+     "font-palette-23-ref.html": [
+      "f7e3a7f4c1e24a39fb9fc0d1c36188c18673e533",
+      []
+     ],
+     "font-palette-24-ref.html": [
+      "9d1454cc33a3b292e16dadaf6e2a8ef4ee802d4e",
+      []
+     ],
+     "font-palette-25-ref.html": [
+      "d6afa3c5af354344af750cbad710627efbd7f596",
+      []
+     ],
+     "font-palette-26-ref.html": [
+      "d6afa3c5af354344af750cbad710627efbd7f596",
+      []
+     ],
+     "font-palette-27-ref.html": [
+      "507d85db7879d7d509666c4aa0acbeba36a2db72",
+      []
+     ],
+     "font-palette-28-ref.html": [
+      "507d85db7879d7d509666c4aa0acbeba36a2db72",
+      []
+     ],
+     "font-palette-29-ref.html": [
+      "6c14d93e587a490e90fb04570ffb2120e544d5e2",
+      []
+     ],
+     "font-palette-3-notref.html": [
+      "31dbd232efb041c11d6188a4e152a2f545dff870",
+      []
+     ],
+     "font-palette-30-ref.html": [
+      "dc7814994bb6776a1aa38f3c9c607bf656ac8f03",
+      []
+     ],
+     "font-palette-31-ref.html": [
+      "2475be9769521a55163dce285c08481c0701c14f",
+      []
+     ],
+     "font-palette-4-notref.html": [
+      "31dbd232efb041c11d6188a4e152a2f545dff870",
+      []
+     ],
+     "font-palette-5-notref.html": [
+      "8e7e85db731f77c63ae6ef254b9012658fa6f067",
+      []
+     ],
+     "font-palette-6-notref.html": [
+      "8e7e85db731f77c63ae6ef254b9012658fa6f067",
+      []
+     ],
+     "font-palette-7-notref.html": [
+      "69c19cb45dc33f36513982057c2e2a0a0ce230f3",
+      []
+     ],
+     "font-palette-8-notref.html": [
+      "69c19cb45dc33f36513982057c2e2a0a0ce230f3",
+      []
+     ],
+     "font-palette-9-notref.html": [
+      "2af0737b6749efef7fae95a549008d43f372dde1",
+      []
+     ],
+     "font-palette-add-2-ref.html": [
+      "de7443bea4a2bdc34d09a14b05725421bff96122",
+      []
+     ],
+     "font-palette-add-notref.html": [
+      "db06864cb31f47cad641b39beb8cc80a63db61b1",
+      []
+     ],
+     "font-palette-empty-font-family-notref.html": [
+      "6d742ae257d376deaf502ed5c66d4743ae19b45b",
+      []
+     ],
+     "font-palette-modify-2-ref.html": [
+      "0f4eeaac43d7c1407cc0641f36fcc5c24b03609d",
+      []
+     ],
+     "font-palette-modify-notref.html": [
+      "8dc2f9e3c7fad12e205356afd136292cf98d710d",
+      []
+     ],
+     "font-palette-ref.html": [
+      "79b3299f758eea095084b8a1e1aa87afeef7ec4f",
+      []
+     ],
+     "font-palette-remove-2-ref.html": [
+      "4baf8126134af634371d7bda6045556c2a3f4076",
+      []
+     ],
+     "font-palette-remove-notref.html": [
+      "b0d34a066e68af29584001f215343d2ff5685708",
       []
      ],
      "font-size-adjust-001-ref.html": [
@@ -234561,6 +235289,22 @@
       "7575db40e1e729f7bc56da4d26fd13937cb721d3",
       []
      ],
+     "palette-values-rule-add-2-ref.html": [
+      "c00669b71015275c4623ad40f536131f98a8df6c",
+      []
+     ],
+     "palette-values-rule-add-notref.html": [
+      "3b06dfd79cc73d3e8304bffff519fcae3ce324b4",
+      []
+     ],
+     "palette-values-rule-delete-2-ref.html": [
+      "35608d6ef017ee74489515e19b1eec4d2fb3a668",
+      []
+     ],
+     "palette-values-rule-delete-notref.html": [
+      "ded10a338c467db6dfe2239700322202a864d184",
+      []
+     ],
      "parsing": {
       "font-language-override-computed-expected.txt": [
        "5ed737846daa780dfc671aa36da9c340c425e831",
@@ -234579,7 +235323,7 @@
        []
       ],
       "font-palette-values-invalid-expected.txt": [
-       "6ff6e54b6401f75263c1ca917254c741642df921",
+       "cbece0683191fcc3894963c0a1c8c9ff32e3f888",
        []
       ],
       "font-palette-values-valid-expected.txt": [
@@ -234620,6 +235364,14 @@
       []
      ],
      "resources": {
+      "COLR-palettes-test-font-no-light-dark.ttf": [
+       "214fd9d43607408043e9c9fda3fbddb0cbe655b8",
+       []
+      ],
+      "COLR-palettes-test-font.ttf": [
+       "0f28caf21e6fde2660c251471f528e4ed21b82a3",
+       []
+      ],
       "markA.ttf": [
        "353e7ac3328297b91844430dbd6d93ad9d25779f",
        []
@@ -248945,6 +249697,10 @@
      ],
      "image-min-max-content-intrinsic-size-change-003-ref.html": [
       "c3253f750c58126dcd71d93b7c4142b10b1e77d1",
+      []
+     ],
+     "inline-intrinsic-size-calc-ref.html": [
+      "6b9a38a1bc4733387e3f2a427214c8fa4f73adde",
       []
      ],
      "intrinsic-percent-non-replaced-001-ref.html": [
@@ -272396,12 +273152,16 @@
          "36e006710133b723b85e38611f24fa288d1e62ea",
          []
         ],
+        "canvas-display-p3-drawImage.https-expected.txt": [
+         "550004c09087da5ade1498deb74c24e107e40923",
+         []
+        ],
         "canvas-display-p3-pattern-image-expected.txt": [
          "f0d1346e7201bb6fcbf7ba7974635b8af8f03eed",
          []
         ],
         "canvas-display-p3.js": [
-         "424840610f689dc8f83d1fa98f1a09797228fa43",
+         "921bbd71f5eeb20d635b5622634de05ef221e7d7",
          []
         ],
         "resources": {
@@ -272435,6 +273195,14 @@
          ],
          "Adobe-RGB-FFFF00000000FFFF.png": [
           "c558eb10b3c6b5894c504c9dbde8ca4e24e07db9",
+          []
+         ],
+         "Display-P3-0.7333-0-0.svg": [
+          "27378148776ab379d1bcae2a5ed763f9af4c31db",
+          []
+         ],
+         "Display-P3-1-0-0.svg": [
+          "5c1b07362a9a7421c3a729cf3eadd5f598aea9a1",
           []
          ],
          "Display-P3-BB0000CC.png": [
@@ -272667,6 +273435,10 @@
            []
           ]
          },
+         "sRGB-BB0000.svg": [
+          "2b785f8cf45a21c791d0b45a08d086646ae5b5f6",
+          []
+         ],
          "sRGB-BB0000CC.png": [
           "fe463486ef8c37742bd94880f8ed4c52d8ceb34e",
           []
@@ -272681,6 +273453,10 @@
          ],
          "sRGB-BBBC00000000FFFF.png": [
           "416ef1298638a93e6f39419ace4f9b0c79f0c737",
+          []
+         ],
+         "sRGB-FF0000.svg": [
+          "8798fdfc3a0d38555a12d22851bca5ca6b811835",
           []
          ],
          "sRGB-FF0000CC.png": [
@@ -278454,7 +279230,7 @@
         []
        ],
        "fieldset-overflow-ref.html": [
-        "d9b36e530b4f95bdfc636050905e6bfd5d8af690",
+        "a73d32b3b0bfafa9fa54cc8bc25e68a711c3f3e4",
         []
        ],
        "fieldset-painting-order-ref.html": [
@@ -279302,10 +280078,6 @@
         ],
         "resource-selection-invoke-play-expected.txt": [
          "8b87ae363401480238a78b364668d2294375b2a2",
-         []
-        ],
-        "resource-selection-invoke-remove-src-expected.txt": [
-         "1c978855773abb6400a7c95e3649fd68ceec28c9",
          []
         ],
         "resource-selection-pointer-control-expected.txt": [
@@ -281009,10 +281781,6 @@
       "the-details-element": {
        "details-add-summary-ref.html": [
         "14f2be232fb4aba0afb4542213331995fcb12575",
-        []
-       ],
-       "toggleEvent-expected.txt": [
-        "5c808aa0a050a4ad866e65445b3fbd7c6807903d",
         []
        ]
       },
@@ -287072,7 +287840,7 @@
       []
      ],
      "largest-contentful-paint-helpers.js": [
-      "e7f7aa764f8643460f5ae86de5b39171da29d80a",
+      "e12ece0a7561cbafa5174bf6cfcc1dddd55a8883",
       []
      ]
     }
@@ -293826,6 +294594,10 @@
     ],
     "OWNERS": [
      "fc6bc8634586ded123fed22ca840e5d1128f7302",
+     []
+    ],
+    "element-set-sanitized-html.https.tentative-expected.txt": [
+     "5c5070b6c2d3174a26a7e74b7f60cd98274a0d77",
      []
     ],
     "support": {
@@ -302432,6 +303204,10 @@
      "3e9296ef880b2b4c3e96807522a56b7c6a8c71b5",
      []
     ],
+    "README.md": [
+     "c6b51584ef2850e0c05f16ee05274bb79d780454",
+     []
+    ],
     "ecmascript-binding": {
      "class-string-iterator-prototype-object.any-expected.txt": [
       "5c7e1f97d1053cc46d0fd750b193ce31650f59ae",
@@ -303844,7 +304620,7 @@
       []
      ],
      "client-close.py": [
-      "b10eb4bca4c8b04a01b7be77c7355a799a1f52c4",
+      "6bb75e37b1ca0d3c036ce591467ae3f212abe1f1",
       []
      ],
      "custom-response.py": [
@@ -341490,6 +342266,13 @@
        {}
       ]
      ],
+     "indexed-env.tentative.html": [
+      "6757cd35c1b710e8cf62da941ca37a5e11f8c607",
+      [
+       null,
+       {}
+      ]
+     ],
      "seralization-round-tripping.tentative.html": [
       "26a9afee011fedb0e0297e0e35686330b10a9905",
       [
@@ -341498,7 +342281,7 @@
       ]
      ],
      "supports-script.tentative.html": [
-      "fa14f17deed1238a1659b3cd2bcdf5b17730b1ed",
+      "5ea463571d0973df160fec2cc6d78162e3414417",
       [
        null,
        {}
@@ -343922,7 +344705,7 @@
        ]
       ],
       "font-palette-values-invalid.html": [
-       "4756a886abc0070c5fb7d73c82d23fa9611cda7c",
+       "3a2f044f18849bd08659e5693b7e440f4947a0a1",
        [
         null,
         {}
@@ -406539,8 +407322,8 @@
           {}
          ]
         ],
-        "canvas-display-p3-drawImage.html": [
-         "02547b82a234f0c329cabba3075e6434bbb6fe3a",
+        "canvas-display-p3-drawImage.https.html": [
+         "35ee91343dac76af82fe6becb8eec5702863c23e",
          [
           null,
           {}
@@ -445461,6 +446244,34 @@
       {}
      ]
     ],
+    "observe-svg-background-image.html": [
+     "bc0b399a184d80db65bf166ddbd0b2f1b6d6be1d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "observe-svg-data-uri-background-image.html": [
+     "53fd1b72732a7ec065f87a6b9f85dced889d91a4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "observe-svg-data-uri-image.html": [
+     "00ea314e146206479543021f54bffa0fa8cb4eae",
+     [
+      null,
+      {}
+     ]
+    ],
+    "observe-svg-image.html": [
+     "3a6e0f6f2336e75f5e8386ba8903f5ed3b0e3ab9",
+     [
+      null,
+      {}
+     ]
+    ],
     "observe-text.html": [
      "b4b485ddebd57afbd4af2ff962151f92d19a54d3",
      [
@@ -472218,7 +473029,7 @@
    },
    "sanitizer-api": {
     "element-set-sanitized-html.https.tentative.html": [
-     "be9beb39ff679f05e76821ecc042dc0f3e0843c5",
+     "ae2c47f2ba1f4f8663f2359cebefb8cf02c632e2",
      [
       null,
       {}
@@ -518634,7 +519445,7 @@
      ]
     ],
     "streams-close.https.any.js": [
-     "abad9ffa342eb8fc2af6c7d3cdcb61feaa6a902e",
+     "96afc1c68ac392190de4c07bd6247858409e03e6",
      [
       "webtransport/streams-close.https.any.html",
       {
