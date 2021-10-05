@@ -8,10 +8,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
@@ -29,23 +26,17 @@ constexpr int kCameraRollThumbnailVideoIconSize = 20;
 
 CameraRollThumbnail::CameraRollThumbnail(
     const chromeos::phonehub::CameraRollItem& item)
-    : views::ImageButton(
-          base::BindRepeating(&CameraRollThumbnail::ButtonPressed,
-                              base::Unretained(this))),
-      key_(item.metadata().key()) {
-  // True if mime type string starts with "video/"
-  video_type_ = (item.metadata().mime_type().find("video/") == 0);
-
+    : views::MenuButton(base::BindRepeating(&CameraRollThumbnail::ButtonPressed,
+                                            base::Unretained(this))),
+      key_(item.metadata().key()),
+      video_type_(item.metadata().mime_type().find("video/") == 0),
+      image_(item.thumbnail().AsImageSkia()) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kFocusRingColor));
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kCameraRollThumbnailBorderRadius);
-
-  SetImageHorizontalAlignment(ALIGN_CENTER);
-  SetImageVerticalAlignment(ALIGN_MIDDLE);
-  SetImage(STATE_NORMAL, item.thumbnail().ToImageSkia());
 
   SetClipPath(SkPath::RRect(SkRRect::MakeRectXY(
       SkRect::Make(SkIRect::MakeWH(kCameraRollThumbnailBorderSize.width(),
@@ -57,11 +48,15 @@ CameraRollThumbnail::CameraRollThumbnail(
 CameraRollThumbnail::~CameraRollThumbnail() = default;
 
 void CameraRollThumbnail::PaintButtonContents(gfx::Canvas* canvas) {
+  views::MenuButton::PaintButtonContents(canvas);
+
   auto* color_provider = AshColorProvider::Get();
   canvas->DrawColor(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
 
-  views::ImageButton::PaintButtonContents(canvas);
+  canvas->DrawImageInt(image_, 0, 0, image_.width(), image_.height(), 0, 0,
+                       kCameraRollThumbnailBorderSize.width(),
+                       kCameraRollThumbnailBorderSize.height(), false);
 
   if (video_type_) {
     cc::PaintFlags flags;
@@ -85,6 +80,20 @@ const char* CameraRollThumbnail::GetClassName() const {
   return "CameraRollThumbnail";
 }
 
-void CameraRollThumbnail::ButtonPressed() {}
+void CameraRollThumbnail::ButtonPressed() {
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      GetMenuModel(), views::MenuRunner::CONTEXT_MENU |
+                          views::MenuRunner::FIXED_ANCHOR |
+                          views::MenuRunner::USE_TOUCHABLE_LAYOUT);
+  menu_runner_->RunMenuAt(GetWidget(), button_controller(), GetBoundsInScreen(),
+                          views::MenuAnchorPosition::kBubbleTopRight,
+                          ui::MENU_SOURCE_NONE);
+}
+
+ui::SimpleMenuModel* CameraRollThumbnail::GetMenuModel() {
+  if (!menu_model_)
+    menu_model_ = std::make_unique<CameraRollMenuModel>(key_);
+  return menu_model_.get();
+}
 
 }  // namespace ash

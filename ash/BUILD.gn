@@ -1265,6 +1265,8 @@ component("ash") {
     "system/pcie_peripheral/pcie_peripheral_notification_controller.h",
     "system/phonehub/bluetooth_disabled_view.cc",
     "system/phonehub/bluetooth_disabled_view.h",
+    "system/phonehub/camera_roll_menu_model.cc",
+    "system/phonehub/camera_roll_menu_model.h",
     "system/phonehub/camera_roll_thumbnail.cc",
     "system/phonehub/camera_roll_thumbnail.h",
     "system/phonehub/camera_roll_view.cc",
