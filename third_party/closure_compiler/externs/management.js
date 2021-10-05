@@ -101,7 +101,7 @@ chrome.management.ExtensionInstallType = {
 chrome.management.ExtensionInfo;
 
 /**
- * Information about an icon belonging to an extension, app, or theme.
+ * Options for how to handle the extension's uninstallation.
  * @typedef {{
  *   showConfirmDialog: (boolean|undefined)
  * }}
