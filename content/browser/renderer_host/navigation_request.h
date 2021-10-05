@@ -616,7 +616,7 @@ class CONTENT_EXPORT NavigationRequest
   static void SetCommitTimeoutForTesting(const base::TimeDelta& timeout);
 
   RenderFrameHostImpl* rfh_restored_from_back_forward_cache() {
-    return rfh_restored_from_back_forward_cache_;
+    return rfh_restored_from_back_forward_cache_.get();
   }
 
   const WebBundleNavigationInfo* web_bundle_navigation_info() const {
@@ -950,7 +950,7 @@ class CONTENT_EXPORT NavigationRequest
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       std::unique_ptr<WebBundleHandleTracker> web_bundle_handle_tracker,
-      RenderFrameHostImpl* rfh_restored_from_back_forward_cache,
+      base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache,
       int initiator_process_id,
       bool was_opener_suppressed);
 
@@ -1740,10 +1740,17 @@ class CONTENT_EXPORT NavigationRequest
   // modified during the redirect phase.
   std::vector<std::string> removed_request_headers_;
 
-  // The RenderFrameHost that was restored from the back-forward cache. This
-  // will be null except for navigations that are restoring a page from the
-  // back-forward cache.
-  RenderFrameHostImpl* const rfh_restored_from_back_forward_cache_;
+  // A WeakPtr for the RenderFrameHost that is being restored from the
+  // back/forward cache. This can be null if this navigation is not restoring a
+  // page from the back/forward cache, or if the RenderFrameHost to restore was
+  // evicted and destroyed after the NavigationRequest was created.
+  base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache_;
+
+  // Whether the navigation is for restoring a page from the back/forward cache
+  // or not. Note that this can be true even when
+  // `rfh_restored_from_back_forward_cache_` is null, if the RenderFrameHost to
+  // restore was evicted and destroyed after the NavigationRequest was created.
+  const bool is_back_forward_cache_restore_;
 
   // These are set to the values from the FrameNavigationEntry this
   // NavigationRequest is associated with (if any).
@@ -1785,9 +1792,8 @@ class CONTENT_EXPORT NavigationRequest
   // be cancelled for deferring.
   bool processing_navigation_throttle_ = false;
 
-  // Used only by (D)CHECK.
-  // True if we are restarting this navigation request as RenderFrameHost was
-  // evicted.
+  // True if we are restarting this navigation request as the RenderFrameHost
+  // was evicted.
   bool restarting_back_forward_cached_navigation_ = false;
 
   // Holds the required CSP for this navigation. This will be moved into
