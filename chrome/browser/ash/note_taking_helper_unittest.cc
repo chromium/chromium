@@ -871,6 +871,7 @@ TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
   HistogramTester histogram_tester;
   SetNoteTakingClientProfile(profile());
   ash::NoteTakingClient::GetInstance()->CreateNote();
+  base::RunLoop().RunUntilIdle();
 
   // Web app, so no launched_chrome_apps.
   EXPECT_EQ(0u, launched_chrome_apps_.size());
@@ -881,10 +882,10 @@ TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kDefaultLaunchResultHistogramName,
       static_cast<int>(LaunchResult::WEB_APP_SUCCESS), 1);
+
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
   GURL url = browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
-  GURL hardcoded_new_note_url("https://yielding-large-chef.glitch.me/new");
-  ASSERT_EQ(hardcoded_new_note_url, url);
+  ASSERT_EQ(app_url, url);
 }
 
 TEST_F(NoteTakingHelperTest, LaunchWebApp) {
@@ -906,6 +907,7 @@ TEST_F(NoteTakingHelperTest, LaunchWebApp) {
   HistogramTester histogram_tester;
   SetNoteTakingClientProfile(profile());
   ash::NoteTakingClient::GetInstance()->CreateNote();
+  base::RunLoop().RunUntilIdle();
 
   histogram_tester.ExpectUniqueSample(
       NoteTakingHelper::kPreferredLaunchResultHistogramName,

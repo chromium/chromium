@@ -236,34 +236,25 @@ NoteTakingHelper::LaunchResult LaunchWebAppInternal(const std::string& app_id,
 
   auto container = apps::mojom::LaunchContainer::kLaunchContainerWindow;
   bool has_note_taking_intent_filter = false;
-  GURL start_url;
-  cache->ForOneApp(app_id, [&container, &has_note_taking_intent_filter,
-                            &start_url](const apps::AppUpdate& update) {
+  cache->ForOneApp(app_id, [&container, &has_note_taking_intent_filter](
+                               const apps::AppUpdate& update) {
     if (update.WindowMode() == apps::mojom::WindowMode::kBrowser)
       container = apps::mojom::LaunchContainer::kLaunchContainerTab;
     if (HasNoteTakingIntentFilter(update.IntentFilters()))
       has_note_taking_intent_filter = true;
-    // Web apps use start_url as PublisherId.
-    start_url = GURL(update.PublisherId());
   });
 
-  apps::AppLaunchParams launch_params(
-      app_id, container, WindowOpenDisposition::UNKNOWN,
-      apps::mojom::AppLaunchSource::kSourceSystemTray);
-
-  if (base::FeatureList::IsEnabled(blink::features::kWebAppNoteTaking) &&
-      has_note_taking_intent_filter) {
-    launch_params.intent = apps_util::CreateCreateNoteIntent();
-  } else if (app_id == NoteTakingHelper::kNoteTakingWebAppIdTest ||
-             app_id == web_app::kCursiveAppId) {
-    DCHECK(start_url.is_valid());
-    // TODO(crbug.com/1185678): Remove hard-coded override URL once new-note URL
-    // is parsed from the manifest (when `kWebAppNoteTaking` is always enabled).
-    launch_params.override_url = start_url.Resolve("/new");
+  // Apps in 'kDefaultAllowedAppIds' might not have a note-taking intent filter.
+  // They can just launch without the intent.
+  if (has_note_taking_intent_filter) {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+        app_id, ui::EF_NONE, apps_util::CreateCreateNoteIntent(),
+        apps::mojom::LaunchSource::kFromShelf);
+  } else {
+    apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
+        app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromShelf);
   }
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(launch_params));
+
   return NoteTakingHelper::LaunchResult::WEB_APP_SUCCESS;
 }
 
