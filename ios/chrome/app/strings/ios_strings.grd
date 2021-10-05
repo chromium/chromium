@@ -207,9 +207,6 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_SYNC_MANAGED_SETTINGS" desc="Explanation text on the sync consent dialog to explain the user they can customize sync settings when sync types are limited. [iOS only]">
         <ph name="BEGIN_LINK">BEGIN_LINK</ph>See what you can sync<ph name="END_LINK">END_LINK</ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_MANAGED_LEARN_MORE" desc="Explanation text on the sync consent dialog to explain that syncable types are limited (i.e. managed). Includes a Learn More link. [iOS only]">
-        Your browser is managed and by your organization. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
-      </message>
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT" desc="Title of the button to add an account [Length: 15m] [iOS only]">
         Add Account
       </message>
@@ -1383,7 +1380,7 @@ See your search engine’s instructions for deleting your search history, if app
         Sign Out and Turn Off Sync
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES" desc="Message shown in the settings account switcher when enterprise policy has restricted some unseen identities. [iOS only]">
-        You can only sign in with accounts that are approved by your administrator. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+          Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_OPTIONS_ADVANCED_TAB_LABEL" desc="The title of the Advanced section of the Settings page.  [Length: 20em] [iOS only]">
         Advanced
@@ -1890,8 +1887,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_ENTERPRISE_MANAGED_INFO" desc="Text displayed to inform the user that the browser is managed by one or more Enterprise policies. [iOS only]">
         Managed by your organization. Some features may be unavailable. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_ENTERPRISE_MANAGED_REQUIRES_SIGNIN" desc="Text displayed to inform the user that they must signin. [iOS only]">
-          Your browser is managed and has requirements for signing in. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Details<ph name="END_LINK">END_LINK</ph>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_DETAILS" desc="Text displayed to inform the user that their Sign In/Sync is managed by their administrator. [iOS only]">
+          Your browser is managed. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Details<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE" desc="Text displayed to inform the user that their Sign In/Sync is managed by their administrator. [iOS only]">
+          Your browser is managed. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn More<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE" desc="Text displayed in the popover to inform the user that the browser is managed by Enterprise policies. (Restrict Accounts To Patterns) [iOS only]">
           Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden.
@@ -2345,7 +2345,7 @@ Try to use a unique password for every site.
         Can't Sign In
       </message>
       <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_MESSAGE" desc="Message of the alert displayed when the user sign in with a restricted account.">
-        Your device is managed. You can only sign in with your organization's account.
+        Your organization allows you to sign in only with certain accounts.
       </message>
       <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_TITLE" desc="Title of the alert displayed when the user sign in with a restricted account.">
         Sign in with a Valid Account

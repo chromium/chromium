@@ -68,7 +68,13 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
   self.titleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-  self.subtitleText = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE);
+  if (self.enterpriseSignInRestrictions == kNoEnterpriseRestriction) {
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE);
+  } else {
+    self.subtitleText =
+        l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED);
+  }
   if (!self.primaryActionString) {
     // |primaryActionString| could already be set using the consumer methods.
     self.primaryActionString =
@@ -189,7 +195,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
 
     NSAttributedString* learnMoreTextAttributedString =
         AttributedStringFromStringWithLink(
-            l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_REQUIRES_SIGNIN),
+            l10n_util::GetNSString(IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_DETAILS),
             textAttributes, linkAttributes);
 
     _learnMoreTextView.attributedText = learnMoreTextAttributedString;
