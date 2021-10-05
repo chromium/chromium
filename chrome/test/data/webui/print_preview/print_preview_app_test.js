@@ -86,7 +86,7 @@ suite(print_preview_app_test.suiteName, function() {
     cloudPrintInterface = new CloudPrintInterfaceStub();
     CloudPrintInterfaceImpl.setInstance(cloudPrintInterface);
     pluginProxy = new TestPluginProxy();
-    PluginProxyImpl.instance_ = pluginProxy;
+    PluginProxyImpl.setInstance(pluginProxy);
   });
 
   // Regression test for https://crbug.com/936029

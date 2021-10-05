@@ -114,32 +114,30 @@ type CloudJobTicket = {
   print: CloudJobTicketPrint,
 };
 
-type PrintTicket = {
+export type MediaSizeValue = {
+  width_microns: number; height_microns: number;
+};
+
+export type Ticket = {
   collate: boolean,
   color: number,
   copies: number,
   deviceName: string,
-  dpiDefault: boolean,
   dpiHorizontal: number,
   dpiVertical: number,
   duplex: DuplexMode,
   headerFooterEnabled: boolean,
   landscape: boolean,
   marginsType: MarginsType,
-  mediaSize: object,
-  pageCount: number,
+  mediaSize: MediaSizeValue,
   pagesPerSheet: number,
-  pageHeight: number,
-  pageWidth: number,
   previewModifiable: boolean,
   printerType: PrinterType,
-  printToGoogleDrive: boolean,
   rasterizePDF: boolean,
   scaleFactor: number,
   scalingType: ScalingType,
   shouldPrintBackgrounds: boolean,
   shouldPrintSelectionOnly: boolean,
-  showSystemDialog: boolean,
   advancedSettings?: object,
   capabilities?: string,
   cloudPrintID?: string,
@@ -147,6 +145,15 @@ type PrintTicket = {
   openPDFInPreview?: boolean,
   pinValue?: string,
   ticket?: string,
+};
+
+type PrintTicket = Ticket&{
+  dpiDefault: boolean,
+  pageCount: number,
+  pageHeight: number,
+  pageWidth: number,
+  printToGoogleDrive: boolean,
+  showSystemDialog: boolean,
 };
 
 /**
@@ -1524,7 +1531,7 @@ export class PrintPreviewModelElement extends PolymerElement {
         'scalingTypePdf' :
         'scalingType';
     const ticket: PrintTicket = {
-      mediaSize: this.getSettingValue('mediaSize'),
+      mediaSize: this.getSettingValue('mediaSize') as MediaSizeValue,
       pageCount: this.getSettingValue('pages').length,
       landscape: this.getSettingValue('layout'),
       color: destination.getNativeColorModel(

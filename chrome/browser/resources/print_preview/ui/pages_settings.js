@@ -16,7 +16,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {areRangesEqual} from '../print_preview_utils.js';
 
-import {InputBehavior, InputBehaviorInterface} from './input_behavior.js';
+import {InputBehaviorInterface, InputMixin} from './input_mixin.js';
 import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
 import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
@@ -55,14 +55,14 @@ function parseIntStrict(value) {
 /**
  * @constructor
  * @extends {PolymerElement}
- * @implements {InputBehaviorInterface}
+ * @implements {InputMixinInterface}
  * @implements {SelectMixinInterface}
  * @implements {SettingsMixinInterface}
  * @implements {WebUIListenerBehaviorInterface}
  */
 const PrintPreviewPagesSettingsElementBase = mixinBehaviors(
-    [InputBehavior, WebUIListenerBehavior],
-    SettingsMixin(SelectMixin(PolymerElement)));
+    [WebUIListenerBehavior],
+    InputMixin(SettingsMixin(SelectMixin(PolymerElement))));
 
 /** @polymer */
 export class PrintPreviewPagesSettingsElement extends
@@ -190,7 +190,7 @@ export class PrintPreviewPagesSettingsElement extends
     this.selectedValue = PagesValue.ALL.toString();
   }
 
-  /** @return {!CrInputElement} The cr-input field element for InputBehavior. */
+  /** @return {!CrInputElement} The cr-input field element for InputMixin. */
   getInput() {
     return /** @type {!CrInputElement} */ (this.$.pageSettingsCustomInput);
   }
