@@ -2349,7 +2349,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.StoresUsedForFillingInLast28Days"
-    enum="PasswordManagerFillingSource" expires_after="2022-01-31">
+    enum="PasswordManagerFillingSource" expires_after="2022-04-03">
   <owner>mamir@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <summary>

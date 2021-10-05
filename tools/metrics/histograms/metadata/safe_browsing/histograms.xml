@@ -2056,7 +2056,7 @@ security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.Network.Result"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-01-30">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-03">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -2081,7 +2081,7 @@ risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4Update.ResponseSizeKB" units="KB"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

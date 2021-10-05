@@ -8673,7 +8673,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kiosk.Launch.CryptohomeFailure" enum="LoginFailureReason"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
   <summary>Tracks cryptohome failure during kiosk launch.</summary>
@@ -8707,7 +8707,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageDetection.TFLiteModel.WasModelAvailableForDetection"
-    enum="BooleanAvailable" expires_after="M98">
+    enum="BooleanAvailable" expires_after="2022-04-03">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -9912,7 +9912,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MachineLearningService.ProcessError"
-    enum="MachineLearningServiceProcessError" expires_after="2022-01-15">
+    enum="MachineLearningServiceProcessError" expires_after="2022-04-03">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>honglinyu@chromium.org</owner>
@@ -15497,7 +15497,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SignedExchange.LoadResult2" enum="SignedExchangeLoadResult"
-    expires_after="M99">
+    expires_after="2022-04-03">
   <owner>ksakamoto@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <owner>horo@chromium.org</owner>
@@ -19369,7 +19369,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.CacheHit" enum="WebFontCacheHit"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kenjibaheux@chromium.org</owner>
   <owner>kouhei@chromium.org</owner>

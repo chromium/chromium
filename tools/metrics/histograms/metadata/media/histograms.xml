@@ -795,7 +795,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTime" units="ms"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>olka@chromium.org</owner>
   <owner>henrika@chromium.org</owner>
   <summary>
@@ -811,7 +811,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Media.Audio.Render.OutputDeviceAuthorizationTimedOut"
-    enum="BooleanTimedOut" expires_after="2022-01-30">
+    enum="BooleanTimedOut" expires_after="2022-04-03">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <summary>

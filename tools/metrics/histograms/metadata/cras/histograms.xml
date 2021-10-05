@@ -932,7 +932,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cras.UnderrunsPerDevice" units="count"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>yuhsuan@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>

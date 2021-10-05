@@ -1489,7 +1489,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.InstantApps.ApiCallDurationWithoutApp" units="ms"
-    expires_after="2022-01-31">
+    expires_after="2022-04-03">
   <owner>sbirch@google.com</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
@@ -4227,7 +4227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage1.FactoryInit"
-    units="ms" expires_after="2022-01-30">
+    units="ms" expires_after="2022-04-03">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4237,7 +4237,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold"
-    units="ms" expires_after="2022-01-30">
+    units="ms" expires_after="2022-04-03">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4249,7 +4249,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm"
-    units="ms" expires_after="2022-01-30">
+    units="ms" expires_after="2022-04-03">
   <owner>changwan@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

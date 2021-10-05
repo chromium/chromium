@@ -213,7 +213,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Platform.Cr50.RlzOfBoardIdMismatch" enum="Cr50CrosRlzCodes"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>vbendeb@chromium.org</owner>
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>

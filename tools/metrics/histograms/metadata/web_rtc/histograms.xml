@@ -863,7 +863,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.SpeechExpandRatePercent" units="%"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Measures the audible expand rate for an incoming WebRTC audio stream. The
@@ -1917,7 +1917,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.ReceivedAudioTrackDuration" units="ms"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>perkj@chromium.org</owner>
   <summary>
     Durations of audio tracks received over a PeerConnection. The stopwatch
@@ -1927,7 +1927,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.ReceivedVideoTrackDuration" units="ms"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>perkj@chromium.org</owner>
   <summary>
     Durations of video tracks received over a PeerConnection. The stopwatch
@@ -1953,7 +1953,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.SentAudioTrackDuration" units="ms"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>perkj@chromium.org</owner>
   <summary>
     Durations of audio tracks sent over a PeerConnection. The stopwatch starts

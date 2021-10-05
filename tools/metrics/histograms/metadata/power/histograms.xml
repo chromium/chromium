@@ -125,7 +125,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.BatteryDischargeRate" units="mW"
-    expires_after="2022-03-27">
+    expires_after="2022-04-03">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -349,7 +349,7 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType" enum="ProcessType2"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <summary>
