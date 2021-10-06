@@ -65,7 +65,8 @@ class ResultSinkClient(object):
            test_log,
            test_file,
            artifacts=None,
-           failure_reason=None):
+           failure_reason=None,
+           html_artifact=None):
     """Uploads the test result to the ResultSink server.
 
     This assumes that the rdb stream has been called already and that
@@ -80,6 +81,9 @@ class ResultSinkClient(object):
       artifacts: An optional dict of artifacts to attach to the test.
       failure_reason: An optional string with the reason why the test failed.
           Should be None if the test did not fail.
+      html_artifact: An optional html-formatted string to prepend to the test's
+          log. Useful to encode click-able URL links in the test log, since that
+          won't be formatted in the test_log.
 
     Returns:
       N/A
@@ -112,11 +116,12 @@ class ResultSinkClient(object):
     }
 
     artifacts = artifacts or {}
+    tr['summaryHtml'] = html_artifact if html_artifact else ''
     if test_log:
       # Upload the original log without any modifications.
       b64_log = six.ensure_str(base64.b64encode(six.ensure_binary(test_log)))
       artifacts.update({'Test Log': {'contents': b64_log}})
-      tr['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
+      tr['summaryHtml'] += '<text-artifact artifact-id="Test Log" />'
     if artifacts:
       tr['artifacts'] = artifacts
     if failure_reason:

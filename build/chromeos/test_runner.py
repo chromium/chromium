@@ -441,9 +441,8 @@ class TastTest(RemoteTest):
         primary_error_message = errors[0]['reason']
         for err in errors:
           error_log += err['stack'] + '\n'
-      error_log += (
-          "\nIf you're unsure why this test failed, consult the steps "
-          'outlined in\n%s\n' % TAST_DEBUG_DOC)
+      debug_link = ("If you're unsure why this test failed, consult the steps "
+                    'outlined <a href="%s">here</a>.' % TAST_DEBUG_DOC)
       base_result = base_test_result.BaseTestResult(
           test['name'], result, duration=duration_ms, log=error_log)
       suite_results.AddResult(base_result)
@@ -461,7 +460,8 @@ class TastTest(RemoteTest):
             error_log,
             None,
             artifacts=artifacts,
-            failure_reason=primary_error_message)
+            failure_reason=primary_error_message,
+            html_artifact=debug_link)
 
     if self._rdb_client and self._logs_dir:
       # Attach artifacts from the device that don't apply to a single test.
