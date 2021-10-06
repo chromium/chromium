@@ -115,9 +115,9 @@ class HttpRequestParser {
   // another request.
   std::unique_ptr<HttpRequest> GetRequest();
 
- private:
-  HttpMethod GetMethodType(const std::string& token) const;
+  static HttpMethod GetMethodType(const std::string& token);
 
+ private:
   // Parses headers and returns ACCEPTED if whole request was parsed. Otherwise
   // returns WAITING.
   ParseResult ParseHeaders();

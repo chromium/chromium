@@ -15,7 +15,6 @@
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_connection.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -26,6 +25,8 @@ namespace net {
 class StreamSocket;
 
 namespace test_server {
+
+class EmbeddedTestServer;
 
 // Wraps the connection socket. Accepts incoming data and sends responses via
 // HTTP/1.1.
@@ -51,7 +52,7 @@ class Http1Connection : public HttpConnection, public HttpResponseDelegate {
   // HttpConnection
   void OnSocketReady() override;
   std::unique_ptr<StreamSocket> TakeSocket() override;
-  const StreamSocket& Socket() override;
+  StreamSocket* Socket() override;
   base::WeakPtr<HttpConnection> GetWeakPtr() override;
 
   // HttpResponseDelegate

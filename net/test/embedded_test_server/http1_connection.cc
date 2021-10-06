@@ -42,8 +42,8 @@ std::unique_ptr<StreamSocket> Http1Connection::TakeSocket() {
   return std::move(socket_);
 }
 
-const StreamSocket& Http1Connection::Socket() {
-  return *socket_.get();
+StreamSocket* Http1Connection::Socket() {
+  return socket_.get();
 }
 
 base::WeakPtr<HttpConnection> Http1Connection::GetWeakPtr() {
