@@ -828,6 +828,9 @@ public class RootUiCoordinator
                 if (mOnOmniboxFocusChangedListener != null) {
                     mOnOmniboxFocusChangedListener.onResult(hasFocus);
                 }
+                if (mMessageQueueMediator != null) {
+                    mMessageQueueMediator.onUrlFocusChange(hasFocus);
+                }
                 mOmniboxFocusStateSupplier.set(hasFocus);
             };
 

@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.messages;
 
+import android.os.Handler;
+
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -17,6 +20,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.messages.ManagedMessageDispatcher;
@@ -31,7 +35,9 @@ import org.chromium.ui.util.TokenHolder;
  * to observe the full screen mode and control the visibility of browser control in order to
  * suspend and resume the queue.
  */
-public class ChromeMessageQueueMediator implements MessageQueueDelegate {
+public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocusChangeListener {
+    private static final long QUEUE_RESUMPTION_ON_URL_UNFOCUS_WAIT_DURATION_MS = 1000;
+
     private ManagedMessageDispatcher mQueueController;
     private MessageContainerCoordinator mContainerCoordinator;
     private BrowserControlsManager mBrowserControlsManager;
@@ -44,6 +50,8 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     @Nullable
     private ModalDialogManager mModalDialogManager;
     private final CallbackController mCallbackController = new CallbackController();
+    private int mUrlFocusToken = TokenHolder.INVALID_TOKEN;
+    private Handler mQueueHandler;
 
     private LayoutStateObserver mLayoutStateObserver = new LayoutStateObserver() {
         private int mToken = TokenHolder.INVALID_TOKEN;
@@ -109,6 +117,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         layoutStateProviderOneShotSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
         modalDialogManagerSupplier.addObserver(this::setModalDialogManager);
+        mQueueHandler = new Handler();
     }
 
     public void destroy() {
@@ -124,6 +133,9 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
                     mBrowserControlsToken);
         }
         mBrowserControlsManager = null;
+        mUrlFocusToken = TokenHolder.INVALID_TOKEN;
+        mQueueHandler.removeCallbacksAndMessages(null);
+        mQueueHandler = null;
     }
 
     @Override
@@ -191,6 +203,21 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         mModalDialogManager.addObserver(mModalDialogManagerObserver);
     }
 
+    @Override
+    public void onUrlFocusChange(boolean hasFocus) {
+        if (hasFocus) {
+            if (mUrlFocusToken == TokenHolder.INVALID_TOKEN) {
+                mUrlFocusToken = suspendQueue();
+            }
+            mQueueHandler.removeCallbacksAndMessages(null);
+        } else {
+            mQueueHandler.postDelayed(() -> {
+                resumeQueue(mUrlFocusToken);
+                mUrlFocusToken = TokenHolder.INVALID_TOKEN;
+            }, QUEUE_RESUMPTION_ON_URL_UNFOCUS_WAIT_DURATION_MS);
+        }
+    }
+
     class BrowserControlsObserver implements BrowserControlsStateProvider.Observer {
         private Runnable mRunOnControlsFullyVisible;
 
@@ -208,5 +235,15 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         void setOneTimeRunnableOnControlsFullyVisible(Runnable runnable) {
             mRunOnControlsFullyVisible = runnable;
         }
+    }
+
+    @VisibleForTesting
+    void setQueueHandlerForTesting(Handler handler) {
+        mQueueHandler = handler;
+    }
+
+    @VisibleForTesting
+    int getUrlFocusTokenForTesting() {
+        return mUrlFocusToken;
     }
 }
