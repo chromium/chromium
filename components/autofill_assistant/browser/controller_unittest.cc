@@ -142,8 +142,8 @@ class ControllerTest : public testing::Test {
     ON_CALL(*mock_service_, OnGetNextActions(_, _, _, _, _, _))
         .WillByDefault(RunOnceCallback<5>(net::HTTP_OK, ""));
 
-    ON_CALL(*mock_web_controller_, OnFindElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus(), nullptr));
+    ON_CALL(*mock_web_controller_, FindElement(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(ClientStatus(), nullptr));
 
     ON_CALL(mock_observer_, OnStateChanged(_))
         .WillByDefault(Invoke([this](AutofillAssistantState state) {
@@ -999,8 +999,8 @@ TEST_F(ControllerTest, KeepCheckingForElement) {
     EXPECT_EQ(AutofillAssistantState::STARTING, controller_->GetState());
   }
 
-  EXPECT_CALL(*mock_web_controller_, OnFindElement(_, _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(*mock_web_controller_, FindElement(_, _, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));

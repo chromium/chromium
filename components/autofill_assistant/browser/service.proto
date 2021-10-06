@@ -1759,8 +1759,14 @@ message ElementConditionProto {
   optional bytes payload = 5;
 
   // Optional. If set, the element of |match| will be stored under this
-  // identifier on the client.
+  // identifier on the client. If |require_unique_element| is not set to true,
+  // the first match will be stored.
   optional ClientIdProto client_id = 6;
+
+  // Optional. If set to true, the finding of element of |match| will be done
+  // in a strict manner, failing if multiple elements match the Selector. By
+  // default the matching is non-strict, selecting the first match.
+  optional bool require_unique_element = 7;
 }
 
 message ElementConditionsProto {

@@ -1016,7 +1016,7 @@ void ScriptExecutor::CheckElementMatches(
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   checker->AddElementCheck(
-      selector,
+      selector, /* strict= */ false,
       base::BindOnce(&ScriptExecutor::CheckElementMatchesCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

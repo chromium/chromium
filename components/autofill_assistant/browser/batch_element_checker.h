@@ -52,7 +52,9 @@ class BatchElementChecker {
   // Checks an element.
   //
   // New element checks cannot be added once Run has been called.
-  void AddElementCheck(const Selector& selector, ElementCheckCallback callback);
+  void AddElementCheck(const Selector& selector,
+                       bool strict,
+                       ElementCheckCallback callback);
 
   // Gets the value of |selector| and return the result through |callback|. The
   // returned value will be the empty string in case of error or empty value.
@@ -90,7 +92,7 @@ class BatchElementChecker {
 
   // A map of ElementCheck arguments (check_type, selector) to callbacks that
   // take the result of the check.
-  std::map<Selector, std::vector<ElementCheckCallback>>
+  std::map<std::pair<Selector, bool>, std::vector<ElementCheckCallback>>
       element_check_callbacks_;
 
   // A map of GetFieldValue arguments (selector) to callbacks that take the

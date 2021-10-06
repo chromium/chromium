@@ -68,6 +68,9 @@ class ElementPrecondition {
     // The identifier given to this result through the script. This identifier
     // can be used to later find the element in the |ElementStore|.
     absl::optional<std::string> client_id;
+
+    // Whether the matching should be done strict or not.
+    bool strict = false;
   };
 
   // Add selectors from |proto| to |results_|, doing a depth-first search.

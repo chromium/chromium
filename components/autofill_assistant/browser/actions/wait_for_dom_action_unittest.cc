@@ -33,8 +33,8 @@ class WaitForDomActionTest : public testing::Test {
   WaitForDomActionTest() {}
 
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnFindElement(_, _))
-        .WillByDefault(RunOnceCallback<1>(
+    ON_CALL(mock_web_controller_, FindElement(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     EXPECT_CALL(mock_action_delegate_, WaitForDomWithSlowWarning(_, _, _, _, _))
@@ -106,8 +106,9 @@ TEST_F(WaitForDomActionTest, NoSelectors) {
 }
 
 TEST_F(WaitForDomActionTest, ConditionMet) {
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(Selector({"#element"}), /* strict= */ false, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
@@ -121,8 +122,9 @@ TEST_F(WaitForDomActionTest, ConditionMet) {
 }
 
 TEST_F(WaitForDomActionTest, TimingStatsConditionMet) {
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(Selector({"#element"}), /* strict= */ false, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
@@ -147,19 +149,23 @@ TEST_F(WaitForDomActionTest, ConditionNotMet) {
 }
 
 TEST_F(WaitForDomActionTest, ReportMatchesToServer) {
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element1"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(Selector({"#element1"}), /* strict= */ false, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element2"}), _))
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(Selector({"#element2"}), /* strict= */ false, _))
       .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element3"}), _))
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(Selector({"#element3"}), /* strict= */ false, _))
       .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
-  EXPECT_CALL(mock_web_controller_, OnFindElement(Selector({"#element4"}), _))
-      .WillRepeatedly(WithArgs<1>([](auto&& callback) {
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(Selector({"#element4"}), /* strict= */ false, _))
+      .WillRepeatedly(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
@@ -195,7 +201,14 @@ TEST_F(WaitForDomActionTest, ReportMatchesToServer) {
 
 TEST_F(WaitForDomActionTest, StoreMatchForLater) {
   Selector expected_selector({"#element"});
-  test_util::MockFindElement(mock_web_controller_, expected_selector);
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector, /* strict= */ false, _))
+      .WillOnce(WithArgs<2>([&expected_selector](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id =
+            expected_selector.proto.filters(0).css_selector();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
 
   auto* condition = proto_.mutable_wait_condition();
   *condition->mutable_match() = ToSelectorProto("#element");
@@ -208,14 +221,55 @@ TEST_F(WaitForDomActionTest, StoreMatchForLater) {
   EXPECT_TRUE(mock_action_delegate_.GetElementStore()->HasElement("element"));
 }
 
+TEST_F(WaitForDomActionTest, StoreStrictMatchForLater) {
+  Selector expected_selector({"#element"});
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector, /* strict= */ true, _))
+      .WillOnce(WithArgs<2>([&expected_selector](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->dom_object.object_data.object_id =
+            expected_selector.proto.filters(0).css_selector();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
+  auto* condition = proto_.mutable_wait_condition();
+  *condition->mutable_match() = ToSelectorProto("#element");
+  condition->set_payload("1");
+  condition->mutable_client_id()->set_identifier("element");
+  condition->set_require_unique_element(true);
+
+  EXPECT_CALL(callback_, Run(_));
+  Run();
+
+  EXPECT_TRUE(mock_action_delegate_.GetElementStore()->HasElement("element"));
+}
+
+TEST_F(WaitForDomActionTest, StrictMatchFailsForMultipleElements) {
+  Selector expected_selector({"#element"});
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector, /* strict= */ true, _))
+      .WillOnce(RunOnceCallback<2>(ClientStatus(TOO_MANY_ELEMENTS), nullptr));
+
+  auto* condition = proto_.mutable_wait_condition();
+  *condition->mutable_match() = ToSelectorProto("#element");
+  condition->set_payload("1");
+  condition->mutable_client_id()->set_identifier("element");
+  condition->set_require_unique_element(true);
+
+  EXPECT_CALL(callback_, Run(_));
+  Run();
+
+  EXPECT_FALSE(mock_action_delegate_.GetElementStore()->HasElement("element"));
+}
+
 TEST_F(WaitForDomActionTest, RemoveElementsNoLongerFound) {
   Selector expected_found_selector({"#element-found"});
   Selector expected_not_found_selector({"#element-not-found"});
   test_util::MockFindElement(mock_web_controller_, expected_found_selector);
   EXPECT_CALL(mock_web_controller_,
-              OnFindElement(expected_not_found_selector, _))
+              FindElement(expected_not_found_selector, _, _))
       .WillOnce(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   // A previous run found this element.
   mock_action_delegate_.GetElementStore()->AddElement("element2",

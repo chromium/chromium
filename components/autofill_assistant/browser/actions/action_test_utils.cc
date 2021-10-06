@@ -44,8 +44,8 @@ ElementFinder::Result MockFindElement(MockActionDelegate& delegate,
 }
 
 void MockFindAnyElement(MockWebController& web_controller) {
-  ON_CALL(web_controller, OnFindElement(_, _))
-      .WillByDefault(WithArgs<1>([](auto&& callback) {
+  ON_CALL(web_controller, FindElement(_, _, _))
+      .WillByDefault(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
@@ -54,9 +54,9 @@ void MockFindAnyElement(MockWebController& web_controller) {
 ElementFinder::Result MockFindElement(MockWebController& web_controller,
                                       const Selector& selector,
                                       int times) {
-  EXPECT_CALL(web_controller, OnFindElement(selector, _))
+  EXPECT_CALL(web_controller, FindElement(selector, _, _))
       .Times(times)
-      .WillRepeatedly(WithArgs<1>([&selector](auto&& callback) {
+      .WillRepeatedly(WithArgs<2>([&selector](auto&& callback) {
         auto element_result = std::make_unique<ElementFinder::Result>();
         element_result->dom_object.object_data.object_id =
             selector.proto.filters(0).css_selector();

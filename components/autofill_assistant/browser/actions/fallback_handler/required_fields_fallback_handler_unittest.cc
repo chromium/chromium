@@ -916,10 +916,10 @@ TEST_F(RequiredFieldsFallbackHandlerTest,
        AddsNotFoundElementToDetailsForOptionalFieldsWithoutFailing) {
   Selector card_name_selector({"#card_name"});
   Selector card_number_selector({"#card_number"});
-  EXPECT_CALL(mock_web_controller_, OnFindElement(card_name_selector, _))
+  EXPECT_CALL(mock_web_controller_, FindElement(card_name_selector, _, _))
       .Times(2)
       .WillRepeatedly(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
   EXPECT_CALL(mock_action_delegate_, FindElement(card_name_selector, _))
       .WillOnce(
           RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));

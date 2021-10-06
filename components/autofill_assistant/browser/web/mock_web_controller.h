@@ -26,15 +26,10 @@ class MockWebController : public WebController {
 
   MOCK_METHOD1(LoadURL, void(const GURL&));
 
-  void FindElement(const Selector& selector,
-                   bool strict_mode,
-                   ElementFinder::Callback callback) override {
-    OnFindElement(selector, callback);
-  }
-  MOCK_METHOD2(OnFindElement,
+  MOCK_METHOD3(FindElement,
                void(const Selector& selector,
-                    ElementFinder::Callback& callback));
-
+                    bool strict,
+                    ElementFinder::Callback callback));
   MOCK_METHOD4(ScrollToElementPosition,
                void(std::unique_ptr<ElementFinder::Result>,
                     const TopPadding&,

@@ -57,14 +57,15 @@ class DirectCallback {
 class ScriptPreconditionTest : public testing::Test {
  public:
   void SetUp() override {
-    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists"}), _))
-        .WillByDefault(WithArgs<1>([](auto&& callback) {
+    ON_CALL(mock_web_controller_,
+            FindElement(Selector({"exists"}), /* strict= */ false, _))
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
                                   std::make_unique<ElementFinder::Result>());
         }));
     ON_CALL(mock_web_controller_,
-            OnFindElement(Selector({"does_not_exist"}), _))
-        .WillByDefault(RunOnceCallback<1>(
+            FindElement(Selector({"does_not_exist"}), /* strict= */ false, _))
+        .WillByDefault(RunOnceCallback<2>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     SetUrl("http://www.example.com/path");

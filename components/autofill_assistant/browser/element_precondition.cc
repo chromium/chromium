@@ -40,7 +40,7 @@ void ElementPrecondition::Check(BatchElementChecker* batch_checks,
       continue;
     }
     batch_checks->AddElementCheck(
-        result.selector,
+        result.selector, result.strict,
         base::BindOnce(&ElementPrecondition::OnCheckElementExists,
                        weak_ptr_factory_.GetWeakPtr(), i));
   }
@@ -163,6 +163,7 @@ void ElementPrecondition::AddResults(const ElementConditionProto& proto_) {
       if (proto_.has_client_id()) {
         result.client_id = proto_.client_id().identifier();
       }
+      result.strict = proto_.require_unique_element();
       results_.emplace_back(result);
       break;
     }

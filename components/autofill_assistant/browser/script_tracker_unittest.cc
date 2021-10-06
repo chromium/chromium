@@ -37,14 +37,14 @@ class ScriptTrackerTest : public testing::Test, public ScriptTracker::Listener {
   void SetUp() override {
     delegate_.SetCurrentURL(GURL("http://www.example.com/"));
 
-    ON_CALL(mock_web_controller_, OnFindElement(Selector({"exists"}), _))
-        .WillByDefault(WithArgs<1>([](auto&& callback) {
+    ON_CALL(mock_web_controller_, FindElement(Selector({"exists"}), _, _))
+        .WillByDefault(WithArgs<2>([](auto&& callback) {
           std::move(callback).Run(OkClientStatus(),
                                   std::make_unique<ElementFinder::Result>());
         }));
     ON_CALL(mock_web_controller_,
-            OnFindElement(Selector({"does_not_exist"}), _))
-        .WillByDefault(RunOnceCallback<1>(
+            FindElement(Selector({"does_not_exist"}), _, _))
+        .WillByDefault(RunOnceCallback<2>(
             ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
     // Scripts run, but have no actions.
@@ -241,9 +241,9 @@ TEST_F(ScriptTrackerTest, NewScriptChangesRunnable) {
 
 TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {
   EXPECT_CALL(mock_web_controller_,
-              OnFindElement(Selector({"maybe_exists"}), _))
+              FindElement(Selector({"maybe_exists"}), _, _))
       .WillOnce(
-          RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
 
   InitScriptProto(AddScript(), "script name", "script path", "maybe_exists");
   SetAndCheckScripts();
@@ -253,8 +253,8 @@ TEST_F(ScriptTrackerTest, CheckScriptsAfterDOMChange) {
 
   // DOM has changed; OnElementExists now returns truthy.
   EXPECT_CALL(mock_web_controller_,
-              OnFindElement(Selector({"maybe_exists"}), _))
-      .WillOnce(WithArgs<1>([](auto&& callback) {
+              FindElement(Selector({"maybe_exists"}), _, _))
+      .WillOnce(WithArgs<2>([](auto&& callback) {
         std::move(callback).Run(OkClientStatus(),
                                 std::make_unique<ElementFinder::Result>());
       }));
