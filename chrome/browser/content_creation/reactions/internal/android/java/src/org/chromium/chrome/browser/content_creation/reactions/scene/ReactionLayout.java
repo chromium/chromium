@@ -29,6 +29,10 @@ class ReactionLayout extends RelativeLayout {
         }
     }
 
+    Drawable getReaction() {
+        return mDrawable;
+    }
+
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();

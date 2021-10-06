@@ -14,9 +14,9 @@ interface SceneEditorDelegate {
     boolean canAddReaction();
 
     /**
-     * Adds the given {@link ReactionLayout} to the scene (offsetting if necessary).
+     * Duplicates the given {@link ReactionLayout} to the scene (offsetting if necessary).
      */
-    void addReaction(ReactionLayout reactionLayout);
+    void duplicateReaction(ReactionLayout reactionLayout);
 
     /**
      * Removes the given {@link ReactionLayout} from the scene.
@@ -24,7 +24,7 @@ interface SceneEditorDelegate {
     void removeReaction(ReactionLayout reactionLayout);
 
     /**
-     * Marks the given {@link ReactionLayout}'s active status as {@code activeStatus}.
+     * Marks the given {@link ReactionLayout}'s active status as {@code isActive}.
      */
-    void markActiveStatus(ReactionLayout reactionLayout, boolean activeStatus);
+    void markActiveStatus(ReactionLayout reactionLayout, boolean isActive);
 }
