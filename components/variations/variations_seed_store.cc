@@ -424,6 +424,13 @@ void VariationsSeedStore::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
 }
 
+// static
+VerifySignatureResult VariationsSeedStore::VerifySeedSignatureForTesting(
+    const std::string& seed_bytes,
+    const std::string& base64_seed_signature) {
+  return VerifySeedSignature(seed_bytes, base64_seed_signature);
+}
+
 void VariationsSeedStore::ClearPrefs(SeedType seed_type) {
   if (seed_type == SeedType::LATEST) {
     local_state_->ClearPref(prefs::kVariationsCompressedSeed);

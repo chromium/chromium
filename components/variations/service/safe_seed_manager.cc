@@ -15,6 +15,7 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_store.h"
+#include "components/variations/variations_switches.h"
 
 namespace variations {
 
@@ -71,14 +72,12 @@ void SafeSeedManager::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 bool SafeSeedManager::ShouldRunInSafeMode() const {
-  // Ignore any number of failures if the --force-fieldtrials flag is set. This
-  // flag is only used by developers, and there's no need to make the
-  // development process flakier.
+  // Ignore any number of failures if the --disable-variations-safe-mode flag is
+  // set.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kForceFieldTrials)) {
+          switches::kDisableVariationsSafeMode)) {
     return false;
   }
-
   int num_crashes = local_state_->GetInteger(prefs::kVariationsCrashStreak);
   int num_failed_fetches =
       local_state_->GetInteger(prefs::kVariationsFailedToFetchSeedStreak);

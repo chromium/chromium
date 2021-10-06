@@ -736,7 +736,7 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSignature) {
   const VariationsSeed seed = CreateTestSeed();
   const std::string serialized_seed = SerializeSeed(seed);
   // A valid signature, but for a different seed.
-  const std::string signature = kBase64TestSeedSignature;
+  const std::string signature = kTestSeedData.base64_signature;
   ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.locale = "en-US";
   client_state.reference_date = WrapTime(12345);
@@ -785,9 +785,9 @@ TEST(VariationsSeedStoreTest, StoreSafeSeed_InvalidSignature) {
 
 TEST(VariationsSeedStoreTest, StoreSafeSeed_ValidSignature) {
   std::string serialized_seed;
-  ASSERT_TRUE(
-      base::Base64Decode(kUncompressedBase64TestSeedData, &serialized_seed));
-  const std::string signature = kBase64TestSeedSignature;
+  ASSERT_TRUE(base::Base64Decode(kTestSeedData.base64_uncompressed_data,
+                                 &serialized_seed));
+  const std::string signature = kTestSeedData.base64_signature;
   ClientFilterableState client_state(base::BindOnce([] { return false; }));
   client_state.locale = "en-US";
   client_state.reference_date = WrapTime(12345);
@@ -953,8 +953,8 @@ TEST(VariationsSeedStoreTest, StoreSeedData_GzippedEmptySeed) {
 TEST(VariationsSeedStoreTest, VerifySeedSignature) {
   // A valid seed and signature pair generated using the server's private key.
   const std::string uncompressed_base64_seed_data =
-      kUncompressedBase64TestSeedData;
-  const std::string base64_seed_signature = kBase64TestSeedSignature;
+      kTestSeedData.base64_uncompressed_data;
+  const std::string base64_seed_signature = kTestSeedData.base64_signature;
 
   std::string base64_seed_data;
   {

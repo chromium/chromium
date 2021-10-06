@@ -114,7 +114,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(VariationsAppInterface);
   GREYAssertTrue([VariationsAppInterface hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
-                  @"There should be no field trial for |kTestSeedStudyName|.");
+                  @"There should be no field trials from |kTestSeedData|.");
 
   // Crash the app three times since a crash streak of three or more triggers
   // variations safe mode. Also, verify the crash streak and the field trial
@@ -124,12 +124,12 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(VariationsAppInterface);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   [self checkCrashStreakValue:1];
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
-                  @"There should be no field trial for |kTestSeedStudyName|.");
+                  @"There should be no field trials from |kTestSeedData|.");
   // Second crash.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   [self checkCrashStreakValue:2];
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
-                  @"There should be no field trial for |kTestSeedStudyName|.");
+                  @"There should be no field trials from |kTestSeedData|.");
   // Third crash.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   [self checkCrashStreakValue:3];
@@ -138,7 +138,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(VariationsAppInterface);
   // Verify that Chrome fell back to variations safe mode by checking that there
   // is a field trial for the test safe seed's study.
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
-                 @"There should be a field trial for |kTestSeedStudyName|.");
+                 @"There should be field trials from |kTestSeedData|.");
 }
 
 // Tests that variations seed fetch failures trigger variations safe mode.
@@ -153,7 +153,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(VariationsAppInterface);
   // Verify that there is no field trial associated with the test safe seed's
   // sole study.
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
-                  @"There should be no field trial for |kTestSeedStudyName|.");
+                  @"There should be no field trials from |kTestSeedData|.");
 
   // Persist the local state pref changes made above and in setUp().
   [[AppLaunchManager sharedManager]
@@ -168,7 +168,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(VariationsAppInterface);
   // Verify that Chrome fell back to variations safe mode by checking that there
   // is a field trial for the test safe seed's study.
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
-                 @"There should be a field trial for |kTestSeedStudyName|.");
+                 @"There should be field trials from |kTestSeedData|.");
 }
 
 // Tests that variations safe mode is not triggered.
@@ -187,7 +187,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(VariationsAppInterface);
   // Verify that there is no field trial associated with the test safe seed's
   // sole study.
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
-                  @"There should be no field trial for |kTestSeedStudyName|.");
+                  @"There should be no field trials from |kTestSeedData|.");
 
   // Persist the local state pref changes made above and in setUp().
   [[AppLaunchManager sharedManager]
@@ -202,7 +202,7 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(VariationsAppInterface);
   // Verify that Chrome did not fall back to variations safe mode by checking
   // that there isn't a field trial for the test safe seed's study.
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
-                  @"There should be no field trial for |kTestSeedStudyName|.");
+                  @"There should be no field trials from |kTestSeedData|.");
 }
 
 @end

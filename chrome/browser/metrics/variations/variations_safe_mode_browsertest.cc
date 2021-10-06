@@ -10,10 +10,12 @@
 
 #include "base/base_switches.h"
 #include "base/containers/contains.h"
+#include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/ranges/ranges.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -23,7 +25,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/clean_exit_beacon.h"
-#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
@@ -40,30 +41,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
-namespace {
-
-// Sets |local_state|'s seed and seed signature prefs to a valid seed-signature
-// pair. If |use_safe_seed_prefs| is true, then uses the safe seed prefs.
-void StoreTestSeedAndSignature(PrefService* local_state,
-                               bool use_safe_seed_prefs) {
-  const std::string seed_pref = use_safe_seed_prefs
-                                    ? prefs::kVariationsSafeCompressedSeed
-                                    : prefs::kVariationsCompressedSeed;
-  local_state->SetString(seed_pref, kCompressedBase64TestSeedData);
-
-  const std::string signature_pref = use_safe_seed_prefs
-                                         ? prefs::kVariationsSafeSeedSignature
-                                         : prefs::kVariationsSeedSignature;
-  local_state->SetString(signature_pref, kBase64TestSeedSignature);
-}
-
-// Simulates a crash by forcing Chrome to fail to exit cleanly.
-void SimulateCrash(PrefService* local_state) {
-  local_state->SetBoolean(metrics::prefs::kStabilityExitedCleanly, false);
-  metrics::CleanExitBeacon::SkipCleanShutdownStepsForTesting();
-}
-
-}  // namespace
 
 class VariationsSafeModeBrowserTest : public InProcessBrowserTest {
  public:
@@ -81,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // pref to be set early enough to be read by the variations code, which runs
   // very early during startup.
   PrefService* local_state = g_browser_process->local_state();
-  StoreTestSeedAndSignature(local_state, /*use_safe_seed_prefs=*/true);
+  WriteSeedData(local_state, kTestSeedData, kSafeSeedPrefKeys);
   SimulateCrash(local_state);
 }
 
@@ -110,9 +87,8 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   histogram_tester_.ExpectUniqueSample("Variations.SeedUsage",
                                        SeedUsage::kSafeSeedUsed, 1);
 
-  // Verify that there is a field trial associated with the sole test seed
-  // study, |variations::kTestSeedStudyName|.
-  EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedStudyName));
+  // Verify that |kTestSeedData| has been applied.
+  EXPECT_TRUE(FieldTrialListHasAllStudiesFrom(kTestSeedData));
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
@@ -123,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   // very early during startup.
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 25);
-  StoreTestSeedAndSignature(local_state, /*use_safe_seed_prefs=*/true);
+  WriteSeedData(local_state, kTestSeedData, kSafeSeedPrefKeys);
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
@@ -138,9 +114,8 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   histogram_tester_.ExpectUniqueSample("Variations.SeedUsage",
                                        SeedUsage::kSafeSeedUsed, 1);
 
-  // Verify that there is a field trial associated with the sole test seed
-  // study, |kTestSeedStudyName|.
-  EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedStudyName));
+  // Verify that |kTestSeedData| has been applied.
+  EXPECT_TRUE(FieldTrialListHasAllStudiesFrom(kTestSeedData));
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
@@ -152,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetInteger(prefs::kVariationsCrashStreak, 2);
   local_state->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 24);
-  StoreTestSeedAndSignature(local_state, /*use_safe_seed_prefs=*/false);
+  WriteSeedData(local_state, kTestSeedData, kRegularSeedPrefKeys);
 }
 
 IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest, DoNotTriggerSafeMode) {
@@ -189,6 +164,16 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest, MANUAL_SubTest) {
   ASSERT_FALSE(expected_user_data_dir.empty());
   ASSERT_FALSE(actual_user_data_dir.empty());
   ASSERT_EQ(actual_user_data_dir, expected_user_data_dir);
+
+  // If the test makes it this far, then either it's the first run of the
+  // test, or the safe seed was used.
+  const int crash_streak = g_browser_process->local_state()->GetInteger(
+      prefs::kVariationsCrashStreak);
+  const bool is_first_run = (crash_streak == 0);
+  const bool safe_seed_was_used =
+      FieldTrialListHasAllStudiesFrom(kTestSeedData);
+  EXPECT_NE(is_first_run, safe_seed_was_used)  // ==> XOR
+      << "crash_streak=" << crash_streak;
 }
 
 namespace {
@@ -206,13 +191,20 @@ class FieldTrialTest : public ::testing::TestWithParam<std::string> {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     user_data_dir_ = temp_dir_.GetPath().AppendASCII("user-data-dir");
-    pref_service_factory_.set_user_prefs(base::MakeRefCounted<JsonPrefStore>(
-        user_data_dir_.AppendASCII("Local State")));
+    local_state_file_ = user_data_dir_.AppendASCII("Local State");
   }
 
  protected:
   const std::string& field_trial_group() const { return GetParam(); }
   const base::FilePath& user_data_dir() const { return user_data_dir_; }
+  const base::FilePath& local_state_file() const { return local_state_file_; }
+
+  const base::FilePath CopyOfLocalStateFile(int suffix) const {
+    base::FilePath copy_of_local_state_file = temp_dir_.GetPath().AppendASCII(
+        base::StringPrintf("local-state-copy-%d.json", suffix));
+    base::CopyFile(local_state_file(), copy_of_local_state_file);
+    return copy_of_local_state_file;
+  }
 
   bool IsSuccessfulSubTestOutput(const std::string& output) {
     static const char* const kSubTestSuccessStrings[] = {
@@ -259,8 +251,12 @@ class FieldTrialTest : public ::testing::TestWithParam<std::string> {
         << output;
   }
 
-  std::unique_ptr<PrefService> LoadLocalState() {
-    return pref_service_factory_.Create(pref_registry_);
+  std::unique_ptr<PrefService> LoadLocalState(const base::FilePath& path) {
+    PrefServiceFactory pref_service_factory;
+    pref_service_factory.set_async(false);
+    pref_service_factory.set_user_prefs(
+        base::MakeRefCounted<JsonPrefStore>(path));
+    return pref_service_factory.Create(pref_registry_);
   }
 
   std::unique_ptr<metrics::CleanExitBeacon> LoadCleanExitBeacon(
@@ -275,15 +271,14 @@ class FieldTrialTest : public ::testing::TestWithParam<std::string> {
  private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<PrefRegistrySimple> pref_registry_;
-  PrefServiceFactory pref_service_factory_;
   base::ScopedTempDir temp_dir_;
   base::FilePath user_data_dir_;
+  base::FilePath local_state_file_;
 };
 
 }  // namespace
 
-// crbug.com/1252344 - Failing on some windows builders; disable temporarily.
-TEST_P(FieldTrialTest, DISABLED_ExtendedSafeModeEndToEnd) {
+TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd) {
   SCOPED_TRACE(field_trial_group());
 
   // Reuse the browser_tests binary (i.e., that this test code is in), to
@@ -291,7 +286,7 @@ TEST_P(FieldTrialTest, DISABLED_ExtendedSafeModeEndToEnd) {
   base::CommandLine sub_test =
       base::CommandLine(base::CommandLine::ForCurrentProcess()->GetProgram());
 
-  // Run the sub-test in the |user_data_dir()| allocated for the test case.
+  // Run the manual sub-test in the |user_data_dir()| allocated for this test.
   sub_test.AppendSwitchASCII(base::kGTestFilterFlag,
                              "VariationsSafeModeBrowserTest.MANUAL_SubTest");
   sub_test.AppendSwitch(::switches::kRunManualTestsFlag);
@@ -304,35 +299,41 @@ TEST_P(FieldTrialTest, DISABLED_ExtendedSafeModeEndToEnd) {
                              base::StrCat({"*", kExtendedSafeModeTrial, "/",
                                            field_trial_group(), "/"}));
 
+  // Assign the test environment to be on the "Dev" channel. This ensures
+  // compatibility with both the extended safe mode trial and the crashing
+  // study in the seed.
+  sub_test.AppendSwitchASCII(switches::kFakeVariationsChannel, "dev");
+
   // Explicitly avoid any terminal control characters in the output.
   sub_test.AppendSwitchASCII("gtest_color", "no");
 
   // Initial sub-test run should be successful.
   RunAndExpectSuccessfulSubTest(sub_test);
 
-  // Add command-line switch to force crash during metric initialization.
-  // TODO(crbug/1249256): inject variations seed into user-data-dir that
-  // enables this feature instead of using altered command line.
-  base::CommandLine crashing_sub_test = sub_test;
-  crashing_sub_test.AppendSwitchASCII(
-      ::switches::kEnableFeatures, kForceFieldTrialSetupCrashForTesting.name);
+  // Inject the safe and crashing seeds into the Local State of |sub_test|.
+  {
+    auto local_state = LoadLocalState(local_state_file());
+    WriteSeedData(local_state.get(), kTestSeedData, kSafeSeedPrefKeys);
+    WriteSeedData(local_state.get(), kCrashingSeedData, kRegularSeedPrefKeys);
+  }
 
+  // Enable the field trial for extended safe mode behavior.
+  // TODO(crbug.com/1241702): Remove this once extended safe mode is launched.
   SetUpExtendedSafeModeExperiment(field_trial_group());
 
-  // The next three runs of the sub-test should crash...
-  for (int expected_crash_streak = 1;
-       expected_crash_streak <= kCrashStreakThreshold;
-       ++expected_crash_streak) {
-    RunAndExpectCrashingSubTest(crashing_sub_test);
-    auto local_state = LoadLocalState();
+  // The next |kCrashStreakThreshold| runs of the sub-test should crash...
+  for (int run_count = 1; run_count <= kCrashStreakThreshold; ++run_count) {
+    SCOPED_TRACE(base::StringPrintf("Run #%d with crashing seed", run_count));
+    RunAndExpectCrashingSubTest(sub_test);
+    auto local_state = LoadLocalState(CopyOfLocalStateFile(run_count));
     auto clean_exit_beacon = LoadCleanExitBeacon(local_state.get());
     ASSERT_TRUE(clean_exit_beacon != nullptr);
     ASSERT_FALSE(clean_exit_beacon->exited_cleanly());
-    EXPECT_EQ(expected_crash_streak,
+    ASSERT_EQ(run_count,
               local_state->GetInteger(prefs::kVariationsCrashStreak));
   }
 
-  // Until safe mode kicks in.
+  // Do another run and verify that safe mode kicks in, preventing the crash.
   RunAndExpectSuccessfulSubTest(sub_test);
 }
 

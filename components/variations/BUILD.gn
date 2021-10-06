@@ -188,6 +188,8 @@ static_library("test_support") {
     "field_trial_config:field_trial_config",
     "proto",
     "//base/test:test_support",
+    "//components/metrics",
+    "//components/prefs:prefs",
     "//components/variations/service:constants",
     "//third_party/zlib/google:compression_utils",
   ]
@@ -213,6 +215,7 @@ source_set("unit_tests") {
     "variations_seed_processor_unittest.cc",
     "variations_seed_simulator_unittest.cc",
     "variations_seed_store_unittest.cc",
+    "variations_test_utils_unittest.cc",
   ]
 
   if (is_android || is_ios) {

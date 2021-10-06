@@ -17,6 +17,7 @@
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_store.h"
+#include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -191,8 +192,8 @@ TEST_F(SafeSeedManagerTest, ShouldRunInSafeMode_OverriddenByCommandlineFlag) {
   // So many failures.
   prefs_.SetInteger(prefs::kVariationsCrashStreak, 100);
   prefs_.SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 100);
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      ::switches::kForceFieldTrials, "SomeFieldTrial");
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableVariationsSafeMode);
 
   SafeSeedManager safe_seed_manager(&prefs_);
   EXPECT_FALSE(safe_seed_manager.ShouldRunInSafeMode());

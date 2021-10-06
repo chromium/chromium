@@ -143,6 +143,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   PrefService* local_state() { return local_state_; }
   const PrefService* local_state() const { return local_state_; }
 
+  static VerifySignatureResult VerifySeedSignatureForTesting(
+      const std::string& seed_bytes,
+      const std::string& base64_seed_signature);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, VerifySeedSignature);
   FRIEND_TEST_ALL_PREFIXES(VariationsSeedStoreTest, ApplyDeltaPatch);

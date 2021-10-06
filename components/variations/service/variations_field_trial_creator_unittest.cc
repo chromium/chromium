@@ -61,13 +61,14 @@ using ::testing::NiceMock;
 using ::testing::Return;
 
 // Constants used to create the test seeds.
+const char kTestSeedStudyName[] = "test";
 const char kTestSeedExperimentName[] = "abc";
 const char kTestSafeSeedExperimentName[] = "abc.safe";
 const int kTestSeedExperimentProbability = 100;
 const char kTestSeedSerialNumber[] = "123";
 
 // Constants used to mock the serialized seed state.
-const char kTestSeedData[] = "a serialized seed, 100% realistic";
+const char kTestSeedSerializedData[] = "a serialized seed, 100% realistic";
 const char kTestSeedSignature[] = "a totally valid signature, I swear!";
 
 #if !defined(OS_ANDROID)
@@ -237,7 +238,7 @@ class TestVariationsSeedStore : public VariationsSeedStore {
                 std::string* seed_data,
                 std::string* base64_signature) override {
     *seed = CreateTestSeed();
-    *seed_data = kTestSeedData;
+    *seed_data = kTestSeedSerializedData;
     *base64_signature = kTestSeedSignature;
     return true;
   }
@@ -463,8 +464,8 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NotExpired) {
     ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
         .WillByDefault(Return(false));
     EXPECT_CALL(safe_seed_manager,
-                DoSetActiveSeedState(kTestSeedData, kTestSeedSignature, _,
-                                     seed_fetch_time))
+                DoSetActiveSeedState(kTestSeedSerializedData,
+                                     kTestSeedSignature, _, seed_fetch_time))
         .Times(1);
 
     TestVariationsServiceClient variations_service_client;
@@ -507,8 +508,8 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_ValidSeed_NoLastFetchTime) {
       .WillByDefault(Return(false));
   const base::Time start_time = base::Time::Now();
   EXPECT_CALL(safe_seed_manager,
-              DoSetActiveSeedState(kTestSeedData, kTestSeedSignature, _,
-                                   Ge(start_time)))
+              DoSetActiveSeedState(kTestSeedSerializedData, kTestSeedSignature,
+                                   _, Ge(start_time)))
       .Times(1);
 
   TestVariationsServiceClient variations_service_client;
@@ -639,9 +640,9 @@ TEST_F(FieldTrialCreatorTest, SetupFieldTrials_EmptySafeSeed_UsesRegularSeed) {
   prefs_.SetTime(prefs::kVariationsLastFetchTime, recent_time);
   // When using the regular seed, the safe seed manager should be informed of
   // the active seed state.
-  EXPECT_CALL(
-      safe_seed_manager,
-      DoSetActiveSeedState(kTestSeedData, kTestSeedSignature, _, recent_time))
+  EXPECT_CALL(safe_seed_manager,
+              DoSetActiveSeedState(kTestSeedSerializedData, kTestSeedSignature,
+                                   _, recent_time))
       .Times(1);
 
   TestVariationsServiceClient variations_service_client;
