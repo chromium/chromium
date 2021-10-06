@@ -32,7 +32,10 @@ if (optimize_webui) {
 }
 
 generate_grd("build_grd") {
-  input_files = [ "bookmarks.html" ]
+  input_files = [
+    "bookmarks.html",
+    "images/folder_open.svg",
+  ]
   input_files_base_dir = rebase_path(".", "//")
 
   if (optimize_webui) {

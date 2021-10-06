@@ -197,7 +197,10 @@ ts_library("library") {
   out_dir = preprocessed_folder
   composite = true
 
-  in_files = [ "js/i18n_mixin.ts" ]
+  in_files = [
+    "cr_elements/cr_nav_menu_item_style.ts",
+    "js/i18n_mixin.ts",
+  ]
 
   definitions = []
 

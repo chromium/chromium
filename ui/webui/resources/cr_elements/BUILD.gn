@@ -168,6 +168,7 @@ preprocess_if_expr("preprocess_generated") {
     "cr_link_row/cr_link_row.js",
     "cr_lottie/cr_lottie.m.js",
     "cr_menu_selector/cr_menu_selector.js",
+    "cr_nav_menu_item_style.ts",
     "cr_page_host_style_css.js",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
     "cr_profile_avatar_selector/cr_profile_avatar_selector.js",
@@ -457,6 +458,7 @@ js_library("find_shortcut_behavior") {
 
 html_to_js("web_components") {
   js_files = [
+    "cr_nav_menu_item_style.ts",
     "cr_page_host_style_css.js",
     "mwb_shared_icons.js",
     "mwb_element_shared_style.js",

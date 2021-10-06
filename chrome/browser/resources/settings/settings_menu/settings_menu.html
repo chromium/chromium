@@ -1,4 +1,4 @@
-    <style include="settings-shared cr-icons">
+    <style include="settings-shared cr-icons cr-nav-menu-item-style">
       :host {
         box-sizing: border-box;
         display: block;
@@ -11,43 +11,15 @@
       }
 
       #topMenu {
+        color: var(--settings-nav-item-color);
         display: flex;
         flex-direction: column;
         min-width: fit-content;
       }
 
-      a[href],
-      #advancedButton {
-        align-items: center;
-        color: var(--settings-nav-item-color);
-        display: flex;
-        font-weight: 500;
-        margin-inline-end: 2px;  /* Margin so selected outline is visible. */
-        margin-inline-start: 1px;
-        min-height: 20px;
-        padding-bottom: 10px;
-        padding-inline-start: 23px;  /* 24px - 1px from margin for outline. */
-        padding-top: 10px;
-      }
-
-      a[href].iron-selected {
-        color: var(--cr-link-color);
-      }
-
-      a[href]:focus {
-        background: transparent;
-        outline: auto 5px -webkit-focus-ring-color;
-      }
-
-      iron-icon {
-        --iron-icon-fill-color: var(--settings-nav-icon-color);
-        margin-inline-end: 24px;
-        pointer-events: none;
-        vertical-align: top;
-      }
-
-      .iron-selected > iron-icon {
-        fill: var(--cr-link-color);
+      /* Needed to override the styles on a[href] from settings-shared. */
+      a[href] {
+        color: var(--cr-nav-menu-item-color);
       }
 
       #advancedButton {
@@ -56,6 +28,7 @@
         border: none;
         border-radius: initial;
         box-shadow: none;
+        color: var(--settings-nav-item-color);
         height: unset;
         margin-top: 8px;
         padding-inline-end: 0;
@@ -89,6 +62,29 @@
         margin-top: 8px;
       }
 
+      #extensionsLink iron-icon {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]) #extensionsLink iron-icon {
+        display: block;
+      }
+
+      #aboutIcon {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]) #aboutIcon {
+        --cr-icon-image: url(//resources/images/chrome_logo_dark.svg);
+        -webkit-mask-size: 18px;
+        background-color: var(--iron-icon-fill-color);
+        display: block;
+        height: var(--cr-icon-size);
+        margin-inline-end: 20px;
+        margin-inline-start: 0;
+        width: var(--cr-icon-size);
+      }
+
       @media (prefers-color-scheme: dark) {
         #menuSeparator {
           border-bottom: var(--cr-separator-line);  /* override */
@@ -100,55 +96,70 @@
       <cr-menu-selector>
         <iron-selector id="topMenu" selectable="a:not(#extensionsLink)"
             attr-for-selected="href" on-iron-activate="onSelectorActivate_"
-            on-click="onLinkClick_">
+            on-click="onLinkClick_" selected-attribute="selected">
           <a role="menuitem"
-              id="people" href="/people" hidden="[[!pageVisibility.people]]">
+              id="people" href="/people" hidden="[[!pageVisibility.people]]"
+              class="cr-nav-menu-item">
             <iron-icon icon="cr:person"></iron-icon>
             $i18n{peoplePageTitle}
+            <paper-ripple></paper-ripple>
           </a>
           <a role="menuitem" id="autofill" href="/autofill"
-              hidden="[[!pageVisibility.autofill]]">
+              hidden="[[!pageVisibility.autofill]]"
+              class="cr-nav-menu-item">
             <iron-icon icon="settings:assignment"></iron-icon>
             $i18n{autofillPageTitle}
+            <paper-ripple></paper-ripple>
           </a>
           <template is="dom-if" if="[[!enableLandingPageRedesign_]]">
             <a role="menuitem" href="/safetyCheck"
                 hidden="[[!pageVisibility.safetyCheck]]"
-                id="safetyCheck">
+                id="safetyCheck"
+                class="cr-nav-menu-item">
               <iron-icon icon="settings20:safety-check"></iron-icon>
               $i18n{safetyCheckSectionTitle}
+              <paper-ripple></paper-ripple>
             </a>
           </template>
           <a role="menuitem" href="/privacy"
-              hidden="[[!pageVisibility.privacy]]">
+              hidden="[[!pageVisibility.privacy]]"
+              class="cr-nav-menu-item">
             <iron-icon icon="cr:security"></iron-icon>
             $i18n{privacyPageTitle}
+            <paper-ripple></paper-ripple>
           </a>
           <a role="menuitem" id="appearance" href="/appearance"
-            hidden="[[!pageVisibility.appearance]]">
+              hidden="[[!pageVisibility.appearance]]"
+              class="cr-nav-menu-item">
             <iron-icon icon="settings:palette"></iron-icon>
             $i18n{appearancePageTitle}
+            <paper-ripple></paper-ripple>
           </a>
-          <a role="menuitem" href="/search">
+          <a role="menuitem" href="/search" class="cr-nav-menu-item">
             <iron-icon icon="cr:search"></iron-icon>
             $i18n{searchPageTitle}
+            <paper-ripple></paper-ripple>
           </a>
     <if expr="not chromeos and not lacros">
-          <a role="menuitem" id="defaultBrowser"
+          <a role="menuitem" id="defaultBrowser" class="cr-nav-menu-item"
             href="/defaultBrowser"
             hidden="[[!pageVisibility.defaultBrowser]]">
             <iron-icon icon="settings:web"></iron-icon>
             $i18n{defaultBrowser}
+            <paper-ripple></paper-ripple>
           </a>
     </if>
           <a role="menuitem" id="onStartup" href="/onStartup"
-            hidden="[[!pageVisibility.onStartup]]">
+              class="cr-nav-menu-item"
+              hidden="[[!pageVisibility.onStartup]]">
             <iron-icon icon="settings:power-settings-new"></iron-icon>
             $i18n{onStartup}
+            <paper-ripple></paper-ripple>
           </a>
           <cr-button
               role="menuitem" tabindex="-1"
               id="advancedButton"
+              class="cr-nav-menu-item"
               aria-expanded$="[[boolToString_(advancedOpened)]]"
               on-click="onAdvancedButtonToggle_"
               hidden="[[!pageVisibility.advancedSettings]]">
@@ -158,48 +169,59 @@
           <iron-collapse id="advancedSubmenu" opened="[[advancedOpened]]"
               hidden="[[!pageVisibility.advancedSettings]]">
             <iron-selector id="subMenu" selectable="a" attr-for-selected="href"
-                role="navigation" on-click="onLinkClick_">
+                role="navigation" on-click="onLinkClick_"
+                selected-attribute="selected">
               <a role="menuitem" href="/languages"
-                disabled$="[[!advancedOpened]]">
+                  disabled$="[[!advancedOpened]]" class="cr-nav-menu-item">
                 <iron-icon icon="settings:language"></iron-icon>
                 $i18n{languagesPageTitle}
+                <paper-ripple></paper-ripple>
               </a>
               <a role="menuitem" href="/downloads"
-                  disabled$="[[!advancedOpened]]">
+                  disabled$="[[!advancedOpened]]" class="cr-nav-menu-item">
                 <iron-icon icon="cr:file-download"></iron-icon>
                 $i18n{downloadsPageTitle}
+                <paper-ripple></paper-ripple>
               </a>
-              <a role="menuitem" href="/accessibility"
+              <a role="menuitem" href="/accessibility" class="cr-nav-menu-item"
                 disabled$="[[!advancedOpened]]">
                 <iron-icon icon="settings:accessibility"></iron-icon>
                 $i18n{a11yPageTitle}
+                <paper-ripple></paper-ripple>
               </a>
     <if expr="not chromeos and not lacros">
-              <a role="menuitem" href="/system"
+              <a role="menuitem" href="/system" class="cr-nav-menu-item"
                   disabled$="[[!advancedOpened]]">
                 <iron-icon icon="settings:build"></iron-icon>
                 $i18n{systemPageTitle}
+                <paper-ripple></paper-ripple>
               </a>
     </if>
               <a role="menuitem" id="reset" href="/reset"
                   disabled$="[[!advancedOpened]]"
-                  hidden="[[!pageVisibility.reset]]">
+                  hidden="[[!pageVisibility.reset]]" class="cr-nav-menu-item">
                 <iron-icon icon="settings:restore"></iron-icon>
                 $i18n{resetPageTitle}
+                <paper-ripple></paper-ripple>
               </a>
             </iron-selector>
           </iron-collapse>
           <div id="menuSeparator"></div>
-          <a role="menuitem" id="extensionsLink"
+          <a role="menuitem" id="extensionsLink" class="cr-nav-menu-item"
               href="chrome://extensions" target="_blank"
               hidden="[[!pageVisibility.extensions]]"
               on-click="onExtensionsLinkClick_"
               title="$i18n{extensionsLinkTooltip}">
+            <iron-icon icon="cr:extension"></iron-icon>
             <span>$i18n{extensionsPageTitle}</span>
             <div class="cr-icon icon-external"></div>
+            <paper-ripple></paper-ripple>
           </a>
-          <a role="menuitem" id="about-menu" href="/help">
+          <a role="menuitem" id="about-menu" href="/help"
+              class="cr-nav-menu-item">
+            <span id="aboutIcon" class="cr-icon" role="presentation"></span>
             $i18n{aboutPageTitle}
+            <paper-ripple></paper-ripple>
           </a>
         </iron-selector>
       </cr-menu-selector>
