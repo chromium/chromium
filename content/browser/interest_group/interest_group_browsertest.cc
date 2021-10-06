@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
@@ -431,19 +432,26 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 // At the moment, InterestGroups use URN urls when fenced frames are enabled,
 // and normal URLs when not. This means they require ads be loaded in fenced
 // frames when Chrome is running with the option enabled.
-class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
+class InterestGroupFencedFrameBrowserTest
+    : public InterestGroupBrowserTest,
+      public ::testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType> {
  public:
   InterestGroupFencedFrameBrowserTest() {
-    // Enable "Multi-Page Architecture" fenced frames implementation. This is
-    // intended to be the final shipped implementation of fenced frames, so it's
-    // best to test with this one. Waiting for navigations and checking URLs is
-    // different for each implementation.
-    //
-    // Since these are intended only to test if ad auctions work with fenced
-    // frames, rather than if fenced frames themselves work, no need to test
-    // with both implementations.
+    // Tests are run with both the ShadowDOM and MPArch ("Multi-Page
+    // Architecture") fenced frames implementations.
     feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+        blink::features::kFencedFrames,
+        {{"implementation_type", GetFencedFrameFeatureParam()}});
+  }
+
+  const char* GetFencedFrameFeatureParam() const {
+    switch (GetParam()) {
+      case blink::features::FencedFramesImplementationType::kShadowDOM:
+        return "shadow_dom";
+      case blink::features::FencedFramesImplementationType::kMPArch:
+        return "mparch";
+    }
   }
 
   ~InterestGroupFencedFrameBrowserTest() override = default;
@@ -473,28 +481,73 @@ class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
 
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
 
+    NavigateFencedFrameAndWait(urn_url, expected_ad_url, *execution_target);
+  }
+
+  // Navigates the only fenced frame in `execution_target` to `url` and waits
+  // for the navigation to complete, expecting the frame to navigate to
+  // `expected_url` and make a network request for it.
+  void NavigateFencedFrameAndWait(const GURL& url,
+                                  const GURL& expected_url,
+                                  const ToRenderFrameHost& execution_target) {
+    // Use to wait for navigation completion in the ShadowDOM case only.
+    // Harmlessly created but not used in the MPArch case.
+    TestFrameNavigationObserver observer(
+        GetFencedFrameRenderFrameHost(execution_target));
+
     EXPECT_TRUE(
-        ExecJs(*execution_target,
+        ExecJs(execution_target,
                JsReplace("document.querySelector('fencedframe').src = $1;",
-                         urn_url.spec())));
+                         url.spec())));
 
     // Wait for the URL to be requested, to make sure the fenced frame has
-    // started loading. On regression, this is likely to hang.
+    // started loading. Used in both ShadowDOM and MPArch cases, but it's only
+    // needed in the MPArch case. On regression, this is likely to hang.
     GURL::Replacements replacements;
     replacements.SetHostStr("127.0.0.1");
-    WaitForURL(expected_ad_url.ReplaceComponents(replacements));
+    WaitForURL(expected_url.ReplaceComponents(replacements));
 
-    // Wait for the load to complete.
-    FencedFrame* fenced_frame = GetFencedFrame(*execution_target);
-    fenced_frame->WaitForDidStopLoadingForTesting();
+    switch (GetParam()) {
+      case blink::features::FencedFramesImplementationType::kShadowDOM: {
+        observer.Wait();
+        break;
+      }
+      case blink::features::FencedFramesImplementationType::kMPArch: {
+        // Wait for the load to complete.
+        FencedFrame* fenced_frame = GetFencedFrame(execution_target);
+        fenced_frame->WaitForDidStopLoadingForTesting();
+      }
+    }
 
-    EXPECT_EQ(expected_ad_url,
-              fenced_frame->GetInnerRoot()->GetLastCommittedURL());
+    EXPECT_EQ(
+        expected_url,
+        GetFencedFrameRenderFrameHost(execution_target)->GetLastCommittedURL());
+  }
+
+  // Returns the RenderFrameHost for a fenced frame in `execution_target`, which
+  // is assumed to contain only one fenced frame and no iframes.
+  RenderFrameHost* GetFencedFrameRenderFrameHost(
+      const ToRenderFrameHost& execution_target) {
+    switch (GetParam()) {
+      case blink::features::FencedFramesImplementationType::kShadowDOM: {
+        // Make sure there's only one child frame.
+        CHECK(!ChildFrameAt(execution_target, 1));
+
+        return ChildFrameAt(execution_target, 0);
+      }
+      case blink::features::FencedFramesImplementationType::kMPArch: {
+        return GetFencedFrame(execution_target)->GetInnerRoot();
+      }
+    }
   }
 
   // Returns FencedFrame in `execution_target` frame. Requires that
-  // `execution_target` have one and only one FencedFrame.
+  // `execution_target` have one and only one FencedFrame. MPArch only, as the
+  // ShadowDOM implementation doesn't use the FencedFrame class.
   FencedFrame* GetFencedFrame(const ToRenderFrameHost& execution_target) {
+    CHECK_EQ(GetParam(),
+             blink::features::FencedFramesImplementationType::kMPArch);
+
     std::vector<FencedFrame*> fenced_frames =
         static_cast<RenderFrameHostImpl*>(execution_target.render_frame_host())
             ->GetFencedFrames();
@@ -505,6 +558,13 @@ class InterestGroupFencedFrameBrowserTest : public InterestGroupBrowserTest {
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InterestGroupFencedFrameBrowserTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch));
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinLeaveInterestGroup) {
   GURL test_url_a = https_server_->GetURL("a.test", "/echo");
@@ -1399,7 +1459,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
 // Runs auction just like the above test, but runs with fenced frames enabled
 // and expects to receive a URN URL to be used. After the auction, loads the URL
 // in a fenced frame, and expects the correct URL is loaded.
-IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest,
                        RunAdAuctionWithWinner) {
   URLLoaderMonitor url_loader_monitor;
 
@@ -1707,7 +1767,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, TopFrameHostname) {
 // Make sure correct topFrameHostname is passed in. Check auctions from top
 // frames, and iframes of various depth. Also test running auctions in
 // cross-site iframes, and loading them into those iframes' fenced frames.
-IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
+IN_PROC_BROWSER_TEST_P(InterestGroupFencedFrameBrowserTest, TopFrameHostname) {
   // Buyer, seller, and iframe all use the same host.
   const char kOtherHost[] = "b.test";
   // Top frame host is unique.
