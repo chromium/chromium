@@ -332,6 +332,23 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForFlexBasis(
 
 void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
   NGFlexChildIterator iterator(Node());
+
+  // This block sets up data collection for
+  // https://github.com/w3c/csswg-drafts/issues/3052
+  bool all_items_have_non_auto_cross_sizes = true;
+  bool all_items_match_container_alignment = true;
+  const StyleContentAlignmentData align_content =
+      algorithm_.ResolvedAlignContent(Style());
+  bool is_alignment_behavior_change_possible =
+      !algorithm_.IsMultiline() &&
+      align_content.Distribution() != ContentDistributionType::kStretch &&
+      align_content.GetPosition() != ContentPosition::kBaseline;
+  const LayoutUnit kAvailableFreeSpace(100);
+  LayoutUnit line_offset = FlexLayoutAlgorithm::InitialContentPositionOffset(
+      Style(), kAvailableFreeSpace, align_content,
+      /* number_of_items */ 1,
+      /* is_reversed */ false);
+
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
     if (child.IsOutOfFlowPositioned()) {
@@ -340,6 +357,16 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     }
 
     const ComputedStyle& child_style = child.Style();
+    if (is_alignment_behavior_change_possible &&
+        all_items_match_container_alignment) {
+      LayoutUnit item_offset = FlexItem::AlignmentOffset(
+          kAvailableFreeSpace,
+          FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style),
+          LayoutUnit(), LayoutUnit(), /* is_wrap_reverse */ false,
+          Style().IsDeprecatedWebkitBox());
+      all_items_match_container_alignment = (item_offset == line_offset);
+    }
+
     NGConstraintSpace flex_basis_space = BuildSpaceForFlexBasis(child);
 
     NGPhysicalBoxStrut physical_child_margins =
@@ -362,6 +389,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
 
     const Length& cross_axis_length =
         is_horizontal_flow_ ? child.Style().Height() : child.Style().Width();
+    all_items_have_non_auto_cross_sizes &= !cross_axis_length.IsAuto();
 
     absl::optional<MinMaxSizesResult> min_max_sizes;
     auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
@@ -617,6 +645,20 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     if (layout_result) {
       DCHECK(!MainAxisIsInlineAxis(child));
       algorithm_.all_items_.back().layout_result_ = layout_result;
+    }
+  }
+
+  if (is_alignment_behavior_change_possible &&
+      algorithm_.all_items_.size() > 0 &&
+      !all_items_match_container_alignment) {
+    if (algorithm_.IsColumnFlow()) {
+      if (all_items_have_non_auto_cross_sizes) {
+        UseCounter::Count(node_.GetDocument(),
+                          WebFeature::kFlexboxAlignSingleLineDifference);
+      }
+    } else if (is_cross_size_definite_) {
+      UseCounter::Count(node_.GetDocument(),
+                        WebFeature::kFlexboxAlignSingleLineDifference);
     }
   }
 }

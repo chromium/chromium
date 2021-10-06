@@ -212,5 +212,337 @@ TEST_F(NGFlexLayoutAlgorithmTest, DevtoolsFragmentedItemDoesntCrash) {
   EXPECT_EQ(devtools.lines.size(), 1u);
 }
 
+// Current:  item is at top of container.
+// Proposed: item is at bottom of container.
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter1) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: flex-end; height: 50px">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter1b) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: flex-end; height: 50px; flex-wrap: wrap;">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: baseline; height: 50px">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2b) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; height: 50px; align-content: end;">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2c) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; height: 50px; align-content: end;">
+      <div style="height:20px; align-self: baseline;">other stuff</div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2d) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; height: 50px; align-content: end;">
+      <div style="align-self: baseline;">other stuff</div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2e) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; height: 50px; align-content: start;">
+      <div style="align-self: baseline;">other stuff</div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2f) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; height: 50px; align-content: center;">
+      <div style="align-self: baseline;">other stuff</div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter2g) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; height: 50px; align-content: end;">
+      <div style="align-self: baseline;">blah<br>blah</div>
+      <div style="align-self: baseline;">other stuff</div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter3) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: initial; height: 50px">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter4) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: stretch; height: 50px">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter5) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: flex-start; height: 50px">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter6) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; height: 50px">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter7) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: flex-end;">
+      <div style="height:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current:  item gets 50px height.
+// Proposed: item gets 0px height and abuts bottom edge of container.
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter9) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: flex-end; height: 50px;">
+      <div></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current:  item abuts left edge of container.
+// Proposed: item abuts right edge of container.
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter10) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-end;">
+      <div style="width:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter11) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-end;">
+      <div style="width:20px;"></div>
+      <div></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current:  items abut left edge of container.
+// Proposed: items abut right edge of container.
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter12) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-end;">
+      <div style="width:20px;"></div>
+      <div style="width:20px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter14) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
+      <div style="align-self: flex-end"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
+      <div style="align-self: flex-end; width: 100px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current: item at top
+// Proposed: item at bottom
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15b) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: end; height: 200px">
+      <div style="align-self: flex-start; height: 100px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15c) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: end; height: 200px;">
+      <div style="height: 100px; align-self: self-end;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current: item at top
+// Proposed: item in center
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15d) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: space-around; height: 200px;">
+      <div style="height: 100px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15e) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: space-around; height: 200px;">
+      <div style="height: 100px; align-self: center;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15f) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: space-between; height: 200px;">
+      <div style="height: 100px;"></div>
+    </div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current: first item is on the top
+// Proposed: first item is on the bottom
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter15g) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: end; height: 200px;">
+      <div style="height: 100px; align-self: start"></div>
+      <div style="height: 100px; align-self: end"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current: item is on the right.
+// Proposed: item is on the left.
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter16) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-start; width: 200px">
+      <div style="align-self: flex-end; width: 100px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current: first item's right edge abuts container's right edge
+//          second item is horizontally centered
+// Proposal: both abut container's right edge
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter17) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 200px">
+      <div style="align-self: flex-end; width: 100px;"></div>
+      <div style="align-self: center; width: 100px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// Current: first item's bottom edge abuts container's bottom edge
+//          second item is vertically centered
+// Proposal: both abut container's bottom edge
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter18) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; align-content: flex-end; height: 200px">
+      <div style="align-self: flex-end; height: 100px;"></div>
+      <div style="align-self: center; height: 100px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
+// This case has no behavior change but checking the used width of each item
+// against the flex container's width is too difficult without fully
+// implementing the new behavior.
+TEST_F(NGFlexLayoutAlgorithmTest, UseCounter19) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="display: flex; flex-flow: column; align-content: flex-end; width: 20px">
+      <div style="width:20px;"></div>
+      <div style="width:10px;"></div>
+    </div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kFlexboxAlignSingleLineDifference));
+}
+
 }  // namespace
 }  // namespace blink
