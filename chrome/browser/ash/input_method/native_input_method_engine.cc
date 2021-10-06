@@ -617,8 +617,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
   // TODO(b/181077907): Always launch the IME service and let IME service decide
   // whether it should shutdown or not.
   if (IsFstEngine(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
-      !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
-      !IsPredictiveWritingEnabled(prefs_, engine_id)) {
+      !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id)) {
     remote_manager_.reset();
     input_method_.reset();
     host_receiver_.reset();
