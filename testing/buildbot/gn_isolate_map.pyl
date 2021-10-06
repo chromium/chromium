@@ -1858,8 +1858,13 @@
   },
   "updater_tests_win_uac": {
     "label": "//chrome/updater:updater_tests_win_uac",
-    "script": "//chrome/updater/test/service/win/run_command_as_standard_user.py",
     "type": "script",
+    "script": "//testing/scripts/run_telemetry_as_googletest.py",
+    "python3": "true",
+    "args": [
+      "test_service/run_command_as_standard_user.py",
+      "--command=updater_tests.exe",
+    ],
   },
   "upload_trace_processor": {
     "label": "//tools/perf/core/perfetto_binary_roller:upload_trace_processor",

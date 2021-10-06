@@ -655,11 +655,14 @@ if (is_win || is_mac) {
   }
 
   if (is_win) {
-    python_library("updater_tests_win_uac") {
+    group("updater_tests_win_uac") {
       testonly = true
-
-      deps = [ ":updater_tests" ]
-      data_deps = [ ":test_service_files" ]
+      data = [ "//testing/scripts/run_telemetry_as_googletest.py" ]
+      data_deps = [
+        ":test_service_files",
+        ":updater_tests",
+        "//testing:test_scripts_shared",
+      ]
     }
   }
 

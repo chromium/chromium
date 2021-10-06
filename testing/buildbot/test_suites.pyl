@@ -5217,7 +5217,6 @@
       },
       'updater_tests_win_uac': {
         'args': [
-          'updater_tests.exe',
           # Timeouts based on empirical observations of test runtimes, 2021-07.
           '--test-launcher-timeout=90000',
           '--ui-test-action-max-timeout=45000',
