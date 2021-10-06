@@ -571,7 +571,7 @@ users to have unique and more complex passwords for websites. As it was
 originally implemented, autocomplete='off' for password fields took control away
 from the user and gave control to the web site developer, which was also a
 violation of the [priority of
-constituencies](http://www.schemehostport.com/2011/10/priority-of-constituencies.html).
+constituencies](https://www.schemehostport.com/2011/10/priority-of-constituencies.html).
 For a longer discussion on this, see the [mailing list
 announcement](https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/zhhj7hCip5c).
 
