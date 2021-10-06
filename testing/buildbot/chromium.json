@@ -29,14 +29,12 @@
   "linux-archive-rel": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
   },
   "linux-archive-tagged": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
   },
   "linux-official": {
     "additional_compile_targets": [
@@ -51,22 +49,11 @@
   "mac-archive-rel": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
   },
   "mac-archive-tagged": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": [
-      {
-        "args": [
-          "mac-release/sizes"
-        ],
-        "name": "checkbins",
-        "script": "checkbins.py",
-        "swarming": {}
-      }
     ]
   },
   "mac-arm64-archive-dbg": {
@@ -77,22 +64,11 @@
   "mac-arm64-archive-rel": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
   },
   "mac-arm64-archive-tagged": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": [
-      {
-        "args": [
-          "mac-release/sizes"
-        ],
-        "name": "checkbins",
-        "script": "checkbins.py",
-        "swarming": {}
-      }
     ]
   },
   "mac-official": {

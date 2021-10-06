@@ -813,17 +813,6 @@
       },
     },
   },
-  'checkbins': {
-    'remove_from': [
-      'linux-archive-dbg',
-      'linux-archive-rel',
-      'linux-archive-tagged',
-      'mac-archive-dbg',
-      'mac-archive-rel',
-      'mac-arm64-archive-dbg',
-      'mac-arm64-archive-rel',
-    ],
-  },
   'chrome_all_tast_tests': {
     'modifications': {
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {

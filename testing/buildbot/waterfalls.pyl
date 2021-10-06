@@ -312,9 +312,6 @@
         'additional_compile_targets': [
           'all',
         ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
       },
       'linux-archive-tagged': {
         'mixins': [
@@ -323,9 +320,6 @@
         'additional_compile_targets': [
           'all',
         ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
       },
       'linux-official': {
         'additional_compile_targets': [
@@ -342,18 +336,12 @@
         'additional_compile_targets': [
           'all',
         ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
       },
       'mac-archive-tagged': {
         'mixins': ['mac-archive-rel-args'],
         'additional_compile_targets': [
           'all',
         ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
       },
       'mac-arm64-archive-dbg': {
         'additional_compile_targets': [
@@ -365,18 +353,12 @@
         'additional_compile_targets': [
           'all',
         ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
       },
       'mac-arm64-archive-tagged': {
         'mixins': ['mac-archive-rel-args'],
         'additional_compile_targets': [
           'all',
         ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
       },
       'mac-official': {
         'additional_compile_targets': [
