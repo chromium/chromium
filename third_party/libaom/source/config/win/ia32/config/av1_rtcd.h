@@ -262,6 +262,9 @@ RTCD_EXTERN int64_t (*av1_block_error)(const tran_low_t* coeff,
 int64_t av1_block_error_lp_c(const int16_t* coeff,
                              const int16_t* dqcoeff,
                              intptr_t block_size);
+int64_t av1_block_error_lp_sse2(const int16_t* coeff,
+                                const int16_t* dqcoeff,
+                                intptr_t block_size);
 int64_t av1_block_error_lp_avx2(const int16_t* coeff,
                                 const int16_t* dqcoeff,
                                 intptr_t block_size);
@@ -1858,7 +1861,18 @@ void av1_quantize_lp_c(const int16_t* coeff_ptr,
                        int16_t* dqcoeff_ptr,
                        const int16_t* dequant_ptr,
                        uint16_t* eob_ptr,
-                       const int16_t* scan);
+                       const int16_t* scan,
+                       const int16_t* iscan);
+void av1_quantize_lp_sse2(const int16_t* coeff_ptr,
+                          intptr_t n_coeffs,
+                          const int16_t* round_ptr,
+                          const int16_t* quant_ptr,
+                          int16_t* qcoeff_ptr,
+                          int16_t* dqcoeff_ptr,
+                          const int16_t* dequant_ptr,
+                          uint16_t* eob_ptr,
+                          const int16_t* scan,
+                          const int16_t* iscan);
 void av1_quantize_lp_avx2(const int16_t* coeff_ptr,
                           intptr_t n_coeffs,
                           const int16_t* round_ptr,
@@ -1867,7 +1881,8 @@ void av1_quantize_lp_avx2(const int16_t* coeff_ptr,
                           int16_t* dqcoeff_ptr,
                           const int16_t* dequant_ptr,
                           uint16_t* eob_ptr,
-                          const int16_t* scan);
+                          const int16_t* scan,
+                          const int16_t* iscan);
 RTCD_EXTERN void (*av1_quantize_lp)(const int16_t* coeff_ptr,
                                     intptr_t n_coeffs,
                                     const int16_t* round_ptr,
@@ -1876,7 +1891,8 @@ RTCD_EXTERN void (*av1_quantize_lp)(const int16_t* coeff_ptr,
                                     int16_t* dqcoeff_ptr,
                                     const int16_t* dequant_ptr,
                                     uint16_t* eob_ptr,
-                                    const int16_t* scan);
+                                    const int16_t* scan,
+                                    const int16_t* iscan);
 
 void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG* src,
                                    YV12_BUFFER_CONFIG* dst,
@@ -2231,7 +2247,7 @@ static void setup_rtcd_internal(void) {
   av1_block_error = av1_block_error_sse2;
   if (flags & HAS_AVX2)
     av1_block_error = av1_block_error_avx2;
-  av1_block_error_lp = av1_block_error_lp_c;
+  av1_block_error_lp = av1_block_error_lp_sse2;
   if (flags & HAS_AVX2)
     av1_block_error_lp = av1_block_error_lp_avx2;
   av1_build_compound_diffwtd_mask = av1_build_compound_diffwtd_mask_c;
@@ -2437,7 +2453,7 @@ static void setup_rtcd_internal(void) {
   av1_quantize_fp_64x64 = av1_quantize_fp_64x64_c;
   if (flags & HAS_AVX2)
     av1_quantize_fp_64x64 = av1_quantize_fp_64x64_avx2;
-  av1_quantize_lp = av1_quantize_lp_c;
+  av1_quantize_lp = av1_quantize_lp_sse2;
   if (flags & HAS_AVX2)
     av1_quantize_lp = av1_quantize_lp_avx2;
   av1_resize_and_extend_frame = av1_resize_and_extend_frame_c;

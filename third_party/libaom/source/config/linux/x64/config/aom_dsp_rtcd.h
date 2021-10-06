@@ -2146,6 +2146,9 @@ void aom_hadamard_8x8_sse2(const int16_t* src_diff,
 void aom_hadamard_lp_16x16_c(const int16_t* src_diff,
                              ptrdiff_t src_stride,
                              int16_t* coeff);
+void aom_hadamard_lp_16x16_sse2(const int16_t* src_diff,
+                                ptrdiff_t src_stride,
+                                int16_t* coeff);
 void aom_hadamard_lp_16x16_avx2(const int16_t* src_diff,
                                 ptrdiff_t src_stride,
                                 int16_t* coeff);
@@ -6108,10 +6111,12 @@ void aom_sad_skip_8x8x4d_sse2(const uint8_t* src_ptr,
 #define aom_sad_skip_8x8x4d aom_sad_skip_8x8x4d_sse2
 
 int aom_satd_c(const tran_low_t* coeff, int length);
+int aom_satd_sse2(const tran_low_t* coeff, int length);
 int aom_satd_avx2(const tran_low_t* coeff, int length);
 RTCD_EXTERN int (*aom_satd)(const tran_low_t* coeff, int length);
 
 int aom_satd_lp_c(const int16_t* coeff, int length);
+int aom_satd_lp_sse2(const int16_t* coeff, int length);
 int aom_satd_lp_avx2(const int16_t* coeff, int length);
 RTCD_EXTERN int (*aom_satd_lp)(const int16_t* coeff, int length);
 
@@ -8710,7 +8715,7 @@ static void setup_rtcd_internal(void) {
   aom_hadamard_32x32 = aom_hadamard_32x32_sse2;
   if (flags & HAS_AVX2)
     aom_hadamard_32x32 = aom_hadamard_32x32_avx2;
-  aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_c;
+  aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_sse2;
   if (flags & HAS_AVX2)
     aom_hadamard_lp_16x16 = aom_hadamard_lp_16x16_avx2;
   aom_ifft16x16_float = aom_ifft16x16_float_sse2;
@@ -9110,10 +9115,10 @@ static void setup_rtcd_internal(void) {
   aom_sad_skip_64x64x4d = aom_sad_skip_64x64x4d_sse2;
   if (flags & HAS_AVX2)
     aom_sad_skip_64x64x4d = aom_sad_skip_64x64x4d_avx2;
-  aom_satd = aom_satd_c;
+  aom_satd = aom_satd_sse2;
   if (flags & HAS_AVX2)
     aom_satd = aom_satd_avx2;
-  aom_satd_lp = aom_satd_lp_c;
+  aom_satd_lp = aom_satd_lp_sse2;
   if (flags & HAS_AVX2)
     aom_satd_lp = aom_satd_lp_avx2;
   aom_scaled_2d = aom_scaled_2d_c;
