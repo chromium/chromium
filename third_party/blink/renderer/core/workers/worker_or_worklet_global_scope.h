@@ -164,7 +164,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope : public EventTargetWithInlineData,
   // services workers use them. Dedicated / Shared workers don't use the cached
   // code since we don't create a CachedMetadataHandler. We need to fix this by
   // creating a cached metadta handler for all workers.
-  virtual blink::mojom::CodeCacheHost* GetCodeCacheHost() { return nullptr; }
+  virtual CodeCacheHost* GetCodeCacheHost() { return nullptr; }
 
   Deprecation& GetDeprecation() { return deprecation_; }
 

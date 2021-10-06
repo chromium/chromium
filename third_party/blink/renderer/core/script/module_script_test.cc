@@ -51,8 +51,7 @@ class MockCachedMetadataSender : public CachedMetadataSender {
  public:
   MockCachedMetadataSender() = default;
 
-  MOCK_METHOD3(Send,
-               void(blink::mojom::CodeCacheHost*, const uint8_t*, size_t));
+  MOCK_METHOD3(Send, void(CodeCacheHost*, const uint8_t*, size_t));
   bool IsServedFromCacheStorage() override { return false; }
 };
 

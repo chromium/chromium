@@ -25,7 +25,7 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
   SingleKeyHandler(SourceKeyedCachedMetadataHandler* parent, Key key)
       : parent_(parent), key_(key) {}
 
-  void SetCachedMetadata(blink::mojom::CodeCacheHost* code_cache_host,
+  void SetCachedMetadata(CodeCacheHost* code_cache_host,
                          uint32_t data_type_id,
                          const uint8_t* data,
                          size_t size) override {
@@ -36,7 +36,7 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
       parent_->SendToPlatform(code_cache_host);
   }
 
-  void ClearCachedMetadata(blink::mojom::CodeCacheHost* code_cache_host,
+  void ClearCachedMetadata(CodeCacheHost* code_cache_host,
                            ClearCacheType cache_type) override {
     if (cache_type == kDiscardLocally)
       return;
@@ -108,7 +108,7 @@ SingleCachedMetadataHandler* SourceKeyedCachedMetadataHandler::HandlerForSource(
 }
 
 void SourceKeyedCachedMetadataHandler::ClearCachedMetadata(
-    blink::mojom::CodeCacheHost* code_cache_host,
+    CodeCacheHost* code_cache_host,
     CachedMetadataHandler::ClearCacheType cache_type) {
   if (cache_type == kDiscardLocally)
     return;
@@ -231,7 +231,7 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
 }
 
 void SourceKeyedCachedMetadataHandler::SendToPlatform(
-    blink::mojom::CodeCacheHost* code_cache_host) {
+    CodeCacheHost* code_cache_host) {
   if (!sender_)
     return;
 

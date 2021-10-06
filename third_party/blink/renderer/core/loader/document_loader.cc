@@ -311,7 +311,7 @@ struct SameSizeAsDocumentLoader
   bool is_cross_site_cross_browsing_context_group;
   WebVector<WebHistoryItem> app_history_back_entries;
   WebVector<WebHistoryItem> app_history_forward_entries;
-  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host;
+  CodeCacheHost code_cache_host;
   HashSet<KURL> early_hints_preloaded_resources_;
 };
 
@@ -1679,7 +1679,7 @@ void DocumentLoader::StartLoadingResponse() {
       MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
           WTF::TextEncoding(), std::move(cached_metadata_sender));
 
-  blink::mojom::CodeCacheHost* code_cache_host = nullptr;
+  CodeCacheHost* code_cache_host = nullptr;
   if (use_isolated_code_cache) {
     code_cache_host = GetCodeCacheHost();
     DCHECK(code_cache_host);
@@ -2697,8 +2697,8 @@ bool& GetDisableCodeCacheForTesting() {
   return disable_code_cache_for_testing;
 }
 
-blink::mojom::CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
-  if (!code_cache_host_) {
+CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
+  if (!code_cache_host_.HasBoundRemote()) {
     if (GetDisableCodeCacheForTesting()) {
       return nullptr;
     }
@@ -2706,12 +2706,12 @@ blink::mojom::CodeCacheHost* DocumentLoader::GetCodeCacheHost() {
     // enabled by default CodeCacheHost interface will be sent along with
     // CommitNavigation message and the following code would not be required and
     // we should just return nullptr here.
+    mojo::Remote<mojom::CodeCacheHost> remote;
     GetLocalFrameClient().GetBrowserInterfaceBroker().GetInterface(
-        code_cache_host_.BindNewPipeAndPassReceiver());
-    code_cache_host_.set_disconnect_handler(WTF::Bind(
-        &DocumentLoader::OnCodeCacheHostClosed, WrapWeakPersistent(this)));
+        remote.BindNewPipeAndPassReceiver());
+    code_cache_host_.SetRemote(std::move(remote));
   }
-  return code_cache_host_.get();
+  return &code_cache_host_;
 }
 
 mojo::PendingRemote<blink::mojom::CodeCacheHost>
@@ -2724,20 +2724,15 @@ DocumentLoader::CreateWorkerCodeCacheHost() {
   return pending_code_cache_host;
 }
 
-void DocumentLoader::OnCodeCacheHostClosed() {
-  code_cache_host_.reset();
-}
-
 void DocumentLoader::SetCodeCacheHost(
     mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) {
-  code_cache_host_.reset();
+  code_cache_host_.Reset();
   // When NavigationThreadingOptimizations feature is disabled, code_cache_host
   // can be a nullptr. When this feature is turned off the CodeCacheHost
   // interface is requested via BrowserBrokerInterface when required.
   if (code_cache_host) {
-    code_cache_host_.Bind(std::move(code_cache_host));
-    code_cache_host_.set_disconnect_handler(WTF::Bind(
-        &DocumentLoader::OnCodeCacheHostClosed, WrapWeakPersistent(this)));
+    code_cache_host_.SetRemote(
+        mojo::Remote<mojom::CodeCacheHost>(std::move(code_cache_host)));
   }
 }
 

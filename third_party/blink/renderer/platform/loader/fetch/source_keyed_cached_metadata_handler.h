@@ -32,7 +32,7 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
   SingleCachedMetadataHandler* HandlerForSource(const String& source);
 
   void ClearCachedMetadata(
-      blink::mojom::CodeCacheHost*,
+      CodeCacheHost*,
       CachedMetadataHandler::ClearCacheType cache_type) override;
   String Encoding() const override;
   bool IsServedFromCacheStorage() const override {
@@ -74,7 +74,7 @@ class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler final
     static bool IsDeletedValue(const Key& value) { return value == Key{1}; }
   };
 
-  void SendToPlatform(blink::mojom::CodeCacheHost*);
+  void SendToPlatform(CodeCacheHost*);
 
   // TODO(leszeks): Maybe just store the SingleKeyHandlers directly in here?
   WTF::HashMap<Key, scoped_refptr<CachedMetadata>, KeyHash, KeyHashTraits>

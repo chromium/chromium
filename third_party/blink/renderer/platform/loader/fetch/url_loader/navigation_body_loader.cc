@@ -128,7 +128,7 @@ void NavigationBodyLoader::SetDefersLoading(WebLoaderFreezeMode mode) {
 
 void NavigationBodyLoader::StartLoadingBody(
     WebNavigationBodyLoader::Client* client,
-    mojom::CodeCacheHost* code_cache_host) {
+    CodeCacheHost* code_cache_host) {
   TRACE_EVENT1("loading", "NavigationBodyLoader::StartLoadingBody", "url",
                original_url_.GetString().Utf8());
   client_ = client;

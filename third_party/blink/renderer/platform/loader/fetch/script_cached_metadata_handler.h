@@ -34,12 +34,11 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
                               std::unique_ptr<CachedMetadataSender>);
   ~ScriptCachedMetadataHandler() override;
   void Trace(Visitor*) const override;
-  void SetCachedMetadata(blink::mojom::CodeCacheHost*,
+  void SetCachedMetadata(CodeCacheHost*,
                          uint32_t,
                          const uint8_t*,
                          size_t) override;
-  void ClearCachedMetadata(blink::mojom::CodeCacheHost*,
-                           ClearCacheType) override;
+  void ClearCachedMetadata(CodeCacheHost*, ClearCacheType) override;
   scoped_refptr<CachedMetadata> GetCachedMetadata(
       uint32_t,
       GetCachedMetadataBehavior = kCrashIfUnchecked) const override;
@@ -62,7 +61,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   size_t GetCodeCacheSize() const override;
 
  protected:
-  virtual void CommitToPersistentStorage(blink::mojom::CodeCacheHost*);
+  virtual void CommitToPersistentStorage(CodeCacheHost*);
 
   CachedMetadataSender* Sender() const { return sender_.get(); }
 
@@ -99,13 +98,12 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
   // created by the current process.
   void ResetForTesting();
 
-  void Check(blink::mojom::CodeCacheHost*,
-             const ParkableString& source_text) override;
+  void Check(CodeCacheHost*, const ParkableString& source_text) override;
 
   Vector<uint8_t> GetSerializedCachedMetadata() const;
 
  protected:
-  void CommitToPersistentStorage(blink::mojom::CodeCacheHost*) override;
+  void CommitToPersistentStorage(CodeCacheHost*) override;
 
  private:
   static const uint32_t kSha256Bytes = 256 / 8;

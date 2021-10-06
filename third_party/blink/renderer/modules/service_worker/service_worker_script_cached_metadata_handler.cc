@@ -36,7 +36,7 @@ void ServiceWorkerScriptCachedMetadataHandler::Trace(Visitor* visitor) const {
 }
 
 void ServiceWorkerScriptCachedMetadataHandler::SetCachedMetadata(
-    blink::mojom::CodeCacheHost* code_cache_host,
+    CodeCacheHost* code_cache_host,
     uint32_t data_type_id,
     const uint8_t* data,
     size_t size) {
@@ -48,7 +48,7 @@ void ServiceWorkerScriptCachedMetadataHandler::SetCachedMetadata(
 }
 
 void ServiceWorkerScriptCachedMetadataHandler::ClearCachedMetadata(
-    blink::mojom::CodeCacheHost* code_cache_host,
+    CodeCacheHost* code_cache_host,
     ClearCacheType type) {
   if (type == kDiscardLocally)
     return;
