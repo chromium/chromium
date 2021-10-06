@@ -1513,6 +1513,26 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
   }
 }
 
+TEST_F(ChromePasswordProtectionServiceTest, VerifyPageLoadToken) {
+  // Feature disabled
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kSafeBrowsingPageLoadToken);
+    auto request = std::make_unique<LoginReputationClientRequest>();
+    service_->FillUserPopulation(GURL("https:www.example.com/"), request.get());
+    ASSERT_EQ(0, request->population().page_load_tokens_size());
+  }
+
+  // Feature enabled
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(kSafeBrowsingPageLoadToken);
+    auto request = std::make_unique<LoginReputationClientRequest>();
+    service_->FillUserPopulation(GURL("https:www.example.com/"), request.get());
+    ASSERT_EQ(1, request->population().page_load_tokens_size());
+  }
+}
+
 namespace {
 
 class ChromePasswordProtectionServiceWithAccountPasswordStoreTest

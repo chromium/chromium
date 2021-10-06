@@ -301,6 +301,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       LoginReputationClientRequest::Frame* frame) = 0;
 
   virtual void FillUserPopulation(
+      const GURL& main_frame_url,
       LoginReputationClientRequest* request_proto) = 0;
 
   virtual bool IsExtendedReporting() = 0;

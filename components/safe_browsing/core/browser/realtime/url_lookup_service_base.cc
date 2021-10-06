@@ -520,8 +520,28 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
         /*should_remove_subresource_url=*/!CanCheckSubresourceURL());
   }
 
-  // TODO(crbug.com/1240403): Use |last_committed_url| and |is_mainframe|
-  // to obtain page load token.
+  if (CanSendPageLoadToken() && cache_manager_) {
+    ChromeUserPopulation::PageLoadToken token;
+    if (is_mainframe) {
+      // If the current check is for a mainframe URL, the token must be
+      // refreshed.
+      token = cache_manager_->CreatePageLoadToken(url);
+    } else {
+      // If the current check is for a subframe URL, use |last_committed_url| to
+      // get the page load token. |last_committed_url| is used as a proxy for
+      // the current mainframe URL, because the mainframe URL has to be
+      // committed before subframe navigation starts.
+      token = cache_manager_->GetPageLoadToken(last_committed_url);
+      // It's possible that the token is not found because the last committed
+      // URL is not checked by real time URL check. Create a new page load token
+      // in this case.
+      if (!token.has_token_value()) {
+        token = cache_manager_->CreatePageLoadToken(last_committed_url);
+      }
+    }
+    request->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+        &token);
+  }
 
   return request;
 }

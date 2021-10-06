@@ -265,6 +265,16 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     return referrer_chain_entry;
   }
 
+  ChromeUserPopulation::PageLoadToken CreatePageLoadToken(
+      std::string token_value) {
+    ChromeUserPopulation::PageLoadToken token;
+    token.set_token_source(
+        ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION);
+    token.set_token_time_msec(base::Time::Now().ToJavaTime());
+    token.set_token_value(token_value);
+    return token;
+  }
+
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<RealTimeUrlLookupService> rt_service_;
@@ -306,6 +316,59 @@ TEST_F(RealTimeUrlLookupServiceTest, TestFillRequestProto) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
     EXPECT_TRUE(result->population().is_under_advanced_protection());
 #endif
+  }
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureDisabled) {
+  feature_list_.InitAndDisableFeature(kSafeBrowsingPageLoadToken);
+  auto request =
+      FillRequestProto(GURL(kTestUrl), GURL(), /*is_mainframe=*/true);
+  // Page load tokens should not be attached because the feature flag is
+  // disabled.
+  ASSERT_EQ(0, request->population().page_load_tokens_size());
+}
+
+TEST_F(RealTimeUrlLookupServiceTest, TestFillPageLoadToken_FeatureEnabled) {
+  GURL url(kTestUrl);
+  GURL subframe_url(kTestSubframeUrl);
+  feature_list_.InitAndEnableFeature(kSafeBrowsingPageLoadToken);
+
+  // mainframe URL
+  {
+    cache_manager_->SetPageLoadTokenForTesting(
+        url, CreatePageLoadToken("url_page_load_token"));
+    auto request = FillRequestProto(url, GURL(), /*is_mainframe=*/true);
+    ASSERT_EQ(1, request->population().page_load_tokens_size());
+    // The token should be re-generated for the mainframe URL.
+    EXPECT_NE("url_page_load_token",
+              request->population().page_load_tokens(0).token_value());
+    EXPECT_EQ(ChromeUserPopulation::PageLoadToken::CLIENT_GENERATION,
+              request->population().page_load_tokens(0).token_source());
+  }
+
+  // subframe URL, token for the mainframe URL not found.
+  {
+    ChromeUserPopulation::PageLoadToken empty_token;
+    cache_manager_->SetPageLoadTokenForTesting(url, empty_token);
+    auto request = FillRequestProto(subframe_url, url, /*is_mainframe=*/false);
+    ASSERT_EQ(1, request->population().page_load_tokens_size());
+    // The token should be generated for the mainframe URL.
+    std::string token_value =
+        request->population().page_load_tokens(0).token_value();
+    EXPECT_EQ(token_value, cache_manager_->GetPageLoadToken(url).token_value());
+    EXPECT_FALSE(
+        cache_manager_->GetPageLoadToken(subframe_url).has_token_value());
+  }
+
+  // subframe URL, token for the mainframe URL found.
+  {
+    cache_manager_->SetPageLoadTokenForTesting(
+        url, CreatePageLoadToken("url_page_load_token"));
+    auto request = FillRequestProto(subframe_url, url, /*is_mainframe=*/false);
+    ASSERT_EQ(1, request->population().page_load_tokens_size());
+    // The token for the mainframe URL should be reused.
+    EXPECT_EQ("url_page_load_token",
+              request->population().page_load_tokens(0).token_value());
   }
 }
 

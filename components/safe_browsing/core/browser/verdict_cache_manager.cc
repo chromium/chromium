@@ -588,7 +588,8 @@ VerdictCacheManager::GetCachedRealTimeUrlVerdict(
       kRealTimeThreatInfoProto, out_threat_info);
 }
 
-void VerdictCacheManager::CreatePageLoadToken(const GURL& url) {
+ChromeUserPopulation::PageLoadToken VerdictCacheManager::CreatePageLoadToken(
+    const GURL& url) {
   std::string hostname = url.host();
   ChromeUserPopulation::PageLoadToken token;
   token.set_token_source(
@@ -597,6 +598,8 @@ void VerdictCacheManager::CreatePageLoadToken(const GURL& url) {
   token.set_token_value(base::RandBytesAsString(kPageLoadTokenBytes));
 
   page_load_token_map_[hostname] = token;
+
+  return token;
 }
 
 ChromeUserPopulation::PageLoadToken VerdictCacheManager::GetPageLoadToken(

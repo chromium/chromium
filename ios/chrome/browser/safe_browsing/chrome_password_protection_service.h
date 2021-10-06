@@ -225,6 +225,7 @@ class ChromePasswordProtectionService
                            VerifySendsPingForAboutBlank);
 
   void FillUserPopulation(
+      const GURL& main_frame_url,
       safe_browsing::LoginReputationClientRequest* request_proto) override;
 
  private:

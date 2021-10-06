@@ -1482,8 +1482,23 @@ RequestOutcome ChromePasswordProtectionService::GetPingNotSentReason(
 }
 
 void ChromePasswordProtectionService::FillUserPopulation(
+    const GURL& main_frame_url,
     LoginReputationClientRequest* request_proto) {
   *request_proto->mutable_population() = GetUserPopulationForProfile(profile_);
+
+  if (!base::FeatureList::IsEnabled(kSafeBrowsingPageLoadToken)) {
+    return;
+  }
+  ChromeUserPopulation::PageLoadToken token =
+      cache_manager_->GetPageLoadToken(main_frame_url);
+  // It's possible that the token is not found because real time URL check is
+  // not performed for this navigation. Create a new page load token in this
+  // case.
+  if (!token.has_token_value()) {
+    token = cache_manager_->CreatePageLoadToken(main_frame_url);
+  }
+  request_proto->mutable_population()->mutable_page_load_tokens()->Add()->Swap(
+      &token);
 }
 
 bool ChromePasswordProtectionService::IsPrimaryAccountSyncing() const {

@@ -112,6 +112,9 @@ const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise{
     "SafeBrowsingRealTimeUrlLookupReferrerChainForEnterprise",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSafeBrowsingPageLoadToken{
+    "SafeBrowsingPageLoadToken", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature
     kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid{
         "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid",
@@ -173,6 +176,7 @@ constexpr struct {
     {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},
     {&kRealTimeUrlLookupReferrerChainForEnterprise, true},
+    {&kSafeBrowsingPageLoadToken, true},
     {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSafeBrowsingSeparateNetworkContexts, true},

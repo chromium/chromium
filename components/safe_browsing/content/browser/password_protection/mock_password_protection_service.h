@@ -50,7 +50,8 @@ class MockPasswordProtectionService : public PasswordProtectionService {
   MOCK_CONST_METHOD1(IsAccountGmail, bool(const std::string&));
   MOCK_CONST_METHOD1(IsURLAllowlistedForPasswordEntry, bool(const GURL&));
 
-  MOCK_METHOD1(FillUserPopulation, void(LoginReputationClientRequest*));
+  MOCK_METHOD2(FillUserPopulation,
+               void(const GURL&, LoginReputationClientRequest*));
   MOCK_METHOD0(CanSendSamplePing, bool());
   MOCK_METHOD0(IsIncognito, bool());
   MOCK_METHOD0(IsExtendedReporting, bool());

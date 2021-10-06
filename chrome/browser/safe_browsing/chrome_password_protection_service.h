@@ -317,7 +317,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                         ReusedPasswordAccountType password_type) override;
 
   // Populates the ChromeUserPopulation in |request_proto|.
-  void FillUserPopulation(LoginReputationClientRequest* request_proto) override;
+  void FillUserPopulation(const GURL& main_frame_url,
+                          LoginReputationClientRequest* request_proto) override;
 
   // If primary account is syncing.
   bool IsPrimaryAccountSyncing() const override;
@@ -435,6 +436,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                            VerifyPersistPhishedSavedPasswordCredential);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyGetPingNotSentReason);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyPageLoadToken);
   // Browser tests
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceBrowserTest,
                            VerifyCheckGaiaPasswordChange);

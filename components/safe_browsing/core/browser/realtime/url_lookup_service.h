@@ -84,6 +84,7 @@ class RealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
   bool CanPerformFullURLLookupWithToken() const override;
   bool CanAttachReferrerChain() const override;
   int GetReferrerUserGestureLimit() const override;
+  bool CanSendPageLoadToken() const override;
   void GetAccessToken(
       const GURL& url,
       const GURL& last_committed_url,

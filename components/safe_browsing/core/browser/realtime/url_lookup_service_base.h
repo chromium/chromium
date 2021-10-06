@@ -153,6 +153,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Returns the user gesture limit of the referrer chain.
   virtual int GetReferrerUserGestureLimit() const = 0;
 
+  // Returns true if page load tokens can be attached to requests.
+  virtual bool CanSendPageLoadToken() const = 0;
+
   // Gets access token, called if |CanPerformFullURLLookupWithToken| returns
   // true.
   virtual void GetAccessToken(

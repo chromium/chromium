@@ -139,6 +139,10 @@ int RealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
       kDefaultRealTimeUrlLookupReferrerLength);
 }
 
+bool RealTimeUrlLookupService::CanSendPageLoadToken() const {
+  return base::FeatureList::IsEnabled(kSafeBrowsingPageLoadToken);
+}
+
 bool RealTimeUrlLookupService::CanCheckSubresourceURL() const {
   return IsEnhancedProtectionEnabled(*pref_service_);
 }

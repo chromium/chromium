@@ -87,7 +87,7 @@ class VerdictCacheManager : public history::HistoryServiceObserver,
 
   // Creates a page load token that is tied with the hostname of the |url|.
   // The token is stored in memory.
-  void CreatePageLoadToken(const GURL& url);
+  ChromeUserPopulation::PageLoadToken CreatePageLoadToken(const GURL& url);
 
   // Gets the page load token for the hostname of the |url|. Returns an empty
   // token if the token is not found.

@@ -106,6 +106,9 @@ extern const base::Feature kSafeBrowsingEnterpriseCsd;
 // the enterprise download checks.
 extern const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise;
 
+// Controls whether page load tokens are added to Safe Browsing requests.
+extern const base::Feature kSafeBrowsingPageLoadToken;
+
 // Controls whether Safe Browsing password reuse warnings are updated with
 // a "Check passwords" button integrated with the CheckPasswords page.
 extern const base::Feature

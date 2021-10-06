@@ -66,6 +66,11 @@ int ChromeEnterpriseRealTimeUrlLookupService::GetReferrerUserGestureLimit()
   return 2;
 }
 
+bool ChromeEnterpriseRealTimeUrlLookupService::CanSendPageLoadToken() const {
+  // Page load token is disabled for enterprise users.
+  return false;
+}
+
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckSubresourceURL() const {
   return false;
 }
