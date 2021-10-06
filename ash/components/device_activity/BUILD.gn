@@ -36,6 +36,7 @@ source_set("unit_tests") {
 
   deps = [
     ":device_activity",
+    "//base",
     "//base/test:test_support",
     "//chromeos/network",
     "//chromeos/network:test_support",

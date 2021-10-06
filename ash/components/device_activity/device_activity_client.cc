@@ -7,15 +7,37 @@
 namespace ash {
 namespace device_activity {
 
+namespace {
+
+// Amount of time to wait before retriggering repeating timer.
+// Currently we define it as 5 hours to align our protocol with Omahas
+// device active reporting.
+constexpr base::TimeDelta kTimeToRepeat = base::TimeDelta::FromHours(5);
+
+}  // namespace
+
 DeviceActivityClient::DeviceActivityClient(NetworkStateHandler* handler)
-    : network_state_handler_(handler) {
+    : report_timer_(ConstructReportTimer()), network_state_handler_(handler) {
   DCHECK(network_state_handler_);
+
+  report_timer_->Start(FROM_HERE, kTimeToRepeat, this,
+                       &DeviceActivityClient::TransitionOutOfIdle);
+
   network_state_handler_->AddObserver(this, FROM_HERE);
   DefaultNetworkChanged(network_state_handler_->DefaultNetwork());
 }
 
 DeviceActivityClient::~DeviceActivityClient() {
   network_state_handler_->RemoveObserver(this, FROM_HERE);
+}
+
+std::unique_ptr<base::RepeatingTimer>
+DeviceActivityClient::ConstructReportTimer() {
+  return std::make_unique<base::RepeatingTimer>();
+}
+
+base::RepeatingTimer* DeviceActivityClient::GetReportTimer() {
+  return report_timer_.get();
 }
 
 // Method gets called when the state of the default (primary)
@@ -34,14 +56,19 @@ DeviceActivityClient::State DeviceActivityClient::GetState() const {
   return state_;
 }
 
-// TODO(hirthanan): Add callback to report actives after
-// synchronizing the system clock.
 void DeviceActivityClient::OnNetworkOnline() {
-  // TODO(hirthanan): Start |once_a_day_timer_| to run at UTC day boundaries.
+  TransitionOutOfIdle();
+}
+
+// TODO(hirthanan): Add callback to report actives only after
+// synchronizing the system clock.
+void DeviceActivityClient::TransitionOutOfIdle() {
   if (!network_connected_ || state_ != State::kIdle)
     return;
 
   // The network is connected and the client |state_| is kIdle.
+  last_time_network_came_online_ = base::Time::Now();
+
   // Begin phase one of checking membership.
   TransitionToCheckMembershipOprf();
 }

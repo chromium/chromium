@@ -27,7 +27,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
  public:
   // For a given use case (DAILY), tracks the state the client is currently in.
   enum class State {
-    kIdle,  // Wait on network connection OR |once_a_day_ timer| to trigger.
+    kIdle,  // Wait on network connection OR |report_timer_| to trigger.
     kCheckingMembershipOprf,   // Phase 1 of the |CheckMembership| request.
     kCheckingMembershipQuery,  // Phase 2 of the |CheckMembership| request.
     kCheckingIn,               // |CheckIn| PSM device active request.
@@ -41,6 +41,12 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   DeviceActivityClient& operator=(const DeviceActivityClient&) = delete;
   ~DeviceActivityClient() override;
 
+  // Initialize repeating timer to run every |kTimeToRepeat|.
+  virtual std::unique_ptr<base::RepeatingTimer> ConstructReportTimer();
+
+  // Returns pointer to |report_timer_|.
+  base::RepeatingTimer* GetReportTimer();
+
   // NetworkStateHandlerObserver overridden method.
   void DefaultNetworkChanged(const NetworkState* network) override;
 
@@ -49,6 +55,9 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
  private:
   // Handles device network connecting successfully.
   void OnNetworkOnline();
+
+  // Called when device network comes online as well as by |report_timer_|.
+  void TransitionOutOfIdle();
 
   // Send Health Check network request and update |state_|.
   // Before method: |state_| set to |kIdle|.
@@ -98,12 +107,13 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
   // This secret is used to generate a PSM identifier for the reporting window.
   const std::string derived_stable_device_secret_;
 
-  // TODO(hirthanan): Store the time the network last connected successfully.
+  // Time the network last connected successfully.
   base::Time last_time_network_came_online_;
 
-  // TODO(hirthanan): Setup repeating timer that reports device actives once
-  // a day, while the device is connected to the network.
-  base::RepeatingTimer once_a_day_timer_;
+  // Tries reporting device actives every |kTimeToRepeat| from when this class
+  // is initialized. Time of class initialization depends on when the device is
+  // turned on (chrome_browser_main_chromeos.cc |PostBrowserStart|).
+  std::unique_ptr<base::RepeatingTimer> report_timer_;
 
   // Tracks the visible networks and their properties.
   // |network_state_handler_| outlives the lifetime of this class.

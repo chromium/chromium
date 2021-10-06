@@ -5,6 +5,7 @@
 #include "ash/components/device_activity/device_activity_client.h"
 
 #include "base/test/task_environment.h"
+#include "base/timer/mock_timer.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/network_state_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,6 +18,26 @@ namespace {
 constexpr char kWifiServiceGuid[] = "wifi_guid";
 
 }  // namespace
+
+class MockDeviceActivityClient : public DeviceActivityClient {
+ public:
+  explicit MockDeviceActivityClient(NetworkStateHandler* handler)
+      : DeviceActivityClient(handler) {}
+
+  // DeviceActivityClient:
+  std::unique_ptr<base::RepeatingTimer> ConstructReportTimer() override {
+    return std::make_unique<base::MockRepeatingTimer>();
+  }
+
+  // TODO(hirthanan): Use method when the state machine flows complete, in order
+  // to test state transitions.
+  void FireTimer() {
+    base::MockRepeatingTimer* mock_timer =
+        static_cast<base::MockRepeatingTimer*>(GetReportTimer());
+    if (mock_timer->IsRunning())
+      mock_timer->Fire();
+  }
+};
 
 class DeviceActivityClientTest : public testing::Test {
  public:
@@ -32,7 +53,8 @@ class DeviceActivityClientTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     CreateWifiNetworkConfig();
-    device_activity_client_ = std::make_unique<DeviceActivityClient>(
+
+    device_activity_client_ = std::make_unique<MockDeviceActivityClient>(
         network_state_test_helper_.network_state_handler());
   }
 
@@ -69,6 +91,14 @@ class DeviceActivityClientTest : public testing::Test {
 TEST_F(DeviceActivityClientTest, DefaultStateIsIdle) {
   EXPECT_EQ(device_activity_client_->GetState(),
             DeviceActivityClient::State::kIdle);
+}
+
+TEST_F(DeviceActivityClientTest, TimerRuns) {
+  EXPECT_TRUE(device_activity_client_->GetReportTimer()->IsRunning());
+  SetWifiNetworkState(shill::kStateOnline);
+  EXPECT_TRUE(device_activity_client_->GetReportTimer()->IsRunning());
+  SetWifiNetworkState(shill::kStateOffline);
+  EXPECT_TRUE(device_activity_client_->GetReportTimer()->IsRunning());
 }
 
 }  // namespace device_activity
