@@ -78,7 +78,18 @@ OSInfo** OSInfo::GetInstanceStorage() {
   // and it's convenient for other modules to use this class without it.
   static OSInfo* info = []() {
     _OSVERSIONINFOEXW version_info = {sizeof(version_info)};
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    // GetVersionEx() is deprecated, and the suggested replacement are
+    // the IsWindows*OrGreater() functions in VersionHelpers.h. We can't
+    // use that because:
+    // - For Windows 10, there's IsWindows10OrGreater(), but nothing more
+    //   granular. We need to be able to detect different Windows 10 releases
+    //   since they sometimes change behavior in ways that matter.
+    // - There is no IsWindows11OrGreater() function yet.
     ::GetVersionEx(reinterpret_cast<_OSVERSIONINFOW*>(&version_info));
+#pragma clang diagnostic pop
 
     DWORD os_type = 0;
     ::GetProductInfo(version_info.dwMajorVersion, version_info.dwMinorVersion,

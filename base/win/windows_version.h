@@ -200,6 +200,8 @@ class BASE_EXPORT OSInfo {
     kUnknown,
   };
 
+  // This is separate from GetInstance() so that ScopedOSInfoOverride
+  // can override it in tests.
   static OSInfo** GetInstanceStorage();
 
   OSInfo(const _OSVERSIONINFOEXW& version_info,
