@@ -76,6 +76,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
@@ -926,13 +927,9 @@ void PdfViewWebPlugin::OnViewportChanged(
                                     css_to_device_pixel_scale),
       new_device_scale);
 
-  if (IsPrintPreview() && !stop_scrolling()) {
-    DCHECK_EQ(new_device_scale, device_scale());
-    gfx::ScrollOffset scroll_offset =
-        container_wrapper_->GetFrame()->GetScrollOffset();
-    scroll_offset.Scale(device_scale());
-    set_scroll_position(gfx::Point(scroll_offset.x(), scroll_offset.y()));
-    UpdateScroll();
+  if (IsPrintPreview()) {
+    UpdateScroll(gfx::ScrollOffsetToVector2dF(
+        container_wrapper_->GetFrame()->GetScrollOffset()));
   }
 
   // Scrolling in the main PDF Viewer UI is already handled by

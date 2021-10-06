@@ -23,6 +23,7 @@
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -61,6 +62,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/events/blink/blink_event_util.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -884,26 +886,31 @@ void PdfViewPluginBase::CalculateBackgroundParts() {
     background_parts_.push_back(part);
 }
 
-void PdfViewPluginBase::UpdateScroll() {
-  DCHECK(!stop_scrolling_);
-  const gfx::PointF scaled_scroll_position = gfx::ScalePoint(
-      BoundScrollPositionToDocument(gfx::PointF(scroll_position_)),
-      device_scale_);
-  engine()->ScrolledToXPosition(scaled_scroll_position.x());
-  engine()->ScrolledToYPosition(scaled_scroll_position.y());
-}
+void PdfViewPluginBase::UpdateScroll(const gfx::Vector2dF& scroll_offset) {
+  if (stop_scrolling_)
+    return;
 
-gfx::PointF PdfViewPluginBase::BoundScrollPositionToDocument(
-    const gfx::PointF& scroll_position) {
   float max_x = std::max(document_size_.width() * static_cast<float>(zoom_) -
                              plugin_dip_size_.width(),
                          0.0f);
-  float x = base::clamp(scroll_position.x(), 0.0f, max_x);
   float max_y = std::max(document_size_.height() * static_cast<float>(zoom_) -
                              plugin_dip_size_.height(),
                          0.0f);
-  float y = base::clamp(scroll_position.y(), 0.0f, max_y);
-  return gfx::PointF(x, y);
+
+  // TODO(crbug.com/1256965): Right-to-left scrolling currently is not
+  // compatible with the PDF viewer's "scroller" element.
+  gfx::PointF scroll_position;
+  if (ui_direction_ == base::i18n::RIGHT_TO_LEFT && IsPrintPreview())
+    scroll_position.set_x(max_x);
+  scroll_position += scroll_offset;
+
+  gfx::PointF scaled_scroll_position(
+      base::clamp(scroll_position.x(), 0.0f, max_x),
+      base::clamp(scroll_position.y(), 0.0f, max_y));
+  scaled_scroll_position.Scale(device_scale_);
+
+  engine()->ScrolledToXPosition(scaled_scroll_position.x());
+  engine()->ScrolledToYPosition(scaled_scroll_position.y());
 }
 
 int PdfViewPluginBase::GetDocumentPixelWidth() const {
@@ -1192,13 +1199,8 @@ void PdfViewPluginBase::HandleStopScrollingMessage(
 }
 
 void PdfViewPluginBase::HandleUpdateScrollMessage(const base::Value& message) {
-  if (stop_scrolling_)
-    return;
-
-  scroll_position_ =
-      gfx::Point(base::checked_cast<int>(message.FindDoubleKey("x").value()),
-                 base::checked_cast<int>(message.FindDoubleKey("y").value()));
-  UpdateScroll();
+  UpdateScroll(gfx::Vector2dF(message.FindDoubleKey("x").value(),
+                              message.FindDoubleKey("y").value()));
 }
 
 void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
@@ -1207,6 +1209,9 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
   if (layout_options_value) {
     DocumentLayout::Options layout_options;
     layout_options.FromValue(*layout_options_value);
+
+    ui_direction_ = layout_options.direction();
+
     // TODO(crbug.com/1013800): Eliminate need to get document size from here.
     document_size_ = engine()->ApplyDocumentLayout(layout_options);
     OnGeometryChanged(zoom_, device_scale_);
@@ -1216,8 +1221,8 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
       SendLoadingProgress(/*percentage=*/100);
   }
 
-  gfx::PointF scroll_position(message.FindDoubleKey("xOffset").value(),
-                              message.FindDoubleKey("yOffset").value());
+  gfx::Vector2dF scroll_offset(message.FindDoubleKey("xOffset").value(),
+                               message.FindDoubleKey("yOffset").value());
   double new_zoom = message.FindDoubleKey("zoom").value();
   const PinchPhase pinch_phase =
       static_cast<PinchPhase>(message.FindIntKey("pinchPhase").value());
@@ -1227,7 +1232,7 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
   const double zoom_ratio = new_zoom / zoom_;
 
   if (pinch_phase == PinchPhase::kStart) {
-    scroll_position_at_last_raster_ = scroll_position;
+    scroll_offset_at_last_raster_ = scroll_offset;
     last_bitmap_smaller_ = false;
     needs_reraster_ = false;
     return;
@@ -1263,9 +1268,9 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
       // We want to keep the paint in the middle but it must stay in the same
       // position relative to the scroll bars.
       paint_offset = gfx::Vector2d(0, (1 - zoom_ratio) * pinch_center.y());
-      scroll_delta =
-          gfx::Vector2d(0, (scroll_position.y() -
-                            scroll_position_at_last_raster_.y() * zoom_ratio));
+      scroll_delta = gfx::Vector2d(
+          0,
+          (scroll_offset.y() - scroll_offset_at_last_raster_.y() * zoom_ratio));
 
       pinch_vector = gfx::Vector2d();
       last_bitmap_smaller_ = true;
@@ -1280,11 +1285,9 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
           (1 - new_zoom / zoom_when_doc_covers_plugin_width) * pinch_center.x(),
           (1 - zoom_ratio) * pinch_center.y());
       pinch_vector = gfx::Vector2d();
-      scroll_delta =
-          gfx::Vector2d((scroll_position.x() -
-                         scroll_position_at_last_raster_.x() * zoom_ratio),
-                        (scroll_position.y() -
-                         scroll_position_at_last_raster_.y() * zoom_ratio));
+      scroll_delta = gfx::Vector2d(
+          (scroll_offset.x() - scroll_offset_at_last_raster_.x() * zoom_ratio),
+          (scroll_offset.y() - scroll_offset_at_last_raster_.y() * zoom_ratio));
     }
 
     paint_manager_.SetTransform(zoom_ratio, pinch_center,
@@ -1305,9 +1308,9 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
     needs_reraster_ = true;
 
     // If we're rerastering due to zooming out, we need to update the scroll
-    // position for the last raster, in case the user continues the gesture by
+    // offset for the last raster, in case the user continues the gesture by
     // zooming in.
-    scroll_position_at_last_raster_ = scroll_position;
+    scroll_offset_at_last_raster_ = scroll_offset;
   }
 
   // Bound the input parameters.
@@ -1315,9 +1318,7 @@ void PdfViewPluginBase::HandleViewportMessage(const base::Value& message) {
   DCHECK(message.FindBoolKey("userInitiated").has_value());
 
   SetZoom(new_zoom);
-  scroll_position = BoundScrollPositionToDocument(scroll_position);
-  engine()->ScrolledToXPosition(scroll_position.x() * device_scale_);
-  engine()->ScrolledToYPosition(scroll_position.y() * device_scale_);
+  UpdateScroll(scroll_offset);
 }
 
 void PdfViewPluginBase::DidStartLoading() {

@@ -72,6 +72,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "pdf/ppapi_migration/pdfium_font_linux.h"
@@ -534,9 +535,9 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
       RectFromPPRect(view.GetRect()), view.GetDeviceScale());
   UpdateGeometryOnPluginRectChanged(new_plugin_rect, view.GetDeviceScale());
 
-  if (IsPrintPreview() && !stop_scrolling()) {
-    set_scroll_position(PointFromPPPoint(view.GetScrollOffset()));
-    UpdateScroll();
+  if (IsPrintPreview()) {
+    UpdateScroll(
+        gfx::Vector2dF(view.GetScrollOffset().x(), view.GetScrollOffset().y()));
   }
 
   // Scrolling in the main PDF Viewer UI is already handled by

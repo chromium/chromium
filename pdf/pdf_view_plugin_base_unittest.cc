@@ -38,6 +38,7 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Return;
 using ::testing::SaveArg;
 
 // Keep it in-sync with the `kFinalFallbackName` returned by
@@ -142,6 +143,9 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   using PdfViewPluginBase::InitializeEngine;
   using PdfViewPluginBase::LoadUrl;
   using PdfViewPluginBase::set_full_frame;
+  using PdfViewPluginBase::SetZoom;
+  using PdfViewPluginBase::UpdateGeometryOnPluginRectChanged;
+  using PdfViewPluginBase::UpdateScroll;
 
   MOCK_METHOD(bool, Confirm, (const std::string&), (override));
 
@@ -380,6 +384,23 @@ class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
     auto engine =
         std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
     fake_plugin_.InitializeEngine(std::move(engine));
+  }
+
+ protected:
+  void SendDefaultViewportMessage() {
+    fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+      "type": "viewport",
+      "userInitiated": false,
+      "zoom": 1,
+      "layoutOptions": {
+        "direction": 2,
+        "defaultPageOrientation": 0,
+        "twoUpViewEnabled": false,
+      },
+      "xOffset": 0,
+      "yOffset": 0,
+      "pinchPhase": 0,
+    })"));
   }
 };
 
@@ -939,6 +960,145 @@ TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageSubsequently) {
   })"));
 
   EXPECT_THAT(fake_plugin_.sent_messages(), IsEmpty());
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, HandleViewportMessageScroll) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  EXPECT_CALL(*engine, ScrolledToXPosition(2));
+  EXPECT_CALL(*engine, ScrolledToYPosition(3));
+
+  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 2,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 2,
+    "yOffset": 3,
+    "pinchPhase": 0,
+  })"));
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest,
+       HandleViewportMessageScrollRightToLeft) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  EXPECT_CALL(*engine, ScrolledToXPosition(2));
+  EXPECT_CALL(*engine, ScrolledToYPosition(3));
+
+  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 1,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": 2,
+    "yOffset": 3,
+    "pinchPhase": 0,
+  })"));
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest,
+       HandleViewportMessageScrollRightToLeftInPrintPreview) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  EXPECT_CALL(*engine, ScrolledToXPosition(14));
+  EXPECT_CALL(*engine, ScrolledToYPosition(3));
+  EXPECT_CALL(fake_plugin_, IsPrintPreview).WillRepeatedly(Return(true));
+
+  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    "type": "viewport",
+    "userInitiated": false,
+    "zoom": 1,
+    "layoutOptions": {
+      "direction": 1,
+      "defaultPageOrientation": 0,
+      "twoUpViewEnabled": false,
+    },
+    "xOffset": -2,
+    "yOffset": 3,
+    "pinchPhase": 0,
+  })"));
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScroll) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, ScrolledToXPosition(0));
+  EXPECT_CALL(*engine, ScrolledToYPosition(0));
+
+  fake_plugin_.UpdateScroll({0, 0});
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollStopped) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, ScrolledToXPosition).Times(0);
+  EXPECT_CALL(*engine, ScrolledToYPosition).Times(0);
+
+  fake_plugin_.HandleMessage(base::test::ParseJson(R"({
+    "type": "stopScrolling",
+  })"));
+  fake_plugin_.UpdateScroll({0, 0});
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollUnderflow) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  SendDefaultViewportMessage();
+  EXPECT_CALL(*engine, ScrolledToXPosition(0));
+  EXPECT_CALL(*engine, ScrolledToYPosition(0));
+
+  fake_plugin_.UpdateScroll({-1, -1});
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollOverflow) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  fake_plugin_.UpdateGeometryOnPluginRectChanged({3, 2}, 1.0f);
+  EXPECT_CALL(*engine, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  SendDefaultViewportMessage();
+
+  EXPECT_CALL(*engine, ScrolledToXPosition(13));
+  EXPECT_CALL(*engine, ScrolledToYPosition(7));
+
+  fake_plugin_.UpdateScroll({14, 8});
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollOverflowZoomed) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  fake_plugin_.UpdateGeometryOnPluginRectChanged({3, 2}, 1.0f);
+  EXPECT_CALL(*engine, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  SendDefaultViewportMessage();
+  fake_plugin_.SetZoom(2.0);
+
+  EXPECT_CALL(*engine, ScrolledToXPosition(29));
+  EXPECT_CALL(*engine, ScrolledToYPosition(16));
+
+  fake_plugin_.UpdateScroll({30, 17});
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, UpdateScrollScaled) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  fake_plugin_.UpdateGeometryOnPluginRectChanged({3, 2}, 2.0f);
+  EXPECT_CALL(*engine, ApplyDocumentLayout)
+      .WillRepeatedly(Return(gfx::Size(16, 9)));
+  SendDefaultViewportMessage();
+
+  EXPECT_CALL(*engine, ScrolledToXPosition(4));
+  EXPECT_CALL(*engine, ScrolledToYPosition(2));
+
+  fake_plugin_.UpdateScroll({2, 1});
 }
 
 TEST_F(PdfViewPluginBaseWithEngineTest, GetContentRestrictions) {

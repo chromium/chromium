@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
@@ -27,14 +28,17 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 class WebInputEvent;
 struct WebPrintPresetOptions;
 }  // namespace blink
+
+namespace gfx {
+class PointF;
+}  // namespace gfx
 
 namespace chrome_pdf {
 
@@ -249,11 +253,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // aren't painted by the PDF engine).
   void CalculateBackgroundParts();
 
-  // Repaints the plugin contents based on the current scroll position.
-  void UpdateScroll();
-
-  // Bound the given scroll position to the document.
-  gfx::PointF BoundScrollPositionToDocument(const gfx::PointF& scroll_position);
+  // Updates the scroll position. `scroll_offset` is in CSS pixels relative to
+  // the scroll origin (which depends on the UI direction).
+  void UpdateScroll(const gfx::Vector2dF& scroll_offset);
 
   // Computes document width/height in device pixels, based on current zoom and
   // device scale
@@ -383,12 +385,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   double zoom() const { return zoom_; }
 
   float device_scale() const { return device_scale_; }
-
-  void set_scroll_position(const gfx::Point& scroll_position) {
-    scroll_position_ = scroll_position;
-  }
-
-  bool stop_scrolling() const { return stop_scrolling_; }
 
   AccessibilityState accessibility_state() const {
     return accessibility_state_;
@@ -570,12 +566,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // True if we request a new bitmap rendering.
   bool needs_reraster_ = true;
 
-  // The scroll position in CSS pixels.
-  gfx::Point scroll_position_;
+  // The UI direction.
+  base::i18n::TextDirection ui_direction_ = base::i18n::UNKNOWN_DIRECTION;
 
-  // The scroll position for the last raster, before any transformations are
-  // applied.
-  gfx::PointF scroll_position_at_last_raster_;
+  // The scroll offset for the last raster in CSS pixels, before any
+  // transformations are applied.
+  gfx::Vector2dF scroll_offset_at_last_raster_;
 
   // If this is true, then don't scroll the plugin in response to the messages
   // from DidChangeView() or HandleUpdateScrollMessage(). This will be true when
