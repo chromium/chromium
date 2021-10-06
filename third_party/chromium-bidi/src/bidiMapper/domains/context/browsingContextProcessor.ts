@@ -46,14 +46,14 @@ export class BrowsingContextProcessor {
     this._onContextDestroyed = onContextDestroyed;
   }
 
-  private _getOrCreateContext(
+  private async _getOrCreateContext(
     contextId: string,
     cdpSessionId: string
-  ): Context {
+  ): Promise<Context> {
     let context = this._contexts.get(contextId);
     if (!context) {
       const sessionCdpClient = this._cdpConnection.sessionClient(cdpSessionId);
-      context = Context.create(contextId, sessionCdpClient);
+      context = await Context.create(contextId, sessionCdpClient);
       this._contexts.set(contextId, context);
     }
     return context;
@@ -69,13 +69,18 @@ export class BrowsingContextProcessor {
     return context;
   }
 
-  handleAttachedToTargetEvent(params: Protocol.Target.AttachedToTargetEvent) {
+  async handleAttachedToTargetEvent(
+    params: Protocol.Target.AttachedToTargetEvent
+  ) {
     logContext('AttachedToTarget event received', params);
 
     const { sessionId, targetInfo } = params;
     if (!this._isValidTarget(targetInfo)) return;
 
-    const context = this._getOrCreateContext(targetInfo.targetId, sessionId);
+    const context = await this._getOrCreateContext(
+      targetInfo.targetId,
+      sessionId
+    );
     context._updateTargetInfo(targetInfo);
 
     this._sessionToTargets.delete(sessionId);
@@ -148,13 +153,18 @@ export class BrowsingContextProcessor {
     });
   }
 
-  async process_script_evaluate(params: Script.ScriptEvaluateParameters): Promise<Script.ScriptEvaluateResult> {
+  async process_script_evaluate(
+    params: Script.ScriptEvaluateParameters
+  ): Promise<Script.ScriptEvaluateResult> {
     const context = this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
     // TODO sadym: add arguments params after they are specified.
     // https://github.com/w3c/webdriver-bidi/pull/136#issuecomment-926700556
-    return await context.evaluateScript(params.expression);
+    return await context.scriptEvaluate(
+      params.expression,
+      params.awaitPromise !== false // `awaitPromise` by default is `true`.
+    );
   }
 
   _isValidTarget(target: Protocol.Target.TargetInfo) {

@@ -17,7 +17,7 @@
 
 import { Protocol } from 'devtools-protocol';
 import { CdpClient } from '../../../cdp';
-import { Script } from '../../bidiProtocolTypes';
+import { Script, CommonDataTypes } from '../../bidiProtocolTypes';
 
 import EVALUATOR_SCRIPT from '../../scripts/eval.es';
 
@@ -25,19 +25,31 @@ export class Context {
   _targetInfo?: Protocol.Target.TargetInfo;
   _sessionId?: string;
 
+  private _dummyContextObjectId: string = '';
+
   private constructor(
     private _contextId: string,
     private _cdpClient: CdpClient
   ) {}
 
-  public static create(contextId: string, cdpClient: CdpClient) {
+  public static async create(contextId: string, cdpClient: CdpClient) {
     const context = new Context(contextId, cdpClient);
-    context._initialize();
+    await context._initialize();
     return context;
   }
 
-  private _initialize() {
-    // TODO: Subscribe to Runtime and Page events to track executionContexts and frames.
+  private async _initialize() {
+    // Enabling Runtime doamin needed to have an exception stacktrace in
+    // `evaluateScript`.
+    await this._cdpClient.Runtime.enable();
+
+    // TODO sadym: `dummyContextObject` needed for the running context.
+    // Use the proper `executionContextId` instead:
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/52
+    const dummyContextObject = await this._cdpClient.Runtime.evaluate({
+      expression: '(()=>{return {}})()',
+    });
+    this._dummyContextObjectId = dummyContextObject.result.objectId!;
   }
 
   _setSessionId(sessionId: string): void {
@@ -64,41 +76,82 @@ export class Context {
     };
   }
 
-  public async evaluateScript(script: string): Promise<Script.ScriptEvaluateResult>  {
-    // Construct a javascript string that will call the evaluator function
-    // with the user script (embedded as a string), and the user arguments
-    // (embedded as BiDi RemoteValue objects). The result is a JSON object
-    // which will be returned by value and may be either:
-    //   { result: <value returned from user script> }
-    // or,
-    //   { exceptionDetails: { message: '<error message from user script>', stacktrace? } }
+  /**
+   * Serializes a given CDP object into BiDi, keeping references in the
+   * target's `globalThis`.
+   * @param cdpObject CDP remote object to be serialized.
+   */
+  private async _serializeCdpObject(
+    cdpObject: Protocol.Runtime.RemoteObject
+  ): Promise<CommonDataTypes.RemoteValue> {
+    const response = await this._cdpClient.Runtime.callFunctionOn({
+      functionDeclaration: `${EVALUATOR_SCRIPT}.serialize`,
+      objectId: this._dummyContextObjectId,
+      arguments: [cdpObject],
+      returnByValue: true,
+    });
 
-    const expression = `(${EVALUATOR_SCRIPT}).evaluate.apply(null, [${JSON.stringify(
-      script
-    )}, []])`;
-    const { result, exceptionDetails } = await this._cdpClient.Runtime.evaluate(
-      {
-        expression,
-        returnByValue: true,
-      }
+    if (response.exceptionDetails)
+      // Serialisation failed unexpectidely.
+      throw new Error(
+        'Cannot serialize object: ' + response.exceptionDetails.text
+      );
+
+    return response.result.value;
+  }
+
+  private async _serializeCdpExceptionDetails(
+    cdpExceptionDetails: Protocol.Runtime.ExceptionDetails
+  ) {
+    const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map(
+      (frame) => ({
+        url: frame.url,
+        functionName: frame.functionName,
+        lineNumber: frame.lineNumber,
+        columnNumber: frame.columnNumber,
+      })
+    );
+    const exception = await this._serializeCdpObject(
+      // Exception should always be there.
+      cdpExceptionDetails.exception!
     );
 
-    // Exceptions thrown from the user script are caught and stored in the result
-    // returned from Runtime.evaluate. If Runtime.evaluate returned exceptionDetails
-    // instead, then this indicates an internal error or bug.
-    if (exceptionDetails) {
-      throw new Error(exceptionDetails.text);
+    return {
+      exceptionDetails: {
+        exception,
+        columnNumber: cdpExceptionDetails.columnNumber,
+        lineNumber: cdpExceptionDetails.lineNumber,
+        stackTrace: {
+          callFrames: callFrames || [],
+        },
+        text: cdpExceptionDetails.text,
+      },
+    };
+  }
+
+  public async scriptEvaluate(
+    expression: string,
+    awaitPromise: boolean
+  ): Promise<Script.ScriptEvaluateResult> {
+    // Evaluate works with 2 DP calls:
+    // 1. Evaluates the `script`;
+    // 2. serializes the result or exception.
+    // This needed to provide a detailed stacktrace in case of not `Error` but
+    // anything else wihtout`stacktrace` is thrown.
+    const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
+      expression,
+      awaitPromise,
+      returnByValue: false,
+    });
+    if (cdpEvaluateResult.exceptionDetails) {
+      // Serialize exception details.
+      return await this._serializeCdpExceptionDetails(
+        cdpEvaluateResult.exceptionDetails
+      );
     }
 
-    // Runtime.evaluate did not return a result for some reason. Could be an
-    // internal error, or a failure to parse the user's script.
-    if (!result.value) {
-      throw new Error('unable to parse result from evaluateScript');
-    }
-
-    // Evaluator script ran and either returned a value or threw an error. Return a
-    // successful response with the value which will have either a result or
-    // exceptionDetails property.
-    return result.value;
+    return {
+      result: await this._serializeCdpObject(cdpEvaluateResult.result),
+    };
   }
 }

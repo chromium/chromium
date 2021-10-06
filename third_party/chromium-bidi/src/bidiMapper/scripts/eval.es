@@ -70,6 +70,11 @@
         return result;
       }
 
+      if (value instanceof Promise) {
+        result.type = 'promise';
+        return result;
+      }
+
       if (Array.isArray(value)) {
         result.type = "array";
       } else {
@@ -123,6 +128,7 @@
       case 'boolean': {
         return value.value;
       }
+      case 'promise':
       case 'array':
       case 'function':
       case 'object': {
@@ -153,19 +159,11 @@
   }
 
   function evaluate(script, args) {
-    try {
       const deserializedArgs = args.map((arg) => deserialize(arg));
-      const func = new Function(`return (${script})`);
+      const func = new Function(`return (\n${script}\n)`);
       const result = func.apply(null, deserializedArgs);
       const serializedResult = serialize(result);
-      return { result: serializedResult };
-    } catch (e) {
-      if (e instanceof Error) {
-        return { exceptionDetails: { message: e.message, stacktrace: e.stack } };
-      } else {
-        return { exceptionDetails: { value: serialize(e) } };
-      }
-    }
+      return serializedResult;
   };
 
   return {

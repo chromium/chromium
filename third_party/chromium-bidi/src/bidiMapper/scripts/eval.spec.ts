@@ -236,5 +236,15 @@ describe('Evaluator', function () {
                 }, ["objectId"]
             );
         });
+        it('promise', function () {
+            checkSerializeAndDeserialize(
+                Promise.resolve(),
+                {
+                    type: 'promise',
+                    objectId: '__any_value__'
+                },
+                ["objectId"]
+            );
+        });
     });
 });

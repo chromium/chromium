@@ -60,8 +60,8 @@ export class CommandProcessor {
   }
 
   private run() {
-    this._browserCdpClient.Target.on('attachedToTarget', (params) => {
-      this._contextProcessor.handleAttachedToTargetEvent(params);
+    this._browserCdpClient.Target.on('attachedToTarget', async (params) => {
+      await this._contextProcessor.handleAttachedToTargetEvent(params);
     });
     this._browserCdpClient.Target.on('targetInfoChanged', (params) => {
       this._contextProcessor.handleInfoChangedEvent(params);

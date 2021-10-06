@@ -26,6 +26,12 @@ async def websocket():
     async with websockets.connect(url) as connection:
         yield connection
 
+@pytest.fixture(autouse=True)
+async def before_each_test(websocket):
+    # Read initial event `browsingContext.contextCreated`
+    resp = await read_JSON_message(websocket)
+    assert resp['method'] == 'browsingContext.contextCreated'
+
 # Compares 2 objects recursively ignoring values of specific attributes.
 def recursiveCompare(expected, actual, ignoreAttributes):
     assert type(expected) == type(actual)
@@ -744,6 +750,105 @@ async def _ignore_test_consoleError_logEntryWithMethodErrorEmmited(websocket):
     assert resp == {
         "id":44,
         "result":{"type":"undefined"}}
+
+@pytest.mark.asyncio
+async def test_scriptEvaluateThrowing1_exceptionReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 45,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "(()=>{const a=()=>{throw 1;}; const b=()=>{a();};\nconst c=()=>{b();};c();})()",
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 45
+
+    # Compare ignoring `objectId`.
+    recursiveCompare({
+        "exceptionDetails":{
+            "text":"Uncaught",
+            "columnNumber":19,
+            "lineNumber":0,
+            "exception":{
+                "type":"number",
+                "value":1},
+            "stackTrace":{
+                "callFrames":[{
+                    "url":"",
+                    "functionName":"a",
+                    "lineNumber":0,
+                    "columnNumber":19
+                },{
+                    "url":"",
+                    "functionName":"b",
+                    "lineNumber":0,
+                    "columnNumber":43
+                },{
+                    "url":"",
+                    "functionName":"c",
+                    "lineNumber":1,
+                    "columnNumber":13
+                },{
+                    "url":"",
+                    "functionName":"",
+                    "lineNumber":1,
+                    "columnNumber":19
+                },{
+                    "url":"",
+                    "functionName":"",
+                    "lineNumber":1,
+                    "columnNumber":25}]}}},
+        resp["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_scriptEvaluateDontWaitPromise_promiseReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 46,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "Promise.resolve('SOME_RESULT')",
+            "awaitPromise": False,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 46
+
+    # Compare ignoring `objectId`.
+    recursiveCompare({
+            "type":"promise",
+            "objectId": "__any_value__"
+        }, resp["result"]["result"], ["objectId"])
+
+@pytest.mark.asyncio
+async def test_scriptEvaluateWaitPromise_resultReturned(websocket):
+    contextID = await get_open_context_id(websocket)
+
+    # Send command.
+    await send_JSON_command(websocket, {
+        "id": 46,
+        "method": "script.evaluate",
+        "params": {
+            "expression": "Promise.resolve('SOME_RESULT')",
+            "awaitPromise": True,
+            "target": {"context": contextID}}})
+
+    # Assert command done.
+    resp = await read_JSON_message(websocket)
+    assert resp["id"] == 46
+
+    # Compare ignoring `objectId`.
+    recursiveCompare({
+        "type":"string",
+        "value":"SOME_RESULT"
+        }, resp["result"]["result"], ["objectId"])
 
 # Testing serialisation.
 async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
