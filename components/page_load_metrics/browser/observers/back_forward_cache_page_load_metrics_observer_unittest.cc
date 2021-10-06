@@ -324,50 +324,49 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 
 // TODO(crbug.com/1255496): Flaky under TSan.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
-       DISABLED_TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
+       TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
+  // In the case that there is no page end time and the page has never
+  // backgrounded, the observer falls back to using Now as the end point of
+  // the time in foreground. So override what 'Now' means.
+  base::ScopedMockClockOverride clock_override;
+  base::TimeTicks scoped_clock_start_time =
+      base::ScopedMockClockOverride::NowTicks();
+
   base::TimeTicks navigation_start =
-      base::TimeTicks() + base::Milliseconds(100);
+      scoped_clock_start_time + base::TimeDelta::FromMilliseconds(100);
   auto in_foreground_bf_state =
       PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
           /*was_in_foreground=*/true, navigation_start);
   fake_delegate_->AddBackForwardCacheRestore(in_foreground_bf_state);
 
   fake_delegate_->page_end_reason_ = page_load_metrics::END_NONE;
-  {
-    // In the case that there is no page end time and the page has never
-    // backgrounded, the observer falls back to using Now as the end point of
-    // the time in foreground. So override what 'Now' means.
-    base::ScopedMockClockOverride clock_override;
-    base::TimeTicks scoped_clock_start_time =
-        base::ScopedMockClockOverride::NowTicks();
-    InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
-                                    /*simulate_app_backgrounding=*/false);
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/false);
 
-    // There's no page end time, and no first background time, and the app isn't
-    // backgrounding, so there should be no results.
-    auto& test_ukm_recorder = tester()->test_ukm_recorder();
-    auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
-        HistoryNavigation::kEntryName,
-        HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
-    EXPECT_EQ(0U, result_metrics.size());
+  // There's no page end time, and no first background time, and the app isn't
+  // backgrounding, so there should be no results.
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(0U, result_metrics.size());
+  clock_override.Advance(base::TimeDelta::FromMilliseconds(250));
+  // This time the app is entering the background, so a metric should be
+  // logged.
+  InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
+                                  /*simulate_app_backgrounding=*/true);
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(1U, result_metrics.size());
 
-    // This time the app is entering the background, so a metric should be
-    // logged.
-    InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
-                                    /*simulate_app_backgrounding=*/true);
-    result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
-        HistoryNavigation::kEntryName,
-        HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
-    EXPECT_EQ(1U, result_metrics.size());
-
-    // The recorded time has been bucketed, so the test needs to figure out what
-    // the bucketed version of the over-ridden Now is.
-    base::TimeDelta expected_foreground_time =
-        scoped_clock_start_time - navigation_start;
-    int64_t bucketed_expected_time = ukm::GetSemanticBucketMinForDurationTiming(
-        expected_foreground_time.InMilliseconds());
-    EXPECT_EQ(bucketed_expected_time, result_metrics.begin()->begin()->second);
-  }
+  // The recorded time has been bucketed, so the test needs to figure out what
+  // the bucketed version of the over-ridden Now is.
+  base::TimeDelta expected_foreground_time =
+      base::ScopedMockClockOverride::NowTicks() - navigation_start;
+  int64_t bucketed_expected_time = ukm::GetSemanticBucketMinForDurationTiming(
+      expected_foreground_time.InMilliseconds());
+  EXPECT_EQ(bucketed_expected_time, result_metrics.begin()->begin()->second);
 }
 
 // Verifies that no foreground duration is logged if the page is restored from
