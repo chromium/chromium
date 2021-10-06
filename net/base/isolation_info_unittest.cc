@@ -51,6 +51,9 @@ class IsolationInfoTest : public testing::Test {
       std::set<net::SchemefulSite>{net::SchemefulSite(kOrigin2)};
   const absl::optional<std::set<net::SchemefulSite>> kPartyContext3 =
       std::set<net::SchemefulSite>{net::SchemefulSite(kOrigin3)};
+  const absl::optional<std::set<net::SchemefulSite>> kPartyContextMultiple =
+      std::set<net::SchemefulSite>{net::SchemefulSite(kOrigin1),
+                                   net::SchemefulSite(kOrigin2)};
 
   const base::UnguessableToken kNonce1 = base::UnguessableToken::Create();
   const base::UnguessableToken kNonce2 = base::UnguessableToken::Create();
@@ -606,6 +609,62 @@ TEST_F(IsolationInfoTest, CreateForRedirectPartyContext) {
     IsolationInfo redirected_isolation_info =
         isolation_info.CreateForRedirect(kOrigin3);
     EXPECT_EQ(kPartyContext2, redirected_isolation_info.party_context());
+  }
+}
+
+TEST_F(IsolationInfoTest, Serialization) {
+  EXPECT_FALSE(IsolationInfo::Deserialize(""));
+  EXPECT_FALSE(IsolationInfo::Deserialize("garbage"));
+
+  const IsolationInfo kPositiveTestCases[] = {
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1),
+                            kPartyContext1),
+      // Null party context
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1),
+                            kPartyContextNull),
+      // Empty party context
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1),
+                            kPartyContextEmpty),
+      // Multiple party context entries.
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1),
+                            kPartyContextMultiple),
+      // Without SiteForCookies
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            kOrigin2, SiteForCookies(), absl::nullopt),
+      // Request type kOther
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin1,
+                            kOrigin1, SiteForCookies::FromOrigin(kOrigin1),
+                            absl::nullopt),
+      // Request type kMainframe
+      IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin1,
+                            kOrigin1, SiteForCookies::FromOrigin(kOrigin1),
+                            absl::nullopt),
+  };
+  for (const auto& info : kPositiveTestCases) {
+    auto rt = IsolationInfo::Deserialize(info.Serialize());
+    ASSERT_TRUE(rt);
+    EXPECT_TRUE(rt->IsEqualForTesting(info));
+  }
+
+  const IsolationInfo kNegativeTestCases[] = {
+      IsolationInfo::CreateTransient(),
+      IsolationInfo::CreateOpaqueAndNonTransient(),
+      // With nonce (i.e transient).
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            kOrigin2, SiteForCookies::FromOrigin(kOrigin1),
+                            kPartyContext1, &kNonce1),
+      // With an opaque origin (i.e transient)
+      IsolationInfo::Create(IsolationInfo::RequestType::kSubFrame, kOrigin1,
+                            url::Origin(), SiteForCookies::FromOrigin(kOrigin1),
+                            absl::nullopt),
+
+  };
+  for (const auto& info : kNegativeTestCases) {
+    EXPECT_TRUE(info.Serialize().empty());
   }
 }
 

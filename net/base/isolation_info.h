@@ -6,6 +6,7 @@
 #define NET_BASE_ISOLATION_INFO_H_
 
 #include <set>
+#include <string>
 
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
@@ -96,6 +97,11 @@ class NET_EXPORT IsolationInfo {
   // (no SameSite cookies, opaque Origins), but does write data to disk, so this
   // allows use of the disk cache with a transient NIK.
   static IsolationInfo CreateOpaqueAndNonTransient();
+
+  // Creates an IsolationInfo from the serialized contents. Returns a nullopt
+  // if deserialization fails or if data is inconsistent.
+  static absl::optional<IsolationInfo> Deserialize(
+      const std::string& serialized);
 
   // Creates an IsolationInfo with the provided parameters. If the parameters
   // are inconsistent, DCHECKs. In particular:
@@ -203,6 +209,10 @@ class NET_EXPORT IsolationInfo {
   }
 
   bool IsEqualForTesting(const IsolationInfo& other) const;
+
+  // Serialize the `IsolationInfo` into a string. Fails if transient, returning
+  // an empty string.
+  std::string Serialize() const;
 
  private:
   IsolationInfo(RequestType request_type,

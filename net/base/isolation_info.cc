@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/unguessable_token.h"
+#include "net/base/isolation_info.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -131,6 +132,35 @@ IsolationInfo IsolationInfo::CreateOpaqueAndNonTransient() {
                        nullptr /* nonce */, absl::nullopt /* party_context */);
 }
 
+absl::optional<IsolationInfo> IsolationInfo::Deserialize(
+    const std::string& serialized) {
+  proto::IsolationInfo proto;
+  if (!proto.ParseFromString(serialized))
+    return absl::nullopt;
+
+  absl::optional<url::Origin> top_frame_origin;
+  if (proto.has_top_frame_origin())
+    top_frame_origin = url::Origin::Create(GURL(proto.top_frame_origin()));
+
+  absl::optional<url::Origin> frame_origin;
+  if (proto.has_frame_origin())
+    frame_origin = url::Origin::Create(GURL(proto.frame_origin()));
+
+  absl::optional<std::set<SchemefulSite>> party_context;
+  if (proto.has_party_context()) {
+    party_context = std::set<SchemefulSite>();
+    for (const auto& site : proto.party_context().site()) {
+      party_context->insert(SchemefulSite::Deserialize(site));
+    }
+  }
+
+  return IsolationInfo::CreateIfConsistent(
+      static_cast<RequestType>(proto.request_type()),
+      std::move(top_frame_origin), std::move(frame_origin),
+      SiteForCookies::FromUrl(GURL(proto.site_for_cookies())),
+      false /* opaque_and_non_transient */, std::move(party_context), nullptr);
+}
+
 IsolationInfo IsolationInfo::Create(
     RequestType request_type,
     const url::Origin& top_frame_origin,
@@ -232,6 +262,35 @@ IsolationInfo IsolationInfo::ToDoUseTopFrameOriginAsWell(
       SiteForCookies::FromOrigin(incorrectly_used_frame_origin),
       false /* opaque_and_non_transient */, nullptr /* nonce */,
       std::set<SchemefulSite>() /* party_context */);
+}
+
+std::string IsolationInfo::Serialize() const {
+  if (network_isolation_key().IsTransient())
+    return "";
+
+  if (opaque_and_non_transient_)
+    return "";
+
+  proto::IsolationInfo info;
+
+  info.set_request_type(static_cast<int32_t>(request_type_));
+
+  if (top_frame_origin_)
+    info.set_top_frame_origin(top_frame_origin_->Serialize());
+
+  if (frame_origin_)
+    info.set_frame_origin(frame_origin_->Serialize());
+
+  info.set_site_for_cookies(site_for_cookies_.RepresentativeUrl().spec());
+
+  if (party_context_) {
+    auto* pc = info.mutable_party_context();
+    for (const auto& site : *party_context_) {
+      pc->add_site(site.Serialize());
+    }
+  }
+
+  return info.SerializeAsString();
 }
 
 IsolationInfo::IsolationInfo(

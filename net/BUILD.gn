@@ -1619,6 +1619,7 @@ source_set("net_deps") {
 
   public_deps = [
     ":constants",
+    ":isolation_info_proto",
     ":net_export_header",
     ":net_resources",
     ":preload_decoder",
@@ -1724,6 +1725,10 @@ proto_library("net_nqe_proto") {
   defines = [ "NET_IMPLEMENTATION" ]
 
   extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+proto_library("isolation_info_proto") {
+  sources = [ "base/isolation_info.proto" ]
 }
 
 component("extras") {
