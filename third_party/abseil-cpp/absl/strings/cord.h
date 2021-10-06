@@ -256,9 +256,7 @@ class Cord {
   // swap()
   //
   // Swaps the contents of two Cords.
-  friend void swap(Cord& x, Cord& y) noexcept {
-    x.swap(y);
-  }
+  friend void swap(Cord& x, Cord& y) noexcept { x.swap(y); }
 
   // Cord::size()
   //
@@ -722,14 +720,14 @@ class Cord {
     const char* data() const;  // Returns nullptr if holding pointer
     void set_data(const char* data, size_t n,
                   bool nullify_tail);  // Discards pointer, if any
-    char* set_data(size_t n);  // Write data to the result
+    char* set_data(size_t n);          // Write data to the result
     // Returns nullptr if holding bytes
     absl::cord_internal::CordRep* tree() const;
     absl::cord_internal::CordRep* as_tree() const;
     // Returns non-null iff was holding a pointer
     absl::cord_internal::CordRep* clear();
     // Converts to pointer if necessary.
-    void reduce_size(size_t n);  // REQUIRES: holding data
+    void reduce_size(size_t n);    // REQUIRES: holding data
     void remove_prefix(size_t n);  // REQUIRES: holding data
     void AppendArray(absl::string_view src, MethodIdentifier method);
     absl::string_view FindFlatStartPiece() const;
@@ -1440,12 +1438,8 @@ inline bool operator==(const Cord& lhs, const Cord& rhs) {
 }
 
 inline bool operator!=(const Cord& x, const Cord& y) { return !(x == y); }
-inline bool operator<(const Cord& x, const Cord& y) {
-  return x.Compare(y) < 0;
-}
-inline bool operator>(const Cord& x, const Cord& y) {
-  return x.Compare(y) > 0;
-}
+inline bool operator<(const Cord& x, const Cord& y) { return x.Compare(y) < 0; }
+inline bool operator>(const Cord& x, const Cord& y) { return x.Compare(y) > 0; }
 inline bool operator<=(const Cord& x, const Cord& y) {
   return x.Compare(y) <= 0;
 }

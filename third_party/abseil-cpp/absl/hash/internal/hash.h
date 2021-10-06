@@ -42,6 +42,7 @@
 #include "absl/base/internal/unaligned_access.h"
 #include "absl/base/port.h"
 #include "absl/container/fixed_array.h"
+#include "absl/hash/internal/city.h"
 #include "absl/hash/internal/low_level_hash.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/int128.h"
@@ -49,7 +50,6 @@
 #include "absl/types/optional.h"
 #include "absl/types/variant.h"
 #include "absl/utility/utility.h"
-#include "absl/hash/internal/city.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -883,7 +883,7 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
 #ifdef ABSL_HAVE_INTRINSIC_INT128
     return LowLevelHashImpl(data, len);
 #else
-    return absl::hash_internal::CityHash64(reinterpret_cast<const char*>(data), len);
+    return hash_internal::CityHash64(reinterpret_cast<const char*>(data), len);
 #endif
   }
 
@@ -929,7 +929,7 @@ inline uint64_t MixingHashState::CombineContiguousImpl(
     if (ABSL_PREDICT_FALSE(len > PiecewiseChunkSize())) {
       return CombineLargeContiguousImpl32(state, first, len);
     }
-    v = absl::hash_internal::CityHash32(reinterpret_cast<const char*>(first), len);
+    v = hash_internal::CityHash32(reinterpret_cast<const char*>(first), len);
   } else if (len >= 4) {
     v = Read4To8(first, len);
   } else if (len > 0) {

@@ -126,23 +126,6 @@ struct MallocAdapter {
   }
 };
 
-// If kUseMemcpy is true, memcpy(dst, src, n); else do nothing.
-// Useful to avoid compiler warnings when memcpy() is used for T values
-// that are not trivially copyable in non-reachable code.
-template <bool kUseMemcpy>
-inline void MemcpyIfAllowed(void* dst, const void* src, size_t n);
-
-// memcpy when allowed.
-template <>
-inline void MemcpyIfAllowed<true>(void* dst, const void* src, size_t n) {
-  memcpy(dst, src, n);
-}
-
-// Do nothing for types that are not memcpy-able. This function is only
-// called from non-reachable branches.
-template <>
-inline void MemcpyIfAllowed<false>(void*, const void*, size_t) {}
-
 template <typename A, typename ValueAdapter>
 void ConstructElements(NoTypeDeduction<A>& allocator,
                        Pointer<A> construct_first, ValueAdapter& values,
@@ -288,7 +271,7 @@ class ConstructionTransaction {
     GetData() = data;
     GetSize() = size;
   }
-  void Commit() {
+  void Commit() && {
     GetData() = nullptr;
     GetSize() = 0;
   }
@@ -511,7 +494,8 @@ void Storage<T, N, A>::InitFrom(const Storage& other) {
     src = other.GetAllocatedData();
   }
   if (IsMemcpyOk<A>::value) {
-    MemcpyIfAllowed<IsMemcpyOk<A>::value>(dst, src, sizeof(dst[0]) * n);
+    std::memcpy(reinterpret_cast<char*>(dst),
+                reinterpret_cast<const char*>(src), n * sizeof(ValueType<A>));
   } else {
     auto values = IteratorValueAdapter<A, ConstPointer<A>>(src);
     ConstructElements<A>(GetAllocator(), dst, values, n);
@@ -628,7 +612,7 @@ auto Storage<T, N, A>::Resize(ValueAdapter values, SizeType<A> new_size)
     ConstructElements<A>(alloc, new_data, move_values, size);
 
     DestroyElements<A>(alloc, base, size);
-    construction_tx.Commit();
+    std::move(construction_tx).Commit();
     DeallocateIfAllocated();
     SetAllocation(std::move(allocation_tx).Release());
     SetIsAllocated();
@@ -668,8 +652,8 @@ auto Storage<T, N, A>::Insert(ConstIterator<A> pos, ValueAdapter values,
 
     DestroyElements<A>(GetAllocator(), storage_view.data, storage_view.size);
 
-    construction_tx.Commit();
-    move_construction_tx.Commit();
+    std::move(construction_tx).Commit();
+    std::move(move_construction_tx).Commit();
     DeallocateIfAllocated();
     SetAllocation(std::move(allocation_tx).Release());
 
@@ -721,7 +705,7 @@ auto Storage<T, N, A>::Insert(ConstIterator<A> pos, ValueAdapter values,
     ConstructElements<A>(GetAllocator(), insert_construction.data(), values,
                          insert_construction.size());
 
-    move_construction_tx.Commit();
+    std::move(move_construction_tx).Commit();
 
     AddSize(insert_count);
     return Iterator<A>(storage_view.data + insert_index);
