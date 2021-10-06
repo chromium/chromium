@@ -26,6 +26,9 @@ source_set("pairing") {
     "pairer_broker.h",
     "pairer_broker_impl.cc",
     "pairer_broker_impl.h",
+    "retroactive_pairing_detector.h",
+    "retroactive_pairing_detector_impl.cc",
+    "retroactive_pairing_detector_impl.h",
   ]
 
   deps = [
@@ -66,6 +69,7 @@ source_set("unit_tests") {
     "fast_pair/fast_pair_encryption_unittest.cc",
     "fast_pair/fast_pair_gatt_service_client_unittest.cc",
     "fast_pair/fast_pair_pairer_unittest.cc",
+    "retroactive_pairing_detector_unittest.cc",
   ]
 
   deps = [
@@ -73,7 +77,7 @@ source_set("unit_tests") {
     ":test_support",
     "//ash/quick_pair/common",
     "//ash/quick_pair/proto:fastpair_proto",
-    "//ash/quick_pair/repository",
+    "//ash/quick_pair/repository:repository",
     "//ash/quick_pair/repository:test_support",
     "//ash/services/quick_pair",
     "//ash/services/quick_pair:test_support",
@@ -82,6 +86,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 }
