@@ -9001,11 +9001,13 @@ void WebContentsImpl::DecrementCapturerCount(bool stay_hidden,
 void WebContentsImpl::NotifyPrimaryMainFrameProcessIsAlive() {
   // The WebContents tracks the process state for the primary main frame's
   // renderer.
-  bool was_crashed = IsCrashed();
+  // Consider renderer as terminated when exited with any termination status.
+  bool was_renderer_terminated = primary_main_frame_process_status_ !=
+                                 base::TERMINATION_STATUS_STILL_RUNNING;
   SetPrimaryMainFrameProcessStatus(base::TERMINATION_STATUS_STILL_RUNNING, 0);
   // Restore the focus to the tab (otherwise the focus will be on the top
   // window).
-  if (was_crashed && !FocusLocationBarByDefault()) {
+  if (was_renderer_terminated && !FocusLocationBarByDefault()) {
     if (!delegate_ || delegate_->ShouldFocusPageAfterCrash()) {
       view_->Focus();
     }
