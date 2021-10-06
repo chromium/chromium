@@ -1366,7 +1366,7 @@
   },
   {
     "name": "enable-aria-element-reflection",
-    "owners": [ "aboxhall", "chrishall", "dmazzoni", "meredithl" ],
+    "owners": [ "aboxhall", "chrishall", "meredithl" ],
     "expiry_milestone": 98
   },
   {
@@ -2340,7 +2340,7 @@
   },
   {
     "name": "enable-penetrating-image-selection",
-    "owners": [ "benwgold", "flackr" ],
+    "owners": [ "benwgold@google.com", "flackr" ],
     "expiry_milestone": 95
   },
   {
@@ -2883,7 +2883,7 @@
   },
   {
     "name": "enhanced-network-voices",
-    "owners": ["joelriley@google.com", "leileilei@google.com", "dmazzoni"],
+    "owners": ["joelriley@google.com", "leileilei@google.com"],
     "expiry_milestone": 95
   },
   {
@@ -3205,7 +3205,7 @@
   },
   {
     "name": "global-media-controls-modern-ui",
-    "owners": [ "noahrose@google.com", "steimel", "media-dev" ],
+    "owners": [ "steimel", "media-dev" ],
     "expiry_milestone": 95
   },
   {
@@ -3215,7 +3215,7 @@
   },
   {
     "name": "global-media-controls-seamless-transfer",
-    "owners": [ "noahrose@google.com", "steimel", "media-dev" ],
+    "owners": [ "steimel", "media-dev" ],
     "expiry_milestone": 93
   },
   {
@@ -3479,7 +3479,7 @@
   },
   {
     "name": "keyboard-based-display-arrangement-in-settings",
-    "owners": [ "czajka", "cros-peripherals@google.com"],
+    "owners": [ "zentaro", "cros-peripherals@google.com"],
     "expiry_milestone": 94
   },
   {
@@ -3735,12 +3735,12 @@
   },
   {
     "name": "microphone-mute-notifications",
-    "owners": ["tbarzic", "rtiknoff@google.com", "amehfooz"],
+    "owners": ["tbarzic", "rtinkoff@google.com", "amehfooz"],
     "expiry_milestone": 94
   },
   {
     "name": "microphone-mute-switch-device",
-    "owners": ["tbarzic", "rtiknoff@google.com", "amehfooz"],
+    "owners": ["tbarzic", "rtinkoff@google.com", "amehfooz"],
     "expiry_milestone": 94
   },
   {
@@ -4198,7 +4198,7 @@
   },
   {
     "name": "page-info-about-this-site",
-    "owners": [ "eokoyomon", "dullweber", "olesiamarukhno" ],
+    "owners": [ "eokoyomon", "dullweber", "olesiamarukhno@google.com" ],
     "expiry_milestone": 99
   },
   {
@@ -4208,7 +4208,7 @@
   },
   {
     "name": "page-info-version-2-desktop",
-    "owners": [ "bsep", "olesiamarukhno" ],
+    "owners": [ "bsep", "olesiamarukhno@google.com" ],
     "expiry_milestone": 97
   },
   {
@@ -4275,17 +4275,17 @@
   },
   {
     "name": "permission-chip",
-    "owners": [ "bsep", "engedy", "olesiamarukhno" ],
+    "owners": [ "bsep", "engedy", "olesiamarukhno@google.com" ],
     "expiry_milestone": 100
   },
   {
     "name": "permission-chip-gesture",
-    "owners": [ "bsep", "engedy", "olesiamarukhno" ],
+    "owners": [ "bsep", "engedy", "olesiamarukhno@google.com" ],
     "expiry_milestone": 100
   },
   {
     "name": "permission-chip-request-type",
-    "owners": [ "bsep", "engedy", "olesiamarukhno" ],
+    "owners": [ "bsep", "engedy", "olesiamarukhno@google.com" ],
     "expiry_milestone": 100
   },
   {
@@ -5422,7 +5422,7 @@
   },
   {
     "name": "wake-on-wifi-allowed",
-    "owners": [ "yenlinlai", "chromeos-wifi-team" ],
+    "owners": [ "yenlinlai", "chromeos-wifi-team@google.com" ],
     "expiry_milestone": 95
   },
   {
