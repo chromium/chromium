@@ -7047,7 +7047,6 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-comp
 crbug.com/1249176 [ Mac11-arm64 ] virtual/scroll-unification/plugins/focus-change-1-no-change.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] plugins/plugin-remove-subframe.html [ Crash Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/replaced/no-focus-ring-object.html [ Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] http/tests/serviceworker/use-counter-third-party-page-register.html [ Crash Pass ]
 
 crbug.com/1249176 [ Mac11-arm64 ] editing/selection/find-in-text-control.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-min-max-attribute.html [ Crash ]
@@ -7201,3 +7200,4 @@ crbug.com/1256763 [ Linux ] virtual/exotic-color-space/images/color-profile-svg-
 
 # Sheriff 2021-10-06
 crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
+crbug.com/1257304 http/tests/serviceworker/use-counter-third-party-page-register.html [ Failure Pass ]
