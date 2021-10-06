@@ -74,7 +74,10 @@ class RTxtGenerator(object):
     return ret
 
   def _ExtractNewIdsFromXml(self, xml_path):
-    root = ElementTree.parse(xml_path).getroot()
+    try:
+      root = ElementTree.parse(xml_path).getroot()
+    except Exception as e:
+      raise RuntimeError('Failure parsing {}:\n  {}'.format(xml_path, e))
     return self._ExtractNewIdsFromNode(root)
 
   def _ParseValuesXml(self, xml_path):
