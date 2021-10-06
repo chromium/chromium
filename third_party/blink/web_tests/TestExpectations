@@ -7199,3 +7199,5 @@ crbug.com/1256763 [ Win ] virtual/exotic-color-space/images/color-profile-svg-fi
 crbug.com/1256763 [ Mac ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1256763 [ Linux ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
 
+# Sheriff 2021-10-06
+crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
