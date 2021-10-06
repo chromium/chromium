@@ -6616,6 +6616,8 @@ static_library("browser") {
       "pdf/chrome_pdf_stream_delegate.h",
       "pdf/pdf_extension_util.cc",
       "pdf/pdf_extension_util.h",
+      "pdf/pdf_frame_util.cc",
+      "pdf/pdf_frame_util.h",
     ]
     deps += [
       "//components/pdf/browser:interceptors",

@@ -46,6 +46,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/pdf_extension_util.h"
+#include "chrome/browser/pdf/pdf_frame_util.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/plugins/plugin_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -329,20 +330,9 @@ class PDFExtensionTestWithoutUnseasonedOverride
   }
 
   content::RenderFrameHost* GetPluginFrame(WebContents* guest_contents) const {
-    if (!IsUnseasoned())
-      return guest_contents->GetMainFrame();
-
-    content::RenderFrameHost* plugin_frame = nullptr;
-    guest_contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
-        [&plugin_frame](content::RenderFrameHost* frame) {
-          // Assume exactly one child frame.
-          if (frame->GetParent()) {
-            EXPECT_FALSE(plugin_frame);
-            plugin_frame = frame;
-          }
-        }));
-
-    return plugin_frame;
+    content::RenderFrameHost* main_frame = guest_contents->GetMainFrame();
+    return IsUnseasoned() ? pdf_frame_util::FindPdfChildFrame(main_frame)
+                          : main_frame;
   }
 
   // Finds the `RenderFrameHost`s of Unseasoned PDF plugins within a given
