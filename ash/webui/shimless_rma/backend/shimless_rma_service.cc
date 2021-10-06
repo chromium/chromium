@@ -53,7 +53,6 @@ class RmadObserver : chromeos::RmadClient::Observer {
 }  // namespace
 
 ShimlessRmaService::ShimlessRmaService() {
-  // TODO(gavindodd): Is there a guarantee that rmad client exists at this time?
   chromeos::RmadClient::Get()->AddObserver(this);
   GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
@@ -63,7 +62,6 @@ ShimlessRmaService::ShimlessRmaService() {
 }
 
 ShimlessRmaService::~ShimlessRmaService() {
-  // TODO(gavindodd): Is there a guarantee that rmad client exists at this time?
   chromeos::RmadClient::Get()->RemoveObserver(this);
 }
 
