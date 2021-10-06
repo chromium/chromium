@@ -40,6 +40,10 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   ScrollableAppsGridView& operator=(const ScrollableAppsGridView&) = delete;
   ~ScrollableAppsGridView() override;
 
+  // Sets the max number of columns the grid can have.
+  // See `AppsGridView::SetMaxColumnsInternal()` for details.
+  void SetMaxColumns(int max_cols);
+
   // views::View:
   void Layout() override;
 

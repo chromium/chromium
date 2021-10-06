@@ -346,19 +346,6 @@ void AppsGridView::UpdateAppListConfig(const AppListConfig* app_list_config) {
     CreateGhostImageView();
 }
 
-void AppsGridView::SetMaxColumns(int max_cols) {
-  if (max_cols_ == max_cols)
-    return;
-
-  max_cols_ = max_cols;
-
-  if (IsInFolder()) {
-    UpdateColsAndRowsForFolder();
-  } else {
-    cols_ = max_cols_;
-  }
-}
-
 void AppsGridView::SetFixedTilePadding(int horizontal_padding,
                                        int vertical_padding) {
   has_fixed_tile_padding_ = true;
@@ -1021,6 +1008,19 @@ int AppsGridView::TilesPerPage(int page) const {
   }
 
   return max_rows * cols();
+}
+
+void AppsGridView::SetMaxColumnsInternal(int max_cols) {
+  if (max_cols_ == max_cols)
+    return;
+
+  max_cols_ = max_cols;
+
+  if (IsInFolder()) {
+    UpdateColsAndRowsForFolder();
+  } else {
+    cols_ = max_cols_;
+  }
 }
 
 void AppsGridView::CalculateIdealBounds() {

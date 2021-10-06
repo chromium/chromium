@@ -563,9 +563,10 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
   items_grid_view_ = items_grid_view;
 
   items_grid_view_->Init();
-  items_grid_view->SetMaxColumns(kMaxFolderColumns);
-  items_grid_view->SetMaxRows(/*max_rows_in_first_page=*/kMaxPagedFolderRows,
-                              /*max_rows=*/kMaxPagedFolderRows);
+  items_grid_view->SetMaxColumnsAndRows(
+      kMaxFolderColumns,
+      /*max_rows_in_first_page=*/kMaxPagedFolderRows,
+      /*max_rows=*/kMaxPagedFolderRows);
   items_grid_view->SetFixedTilePadding(kTileSpacingInFolder / 2,
                                        kTileSpacingInFolder / 2);
 
@@ -615,14 +616,15 @@ void AppListFolderView::CreateScrollableAppsGrid() {
       .SetCollapseMargins(true);
 
   // Create the apps grid.
-  items_grid_view_ =
+  auto* items_grid_view =
       scroll_contents->AddChildView(std::make_unique<ScrollableAppsGridView>(
           a11y_announcer_, view_delegate_, this, scroll_view_,
           /*folder_controller=*/nullptr, /*focus_delegate=*/nullptr));
-  items_grid_view_->Init();
-  items_grid_view_->SetMaxColumns(kMaxFolderColumns);
-  items_grid_view_->SetFixedTilePadding(kTileSpacingInFolder / 2,
-                                        kTileSpacingInFolder / 2);
+  items_grid_view_ = items_grid_view;
+  items_grid_view->Init();
+  items_grid_view->SetMaxColumns(kMaxFolderColumns);
+  items_grid_view->SetFixedTilePadding(kTileSpacingInFolder / 2,
+                                       kTileSpacingInFolder / 2);
   scroll_view_->SetContents(std::move(scroll_contents));
 
   // The scroll view consumes all available vertical space in its parent. This

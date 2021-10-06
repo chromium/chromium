@@ -2488,6 +2488,81 @@ TEST_P(AppsGridViewTabletTest, TouchDragFlipToNextPage) {
   EndDrag(apps_grid_view_, /*cancel=*/true);
 }
 
+TEST_P(AppsGridViewTabletTest,
+       UpdatePagingIfPageSizesChangeOverflownLandspaceToPortait) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+
+  // Create 2 full pages of apps, and add another app to overflow to third page.
+  const int kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) + 1;
+  model_->PopulateApps(kTotalApps);
+  EXPECT_EQ(3, GetPaginationModel()->total_pages());
+
+  // Rotate the screen, and verify that the number of pages decreased if new
+  // page structure fit all apps into 2 pages (number of items per page may
+  // change between landscape and protrait mode for productivity launcher).
+  UpdateDisplay("1024x768/r");
+
+  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+            GetPaginationModel()->total_pages());
+}
+
+TEST_P(AppsGridViewTabletTest,
+       UpdatePagingIfPageSizesChangeUnderflowLandspaceToPortait) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+
+  // Create 2 full pages of apps, and add another app to overflow to third page.
+  const int kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) - 1;
+  model_->PopulateApps(kTotalApps);
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+
+  // Rotate the screen, and verify that the number of pages increased if new
+  // page structure does not fit all apps into 2 pages (number of items per page
+  // may change between landscape and protrait mode for productivity launcher).
+  UpdateDisplay("1024x768/r");
+
+  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+            GetPaginationModel()->total_pages());
+}
+
+TEST_P(AppsGridViewTabletTest,
+       UpdatePagingIfPageSizesChangeOverflownPortraitToLandcape) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+  UpdateDisplay("1024x768/r");
+
+  // Create 2 full pages of apps, and add another app to overflow to third page.
+  const int kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) + 1;
+  model_->PopulateApps(kTotalApps);
+  EXPECT_EQ(3, GetPaginationModel()->total_pages());
+
+  // Rotate the screen, and verify that the number of pages decreased if new
+  // page structure fit all apps into 2 pages (number of items per page may
+  // change between landscape and protrait mode for productivity launcher).
+  UpdateDisplay("1024x768");
+
+  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+            GetPaginationModel()->total_pages());
+}
+
+TEST_P(AppsGridViewTabletTest,
+       UpdatePagingIfPageSizesChangeUnderflowPortraitToLandscape) {
+  ASSERT_TRUE(paged_apps_grid_view_);
+  UpdateDisplay("1024x768/r");
+
+  // Create 2 full pages of apps, and add another app to overflow to third page.
+  const int kTotalApps = GetTilesPerPage(0) + GetTilesPerPage(1) - 1;
+  model_->PopulateApps(kTotalApps);
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+
+  // Rotate the screen, and verify that the number of pages increaesed if new
+  // page structure fits all apps into 2 pages (which may be the case if
+  // productivity launcher is enabled, in which case protrait mode grid has more
+  // items per page than landscape UI).
+  UpdateDisplay("1024x768");
+
+  EXPECT_EQ(kTotalApps <= GetTilesPerPage(0) + GetTilesPerPage(1) ? 2 : 3,
+            GetPaginationModel()->total_pages());
+}
+
 TEST_P(AppsGridViewTabletTest, TouchDragFlipToPreviousPage) {
   ASSERT_TRUE(paged_apps_grid_view_);
 

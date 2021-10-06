@@ -79,14 +79,16 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
                      float apps_opacity_change_start,
                      float apps_opacity_change_end);
 
-  // Sets the number of max rows in grid pages. Special-cases the first page,
-  // which may allow smaller number of rows in certain spaces (to make room for
-  // other UI elements like continue section).
+  // Sets the number of max rows and columns in grid pages. Special-cases the
+  // first page, which may allow smaller number of rows in certain cases (to
+  // make room for other UI elements like continue section).
   // For non-folder item grid, this generally describes the number of slots
   // shown in the page. For folders, the number of displayed slots will also
   // depend on number of items in the grid (e.g. folder with 4 items will have
   // 2x2 grid).
-  void SetMaxRows(int max_rows_on_first_page, int max_rows);
+  void SetMaxColumnsAndRows(int max_columns,
+                            int max_rows_on_first_page,
+                            int max_rows);
 
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;

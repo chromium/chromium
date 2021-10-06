@@ -115,15 +115,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // adhere to new tile and icon dimensions, so it should be used sparingly.
   void UpdateAppListConfig(const AppListConfig* app_list_config);
 
-  // Sets the max number of columns that the grid can have.
-  // For root apps grid view, the grid size depends on the space available to
-  // apps grid view only, and `cols()` will match `max_columns`. I.e. if the
-  // grid doesn't have enough items to fill out all columns, it will leave empty
-  // spaces in the UI.
-  // For folder item grid, the grid size also depends on the number of items in
-  // the grid, so number of actual columns may be smaller than `max_columns`.
-  void SetMaxColumns(int max_columns);
-
   int cols() const { return cols_; }
 
   // Sets padding for apps grid items to use during layout if fixed padding
@@ -391,6 +382,15 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Calculates the item views' bounds for non-folder.
   virtual void CalculateIdealBoundsForNonFolder() = 0;
+
+  // Sets the max number of columns that the grid can have.
+  // For root apps grid view, the grid size depends on the space available to
+  // apps grid view only, and `cols()` will match `max_columns`. I.e. if the
+  // grid doesn't have enough items to fill out all columns, it will leave empty
+  // spaces in the UI.
+  // For folder item grid, the grid size also depends on the number of items in
+  // the grid, so number of actual columns may be smaller than `max_columns`.
+  void SetMaxColumnsInternal(int max_columns);
 
   // Calculates the item views' bounds for both folder and non-folder.
   void CalculateIdealBounds();

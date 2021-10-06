@@ -341,11 +341,23 @@ void PagedAppsGridView::UpdateOpacity(bool restore_opacity,
   }
 }
 
-void PagedAppsGridView::SetMaxRows(int max_rows_on_first_page, int max_rows) {
+void PagedAppsGridView::SetMaxColumnsAndRows(int max_columns,
+                                             int max_rows_on_first_page,
+                                             int max_rows) {
   DCHECK_LE(max_rows_on_first_page, max_rows);
+  const int first_page_size = TilesPerPage(0);
+  const int default_page_size = TilesPerPage(1);
 
   max_rows_on_first_page_ = max_rows_on_first_page;
   max_rows_ = max_rows;
+  SetMaxColumnsInternal(max_columns);
+
+  // Update paging if the page sizes have changed.
+  if (item_list() && (TilesPerPage(0) != first_page_size ||
+                      TilesPerPage(1) != default_page_size)) {
+    view_structure_.LoadFromMetadata();
+    UpdatePaging();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

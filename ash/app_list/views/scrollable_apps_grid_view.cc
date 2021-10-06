@@ -68,6 +68,10 @@ ScrollableAppsGridView::~ScrollableAppsGridView() {
   EndDrag(/*cancel=*/true);
 }
 
+void ScrollableAppsGridView::SetMaxColumns(int max_cols) {
+  SetMaxColumnsInternal(max_cols);
+}
+
 void ScrollableAppsGridView::Layout() {
   if (ignore_layout())
     return;
