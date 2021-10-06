@@ -593,7 +593,7 @@ crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] confor
 crbug.com/angleproject/5213 [ linux amd-0x6613 angle-opengl passthrough ] conformance/renderbuffers/renderbuffer-initialization.html [ Failure ]
 
 # Linux Intel
-crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.html [ RetryOnFailure ]
+crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
 ####################
 # Android failures #
