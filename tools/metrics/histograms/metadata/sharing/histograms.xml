@@ -134,7 +134,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
-    expires_after="M97">
+    expires_after="M100">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -589,7 +589,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="M97">
+    expires_after="M100">
   <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
@@ -614,8 +614,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.ThirdPartyAppUsage"
-    enum="SharingHubBottomRowIndex" expires_after="M97">
-  <owner>kmilka@chromium.org</owner>
+    enum="SharingHubBottomRowIndex" expires_after="M100">
+  <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
     Records the index of the third party app selected from the bottom row of the
@@ -624,8 +624,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShare" units="ms"
-    expires_after="M97">
-  <owner>kmilka@chromium.org</owner>
+    expires_after="M100">
+  <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
     Records the amount of time taken for the user to select a share target after
@@ -634,8 +634,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToShowShareSheet" units="ms"
-    expires_after="M97">
-  <owner>kmilka@chromium.org</owner>
+    expires_after="M100">
+  <owner>sophey@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
     Records the amount of time taken for the custom share sheet to open after a
