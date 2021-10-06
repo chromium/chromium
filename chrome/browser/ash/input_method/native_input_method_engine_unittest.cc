@@ -297,6 +297,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
                                 /*autocorrect=*/true,
                                 /*predictive_writing=*/false)));
             }));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
 
   ui::IMEEngineHandlerInterface::InputContext input_context(
@@ -341,6 +342,7 @@ TEST_F(NativeInputMethodEngineTest,
                                 /*autocorrect=*/true,
                                 /*predictive_writing=*/true)));
             }));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
 
   ui::IMEEngineHandlerInterface::InputContext input_context(
@@ -400,6 +402,8 @@ TEST_F(NativeInputMethodEngineTest,
   {
     testing::InSequence seq;
     EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged("", _, _));
+
     // Each character in "你好" is three UTF-8 code units.
     EXPECT_CALL(mock_input_method,
                 OnSurroundingTextChanged(u8"你好",
@@ -439,6 +443,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   {
     testing::InSequence seq;
     EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
     // once the Mojo API is replaced with protos. GMock does not play well with
@@ -493,6 +498,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
   {
     testing::InSequence seq;
     EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
     // once the Mojo API is replaced with protos. GMock does not play well with
@@ -548,6 +554,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   {
     testing::InSequence seq;
     EXPECT_CALL(mock_input_method, OnFocus(_, _));
+    EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
     EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _)).Times(0);
   }
 

@@ -170,6 +170,16 @@ class NativeInputMethodEngine
     void OnProfileWillBeDestroyed();
 
    private:
+    struct SurroundingText {
+      std::u16string text;
+      int cursor_pos = 0;
+      int anchor_pos = 0;
+      int offset_pos = 0;
+    };
+
+    void SendSurroundingTextToNativeMojoEngine(
+        const SurroundingText& surrounding_text);
+
     PrefService* prefs_ = nullptr;
 
     std::unique_ptr<InputMethodEngineBase::Observer> ime_base_observer_;
@@ -183,6 +193,8 @@ class NativeInputMethodEngine
     std::unique_ptr<GrammarManager> grammar_manager_;
 
     ui::CharacterComposer character_composer_;
+
+    SurroundingText last_surrounding_text_;
   };
 
   ImeObserver* GetNativeObserver() const;

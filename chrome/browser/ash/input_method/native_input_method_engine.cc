@@ -696,6 +696,9 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
                                      ? mojom::PersonalizationMode::kEnabled
                                      : mojom::PersonalizationMode::kDisabled),
                              CreateSettingsFromPrefs(engine_id, prefs_));
+
+      // TODO(b/202224495): Send the surrounding text as part of InputFieldInfo.
+      SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);
     }
   } else {
     ime_base_observer_->OnFocus(engine_id, context_id, context);
@@ -814,6 +817,12 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
     int offset_pos) {
   DCHECK_GE(cursor_pos, 0);
   DCHECK_GE(anchor_pos, 0);
+
+  last_surrounding_text_ = SurroundingText{.text = text,
+                                           .cursor_pos = cursor_pos,
+                                           .anchor_pos = anchor_pos,
+                                           .offset_pos = offset_pos};
+
   assistive_suggester_->RecordAssistiveMatchMetrics(text, cursor_pos,
                                                     anchor_pos);
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
@@ -826,17 +835,7 @@ void NativeInputMethodEngine::ImeObserver::OnSurroundingTextChanged(
   }
   if (ShouldRouteToNativeMojoEngine(engine_id)) {
     if (input_method_.is_bound()) {
-      std::vector<size_t> selection_indices = {static_cast<size_t>(anchor_pos),
-                                               static_cast<size_t>(cursor_pos)};
-      std::string utf8_text =
-          base::UTF16ToUTF8AndAdjustOffsets(text, &selection_indices);
-
-      auto selection = mojom::SelectionRange::New();
-      selection->anchor = selection_indices[0];
-      selection->focus = selection_indices[1];
-
-      input_method_->OnSurroundingTextChanged(std::move(utf8_text), offset_pos,
-                                              std::move(selection));
+      SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);
     }
   } else {
     ime_base_observer_->OnSurroundingTextChanged(engine_id, text, cursor_pos,
@@ -1069,6 +1068,23 @@ void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
 
 void NativeInputMethodEngine::ImeObserver::OnProfileWillBeDestroyed() {
   prefs_ = nullptr;
+}
+
+void NativeInputMethodEngine::ImeObserver::
+    SendSurroundingTextToNativeMojoEngine(
+        const SurroundingText& surrounding_text) {
+  std::vector<size_t> selection_indices = {
+      static_cast<size_t>(surrounding_text.anchor_pos),
+      static_cast<size_t>(surrounding_text.cursor_pos)};
+  std::string utf8_text = base::UTF16ToUTF8AndAdjustOffsets(
+      surrounding_text.text, &selection_indices);
+
+  auto selection = mojom::SelectionRange::New();
+  selection->anchor = selection_indices[0];
+  selection->focus = selection_indices[1];
+
+  input_method_->OnSurroundingTextChanged(
+      std::move(utf8_text), surrounding_text.offset_pos, std::move(selection));
 }
 
 void NativeInputMethodEngine::OnInputMethodOptionsChanged() {
