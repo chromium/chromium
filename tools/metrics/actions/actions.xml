@@ -23247,6 +23247,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SharingDesktopScreenshot.ScreenshotSavedViaBubble">
+  <owner>skare@chromium.org</owner>
+  <owner>src/components/send_tab_to_self/OWNERS</owner>
+  <description>
+    User saved a screenshot captured from the desktop screenshot bubble.
+  </description>
+</action>
+
 <action name="SharingHubAndroid.BottomRowScrolled">
   <obsolete>
     Renamed to SharingHubAndroid.ThirdPartyAppsScrolled 09/2020.

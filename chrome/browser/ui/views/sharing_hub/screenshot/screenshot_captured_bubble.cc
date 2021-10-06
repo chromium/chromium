@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.h"
 
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -237,6 +238,8 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
   params->set_suggested_name(
       GetFilenameForURL(web_contents_->GetLastCommittedURL()));
   download_manager->DownloadUrl(std::move(params));
+  base::RecordAction(base::UserMetricsAction(
+      "SharingDesktopScreenshot.ScreenshotSavedViaBubble"));
 }
 
 void ScreenshotCapturedBubble::EditButtonPressed() {
