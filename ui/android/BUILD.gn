@@ -349,6 +349,7 @@ android_library("ui_no_recycler_view_java") {
     "java/src/org/chromium/ui/widget/RippleBackgroundHelper.java",
     "java/src/org/chromium/ui/widget/TextViewWithClickableSpans.java",
     "java/src/org/chromium/ui/widget/TextViewWithLeading.java",
+    "java/src/org/chromium/ui/widget/TextViewWithTightWrap.java",
     "java/src/org/chromium/ui/widget/Toast.java",
     "java/src/org/chromium/ui/widget/UiWidgetFactory.java",
     "java/src/org/chromium/ui/widget/ViewLookupCachingFrameLayout.java",
@@ -546,7 +547,10 @@ android_library("clipboard_java_test_support") {
 android_library("ui_javatests") {
   testonly = true
 
-  sources = [ "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java" ]
+  sources = [
+    "java/src/org/chromium/ui/widget/TextViewWithTightWrapTest.java",
+    "javatests/src/org/chromium/ui/base/ClipboardAndroidTest.java",
+  ]
 
   deps = [
     ":clipboard_java_test_support",

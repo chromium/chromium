@@ -106,4 +106,13 @@
         <item name="android:windowEnterAnimation">@anim/chip_in</item>
         <item name="android:windowExitAnimation">@anim/chip_out</item>
     </style>
+
+    <!-- Snooze button -->
+    <style name="TextButton.Inverse.Snooze">
+        <item name="android:paddingStart">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
 </resources>

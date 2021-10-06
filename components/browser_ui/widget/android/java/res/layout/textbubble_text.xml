@@ -13,7 +13,7 @@
     android:padding="16dp"
     android:gravity="center" >
 
-     <TextView
+     <org.chromium.ui.widget.TextViewWithTightWrap
           android:id="@+id/message"
           android:layout_width="0dp"
           android:layout_height="wrap_content"
@@ -27,7 +27,8 @@
           android:focusable="true"
           android:clickable="true"
           android:visibility="gone"
-          android:text="@string/iph_snooze" />
+          android:text="@string/iph_snooze"
+          style="@style/TextButton.Inverse.Snooze" />
 
      <org.chromium.ui.widget.ButtonCompat
           android:id="@+id/button_dismiss"
@@ -36,6 +37,7 @@
           android:focusable="true"
           android:clickable="true"
           android:visibility="gone"
-          android:text="@string/got_it" />
+          android:text="@string/got_it"
+          style="@style/TextButton.Inverse.Snooze" />
 
 </LinearLayout>

@@ -480,6 +480,14 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         if (mImageDrawable == null) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.textbubble_text, null);
             setText(view.findViewById(R.id.message));
+
+            // Set different paddings for when snooze feature is present.
+            if (mSnoozeRunnable != null || mSnoozeDismissRunnable != null) {
+                int paddingStart = mContext.getResources().getDimensionPixelSize(
+                        R.dimen.text_bubble_with_snooze_padding_horizontal);
+                view.setPadding(paddingStart, view.getPaddingTop(), 0, view.getPaddingBottom());
+            }
+
             if (mSnoozeRunnable != null) {
                 Button snoozeButton = (Button) view.findViewById(R.id.button_snooze);
                 snoozeButton.setVisibility(View.VISIBLE);
