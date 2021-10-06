@@ -32,6 +32,7 @@ TARGET_DEVICES = {
     'android-pixel2-perf': {
         'system_health.common_mobile': 3,
         'system_health.memory_mobile': 3,
+        'startup.mobile': 10,
     },
     'android-go-perf': {
         'system_health.common_mobile': {
