@@ -17,7 +17,6 @@
 #include <memory>
 
 #include "base/check_op.h"
-#include "base/clang_profiling_buildflags.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -52,10 +51,6 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-
-#if BUILDFLAG(CLANG_PROFILING)
-#include "base/test/clang_profiling.h"
-#endif
 
 #if defined(USE_SYMBOLIZE)
 #include "base/third_party/symbolize/symbolize.h"
@@ -335,13 +330,6 @@ void BreakDebuggerAsyncSafe() {
   _exit(1);
 #pragma GCC diagnostic pop
 #endif
-}
-
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-  BreakDebuggerAsyncSafe();
 }
 
 }  // namespace debug

@@ -7,12 +7,6 @@
 #include <stdlib.h>
 #include <windows.h>
 
-#include "base/clang_profiling_buildflags.h"
-
-#if BUILDFLAG(CLANG_PROFILING)
-#include "base/test/clang_profiling.h"
-#endif
-
 namespace base {
 namespace debug {
 
@@ -25,14 +19,6 @@ void BreakDebuggerAsyncSafe() {
     _exit(1);
 
   __debugbreak();
-}
-
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-
-  BreakDebuggerAsyncSafe();
 }
 
 void VerifyDebugger() {}

@@ -10,12 +10,7 @@
 #include <zircon/process.h>
 #include <zircon/syscalls.h>
 
-#include "base/clang_profiling_buildflags.h"
 #include "base/debug/alias.h"
-
-#if BUILDFLAG(CLANG_PROFILING)
-#include "base/test/clang_profiling.h"
-#endif
 
 namespace base {
 namespace debug {
@@ -40,13 +35,6 @@ void BreakDebuggerAsyncSafe() {
   Alias(&static_variable_to_make_this_function_unique);
 
   abort();
-}
-
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-  BreakDebuggerAsyncSafe();
 }
 
 void VerifyDebugger() {}
