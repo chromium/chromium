@@ -22,23 +22,14 @@ void OfferNotificationHelper::OnDisplayOfferNotification(
   origins_to_display_notification_ = origins;
 }
 
-void OfferNotificationHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted()) {
-    return;
-  }
-  // Don't react to same-document (fragment) navigations.
-  if (navigation_handle->IsSameDocument())
-    return;
+void OfferNotificationHelper::PrimaryPageChanged(content::Page& page) {
   // Don't do anything if user is still on an eligible origin for this offer.
-  if (base::ranges::count(origins_to_display_notification_,
-                          navigation_handle->GetURL().GetOrigin())) {
+  if (base::ranges::count(
+          origins_to_display_notification_,
+          page.GetMainDocument().GetLastCommittedURL().GetOrigin())) {
     return;
   }
+
   // TODO(crbug.com/1093057): Introduce a callback and hide the offer
   // notification.
   origins_to_display_notification_.clear();
