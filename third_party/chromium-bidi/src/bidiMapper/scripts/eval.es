@@ -89,7 +89,7 @@
           if (Array.isArray(value)) {
             result.value.push(serializedProperty);
           } else {
-            // TODO sadym: implement key serialisation.
+            // TODO sadym: implement key serialization.
             result.value.push([key, serialize(value[key], maxDepth - 1)]);
           }
         }

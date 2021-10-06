@@ -26,7 +26,7 @@ export class Context {
   _sessionId?: string;
 
   private _dummyContextObjectId: string = '';
-  // As `script.evaluate` wraps call into serialisation script, `lineNumber`
+  // As `script.evaluate` wraps call into serialization script, `lineNumber`
   // should be adjusted.
   private _evaluateStacktraceLineOffset = 1;
 
@@ -95,7 +95,7 @@ export class Context {
     });
 
     if (response.exceptionDetails)
-      // Serialisation failed unexpectidely.
+      // Serialization failed unexpectidely.
       throw new Error(
         'Cannot serialize object: ' + response.exceptionDetails.text
       );
@@ -110,7 +110,7 @@ export class Context {
       (frame) => ({
         url: frame.url,
         functionName: frame.functionName,
-        // As `script.evaluate` wraps call into serialisation script, so
+        // As `script.evaluate` wraps call into serialization script, so
         // `lineNumber` should be adjusted.
         lineNumber: frame.lineNumber - this._evaluateStacktraceLineOffset,
         columnNumber: frame.columnNumber,
@@ -125,7 +125,7 @@ export class Context {
       exceptionDetails: {
         exception,
         columnNumber: cdpExceptionDetails.columnNumber,
-        // As `script.evaluate` wraps call into serialisation script, so
+        // As `script.evaluate` wraps call into serialization script, so
         // `lineNumber` should be adjusted.
         lineNumber:
           cdpExceptionDetails.lineNumber - this._evaluateStacktraceLineOffset,
@@ -145,14 +145,14 @@ export class Context {
     // on the`EVALUATOR_SCRIPT` length in case of exception. Based on
     // `awaitPromise`, `_serialize` function will wait for the result, or
     // serialize promise as-is.
-    const evalAndSerialiseScript = `_serialize(\n${expression}\n);
+    const evalAndSerializeScript = `_serialize(\n${expression}\n);
       async function _serialize(value){
         return (${EVALUATOR_SCRIPT})
           .serialize.apply(null, [${awaitPromise ? 'await' : ''} value])
       }`;
 
     const cdpEvaluateResult = await this._cdpClient.Runtime.evaluate({
-      expression: evalAndSerialiseScript,
+      expression: evalAndSerializeScript,
       // Always wait for the result of `_serialize`. Wait or not for the user's
       // expression is handled in the `_serialize` function.
       awaitPromise: true,

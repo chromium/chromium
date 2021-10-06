@@ -538,7 +538,7 @@ async def _ignore_test_pageEvaluateWithElement_resultReceived(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "element => '!!@@##, ' + element.innerHTML",
-    # TODO: send properly serialised element according to
+    # TODO: send properly serialized element according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
                 "objectId": objectID}],
@@ -583,7 +583,7 @@ async def _ignore_test_pageEvaluateWithScalarArgs_resultReceived(websocket):
         "id": 45,
         "method": "script.evaluate",
         "params": {
-    # TODO: send properly serialised scalars according to
+    # TODO: send properly serialized scalars according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [1, 2],
             "expression": "(a,b) => a+b",
@@ -687,7 +687,7 @@ async def _ignore_test_browsingContextType_textTyped(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "element => element.value",
-    # TODO: send properly serialised element according to
+    # TODO: send properly serialized element according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
                 "objectId": objectID}],
@@ -889,8 +889,8 @@ async def test_scriptEvaluateChangingObject_resultObjectDidNotChange(websocket):
         "objectId": "__any_value__"
         }, resp["result"]["result"], ["objectId"])
 
-# Testing serialisation.
-async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
+# Testing serialization.
+async def assertSerialization(jsStrObject, expectedSerializedObject, websocket):
     contextID = await get_open_context_id(websocket)
 
     # Send command.
@@ -906,27 +906,27 @@ async def assertSerialisation(jsStrObject, expectedSerialisedObject, websocket):
     assert resp["id"] == 9997
 
     # Compare ignoring `objectId`.
-    recursiveCompare(expectedSerialisedObject, resp["result"]["result"], ["objectId"])
+    recursiveCompare(expectedSerializedObject, resp["result"]["result"], ["objectId"])
 
 @pytest.mark.asyncio
-async def test_serialisation_undefined(websocket):
-    await assertSerialisation(
+async def test_serialization_undefined(websocket):
+    await assertSerialization(
         "undefined",
         {"type":"undefined"},
         websocket)
 
 
 @pytest.mark.asyncio
-async def test_serialisation_null(websocket):
-    await assertSerialisation(
+async def test_serialization_null(websocket):
+    await assertSerialization(
         "null",
         {"type":"null"},
         websocket)
 
 # TODO: test escaping, null bytes string, lone surrogates.
 @pytest.mark.asyncio
-async def test_serialisation_string(websocket):
-    await assertSerialisation(
+async def test_serialization_string(websocket):
+    await assertSerialization(
         "'someStr'",
         {
             "type":"string",
@@ -934,14 +934,14 @@ async def test_serialisation_string(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_number(websocket):
-    await assertSerialisation(
+async def test_serialization_number(websocket):
+    await assertSerialization(
         "123",
         {
             "type":"number",
             "value":123},
         websocket)
-    await assertSerialisation(
+    await assertSerialization(
         "0.56",
         {
             "type":"number",
@@ -949,26 +949,26 @@ async def test_serialisation_number(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_specialNumber(websocket):
-    await assertSerialisation(
+async def test_serialization_specialNumber(websocket):
+    await assertSerialization(
         "+Infinity",
         {
             "type":"number",
             "value":"+Infinity"},
         websocket)
-    await assertSerialisation(
+    await assertSerialization(
         "-Infinity",
         {
             "type":"number",
             "value":"-Infinity"},
         websocket)
-    await assertSerialisation(
+    await assertSerialization(
         "-0",
         {
             "type":"number",
             "value":"-0"},
         websocket)
-    await assertSerialisation(
+    await assertSerialization(
         "NaN",
         {
             "type":"number",
@@ -976,14 +976,14 @@ async def test_serialisation_specialNumber(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_bool(websocket):
-    await assertSerialisation(
+async def test_serialization_bool(websocket):
+    await assertSerialization(
         "true",
         {
             "type":"boolean",
             "value":True},
         websocket)
-    await assertSerialisation(
+    await assertSerialization(
         "false",
         {
             "type":"boolean",
@@ -991,8 +991,8 @@ async def test_serialisation_bool(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_function(websocket):
-    await assertSerialisation(
+async def test_serialization_function(websocket):
+    await assertSerialization(
         "function(){}",
         {
             "type":"function",
@@ -1001,8 +1001,8 @@ async def test_serialisation_function(websocket):
         websocket)
 
 @pytest.mark.asyncio
-async def test_serialisation_object(websocket):
-    await assertSerialisation(
+async def test_serialization_object(websocket):
+    await assertSerialization(
         "{'foo': {'bar': 'baz'}, 'qux': 'quux'}",
         {
             "type":"object",
@@ -1018,8 +1018,8 @@ async def test_serialisation_object(websocket):
 
 
 @pytest.mark.asyncio
-async def test_serialisation_array(websocket):
-    await assertSerialisation(
+async def test_serialization_array(websocket):
+    await assertSerialization(
         "[1, 'a', {foo: 'bar'}, [2,[3,4]]]",
         {
             "type":"array",
@@ -1040,8 +1040,8 @@ async def test_serialisation_array(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_bigint(websocket):
-    await assertSerialisation(
+async def _ignore_test_serialization_bigint(websocket):
+    await assertSerialization(
         "BigInt('12345678901234567890')",
         {
             "type":"bigint",
@@ -1050,8 +1050,8 @@ async def _ignore_test_serialisation_bigint(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_symbol(websocket):
-    await assertSerialisation(
+async def _ignore_test_serialization_symbol(websocket):
+    await assertSerialization(
         "Symbol('foo')",
         {
             "type":"symbol",
@@ -1062,8 +1062,8 @@ async def _ignore_test_serialisation_symbol(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_regExp(websocket):
-    await assertSerialisation(
+async def _ignore_test_serialization_regExp(websocket):
+    await assertSerialization(
         "new RegExp('ab+c')",
         {
             "type":"regexp",
@@ -1072,11 +1072,11 @@ async def _ignore_test_serialisation_regExp(websocket):
         },
         websocket)
 
-# TODO: check timezone serialisation.
+# TODO: check timezone serialization.
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_date(websocket):
-    await assertSerialisation(
+async def _ignore_test_serialization_date(websocket):
+    await assertSerialization(
         "new Date('2021-02-18T13:53:00+0200')",
         {
             "type":"date",
@@ -1086,8 +1086,8 @@ async def _ignore_test_serialisation_date(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_windowProxy(websocket):
-    await assertSerialisation(
+async def _ignore_test_serialization_windowProxy(websocket):
+    await assertSerialization(
         "this.window",
         {
             "type":"window",
@@ -1097,8 +1097,8 @@ async def _ignore_test_serialisation_windowProxy(websocket):
 
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_error(websocket):
-    await assertSerialisation(
+async def _ignore_test_serialization_error(websocket):
+    await assertSerialization(
         "new Error('Woops!')",
         {
             "type":"error",
@@ -1106,11 +1106,11 @@ async def _ignore_test_serialisation_error(websocket):
         },
         websocket)
 
-# TODO: add `NodeProperties` after serialisation MaxDepth logic specified:
+# TODO: add `NodeProperties` after serialization MaxDepth logic specified:
 # https://github.com/w3c/webdriver-bidi/issues/86.
 @pytest.mark.asyncio
 # Not implemented yet.
-async def _ignore_test_serialisation_node(websocket):
+async def _ignore_test_serialization_node(websocket):
     contextID = await get_open_context_id(websocket)
     await goto_url(websocket, contextID,
         "data:text/html,<div some_attr_name='some_attr_value' ><h2>test</h2></div>")
@@ -1133,7 +1133,7 @@ async def _ignore_test_serialisation_node(websocket):
         "method": "script.evaluate",
         "params": {
             "expression": "element => element",
-    # TODO: send properly serialised element according to
+    # TODO: send properly serialized element according to
     # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
             "args": [{
                 "objectId": objectId}],
@@ -1161,35 +1161,35 @@ async def _ignore_test_serialisation_node(websocket):
     resp, ["objectId"])
 
 
-# TODO: implement proper serialisation according to
+# TODO: implement proper serialization according to
 # https://w3c.github.io/webdriver-bidi/#data-types-remote-value.
 
 # @pytest.mark.asyncio
-# async def test_serialisation_map(websocket):
+# async def test_serialization_map(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_set(websocket):
+# async def test_serialization_set(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_weakMap(websocket):
+# async def test_serialization_weakMap(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_weakSet(websocket):
+# async def test_serialization_weakSet(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_iterator(websocket):
+# async def test_serialization_iterator(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_generator(websocket):
+# async def test_serialization_generator(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_proxy(websocket):
+# async def test_serialization_proxy(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_promise(websocket):
+# async def test_serialization_promise(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_typedArray(websocket):
+# async def test_serialization_typedArray(websocket):
 
 # @pytest.mark.asyncio
-# async def test_serialisation_arrayBuffer(websocket):
+# async def test_serialization_arrayBuffer(websocket):
