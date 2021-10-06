@@ -450,6 +450,7 @@ export const MainPageMixin = dedupingMixin(
             if (newState === RouteState.SECTION) {
               this.switchToSections_(newRoute);
             } else if (newState === RouteState.SUBPAGE) {
+              this.switchToSections_(newRoute);
               this.enterSubpage_(newRoute);
             } else if (newState === RouteState.TOP_LEVEL) {
               // Case when navigating from '/?search=foo' to '/' (clearing

@@ -185,6 +185,15 @@ suite('SettingsBasicPageRedesign', () => {
     await whenDone;
     await flushTasks();
     assertActiveSection(routes.PEOPLE.section);
+
+    // RouteState.TOP_LEVEL -> RoutState.SUBPAGE
+    whenDone = eventToPromise('show-container', page);
+    // Navigate specifically to a subpage that is *not* a child of
+    // TOP_LEVEL_EQUIVALENT_ROUTE .
+    Router.getInstance().navigateTo(routes.FONTS);
+    await whenDone;
+    await flushTasks();
+    assertActiveSubpage(routes.FONTS.section);
   });
 
   // Test cases where a settings-section is appearing next to another section
