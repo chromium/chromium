@@ -1685,6 +1685,13 @@
        {}
       ]
      ],
+     "execCommand-at-load-with-changing-editing-host.html": [
+      "ec1dd30dc023205ce479df1038d08279c315ae62",
+      [
+       null,
+       {}
+      ]
+     ],
      "execCommand-backcolor-and-hilitecolor-in-empty-iframe-in-designMode.html": [
       "0750dddca7b8a820e93c459fbb38aaa100c90ff7",
       [
@@ -1727,6 +1734,13 @@
        {}
       ]
      ],
+     "inserthtml-indent-delete-when-input-element-in-editing-host-has-focus.html": [
+      "ff1eebe0413b679534176f96c50126243df72b86",
+      [
+       null,
+       {}
+      ]
+     ],
      "insertorderedlist-in-focused-inline-editing-host.html": [
       "73869af3b597697c4774640e596eb54dceeddbfb",
       [
@@ -1743,6 +1757,13 @@
      ],
      "insertparagraph-from-DOMNodeInserted-caused-by-insertorderedlist.html": [
       "fa322420cb3686b7d7ccb1b49f910aa5e409a72b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "insertunorderedlist-in-empty-inline-editing-host.html": [
+      "74b0993322eda076a13023c96261840eadd53339",
       [
        null,
        {}
@@ -1783,6 +1804,13 @@
        {}
       ]
      ],
+     "outdent-editing-host-containing-combining-diacritical-mark.html": [
+      "0ed71f789b01991636a1d91efd555fd630e93bf9",
+      [
+       null,
+       {}
+      ]
+     ],
      "outdent-in-empty-body-editing-host.html": [
       "f68e46bc5391a1687ec1d11315c492e38f6301a6",
       [
@@ -1818,6 +1846,13 @@
        {}
       ]
      ],
+     "remove-iframe-for-designMode.html": [
+      "609a9ca5429c6f5d2230e05a8b6db9501348d419",
+      [
+       null,
+       {}
+      ]
+     ],
      "selectall-and-inerthtml-in-textarea-editing-host.html": [
       "8b0e36cd655a51da8cc7df1740eed9f456bebf83",
       [
@@ -1827,6 +1862,13 @@
      ],
      "selectall-in-head-editing-host-after-body-removed.html": [
       "786ea25d9ae86e18fa05cec93fc2d2848e4fd543",
+      [
+       null,
+       {}
+      ]
+     ],
+     "unloading-editor-in-subdocument-containing-misspelled-word.html": [
+      "1b90e1d56a6a03bf164ca053691c3117b513af57",
       [
        null,
        {}
@@ -264239,6 +264281,14 @@
      "945ce83a00b407cf9ffdca4ff4b451d706d8a812",
      []
     ],
+    "crashtests": {
+     "support": {
+      "unloading-editor-in-subdocument-containing-misspelled-word-iframe.html": [
+       "cfedfa8d2e809fcd08c77a19fbcb2647df8ae9dd",
+       []
+      ]
+     }
+    },
     "data": {
      "README.md": [
       "2ac414b280275ea7a5ad1f376b6fe65d1bb897fe",
