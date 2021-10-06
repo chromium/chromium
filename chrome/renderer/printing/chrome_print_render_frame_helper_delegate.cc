@@ -6,12 +6,15 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/renderer/render_frame.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "pdf/pdf_features.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -34,6 +37,7 @@ blink::WebElement ChromePrintRenderFrameHelperDelegate::GetPdfElement(
     blink::WebLocalFrame* frame) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (IsPdfInternalPluginAllowedOrigin(frame->GetSecurityOrigin())) {
+    DCHECK(!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned));
     // <object> with id="plugin" is created in
     // chrome/browser/resources/pdf/pdf_viewer_base.js.
     auto viewer_element = frame->GetDocument().GetElementById("viewer");

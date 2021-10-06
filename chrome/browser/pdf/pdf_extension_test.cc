@@ -1610,9 +1610,7 @@ class PrintObserver : public printing::PrintViewManagerBase::Observer {
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BasicPrintCommand) {
   content::WebContents* guest_contents =
       LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-
-  // TODO(crbug.com/1246187): Observe on `GetPluginFrame(guest_contents)`.
-  content::RenderFrameHost* frame = guest_contents->GetMainFrame();
+  content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
   ASSERT_TRUE(frame);
 
   PrintObserver print_observer(guest_contents, frame);
@@ -1624,9 +1622,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, BasicPrintCommand) {
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, PrintCommand) {
   content::WebContents* guest_contents =
       LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
-
-  // TODO(crbug.com/1246187): Observe on `GetPluginFrame(guest_contents)`.
-  content::RenderFrameHost* frame = guest_contents->GetMainFrame();
+  content::RenderFrameHost* frame = GetPluginFrame(guest_contents);
   ASSERT_TRUE(frame);
 
   PrintObserver print_observer(guest_contents, frame);

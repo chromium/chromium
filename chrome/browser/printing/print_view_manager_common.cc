@@ -7,12 +7,17 @@
 #include "base/bind.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/buildflags/buildflags.h"
+#include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_frame_util.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_view_manager.h"
@@ -42,9 +47,16 @@ bool StoreFullPagePlugin(content::WebContents** result,
 content::RenderFrameHost* GetRenderFrameHostToUse(
     content::WebContents* original_contents,
     content::WebContents* contents_to_use) {
-  if (original_contents != contents_to_use)
-    return contents_to_use->GetMainFrame();
-  return GetFrameToPrint(contents_to_use);
+  if (original_contents == contents_to_use)
+    return GetFrameToPrint(contents_to_use);
+
+#if BUILDFLAG(ENABLE_PDF)
+  content::RenderFrameHost* pdf_rfh =
+      pdf_frame_util::FindPdfChildFrame(contents_to_use->GetMainFrame());
+  if (pdf_rfh)
+    return pdf_rfh;
+#endif
+  return contents_to_use->GetMainFrame();
 }
 
 }  // namespace
