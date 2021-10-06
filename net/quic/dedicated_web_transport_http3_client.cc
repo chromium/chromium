@@ -186,6 +186,11 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   quic::WebTransportVisitor* visitor_;
 };
 
+bool IsTerminalState(WebTransportState state) {
+  return state == WebTransportState::CLOSED ||
+         state == WebTransportState::FAILED;
+}
+
 }  // namespace
 
 DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
@@ -474,7 +479,7 @@ void DedicatedWebTransportHttp3Client::OnHeadersComplete() {
 }
 
 void DedicatedWebTransportHttp3Client::OnConnectStreamClosed() {
-  SetErrorIfNecessary(ERR_FAILED);
+  SetErrorIfNecessary(session_ready_ ? ERR_FAILED : ERR_METHOD_NOT_SUPPORTED);
   TransitionToState(WebTransportState::FAILED);
 }
 
@@ -521,6 +526,14 @@ int DedicatedWebTransportHttp3Client::DoConfirmConnection() {
 
 void DedicatedWebTransportHttp3Client::TransitionToState(
     WebTransportState next_state) {
+  // Ignore all state transition requests if we have reached the terminal
+  // state.
+  if (IsTerminalState(state_)) {
+    DCHECK(IsTerminalState(next_state))
+        << "from: " << state_ << ", to: " << next_state;
+    return;
+  }
+
   DCHECK_NE(state_, next_state);
   const WebTransportState last_state = state_;
   state_ = next_state;
