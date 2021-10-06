@@ -885,25 +885,75 @@ const base::FeatureParam<bool>
         "RichAutocompletionAutocompletePreferUrlsOverPrefixes",
         false);
 
+// Bookmark paths.
+
+const base::FeatureParam<std::string> kBookmarkPathsCounterfactual(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsCounterfactual",
+    "");
+const base::FeatureParam<bool> kBookmarkPathsUiReplaceTitle(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiReplaceTitle",
+    false);
+const base::FeatureParam<bool> kBookmarkPathsUiReplaceUrl(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiReplaceUrl",
+    false);
+const base::FeatureParam<bool> kBookmarkPathsUiAppendAfterTitle(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiAppendAfterTitle",
+    false);
+const base::FeatureParam<bool> kBookmarkPathsUiDynamicReplaceUrl(
+    &omnibox::kBookmarkPaths,
+    "OmniboxBookmarkPathsUiDynamicReplaceUrl",
+    false);
+
 // Short bookmarks.
 
-size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold() {
-  int threshold = 3;
-
-  // The rich autocompletion feature requires this feature to be enabled. If
-  // rich autocompletion is enabled, then make sure to use a threshold
-  // sufficient for it.
-  if (kRichAutocompletionAutocompleteTitles.Get()) {
-    threshold =
-        std::min(threshold, kRichAutocompletionAutocompleteTitlesMinChar.Get());
-  }
-  if (kRichAutocompletionAutocompleteNonPrefixAll.Get()) {
-    threshold = std::min(threshold,
-                         kRichAutocompletionAutocompleteNonPrefixMinChar.Get());
-  }
-
-  return threshold;
+bool IsShortBookmarkSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kShortBookmarkSuggestions);
 }
+
+bool IsShortBookmarkSuggestionsByTotalInputLengthEnabled() {
+  return base::FeatureList::IsEnabled(
+             omnibox::kShortBookmarkSuggestionsByTotalInputLength) ||
+         (IsRichAutocompletionEnabled() &&
+          (kRichAutocompletionAutocompleteTitles.Get() ||
+           kRichAutocompletionAutocompleteNonPrefixAll.Get()));
+}
+
+size_t ShortBookmarkSuggestionsByTotalInputLengthThreshold() {
+  // The rich autocompletion feature requires this feature to be enabled. If
+  // short bookmarks is enabled transitively; i.e. rich autocompletion is
+  // enabled, but short bookmarks isn't explicitly enabled, then use the rich
+  // autocompletion min char limit.
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kShortBookmarkSuggestionsByTotalInputLength) &&
+      IsRichAutocompletionEnabled()) {
+    if (kRichAutocompletionAutocompleteTitles.Get() &&
+        kRichAutocompletionAutocompleteNonPrefixAll.Get()) {
+      return std::min(kRichAutocompletionAutocompleteTitlesMinChar.Get(),
+                      kRichAutocompletionAutocompleteNonPrefixMinChar.Get());
+    } else if (kRichAutocompletionAutocompleteTitles.Get())
+      return kRichAutocompletionAutocompleteTitlesMinChar.Get();
+    else if (kRichAutocompletionAutocompleteNonPrefixAll.Get())
+      return kRichAutocompletionAutocompleteNonPrefixMinChar.Get();
+  }
+
+  return kShortBookmarkSuggestionsByTotalInputLengthThreshold.Get();
+}
+
+const base::FeatureParam<bool>
+    kShortBookmarkSuggestionsByTotalInputLengthCounterfactual(
+        &omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        "ShortBookmarkSuggestionsByTotalInputLengthCounterfactual",
+        false);
+
+const base::FeatureParam<int>
+    kShortBookmarkSuggestionsByTotalInputLengthThreshold(
+        &omnibox::kShortBookmarkSuggestionsByTotalInputLength,
+        "ShortBookmarkSuggestionsByTotalInputLengthThreshold",
+        3);
 
 }  // namespace OmniboxFieldTrial
 

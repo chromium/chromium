@@ -7,6 +7,7 @@
 #include <numeric>
 #include <vector>
 
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/titled_url_node.h"
@@ -15,6 +16,7 @@
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/url_formatter/url_formatter.h"
 
 namespace {
@@ -68,13 +70,16 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   const std::u16string formatted_url = url_formatter::FormatUrl(
       url, format_types, net::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
 
-  // Prefer displaying the path. But if the input explicitly matches the URL and
-  // not the path, then display the URL.
-  DCHECK(!titled_url_match.has_ancestor_match || !path.empty());
-  match.contents = titled_url_match.has_ancestor_match ||
-                           titled_url_match.url_match_positions.empty()
-                       ? path
-                       : formatted_url;
+  if (OmniboxFieldTrial::kBookmarkPathsUiReplaceUrl.Get()) {
+    match.contents = path;
+  } else if (OmniboxFieldTrial::kBookmarkPathsUiDynamicReplaceUrl.Get()) {
+    match.contents = !titled_url_match.has_ancestor_match &&
+                             !titled_url_match.url_match_positions.empty()
+                         ? formatted_url
+                         : path;
+  } else {
+    match.contents = formatted_url;
+  }
 
   // Bookmark classification diverges from relevance scoring. Specifically,
   // 1) All occurrences of the input contribute to relevance; e.g. for the input
@@ -93,7 +98,13 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
       ACMatchClassification::MATCH | ACMatchClassification::URL,
       ACMatchClassification::URL);
 
-  match.description = title;
+  if (OmniboxFieldTrial::kBookmarkPathsUiReplaceTitle.Get()) {
+    match.description = path + u"/" + title;
+  } else if (OmniboxFieldTrial::kBookmarkPathsUiAppendAfterTitle.Get()) {
+    match.description = title + u" : " + path;
+  } else {
+    match.description = title;
+  }
 
   base::TrimWhitespace(match.description, base::TRIM_LEADING,
                        &match.description);
