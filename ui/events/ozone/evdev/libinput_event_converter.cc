@@ -35,6 +35,27 @@ double GetAxisValue(libinput_event_pointer* const event,
   return -libinput_event_pointer_get_axis_value(event, axis);
 }
 
+// Log the result of setting a device configuration value.
+template <typename Value>
+void LogConfigStatus(const libinput_config_status status,
+                     const char* key,
+                     const Value value) {
+  switch (status) {
+    case LIBINPUT_CONFIG_STATUS_SUCCESS:
+      DVLOG(3) << "libinput config: set " << key << " to " << value;
+      break;
+
+    case LIBINPUT_CONFIG_STATUS_UNSUPPORTED:
+      LOG(ERROR) << "libinput config: " << key << " not supported";
+      break;
+
+    case LIBINPUT_CONFIG_STATUS_INVALID:
+      LOG(ERROR) << "libinput config: invalid parameter for " << key << ": "
+                 << value;
+      break;
+  }
+}
+
 }  // namespace
 
 LibInputEventConverter::LibInputEvent::LibInputEvent(LibInputEvent&& other)
@@ -72,6 +93,9 @@ LibInputEventConverter::LibInputDevice::LibInputDevice(
   // derefed at the next call to |libinput_dispatch|. Add a ref here
   // so that we can keep using the pointer.
   libinput_device_ref(device);
+
+  DVLOG(2) << "device: \"" << libinput_device_get_name(device_)
+           << "\", capabilities: " << GetCapabilitiesString();
 }
 
 LibInputEventConverter::LibInputDevice::LibInputDevice(LibInputDevice&& other)
@@ -92,9 +116,33 @@ void LibInputEventConverter::LibInputDevice::ApplySettings(
   SetTapToClickEnabled(settings.tap_to_click_enabled);
 }
 
+// Get a comma-separated string of the device's capabilities
+std::string LibInputEventConverter::LibInputDevice::GetCapabilitiesString() {
+  // All capabilities exposed by libinput
+  std::vector<std::pair<libinput_device_capability, std::string>> caps = {
+      {LIBINPUT_DEVICE_CAP_KEYBOARD, "keyboard"},
+      {LIBINPUT_DEVICE_CAP_POINTER, "pointer"},
+      {LIBINPUT_DEVICE_CAP_TOUCH, "touch"},
+      {LIBINPUT_DEVICE_CAP_TABLET_TOOL, "tablet-tool"},
+      {LIBINPUT_DEVICE_CAP_TABLET_PAD, "tablet-pad"},
+      {LIBINPUT_DEVICE_CAP_GESTURE, "gesture"},
+      {LIBINPUT_DEVICE_CAP_SWITCH, "switch"}};
+
+  std::vector<std::string> parts(caps.size());
+  for (const auto& pair : caps) {
+    if (libinput_device_has_capability(device_, pair.first)) {
+      parts.emplace_back(pair.second);
+    }
+  }
+
+  return base::JoinString(parts, ", ");
+}
+
 void LibInputEventConverter::LibInputDevice::SetNaturalScrollEnabled(
     const bool enabled) const {
-  libinput_device_config_scroll_set_natural_scroll_enabled(device_, enabled);
+  const auto status = libinput_device_config_scroll_set_natural_scroll_enabled(
+      device_, enabled);
+  LogConfigStatus(status, "natural-scroll", enabled);
 }
 
 void LibInputEventConverter::LibInputDevice::SetSensitivity(
@@ -102,7 +150,8 @@ void LibInputEventConverter::LibInputDevice::SetSensitivity(
   // The range of |sensitivity| is [1..5] according to comments in
   // libgestures. Rescale to floating point [-1, 1].
   const double speed = (sensitivity - 3.0) / 2.0;
-  libinput_device_config_accel_set_speed(device_, speed);
+  const auto status = libinput_device_config_accel_set_speed(device_, speed);
+  LogConfigStatus(status, "sensitivity", speed);
 }
 
 void LibInputEventConverter::LibInputDevice::SetTapToClickEnabled(
@@ -110,7 +159,8 @@ void LibInputEventConverter::LibInputDevice::SetTapToClickEnabled(
   const auto arg =
       (enabled ? LIBINPUT_CONFIG_TAP_ENABLED : LIBINPUT_CONFIG_TAP_DISABLED);
 
-  libinput_device_config_tap_set_enabled(device_, arg);
+  const auto status = libinput_device_config_tap_set_enabled(device_, arg);
+  LogConfigStatus(status, "tap-to-click", arg);
 }
 
 LibInputEventConverter::LibInputContext::LibInputContext(

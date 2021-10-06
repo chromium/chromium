@@ -52,6 +52,8 @@ class LibInputEventConverter : public EventConverterEvdev {
     void ApplySettings(const InputDeviceSettingsEvdev& settings) const;
 
    private:
+    std::string GetCapabilitiesString();
+
     void SetNaturalScrollEnabled(const bool enabled) const;
     void SetSensitivity(const int sensitivity) const;
     void SetTapToClickEnabled(const bool enabled) const;
