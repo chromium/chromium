@@ -5252,6 +5252,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "upcoming-sharing-features",
+    "owners": [ "ellyjones", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "update-history-entry-points-in-incognito",
     "owners": [ "sideyilmaz", "rhalavati", "chrome-privacy-core@google.com" ],
     "expiry_milestone": 97

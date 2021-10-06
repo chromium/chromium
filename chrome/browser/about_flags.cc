@@ -54,6 +54,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
@@ -7554,6 +7555,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"u2f-permission-prompt", flag_descriptions::kU2FPermissionPromptName,
      flag_descriptions::kU2FPermissionPromptDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kU2fPermissionPrompt)},
+    {"upcoming-sharing-features",
+     flag_descriptions::kUpcomingSharingFeaturesName,
+     flag_descriptions::kUpcomingSharingFeaturesDescription, kOsAll,
+     FEATURE_VALUE_TYPE(share::kUpcomingSharingFeatures)},
 
 #if BUILDFLAG(ENABLE_SIDE_SEARCH)
     {"side-search", flag_descriptions::kSideSearchName,

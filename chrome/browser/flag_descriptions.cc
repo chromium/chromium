@@ -209,6 +209,12 @@ const char kU2FSecurityKeyAPIDescription[] =
     "information, refer to the deprecation announcement at "
     "https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A";
 
+const char kUpcomingSharingFeaturesName[] = "Enable upcoming sharing features.";
+const char kUpcomingSharingFeaturesDescription[] =
+    "This flag enables all upcoming sharing features, in the experiment "
+    "arms that are most likely to be shipped. This is a meta-flag so which "
+    "features are upcoming at any given time may change.";
+
 const char kUseStorkSmdsServerAddressName[] = "Use Stork SM-DS address";
 const char kUseStorkSmdsServerAddressDescription[] =
     "Use the Stork SM-DS address to fetch pending eSIM profiles managed by the "
