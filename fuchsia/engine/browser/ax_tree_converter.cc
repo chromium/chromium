@@ -188,7 +188,7 @@ fuchsia::accessibility::semantics::States ConvertStates(
   }
 
   // Indicates if the node is hidden.
-  states.set_hidden(node.IsIgnored());
+  states.set_hidden(node.IsIgnored() || node.IsInvisible());
 
   // The user entered value of the node, if applicable.
   if (node.HasStringAttribute(ax::mojom::StringAttribute::kValue)) {
@@ -210,6 +210,9 @@ fuchsia::accessibility::semantics::States ConvertStates(
       node.GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
   if (x_scroll_offset || y_scroll_offset)
     states.set_viewport_offset({x_scroll_offset, y_scroll_offset});
+
+  if (node.HasState(ax::mojom::State::kFocusable))
+    states.set_focusable(true);
 
   return states;
 }

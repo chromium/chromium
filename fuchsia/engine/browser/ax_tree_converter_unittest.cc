@@ -114,6 +114,7 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   ax_node_data.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, false);
   ax_node_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollX, 10);
   ax_node_data.RemoveState(ax::mojom::State::kIgnored);
+  ax_node_data.AddState(ax::mojom::State::kFocusable);
   ax_node_data.AddIntAttribute(ax::mojom::IntAttribute::kScrollY, 20);
   ax_node_data.id = kChildId4;
 
@@ -131,6 +132,7 @@ std::pair<ui::AXNodeData, Node> CreateSemanticNodeAllFieldsSet() {
   states.set_hidden(false);
   states.set_selected(false);
   states.set_viewport_offset({10, 20});
+  states.set_focusable(true);
   MockNodeIDMapper mapper;
   auto fuchsia_node = CreateSemanticNode(
       mapper.ToFuchsiaNodeID(ui::AXTreeID::CreateNewAXTreeID(), ax_node_data.id,
@@ -666,4 +668,23 @@ TEST_F(AXTreeConverterTest, NodeWithTableAttributes) {
   EXPECT_EQ(cell_node.attributes().table_cell_attributes().column_index(), 1u);
 }
 
+TEST_F(AXTreeConverterTest, IgnoredAndInvisibleNodesAreMarkedAsHidden) {
+  MockNodeIDMapper mapper;
+  ui::AXNodeData node;
+  node.id = 0;
+  node.AddState(ax::mojom::State::kInvisible);
+  EXPECT_TRUE(AXNodeDataToSemanticNode(AddChildNode(node), root_node(),
+                                       ui::AXTreeID::CreateNewAXTreeID(), false,
+                                       0.0f, &mapper)
+                  .states()
+                  .hidden());
+
+  node.RemoveState(ax::mojom::State::kInvisible);
+  node.AddState(ax::mojom::State::kIgnored);
+  EXPECT_TRUE(AXNodeDataToSemanticNode(AddChildNode(node), root_node(),
+                                       ui::AXTreeID::CreateNewAXTreeID(), false,
+                                       0.0f, &mapper)
+                  .states()
+                  .hidden());
+}
 }  // namespace
