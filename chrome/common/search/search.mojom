@@ -46,19 +46,6 @@ interface EmbeddedSearch {
   // Tells InstantExtended to undo one most visited item deletion.
   UndoMostVisitedDeletion(int32 page_seq_no, url.mojom.Url url);
 
-  // Logs events from InstantExtended New Tab Pages.
-  LogEvent(int32 page_seq_no,
-           NTPLoggingEventType event,
-           mojo_base.mojom.TimeDelta time);
-
-  // Logs an impression on one of the Most Visited tile on the InstantExtended
-  // New Tab Page.
-  LogMostVisitedImpression(int32 page_seq_no, NTPTileImpression impression);
-
-  // Logs a navigation on one of the Most Visited tile on the InstantExtended
-  // New Tab Page.
-  LogMostVisitedNavigation(int32 page_seq_no, NTPTileImpression impression);
-
   // Applies the default theme.
   ApplyDefaultTheme();
 

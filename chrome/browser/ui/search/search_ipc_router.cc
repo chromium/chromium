@@ -215,44 +215,6 @@ void SearchIPCRouter::UndoAllMostVisitedDeletions(int page_seq_no) {
   delegate_->OnUndoAllMostVisitedDeletions();
 }
 
-void SearchIPCRouter::LogEvent(int page_seq_no,
-                               NTPLoggingEventType event,
-                               base::TimeDelta time) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  if (!policy_->ShouldProcessLogEvent())
-    return;
-
-  delegate_->OnLogEvent(event, time);
-}
-
-void SearchIPCRouter::LogMostVisitedImpression(
-    int page_seq_no,
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  // Logging impressions is controlled by the same policy as logging events.
-  if (!policy_->ShouldProcessLogEvent())
-    return;
-
-  delegate_->OnLogMostVisitedImpression(impression);
-}
-
-void SearchIPCRouter::LogMostVisitedNavigation(
-    int page_seq_no,
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (page_seq_no != commit_counter_)
-    return;
-
-  // Logging navigations is controlled by the same policy as logging events.
-  if (!policy_->ShouldProcessLogEvent())
-    return;
-
-  delegate_->OnLogMostVisitedNavigation(impression);
-}
-
 void SearchIPCRouter::ApplyDefaultTheme() {
   if (!policy_->ShouldProcessThemeChangeMessages())
     return;

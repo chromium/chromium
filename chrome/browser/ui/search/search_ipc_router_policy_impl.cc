@@ -37,10 +37,6 @@ bool SearchIPCRouterPolicyImpl::ShouldProcessUndoAllMostVisitedDeletions() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }
 
-bool SearchIPCRouterPolicyImpl::ShouldProcessLogEvent() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}
-
 bool SearchIPCRouterPolicyImpl::ShouldSendSetInputInProgress(
     bool is_active_tab) {
   return is_active_tab && !is_incognito_;

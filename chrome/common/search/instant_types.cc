@@ -23,9 +23,7 @@ bool NtpTheme::operator==(const NtpTheme& rhs) const {
          has_theme_image == rhs.has_theme_image;
 }
 
-InstantMostVisitedItem::InstantMostVisitedItem()
-    : title_source(ntp_tiles::TileTitleSource::UNKNOWN),
-      source(ntp_tiles::TileSource::TOP_SITES) {}
+InstantMostVisitedItem::InstantMostVisitedItem() = default;
 
 InstantMostVisitedItem::InstantMostVisitedItem(
     const InstantMostVisitedItem& other) = default;

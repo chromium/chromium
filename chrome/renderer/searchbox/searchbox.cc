@@ -47,8 +47,7 @@ bool AreMostVisitedItemsEqual(
 
   for (size_t i = 0; i < new_items.size(); ++i) {
     if (new_items[i].url != old_item_id_pairs[i].second.url ||
-        new_items[i].title != old_item_id_pairs[i].second.title ||
-        new_items[i].source != old_item_id_pairs[i].second.source) {
+        new_items[i].title != old_item_id_pairs[i].second.title) {
       return false;
     }
   }
@@ -203,24 +202,6 @@ SearchBox::SearchBox(content::RenderFrame* render_frame)
 }
 
 SearchBox::~SearchBox() = default;
-
-void SearchBox::LogEvent(NTPLoggingEventType event) {
-  base::Time navigation_start = base::Time::FromDoubleT(
-      render_frame()->GetWebFrame()->Performance().NavigationStart());
-  base::Time now = base::Time::Now();
-  base::TimeDelta delta = now - navigation_start;
-  embedded_search_service_->LogEvent(page_seq_no_, event, delta);
-}
-
-void SearchBox::LogMostVisitedImpression(
-    const ntp_tiles::NTPTileImpression& impression) {
-  embedded_search_service_->LogMostVisitedImpression(page_seq_no_, impression);
-}
-
-void SearchBox::LogMostVisitedNavigation(
-    const ntp_tiles::NTPTileImpression& impression) {
-  embedded_search_service_->LogMostVisitedNavigation(page_seq_no_, impression);
-}
 
 void SearchBox::DeleteMostVisitedItem(
     InstantRestrictedID most_visited_item_id) {

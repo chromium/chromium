@@ -319,24 +319,6 @@ void SearchTabHelper::OnUndoAllMostVisitedDeletions() {
     instant_service_->UndoAllMostVisitedDeletions();
 }
 
-void SearchTabHelper::OnLogEvent(NTPLoggingEventType event,
-                                 base::TimeDelta time) {
-  if (logger_)
-    logger_->LogEvent(event, time);
-}
-
-void SearchTabHelper::OnLogMostVisitedImpression(
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (logger_)
-    logger_->LogMostVisitedImpression(impression);
-}
-
-void SearchTabHelper::OnLogMostVisitedNavigation(
-    const ntp_tiles::NTPTileImpression& impression) {
-  if (logger_)
-    logger_->LogMostVisitedNavigation(impression);
-}
-
 void SearchTabHelper::OnOmniboxInputStateChanged() {
   ipc_router_.SetInputInProgress(IsInputInProgress());
 }

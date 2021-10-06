@@ -49,15 +49,6 @@ class SearchBox : public content::RenderFrameObserver,
 
   ~SearchBox() override;
 
-  // Sends LogEvent to the browser.
-  void LogEvent(NTPLoggingEventType event);
-
-  // Sends LogMostVisitedImpression to the browser.
-  void LogMostVisitedImpression(const ntp_tiles::NTPTileImpression& impression);
-
-  // Sends LogMostVisitedNavigation to the browser.
-  void LogMostVisitedNavigation(const ntp_tiles::NTPTileImpression& impression);
-
   // Sends DeleteMostVisitedItem to the browser.
   void DeleteMostVisitedItem(InstantRestrictedID most_visited_item_id);
 

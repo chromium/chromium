@@ -11,9 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/time/time.h"
-#include "components/ntp_tiles/tile_source.h"
-#include "components/ntp_tiles/tile_title_source.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "url/gurl.h"
@@ -105,16 +102,6 @@ struct InstantMostVisitedItem {
 
   // The external URL of the favicon associated with this page.
   GURL favicon;
-
-  // The source of the item's |title|.
-  ntp_tiles::TileTitleSource title_source;
-
-  // The source of the item, e.g. server-side or client-side.
-  ntp_tiles::TileSource source;
-
-  // The timestamp representing when the tile data (e.g. URL) was generated
-  // originally, regardless of the impression timestamp.
-  base::Time data_generation_time;
 };
 
 struct InstantMostVisitedInfo {

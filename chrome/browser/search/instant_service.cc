@@ -227,9 +227,6 @@ void InstantService::OnURLsAvailable(
     item.url = tile.url;
     item.title = tile.title;
     item.favicon = tile.favicon_url;
-    item.source = tile.source;
-    item.title_source = tile.title_source;
-    item.data_generation_time = tile.data_generation_time;
     most_visited_info_->items.push_back(item);
   }
 
