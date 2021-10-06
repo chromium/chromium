@@ -1405,6 +1405,9 @@ extern const char kTabEngagementReportingDescription[];
 extern const char kTabGridLayoutAndroidName[];
 extern const char kTabGridLayoutAndroidDescription[];
 
+extern const char kCommerceDeveloperName[];
+extern const char kCommerceDeveloperDescription[];
+
 extern const char kCommerceMerchantViewerAndroidName[];
 extern const char kCommerceMerchantViewerAndroidDescription[];
 

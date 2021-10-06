@@ -43,6 +43,9 @@ const base::Feature kShoppingList{"ShoppingList",
 const base::Feature kRetailCoupons{"RetailCoupons",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCommerceDeveloper{"CommerceDeveloper",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsCouponDiscountPartnerMerchant(const GURL& url) {
   const std::string& url_string = url.spec();
   return RE2::PartialMatch(
