@@ -92,8 +92,6 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   // Returns true if the full restore data from the full restore file is loaded.
   bool IsRestoreDataLoaded();
 
-  base::TimeTicks restore_start_time() const { return restore_start_time_; }
-
   // AppLaunchHandler:
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppTypeInitialized(apps::mojom::AppType app_type) override;
@@ -149,9 +147,6 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
 
   bool are_web_apps_initialized_ = false;
   bool are_chrome_apps_initialized_ = false;
-
-  // The time when `should_restore_` has been set to true.
-  base::TimeTicks restore_start_time_;
 
   bool should_launch_browser_ = false;
 

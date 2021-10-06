@@ -32,13 +32,6 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler {
     // `app_id`. `app_id` should be a Chrome app id.
     virtual int32_t FetchRestoreWindowId(const std::string& app_id) = 0;
 
-    // Returns true if full restore is believed to be running. `GetWindowInfo()`
-    // and `FetchRestoreWindowId()` will return nullptr and 0 respectively, as
-    // we want to query full restore instead.
-    // TODO(sammiequon): This should take a app id or key and check if
-    // `FullRestoreReadHandler` has data for that app.
-    virtual bool IsFullRestoreRunning() const = 0;
-
    protected:
     virtual ~Delegate() = default;
   };

@@ -26,16 +26,12 @@ void DeskTemplateReadHandler::SetDelegate(Delegate* delegate) {
 
 std::unique_ptr<WindowInfo> DeskTemplateReadHandler::GetWindowInfo(
     int restore_window_id) {
-  if (!delegate_ || delegate_->IsFullRestoreRunning())
-    return nullptr;
-  return delegate_->GetWindowInfo(restore_window_id);
+  return delegate_ ? delegate_->GetWindowInfo(restore_window_id) : nullptr;
 }
 
 int32_t DeskTemplateReadHandler::FetchRestoreWindowId(
     const std::string& app_id) {
-  if (!delegate_ || delegate_->IsFullRestoreRunning())
-    return 0;
-  return delegate_->FetchRestoreWindowId(app_id);
+  return delegate_ ? delegate_->FetchRestoreWindowId(app_id) : 0;
 }
 
 }  // namespace app_restore

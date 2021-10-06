@@ -28,6 +28,14 @@
 
 namespace full_restore {
 
+namespace {
+
+//  This is a temporary estimate of how long it takes full restore to launch
+//  apps.
+constexpr base::TimeDelta kFullRestoreEstimateDuration = base::Seconds(5);
+
+}  // namespace
+
 FullRestoreReadHandler* FullRestoreReadHandler::GetInstance() {
   static base::NoDestructor<FullRestoreReadHandler> full_restore_read_handler;
   return full_restore_read_handler.get();
@@ -314,12 +322,14 @@ void FullRestoreReadHandler::ModifyWidgetParams(
                       ? arc_read_handler_->GetWindowInfo(restore_window_id)
                       : nullptr;
   } else {
-    // `DeskTemplateReadHandler::GetWindowInfo()` will return nullptr if full
-    // restore is running.
+    // If full restore is not running, try and get `window_info` from desk
+    // templates. Otherwise, default to getting `window_info` from full restore.
     // TODO(sammiequon): Separate full restore and desk templates logic.
-    window_info =
-        app_restore::DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
-            restore_window_id);
+    if (!IsFullRestoreRunning()) {
+      window_info =
+          app_restore::DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
+              restore_window_id);
+    }
     if (!window_info &&
         base::Contains(should_check_restore_data_, active_profile_path_)) {
       window_info = GetWindowInfo(restore_window_id);
@@ -362,6 +372,21 @@ void FullRestoreReadHandler::SetArcSessionIdForWindowId(int32_t arc_session_id,
                                                         int32_t window_id) {
   DCHECK(arc_read_handler_);
   arc_read_handler_->SetArcSessionIdForWindowId(arc_session_id, window_id);
+}
+
+void FullRestoreReadHandler::SetStartTimeForProfile(
+    const base::FilePath& profile_path) {
+  profile_path_to_start_time_data_[profile_path] = base::TimeTicks::Now();
+}
+
+bool FullRestoreReadHandler::IsFullRestoreRunning() const {
+  auto it = profile_path_to_start_time_data_.find(active_profile_path_);
+  if (it == profile_path_to_start_time_data_.end())
+    return false;
+
+  // We estimate that full restore is still running if it has been less than
+  // five seconds since it started.
+  return (base::TimeTicks::Now() - it->second) < kFullRestoreEstimateDuration;
 }
 
 void FullRestoreReadHandler::AddChromeBrowserLaunchInfoForTesting(

@@ -156,6 +156,14 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // |arc session id| is assigned when ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);
 
+  // Called when full restore launching is about to begin. Saves the start time
+  // in `profile_path_to_start_time_data_`.
+  void SetStartTimeForProfile(const base::FilePath& profile_path);
+
+  // Returns true if full restore launching is thought to be underway on
+  // `active_profile_path_`.
+  bool IsFullRestoreRunning() const;
+
   void AddChromeBrowserLaunchInfoForTesting(const base::FilePath& profile_path);
 
  private:
@@ -198,6 +206,10 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // id when get the window info. This map is not used for ARC app windows.
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
+
+  // The start time of full restore for each profile. There won't be an entry if
+  // full restore hasn't started for the profile.
+  std::map<base::FilePath, base::TimeTicks> profile_path_to_start_time_data_;
 
   std::unique_ptr<app_restore::ArcReadHandler> arc_read_handler_;
 

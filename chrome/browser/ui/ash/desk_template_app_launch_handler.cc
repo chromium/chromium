@@ -94,29 +94,6 @@ int32_t DeskTemplateAppLaunchHandler::FetchRestoreWindowId(
                              : 0;
 }
 
-bool DeskTemplateAppLaunchHandler::IsFullRestoreRunning() const {
-  ash::full_restore::FullRestoreService* full_restore_service =
-      ash::full_restore::FullRestoreService::GetForProfile(
-          const_cast<Profile*>(profile()));
-  if (!full_restore_service)
-    return false;
-  ash::full_restore::FullRestoreAppLaunchHandler*
-      full_restore_app_launch_handler =
-          full_restore_service->app_launch_handler();
-  DCHECK(full_restore_app_launch_handler);
-  base::TimeTicks full_restore_start_time =
-      full_restore_app_launch_handler->restore_start_time();
-
-  // Full restore has not started yet.
-  if (full_restore_start_time.is_null())
-    return false;
-
-  // We estimate that full restore is still running if it has been less than
-  // five seconds since it started.
-  return (base::TimeTicks::Now() - full_restore_start_time) <
-         kClearRestoreDataDuration;
-}
-
 bool DeskTemplateAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
     const std::string& app_id,
     const app_restore::RestoreData::LaunchList& launch_list) {

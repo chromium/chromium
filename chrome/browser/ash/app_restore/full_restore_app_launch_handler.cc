@@ -205,7 +205,8 @@ void FullRestoreAppLaunchHandler::MaybePostRestore() {
 }
 
 void FullRestoreAppLaunchHandler::MaybeRestore() {
-  restore_start_time_ = base::TimeTicks::Now();
+  ::full_restore::FullRestoreReadHandler::GetInstance()->SetStartTimeForProfile(
+      profile()->GetPath());
   ::full_restore::FullRestoreReadHandler::GetInstance()->SetCheckRestoreData(
       profile()->GetPath());
 

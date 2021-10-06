@@ -43,14 +43,17 @@ int32_t FetchRestoreWindowId(const std::string& app_id) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return 0;
 
-  // `DeskTemplateReadHandler::FetchRestoreWindowId()` will return 0 if full
-  // restore is running.
+  // If full restore is not running, check if desk templates can get a viable
+  // window id, otherwise default to checking full restore.
   // TODO(sammiequon): Separate full restore and desk templates logic.
-  const int32_t desk_template_restore_window_id =
-      app_restore::DeskTemplateReadHandler::GetInstance()->FetchRestoreWindowId(
-          app_id);
-  if (desk_template_restore_window_id > 0)
-    return desk_template_restore_window_id;
+  auto* full_restore_read_handler = FullRestoreReadHandler::GetInstance();
+  if (!full_restore_read_handler->IsFullRestoreRunning()) {
+    const int32_t desk_template_restore_window_id =
+        app_restore::DeskTemplateReadHandler::GetInstance()
+            ->FetchRestoreWindowId(app_id);
+    if (desk_template_restore_window_id > 0)
+      return desk_template_restore_window_id;
+  }
 
   return FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
 }

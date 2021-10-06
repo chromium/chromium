@@ -41,7 +41,6 @@ class DeskTemplateAppLaunchHandler
   std::unique_ptr<app_restore::WindowInfo> GetWindowInfo(
       int restore_window_id) override;
   int32_t FetchRestoreWindowId(const std::string& app_id) override;
-  bool IsFullRestoreRunning() const override;
 
  protected:
   // chromeos::AppLaunchHandler:
