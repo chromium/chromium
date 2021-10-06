@@ -211,8 +211,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         boolean notifyAdapter = false;
         // An optional sign-in page.
-        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()
-                && showDataReductionPromo.getAsBoolean()) {
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && showSyncConsent.getAsBoolean()) {
             mPages.add(new FirstRunPage<>(SyncConsentFirstRunFragment.class, showSyncConsent));
             mFreProgressStates.add(MobileFreProgress.SYNC_CONSENT_SHOWN);
             notifyAdapter = true;
