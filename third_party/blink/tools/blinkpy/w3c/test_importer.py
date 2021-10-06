@@ -293,7 +293,7 @@ class TestImporter(object):
                 'CQ appears to have passed; sending to the sheriff for '
                 'CR+1 and commit. The sheriff has one hour to respond.')
             self.git_cl.run([
-                'upload', '-f', '--send-mail', '--enable-auto-submit'
+                'upload', '-f', '--send-mail', '--enable-auto-submit',
                 '--reviewers', self.sheriff_email()
             ])
             timeout = 3600
