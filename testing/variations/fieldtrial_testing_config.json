@@ -7430,6 +7430,40 @@
             ]
         }
     ],
+    "TabSearchEntrypointChevronIcon": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabSearchChevronIcon"
+                    ]
+                }
+            ]
+        }
+    ],
+    "TabSearchEntrypointWindowsEntrypoint": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabSearchChevronIcon",
+                        "Win10TabSearchCaptionButton"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabSearchIPH": [
         {
             "platforms": [
