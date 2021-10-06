@@ -4282,10 +4282,6 @@ TEST_P(PasswordManagerTest, SubmittedManagerClearingOnSuccessfulLogin) {
 // Check that on successful login the credentials are checked for leak depending
 // on mute state of insecure credential.
 TEST_P(PasswordManagerTest, DontStartLeakDetectionWhenMuted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
-                                    true);
-
   auto mock_factory =
       std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();
   manager()->set_leak_factory(std::move(mock_factory));
@@ -4316,9 +4312,6 @@ TEST_P(PasswordManagerTest, DontStartLeakDetectionWhenMuted) {
 // Tests that check for leaks happens even if there are muted credentials for
 // the same domain, but with different username.
 TEST_P(PasswordManagerTest, StartLeakCheckWhenForUsernameNotMuted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
-                                    true);
 
   auto mock_factory =
       std::make_unique<testing::StrictMock<MockLeakDetectionCheckFactory>>();

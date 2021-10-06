@@ -79,10 +79,6 @@ const base::Feature kFillOnAccountSelect = {"fill-on-account-select",
 const base::Feature kInferConfirmationPasswordField = {
     "InferConfirmationPasswordField", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables respecting of insecure credential muting state.
-const base::Feature kMutingCompromisedCredentials{
-    "MutingCompromisedCredentials", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables password change flow from leaked password dialog.
 const base::Feature kPasswordChange = {"PasswordChange",
                                        base::FEATURE_DISABLED_BY_DEFAULT};

@@ -7174,12 +7174,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kEnableInputEventLogging)},
 #endif
 
-    {"muting-compromised-credentials",
-     flag_descriptions::kMutingCompromisedCredentialsName,
-     flag_descriptions::kMutingCompromisedCredentialsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kMutingCompromisedCredentials)},
-
     {"autofill-enable-merchant-bound-virtual-cards",
      flag_descriptions::kAutofillEnableMerchantBoundVirtualCardsName,
      flag_descriptions::kAutofillEnableMerchantBoundVirtualCardsDescription,

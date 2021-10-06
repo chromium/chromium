@@ -964,8 +964,7 @@ void PasswordManager::OnLoginSuccessful() {
   // Check for leaks only if there are no muted credentials.
   if (!HasMutedCredentials(
           submitted_manager->GetInsecureCredentials(),
-          submitted_manager->GetSubmittedForm()->username_value) ||
-      !base::FeatureList::IsEnabled(features::kMutingCompromisedCredentials)) {
+          submitted_manager->GetSubmittedForm()->username_value)) {
     leak_delegate_.StartLeakCheck(submitted_manager->GetPendingCredentials());
   }
 

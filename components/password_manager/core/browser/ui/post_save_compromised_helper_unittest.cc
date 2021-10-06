@@ -214,10 +214,6 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, BubbleShownEvenIfIssueIsMuted) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
-                                    true);
-
   prefs()->SetDouble(kLastTimePasswordCheckCompleted,
                      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   std::vector<InsecureCredential> saved = {CreateInsecureCredential(
@@ -234,10 +230,6 @@ TEST_F(PostSaveCompromisedHelperTest, BubbleShownEvenIfIssueIsMuted) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, MutedIssuesNotIncludedToCount) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(features::kMutingCompromisedCredentials,
-                                    true);
-
   prefs()->SetDouble(kLastTimePasswordCheckCompleted,
                      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   std::vector<InsecureCredential> saved = {CreateInsecureCredential(kUsername)};

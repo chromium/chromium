@@ -1656,11 +1656,6 @@ const char kMouseSubframeNoImplicitCaptureName[] =
 const char kMouseSubframeNoImplicitCaptureDescription[] =
     "When enable, mouse down does not implicit capture for iframe.";
 
-const char kMutingCompromisedCredentialsName[] =
-    "Enables muting of compromised credentials";
-const char kMutingCompromisedCredentialsDescription[] =
-    "When enable, insecure credential muting state is respected.";
-
 const char kCanvas2DLayersName[] =
     "Enables canvas 2D methods BeginLayer and EndLayer";
 const char kCanvas2DLayersDescription[] =
