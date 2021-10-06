@@ -72,7 +72,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "pdf/ppapi_migration/pdfium_font_linux.h"
@@ -534,14 +533,6 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
   const gfx::Rect new_plugin_rect = gfx::ScaleToEnclosingRectSafe(
       RectFromPPRect(view.GetRect()), view.GetDeviceScale());
   UpdateGeometryOnPluginRectChanged(new_plugin_rect, view.GetDeviceScale());
-
-  if (IsPrintPreview()) {
-    UpdateScroll(
-        gfx::Vector2dF(view.GetScrollOffset().x(), view.GetScrollOffset().y()));
-  }
-
-  // Scrolling in the main PDF Viewer UI is already handled by
-  // HandleUpdateScrollMessage().
 }
 
 void OutOfProcessInstance::DidChangeFocus(bool has_focus) {

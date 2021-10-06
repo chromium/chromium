@@ -75,7 +75,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
@@ -929,12 +928,6 @@ void PdfViewWebPlugin::OnViewportChanged(
       gfx::ScaleToEnclosingRectSafe(plugin_rect_in_css_pixel,
                                     css_to_device_pixel_scale),
       new_device_scale);
-
-  if (IsPrintPreview())
-    UpdateScroll(container_wrapper_->GetFrame()->GetScrollOffset());
-
-  // Scrolling in the main PDF Viewer UI is already handled by
-  // `HandleUpdateScrollMessage()`.
 }
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {

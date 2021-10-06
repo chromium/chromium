@@ -47,6 +47,14 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
   }
 
   /** @override */
+  ready() {
+    super.ready();
+    window.addEventListener('scroll', () => {
+      this.pluginController_.updateScroll(window.scrollX, window.scrollY);
+    });
+  }
+
+  /** @override */
   getContent() {
     return /** @type {!HTMLDivElement} */ (this.$$('#content'));
   }
