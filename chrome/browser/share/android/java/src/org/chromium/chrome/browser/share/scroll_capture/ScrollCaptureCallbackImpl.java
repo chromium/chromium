@@ -72,10 +72,10 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
     private EntryManager mEntryManager;
 
     private Rect mContentArea;
-    // Holds the coordinates of the initial visible content with respect to the content area.
-    private Rect mInitialRect;
     // Holds the viewport size.
     private Rect mViewportRect;
+    private int mInitialYOffset;
+    private float mMinPageScaleFactor;
 
     private long mCaptureStartTime;
 
@@ -97,12 +97,11 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
         }
 
         RenderCoordinates renderCoordinates = RenderCoordinates.fromWebContents(webContents);
-        // Take the view display pixels and divide by the min page scale factor to transform those
-        // dimensions into the renderer physical coordinate space which is the coordinate space in
-        // which the clip is applied to the capture.
-        mViewportRect = new Rect(0, 0,
-                (int) Math.floor(view.getWidth() / renderCoordinates.getMinPageScaleFactor()),
-                (int) Math.floor(view.getHeight() / renderCoordinates.getMinPageScaleFactor()));
+        // getLastFrameViewport{Width|Height}PixInt() always reports in physical pixels no matter
+        // the scale factor.
+        mViewportRect = new Rect(0, 0, renderCoordinates.getLastFrameViewportWidthPixInt(),
+                renderCoordinates.getLastFrameViewportHeightPixInt());
+        mMinPageScaleFactor = renderCoordinates.getMinPageScaleFactor();
         onReady.accept(mViewportRect);
     }
 
@@ -145,10 +144,11 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
                     return;
                 }
 
-                mContentArea = new Rect(0, 0, contentSize.getWidth(), contentSize.getHeight());
-                // Offset the viewport rect with the offset height to get the initial rect.
-                mInitialRect = new Rect(mViewportRect);
-                mInitialRect.offsetTo(0, scrollOffset.y);
+                // Store the content area and Y offset in physical pixel coordinates
+                mContentArea = new Rect(0, 0,
+                        (int) Math.floor(contentSize.getWidth() * mMinPageScaleFactor),
+                        (int) Math.floor(contentSize.getHeight() * mMinPageScaleFactor));
+                mInitialYOffset = (int) Math.floor(scrollOffset.y * mMinPageScaleFactor);
                 logBitmapGeneratorStatus(BitmapGeneratorStatus.CAPTURE_COMPLETE);
                 onReady.run();
             }
@@ -163,7 +163,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             @NonNull CancellationSignal signal, @NonNull Rect captureArea,
             @NonNull Consumer<Rect> onComplete) {
         // Reposition the captureArea to the content area coordinates.
-        captureArea.offset(mInitialRect.left, mInitialRect.top);
+        captureArea.offset(0, mInitialYOffset);
         if (!captureArea.intersect(mContentArea)
                 || captureArea.height() < BITMAP_HEIGHT_THRESHOLD) {
             onComplete.accept(new Rect());
@@ -186,7 +186,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
             canvas.drawBitmap(bitmap, null, destRect, null);
             session.getSurface().unlockCanvasAndPost(canvas);
             // Translate the captureArea Rect back to its original coordinates.
-            captureArea.offset(-mInitialRect.left, -mInitialRect.top);
+            captureArea.offset(0, -mInitialYOffset);
             onComplete.accept(captureArea);
         });
     }
@@ -206,8 +206,9 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
         }
         mCaptureStartTime = 0;
         mContentArea = null;
-        mInitialRect = null;
         mViewportRect = null;
+        mInitialYOffset = 0;
+        mMinPageScaleFactor = 1;
         onReady.run();
     }
 
@@ -226,7 +227,7 @@ public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
     }
 
     @VisibleForTesting
-    Rect getInitialRectForTesting() {
-        return mInitialRect;
+    int getInitialYOffsetForTesting() {
+        return mInitialYOffset;
     }
 }
