@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "content/browser/attribution_reporting/conversion_host.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -32,16 +32,16 @@ const std::string kWellKnownUrl =
 
 }  // namespace
 
-// A mock conversion host which waits until a conversion registration
+// A mock attribution host which waits until a conversion registration
 // mojo message is received. Tracks the last seen conversion data.
-class TestConversionHost : public ConversionHost {
+class TestAttributionHost : public AttributionHost {
  public:
-  explicit TestConversionHost(WebContents* contents)
-      : ConversionHost(contents) {
+  explicit TestAttributionHost(WebContents* contents)
+      : AttributionHost(contents) {
     SetReceiverImplForTesting(this);
   }
 
-  ~TestConversionHost() override { SetReceiverImplForTesting(nullptr); }
+  ~TestAttributionHost() override { SetReceiverImplForTesting(nullptr); }
 
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override {
     last_conversion_ = std::move(conversion);
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
 
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), "registerConversion({data: 123})"));
   EXPECT_EQ(123UL, host.WaitForNumConversions(1));
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(
       ExecJs(web_contents(),
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(
       ExecJs(web_contents(), "registerConversion({data: 123, priority: 456})"));
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "/page_with_conversion_measurement_disabled.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "trigger-data=200");
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   GURL registration_url =
       embedded_test_server()->GetURL("/" + kWellKnownUrl + "?trigger-data=200");
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(NavigateToURL(
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   // Create a url that does the following redirect chain b.test ->
   // a.test/.well-known/...; this conversion registration should not be allowed,
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       https_server()->GetURL("c.test", "/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   // Create a url that does the following redirect chain b.test -> a.test ->
   // a.test/.well-known/...; this conversion registration should be allowed.
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
                        ConversionRegistrationInPreload_NotReceived) {
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL(
                                  "/page_with_preload_conversion_ping.html")));
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_conversion_redirect.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), "createTrackingPixel(\"server-redirect?" +
                                          kWellKnownUrl + "\");"));
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(AttributionTriggerRegistrationBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(),
       embedded_test_server()->GetURL("/page_with_subframe_conversion.html")));
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   GURL redirect_url = https_server()->GetURL(
       "b.test", "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -367,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("b.test", "/page_with_conversion_redirect.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   GURL redirect_url = https_server()->GetURL(
       "b.test", "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");
@@ -410,7 +410,7 @@ IN_PROC_BROWSER_TEST_F(
                      .expected_conversion = false}};
 
   for (const auto& test_case : kTestCases) {
-    TestConversionHost host(web_contents());
+    TestAttributionHost host(web_contents());
 
     // Secure hosts must be served from the https server.
     net::EmbeddedTestServer* page_server = (test_case.page_host == kSecureHost)
@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(
                                               innermost_iframe_url)));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   GURL redirect_url = embedded_test_server()->GetURL(
       "/server-redirect?" + kWellKnownUrl + "?trigger-data=200");

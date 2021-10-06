@@ -9,8 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/strcat.h"
-#include "content/browser/attribution_reporting/conversion_host.h"
-#include "content/browser/attribution_reporting/conversion_host_utils.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
+#include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"
@@ -40,7 +40,7 @@ void ReportAppImpression(ConversionManager& conversion_manager,
                          const std::string& report_to,
                          int64_t expiry) {
   absl::optional<blink::Impression> impression =
-      conversion_host_utils::ParseImpressionFromApp(
+      attribution_host_utils::ParseImpressionFromApp(
           source_event_id, destination, report_to, expiry);
   if (!impression)
     return;
@@ -48,7 +48,7 @@ void ReportAppImpression(ConversionManager& conversion_manager,
   url::Origin impression_origin =
       OriginFromAndroidPackageName(source_package_name);
 
-  conversion_host_utils::VerifyAndStoreImpression(
+  attribution_host_utils::VerifyAndStoreImpression(
       StorableSource::SourceType::kEvent, impression_origin, *impression,
       context, conversion_manager);
 }
@@ -65,7 +65,7 @@ void JNI_AttributionReporterImpl_ReportAttributionForCurrentNavigation(
     jlong expiry) {
   WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
   absl::optional<blink::Impression> impression =
-      conversion_host_utils::ParseImpressionFromApp(
+      attribution_host_utils::ParseImpressionFromApp(
           ConvertJavaStringToUTF8(env, j_source_event_id),
           ConvertJavaStringToUTF8(env, j_destination),
           j_report_to ? ConvertJavaStringToUTF8(env, j_report_to) : "", expiry);
@@ -74,7 +74,7 @@ void JNI_AttributionReporterImpl_ReportAttributionForCurrentNavigation(
 
   url::Origin impression_origin = OriginFromAndroidPackageName(
       ConvertJavaStringToUTF8(env, j_source_package_name));
-  ConversionHost::FromWebContents(web_contents)
+  AttributionHost::FromWebContents(web_contents)
       ->ReportAttributionForCurrentNavigation(impression_origin, *impression);
 }
 

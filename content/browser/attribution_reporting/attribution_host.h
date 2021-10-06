@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_H_
 
 #include <memory>
 
@@ -27,17 +27,17 @@ class WebContents;
 // Class responsible for listening to conversion events originating from blink,
 // and verifying that they are valid. Owned by the WebContents. Lifetime is
 // bound to lifetime of the WebContents.
-class CONTENT_EXPORT ConversionHost
+class CONTENT_EXPORT AttributionHost
     : public WebContentsObserver,
-      public WebContentsUserData<ConversionHost>,
+      public WebContentsUserData<AttributionHost>,
       public blink::mojom::ConversionHost {
  public:
-  explicit ConversionHost(WebContents* web_contents);
-  ConversionHost(const ConversionHost& other) = delete;
-  ConversionHost& operator=(const ConversionHost& other) = delete;
-  ConversionHost(ConversionHost&& other) = delete;
-  ConversionHost& operator=(ConversionHost&& other) = delete;
-  ~ConversionHost() override;
+  explicit AttributionHost(WebContents* web_contents);
+  AttributionHost(const AttributionHost& other) = delete;
+  AttributionHost& operator=(const AttributionHost& other) = delete;
+  AttributionHost(AttributionHost&& other) = delete;
+  AttributionHost& operator=(AttributionHost&& other) = delete;
+  ~AttributionHost() override;
 
   static void BindReceiver(
       mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
@@ -62,18 +62,18 @@ class CONTENT_EXPORT ConversionHost
       const blink::Impression& impression) WARN_UNUSED_RESULT;
 
   // Overrides the target object to bind |receiver| to in BindReceiver().
-  static void SetReceiverImplForTesting(ConversionHost* impl);
+  static void SetReceiverImplForTesting(AttributionHost* impl);
 
  private:
-  friend class ConversionHostTestPeer;
-  friend class WebContentsUserData<ConversionHost>;
+  friend class AttributionHostTestPeer;
+  friend class WebContentsUserData<AttributionHost>;
 
   struct PendingAttribution {
     url::Origin initiator_origin;
     blink::Impression impression;
   };
 
-  ConversionHost(
+  AttributionHost(
       WebContents* web_contents,
       std::unique_ptr<ConversionManager::Provider> conversion_manager_provider);
 
@@ -132,4 +132,4 @@ class CONTENT_EXPORT ConversionHost
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_H_

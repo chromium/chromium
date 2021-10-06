@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/conversion_host.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 
 #include <utility>
 
@@ -12,9 +12,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/attribution_reporting/attribution_page_metrics.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
-#include "content/browser/attribution_reporting/conversion_host_utils.h"
 #include "content/browser/attribution_reporting/conversion_manager.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
@@ -43,7 +43,7 @@ namespace content {
 
 namespace {
 
-ConversionHost* g_receiver_for_testing = nullptr;
+AttributionHost* g_receiver_for_testing = nullptr;
 
 // Abstraction that wraps an iterator to a map. When this goes out of the scope,
 // the underlying iterator is erased from the map. This is useful for control
@@ -78,11 +78,11 @@ void RecordRegisterImpressionAllowed(bool allowed) {
 
 }  // namespace
 
-ConversionHost::ConversionHost(WebContents* web_contents)
-    : ConversionHost(web_contents,
-                     std::make_unique<ConversionManagerProviderImpl>()) {}
+AttributionHost::AttributionHost(WebContents* web_contents)
+    : AttributionHost(web_contents,
+                      std::make_unique<ConversionManagerProviderImpl>()) {}
 
-ConversionHost::ConversionHost(
+AttributionHost::AttributionHost(
     WebContents* web_contents,
     std::unique_ptr<ConversionManager::Provider> conversion_manager_provider)
     : WebContentsObserver(web_contents),
@@ -92,11 +92,11 @@ ConversionHost::ConversionHost(
   // that the kConversionMeasurement feature is enabled.
 }
 
-ConversionHost::~ConversionHost() {
+AttributionHost::~AttributionHost() {
   DCHECK_EQ(0u, navigation_impression_origins_.size());
 }
 
-void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
+void AttributionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   // Impression navigations need to navigate the primary main frame to be valid.
   if (!navigation_handle->GetImpression() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
@@ -143,7 +143,7 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   if (auto* initiator_web_contents =
           WebContents::FromRenderFrameHost(initiator_frame_host)) {
     if (auto* initiator_conversion_host =
-            ConversionHost::FromWebContents(initiator_web_contents)) {
+            AttributionHost::FromWebContents(initiator_web_contents)) {
       // This doesn't necessarily mean that the browser will store the report,
       // due to the additional logic in DidFinishNavigation(). This records
       // that a page /attempted/ to register an impression for a navigation.
@@ -153,7 +153,7 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
   }
 }
 
-void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
+void AttributionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   // Observe only navigation toward a new document in the primary main frame.
   // Impressions should never be attached to same-document navigations but can
   // be the result of a bad renderer.
@@ -230,25 +230,25 @@ void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
                            impression_origin, impression, *conversion_manager);
 }
 
-bool ConversionHost::VerifyAndStoreImpression(
+bool AttributionHost::VerifyAndStoreImpression(
     StorableSource::SourceType source_type,
     const url::Origin& impression_origin,
     const blink::Impression& impression,
     ConversionManager& conversion_manager) {
-  conversion_host_utils::VerifyResult result =
-      conversion_host_utils::VerifyAndStoreImpression(
+  attribution_host_utils::VerifyResult result =
+      attribution_host_utils::VerifyAndStoreImpression(
           source_type, impression_origin, impression,
           web_contents()->GetBrowserContext(), conversion_manager);
   RecordRegisterImpressionAllowed(result.allowed);
   return result.stored;
 }
 
-void ConversionHost::RegisterConversion(
+void AttributionHost::RegisterConversion(
     blink::mojom::ConversionPtr conversion) {
   content::RenderFrameHost* render_frame_host =
       receivers_.GetCurrentTargetFrame();
 
-  // ConversionHost calls are delayed in blink if pre-rendering.
+  // AttributionHost calls are delayed in blink if pre-rendering.
   DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
             render_frame_host->GetLifecycleState());
 
@@ -328,7 +328,7 @@ void ConversionHost::RegisterConversion(
   conversion_manager->HandleConversion(std::move(storable_conversion));
 }
 
-void ConversionHost::NotifyImpressionInitiatedByPage(
+void AttributionHost::NotifyImpressionInitiatedByPage(
     const url::Origin& impression_origin,
     const blink::Impression& impression) {
   if (!conversion_page_metrics_)
@@ -340,7 +340,7 @@ void ConversionHost::NotifyImpressionInitiatedByPage(
   conversion_page_metrics_->OnImpression(reporting_origin);
 }
 
-void ConversionHost::RegisterImpression(const blink::Impression& impression) {
+void AttributionHost::RegisterImpression(const blink::Impression& impression) {
   // If there is no conversion manager available, ignore any impression
   // registrations.
   ConversionManager* conversion_manager =
@@ -351,7 +351,7 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
   content::RenderFrameHost* render_frame_host =
       receivers_.GetCurrentTargetFrame()->GetMainFrame();
 
-  // ConversionHost calls are delayed in blink if pre-rendering.
+  // AttributionHost calls are delayed in blink if pre-rendering.
   DCHECK_NE(content::RenderFrameHost::LifecycleState::kPrerendering,
             render_frame_host->GetLifecycleState());
 
@@ -364,7 +364,7 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
   }
 }
 
-void ConversionHost::ReportAttributionForCurrentNavigation(
+void AttributionHost::ReportAttributionForCurrentNavigation(
     const url::Origin& impression_origin,
     const blink::Impression& impression) {
   ConversionManager* conversion_manager =
@@ -400,7 +400,7 @@ void ConversionHost::ReportAttributionForCurrentNavigation(
 }
 
 // static
-void ConversionHost::BindReceiver(
+void AttributionHost::BindReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
     RenderFrameHost* rfh) {
   if (g_receiver_for_testing) {
@@ -411,14 +411,14 @@ void ConversionHost::BindReceiver(
   auto* web_contents = WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
-  auto* conversion_host = ConversionHost::FromWebContents(web_contents);
+  auto* conversion_host = AttributionHost::FromWebContents(web_contents);
   if (!conversion_host)
     return;
   conversion_host->receivers_.Bind(rfh, std::move(receiver));
 }
 
 // static
-blink::mojom::ImpressionPtr ConversionHost::MojoImpressionFromImpression(
+blink::mojom::ImpressionPtr AttributionHost::MojoImpressionFromImpression(
     const blink::Impression& impression) {
   return blink::mojom::Impression::New(
       impression.conversion_destination, impression.reporting_origin,
@@ -426,10 +426,10 @@ blink::mojom::ImpressionPtr ConversionHost::MojoImpressionFromImpression(
 }
 
 // static
-void ConversionHost::SetReceiverImplForTesting(ConversionHost* impl) {
+void AttributionHost::SetReceiverImplForTesting(AttributionHost* impl) {
   g_receiver_for_testing = impl;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ConversionHost);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AttributionHost);
 
 }  // namespace content

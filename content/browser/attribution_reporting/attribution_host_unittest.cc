@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/conversion_host.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 
 #include <memory>
 
@@ -29,18 +29,18 @@
 
 namespace content {
 
-class ConversionHostTestPeer {
+class AttributionHostTestPeer {
  public:
-  static std::unique_ptr<ConversionHost> CreateConversionHost(
+  static std::unique_ptr<AttributionHost> CreateAttributionHost(
       WebContents* web_contents,
       std::unique_ptr<ConversionManager::Provider>
           conversion_manager_provider) {
-    return base::WrapUnique(new ConversionHost(
+    return base::WrapUnique(new AttributionHost(
         web_contents, std::move(conversion_manager_provider)));
   }
 
   static void SetCurrentTargetFrameForTesting(
-      ConversionHost* conversion_host,
+      AttributionHost* conversion_host,
       RenderFrameHost* render_frame_host) {
     conversion_host->receivers_.SetCurrentTargetFrameForTesting(
         render_frame_host);
@@ -62,22 +62,22 @@ blink::Impression CreateValidImpression() {
   return result;
 }
 
-class ConversionHostTest : public RenderViewHostTestHarness {
+class AttributionHostTest : public RenderViewHostTestHarness {
  public:
-  ConversionHostTest() = default;
+  AttributionHostTest() = default;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
+    conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
         web_contents(), std::make_unique<TestManagerProvider>(&test_manager_));
-    ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
+    AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
 
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
   }
 
   void TearDown() override {
-    ConversionHost::SetReceiverImplForTesting(nullptr);
+    AttributionHost::SetReceiverImplForTesting(nullptr);
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -89,19 +89,19 @@ class ConversionHostTest : public RenderViewHostTestHarness {
     return conversion_host_.get();
   }
 
-  ConversionHost* conversion_host() { return conversion_host_.get(); }
+  AttributionHost* conversion_host() { return conversion_host_.get(); }
 
   void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host) {
-    ConversionHostTestPeer::SetCurrentTargetFrameForTesting(
+    AttributionHostTestPeer::SetCurrentTargetFrameForTesting(
         conversion_host_.get(), render_frame_host);
   }
 
  protected:
   TestConversionManager test_manager_;
-  std::unique_ptr<ConversionHost> conversion_host_;
+  std::unique_ptr<AttributionHost> conversion_host_;
 };
 
-TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
+TEST_F(AttributionHostTest, ValidConversionInSubframe_NoBadMessage) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   // Create a subframe and use it as a target for the conversion registration
@@ -130,7 +130,7 @@ TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
             test_manager_.last_conversion_destination());
 }
 
-TEST_F(ConversionHostTest,
+TEST_F(AttributionHostTest,
        ConversionInSubframe_ConversionDestinationMatchesMainFrame) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
@@ -162,7 +162,7 @@ TEST_F(ConversionHostTest,
             test_manager_.last_conversion_destination());
 }
 
-TEST_F(ConversionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
+TEST_F(AttributionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
   contents()->NavigateAndCommit(GURL("http://www.example.com"));
 
   // Create a subframe and use it as a target for the conversion registration
@@ -189,7 +189,7 @@ TEST_F(ConversionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
   EXPECT_EQ(0u, test_manager_.num_conversions());
 }
 
-TEST_F(ConversionHostTest,
+TEST_F(AttributionHostTest,
        ConversionInSubframe_EmbeddedDisabledContextOnMainFrame) {
   // Verifies that conversions from subframes use the correct origins when
   // checking if the operation is allowed by the embedded.
@@ -244,7 +244,7 @@ TEST_F(ConversionHostTest,
   SetBrowserClientForTesting(old_browser_client);
 }
 
-TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {
+TEST_F(AttributionHostTest, ConversionOnInsecurePage_BadMessage) {
   // Create a page with an insecure origin.
   contents()->NavigateAndCommit(GURL("http://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -264,7 +264,7 @@ TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {
   EXPECT_EQ(0u, test_manager_.num_conversions());
 }
 
-TEST_F(ConversionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
+TEST_F(AttributionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
 
@@ -283,7 +283,7 @@ TEST_F(ConversionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
   EXPECT_EQ(0u, test_manager_.num_conversions());
 }
 
-TEST_F(ConversionHostTest, ValidConversion_NoBadMessage) {
+TEST_F(AttributionHostTest, ValidConversion_NoBadMessage) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -304,7 +304,7 @@ TEST_F(ConversionHostTest, ValidConversion_NoBadMessage) {
   EXPECT_EQ(1u, test_manager_.num_conversions());
 }
 
-TEST_F(ConversionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
+TEST_F(AttributionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   ConversionDisallowingContentBrowserClient disallowed_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&disallowed_browser_client);
@@ -322,7 +322,7 @@ TEST_F(ConversionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
   SetBrowserClientForTesting(old_browser_client);
 }
 
-TEST_F(ConversionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
+TEST_F(AttributionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
   ConfigurableConversionTestBrowserClient browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&browser_client);
@@ -362,8 +362,7 @@ TEST_F(ConversionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
   SetBrowserClientForTesting(old_browser_client);
 }
 
-// TODO(crbug.com/1203592): Disabled due to flakiness.
-TEST_F(ConversionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
+TEST_F(AttributionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
   ConfigurableConversionTestBrowserClient browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&browser_client);
@@ -408,7 +407,7 @@ TEST_F(ConversionHostTest, EmbedderDisabledContext_ImpressionDisallowed) {
   SetBrowserClientForTesting(old_browser_client);
 }
 
-TEST_F(ConversionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
+TEST_F(AttributionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
   ConversionDisallowingContentBrowserClient disallowed_browser_client;
   ContentBrowserClient* old_browser_client =
       SetBrowserClientForTesting(&disallowed_browser_client);
@@ -424,7 +423,7 @@ TEST_F(ConversionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
   SetBrowserClientForTesting(old_browser_client);
 }
 
-TEST_F(ConversionHostTest, Conversion_AssociatedWithConversionSite) {
+TEST_F(AttributionHostTest, Conversion_AssociatedWithConversionSite) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://sub.conversion.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -441,7 +440,7 @@ TEST_F(ConversionHostTest, Conversion_AssociatedWithConversionSite) {
             test_manager_.last_conversion_destination());
 }
 
-TEST_F(ConversionHostTest, PerPageConversionMetrics) {
+TEST_F(AttributionHostTest, PerPageConversionMetrics) {
   base::HistogramTester histograms;
 
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
@@ -478,7 +477,7 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
   contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
 
   // TODO(johnidel): This test creates a second conversion host which gets
-  // injected with a TestManager. However, the ConversionHost owned by the
+  // injected with a TestManager. However, the AttributionHost owned by the
   // WebContents is still active for this test, and will record a zero sample in
   // this histogram. Consider modifying this test suite so that we do not have
   // metrics being recorded in multiple places.
@@ -490,12 +489,12 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
       "Conversions.UniqueReportingOriginsPerPage.Conversions", 2, 1);
 }
 
-TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {
-  // Replace the ConversionHost on the WebContents with one that is backed by a
+TEST_F(AttributionHostTest, NoManager_NoPerPageConversionMetrics) {
+  // Replace the AttributionHost on the WebContents with one that is backed by a
   // null ConversionManager.
-  conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
+  conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
-  ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
+  AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   base::HistogramTester histograms;
@@ -513,7 +512,7 @@ TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {
       "Conversions.UniqueReportingOriginsPerPage.Conversions", 0);
 }
 
-TEST_F(ConversionHostTest, PerPageImpressionMetrics) {
+TEST_F(AttributionHostTest, PerPageImpressionMetrics) {
   base::HistogramTester histograms;
 
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
@@ -556,12 +555,12 @@ TEST_F(ConversionHostTest, PerPageImpressionMetrics) {
       "Conversions.UniqueReportingOriginsPerPage.Impressions", 2, 1);
 }
 
-TEST_F(ConversionHostTest, NoManager_NoPerPageImpressionMetrics) {
-  // Replace the ConversionHost on the WebContents with one that is backed by a
+TEST_F(AttributionHostTest, NoManager_NoPerPageImpressionMetrics) {
+  // Replace the AttributionHost on the WebContents with one that is backed by a
   // null ConversionManager.
-  conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
+  conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
-  ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
+  AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   base::HistogramTester histograms;
@@ -575,7 +574,7 @@ TEST_F(ConversionHostTest, NoManager_NoPerPageImpressionMetrics) {
       "Conversions.UniqueReportingOriginsPerPage.Impressions", 0);
 }
 
-TEST_F(ConversionHostTest, NavigationWithImpression_PerPageImpressionMetrics) {
+TEST_F(AttributionHostTest, NavigationWithImpression_PerPageImpressionMetrics) {
   base::HistogramTester histograms;
 
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
@@ -601,7 +600,7 @@ TEST_F(ConversionHostTest, NavigationWithImpression_PerPageImpressionMetrics) {
       "Conversions.UniqueReportingOriginsPerPage.Impressions", 1, 2);
 }
 
-TEST_F(ConversionHostTest, NavigationWithNoImpression_Ignored) {
+TEST_F(AttributionHostTest, NavigationWithNoImpression_Ignored) {
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   NavigationSimulatorImpl::NavigateAndCommitFromDocument(GURL(kConversionUrl),
                                                          main_rfh());
@@ -609,8 +608,7 @@ TEST_F(ConversionHostTest, NavigationWithNoImpression_Ignored) {
   EXPECT_EQ(0u, test_manager_.num_impressions());
 }
 
-// TODO(crbug.com/1203601): Disabled due to flakiness.
-TEST_F(ConversionHostTest, ValidImpression_ForwardedToManager) {
+TEST_F(AttributionHostTest, ValidImpression_ForwardedToManager) {
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
@@ -621,12 +619,12 @@ TEST_F(ConversionHostTest, ValidImpression_ForwardedToManager) {
   EXPECT_EQ(1u, test_manager_.num_impressions());
 }
 
-TEST_F(ConversionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
-  // Replace the ConversionHost on the WebContents with one that is backed by a
+TEST_F(AttributionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
+  // Replace the AttributionHost on the WebContents with one that is backed by a
   // null ConversionManager.
-  conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
+  conversion_host_ = AttributionHostTestPeer::CreateAttributionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
-  ConversionHost::SetReceiverImplForTesting(conversion_host_.get());
+  AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
       GURL(kConversionUrl), main_rfh());
@@ -635,7 +633,7 @@ TEST_F(ConversionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
   navigation->Commit();
 }
 
-TEST_F(ConversionHostTest, ImpressionInSubframe_Ignored) {
+TEST_F(AttributionHostTest, ImpressionInSubframe_Ignored) {
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   // Create a subframe and use it as a target for the conversion registration
@@ -655,7 +653,7 @@ TEST_F(ConversionHostTest, ImpressionInSubframe_Ignored) {
 
 // Test that if we cannot access the initiator frame of the navigation, we
 // ignore the associated impression.
-TEST_F(ConversionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
+TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   base::HistogramTester histograms;
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
@@ -673,7 +671,7 @@ TEST_F(ConversionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
       "Conversions.ImpressionNavigationHasDeadInitiator", true, 2);
 }
 
-TEST_F(ConversionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
+TEST_F(AttributionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -686,7 +684,7 @@ TEST_F(ConversionHostTest, ImpressionNavigationCommitsToErrorPage_Ignored) {
   EXPECT_EQ(0u, test_manager_.num_impressions());
 }
 
-TEST_F(ConversionHostTest, ImpressionNavigationAborts_Ignored) {
+TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -698,7 +696,7 @@ TEST_F(ConversionHostTest, ImpressionNavigationAborts_Ignored) {
   EXPECT_EQ(0u, test_manager_.num_impressions());
 }
 
-TEST_F(ConversionHostTest,
+TEST_F(AttributionHostTest,
        CommittedOriginDiffersFromConversionDesintation_Ignored) {
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -711,8 +709,7 @@ TEST_F(ConversionHostTest,
   EXPECT_EQ(0u, test_manager_.num_impressions());
 }
 
-// TODO(crbug.com/1203544): Disabled due to flakiness.
-TEST_F(ConversionHostTest,
+TEST_F(AttributionHostTest,
        ImpressionNavigation_OriginTrustworthyChecksPerformed) {
   const char kLocalHost[] = "http://localhost";
 
@@ -769,7 +766,7 @@ TEST_F(ConversionHostTest,
   }
 }
 
-TEST_F(ConversionHostTest,
+TEST_F(AttributionHostTest,
        ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
@@ -799,7 +796,7 @@ TEST_F(ConversionHostTest,
             test_manager_.last_impression_origin());
 }
 
-TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
+TEST_F(AttributionHostTest, ValidImpression_NoBadMessage) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -821,7 +818,7 @@ TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
   EXPECT_EQ(10, test_manager_.last_attribution_source_priority());
 }
 
-TEST_F(ConversionHostTest, RegisterImpression_RecordsAllowedMetric) {
+TEST_F(AttributionHostTest, RegisterImpression_RecordsAllowedMetric) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -850,7 +847,7 @@ TEST_F(ConversionHostTest, RegisterImpression_RecordsAllowedMetric) {
   }
 }
 
-TEST_F(ConversionHostTest, RegisterConversion_RecordsAllowedMetric) {
+TEST_F(AttributionHostTest, RegisterConversion_RecordsAllowedMetric) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
   SetCurrentTargetFrameForTesting(main_rfh());
@@ -885,7 +882,7 @@ TEST_F(ConversionHostTest, RegisterConversion_RecordsAllowedMetric) {
 // In pre-loaded CCT navigations, the attribution can arrive after the
 // navigation begins but before it's committed. Currently only used on Android
 // but should work cross-platform.
-TEST_F(ConversionHostTest, AndroidConversion_DuringNavigation) {
+TEST_F(AttributionHostTest, AndroidConversion_DuringNavigation) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -914,7 +911,7 @@ TEST_F(ConversionHostTest, AndroidConversion_DuringNavigation) {
 // In pre-loaded CCT navigations, the attribution can arrive after the
 // navigation completes. Currently only used on Android but should work
 // cross-platform.
-TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation) {
+TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -942,7 +939,7 @@ TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation) {
   EXPECT_EQ(1u, test_manager_.num_impressions());
 }
 
-TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
+TEST_F(AttributionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -964,7 +961,8 @@ TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation_SubDomain) {
 
 // In pre-loaded CCT navigations, the attribution can arrive after the
 // navigation completes, but the destination must match the attribution.
-TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation_WrongDestination) {
+TEST_F(AttributionHostTest,
+       AndroidConversion_AfterNavigation_WrongDestination) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -994,7 +992,7 @@ TEST_F(ConversionHostTest, AndroidConversion_AfterNavigation_WrongDestination) {
 
 // Ensure we don't re-use pending Impressions after an aborted commit. Currently
 // only used on Android but should work cross-platform.
-TEST_F(ConversionHostTest, AndroidConversion_NavigationAborted) {
+TEST_F(AttributionHostTest, AndroidConversion_NavigationAborted) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -1025,7 +1023,7 @@ TEST_F(ConversionHostTest, AndroidConversion_NavigationAborted) {
 
 // Ensure we don't re-use pending Impressions after an Error page commit.
 // Currently only used on Android but should work cross-platform.
-TEST_F(ConversionHostTest, AndroidConversion_NavigationError) {
+TEST_F(AttributionHostTest, AndroidConversion_NavigationError) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -1057,7 +1055,7 @@ TEST_F(ConversionHostTest, AndroidConversion_NavigationError) {
 
 // We don't allow attributions before a navigation begins. Currently only used
 // on Android but should work cross-platform.
-TEST_F(ConversionHostTest, AndroidConversion_BeforeNavigation) {
+TEST_F(AttributionHostTest, AndroidConversion_BeforeNavigation) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -1079,7 +1077,7 @@ TEST_F(ConversionHostTest, AndroidConversion_BeforeNavigation) {
 }
 
 // We ignore same-document navigations.
-TEST_F(ConversionHostTest, AndroidConversion_SameDocument) {
+TEST_F(AttributionHostTest, AndroidConversion_SameDocument) {
   std::string origin(
 #if defined(OS_ANDROID)
       "android-app:com.any.app");
@@ -1102,7 +1100,7 @@ TEST_F(ConversionHostTest, AndroidConversion_SameDocument) {
 }
 
 #if defined(OS_ANDROID)
-TEST_F(ConversionHostTest, AndroidConversion) {
+TEST_F(AttributionHostTest, AndroidConversion) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kAndroidAppScheme, url::SCHEME_WITH_HOST);
   auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
@@ -1115,7 +1113,7 @@ TEST_F(ConversionHostTest, AndroidConversion) {
   EXPECT_EQ(1u, test_manager_.num_impressions());
 }
 
-TEST_F(ConversionHostTest, AndroidConversion_BadScheme) {
+TEST_F(AttributionHostTest, AndroidConversion_BadScheme) {
   auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL(kConversionUrl), contents());
   navigation->set_initiator_origin(

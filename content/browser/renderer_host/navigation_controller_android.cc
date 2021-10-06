@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
-#include "content/browser/attribution_reporting/conversion_host_utils.h"
+#include "content/browser/attribution_reporting/attribution_host_utils.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/common/url_utils.h"
@@ -324,7 +324,7 @@ void NavigationControllerAndroid::LoadUrl(
     params.initiator_origin = OriginFromAndroidPackageName(
         ConvertJavaStringToUTF8(env, source_package_name));
 
-    params.impression = conversion_host_utils::ParseImpressionFromApp(
+    params.impression = attribution_host_utils::ParseImpressionFromApp(
         ConvertJavaStringToUTF8(env, attribution_source_event_id),
         ConvertJavaStringToUTF8(env, attribution_destination),
         attribution_report_to

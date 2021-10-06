@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_UTILS_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_UTILS_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
@@ -19,7 +19,7 @@ namespace content {
 class BrowserContext;
 class ConversionManager;
 
-namespace conversion_host_utils {
+namespace attribution_host_utils {
 
 // Contains result for `VerifyAndStoreImpression()`.
 struct VerifyResult {
@@ -45,8 +45,8 @@ CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
     const std::string& attribution_report_to,
     int64_t attribution_expiry) WARN_UNUSED_RESULT;
 
-}  // namespace conversion_host_utils
+}  // namespace attribution_host_utils
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_CONVERSION_HOST_UTILS_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_

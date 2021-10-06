@@ -10,7 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "content/browser/attribution_reporting/conversion_host.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/attribution_reporting/conversion_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
@@ -84,16 +84,16 @@ class SourceObserver : public TestNavigationObserver {
   base::RunLoop impression_loop_;
 };
 
-// A mock conversion host which waits until an impression registration
+// A mock attribution host which waits until an impression registration
 // mojo message is received. Tracks the last seen impression data.
-class TestConversionHost : public ConversionHost {
+class TestAttributionHost : public AttributionHost {
  public:
-  explicit TestConversionHost(WebContents* contents)
-      : ConversionHost(contents) {
+  explicit TestAttributionHost(WebContents* contents)
+      : AttributionHost(contents) {
     SetReceiverImplForTesting(this);
   }
 
-  ~TestConversionHost() override { SetReceiverImplForTesting(nullptr); }
+  ~TestAttributionHost() override { SetReceiverImplForTesting(nullptr); }
 
   void RegisterImpression(const blink::Impression& impression) override {
     last_impression_data_ = impression.impression_data;
@@ -748,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     createImpressionTag({id: 'link',
@@ -780,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     createImpressionTag({id: 'link',
@@ -814,7 +814,7 @@ IN_PROC_BROWSER_TEST_F(
       https_server()->GetURL("c.test", "/page_with_impression_creator.html");
   NavigateIframeToURL(web_contents(), "test_iframe", subframe_url);
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   RenderFrameHost* subframe = ChildFrameAt(web_contents()->GetMainFrame(), 0);
   EXPECT_TRUE(ExecJs(subframe, R"(
@@ -951,7 +951,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSourceDeclarationBrowserTest,
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_TRUE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({
@@ -1006,7 +1006,7 @@ IN_PROC_BROWSER_TEST_F(
       shell(),
       https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
 
-  TestConversionHost host(web_contents());
+  TestAttributionHost host(web_contents());
 
   EXPECT_FALSE(ExecJs(web_contents(), R"(
     window.attributionReporting.registerAttributionSource({

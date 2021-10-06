@@ -47,7 +47,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/appcache/appcache_navigation_handle.h"
-#include "content/browser/attribution_reporting/conversion_host.h"
+#include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/browser/browser_main_loop.h"
@@ -8320,7 +8320,7 @@ void RenderFrameHostImpl::SetUpMojoIfNeeded() {
       [](RenderFrameHostImpl* impl,
          mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost>
              receiver) {
-        ConversionHost::BindReceiver(std::move(receiver), impl);
+        AttributionHost::BindReceiver(std::move(receiver), impl);
       },
       base::Unretained(this)));
 

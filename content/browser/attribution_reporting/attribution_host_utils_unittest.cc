@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/conversion_host_utils.h"
+#include "content/browser/attribution_reporting/attribution_host_utils.h"
 
 #include <memory>
 
@@ -12,7 +12,7 @@
 
 namespace content {
 
-namespace conversion_host_utils {
+namespace attribution_host_utils {
 
 class ConversionHostUtilsTest : public ::testing::Test {};
 
@@ -51,5 +51,5 @@ TEST(ConversionHostUtilsTest, AppImpression_Invalid_EventId) {
             ParseImpressionFromApp("-12345", "https://example.com", "", 0));
 }
 
-}  // namespace conversion_host_utils
+}  // namespace attribution_host_utils
 }  // namespace content
