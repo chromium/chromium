@@ -152,7 +152,6 @@ class CORE_EXPORT DedicatedWorker final
 
   Member<WorkerClassicScriptLoader> classic_script_loader_;
 
-  // Used only when PlzDedicatedWorker is enabled.
   std::unique_ptr<WebDedicatedWorkerHostFactoryClient> factory_client_;
 
   // Used for tracking cross-debugger calls.
