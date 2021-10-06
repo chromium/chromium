@@ -83,6 +83,7 @@ def AddCommonArgs(arg_parser):
       help=('Path to the directory in which build files are located. '
             'Defaults to current directory.'))
   common_args.add_argument('--fuchsia-out-dir',
+                           default=None,
                            help='Path to a Fuchsia build output directory. '
                            'Setting the GN arg '
                            '"default_fuchsia_build_dir_for_installation" '
