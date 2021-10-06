@@ -32,8 +32,8 @@ namespace {
 const CGFloat kStackViewHorizontalMargin = 16.0;
 const CGFloat kStackViewMaxWidth = 470.0;
 const CGFloat kStackViewDefaultSpacing = 32.0;
-const CGFloat kStackViewImageSpacing = 22.0;
-const CGFloat kStackViewDescriptionsSpacing = 16.0;
+const CGFloat kStackViewImageSpacing = 16.0;
+const CGFloat kStackViewDescriptionsSpacing = 20.0;
 const CGFloat kLayoutGuideVerticalMargin = 8.0;
 const CGFloat kLayoutGuideMinHeight = 12.0;
 const CGFloat kDescriptionsInnerMargin = 16.0;
@@ -298,7 +298,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   learnMore.editable = NO;
   learnMore.attributedText = FormatHTMLForLearnMoreSection();
   learnMore.layer.masksToBounds = YES;
-  learnMore.layer.cornerRadius = 12;
+  learnMore.layer.cornerRadius = 17;
   learnMore.backgroundColor = TextBackgroudColor();
   learnMore.textContainerInset = UIEdgeInsetsMake(
       kLearnMoreVerticalInnerMargin, kLearnMoreHorizontalInnerMargin,
@@ -337,7 +337,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   stackView.spacing = 8;
   stackView.alignment = UIStackViewAlignmentLeading;
   stackView.backgroundColor = TextBackgroudColor();
-  stackView.layer.cornerRadius = 12;
+  stackView.layer.cornerRadius = 10;
   stackView.layer.masksToBounds = true;
   stackView.layoutMarginsRelativeArrangement = YES;
   stackView.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
