@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -92,7 +93,7 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
         }),
         std::move(callback));
   } else {
-    DoFileSystemOperation(
+    manager()->DoFileSystemOperation(
         FROM_HERE, &FileSystemOperationRunner::FileExists,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetFile,
                        weak_factory_.GetWeakPtr(), child_url,
@@ -137,7 +138,7 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectory(
         }),
         std::move(callback));
   } else {
-    DoFileSystemOperation(
+    manager()->DoFileSystemOperation(
         FROM_HERE, &FileSystemOperationRunner::DirectoryExists,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetDirectory,
                        weak_factory_.GetWeakPtr(), child_url,
@@ -169,7 +170,7 @@ void FileSystemAccessDirectoryHandleImpl::GetEntries(
     return;
   }
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::ReadDirectory,
       base::BindRepeating(
           &FileSystemAccessDirectoryHandleImpl::DidReadDirectory,
@@ -330,7 +331,7 @@ void FileSystemAccessDirectoryHandleImpl::GetFileWithWritePermission(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
       base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetFile,
                      weak_factory_.GetWeakPtr(), child_url,
@@ -363,7 +364,7 @@ void FileSystemAccessDirectoryHandleImpl::GetDirectoryWithWritePermission(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateDirectory,
       base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DidGetDirectory,
                      weak_factory_.GetWeakPtr(), child_url,

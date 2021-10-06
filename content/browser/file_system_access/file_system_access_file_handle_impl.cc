@@ -17,6 +17,7 @@
 #include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -149,7 +150,7 @@ void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {
 
   // TODO(mek): Check backend::SupportsStreaming and create snapshot file if
   // streaming is not supported.
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::GetMetadata,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
@@ -294,7 +295,7 @@ void FileSystemAccessFileHandleImpl::DoOpenFile(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::OpenFile,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile,
                      weak_factory_.GetWeakPtr(), std::move(callback),
@@ -573,7 +574,7 @@ void FileSystemAccessFileHandleImpl::CreateSwapFile(
           url().storage_key(), url().mount_type(), swap_path);
   DCHECK(swap_url.is_valid());
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidCreateSwapFile,
                      weak_factory_.GetWeakPtr(), count, swap_url,
@@ -620,7 +621,7 @@ void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
     return;
   }
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::Copy,
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidCopySwapFile,
                      weak_factory_.GetWeakPtr(), swap_url, auto_close,

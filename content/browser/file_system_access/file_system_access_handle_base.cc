@@ -12,6 +12,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -329,7 +330,7 @@ void FileSystemAccessHandleBase::DidCreateDestinationDirectoryHandle(
     locks.emplace_back(std::move(dest_write_lock.value()));
   }
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::Move,
       base::BindOnce(
           [](base::WeakPtr<FileSystemAccessHandleBase> handle,
@@ -387,8 +388,9 @@ void FileSystemAccessHandleBase::DoRemove(
       },
       std::move(write_locks), std::move(callback));
 
-  DoFileSystemOperation(FROM_HERE, &storage::FileSystemOperationRunner::Remove,
-                        std::move(wrapped_callback), url, recurse);
+  manager()->DoFileSystemOperation(FROM_HERE,
+                                   &storage::FileSystemOperationRunner::Remove,
+                                   std::move(wrapped_callback), url, recurse);
 }
 
 storage::FileSystemURL FileSystemAccessHandleBase::GetParentURL() {

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
 
+#include "base/bind_post_task.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_capacity_allocation_host.mojom.h"
@@ -41,7 +43,6 @@ class StorageKey;
 
 namespace storage {
 class FileSystemContext;
-class FileSystemOperationRunner;
 }  // namespace storage
 
 namespace content {
@@ -289,6 +290,76 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       const base::FilePath& path);
 
   void Shutdown();
+
+  // Invokes `method` on the correct sequence on the FileSystemOperationRunner,
+  // passing `args` and a callback to the method.
+  // The passed in `callback` is wrapped to make sure it is called on the
+  // correct sequence before passing it off to the `method`.
+  //
+  // Note that `callback` is passed to this method before other arguments,
+  // while the wrapped callback will be passed as last argument to the
+  // underlying FileSystemOperation `method`.
+  template <typename... MethodArgs,
+            typename... ArgsMinusCallback,
+            typename... CallbackArgs>
+  void DoFileSystemOperation(
+      const base::Location& from_here,
+      storage::FileSystemOperationRunner::OperationID (
+          storage::FileSystemOperationRunner::*method)(MethodArgs...),
+      base::OnceCallback<void(CallbackArgs...)> callback,
+      ArgsMinusCallback&&... args) {
+    // Wrap the passed in callback in one that posts a task back to the
+    // current sequence.
+    auto wrapped_callback = base::BindPostTask(
+        base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+
+    // And then post a task to the sequence bound operation runner to run the
+    // provided method with the provided arguments (and the wrapped callback).
+    //
+    // FileSystemOperationRunner assumes context() is kept alive, to make sure
+    // this happens it is bound to a callback that otherwise does nothing.
+    operation_runner()
+        .AsyncCall(base::IgnoreResult(method), from_here)
+        .WithArgs(std::forward<ArgsMinusCallback>(args)...,
+                  std::move(wrapped_callback))
+        .Then(base::BindOnce([](scoped_refptr<storage::FileSystemContext>) {},
+                             base::WrapRefCounted(context())));
+  }
+  // Same as the previous overload, but using RepeatingCallback and
+  // BindRepeating instead.
+  template <typename... MethodArgs,
+            typename... ArgsMinusCallback,
+            typename... CallbackArgs>
+  void DoFileSystemOperation(
+      const base::Location& from_here,
+      storage::FileSystemOperationRunner::OperationID (
+          storage::FileSystemOperationRunner::*method)(MethodArgs...),
+      base::RepeatingCallback<void(CallbackArgs...)> callback,
+      ArgsMinusCallback&&... args) {
+    // Wrap the passed in callback in one that posts a task back to the
+    // current sequence.
+    auto wrapped_callback = base::BindRepeating(
+        [](scoped_refptr<base::SequencedTaskRunner> runner,
+           const base::RepeatingCallback<void(CallbackArgs...)>& callback,
+           CallbackArgs... args) {
+          runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(callback, std::forward<CallbackArgs>(args)...));
+        },
+        base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+
+    // And then post a task to the sequence bound operation runner to run the
+    // provided method with the provided arguments (and the wrapped callback).
+    //
+    // FileSystemOperationRunner assumes context() is kept alive, to make sure
+    // this happens it is bound to a callback that otherwise does nothing.
+    operation_runner()
+        .AsyncCall(base::IgnoreResult(method), from_here)
+        .WithArgs(std::forward<ArgsMinusCallback>(args)...,
+                  std::move(wrapped_callback))
+        .Then(base::BindOnce([](scoped_refptr<storage::FileSystemContext>) {},
+                             base::WrapRefCounted(context())));
+  }
 
  private:
   friend class FileSystemAccessFileHandleImpl;

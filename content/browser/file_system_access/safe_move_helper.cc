@@ -245,7 +245,7 @@ void SafeMoveHelper::DidAfterWriteCheck(
     result_callback = base::BindOnce(&SafeMoveHelper::DidFileSkipQuarantine,
                                      weak_factory_.GetWeakPtr());
   }
-  DoFileSystemOperation(
+  manager_->DoFileSystemOperation(
       FROM_HERE, &storage::FileSystemOperationRunner::MoveFileLocal,
       std::move(result_callback), source_url(), dest_url(), option_);
 }

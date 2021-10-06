@@ -60,7 +60,7 @@ FileSystemAccessFileWriterImpl::FileSystemAccessFileWriterImpl(
 
 FileSystemAccessFileWriterImpl::~FileSystemAccessFileWriterImpl() {
   if (should_purge_swap_file_on_destruction_) {
-    DoFileSystemOperation(
+    manager()->DoFileSystemOperation(
         FROM_HERE, &FileSystemOperationRunner::RemoveFile,
         base::BindOnce(
             [](const storage::FileSystemURL& swap_url,
@@ -186,7 +186,7 @@ void FileSystemAccessFileWriterImpl::WriteImpl(
     return;
   }
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::WriteStream,
       base::BindRepeating(&FileSystemAccessFileWriterImpl::DidWrite,
                           weak_factory_.GetWeakPtr(),
@@ -222,7 +222,7 @@ void FileSystemAccessFileWriterImpl::TruncateImpl(uint64_t length,
     return;
   }
 
-  DoFileSystemOperation(
+  manager()->DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::Truncate,
       base::BindOnce(
           [](TruncateCallback callback, base::File::Error result) {
