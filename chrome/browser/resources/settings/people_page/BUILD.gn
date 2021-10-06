@@ -14,11 +14,8 @@ js_type_check("closure_compile") {
     ":account_manager_browser_proxy",
     ":profile_info_browser_proxy",
     ":signout_dialog",
-    ":sync_account_control",
     ":sync_browser_proxy",
-    ":sync_controls",
     ":sync_encryption_options",
-    ":sync_page",
   ]
 }
 
@@ -41,31 +38,9 @@ js_library("signout_dialog") {
   ]
 }
 
-js_library("sync_account_control") {
-  deps = [
-    ":sync_browser_proxy",
-    "..:i18n_setup",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/js:assert.m",
-  ]
-  externs_list = [ "$externs_path/settings_private.js" ]
-}
-
 js_library("sync_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("sync_controls") {
-  deps = [
-    ":sync_browser_proxy",
-    "..:i18n_setup",
-    "..:router",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
 }
 
 js_library("sync_encryption_options") {
@@ -77,28 +52,14 @@ js_library("sync_encryption_options") {
   ]
 }
 
-js_library("sync_page") {
-  deps = [
-    ":sync_browser_proxy",
-    ":sync_encryption_options",
-    "..:i18n_setup",
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "people_page.ts",
     "signout_dialog.js",
-    "sync_account_control.js",
-    "sync_controls.js",
+    "sync_account_control.ts",
+    "sync_controls.ts",
     "sync_encryption_options.js",
-    "sync_page.js",
+    "sync_page.ts",
   ]
 
   if (!is_chromeos_ash) {

@@ -12,7 +12,7 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -23,9 +23,8 @@ import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncSta
 /**
  * Names of the individual data type properties to be cached from
  * SyncPrefs when the user checks 'Sync All'.
- * @type {!Array<string>}
  */
-const SyncPrefsIndividualDataTypes = [
+const SyncPrefsIndividualDataTypes: string[] = [
   'appsSynced',
   'extensionsSynced',
   'preferencesSynced',
@@ -43,27 +42,21 @@ const SyncPrefsIndividualDataTypes = [
 /**
  * Names of the radio buttons which allow the user to choose their data sync
  * mechanism.
- * @enum {string}
  */
-const RadioButtonNames = {
-  SYNC_EVERYTHING: 'sync-everything',
-  CUSTOMIZE_SYNC: 'customize-sync',
-};
+enum RadioButtonNames {
+  SYNC_EVERYTHING = 'sync-everything',
+  CUSTOMIZE_SYNC = 'customize-sync',
+}
 
 /**
  * @fileoverview
  * 'settings-sync-controls' contains all sync data type controls.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
 const SettingsSyncControlsElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
 
-/** @polymer */
 class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
   static get is() {
     return 'settings-sync-controls';
@@ -85,13 +78,11 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
 
       /**
        * The current sync preferences, supplied by SyncBrowserProxy.
-       * @type {SyncPrefs|undefined}
        */
       syncPrefs: Object,
 
       /**
        * The current sync status, supplied by the parent.
-       * @type {SyncStatus}
        */
       syncStatus: {
         type: Object,
@@ -100,21 +91,22 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
     };
   }
 
+  hidden: boolean;
+  syncPrefs?: SyncPrefs;
+  syncStatus: SyncStatus;
+  private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
+  private cachedSyncPrefs_: {[key: string]: any}|null;
+
   constructor() {
     super();
-
-    /** @private {!SyncBrowserProxy} */
-    this.browserProxy_ = SyncBrowserProxyImpl.getInstance();
 
     /**
      * Caches the individually selected synced data types. This is used to
      * be able to restore the selections after checking and unchecking Sync All.
-     * @private {?Object}
      */
     this.cachedSyncPrefs_ = null;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -123,28 +115,22 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
 
     const router = Router.getInstance();
     if (router.getCurrentRoute() ===
-        /** @type {{ SYNC_ADVANCED: !Route }} */
-        (router.getRoutes()).SYNC_ADVANCED) {
+        (router.getRoutes() as {SYNC_ADVANCED: Route}).SYNC_ADVANCED) {
       this.browserProxy_.didNavigateToSyncPage();
     }
   }
 
 
   // <if expr="chromeos or lacros">
-  /**
-   * @returns {boolean}
-   * @private
-   */
-  shouldShowLacrosSideBySideWarning_() {
+  private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }
   // </if>
 
   /**
    * Handler for when the sync preferences are updated.
-   * @private
    */
-  handleSyncPrefsChanged_(syncPrefs) {
+  private handleSyncPrefsChanged_(syncPrefs: SyncPrefs) {
     this.syncPrefs = syncPrefs;
 
     // If autofill is not registered or synced, force Payments integration off.
@@ -154,41 +140,25 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
   }
 
   /**
-   * @return {string} Computed binding returning the selected sync data radio
-   *     button.
-   * @private
+   * @return Computed binding returning the selected sync data radio button.
    */
-  selectedSyncDataRadio_() {
-    return this.syncPrefs.syncAllDataTypes ? RadioButtonNames.SYNC_EVERYTHING :
-                                             RadioButtonNames.CUSTOMIZE_SYNC;
+  private selectedSyncDataRadio_(): string {
+    return this.syncPrefs!.syncAllDataTypes ? RadioButtonNames.SYNC_EVERYTHING :
+                                              RadioButtonNames.CUSTOMIZE_SYNC;
   }
 
   /**
    * Called when the sync data radio button selection changes.
-   * @param {!CustomEvent<{value: string}>} event
-   * @private
    */
-  onSyncDataRadioSelectionChanged_(event) {
+  private onSyncDataRadioSelectionChanged_(event:
+                                               CustomEvent<{value: string}>) {
     const syncAllDataTypes =
         event.detail.value === RadioButtonNames.SYNC_EVERYTHING;
     this.set('syncPrefs.syncAllDataTypes', syncAllDataTypes);
     this.handleSyncAllDataTypesChanged_(syncAllDataTypes);
   }
 
-  /**
-   * Handler for when the sync all data types checkbox is changed.
-   * @param {!Event} event
-   * @private
-   */
-  onSyncAllDataTypesChanged_(event) {
-    this.handleSyncAllDataTypesChanged_(event.target.checked);
-  }
-
-  /**
-   * @param {boolean} syncAllDataTypes
-   * @private
-   */
-  handleSyncAllDataTypesChanged_(syncAllDataTypes) {
+  private handleSyncAllDataTypesChanged_(syncAllDataTypes: boolean) {
     if (syncAllDataTypes) {
       this.set('syncPrefs.syncAllDataTypes', true);
 
@@ -196,7 +166,8 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
       this.cachedSyncPrefs_ = {};
       for (const dataType of SyncPrefsIndividualDataTypes) {
         // These are all booleans, so this shallow copy is sufficient.
-        this.cachedSyncPrefs_[dataType] = this.syncPrefs[dataType];
+        this.cachedSyncPrefs_[dataType] =
+            (this.syncPrefs as {[key: string]: any})[dataType];
 
         this.set(['syncPrefs', dataType], true);
       }
@@ -213,50 +184,37 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
 
   /**
    * Handler for when any sync data type checkbox is changed (except autofill).
-   * @private
    */
-  onSingleSyncDataTypeChanged_() {
+  private onSingleSyncDataTypeChanged_() {
     assert(this.syncPrefs);
-    this.browserProxy_.setSyncDatatypes(this.syncPrefs);
+    this.browserProxy_.setSyncDatatypes(this.syncPrefs!);
   }
 
   /**
    * Handler for when the autofill data type checkbox is changed.
-   * @private
    */
-  onAutofillDataTypeChanged_() {
+  private onAutofillDataTypeChanged_() {
     this.set(
-        'syncPrefs.paymentsIntegrationEnabled', this.syncPrefs.autofillSynced);
+        'syncPrefs.paymentsIntegrationEnabled', this.syncPrefs!.autofillSynced);
 
     this.onSingleSyncDataTypeChanged_();
   }
 
   /**
    * Handler for when the autofill data type checkbox is changed.
-   * @private
    */
-  onTypedUrlsDataTypeChanged_() {
+  private onTypedUrlsDataTypeChanged_() {
     this.onSingleSyncDataTypeChanged_();
   }
 
-  /**
-   * @param {boolean} syncAllDataTypes
-   * @param {boolean} autofillSynced
-   * @return {boolean} Whether the sync checkbox should be disabled.
-   */
-  shouldPaymentsCheckboxBeDisabled_(syncAllDataTypes, autofillSynced) {
+  shouldPaymentsCheckboxBeDisabled_(
+      syncAllDataTypes: boolean, autofillSynced: boolean): boolean {
     return syncAllDataTypes || !autofillSynced;
   }
 
-  /** @private */
-  syncStatusChanged_() {
+  private syncStatusChanged_() {
     const router = Router.getInstance();
-    const routes =
-        /**
-         * @type {{ SYNC: !Route,
-         *           SYNC_ADVANCED: !Route }}
-         */
-        (router.getRoutes());
+    const routes = router.getRoutes() as {SYNC: Route, SYNC_ADVANCED: Route};
     if (router.getCurrentRoute() === routes.SYNC_ADVANCED &&
         this.syncControlsHidden_()) {
       router.navigateTo(routes.SYNC);
@@ -264,10 +222,9 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
   }
 
   /**
-   * @return {boolean} Whether the sync controls are hidden.
-   * @private
+   * @return Whether the sync controls are hidden.
    */
-  syncControlsHidden_() {
+  private syncControlsHidden_(): boolean {
     if (!this.syncStatus) {
       // Show sync controls by default.
       return false;
@@ -278,8 +235,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
     }
 
     return !!this.syncStatus.hasError &&
-        this.syncStatus.statusAction !==
-        StatusAction.ENTER_PASSPHRASE &&
+        this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
         this.syncStatus.statusAction !==
         StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS;
   }

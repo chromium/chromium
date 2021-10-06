@@ -60,3 +60,44 @@ function SettingsPrefsElement() {}
 
 /** @param {string} key */
 SettingsPrefsElement.prototype.refresh = function(key) {};
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function SettingsPersonalizationOptionsElement() {}
+
+/** @return {?HTMLElement} */
+SettingsPersonalizationOptionsElement.prototype.getDriveSuggestToggle =
+    function() {};
+
+/** @return {?HTMLElement} */
+SettingsPersonalizationOptionsElement.prototype.getUrlCollectionToggle =
+    function() {};
+
+/** @return {?HTMLElement} */
+SettingsPersonalizationOptionsElement.prototype.getSearchSuggestToggle =
+    function() {};
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function SettingsSyncEncryptionOptionsElement() {}
+
+/** @return {?HTMLElement} */
+SettingsSyncEncryptionOptionsElement.prototype.getEncryptionsRadioButtons =
+    function() {};
+
+
+/**
+ * @constructor
+ * @extends {HTMLElement}
+ */
+function SettingsSyncPageElement() {}
+
+/** @return {?SettingsPersonalizationOptionsElement} */
+SettingsSyncPageElement.prototype.getPersonalizationOptions = function() {};
+
+/** @return {?SettingsSyncEncryptionOptionsElement} */
+SettingsSyncPageElement.prototype.getEncryptionOptions = function() {};

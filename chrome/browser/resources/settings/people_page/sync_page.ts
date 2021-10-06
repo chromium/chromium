@@ -23,13 +23,16 @@ import '../settings_vars_css.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 // </if>
 
+import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {flush, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {SettingsPersonalizationOptionsElement} from '../privacy_page/personalization_options.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
@@ -37,51 +40,33 @@ import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js
 
 // TODO(rbpotter): Remove this typedef when this file is no longer needed by OS
 // Settings.
-/**
- * @typedef {{
- *   BASIC: !Route,
- *   PEOPLE: !Route,
- *   SYNC: !Route,
- *   SYNC_ADVANCED: !Route,
- * }}
- */
-let SyncRoutes;
+type SyncRoutes = {
+  BASIC: Route,
+  PEOPLE: Route,
+  SYNC: Route,
+  SYNC_ADVANCED: Route,
+};
 
-/** @return {!SyncRoutes} */
-function getSyncRoutes() {
+function getSyncRoutes(): SyncRoutes {
   const router = Router.getInstance();
-  return /** @type {!SyncRoutes} */ (router.getRoutes());
+  return router.getRoutes() as SyncRoutes;
 }
 
-// TODO(dpapad): Remove this interface when this file is no longer needed by OS
-// Settings.
-class SettingsPersonalizationOptionsElement {
-  /** @return {?HTMLElement} */
-  getDriveSuggestToggle() {}
-
-  /** @return {?HTMLElement} */
-  getUrlCollectionToggle() {}
-
-  /** @return {?HTMLElement} */
-  getSearchSuggestToggle() {}
-}
+type FocusConfig = Map<string, (string|(() => void))>;
 
 /**
  * @fileoverview
  * 'settings-sync-page' is the settings page containing sync settings.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsSyncPageElementBase = mixinBehaviors(
-    [WebUIListenerBehavior, I18nBehavior], RouteObserverMixin(PolymerElement));
+const SettingsSyncPageElementBase =
+    mixinBehaviors(
+        [WebUIListenerBehavior],
+        RouteObserverMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUIListenerBehavior & I18nMixinInterface &
+      RouteObserverMixinInterface
+    };
 
-/** @polymer */
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   static get is() {
     return 'settings-sync-page';
@@ -101,14 +86,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         notify: true,
       },
 
-      /** @private {!Map<string, (string|Function)>} */
       focusConfig: {
         type: Object,
         observer: 'onFocusConfigChange_',
       },
 
-      /** @private */
-      pages_: {
+      pageStatusEnum_: {
         type: Object,
         value: PageStatus,
         readOnly: true,
@@ -118,7 +101,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
        * The current page status. Defaults to |CONFIGURE| such that the
        * searching algorithm can search useful content when the page is not
        * visible to the user.
-       * @private {?PageStatus}
        */
       pageStatus_: {
         type: String,
@@ -135,24 +117,16 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
       /**
        * The current sync preferences, supplied by SyncBrowserProxy.
-       * @type {SyncPrefs|undefined}
        */
-      syncPrefs: {
-        type: Object,
-      },
+      syncPrefs: Object,
 
-      /** @type {SyncStatus} */
-      syncStatus: {
-        type: Object,
-      },
+      syncStatus: Object,
 
-      /** @private */
       dataEncrypted_: {
         type: Boolean,
         computed: 'computeDataEncrypted_(syncPrefs.encryptAllData)'
       },
 
-      /** @private */
       encryptionExpanded_: {
         type: Boolean,
         value: false,
@@ -166,28 +140,24 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
       /**
        * The existing passphrase input field value.
-       * @private
        */
       existingPassphrase_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       signedIn_: {
         type: Boolean,
         value: true,
         computed: 'computeSignedIn_(syncStatus.signedIn)',
       },
 
-      /** @private */
       syncDisabledByAdmin_: {
         type: Boolean,
         value: false,
         computed: 'computeSyncDisabledByAdmin_(syncStatus.managed)',
       },
 
-      /** @private */
       syncSectionDisabled_: {
         type: Boolean,
         value: false,
@@ -197,20 +167,17 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.trustedVaultKeysRequired)',
       },
 
-      /** @private */
       showSetupCancelDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       enterPassphraseLabel_: {
         type: String,
         computed: 'computeEnterPassphraseLabel_(syncPrefs.encryptAllData,' +
             'syncPrefs.explicitPassphraseTime)',
       },
 
-      /** @private */
       existingPassphraseLabel_: {
         type: String,
         computed: 'computeExistingPassphraseLabel_(syncPrefs.encryptAllData,' +
@@ -225,12 +192,30 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     ];
   }
 
-  /** @override */
+  focusConfig: FocusConfig;
+  private pageStatus_: PageStatus
+  syncPrefs?: SyncPrefs;
+  syncStatus: SyncStatus;
+  private dataEncrypted_: boolean;
+  private encryptionExpanded_: boolean;
+  forceEncryptionExpanded: boolean;
+  private existingPassphrase_: string;
+  private signedIn_: boolean;
+  private syncDisabledByAdmin_: boolean;
+  private syncSectionDisabled_: boolean;
+  private showSetupCancelDialog_: boolean;
+  private enterPassphraseLabel_: string;
+  private existingPassphraseLabel_: string;
+
+  private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
+  private collapsibleSectionsInitialized_: boolean;
+  private didAbort_: boolean;
+  private setupCancelConfirmed_: boolean;
+  private beforeunloadCallback_: ((e: Event) => void)|null;
+  private unloadCallback_: (() => void)|null;
+
   constructor() {
     super();
-
-    /** @private {!SyncBrowserProxy} */
-    this.browserProxy_ = SyncBrowserProxyImpl.getInstance();
 
     /**
      * The beforeunload callback is used to show the 'Leave site' dialog. This
@@ -239,8 +224,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
      *
      * This property is non-null if the user is currently navigated on the sync
      * settings route.
-     *
-     * @private {?Function}
      */
     this.beforeunloadCallback_ = null;
 
@@ -250,32 +233,26 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
      * Note = Cases like closing the tab or reloading don't need to be handled;
      * because they are already caught in |PeopleHandler::~PeopleHandler|
      * from the C++ code.
-     *
-     * @private {?Function}
      */
     this.unloadCallback_ = null;
 
     /**
      * Whether the initial layout for collapsible sections has been computed. It
      * is computed only once; the first time the sync status is updated.
-     * @private {boolean}
      */
     this.collapsibleSectionsInitialized_ = false;
 
     /**
      * Whether the user decided to abort sync.
-     * @private {boolean}
      */
     this.didAbort_ = true;
 
     /**
      * Whether the user confirmed the cancellation of sync.
-     * @private {boolean}
      */
     this.setupCancelConfirmed_ = false;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
 
@@ -290,7 +267,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -310,100 +286,71 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   }
 
   /**
-   * Returns the encryption options SettingsSyncEncryptionOptionsElement.
-   * @return {?SettingsSyncEncryptionOptionsElement}
+   * @return The encryption options SettingsSyncEncryptionOptionsElement.
    */
-  getEncryptionOptions() {
-    return /** @type {?SettingsSyncEncryptionOptionsElement} */ (
-        this.shadowRoot.querySelector('settings-sync-encryption-options'));
+  getEncryptionOptions(): SettingsSyncEncryptionOptionsElement|null {
+    return this.shadowRoot!.querySelector('settings-sync-encryption-options');
   }
 
   /**
-   * Returns the personalization options SettingsPersonalizationOptionsElement.
-   * @return {?SettingsPersonalizationOptionsElement}
-   * @suppress {checkTypes}
+   * @return The personalization options SettingsPersonalizationOptionsElement.
    */
-  getPersonalizationOptions() {
-    return /** @type {?SettingsPersonalizationOptionsElement} */ (
-        this.shadowRoot.querySelector('settings-personalization-options'));
+  getPersonalizationOptions(): SettingsPersonalizationOptionsElement|null {
+    return this.shadowRoot!.querySelector('settings-personalization-options');
   }
 
   // <if expr="chromeos or lacros">
-  /**
-   * @returns {boolean}
-   * @private
-   */
-  shouldShowLacrosSideBySideWarning_() {
+  private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }
   // </if>
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeSignedIn_() {
+  private computeSignedIn_(): boolean {
     return !!this.syncStatus.signedIn;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeSyncSectionDisabled_() {
+  private computeSyncSectionDisabled_(): boolean {
     return this.syncStatus !== undefined &&
         (!this.syncStatus.signedIn || !!this.syncStatus.disabled ||
          (!!this.syncStatus.hasError &&
-          this.syncStatus.statusAction !==
-              StatusAction.ENTER_PASSPHRASE &&
+          this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
           this.syncStatus.statusAction !==
               StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeSyncDisabledByAdmin_() {
+  private computeSyncDisabledByAdmin_(): boolean {
     return this.syncStatus !== undefined && !!this.syncStatus.managed;
   }
 
-  /** @private */
-  onFocusConfigChange_() {
+  private onFocusConfigChange_() {
     const router = Router.getInstance();
     this.focusConfig.set(getSyncRoutes().SYNC_ADVANCED.path, () => {
       focusWithoutInk(
-          assert(this.shadowRoot.querySelector('#sync-advanced-row')));
+          assert(this.shadowRoot!.querySelector('#sync-advanced-row')!));
     });
   }
 
-  /** @private */
-  onSetupCancelDialogBack_() {
-    /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('#setupCancelDialog'))
-        .cancel();
+  private onSetupCancelDialogBack_() {
+    this.shadowRoot!.querySelector<CrDialogElement>(
+                        '#setupCancelDialog')!.cancel();
     chrome.metricsPrivate.recordUserAction(
         'Signin_Signin_CancelCancelAdvancedSyncSettings');
   }
 
-  /** @private */
-  onSetupCancelDialogConfirm_() {
+  private onSetupCancelDialogConfirm_() {
     this.setupCancelConfirmed_ = true;
-    /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('#setupCancelDialog'))
-        .close();
+    this.shadowRoot!.querySelector<CrDialogElement>(
+                        '#setupCancelDialog')!.close();
     const router = Router.getInstance();
     router.navigateTo(getSyncRoutes().BASIC);
     chrome.metricsPrivate.recordUserAction(
         'Signin_Signin_ConfirmCancelAdvancedSyncSettings');
   }
 
-  /** @private */
-  onSetupCancelDialogClose_() {
+  private onSetupCancelDialogClose_() {
     this.showSetupCancelDialog_ = false;
   }
 
-  /** @protected */
   currentRouteChanged() {
     const router = Router.getInstance();
     if (router.getCurrentRoute() === getSyncRoutes().SYNC) {
@@ -439,7 +386,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         this.showSetupCancelDialog_ = true;
         // Flush to make sure that the setup cancel dialog is attached.
         flush();
-        this.shadowRoot.querySelector('#setupCancelDialog').showModal();
+        this.shadowRoot!.querySelector<CrDialogElement>(
+                            '#setupCancelDialog')!.showModal();
       });
       return;
     }
@@ -450,17 +398,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.onNavigateAwayFromPage_();
   }
 
-  /**
-   * @param {!PageStatus} expectedPageStatus
-   * @return {boolean}
-   * @private
-   */
-  isStatus_(expectedPageStatus) {
+  private isStatus_(expectedPageStatus: PageStatus): boolean {
     return expectedPageStatus === this.pageStatus_;
   }
 
-  /** @private */
-  onNavigateToPage_() {
+  private onNavigateToPage_() {
     const router = Router.getInstance();
     assert(router.getCurrentRoute() === getSyncRoutes().SYNC);
     if (this.beforeunloadCallback_) {
@@ -479,7 +421,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       // dialog.
       if (this.syncStatus && this.syncStatus.firstSetupInProgress) {
         event.preventDefault();
-        event.returnValue = '';
 
         chrome.metricsPrivate.recordUserAction(
             'Signin_Signin_AbortAdvancedSyncSettings');
@@ -491,8 +432,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     window.addEventListener('unload', this.unloadCallback_);
   }
 
-  /** @private */
-  onNavigateAwayFromPage_() {
+  private onNavigateAwayFromPage_() {
     if (!this.beforeunloadCallback_) {
       return;
     }
@@ -514,38 +454,27 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   /**
    * Handler for when the sync preferences are updated.
-   * @private
    */
-  handleSyncPrefsChanged_(syncPrefs) {
+  private handleSyncPrefsChanged_(syncPrefs: SyncPrefs) {
     this.syncPrefs = syncPrefs;
     this.pageStatus_ = PageStatus.CONFIGURE;
   }
 
-  /** @private */
-  onActivityControlsClick_() {
+  private onActivityControlsClick_() {
     chrome.metricsPrivate.recordUserAction('Sync_OpenActivityControlsPage');
     this.browserProxy_.openActivityControlsUrl();
     window.open(loadTimeData.getString('activityControlsUrl'));
   }
 
-  /** @private */
-  onSyncDashboardLinkClick_() {
+  private onSyncDashboardLinkClick_() {
     window.open(loadTimeData.getString('syncDashboardUrl'));
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeDataEncrypted_() {
+  private computeDataEncrypted_(): boolean {
     return !!this.syncPrefs && this.syncPrefs.encryptAllData;
   }
 
-  /**
-   * @return  {string}
-   * @private
-   */
-  computeEnterPassphraseLabel_() {
+  private computeEnterPassphraseLabel_(): string {
     if (!this.syncPrefs || !this.syncPrefs.encryptAllData) {
       return '';
     }
@@ -565,11 +494,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     });
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeExistingPassphraseLabel_() {
+  private computeExistingPassphraseLabel_(): string {
     if (!this.syncPrefs || !this.syncPrefs.encryptAllData) {
       return '';
     }
@@ -585,9 +510,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   /**
    * Whether the encryption dropdown should be expanded by default.
-   * @private
    */
-  expandEncryptionIfNeeded_() {
+  private expandEncryptionIfNeeded_() {
     // Force the dropdown to expand.
     if (this.forceEncryptionExpanded) {
       this.forceEncryptionExpanded = false;
@@ -598,12 +522,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.encryptionExpanded_ = this.dataEncrypted_;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onResetSyncClick_(event) {
-    if (event.target.tagName === 'A') {
+  private onResetSyncClick_(event: Event) {
+    if ((event.target as HTMLElement).tagName === 'A') {
       // Stop the propagation of events as the |cr-expand-button|
       // prevents the default which will prevent the navigation to the link.
       event.stopPropagation();
@@ -612,10 +532,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   /**
    * Sends the user-entered existing password to re-enable sync.
-   * @private
-   * @param {!Event} e
    */
-  onSubmitExistingPassphraseTap_(e) {
+  private onSubmitExistingPassphraseTap_(e: KeyboardEvent) {
     if (e.type === 'keypress' && e.key !== 'Enter') {
       return;
     }
@@ -629,22 +547,15 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.existingPassphrase_ = '';
   }
 
-  /**
-   * @private
-   * @param {!CustomEvent<!{didChange: boolean}>} e
-   */
-  onPassphraseChanged_(e) {
+  private onPassphraseChanged_(e: CustomEvent<{didChange: boolean}>) {
     this.handlePageStatusChanged_(
-        e.detail.didChange ? PageStatus.DONE :
-                             PageStatus.PASSPHRASE_FAILED);
+        e.detail.didChange ? PageStatus.DONE : PageStatus.PASSPHRASE_FAILED);
   }
 
   /**
    * Called when the page status updates.
-   * @param {!PageStatus} pageStatus
-   * @private
    */
-  handlePageStatusChanged_(pageStatus) {
+  private handlePageStatusChanged_(pageStatus: PageStatus) {
     const router = Router.getInstance();
     switch (pageStatus) {
       case PageStatus.SPINNER:
@@ -657,10 +568,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         }
         return;
       case PageStatus.PASSPHRASE_FAILED:
-        if (this.pageStatus_ === this.pages_.CONFIGURE && this.syncPrefs &&
+        if (this.pageStatus_ === PageStatus.CONFIGURE && this.syncPrefs &&
             this.syncPrefs.passphraseRequired) {
-          const passphraseInput = /** @type {!CrInputElement} */ (
-              this.shadowRoot.querySelector('#existingPassphraseInput'));
+          const passphraseInput =
+              this.shadowRoot!.querySelector<CrInputElement>(
+                  '#existingPassphraseInput')!;
           passphraseInput.invalid = true;
           passphraseInput.focusInput();
         }
@@ -670,23 +582,15 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     assertNotReached();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onLearnMoreTap_(event) {
-    if (event.target.tagName === 'A') {
+  private onLearnMoreTap_(event: Event) {
+    if ((event.target as HTMLElement).tagName === 'A') {
       // Stop the propagation of events, so that clicking on links inside
       // checkboxes or radio buttons won't change the value.
       event.stopPropagation();
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowSyncAccountControl_() {
+  private shouldShowSyncAccountControl_(): boolean {
     // <if expr="chromeos">
     if (!loadTimeData.getBoolean('useBrowserSyncConsent')) {
       return false;
@@ -697,26 +601,19 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         loadTimeData.getBoolean('signinAllowed');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowExistingPassphraseBelowAccount_() {
+  private shouldShowExistingPassphraseBelowAccount_(): boolean {
     return this.syncPrefs !== undefined && !!this.syncPrefs.passphraseRequired;
   }
 
-  /** @private */
-  onSyncAdvancedClick_() {
+  private onSyncAdvancedClick_() {
     const router = Router.getInstance();
     router.navigateTo(getSyncRoutes().SYNC_ADVANCED);
   }
 
   /**
-   * @param {!CustomEvent<boolean>} e The event passed from
-   *     settings-sync-account-control.
-   * @private
+   * @param e The event passed from settings-sync-account-control.
    */
-  onSyncSetupDone_(e) {
+  private onSyncSetupDone_(e: CustomEvent<boolean>) {
     if (e.detail) {
       this.didAbort_ = false;
       chrome.metricsPrivate.recordUserAction(
@@ -733,12 +630,10 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   /**
    * Focuses the passphrase input element if it is available and the page is
    * visible.
-   * @private
    */
-  focusPassphraseInput_() {
-    const passphraseInput =
-        /** @type {!CrInputElement} */ (
-            this.shadowRoot.querySelector('#existingPassphraseInput'));
+  private focusPassphraseInput_() {
+    const passphraseInput = this.shadowRoot!.querySelector<CrInputElement>(
+        '#existingPassphraseInput');
     const router = Router.getInstance();
     if (passphraseInput && router.getCurrentRoute() === getSyncRoutes().SYNC) {
       passphraseInput.focus();

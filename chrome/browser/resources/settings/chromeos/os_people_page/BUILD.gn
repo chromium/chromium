@@ -138,7 +138,6 @@ js_library("os_people_page.m") {
     "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy",
     "//chrome/browser/resources/settings/people_page:signout_dialog",
     "//chrome/browser/resources/settings/people_page:sync_browser_proxy",
-    "//chrome/browser/resources/settings/people_page:sync_page",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
@@ -151,7 +150,8 @@ js_library("os_people_page.m") {
     "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
   extra_deps = [ ":os_people_page_module" ]
-  externs_list = chrome_extension_public_externs
+  externs_list =
+      chrome_extension_public_externs + [ "../settings_controls_types.js" ]
 }
 
 js_library("os_sync_browser_proxy.m") {
@@ -313,7 +313,7 @@ polymer_modulizer("os_people_page") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/people_page/sync_page.html|SettingsSyncPageElement" ]
+  auto_imports = os_settings_auto_imports
 }
 
 polymer_modulizer("os_sync_controls") {
