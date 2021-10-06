@@ -20,6 +20,7 @@ namespace content {
 
 static NavigationURLLoaderFactory* g_loader_factory = nullptr;
 
+// static
 std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     BrowserContext* browser_context,
     StoragePartition* storage_partition,
@@ -72,6 +73,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
       std::move(devtools_observer), std::move(initial_interceptors));
 }
 
+// static
 void NavigationURLLoader::SetFactoryForTesting(
     NavigationURLLoaderFactory* factory) {
   DCHECK(g_loader_factory == nullptr || factory == nullptr);

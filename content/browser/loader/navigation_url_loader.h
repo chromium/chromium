@@ -41,24 +41,26 @@ class CONTENT_EXPORT NavigationURLLoader {
     // Creates a regular NavigationURLLoader.
     kRegular,
 
-    // Creates a noop NavigationURLLoader for BackForwardCache.
+    // Creates a noop NavigationURLLoader for BackForwardCache activation.
     kNoopForBackForwardCache,
 
-    // Creates a noop NavigationURLLoader for Prerender.
+    // Creates a noop NavigationURLLoader for Prerender activation.
     kNoopForPrerender,
   };
 
   // Creates a NavigationURLLoader. The caller is responsible for ensuring that
-  // |delegate| outlives the loader. |request_body| must not be accessed on the
+  // `delegate` outlives the loader. `request_body` must not be accessed on the
   // UI thread after this point.
   //
-  // If |loader_type| is LoaderType::kNoop, a noop CachedNavigationURLLoader
-  // will be returned.
+  // If `loader_type` is LoaderType::kNoopForBackForwardCache or
+  // LoaderType::kNoopoForPrerender, a noop CachedNavigationURLLoader will be
+  // returned.
   //
   // TODO(davidben): When navigation is disentangled from the loader, the
   // request parameters should not come in as a navigation-specific
-  // structure. Information like has_user_gesture and
-  // should_replace_current_entry shouldn't be needed at this layer.
+  // structure. Information like `has_user_gesture` and
+  // `should_replace_current_entry` in `request_info->common_params` shouldn't
+  // be needed at this layer.
   static std::unique_ptr<NavigationURLLoader> Create(
       BrowserContext* browser_context,
       StoragePartition* storage_partition,
@@ -95,8 +97,8 @@ class CONTENT_EXPORT NavigationURLLoader {
   virtual void Start() = 0;
 
   // Called in response to OnRequestRedirected to continue processing the
-  // request. |new_previews_state| will be updated for newly created URLLoaders,
-  // but the existing default URLLoader will not see |new_previews_state| unless
+  // request. `new_previews_state` will be updated for newly created URLLoaders,
+  // but the existing default URLLoader will not see `new_previews_state` unless
   // the URLLoader happens to be reset.
   virtual void FollowRedirect(
       const std::vector<std::string>& removed_headers,
