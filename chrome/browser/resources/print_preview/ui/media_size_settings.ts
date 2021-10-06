@@ -4,20 +4,16 @@
 
 import './print_preview_shared_css.js';
 import './settings_section.js';
+import './settings_select.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
-import {SelectOption} from './settings_select.js';
+import {MediaSizeCapability, SelectOption} from '../data/cdd.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsMixinInterface}
- */
+import {SettingsMixin} from './settings_mixin.js';
+
 const PrintPreviewMediaSizeSettingsElementBase = SettingsMixin(PolymerElement);
 
-/** @polymer */
 export class PrintPreviewMediaSizeSettingsElement extends
     PrintPreviewMediaSizeSettingsElementBase {
   static get is() {
@@ -36,22 +32,23 @@ export class PrintPreviewMediaSizeSettingsElement extends
     };
   }
 
+  capability: MediaSizeCapability;
+  disabled: boolean;
+
   static get observers() {
     return [
       'onMediaSizeSettingChange_(settings.mediaSize.*, capability.option)',
     ];
   }
 
-  /** @private */
-  onMediaSizeSettingChange_() {
+  private onMediaSizeSettingChange_() {
     if (!this.capability) {
       return;
     }
     const valueToSet = JSON.stringify(this.getSettingValue('mediaSize'));
-    for (const option of
-         /** @type {!Array<!SelectOption>} */ (this.capability.option)) {
+    for (const option of this.capability.option) {
       if (JSON.stringify(option) === valueToSet) {
-        this.shadowRoot.querySelector('print-preview-settings-select')
+        this.shadowRoot!.querySelector('print-preview-settings-select')!
             .selectValue(valueToSet);
         return;
       }

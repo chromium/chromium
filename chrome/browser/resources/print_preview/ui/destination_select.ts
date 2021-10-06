@@ -156,8 +156,7 @@ export class PrintPreviewDestinationSelectElement extends
       iconSetAndIcon = ['cr', 'error'];
     }
     iconSetAndIcon = iconSetAndIcon || icon.split(':');
-    const iconset = /** @type {!IronIconsetSvgElement} */ (
-        this.meta_.byKey(iconSetAndIcon[0]));
+    const iconset = this.meta_.byKey(iconSetAndIcon[0]);
     return getSelectDropdownBackground(iconset, iconSetAndIcon[1], this);
   }
 

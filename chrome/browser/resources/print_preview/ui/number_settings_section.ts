@@ -7,21 +7,22 @@ import './print_preview_shared_css.js';
 import './print_preview_vars_css.js';
 import './settings_section.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {InputMixin, InputMixinInterface} from './input_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {InputMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const PrintPreviewNumberSettingsSectionElementBase =
-    mixinBehaviors([WebUIListenerBehavior], InputMixin(PolymerElement));
+export interface PrintPreviewNumberSettingsSectionElement {
+  $: {
+    userValue: CrInputElement,
+  };
+}
 
-/** @polymer */
+const PrintPreviewNumberSettingsSectionElementBase =
+    mixinBehaviors([WebUIListenerBehavior], InputMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerBehavior & InputMixinInterface};
+
 export class PrintPreviewNumberSettingsSectionElement extends
     PrintPreviewNumberSettingsSectionElementBase {
   static get is() {
@@ -34,14 +35,12 @@ export class PrintPreviewNumberSettingsSectionElement extends
 
   static get properties() {
     return {
-      /** @private {string} */
       inputString_: {
         type: String,
         notify: true,
         observer: 'onInputStringChanged_',
       },
 
-      /** @type {boolean} */
       inputValid: {
         type: Boolean,
         notify: true,
@@ -49,7 +48,6 @@ export class PrintPreviewNumberSettingsSectionElement extends
         value: true,
       },
 
-      /** @type {string} */
       currentValue: {
         type: String,
         notify: true,
@@ -70,49 +68,51 @@ export class PrintPreviewNumberSettingsSectionElement extends
 
       disabled: Boolean,
 
-      /** @private */
       errorMessage_: {
         type: String,
         computed: 'computeErrorMessage_(hintMessage, inputValid)',
       },
-
     };
   }
+
+  currentValue: string;
+  defaultValue: string;
+  disabled: boolean;
+  hintMessage: string;
+  inputAriaLabel: string;
+  inputLabel: string;
+  inputValid: boolean;
+  minValue: number;
+  maxValue: number;
+  private inputString_: string;
+  private errorMessage_: string;
 
   ready() {
     super.ready();
 
-    this.addEventListener(
-        'input-change',
-        e => this.onInputChangeEvent_(/** @type {!CustomEvent<string>} */ (e)));
+    this.addEventListener('input-change', e => this.onInputChangeEvent_(e));
   }
 
-  /** @return {!CrInputElement} The cr-input field element for InputBehavior. */
+  /** @return The cr-input field element for InputBehavior. */
   getInput() {
-    return /** @type {!CrInputElement} */ (this.$.userValue);
+    return this.$.userValue;
   }
 
   /**
-   * @param {!CustomEvent<string>} e Contains the new input value.
-   * @private
+   * @param e Contains the new input value.
    */
-  onInputChangeEvent_(e) {
-    this.inputString_ = e.detail;
+  private onInputChangeEvent_(e: CustomEvent<string>) {
+    this.inputString_ = e.detail!;
   }
 
   /**
-   * @return {boolean} Whether the input should be disabled.
-   * @private
+   * @return Whether the input should be disabled.
    */
-  getDisabled_() {
+  private getDisabled_(): boolean {
     return this.disabled && this.inputValid;
   }
 
-  /**
-   * @param {!KeyboardEvent} e The keyboard event
-   * @private
-   */
-  onKeydown_(e) {
+  private onKeydown_(e: KeyboardEvent) {
     if (['.', 'e', 'E', '-', '+'].includes(e.key)) {
       e.preventDefault();
       return;
@@ -123,8 +123,7 @@ export class PrintPreviewNumberSettingsSectionElement extends
     }
   }
 
-  /** @private */
-  onBlur_() {
+  private onBlur_() {
     if (this.inputString_ === '') {
       this.set('inputString_', this.defaultValue);
     }
@@ -133,34 +132,27 @@ export class PrintPreviewNumberSettingsSectionElement extends
     }
   }
 
-  /** @private */
-  onInputStringChanged_() {
+  private onInputStringChanged_() {
     this.inputValid = this.computeValid_();
     this.currentValue = this.inputString_;
   }
 
-  /** @private */
-  onCurrentValueChanged_() {
+  private onCurrentValueChanged_() {
     this.inputString_ = this.currentValue;
     this.resetString();
   }
 
   /**
-   * @return {boolean} Whether input value represented by inputString_ is
+   * @return Whether input value represented by inputString_ is
    *     valid and non-empty, so that it can be used to update the setting.
-   * @private
    */
-  computeValid_() {
+  private computeValid_(): boolean {
     // Make sure value updates first, in case inputString_ was updated by JS.
     this.$.userValue.value = this.inputString_;
     return !this.$.userValue.invalid;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeErrorMessage_() {
+  private computeErrorMessage_(): string {
     return this.inputValid ? '' : this.hintMessage;
   }
 }

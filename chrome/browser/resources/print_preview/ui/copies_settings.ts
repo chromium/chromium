@@ -6,27 +6,28 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import './number_settings_section.js';
 import './print_preview_shared_css.js';
 
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {CopiesCapability} from '../data/cdd.js';
+
+import {SettingsMixin} from './settings_mixin.js';
 
 /**
  * Maximum number of copies supported by the printer if not explicitly
  * specified.
- * @type {number}
  */
-export const DEFAULT_MAX_COPIES = 999;
+export const DEFAULT_MAX_COPIES: number = 999;
 
+export interface PrintPreviewCopiesSettingsElement {
+  $: {
+    collate: CrCheckboxElement,
+  };
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsMixinInterface}
- */
 const PrintPreviewCopiesSettingsElementBase = SettingsMixin(PolymerElement);
 
-/** @polymer */
 export class PrintPreviewCopiesSettingsElement extends
     PrintPreviewCopiesSettingsElementBase {
   static get is() {
@@ -41,19 +42,16 @@ export class PrintPreviewCopiesSettingsElement extends
     return {
       capability: Object,
 
-      /** @private {number} */
       copiesMax_: {
         type: Number,
         computed: 'computeCopiesMax_(capability)',
       },
 
-      /** @private {string} */
       currentValue_: {
         type: String,
         observer: 'onInputChanged_',
       },
 
-      /** @private {boolean} */
       inputValid_: Boolean,
 
       disabled: Boolean,
@@ -64,42 +62,44 @@ export class PrintPreviewCopiesSettingsElement extends
     return ['onSettingsChanged_(settings.copies.value, settings.collate.*)'];
   }
 
+  capability: CopiesCapability;
+  disabled: boolean;
+  private copiesMax_: number;
+  private currentValue_: string;
+  private inputValid_: boolean;
+
   /**
-   * @return {number} The maximum number of copies this printer supports.
-   * @private
+   * @return The maximum number of copies this printer supports.
    */
-  computeCopiesMax_() {
+  private computeCopiesMax_(): number {
     return (this.capability && this.capability.max) ? this.capability.max :
                                                       DEFAULT_MAX_COPIES;
   }
 
   /**
-   * @return {string} The message to show as hint.
-   * @private
+   * @return The message to show as hint.
    */
-  getHintMessage_() {
+  private getHintMessage_(): string {
     return loadTimeData.getStringF('copiesInstruction', this.copiesMax_);
   }
 
   /**
    * Updates the input string when the setting has been initialized.
-   * @private
    */
-  onSettingsChanged_() {
+  private onSettingsChanged_() {
     const copies = this.getSetting('copies');
     if (this.inputValid_) {
-      this.currentValue_ = /** @type {string} */ (copies.value.toString());
+      this.currentValue_ = (copies.value as number).toString();
     }
     const collate = this.getSetting('collate');
-    this.$.collate.checked = /** @type {boolean} */ (collate.value);
+    this.$.collate.checked = collate.value as boolean;
   }
 
   /**
    * Updates model.copies and model.copiesInvalid based on the validity
    * and current value of the copies input.
-   * @private
    */
-  onInputChanged_() {
+  private onInputChanged_() {
     if (this.currentValue_ !== '' &&
         this.currentValue_ !== this.getSettingValue('copies').toString()) {
       this.setSetting(
@@ -109,16 +109,14 @@ export class PrintPreviewCopiesSettingsElement extends
   }
 
   /**
-   * @return {boolean} Whether collate checkbox should be hidden.
-   * @private
+   * @return Whether collate checkbox should be hidden.
    */
-  collateHidden_() {
+  private collateHidden_(): boolean {
     return !this.getSetting('collate').available || !this.inputValid_ ||
         this.currentValue_ === '' || parseInt(this.currentValue_, 10) === 1;
   }
 
-  /** @private */
-  onCollateChange_() {
+  private onCollateChange_() {
     this.setSetting('collate', this.$.collate.checked);
   }
 }

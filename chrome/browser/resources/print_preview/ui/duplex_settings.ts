@@ -11,24 +11,25 @@ import './icons.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {Base, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {IronMeta} from 'chrome://resources/polymer/v3_0/iron-meta/iron-meta.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DuplexMode} from '../data/model.js';
 import {getSelectDropdownBackground} from '../print_preview_utils.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsMixinInterface}
- * @implements {SelectMixinInterface}
- */
+export interface PrintPreviewDuplexSettingsElement {
+  $: {
+    duplex: CrCheckboxElement,
+  };
+}
+
 const PrintPreviewDuplexSettingsElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
 
-/** @polymer */
 export class PrintPreviewDuplexSettingsElement extends
     PrintPreviewDuplexSettingsElementBase {
   static get is() {
@@ -47,7 +48,6 @@ export class PrintPreviewDuplexSettingsElement extends
 
       /**
        * Mirroring the enum so that it can be used from HTML bindings.
-       * @private
        */
       duplexValueEnum_: {
         type: Object,
@@ -63,66 +63,60 @@ export class PrintPreviewDuplexSettingsElement extends
     ];
   }
 
+  dark: boolean;
+  disabled: boolean;
+  private meta_: IronMeta;
+
   constructor() {
     super();
 
-    /** @private {!IronMetaElement} */
-    this.meta_ = /** @type {!IronMetaElement} */ (
-        Base.create('iron-meta', {type: 'iconset'}));
+    this.meta_ = new IronMeta({type: 'iconset', value: undefined});
   }
 
-  /** @private */
-  onDuplexSettingChange_() {
+  private onDuplexSettingChange_() {
     this.$.duplex.checked = this.getSettingValue('duplex');
   }
 
-  /** @private */
-  onDuplexTypeChange_() {
+  private onDuplexTypeChange_() {
     this.selectedValue = this.getSettingValue('duplexShortEdge') ?
-        this.duplexValueEnum_.SHORT_EDGE.toString() :
-        this.duplexValueEnum_.LONG_EDGE.toString();
+        DuplexMode.SHORT_EDGE.toString() :
+        DuplexMode.LONG_EDGE.toString();
   }
 
-  /** @private */
-  onCheckboxChange_() {
+  private onCheckboxChange_() {
     this.setSetting('duplex', this.$.duplex.checked);
   }
 
-  onProcessSelectChange(value) {
+  onProcessSelectChange(value: string) {
     this.setSetting(
-        'duplexShortEdge',
-        value === this.duplexValueEnum_.SHORT_EDGE.toString());
+        'duplexShortEdge', value === DuplexMode.SHORT_EDGE.toString());
   }
 
   /**
-   * @return {boolean} Whether to expand the collapse for the dropdown.
-   * @private
+   * @return Whether to expand the collapse for the dropdown.
    */
-  getOpenCollapse_() {
+  private getOpenCollapse_(): boolean {
     return this.getSetting('duplexShortEdge').available &&
-        /** @type {boolean} */ (this.getSettingValue('duplex'));
+        (this.getSettingValue('duplex') as boolean);
   }
 
   /**
-   * @param {boolean} managed Whether the setting is managed by policy.
-   * @param {boolean} disabled value of this.disabled
-   * @return {boolean} Whether the controls should be disabled.
-   * @private
+   * @param managed Whether the setting is managed by policy.
+   * @param disabled value of this.disabled
+   * @return Whether the controls should be disabled.
    */
-  getDisabled_(managed, disabled) {
+  private getDisabled_(managed: boolean, disabled: boolean): boolean {
     return managed || disabled;
   }
 
   /**
-   * @return {string} An inline svg corresponding to |icon| and the image for
+   * @return An inline svg corresponding to |icon| and the image for
    *     the dropdown arrow.
-   * @private
    */
-  getBackgroundImages_() {
+  private getBackgroundImages_(): string {
     const icon =
         this.getSettingValue('duplexShortEdge') ? 'short-edge' : 'long-edge';
-    const iconset = /** @type {!IronIconsetSvgElement} */ (
-        this.meta_.byKey('print-preview'));
+    const iconset = this.meta_.byKey('print-preview');
     return getSelectDropdownBackground(iconset, icon, this);
   }
 }

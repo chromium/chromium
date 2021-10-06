@@ -266,8 +266,8 @@ export class PrintPreviewMarginControlElement extends
   /**
    * @param e Contains the new value of the input.
    */
-  private onInputChange_(e: CustomEvent<string|undefined>) {
-    if (e.detail === '' || e.detail === undefined) {
+  private onInputChange_(e: CustomEvent<string>) {
+    if (e.detail === '') {
       return;
     }
 

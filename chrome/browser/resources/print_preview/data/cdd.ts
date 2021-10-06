@@ -90,15 +90,18 @@ type PageOrientationCapability = {
   option: PageOrientationOption[],
 }&CapabilityWithReset;
 
-export type MediaSizeOption = {
-  type?: string,
-  vendor_id?: string,
+export type SelectOption = {
   custom_display_name?: string,
-  custom_display_name_localized?: string,
-  name?: string, height_microns: number, width_microns: number,
+  custom_display_name_localized?: LocalizedString[],
+  name?: string,
 }&OptionWithDefault;
 
-type MediaSizeCapability = {
+export type MediaSizeOption = {
+  type?: string,
+  vendor_id?: string, height_microns: number, width_microns: number,
+}&SelectOption;
+
+export type MediaSizeCapability = {
   option: MediaSizeOption[],
 }&CapabilityWithReset;
 
@@ -106,7 +109,7 @@ export type DpiOption = {
   vendor_id?: string, horizontal_dpi: number, vertical_dpi: number,
 }&OptionWithDefault;
 
-type DpiCapability = {
+export type DpiCapability = {
   option: DpiOption[],
 }&CapabilityWithReset;
 

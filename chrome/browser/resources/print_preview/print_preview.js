@@ -70,5 +70,5 @@ export {PreviewAreaState, PrintPreviewPreviewAreaElement} from './ui/preview_are
 export {PrintPreviewSearchBoxElement} from './ui/print_preview_search_box.js';
 export {PrintPreviewScalingSettingsElement} from './ui/scaling_settings.js';
 export {SelectMixin} from './ui/select_mixin.js';
-export {PrintPreviewSettingsSelectElement, SelectOption} from './ui/settings_select.js';
+export {PrintPreviewSettingsSelectElement} from './ui/settings_select.js';
 export {PrintPreviewSidebarElement} from './ui/sidebar.js';

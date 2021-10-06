@@ -8,19 +8,12 @@ import './settings_section.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SelectMixinInterface}
- * @implements {SettingsMixinInterface}
- */
 const PrintPreviewColorSettingsElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
 
-/** @polymer */
 export class PrintPreviewColorSettingsElement extends
     PrintPreviewColorSettingsElementBase {
   static get is() {
@@ -35,7 +28,6 @@ export class PrintPreviewColorSettingsElement extends
     return {
       disabled: Boolean,
 
-      /** @private {boolean} */
       disabled_: {
         type: Boolean,
         computed: 'computeDisabled_(disabled, settings.color.setByPolicy)',
@@ -47,26 +39,24 @@ export class PrintPreviewColorSettingsElement extends
     return ['onColorSettingChange_(settings.color.value)'];
   }
 
-  /**
-   * @param {*} newValue The new value of the color setting.
-   * @private
-   */
-  onColorSettingChange_(newValue) {
-    this.selectedValue = /** @type {boolean} */ (newValue) ? 'color' : 'bw';
+  disabled: boolean;
+  private disabled_: boolean;
+
+  private onColorSettingChange_(newValue: boolean) {
+    this.selectedValue = newValue ? 'color' : 'bw';
   }
 
   /**
-   * @param {boolean} disabled Whether color selection is disabled.
-   * @param {boolean} managed Whether color selection is managed.
-   * @return {boolean} Whether drop-down should be disabled.
-   * @private
+   * @param disabled Whether color selection is disabled.
+   * @param managed Whether color selection is managed.
+   * @return Whether drop-down should be disabled.
    */
-  computeDisabled_(disabled, managed) {
-    return !!(disabled || managed);
+  private computeDisabled_(disabled: boolean, managed: boolean): boolean {
+    return disabled || managed;
   }
 
-  /** @param {string} value The new select value. */
-  onProcessSelectChange(value) {
+  /** @param value The new select value. */
+  onProcessSelectChange(value: string) {
     this.setSetting('color', value === 'color');
   }
 }

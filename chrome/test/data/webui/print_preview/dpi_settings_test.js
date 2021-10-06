@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PrintPreviewDpiSettingsElement, PrintPreviewModelElement, PrintPreviewSettingsSelectElement, SelectOption} from 'chrome://print/print_preview.js';
+import {PrintPreviewDpiSettingsElement, PrintPreviewModelElement, PrintPreviewSettingsSelectElement} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse} from '../chai_assert.js';

@@ -13,7 +13,7 @@ import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/pol
 
 declare global {
   interface HTMLElementEventMap {
-    'input-change': CustomEvent<string|undefined>;
+    'input-change': CustomEvent<string>;
   }
 }
 
@@ -87,7 +87,7 @@ export const InputMixin = dedupingMixin(
          */
         private onTimeout_() {
           this.timeout_ = null;
-          const value = this.getInput().value;
+          const value = this.getInput().value || '';
           if (this.lastValue_ !== value) {
             this.lastValue_ = value;
             this.dispatchEvent(new CustomEvent(

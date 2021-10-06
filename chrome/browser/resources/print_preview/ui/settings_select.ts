@@ -8,32 +8,15 @@ import './print_preview_shared_css.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SelectOption} from '../data/cdd.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-/**
- * @typedef {{
- *   is_default: (boolean | undefined),
- *   custom_display_name: (string | undefined),
- *   custom_display_name_localized: (Array<!{locale: string, value:string}> |
- *                                   undefined),
- *   name: (string | undefined),
- * }}
- */
-export let SelectOption;
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsMixinInterface}
- * @implements {SelectMixinInterface}
- */
 const PrintPreviewSettingsSelectElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
 
-/** @polymer */
 export class PrintPreviewSettingsSelectElement extends
     PrintPreviewSettingsSelectElementBase {
   static get is() {
@@ -48,7 +31,6 @@ export class PrintPreviewSettingsSelectElement extends
     return {
       ariaLabel: String,
 
-      /** @type {{ option: Array<!SelectOption> }} */
       capability: Object,
 
       settingName: String,
@@ -57,38 +39,37 @@ export class PrintPreviewSettingsSelectElement extends
     };
   }
 
+  ariaLabel: string;
+  capability: SelectOption[];
+  settingName: string;
+  disabled: boolean;
+
   /**
-   * @param {!SelectOption} option Option to check.
-   * @return {boolean} Whether the option is selected.
-   * @private
+   * @param option Option to check.
+   * @return Whether the option is selected.
    */
-  isSelected_(option) {
+  private isSelected_(option: SelectOption): boolean {
     return this.getValue_(option) === this.selectedValue ||
         (!!option.is_default && this.selectedValue === '');
   }
 
-  /** @param {string} value The value to select. */
-  selectValue(value) {
+  selectValue(value: string) {
     this.selectedValue = value;
   }
 
   /**
-   * @param {!SelectOption} option Option to get the value
-   *    for.
-   * @return {string} Value for the option.
-   * @private
+   * @param option Option to get the value for.
+   * @return Value for the option.
    */
-  getValue_(option) {
+  private getValue_(option: SelectOption): string {
     return JSON.stringify(option);
   }
 
   /**
-   * @param {!SelectOption} option Option to get the display
-   *    name for.
-   * @return {string} Display name for the option.
-   * @private
+   * @param option Option to get the display name for.
+   * @return Display name for the option.
    */
-  getDisplayName_(option) {
+  private getDisplayName_(option: SelectOption): string {
     let displayName = option.custom_display_name;
     if (!displayName && option.custom_display_name_localized) {
       displayName = getStringForCurrentLocale(
@@ -97,8 +78,7 @@ export class PrintPreviewSettingsSelectElement extends
     return displayName || option.name || '';
   }
 
-  /** @param {string} value The new select value. */
-  onProcessSelectChange(value) {
+  onProcessSelectChange(value: string) {
     let newValue = null;
     try {
       newValue = JSON.parse(value);
@@ -107,8 +87,14 @@ export class PrintPreviewSettingsSelectElement extends
       return;
     }
     if (value !== JSON.stringify(this.getSettingValue(this.settingName))) {
-      this.setSetting(this.settingName, /** @type {Object} */ (newValue));
+      this.setSetting(this.settingName, newValue);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-settings-select': PrintPreviewSettingsSelectElement;
   }
 }
 
