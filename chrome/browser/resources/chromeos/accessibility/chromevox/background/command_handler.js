@@ -376,6 +376,7 @@ CommandHandler.onCommand = function(command) {
   }
 
   let current = ChromeVoxState.instance.currentRange;
+  let node = current.start.node;
 
   // If true, will check if the predicate matches the current node.
   let matchCurrent = false;
@@ -623,7 +624,6 @@ CommandHandler.onCommand = function(command) {
       // Falls through.
     case 'nextSimilarItem': {
       skipSync = true;
-      let node = current.start.node;
       const originalNode = node;
 
       // Scan upwards until we get a role we don't want to ignore.
@@ -699,7 +699,6 @@ CommandHandler.onCommand = function(command) {
       // for that.
       return false;
     case 'jumpToDetails': {
-      let node = current.start.node;
       while (node && !node.details) {
         node = node.parent;
       }
@@ -918,7 +917,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToRowFirstCell':
     case 'goToRowLastCell': {
-      let node = current.start.node;
       while (node && node.role !== RoleType.ROW) {
         node = node.parent;
       }
@@ -933,7 +931,6 @@ CommandHandler.onCommand = function(command) {
       }
     } break;
     case 'goToColFirstCell': {
-      let node = current.start.node;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -951,7 +948,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToColLastCell': {
       dir = Dir.BACKWARD;
-      let node = current.start.node;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -979,7 +975,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToFirstCell':
     case 'goToLastCell': {
-      let node = current.start.node;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -1021,7 +1016,6 @@ CommandHandler.onCommand = function(command) {
       CommandHandler.onCommand(command);
       return false;
     case 'announceRichTextDescription': {
-      const node = ChromeVoxState.instance.currentRange.start.node;
       const optSubs = [];
       node.fontSize ? optSubs.push('font size: ' + node.fontSize) :
                       optSubs.push('');
@@ -1045,7 +1039,6 @@ CommandHandler.onCommand = function(command) {
       return false;
     case 'readPhoneticPronunciation': {
       // Get node info.
-      const node = ChromeVoxState.instance.currentRange.start.node;
       let index = ChromeVoxState.instance.currentRange.start.index;
       const text = node.name;
       // If there is no text to speak, inform the user and return early.
@@ -1091,7 +1084,6 @@ CommandHandler.onCommand = function(command) {
     }
       return false;
     case 'readLinkURL': {
-      let node = ChromeVoxState.instance.currentRange.start.node;
       const rootNode = node.root;
       while (node && !node.url) {
         // URL could be an ancestor of current range.
@@ -1113,7 +1105,6 @@ CommandHandler.onCommand = function(command) {
         return false;
       }
 
-      const node = ChromeVoxState.instance.currentRange.start.node;
       const outString = `
       Language information for node
       Name: ${node.name}
