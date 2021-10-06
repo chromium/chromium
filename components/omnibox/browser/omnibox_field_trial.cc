@@ -610,6 +610,10 @@ bool OmniboxFieldTrial::IsPedalsBatch3Enabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch3);
 }
 
+bool OmniboxFieldTrial::IsPedalsBatch3NonEnglishEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsBatch3NonEnglish);
+}
+
 bool OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled() {
   return base::FeatureList::IsEnabled(
       omnibox::kOmniboxPedalsTranslationConsole);

@@ -320,13 +320,22 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
-    // These IDs are the first and last for batch 2. Skip loading if batch 2 is
-    // not enabled for the current locale.
-    if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
-        id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
-        !(locale_is_english ||
-          OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled())) {
-      continue;
+    if (!locale_is_english) {
+      // These IDs are the first and last for batch 2. Skip loading if batch 2
+      // is not enabled for the current locale.
+      if (id >= static_cast<int>(OmniboxPedalId::RUN_CHROME_SAFETY_CHECK) &&
+          id <= static_cast<int>(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) &&
+          !OmniboxFieldTrial::IsPedalsBatch2NonEnglishEnabled()) {
+        continue;
+      }
+      // These IDs are the first and last for batch 3. Skip loading if batch 3
+      // is not enabled for the current locale.
+      if (id >= static_cast<int>(OmniboxPedalId::CLOSE_INCOGNITO_WINDOWS) &&
+          id <=
+              static_cast<int>(OmniboxPedalId::MANAGE_CHROMEOS_ACCESSIBILITY) &&
+          !OmniboxFieldTrial::IsPedalsBatch3NonEnglishEnabled()) {
+        continue;
+      }
     }
     const auto pedal_iter = pedals_.find(static_cast<OmniboxPedalId>(id));
     if (pedal_iter == pedals_.end()) {

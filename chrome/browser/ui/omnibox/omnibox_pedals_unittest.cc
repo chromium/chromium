@@ -26,6 +26,7 @@ void TestDataLoadsForAllLocales(bool with_translation_console) {
   std::vector<base::Feature> features = {
       omnibox::kOmniboxPedalsBatch2NonEnglish,
       omnibox::kOmniboxPedalsBatch3,
+      omnibox::kOmniboxPedalsBatch3NonEnglish,
   };
   if (with_translation_console) {
     // TODO(orinj): Consider loading sets of cover cases from translation

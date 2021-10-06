@@ -19,6 +19,7 @@ class OmniboxPedalProviderTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {omnibox::kOmniboxPedalsBatch2NonEnglish, omnibox::kOmniboxPedalsBatch3,
+         omnibox::kOmniboxPedalsBatch3NonEnglish,
          omnibox::kOmniboxPedalsTranslationConsole},
         {});
   }

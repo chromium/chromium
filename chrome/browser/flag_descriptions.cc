@@ -3783,6 +3783,13 @@ const char kOmniboxPedalsBatch3Name[] = "Omnibox Pedals batch 3";
 const char kOmniboxPedalsBatch3Description[] =
     "Enable the third batch of Omnibox Pedals.";
 
+const char kOmniboxPedalsBatch3NonEnglishName[] =
+    "Omnibox Pedals batch 3 for non-English locales";
+const char kOmniboxPedalsBatch3NonEnglishDescription[] =
+    "Enable the second batch of Omnibox Pedals (Find your phone, etc.) for "
+    "locales other than 'en' and 'en-GB'. This flag has no effect unless "
+    "\"Omnibox Pedals batch 3\" is also enabled.";
+
 const char kOmniboxPedalsTranslationConsoleName[] =
     "Omnibox Pedals Translation Console";
 const char kOmniboxPedalsTranslationConsoleDescription[] =

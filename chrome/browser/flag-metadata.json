@@ -4070,12 +4070,17 @@
   {
     "name": "omnibox-pedals-batch2-nonenglish",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "omnibox-pedals-batch3",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 99
+  },
+  {
+    "name": "omnibox-pedals-batch3-nonenglish",
+    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 101
   },
   {
     "name": "omnibox-pedals-translation-console",

@@ -263,6 +263,12 @@ const base::Feature kOmniboxPedalsBatch2NonEnglish{
 const base::Feature kOmniboxPedalsBatch3{"OmniboxPedalsBatch3",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to enable the third batch of Pedals (Find your phone, etc.)
+// for non-English locales (English locales are 'en' and 'en-GB').
+// This feature is only meaningful if `OmniboxPedalsBatch3` is enabled.
+const base::Feature kOmniboxPedalsBatch3NonEnglish{
+    "OmniboxPedalsBatch3NonEnglish", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature that enables loading synonyms from the translation console.
 const base::Feature kOmniboxPedalsTranslationConsole{
     "OmniboxPedalsTranslationConsole", base::FEATURE_DISABLED_BY_DEFAULT};

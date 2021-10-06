@@ -364,6 +364,10 @@ bool IsPedalsBatch2NonEnglishEnabled();
 // Returns true if the third batch of Pedals is enabled.
 bool IsPedalsBatch3Enabled();
 
+// Returns true if the third batch of Pedals is enabled for non-English
+// locales. This is only meaningful if batch 3 is enabled.
+bool IsPedalsBatch3NonEnglishEnabled();
+
 // Returns true if the Pedals synonyms should be loaded from the translation
 // console.
 bool IsPedalsTranslationConsoleEnabled();
