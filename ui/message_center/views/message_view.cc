@@ -484,8 +484,12 @@ void MessageView::UpdateBackgroundPainter() {
                  : ui::kColorNotificationBackgroundInactive);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled())
-    background_color = SK_ColorTRANSPARENT;
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    // These are the same colors provided by AshColorProvider.
+    // See ash/style/ash_color_provider.cc
+    background_color = is_active_ ? SkColorSetA(SK_ColorBLACK, 0x0D)
+                                  : SkColorSetA(SK_ColorWHITE, 0x1A);
+  }
 #endif
 
   SetBackground(views::CreateBackgroundFromPainter(

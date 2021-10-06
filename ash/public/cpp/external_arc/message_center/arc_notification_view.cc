@@ -10,6 +10,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
+#include "ash/style/ash_color_provider.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -57,7 +58,9 @@ ArcNotificationView::ArcNotificationView(
 
   if (content_view_->background()) {
     if (ash::features::IsNotificationsRefreshEnabled()) {
-      background()->SetNativeControlColor(SK_ColorTRANSPARENT);
+      background()->SetNativeControlColor(
+          AshColorProvider::Get()->GetBaseLayerColor(
+              AshColorProvider::BaseLayerType::kTransparent80));
     } else {
       background()->SetNativeControlColor(
           content_view_->background()->get_color());

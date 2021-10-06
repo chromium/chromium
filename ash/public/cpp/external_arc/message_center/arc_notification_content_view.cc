@@ -10,6 +10,7 @@
 #include "ash/public/cpp/external_arc/message_center/arc_notification_surface.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_view.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -568,6 +569,14 @@ void ArcNotificationContentView::UpdateMask(bool force_update) {
   SkColor color = GetColorProvider()->GetColor(
       message_view_->is_active() ? ui::kColorNotificationBackgroundActive
                                  : ui::kColorNotificationBackgroundInactive);
+
+  if (ash::features::IsNotificationsRefreshEnabled()) {
+    color = AshColorProvider::Get()->GetControlsLayerColor(
+        message_view_->is_active()
+            ? AshColorProvider::ControlsLayerType::kControlBackgroundColorActive
+            : AshColorProvider::ControlsLayerType::
+                  kControlBackgroundColorInactive);
+  }
 
   auto mask_painter =
       std::make_unique<message_center::NotificationBackgroundPainter>(
