@@ -1578,7 +1578,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Session.MojoDisconnection{ArcUserTypes}"
-    enum="ArcMojoConnectionType" expires_after="2021-11-11">
+    enum="ArcMojoConnectionType" expires_after="2022-11-11">
   <owner>shaochuan@google.com</owner>
   <owner>khmel@google.com</owner>
   <owner>ttylenda@google.com</owner>
