@@ -422,8 +422,6 @@ static_library("renderer") {
 
     deps += [
       "//chrome/common/cart:mojo_bindings",
-      "//chrome/common/search:generate_chrome_colors_info",
-      "//chrome/common/search:generate_colors_info",
       "//components/crx_file",
       "//components/search:search",
     ]

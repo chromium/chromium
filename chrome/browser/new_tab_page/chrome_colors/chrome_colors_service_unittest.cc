@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
+#include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/search/chrome_colors/chrome_colors_factory.h"
+#include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search/chrome_colors/chrome_colors_service.h"
+#include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_service.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/new_tab_page/chrome_colors/generated_colors_info.h"
+#include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/common/search/generated_colors_info.h"
-#include "chrome/common/search/selected_colors_info.h"
 
 namespace chrome_colors {
 

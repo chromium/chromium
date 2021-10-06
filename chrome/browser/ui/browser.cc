@@ -2323,8 +2323,6 @@ void Browser::OnTabClosing(WebContents* contents) {
 
   if (service)
     service->TabClosing(contents);
-
-  SearchTabHelper::FromWebContents(contents)->OnTabClosing();
 }
 
 void Browser::OnTabDetached(WebContents* contents, bool was_active) {

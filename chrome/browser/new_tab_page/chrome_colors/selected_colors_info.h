@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_SEARCH_SELECTED_COLORS_INFO_H_
-#define CHROME_COMMON_SEARCH_SELECTED_COLORS_INFO_H_
+#ifndef CHROME_BROWSER_NEW_TAB_PAGE_CHROME_COLORS_SELECTED_COLORS_INFO_H_
+#define CHROME_BROWSER_NEW_TAB_PAGE_CHROME_COLORS_SELECTED_COLORS_INFO_H_
 
 #include <stdint.h>
 
@@ -14,16 +14,10 @@ namespace chrome_colors {
 
 struct ColorInfo {
   constexpr ColorInfo(int id, SkColor color, int label_id)
-      : ColorInfo(id, color, label_id, nullptr) {}
-  constexpr ColorInfo(int id,
-                      SkColor color,
-                      int label_id,
-                      const char* icon_data)
-      : id(id), color(color), label_id(label_id), icon_data(icon_data) {}
+      : id(id), color(color), label_id(label_id) {}
   int id;
   SkColor color;
   int label_id;
-  const char* icon_data;
 };
 
 // List of preselected colors to show in Chrome Colors menu. This array should
@@ -62,4 +56,4 @@ constexpr ColorInfo kSelectedColorsInfo[] = {
 
 }  // namespace chrome_colors
 
-#endif  // CHROME_COMMON_SEARCH_SELECTED_COLORS_INFO_H_
+#endif  // CHROME_BROWSER_NEW_TAB_PAGE_CHROME_COLORS_SELECTED_COLORS_INFO_H_
