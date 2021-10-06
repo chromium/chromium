@@ -25,6 +25,10 @@ const char kUserDevicesUrl[] =
     "https://nearbydevices-pa.googleapis.com/v1/user/devices"
     "?key=%s&alt=proto";
 
+const char kUserDeleteDeviceUrl[] =
+    "https://nearbydevices-pa.googleapis.com/v1/user/devices/%s"
+    "?key=%s&alt=proto";
+
 // TODO(crbug/1226117): Update annotation with policy details when available.
 const net::PartialNetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefinePartialNetworkTrafficAnnotation("fast_pair_footprints_request",
@@ -55,6 +59,11 @@ std::unique_ptr<HttpFetcher> CreateHttpFetcher() {
 GURL GetUserDevicesUrl() {
   return GURL(
       base::StringPrintf(kUserDevicesUrl, google_apis::GetAPIKey().c_str()));
+}
+
+GURL GetUserDeleteDeviceUrl(const std::string& hex_account_key) {
+  return GURL(base::StringPrintf(kUserDeleteDeviceUrl, hex_account_key.c_str(),
+                                 google_apis::GetAPIKey().c_str()));
 }
 
 }  // namespace
@@ -130,6 +139,33 @@ void FootprintsFetcher::OnPostComplete(
   }
 
   QP_LOG(VERBOSE) << __func__ << ": Successfully saved new footprints data.";
+  std::move(callback).Run(true);
+}
+
+void FootprintsFetcher::DeleteUserDevice(const std::string& hex_account_key,
+                                         DeleteDeviceCallback callback) {
+  auto http_fetcher = CreateHttpFetcher();
+  auto* raw_http_fetcher = http_fetcher.get();
+  raw_http_fetcher->ExecuteDeleteRequest(
+      GetUserDeleteDeviceUrl(hex_account_key),
+      base::BindOnce(&FootprintsFetcher::OnPostComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(http_fetcher)));
+}
+
+void FootprintsFetcher::OnDeleteComplete(
+    DeleteDeviceCallback callback,
+    std::unique_ptr<HttpFetcher> http_fetcher,
+    std::unique_ptr<std::string> response_body) {
+  QP_LOG(VERBOSE) << __func__;
+
+  if (!response_body) {
+    QP_LOG(WARNING) << __func__ << ": No response.";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  QP_LOG(VERBOSE) << __func__ << ": Successfully deleted footprints data.";
   std::move(callback).Run(true);
 }
 
