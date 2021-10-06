@@ -135,7 +135,7 @@
           SDK.SourceMapManager.Events.SourceMapFailedToAttach, onSourceMapLoaded, this);
 
       async function onSourceMapLoaded(event) {
-        var script = event.data;
+        var script = event.data.client;
         if (script.sourceMapURL !== 'http://127.0.0.1:8000/devtools/resources/source-map.json_')
           return;
         TestRunner.addResult('SourceMap Failed to load.');
