@@ -21,6 +21,7 @@
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/test/begin_frame_args_test.h"
+#include "components/viz/test/compositor_frame_helpers.h"
 #include "gpu/ipc/common/mailbox_holder_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
@@ -586,6 +587,39 @@ TEST_F(StructTraitsTest, CompositorFrame) {
   EXPECT_EQ(color2, out_solid_color_draw_quad->color);
   EXPECT_EQ(force_anti_aliasing_off,
             out_solid_color_draw_quad->force_anti_aliasing_off);
+}
+
+TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
+  auto frame = CompositorFrameBuilder()
+                   .AddDefaultRenderPass()
+                   .AddDefaultRenderPass()
+                   .AddDefaultRenderPass()
+                   .Build();
+
+  CompositorFrameTransitionDirective::SharedElement element;
+  element.render_pass_id = frame.render_pass_list.front()->id;
+  frame.metadata.transition_directives.push_back(
+      CompositorFrameTransitionDirective(
+          1u, CompositorFrameTransitionDirective::Type::kSave,
+          CompositorFrameTransitionDirective::Effect::kNone,
+          CompositorFrameTransitionDirective::TransitionConfig(), {element}));
+
+  // This ensures de-serialization succeeds if all passes are present.
+  CompositorFrame output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(
+      frame, output));
+
+  element.render_pass_id = CompositorRenderPassId(
+      frame.render_pass_list.back()->id.GetUnsafeValue() + 1);
+  frame.metadata.transition_directives.push_back(
+      CompositorFrameTransitionDirective(
+          1u, CompositorFrameTransitionDirective::Type::kSave,
+          CompositorFrameTransitionDirective::Effect::kNone,
+          CompositorFrameTransitionDirective::TransitionConfig(), {element}));
+
+  // This ensures de-serialization fails if a pass is missing.
+  ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::CompositorFrame>(
+      frame, output));
 }
 
 TEST_F(StructTraitsTest, SurfaceInfo) {
