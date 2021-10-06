@@ -18,17 +18,15 @@ additional conventions for these particular tests.
 
 All tests should have a comment near the top of the file that explains what must
 change before the test can be upstreamed. Typical reasons include:
-* The need for a [WebDriver API](https://crbug.com/1226460) that triggers
-  prerendering. Most of these tests use `startPrerendering()` which uses
-  the Speculation Rules API, but conforming browsers can elect to not prerender
-  hints from this API.
+* The need for a [WebDriver API](https://crbug.com/1226460) to get a permission.
+  See the later section for details.
 * The tests expects behaviors that are not yet described in the specification.
 
 **Good:**
 ```html
 <!--
 This file cannot be upstreamed to WPT until:
-* startPrerendering() usage is replaced with a WebDriver API.
+* internals.setPermission() usage is replaced with a WebDriver API
 * The specification describes the loading of cross-origin iframes. The test
   expects that they are not loaded during prerendering.
 -->
