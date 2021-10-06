@@ -55,7 +55,6 @@
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -123,7 +122,7 @@ ExecutionContext* ExecutionContext::ForRelevantRealm(
 }
 
 // static
-CodeCacheHost* ExecutionContext::GetCodeCacheHostFromContext(
+blink::mojom::CodeCacheHost* ExecutionContext::GetCodeCacheHostFromContext(
     ExecutionContext* execution_context) {
   DCHECK_NE(execution_context, nullptr);
   if (execution_context->IsWindow()) {

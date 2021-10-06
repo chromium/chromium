@@ -137,8 +137,8 @@ WorkletGlobalScope::WorkletGlobalScope(
   DCHECK_EQ(creation_params->ukm_source_id, ukm::kInvalidSourceId);
 
   if (creation_params->code_cache_host_interface.is_valid()) {
-    code_cache_host_.SetRemote(mojo::Remote<mojom::CodeCacheHost>(
-        std::move(creation_params->code_cache_host_interface)));
+    code_cache_host_.Bind(std::move(creation_params->code_cache_host_interface),
+                          GetTaskRunner(TaskType::kInternalDefault));
   }
 }
 
@@ -229,12 +229,12 @@ const base::UnguessableToken& WorkletGlobalScope::GetDevToolsToken() const {
   return GetThread()->GetDevToolsWorkerToken();
 }
 
-CodeCacheHost* WorkletGlobalScope::GetCodeCacheHost() {
+blink::mojom::CodeCacheHost* WorkletGlobalScope::GetCodeCacheHost() {
   if (IsMainThreadWorkletGlobalScope())
     return frame_->Loader().GetDocumentLoader()->GetCodeCacheHost();
-  if (!code_cache_host_.HasBoundRemote())
+  if (!code_cache_host_)
     return nullptr;
-  return &code_cache_host_;
+  return code_cache_host_.get();
 }
 
 CoreProbeSink* WorkletGlobalScope::GetProbeSink() {

@@ -694,19 +694,17 @@ FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
   return font_matching_metrics_.get();
 }
 
-CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
-  if (!code_cache_host_.HasBoundRemote()) {
+blink::mojom::CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
+  if (!code_cache_host_) {
     // We may not have a valid browser interface in tests. For ex:
     // FakeWorkerGlobalScope doesn't provide a valid interface. These tests
     // don't rely on code caching so it's safe to return nullptr here.
     if (!GetBrowserInterfaceBroker().is_bound())
       return nullptr;
-    mojo::Remote<mojom::CodeCacheHost> remote;
     GetBrowserInterfaceBroker().GetInterface(
-        remote.BindNewPipeAndPassReceiver());
-    code_cache_host_.SetRemote(std::move(remote));
+        code_cache_host_.BindNewPipeAndPassReceiver());
   }
-  return &code_cache_host_;
+  return code_cache_host_.get();
 }
 
 }  // namespace blink

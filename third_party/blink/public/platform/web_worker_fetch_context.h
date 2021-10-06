@@ -33,7 +33,6 @@ class SiteForCookies;
 
 namespace blink {
 
-class CodeCacheHost;
 class WebURLRequest;
 class WebDocumentSubresourceFilter;
 
@@ -91,7 +90,7 @@ class WebWorkerFetchContext : public base::RefCounted<WebWorkerFetchContext> {
   // interface. Update worklets to use context specific interface and check that
   // code_cache_host is not a nullptr.
   virtual std::unique_ptr<WebCodeCacheLoader> CreateCodeCacheLoader(
-      CodeCacheHost* code_cache_host) {
+      blink::mojom::CodeCacheHost* code_cache_host) {
     return nullptr;
   }
 

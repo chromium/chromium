@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -14,8 +15,6 @@
 #include "url/gurl.h"
 
 namespace blink {
-
-class CodeCacheHost;
 
 // WebCodeCacheLoader is an abstract class that provides the interface for
 // fetching the data from code cache.
@@ -26,7 +25,7 @@ class BLINK_PLATFORM_EXPORT WebCodeCacheLoader {
   virtual ~WebCodeCacheLoader() = default;
 
   static std::unique_ptr<WebCodeCacheLoader> Create(
-      CodeCacheHost* code_cache_host);
+      blink::mojom::CodeCacheHost* code_cache_host);
   virtual void FetchFromCodeCache(blink::mojom::CodeCacheType cache_type,
                                   const WebURL& url,
                                   FetchCodeCacheCallback) = 0;

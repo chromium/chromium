@@ -82,7 +82,7 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   // WebNavigationBodyLoader implementation.
   void SetDefersLoading(WebLoaderFreezeMode mode) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client* client,
-                        CodeCacheHost* code_cache_host) override;
+                        mojom::CodeCacheHost* code_cache_host) override;
 
   // network::mojom::URLLoaderClient implementation.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;

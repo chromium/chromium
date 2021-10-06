@@ -38,6 +38,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink-forward.h"
@@ -70,7 +71,6 @@ namespace blink {
 
 class Agent;
 class AuditsIssue;
-class CodeCacheHost;
 class ConsoleMessage;
 class ContentSecurityPolicy;
 class ContentSecurityPolicyDelegate;
@@ -145,7 +145,8 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Returns the CodeCacheHost interface associated with the execution
   // context. This could return nullptr if there is no CodeCacheHost associated
   // with the current execution context.
-  static CodeCacheHost* GetCodeCacheHostFromContext(ExecutionContext*);
+  static blink::mojom::CodeCacheHost* GetCodeCacheHostFromContext(
+      ExecutionContext*);
 
   virtual bool IsWindow() const { return false; }
   virtual bool IsWorkerOrWorkletGlobalScope() const { return false; }

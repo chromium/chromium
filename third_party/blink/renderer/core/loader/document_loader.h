@@ -35,12 +35,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
@@ -70,7 +70,6 @@
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
-#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -88,7 +87,6 @@ class TickClock;
 namespace blink {
 
 class ContentSecurityPolicy;
-class CodeCacheHost;
 class Document;
 class DocumentParser;
 class Frame;
@@ -351,7 +349,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // activated.
   void NotifyPrerenderingDocumentActivated(base::TimeTicks activation_start);
 
-  CodeCacheHost* GetCodeCacheHost();
+  blink::mojom::CodeCacheHost* GetCodeCacheHost();
+  void OnCodeCacheHostClosed();
   void SetCodeCacheHost(
       mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host);
   static void DisableCodeCacheForTesting();
@@ -634,7 +633,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // This is the interface that handles generated code cache
   // requests to fetch code cache when loading resources.
-  CodeCacheHost code_cache_host_;
+  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
 
   HashSet<KURL> early_hints_preloaded_resources_;
 };

@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -92,7 +91,7 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerThread* GetThread() const final { return thread_; }
   const base::UnguessableToken& GetDevToolsToken() const override;
   bool IsInitialized() const final { return !url_.IsNull(); }
-  CodeCacheHost* GetCodeCacheHost() override;
+  blink::mojom::CodeCacheHost* GetCodeCacheHost() override;
 
   void ExceptionUnhandled(int exception_id);
 
@@ -333,7 +332,7 @@ class CORE_EXPORT WorkerGlobalScope
 
   // This is the interface that handles generated code cache
   // requests both to fetch code cache when loading resources.
-  CodeCacheHost code_cache_host_;
+  mojo::Remote<blink::mojom::CodeCacheHost> code_cache_host_;
 
   const ukm::SourceId ukm_source_id_;
 };

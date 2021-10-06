@@ -66,7 +66,7 @@ class V8ScriptRunnerTest : public testing::Test {
   unsigned TagForTimeStamp(SingleCachedMetadataHandler* cache_handler) const {
     return V8CodeCache::TagForTimeStamp(cache_handler);
   }
-  void SetCacheTimeStamp(CodeCacheHost* code_cache_host,
+  void SetCacheTimeStamp(mojom::CodeCacheHost* code_cache_host,
                          SingleCachedMetadataHandler* cache_handler) {
     V8CodeCache::SetCacheTimeStamp(code_cache_host, cache_handler);
   }
