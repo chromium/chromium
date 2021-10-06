@@ -352,7 +352,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Browser.MemoryFootprint.NumOpenTabs" units="tabs"
-    expires_after="2021-11-14">
+    expires_after="2022-11-14">
   <owner>ajuma@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
