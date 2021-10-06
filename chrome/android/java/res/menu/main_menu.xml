@@ -82,6 +82,9 @@
         <item android:id="@+id/add_to_reading_list_menu_id"
             android:title="@string/menu_add_to_reading_list"
             android:icon="@drawable/ic_reading_list_add_24dp" />
+        <item android:id="@+id/edit_reading_list_menu_id"
+            android:title="@string/menu_edit_reading_list"
+            android:icon="@drawable/ic_reading_list_folder_24dp" />
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />

@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
  * <ul>
  * <li>{@code add_to_reading_list_in_app_menu}: boolean; show "Add to Reading List" in the app menu.
  * Default: {@code false}</li>
+ * <li>{@code edit_reading_list_in_app_menu}: boolean; show "Edit Reading List" in the app menu.
+ * Default: {@code false}</li>
  * <li>{@code session_length}: int (seconds); duration Chrome needs to spend in background before it
  * discards the "last bookmark location". Default: {@link #DEFAULT_SESSION_LENGTH_SECONDS}</li>
  * <li>{@code use_root_bookmark_as_default}: boolean; use the root folder rather than "Mobile
@@ -48,10 +50,17 @@ public class ReadingListFeatures {
                 ChromeFeatureList.READ_LATER, "session_length", DEFAULT_SESSION_LENGTH_SECONDS));
     }
 
-    /** Returns whether the "Add to Reading List" app menu item should be enabled. */
-    public static boolean enableAddToReadingListAppMenuItem() {
+    /** Returns whether the "Add To Reading List" app menu item should be enabled. */
+    public static boolean isAddToReadingListAppMenuItemEnabled() {
         return isReadingListEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.READ_LATER, "add_to_reading_list_in_app_menu", false);
+    }
+
+    /** Returns whether the "Edit Reading List" app menu item should be enabled. */
+    public static boolean isEditReadingListAppMenuItemEnabled() {
+        return isReadingListEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.READ_LATER, "edit_reading_list_in_app_menu", false);
     }
 }

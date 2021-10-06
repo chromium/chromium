@@ -398,7 +398,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
         menu.findItem(R.id.add_to_reading_list_menu_id)
                 .setVisible(isHttpOrHttpsScheme
-                        && ReadingListFeatures.enableAddToReadingListAppMenuItem());
+                        && ReadingListFeatures.isAddToReadingListAppMenuItemEnabled());
+        // TODO(crbug.com/1252228): Show this only on URLs already on the Reading List.
+        menu.findItem(R.id.edit_reading_list_menu_id)
+                .setVisible(isHttpOrHttpsScheme
+                        && ReadingListFeatures.isEditReadingListAppMenuItemEnabled());
+
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));
 
