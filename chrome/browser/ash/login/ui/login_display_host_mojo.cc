@@ -41,12 +41,14 @@
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
+#include "chrome/common/channel_info.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/aura/window.h"
@@ -118,8 +120,18 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
   user_selection_screen_->SetView(user_board_view_mojo_.get());
 
   // Do not load WebUI before it is needed if feature permits.
-  if (!base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading) &&
-      (displayed_screen == DisplayedScreen::SIGN_IN_SCREEN)) {
+  bool enable_lazy_webui_loading = false;
+  if (base::FeatureList::GetInstance()->IsFeatureOverridden(
+          features::kEnableLazyLoginWebUILoading.name)) {
+    enable_lazy_webui_loading =
+        base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
+  } else if ((chrome::GetChannel() != version_info::Channel::STABLE) &&
+             (chrome::GetChannel() != version_info::Channel::BETA)) {
+    enable_lazy_webui_loading = true;
+  }
+  // Force load WebUI if feature is not enabled.
+  if (!enable_lazy_webui_loading &&
+      displayed_screen == DisplayedScreen::SIGN_IN_SCREEN) {
     EnsureOobeDialogLoaded();
   }
 }
