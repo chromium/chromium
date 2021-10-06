@@ -53,8 +53,8 @@ class FastPairRepository {
                                 CheckAccountKeysCallback callback) = 0;
 
   // Stores the given |account_key| for a |device| on the server.
-  virtual void AssociateAccountKey(const Device& device,
-                                   const std::string& account_key) = 0;
+  virtual void AssociateAccountKey(scoped_refptr<Device> device,
+                                   const std::vector<uint8_t>& account_key) = 0;
 
   // Deletes the associated data for a given |device|.
   virtual void DeleteAssociatedDevice(

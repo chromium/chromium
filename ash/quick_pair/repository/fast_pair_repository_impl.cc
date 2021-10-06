@@ -10,6 +10,7 @@
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
 #include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
+#include "ash/quick_pair/repository/fast_pair/proto_conversions.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/services/quick_pair/public/cpp/account_key_filter.h"
 #include "base/strings/stringprintf.h"
@@ -174,9 +175,27 @@ void FastPairRepositoryImpl::UpdateUserDevicesCache(
 }
 
 void FastPairRepositoryImpl::AssociateAccountKey(
-    const Device& device,
-    const std::string& account_key) {
+    scoped_refptr<Device> device,
+    const std::vector<uint8_t>& account_key) {
   QP_LOG(INFO) << __func__;
+  GetDeviceMetadata(device->metadata_id,
+                    base::BindOnce(&FastPairRepositoryImpl::AddToFootprints,
+                                   weak_ptr_factory_.GetWeakPtr(),
+                                   device->metadata_id, account_key));
+}
+
+void FastPairRepositoryImpl::AddToFootprints(
+    const std::string& hex_model_id,
+    const std::vector<uint8_t>& account_key,
+    DeviceMetadata* metadata) {
+  if (!metadata) {
+    QP_LOG(WARNING) << __func__ << ": Unable to retrieve metadata.";
+    return;
+  }
+
+  footprints_fetcher_->AddUserDevice(
+      BuildFastPairInfo(hex_model_id, account_key, metadata),
+      base::DoNothing());
 }
 
 void FastPairRepositoryImpl::DeleteAssociatedDevice(

@@ -47,8 +47,8 @@ class FastPairRepositoryImpl : public FastPairRepository {
                       base::OnceCallback<void(bool)> callback) override;
   void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
                         CheckAccountKeysCallback callback) override;
-  void AssociateAccountKey(const Device& device,
-                           const std::string& account_key) override;
+  void AssociateAccountKey(scoped_refptr<Device> device,
+                           const std::vector<uint8_t>& account_key) override;
   void DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
 
  private:
@@ -72,6 +72,9 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void CompleteAccountKeyLookup(CheckAccountKeysCallback callback,
                                 const std::vector<uint8_t> account_key,
                                 DeviceMetadata* device_metadata);
+  void AddToFootprints(const std::string& hex_model_id,
+                       const std::vector<uint8_t>& account_key,
+                       DeviceMetadata* metadata);
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;

@@ -59,8 +59,8 @@ void FakeFastPairRepository::CheckAccountKeys(
 }
 
 void FakeFastPairRepository::AssociateAccountKey(
-    const Device& device,
-    const std::string& account_key) {}
+    scoped_refptr<Device> device,
+    const std::vector<uint8_t>& account_key) {}
 
 void FakeFastPairRepository::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {}

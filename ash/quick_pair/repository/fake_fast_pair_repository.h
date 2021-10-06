@@ -44,8 +44,8 @@ class FakeFastPairRepository : public FastPairRepository {
                       base::OnceCallback<void(bool)> callback) override;
   void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
                         CheckAccountKeysCallback callback) override;
-  void AssociateAccountKey(const Device& device,
-                           const std::string& account_key) override;
+  void AssociateAccountKey(scoped_refptr<Device> device,
+                           const std::vector<uint8_t>& account_key) override;
   void DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
 
  private:
