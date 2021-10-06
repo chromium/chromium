@@ -223,9 +223,14 @@ bool NGOffsetMapping::AcceptsPosition(const Position& position) {
 const NGOffsetMapping* NGOffsetMapping::GetFor(const Position& position) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return nullptr;
+  return ForceGetFor(position);
+}
+
+const NGOffsetMapping* NGOffsetMapping::ForceGetFor(const Position& position) {
   if (!NGOffsetMapping::AcceptsPosition(position))
     return nullptr;
-  LayoutBlockFlow* context = NGInlineFormattingContextOf(position);
+  LayoutBlockFlow* context =
+      NGOffsetMapping::GetInlineFormattingContextOf(position);
   if (!context)
     return nullptr;
   return NGInlineNode::GetOffsetMapping(context);

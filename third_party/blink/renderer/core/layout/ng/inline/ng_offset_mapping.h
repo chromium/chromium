@@ -128,6 +128,12 @@ class CORE_EXPORT NGOffsetMapping final
   // given position.
   static const NGOffsetMapping* GetFor(const Position&);
 
+  // Returns the mapping object of the inline formatting context laying out the
+  // given position even if legacy layout tree.
+  // TODO(yosin): Once we get rid of legacy layout, we should get rid of
+  // |ForceGetFor()|.
+  static const NGOffsetMapping* ForceGetFor(const Position&);
+
   // Returns the mapping object of the inline formatting context containing the
   // given LayoutObject, if it's laid out with LayoutNG. If the LayoutObject is
   // itself an inline formatting context, returns its own offset mapping object.
