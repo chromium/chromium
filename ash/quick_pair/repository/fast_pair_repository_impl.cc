@@ -13,6 +13,7 @@
 #include "ash/quick_pair/repository/fast_pair/proto_conversions.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/services/quick_pair/public/cpp/account_key_filter.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -178,14 +179,16 @@ void FastPairRepositoryImpl::AssociateAccountKey(
     scoped_refptr<Device> device,
     const std::vector<uint8_t>& account_key) {
   QP_LOG(INFO) << __func__;
-  GetDeviceMetadata(device->metadata_id,
-                    base::BindOnce(&FastPairRepositoryImpl::AddToFootprints,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   device->metadata_id, account_key));
+  GetDeviceMetadata(
+      device->metadata_id,
+      base::BindOnce(&FastPairRepositoryImpl::AddToFootprints,
+                     weak_ptr_factory_.GetWeakPtr(), device->metadata_id,
+                     device->address, account_key));
 }
 
 void FastPairRepositoryImpl::AddToFootprints(
     const std::string& hex_model_id,
+    const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
     DeviceMetadata* metadata) {
   if (!metadata) {
@@ -195,12 +198,38 @@ void FastPairRepositoryImpl::AddToFootprints(
 
   footprints_fetcher_->AddUserDevice(
       BuildFastPairInfo(hex_model_id, account_key, metadata),
-      base::DoNothing());
+      base::BindOnce(&FastPairRepositoryImpl::OnAddToFootprintsComplete,
+                     weak_ptr_factory_.GetWeakPtr(), mac_address, account_key));
+}
+
+void FastPairRepositoryImpl::OnAddToFootprintsComplete(
+    const std::string& mac_address,
+    const std::vector<uint8_t>& account_key,
+    bool success) {
+  if (!success) {
+    // TODO(jonmann): Handle caching to disk + retries.
+    return;
+  }
+
+  saved_device_registry_->SaveAccountKey(mac_address, account_key);
 }
 
 void FastPairRepositoryImpl::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {
   QP_LOG(INFO) << __func__;
+  absl::optional<const std::vector<uint8_t>> account_key =
+      saved_device_registry_->GetAccountKey(device->GetAddress());
+  if (!account_key) {
+    QP_LOG(VERBOSE)
+        << __func__
+        << ": Cannot find matching account key for unpaired device.";
+    return;
+  }
+
+  QP_LOG(INFO) << __func__ << ": Removing device from Footprints.";
+  footprints_fetcher_->DeleteUserDevice(base::HexEncode(*account_key),
+                                        base::DoNothing());
+  // TODO(jonmann): Handle saving pending update to disk + retries.
 }
 
 }  // namespace quick_pair

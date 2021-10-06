@@ -73,8 +73,12 @@ class FastPairRepositoryImpl : public FastPairRepository {
                                 const std::vector<uint8_t> account_key,
                                 DeviceMetadata* device_metadata);
   void AddToFootprints(const std::string& hex_model_id,
+                       const std::string& mac_address,
                        const std::vector<uint8_t>& account_key,
                        DeviceMetadata* metadata);
+  void OnAddToFootprintsComplete(const std::string& mac_address,
+                                 const std::vector<uint8_t>& account_key,
+                                 bool success);
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;
