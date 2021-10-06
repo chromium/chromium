@@ -15,10 +15,8 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /**
- * The coordinator of account picker is the only public class in the account_picker package.
- *
- * It is responsible for setting up the account list's view and model and it serves as an access
- * point for users of this package.
+ * This class is responsible for setting up the account list's view and model and it serves as
+ * an access point for users of the account picker MVC.
  */
 @MainThread
 public class AccountPickerCoordinator {
@@ -61,9 +59,7 @@ public class AccountPickerCoordinator {
         mMediator = new AccountPickerMediator(view.getContext(), listModel, listener);
     }
 
-    /**
-     * Destroys the resources used by the coordinator.
-     */
+    /** Destroys the resources used by the coordinator. */
     void destroy() {
         mMediator.destroy();
     }
