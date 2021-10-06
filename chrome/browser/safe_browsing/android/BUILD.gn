@@ -24,6 +24,7 @@ source_set("android") {
     # explicitly here to avoid flaky build failures that otherwise can occur.
     # TODO(crbug.com/1222101): Resolve the circular dependency structure so
     # that workarounds aren't needed.
+    "//chrome/common",
     "//content/public/browser",
   ]
 
