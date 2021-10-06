@@ -20,10 +20,6 @@ void CodeCacheLoaderMock::FetchFromCodeCache(
   }
 }
 
-void CodeCacheLoaderMock::ClearCodeCacheEntry(
-    blink::mojom::CodeCacheType cache_type,
-    const WebURL& url) {}
-
 void CodeCacheLoaderMock::Controller::DelayResponse() {
   delayed_ = true;
 }

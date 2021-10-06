@@ -31,9 +31,6 @@ class BLINK_PLATFORM_EXPORT CodeCacheLoader : public WebCodeCacheLoader {
                           const WebURL& url,
                           FetchCodeCacheCallback callback) override;
 
-  void ClearCodeCacheEntry(mojom::CodeCacheType cache_type,
-                           const WebURL& url) override;
-
  private:
   bool ShouldUsePerProcessInterface() const;
 
