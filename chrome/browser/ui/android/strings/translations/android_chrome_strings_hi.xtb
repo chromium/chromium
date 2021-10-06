@@ -691,7 +691,7 @@
 <translation id="5355191726083956201">बेहतर सुरक्षा की सुविधा चालू है</translation>
 <translation id="5357811892247919462">टैब मिला</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> टैब खुला है, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}one{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}other{<ph name="OPEN_TABS_MANY" /> टैब खुले हैं, एक टैब से दूसरे टैब पर जाने के लिए टैप करें}}</translation>
-<translation id="5375577065097716013"><ph name="BEGIN_NEW" />नया<ph name="END_NEW" /> Google Lens से इमेज खोजें</translation>
+<translation id="5375577065097716013">Google Lens से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">सिर्फ़ कुछ निश्चित साइटों को ही अनुमति दें</translation>
 <translation id="5409881200985013443">क्या आप <ph name="CLIENT_NAME" /> पर <ph name="ONE_TIME_CODE" /> सबमिट करना चाहते हैं?</translation>
 <translation id="5414836363063783498">सत्यापन हो रहा है...</translation>

@@ -2325,7 +2325,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3435688026795609344">«<ph name="EXTENSION_NAME" />» ber om <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="343578350365773421">Tom for papir</translation>
-<translation id="3435896845095436175">Slå på</translation>
+<translation id="3435896845095436175">Aktivér</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Tillat alltid at <ph name="HOST" /> bruker mikrofonen din</translation>
 <translation id="3439970425423980614">Åpner PDF i forhåndsvisning</translation>
@@ -2870,7 +2870,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="397703832102027365">Fullfører …</translation>
 <translation id="3977886311744775419">Automatiske oppdateringer lastes ikke ned på denne nettverkstypen, men du kan se etter oppdateringer manuelt.</translation>
 <translation id="3979395879372752341">Ny utvidelse lagt til (<ph name="EXTENSION_NAME" />)</translation>
-<translation id="3979748722126423326">Slå på <ph name="NETWORKDEVICE" /></translation>
+<translation id="3979748722126423326">Aktivér <ph name="NETWORKDEVICE" /></translation>
 <translation id="3981058120448670012">Vises som <ph name="DEVICE_NAME" /> for enheter i nærheten i <ph name="REMAINING_TIME" /> …</translation>
 <translation id="3981760180856053153">Ugyldig lagringstype angitt.</translation>
 <translation id="3982375475032951137">Konfigurer nettleseren din med noen få enkle trinn</translation>
@@ -3208,7 +3208,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4390396490617716185"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, og <ph name="NUMBER_OF_OTHER_SWITCHES" /> brytere til</translation>
 <translation id="439266289085815679">Bluetooth-konfigurasjonen kontrolleres av <ph name="USER_EMAIL" />.</translation>
 <translation id="4392896746540753732">Rediger konfigurasjonsfilen</translation>
-<translation id="4394049700291259645">Slå av</translation>
+<translation id="4394049700291259645">Deaktiver</translation>
 <translation id="4396956294839002702">{COUNT,plural, =0{&amp;Åpne alle}=1{&amp;Åpne bokmerket}other{&amp;Åpne alle ({COUNT})}}</translation>
 <translation id="439817266247065935">Enheten ble ikke avsluttet ordentlig. Start Linux på nytt for å bruke Linux-apper.</translation>
 <translation id="4400367121200150367">Nettsteder som aldri lagrer passord, vises her</translation>
@@ -3981,7 +3981,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5235750401727657667">Erstatt siden du ser når du åpner nye faner</translation>
 <translation id="5236374273162681467">For å bruke dem enkelt på alle enhetene dine kan du flytte dem til Google-kontoen din</translation>
 <translation id="5238278114306905396">Programmet «<ph name="EXTENSION_NAME" />» ble automatisk fjernet.</translation>
-<translation id="5242724311594467048">Vil du slå på «<ph name="EXTENSION_NAME" />»?</translation>
+<translation id="5242724311594467048">Vil du aktivere «<ph name="EXTENSION_NAME" />»?</translation>
 <translation id="5243522832766285132">Prøv på nytt om en liten stund</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
 <translation id="5245610266855777041">Kom i gang med en skolekonto</translation>
@@ -5977,7 +5977,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="744341768939279100">Opprett en ny profil</translation>
 <translation id="744366959743242014">Laster inn data. Dette kan ta noen sekunder.</translation>
 <translation id="7443806024147773267">Få tilgang til passordene dine når du er logget på Google-kontoen</translation>
-<translation id="7444983668544353857">Slå av <ph name="NETWORKDEVICE" /></translation>
+<translation id="7444983668544353857">Deaktiver <ph name="NETWORKDEVICE" /></translation>
 <translation id="7448430327655618736">installere apper automatisk</translation>
 <translation id="7449752890690775568">Vil du fjerne passordet?</translation>
 <translation id="7450761244949417357">Åpnes i <ph name="ALTERNATIVE_BROWSER_NAME" /> nå</translation>

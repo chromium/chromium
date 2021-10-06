@@ -691,7 +691,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
 <translation id="5357811892247919462">Scheda ricevuta</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> scheda aperta, tocca per cambiare scheda}other{<ph name="OPEN_TABS_MANY" /> schede aperte, tocca per cambiare scheda}}</translation>
-<translation id="5375577065097716013">Cerca immagine con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">Cerca immagine con Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">Consenti solo siti specifici</translation>
 <translation id="5409881200985013443">Vuoi inviare <ph name="ONE_TIME_CODE" /> a <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Verifica…</translation>

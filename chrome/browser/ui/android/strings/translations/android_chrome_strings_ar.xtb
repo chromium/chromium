@@ -502,7 +502,7 @@
 <translation id="4170011742729630528">الخدمة غير متاحة، أعد المحاولة لاحقًا.</translation>
 <translation id="4179980317383591987">تم استخدام <ph name="AMOUNT" /></translation>
 <translation id="4181841719683918333">اللغات</translation>
-<translation id="4183868528246477015">‏البحث باستخدام "عدسة Google" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
+<translation id="4183868528246477015">‏ابحث باستخدام "عدسة Google" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="4195643157523330669">الفتح في علامة تبويب جديدة</translation>
 <translation id="4196597275619698563">إنشاء بطاقة</translation>
 <translation id="4198423547019359126">ما من مواقع تنزيل متاحة</translation>
@@ -691,7 +691,7 @@
 <translation id="5355191726083956201">الحماية المُحسّنة مفعّلة.</translation>
 <translation id="5357811892247919462">تم تلقي علامة تبويب</translation>
 <translation id="5368958499335451666">{OPEN_TABS,plural, =1{<ph name="OPEN_TABS_ONE" /> علامة تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}zero{<ph name="OPEN_TABS_MANY" /> علامات تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}two{علامتا تبويب مفتوحتان<ph name="OPEN_TABS_MANY" />، يُرجى النقر لتبديل علامات التبويب}few{<ph name="OPEN_TABS_MANY" /> علامات تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}many{<ph name="OPEN_TABS_MANY" /> علامة تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}other{<ph name="OPEN_TABS_MANY" /> علامة تبويب مفتوحة، يُرجى النقر لتبديل علامات التبويب}}</translation>
-<translation id="5375577065097716013">‏البحث عن الصورة باستخدام "عدسة Google" <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
+<translation id="5375577065097716013">‏ابحث في الصور عبر "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="5403644198645076998">السماح بمواقع ويب معيّنة فقط</translation>
 <translation id="5409881200985013443">هل تريد إرسال <ph name="ONE_TIME_CODE" /> إلى <ph name="CLIENT_NAME" />؟</translation>
 <translation id="5414836363063783498">جارٍ التحقق...</translation>
