@@ -2022,6 +2022,11 @@ void WebContentsImpl::SetHasPictureInPictureVideo(
   NotifyNavigationStateChanged(INVALIDATE_TYPE_TAB);
   observers_.NotifyObservers(&WebContentsObserver::MediaPictureInPictureChanged,
                              has_picture_in_picture_video_);
+
+  // Picture-in-picture state can affect how we notify visibility for non-
+  // visible pages.
+  if (visibility_ != Visibility::VISIBLE)
+    UpdateVisibilityAndNotifyPageAndView(visibility_);
 }
 
 bool WebContentsImpl::IsCrashed() {
