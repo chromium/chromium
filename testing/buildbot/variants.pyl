@@ -587,7 +587,7 @@
   'CROS_ATLAS_LKGM': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R96-14252.0.0',
+      'cros_img': 'atlas-release/R96-14263.0.0',
     },
     'identifier': 'ATLAS_LKGM',
   },
@@ -601,7 +601,7 @@
   'CROS_ATLAS_BETA': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_img': 'atlas-release/R94-14150.39.0',
+      'cros_img': 'atlas-release/R94-14150.46.0',
     },
     'identifier': 'ATLAS_BETA',
   },
@@ -615,7 +615,7 @@
   'CROS_EVE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R96-14252.0.0',
+      'cros_img': 'eve-release/R96-14263.0.0',
     },
     'identifier': 'EVE_LKGM',
   },
@@ -629,7 +629,7 @@
   'CROS_EVE_BETA': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_img': 'eve-release/R93-14092.46.0',
+      'cros_img': 'eve-release/R94-14150.46.0',
     },
     'identifier': 'EVE_BETA',
   },
@@ -643,7 +643,7 @@
   'CROS_KEVIN_LKGM': {
     'skylab': {
       'cros_board': 'kevin',
-      'cros_img': 'kevin-release/R96-14252.0.0',
+      'cros_img': 'kevin-release/R96-14263.0.0',
     },
     'identifier': 'KEVIN_LKGM',
   },

@@ -1283,7 +1283,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R96-14252.0.0",
+        "cros_img": "atlas-release/R96-14263.0.0",
         "name": "lacros_fyi_tast_tests_ATLAS_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1305,7 +1305,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R94-14150.39.0",
+        "cros_img": "atlas-release/R94-14150.46.0",
         "name": "lacros_fyi_tast_tests_ATLAS_BETA",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1327,7 +1327,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R96-14252.0.0",
+        "cros_img": "eve-release/R96-14263.0.0",
         "name": "lacros_fyi_tast_tests_EVE_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1349,7 +1349,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R93-14092.46.0",
+        "cros_img": "eve-release/R94-14150.46.0",
         "name": "lacros_fyi_tast_tests_EVE_BETA",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
@@ -1371,7 +1371,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R96-14252.0.0",
+        "cros_img": "atlas-release/R96-14263.0.0",
         "name": "ozone_unittests_ATLAS_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1391,7 +1391,7 @@
       {
         "args": [],
         "cros_board": "atlas",
-        "cros_img": "atlas-release/R94-14150.39.0",
+        "cros_img": "atlas-release/R94-14150.46.0",
         "name": "ozone_unittests_ATLAS_BETA",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1411,7 +1411,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R96-14252.0.0",
+        "cros_img": "eve-release/R96-14263.0.0",
         "name": "ozone_unittests_EVE_LKGM",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1431,7 +1431,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R93-14092.46.0",
+        "cros_img": "eve-release/R94-14150.46.0",
         "name": "ozone_unittests_EVE_BETA",
         "swarming": {},
         "test": "ozone_unittests",
@@ -1458,7 +1458,7 @@
       {
         "args": [],
         "cros_board": "kevin",
-        "cros_img": "kevin-release/R96-14252.0.0",
+        "cros_img": "kevin-release/R96-14263.0.0",
         "name": "lacros_all_tast_tests_KEVIN_LKGM",
         "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
