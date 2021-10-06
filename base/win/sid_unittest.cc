@@ -138,7 +138,7 @@ TEST(SidTest, KnownCapability) {
 }
 
 TEST(SidTest, NamedCapability) {
-  if (GetVersion() < Version::WIN10)
+  if (GetVersion() < Version::WIN10_RS2)
     return;
 
   EXPECT_FALSE(Sid::FromNamedCapability(nullptr));
@@ -265,7 +265,7 @@ TEST(SidTest, FromSddlStringVector) {
 }
 
 TEST(SidTest, FromNamedCapabilityVector) {
-  if (GetVersion() < Version::WIN10)
+  if (GetVersion() < Version::WIN10_RS2)
     return;
   std::vector<const wchar_t*> capabilities = {L"internetClient",
                                               L"internetClientServer",

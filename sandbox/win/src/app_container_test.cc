@@ -919,8 +919,9 @@ class SocketBrokerTest
 };
 
 TEST_P(SocketBrokerTest, SocketBrokerTestUDP) {
-  // App Container socket brokering only supported on Win10 RS1 and above.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  // Some APIs, such as named capabilities, needed to create the network service
+  // sandbox require Windows 10 RS2.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS2)
     return;
 
   UDPEchoServer server;
@@ -937,8 +938,9 @@ TEST_P(SocketBrokerTest, SocketBrokerTestUDP) {
 }
 
 TEST_P(SocketBrokerTest, SocketBrokerTestTCP) {
-  // App Container socket brokering only supported on Win10 RS1 and above.
-  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+  // Some APIs, such as named capabilities, needed to create the network service
+  // sandbox require Windows 10 RS2.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS2)
     return;
 
   std::wstring hostname = GetTestHostName();
