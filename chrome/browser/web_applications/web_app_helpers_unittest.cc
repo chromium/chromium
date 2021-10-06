@@ -41,6 +41,10 @@ TEST(WebAppHelpers, GenerateRecommendedId) {
 }
 
 TEST(WebAppHelpers, IsValidWebAppUrl) {
+  // TODO(crbug.com/1253234): Remove chrome-extension scheme.
+  EXPECT_TRUE(IsValidWebAppUrl(
+      GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")));
+
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://chromium.org")));
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://www.chromium.org")));
   EXPECT_TRUE(
@@ -53,8 +57,6 @@ TEST(WebAppHelpers, IsValidWebAppUrl) {
   EXPECT_TRUE(IsValidWebAppUrl(GURL("https://examle.com/foo#bar")));
 
   EXPECT_FALSE(IsValidWebAppUrl(GURL()));
-  EXPECT_TRUE(IsValidWebAppUrl(
-      GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")));
   EXPECT_FALSE(IsValidWebAppUrl(GURL("ftp://www.chromium.org")));
   EXPECT_FALSE(IsValidWebAppUrl(GURL("chrome://flags")));
   EXPECT_FALSE(IsValidWebAppUrl(GURL("about:blank")));
@@ -63,21 +65,6 @@ TEST(WebAppHelpers, IsValidWebAppUrl) {
   EXPECT_FALSE(IsValidWebAppUrl(GURL("chrome://extensions")));
   EXPECT_FALSE(
       IsValidWebAppUrl(GURL("filesystem:http://example.com/path/file.html")));
-}
-
-TEST(WebAppHelpers, IsValidExtensionUrl) {
-  EXPECT_FALSE(IsValidExtensionUrl(GURL("https://chromium.org")));
-  EXPECT_FALSE(IsValidExtensionUrl(GURL("http://example.org")));
-  EXPECT_TRUE(IsValidExtensionUrl(
-      GURL("chrome-extension://oafaagfgbdpldilgjjfjocjglfbolmac")));
-  EXPECT_FALSE(IsValidExtensionUrl(GURL("ftp://www.chromium.org")));
-  EXPECT_FALSE(IsValidExtensionUrl(GURL("chrome://flags")));
-  EXPECT_FALSE(IsValidExtensionUrl(GURL("about:blank")));
-  EXPECT_FALSE(
-      IsValidExtensionUrl(GURL("file://mhjfbmdgcfjbbpaeojofohoefgiehjai")));
-  EXPECT_FALSE(IsValidExtensionUrl(GURL("chrome://extensions")));
-  EXPECT_FALSE(IsValidExtensionUrl(
-      GURL("filesystem:http://example.com/path/file.html")));
 }
 
 TEST(WebAppHelpers, ManifestIdEncoding) {

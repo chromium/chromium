@@ -3901,6 +3901,7 @@ source_set("unit_tests") {
     "../ash/child_accounts/time_limits/app_activity_registry_unittest.cc",
     "../ash/child_accounts/time_limits/app_service_wrapper_unittest.cc",
     "../ash/child_accounts/time_limits/app_time_controller_unittest.cc",
+    "../ash/child_accounts/time_limits/app_time_limit_utils_unittest.cc",
     "../ash/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.cc",
     "../ash/child_accounts/time_limits/app_time_limits_allowlist_policy_test_utils.h",
     "../ash/child_accounts/time_limits/app_time_test_utils.cc",

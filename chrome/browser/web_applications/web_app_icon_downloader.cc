@@ -39,8 +39,8 @@ void WebAppIconDownloader::FailAllIfAnyFail() {
 }
 
 void WebAppIconDownloader::Start() {
-  // Favicons are not supported in extension WebContents.
-  if (IsValidExtensionUrl(web_contents()->GetLastCommittedURL()))
+  // Favicons are supported only in HTTP or HTTPS WebContents.
+  if (!web_contents()->GetLastCommittedURL().SchemeIsHTTPOrHTTPS())
     SkipPageFavicons();
 
   // If the candidates aren't loaded, icons will be fetched when
@@ -59,6 +59,8 @@ void WebAppIconDownloader::Start() {
 }
 
 int WebAppIconDownloader::DownloadImage(const GURL& url) {
+  // If |is_favicon| is true, the cookies are not sent and not accepted during
+  // download.
   return web_contents()->DownloadImage(
       url,
       true,         // is_favicon

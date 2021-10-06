@@ -33,7 +33,6 @@
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
-#include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -1285,10 +1284,6 @@ TEST_F(WebAppIconManagerTest, ReadIconAndResize_Failure) {
             }));
     run_loop.Run();
   }
-}
-
-TEST_F(WebAppIconManagerTest, MatchSizes) {
-  EXPECT_EQ(kWebAppIconSmall, extension_misc::EXTENSION_ICON_SMALL);
 }
 
 TEST_F(WebAppIconManagerTest, CacheExistingAppFavicon) {

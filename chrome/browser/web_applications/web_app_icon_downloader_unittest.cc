@@ -10,7 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
@@ -37,16 +37,26 @@ std::vector<SkBitmap> CreateTestBitmaps(const std::vector<gfx::Size>& sizes) {
   return bitmaps;
 }
 
-class WebAppIconDownloaderTest : public ChromeRenderViewHostTestHarness {
+class WebAppIconDownloaderTest : public WebAppTest {
  public:
   WebAppIconDownloaderTest(const WebAppIconDownloaderTest&) = delete;
   WebAppIconDownloaderTest& operator=(const WebAppIconDownloaderTest&) = delete;
 
- protected:
-  WebAppIconDownloaderTest() {}
-  ~WebAppIconDownloaderTest() override {}
+  WebAppIconDownloaderTest() = default;
+  ~WebAppIconDownloaderTest() override = default;
+
+  void SetUp() override {
+    WebAppTest::SetUp();
+
+    // Specifies HTTPS for web_contents()->GetLastCommittedURL().
+    web_contents_tester()->NavigateAndCommit(GURL("https://www.example.com"));
+  }
 
  protected:
+  content::WebContentsTester* web_contents_tester() {
+    return content::WebContentsTester::For(web_contents());
+  }
+
   base::HistogramTester histogram_tester_;
 };
 
@@ -81,7 +91,7 @@ class TestWebAppIconDownloader : public WebAppIconDownloader {
         id_counter_(0) {}
   TestWebAppIconDownloader(const TestWebAppIconDownloader&) = delete;
   TestWebAppIconDownloader& operator=(const TestWebAppIconDownloader&) = delete;
-  ~TestWebAppIconDownloader() override {}
+  ~TestWebAppIconDownloader() override = default;
 
   int DownloadImage(const GURL& url) override { return id_counter_++; }
 

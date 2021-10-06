@@ -61,9 +61,6 @@ std::string GenerateRecommendedId(const GURL& start_url);
 // Returns whether the given |app_url| is a valid web app url.
 bool IsValidWebAppUrl(const GURL& app_url);
 
-// Returns whether the given |app_url| is a valid extension url.
-bool IsValidExtensionUrl(const GURL& app_url);
-
 // Searches for the first locally installed app id in the registry for which
 // the |url| is in scope. If |window_only| is specified, only apps that
 // open in app windows will be considered.

@@ -266,7 +266,6 @@ source_set("web_applications") {
     "//components/webapps/services/web_app_origin_association:lib",
     "//components/webapps/services/web_app_origin_association:service",
     "//content/public/browser",
-    "//extensions/common:common_constants",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/metrics/public/cpp:ukm_builders",

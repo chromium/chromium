@@ -87,7 +87,6 @@
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"  // nogncheck
-#include "extensions/common/constants.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
