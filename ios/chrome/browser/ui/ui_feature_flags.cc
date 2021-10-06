@@ -64,6 +64,9 @@ const base::Feature kContextMenuActionsRefresh{
 const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCredentialProviderExtensionPromo{
+    "CredentialProviderExtensionPromo", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsContextMenuActionsRefreshEnabled() {
   return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
 }

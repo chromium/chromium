@@ -221,6 +221,11 @@ extern const char kForceDisableExtendedSyncPromosDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
+// Title and description for the flag to trigger credentials provider extension
+// promo.
+extern const char kCredentialProviderExtensionPromoName[];
+extern const char kCredentialProviderExtensionPromoDescription[];
+
 // Title and description for the flag to set the major version the UA string to
 // 100.
 extern const char kForceMajorVersion100InUserAgentName[];

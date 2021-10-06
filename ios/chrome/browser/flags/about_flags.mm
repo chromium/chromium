@@ -779,7 +779,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREDefaultBrowserScreenTesting,
                                     kFREDefaultPromoTestingVariations,
-                                    "EnableFREDefaultBrowserScreenTesting")}};
+                                    "EnableFREDefaultBrowserScreenTesting")},
+    {"credential-provider-extension-promo",
+     flag_descriptions::kCredentialProviderExtensionPromoName,
+     flag_descriptions::kCredentialProviderExtensionPromoDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kCredentialProviderExtensionPromo)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

@@ -261,6 +261,13 @@ const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "
     "Chrome.";
 
+const char kCredentialProviderExtensionPromoName[] =
+    "Enable the credential provider extension promo";
+const char kCredentialProviderExtensionPromoDescription[] =
+    "When enabled, a new item 'Passwords In Other Apps' item will be available "
+    "Chrome passwords settings, containing promotional instructions to enable"
+    "password autofill using Chrome.";
+
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "

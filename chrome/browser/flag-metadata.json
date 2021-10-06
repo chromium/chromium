@@ -883,6 +883,11 @@
     "expiry_milestone": 107
   },
   {
+    "name": "credential-provider-extension-promo",
+    "owners": ["ginnyhuang","bling-flags@google.com"],
+    "expiry_milestone": 99
+  },
+  {
     "name": "cros-regions-mode",
     "owners": [ "alemate" ],
     "expiry_milestone": 80
@@ -3927,7 +3932,7 @@
     "name": "old-sync-string-fre",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 97
-},
+  },
   {
     "name": "omnibox-active-search-engines",
     "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],

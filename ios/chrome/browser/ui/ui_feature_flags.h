@@ -72,6 +72,10 @@ extern const base::Feature kContextMenuActionsRefresh;
 // Feature flag to enable using Lens to search for images.
 extern const base::Feature kUseLensToSearchForImage;
 
+// Feature flag to enable promotional view for Passwords In Other Apps in
+// Settings.
+extern const base::Feature kCredentialProviderExtensionPromo;
+
 // Whether the ContextMenuActionsRefresh flag is enabled.
 bool IsContextMenuActionsRefreshEnabled();
 
