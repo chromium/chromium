@@ -519,6 +519,10 @@ bool EventDeviceInfo::HasStylus() const {
          HasKeyEvent(BTN_STYLUS2);
 }
 
+bool EventDeviceInfo::IsSemiMultitouch() const {
+  return HasProp(INPUT_PROP_SEMI_MT);
+}
+
 bool EventDeviceInfo::IsStylusButtonDevice() const {
   for (const auto& device_id : kStylusButtonDevices) {
     if (input_id_.vendor == device_id.vendor &&
@@ -638,6 +642,13 @@ bool EventDeviceInfo::HasGamepad() const {
   }
 
   return support_gamepad_btn && !HasTablet() && !HasKeyboard();
+}
+
+bool EventDeviceInfo::HasValidMTAbsXY() const {
+  const auto x = GetAbsInfoByCode(ABS_MT_POSITION_X);
+  const auto y = GetAbsInfoByCode(ABS_MT_POSITION_Y);
+
+  return x.resolution > 0 && y.resolution > 0;
 }
 
 bool EventDeviceInfo::SupportsRumble() const {

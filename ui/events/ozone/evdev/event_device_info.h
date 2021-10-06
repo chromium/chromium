@@ -165,8 +165,15 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Determine whether there's a gamepad on this device.
   bool HasGamepad() const;
 
+  // Determine whether horizontal and vertical resolutions are reported by the
+  // device.
+  bool HasValidMTAbsXY() const;
+
   // Determine whether the device supports rumble.
   bool SupportsRumble() const;
+
+  // Determine whether it's semi-multitouch device.
+  bool IsSemiMultitouch() const;
 
   // Determine if this is a dedicated device for a stylus button.
   bool IsStylusButtonDevice() const;

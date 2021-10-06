@@ -40,6 +40,10 @@
 #include "ui/events/ozone/evdev/libgestures_glue/gesture_property_provider.h"
 #endif
 
+#if defined(USE_LIBINPUT)
+#include "ui/events/ozone/evdev/libinput_event_converter.h"
+#endif
+
 #ifndef EVIOCSCLOCKID
 #define EVIOCSCLOCKID _IOW('E', 0xa0, int)
 #endif
@@ -65,6 +69,30 @@ struct OpenInputDeviceParams {
 #endif
   SharedPalmDetectionFilterState* shared_palm_state;
 };
+
+#if defined(USE_LIBINPUT)
+// Certain devices need to be forced to use libinput in place of
+// evdev/libgestures
+constexpr struct {
+  uint16_t vendor;
+  uint16_t product_id;
+} kForceLibinputlist[] = {
+    {0x0002, 0x000e},  // HP Stream 14 touchpad
+    {0x044e, 0x120a},  // Dell Latitude 3480 touchpad
+};
+
+bool IsForceLibinput(const EventDeviceInfo& devinfo) {
+  for (auto entry : kForceLibinputlist) {
+    if (devinfo.vendor_id() == entry.vendor &&
+        devinfo.product_id() == entry.product_id) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+#endif
 
 #if defined(USE_EVDEV_GESTURES)
 void SetGestureIntProperty(GesturePropertyProvider* provider,
@@ -95,6 +123,18 @@ std::unique_ptr<EventConverterEvdev> CreateConverter(
     const OpenInputDeviceParams& params,
     base::ScopedFD fd,
     const EventDeviceInfo& devinfo) {
+#if defined(USE_LIBINPUT)
+  // Use LibInputEventConverter for odd touchpads
+  if (devinfo.HasTouchpad()) {
+    if (!devinfo.HasMultitouch() || !devinfo.HasValidMTAbsXY() ||
+        !devinfo.IsSemiMultitouch() || IsForceLibinput(devinfo)) {
+      return LibInputEventConverter::Create(params.path, params.id, devinfo,
+                                            params.cursor, params.dispatcher);
+    }
+  }
+
+#endif
+
 #if defined(USE_EVDEV_GESTURES)
   // Touchpad or mouse: use gestures library.
   // EventReaderLibevdevCros -> GestureInterpreterLibevdevCros -> DispatchEvent
