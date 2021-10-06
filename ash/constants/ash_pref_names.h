@@ -381,6 +381,9 @@ extern const char kImprovedShortcutsNotificationShownCount[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLacrosProxyControllingExtension[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kFastPairEnabled[];
+
 }  // namespace prefs
 }  // namespace ash
 

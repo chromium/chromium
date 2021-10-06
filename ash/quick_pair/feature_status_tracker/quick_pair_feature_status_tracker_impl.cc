@@ -8,6 +8,7 @@
 
 #include "ash/quick_pair/feature_status_tracker/bluetooth_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/fast_pair_enabled_provider.h"
+#include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/google_api_key_availability_provider.h"
 #include "ash/quick_pair/feature_status_tracker/logged_in_user_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/screen_state_enabled_provider.h"
@@ -19,6 +20,7 @@ namespace quick_pair {
 FeatureStatusTrackerImpl::FeatureStatusTrackerImpl()
     : fast_pair_enabled_provider_(std::make_unique<FastPairEnabledProvider>(
           std::make_unique<BluetoothEnabledProvider>(),
+          std::make_unique<FastPairPrefEnabledProvider>(),
           std::make_unique<LoggedInUserEnabledProvider>(),
           std::make_unique<ScreenStateEnabledProvider>(),
           std::make_unique<GoogleApiKeyAvailabilityProvider>())) {

@@ -845,6 +845,9 @@ const char kImprovedShortcutsNotificationShownCount[] =
 const char kLacrosProxyControllingExtension[] =
     "ash.lacros_proxy_controlling_extension";
 
+// A boolean pref which is true if Fast Pair is enabled.
+const char kFastPairEnabled[] = "ash.fast_pair.enabled";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

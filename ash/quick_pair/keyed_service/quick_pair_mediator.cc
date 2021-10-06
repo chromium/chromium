@@ -8,6 +8,7 @@
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/feature_status_tracker/fast_pair_pref_enabled_provider.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker.h"
 #include "ash/quick_pair/feature_status_tracker/quick_pair_feature_status_tracker_impl.h"
 #include "ash/quick_pair/keyed_service/quick_pair_metrics_logger.h"
@@ -81,6 +82,7 @@ Mediator::~Mediator() {
 
 // static
 void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  FastPairPrefEnabledProvider::RegisterProfilePrefs(registry);
   SavedDeviceRegistry::RegisterProfilePrefs(registry);
 }
 

@@ -16,12 +16,16 @@ namespace quick_pair {
 
 FastPairEnabledProvider::FastPairEnabledProvider(
     std::unique_ptr<BluetoothEnabledProvider> bluetooth_enabled_provider,
+    std::unique_ptr<FastPairPrefEnabledProvider>
+        fast_pair_pref_enabled_provider,
     std::unique_ptr<LoggedInUserEnabledProvider>
         logged_in_user_enabled_provider,
     std::unique_ptr<ScreenStateEnabledProvider> screen_state_enabled_provider,
     std::unique_ptr<GoogleApiKeyAvailabilityProvider>
         google_api_key_availability_provider)
     : bluetooth_enabled_provider_(std::move(bluetooth_enabled_provider)),
+      fast_pair_pref_enabled_provider_(
+          std::move(fast_pair_pref_enabled_provider)),
       logged_in_user_enabled_provider_(
           std::move(logged_in_user_enabled_provider)),
       screen_state_enabled_provider_(std::move(screen_state_enabled_provider)),
@@ -32,6 +36,10 @@ FastPairEnabledProvider::FastPairEnabledProvider(
   if (features::IsFastPairEnabled() &&
       google_api_key_availability_provider_->is_enabled()) {
     bluetooth_enabled_provider_->SetCallback(base::BindRepeating(
+        &FastPairEnabledProvider::OnSubProviderEnabledChanged,
+        weak_factory_.GetWeakPtr()));
+
+    fast_pair_pref_enabled_provider_->SetCallback(base::BindRepeating(
         &FastPairEnabledProvider::OnSubProviderEnabledChanged,
         weak_factory_.GetWeakPtr()));
 
@@ -50,17 +58,18 @@ FastPairEnabledProvider::FastPairEnabledProvider(
 FastPairEnabledProvider::~FastPairEnabledProvider() = default;
 
 bool FastPairEnabledProvider::AreSubProvidersEnabled() {
-  QP_LOG(VERBOSE) << __func__ << ": Flag:"
-                  << base::FeatureList::IsEnabled(features::kFastPair)
-                  << " Google API Key:"
-                  << google_api_key_availability_provider_->is_enabled()
-                  << " Logged in User:"
-                  << logged_in_user_enabled_provider_->is_enabled()
-                  << " Screen State:"
-                  << screen_state_enabled_provider_->is_enabled()
-                  << " Bluetooth:" << bluetooth_enabled_provider_->is_enabled();
+  QP_LOG(VERBOSE)
+      << __func__
+      << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
+      << " Policy Pref:" << fast_pair_pref_enabled_provider_->is_enabled()
+      << " Google API Key:"
+      << google_api_key_availability_provider_->is_enabled()
+      << " Logged in User:" << logged_in_user_enabled_provider_->is_enabled()
+      << " Screen State:" << screen_state_enabled_provider_->is_enabled()
+      << " Bluetooth:" << bluetooth_enabled_provider_->is_enabled();
 
   return base::FeatureList::IsEnabled(features::kFastPair) &&
+         fast_pair_pref_enabled_provider_->is_enabled() &&
          google_api_key_availability_provider_->is_enabled() &&
          logged_in_user_enabled_provider_->is_enabled() &&
          bluetooth_enabled_provider_->is_enabled() &&

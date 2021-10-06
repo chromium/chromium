@@ -15,6 +15,8 @@ static_library("feature_status_tracker") {
     "bluetooth_enabled_provider.h",
     "fast_pair_enabled_provider.cc",
     "fast_pair_enabled_provider.h",
+    "fast_pair_pref_enabled_provider.cc",
+    "fast_pair_pref_enabled_provider.h",
     "google_api_key_availability_provider.cc",
     "google_api_key_availability_provider.h",
     "logged_in_user_enabled_provider.cc",
@@ -28,8 +30,10 @@ static_library("feature_status_tracker") {
 
   deps = [
     "//ash/constants",
+    "//ash/public/cpp",
     "//ash/quick_pair/common",
     "//base",
+    "//components/prefs",
     "//components/user_manager",
     "//device/bluetooth",
     "//google_apis",
@@ -47,6 +51,8 @@ static_library("test_support") {
     "fake_feature_status_tracker.h",
     "mock_bluetooth_enabled_provider.cc",
     "mock_bluetooth_enabled_provider.h",
+    "mock_fast_pair_pref_enabled_provider.cc",
+    "mock_fast_pair_pref_enabled_provider.h",
     "mock_google_api_key_availability_provider.cc",
     "mock_google_api_key_availability_provider.h",
     "mock_logged_in_user_enabled_provider.cc",
