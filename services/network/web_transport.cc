@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -521,8 +522,19 @@ void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
 
   absl::optional<net::WebTransportCloseInfo> close_info_to_pass;
   if (close_info) {
-    close_info_to_pass = absl::make_optional<net::WebTransportCloseInfo>(
-        close_info->code, close_info->reason);
+    close_info_to_pass =
+        absl::make_optional<net::WebTransportCloseInfo>(close_info->code, "");
+
+    // As described at
+    // https://w3c.github.io/webtransport/#dom-webtransport-close,
+    // the size of the reason string must not exceed 1024.
+    constexpr size_t kMaxSize = 1024;
+    if (close_info->reason.size() > kMaxSize) {
+      base::TruncateUTF8ToByteSize(close_info->reason, kMaxSize,
+                                   &close_info_to_pass->reason);
+    } else {
+      close_info_to_pass->reason = std::move(close_info->reason);
+    }
   }
 
   transport_->Close(close_info_to_pass);
