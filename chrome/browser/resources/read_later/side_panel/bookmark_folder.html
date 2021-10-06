@@ -184,7 +184,7 @@
         </template>
 
         <template is="dom-if" if="[[item.url]]" restamp>
-          <a role="treeitem" href="[[item.url]]" class="bookmark row"
+          <button role="treeitem" class="bookmark row"
               draggable="true" data-bookmark="[[item]]"
               on-click="onBookmarkClick_"
               on-auxclick="onBookmarkAuxClick_"
@@ -194,7 +194,7 @@
                 style="background-image: [[getBookmarkIcon_(item.url)]]">
             </div>
             <div class="title">[[item.title]]</div>
-          </a>
+          </button>
         </template>
       </template>
     </div>

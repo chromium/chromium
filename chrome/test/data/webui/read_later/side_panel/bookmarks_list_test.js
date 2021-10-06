@@ -117,7 +117,6 @@ suite('SidePanelBookmarksListTest', () => {
     const folderElement = getFolderElements(bookmarksList)[rootFolderIndex];
     const bookmarkElement = getBookmarkElements(folderElement)[bookmarkIndex];
     assertEquals('New title', bookmarkElement.textContent);
-    assertEquals('http://new/url', bookmarkElement.href);
   });
 
   test('UpdatesReorderedChildren', () => {
