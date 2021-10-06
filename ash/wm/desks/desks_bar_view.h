@@ -27,7 +27,7 @@ class OverviewGrid;
 class PersistentDesksBarVerticalDotsButton;
 class ScrollArrowButton;
 class ZeroStateDefaultDeskButton;
-class ZeroStateNewDeskButton;
+class ZeroStateIconButton;
 
 // A bar that resides at the top portion of the overview mode's ShieldView,
 // which contains the virtual desks mini_views, as well as the new desk button.
@@ -60,7 +60,7 @@ class ASH_EXPORT DesksBarView : public views::View,
     return zero_state_default_desk_button_;
   }
 
-  ZeroStateNewDeskButton* zero_state_new_desk_button() const {
+  ZeroStateIconButton* zero_state_new_desk_button() const {
     return zero_state_new_desk_button_;
   }
 
@@ -68,8 +68,12 @@ class ASH_EXPORT DesksBarView : public views::View,
     return expanded_state_new_desk_button_;
   }
 
-  ExpandedDesksBarButton* desks_templates_button() const {
-    return desks_templates_button_;
+  ZeroStateIconButton* zero_state_desks_templates_button() const {
+    return zero_state_desks_templates_button_;
+  }
+
+  ExpandedDesksBarButton* expanded_state_desks_templates_button() const {
+    return expanded_state_desks_templates_button_;
   }
 
   const std::vector<DeskMiniView*>& mini_views() const { return mini_views_; }
@@ -256,8 +260,8 @@ class ASH_EXPORT DesksBarView : public views::View,
   views::ScrollView* scroll_view_ = nullptr;
 
   // Contents of `scroll_view_`, which includes `mini_views_`,
-  // `expanded_state_new_desk_button_` and optionally `desks_templates_button_`
-  // currently.
+  // `expanded_state_new_desk_button_` and optionally
+  // `expanded_state_desks_templates_button_` currently.
   views::View* scroll_view_contents_ = nullptr;
 
   // If this is true, when `UpdateNewMiniViews()` is called, the newly created
@@ -266,9 +270,12 @@ class ASH_EXPORT DesksBarView : public views::View,
   bool should_name_nudge_ = false;
 
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
-  ZeroStateNewDeskButton* zero_state_new_desk_button_ = nullptr;
+  ZeroStateIconButton* zero_state_new_desk_button_ = nullptr;
   ExpandedDesksBarButton* expanded_state_new_desk_button_ = nullptr;
-  ExpandedDesksBarButton* desks_templates_button_ = nullptr;
+
+  // Buttons to show the desks templates grid.
+  ZeroStateIconButton* zero_state_desks_templates_button_ = nullptr;
+  ExpandedDesksBarButton* expanded_state_desks_templates_button_ = nullptr;
 
   ScrollArrowButton* left_scroll_button_ = nullptr;
   ScrollArrowButton* right_scroll_button_ = nullptr;

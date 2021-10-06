@@ -9,6 +9,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
+#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/bind.h"
@@ -54,9 +55,11 @@ void DesksTemplatesPresenter::OnGetAllEntries(
   for (auto& grid : overview_session_->grid_list()) {
     const DesksBarView* desks_bar_view = grid->desks_bar_view();
     if (desks_bar_view) {
-      auto* desks_templates_button = desks_bar_view->desks_templates_button();
-      DCHECK(desks_templates_button);
-      desks_templates_button->SetVisible(visible);
+      const bool is_zero_state = desks_bar_view->IsZeroState();
+      desks_bar_view->zero_state_desks_templates_button()->SetVisible(
+          is_zero_state && visible);
+      desks_bar_view->expanded_state_desks_templates_button()->SetVisible(
+          !is_zero_state && visible);
     }
   }
 

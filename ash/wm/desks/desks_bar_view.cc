@@ -190,7 +190,6 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
   void Layout(views::View* host) override {
     const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
 
-    auto* desks_templates_button = bar_view_->desks_templates_button();
 
     // |host| here is |scroll_view_contents_|.
     // TODO(crbug.com/1255185): Make templates button compatible with zero
@@ -207,6 +206,8 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
       const gfx::Size zero_state_new_desk_button_size =
           zero_state_new_desk_button->GetPreferredSize();
 
+      auto* desks_templates_button =
+          bar_view_->zero_state_desks_templates_button();
       const gfx::Size desks_templates_button_size =
           desks_templates_button ? desks_templates_button->GetPreferredSize()
                                  : gfx::Size();
@@ -257,6 +258,8 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
     if (mini_views.empty())
       return;
 
+    auto* desks_templates_button =
+        bar_view_->expanded_state_desks_templates_button();
     const bool desks_templates_button_visible =
         desks_templates_button && desks_templates_button->GetVisible();
 
@@ -357,20 +360,33 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                               base::Unretained(this))));
   zero_state_default_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ZeroStateDefaultDeskButton>(this));
-  zero_state_new_desk_button_ = scroll_view_contents_->AddChildView(
-      std::make_unique<ZeroStateNewDeskButton>(this));
+  zero_state_new_desk_button_ =
+      scroll_view_contents_->AddChildView(std::make_unique<ZeroStateIconButton>(
+          &kDesksNewDeskButtonIcon,
+          base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
+                              base::Unretained(this))));
   if (features::AreDesksTemplatesEnabled()) {
     // TODO(sophiewen): u"Templates" should be replaced with the localized name
     // for the "Templates" desk label.
-    desks_templates_button_ = scroll_view_contents_->AddChildView(
-        std::make_unique<ExpandedDesksBarButton>(
-            this, &kDesksTemplatesIcon, u"Templates",
+    expanded_state_desks_templates_button_ =
+        scroll_view_contents_->AddChildView(
+            std::make_unique<ExpandedDesksBarButton>(
+                this, &kDesksTemplatesIcon, u"Templates",
+                base::BindRepeating(
+                    &DesksBarView::OnDesksTemplatesButtonPressed,
+                    base::Unretained(this))));
+    zero_state_desks_templates_button_ = scroll_view_contents_->AddChildView(
+        std::make_unique<ZeroStateIconButton>(
+            &kDesksTemplatesIcon,
             base::BindRepeating(&DesksBarView::OnDesksTemplatesButtonPressed,
                                 base::Unretained(this))));
     // Hide the button initially. The presenter will ask the desk model and
     // update the visibility of this button if there are any entries to
-    // view.
-    desks_templates_button_->SetVisible(false);
+    // view. Note that we should not control visibility after creating them
+    // invisible in this class like other buttons, and have the
+    // DesksTemplatesPresenter control the visibility.
+    expanded_state_desks_templates_button_->SetVisible(false);
+    zero_state_desks_templates_button_->SetVisible(false);
   }
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
@@ -1118,11 +1134,11 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 
 void DesksBarView::OnNewDeskButtonPressed() {
   auto* controller = DesksController::Get();
-  if (controller->CanCreateDesks()) {
-    this->set_should_name_nudge(true);
-    controller->NewDesk(DesksCreationRemovalSource::kButton);
-    expanded_state_new_desk_button_->UpdateButtonState();
-  }
+  if (!controller->CanCreateDesks())
+    return;
+  set_should_name_nudge(true);
+  controller->NewDesk(DesksCreationRemovalSource::kButton);
+  expanded_state_new_desk_button_->UpdateButtonState();
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {

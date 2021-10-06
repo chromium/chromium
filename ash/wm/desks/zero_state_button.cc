@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/zero_state_button.h"
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desk.h"
@@ -38,7 +37,8 @@ constexpr int kZeroStateButtonHeight = 28;
 
 constexpr int kZeroStateDefaultButtonHorizontalPadding = 16;
 
-constexpr int kZeroStateNewDeskButtonWidth = 36;
+// The width for the zero state new desk button and templates button.
+constexpr int kZeroStateIconButtonWidth = 36;
 
 constexpr int kZeroStateDefaultDeskButtonMinWidth = 56;
 
@@ -159,6 +159,9 @@ void DeskButtonBase::SetShouldPaintBackground(bool should_paint_background) {
   SchedulePaint();
 }
 
+BEGIN_METADATA(DeskButtonBase, views::LabelButton)
+END_METADATA
+
 // -----------------------------------------------------------------------------
 // ZeroStateDefaultDeskButton:
 
@@ -168,10 +171,6 @@ ZeroStateDefaultDeskButton::ZeroStateDefaultDeskButton(DesksBarView* bar_view)
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringFUTF16(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
                                  DesksController::Get()->desks()[0]->name()));
-}
-
-const char* ZeroStateDefaultDeskButton::GetClassName() const {
-  return "ZeroStateDefaultDeskButton";
 }
 
 void ZeroStateDefaultDeskButton::OnThemeChanged() {
@@ -216,45 +215,48 @@ void ZeroStateDefaultDeskButton::UpdateLabelText() {
       gfx::ELIDE_TAIL));
 }
 
-// -----------------------------------------------------------------------------
-// ZeroStateNewDeskButton:
+BEGIN_METADATA(ZeroStateDefaultDeskButton, DeskButtonBase)
+END_METADATA
 
-ZeroStateNewDeskButton::ZeroStateNewDeskButton(DesksBarView* bar_view)
-    : DeskButtonBase(std::u16string()), bar_view_(bar_view) {
+// -----------------------------------------------------------------------------
+// ZeroStateIconButton:
+
+ZeroStateIconButton::ZeroStateIconButton(const gfx::VectorIcon* button_icon,
+                                         base::RepeatingClosure callback)
+    : DeskButtonBase(std::u16string()),
+      button_icon_(button_icon),
+      button_callback_(callback) {
   should_paint_background_ = false;
 }
 
-const char* ZeroStateNewDeskButton::GetClassName() const {
-  return "ZeroStateNewDeskButton";
-}
+ZeroStateIconButton::~ZeroStateIconButton() = default;
 
-void ZeroStateNewDeskButton::OnThemeChanged() {
+void ZeroStateIconButton::OnThemeChanged() {
   DeskButtonBase::OnThemeChanged();
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColor);
   SetImage(views::Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(kDesksNewDeskButtonIcon, icon_color));
+           gfx::CreateVectorIcon(*button_icon_, icon_color));
 }
 
-gfx::Size ZeroStateNewDeskButton::CalculatePreferredSize() const {
-  return gfx::Size(kZeroStateNewDeskButtonWidth, kZeroStateButtonHeight);
+gfx::Size ZeroStateIconButton::CalculatePreferredSize() const {
+  return gfx::Size(kZeroStateIconButtonWidth, kZeroStateButtonHeight);
 }
 
-void ZeroStateNewDeskButton::OnButtonPressed() {
-  bar_view_->set_should_name_nudge(true);
-  DesksController::Get()->NewDesk(DesksCreationRemovalSource::kButton);
+void ZeroStateIconButton::OnButtonPressed() {
+  button_callback_.Run();
   SetShouldPaintBackground(false);
 }
 
-void ZeroStateNewDeskButton::OnMouseEntered(const ui::MouseEvent& event) {
+void ZeroStateIconButton::OnMouseEntered(const ui::MouseEvent& event) {
   SetShouldPaintBackground(true);
 }
 
-void ZeroStateNewDeskButton::OnMouseExited(const ui::MouseEvent& event) {
+void ZeroStateIconButton::OnMouseExited(const ui::MouseEvent& event) {
   SetShouldPaintBackground(false);
 }
 
-BEGIN_METADATA(DeskButtonBase, views::LabelButton)
+BEGIN_METADATA(ZeroStateIconButton, DeskButtonBase)
 END_METADATA
 
 }  // namespace ash
