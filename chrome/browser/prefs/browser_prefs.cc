@@ -482,9 +482,6 @@ const char kLocalDiscoveryNotificationsEnabled[] =
     "local_discovery.notifications_enabled";
 #endif
 
-// Deprecated 10/2020
-const char kHistoryMenuPromoShown[] = "history.menu_promo_shown";
-
 // Deprecated 11/2020
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
 const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
@@ -738,8 +735,6 @@ void RegisterProfilePrefsForMigration(
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
 
   registry->RegisterBooleanPref(prefs::kWebAppsUserDisplayModeCleanedUp, false);
-
-  registry->RegisterBooleanPref(kHistoryMenuPromoShown, true);
 
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
   registry->RegisterIntegerPref(kMigrationToLoginDBStep, 0);
@@ -1525,9 +1520,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-  // Added 10/2020
-  profile_prefs->ClearPref(kHistoryMenuPromoShown);
 
   // Added 11/2020
 #if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
