@@ -3538,7 +3538,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, OnGoogleDriveMounted) {
                           prefs::kUserWallpaperInfo);
 
   SimulateUserLogin(account_id_1);
-  controller_->OnGoogleDriveMounted(account_id_1);
+  controller_->SyncLocalAndRemotePrefs(account_id_1);
   EXPECT_EQ(account_id_1, client_.get_save_wallpaper_to_drive_fs_account_id());
 }
 
@@ -3548,7 +3548,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
                           prefs::kUserWallpaperInfo);
 
-  controller_->OnGoogleDriveMounted(account_id_1);
+  controller_->SyncLocalAndRemotePrefs(account_id_1);
   EXPECT_TRUE(client_.get_save_wallpaper_to_drive_fs_account_id().empty());
 }
 
@@ -3570,7 +3570,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   client_.ResetCounts();
 
   // Should not reupload image if it has already been synced.
-  controller_->OnGoogleDriveMounted(account_id_1);
+  controller_->SyncLocalAndRemotePrefs(account_id_1);
   EXPECT_FALSE(client_.get_save_wallpaper_to_drive_fs_account_id().is_valid());
 }
 
@@ -3591,7 +3591,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
 
   SimulateUserLogin(account_id_1);
 
-  controller_->OnGoogleDriveMounted(account_id_1);
+  controller_->SyncLocalAndRemotePrefs(account_id_1);
   EXPECT_FALSE(client_.get_save_wallpaper_to_drive_fs_account_id().is_valid());
   // This is called by WallpaperController::HandleCustomWallpaperSyncedIn.
   EXPECT_EQ(client_.get_wallpaper_path_from_drive_fs_account_id(),
@@ -3615,7 +3615,7 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
 
   SimulateUserLogin(account_id_1);
 
-  controller_->OnGoogleDriveMounted(account_id_1);
+  controller_->SyncLocalAndRemotePrefs(account_id_1);
   EXPECT_EQ(account_id_1, client_.get_save_wallpaper_to_drive_fs_account_id());
 }
 

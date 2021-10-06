@@ -302,7 +302,7 @@ class ASH_EXPORT WallpaperControllerImpl
       const AccountId& account_id) const override;
   void UpdateDailyRefreshWallpaper(
       RefreshWallpaperCallback callback = base::DoNothing()) override;
-  void OnGoogleDriveMounted(const AccountId& account_id) override;
+  void SyncLocalAndRemotePrefs(const AccountId& account_id) override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;
@@ -593,7 +593,6 @@ class ASH_EXPORT WallpaperControllerImpl
                               const WallpaperInfo& info);
   bool GetSyncedWallpaperInfo(const AccountId& account_id,
                               WallpaperInfo* info) const;
-  void SyncLocalAndRemotePrefs(const AccountId& account_id);
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
   void OnAttemptSetOnlineWallpaper(const OnlineWallpaperParams& params,

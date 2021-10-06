@@ -536,7 +536,6 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
                chromeos::settings::prefs::kSyncOsWallpaper);
   }
   return sync_service->CanSyncFeatureStart() &&
-         sync_service->GetUserSettings()->IsFirstSetupComplete() &&
          sync_service->GetUserSettings()->GetSelectedTypes().Has(
              syncer::UserSelectableType::kThemes);
 }
@@ -544,9 +543,9 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
 void WallpaperControllerClientImpl::ActiveUserChanged(
     user_manager::User* active_user) {
   volume_manager_observation_.Reset();
-  active_user->AddProfileCreatedObserver(base::BindOnce(
-      &WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser,
-      weak_factory_.GetWeakPtr(), active_user));
+  active_user->AddProfileCreatedObserver(
+      base::BindOnce(&WallpaperControllerClientImpl::OnProfileCreated,
+                     weak_factory_.GetWeakPtr(), active_user));
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(
@@ -557,7 +556,7 @@ void WallpaperControllerClientImpl::OnVolumeMounted(
   }
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
   if (user) {
-    wallpaper_controller_->OnGoogleDriveMounted(user->GetAccountId());
+    wallpaper_controller_->SyncLocalAndRemotePrefs(user->GetAccountId());
   }
 }
 
@@ -740,11 +739,16 @@ void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
   surprise_me_image_fetcher_.reset();
 }
 
-void WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser(
-    user_manager::User* user) {
+void WallpaperControllerClientImpl::OnProfileCreated(user_manager::User* user) {
   if (!user->is_active())
     return;
 
+  ObserveVolumeManagerForActiveUser(user);
+  wallpaper_controller_->SyncLocalAndRemotePrefs(user->GetAccountId());
+}
+
+void WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser(
+    user_manager::User* user) {
   Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   DCHECK(profile);
 
