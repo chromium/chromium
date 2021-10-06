@@ -1,7 +1,6 @@
 {
   "$build/archive": {
     "source_side_spec_path": [
-      "chromium",
       "src",
       "infra",
       "archive_config",

@@ -1672,7 +1672,6 @@ ci.chromium_builder(
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
             "source_side_spec_path": [
-                "chromium",
                 "src",
                 "infra",
                 "archive_config",
@@ -1721,7 +1720,6 @@ ci.chromium_builder(
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
             "source_side_spec_path": [
-                "chromium",
                 "src",
                 "infra",
                 "archive_config",
@@ -1790,7 +1788,6 @@ ci.chromium_builder(
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
             "source_side_spec_path": [
-                "chromium",
                 "src",
                 "infra",
                 "archive_config",
@@ -1856,7 +1853,6 @@ ci.chromium_builder(
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
             "source_side_spec_path": [
-                "chromium",
                 "src",
                 "infra",
                 "archive_config",
