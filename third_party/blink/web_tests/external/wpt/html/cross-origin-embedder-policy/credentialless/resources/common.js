@@ -61,7 +61,7 @@ let parseCookies = function(headers_json) {
     .split(';')
     .map(v => v.split('='))
     .reduce((acc, v) => {
-      acc[v[0]] = v[1];
+      acc[v[0].trim()] = v[1].trim();
       return acc;
     }, {});
 }
