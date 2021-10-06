@@ -379,8 +379,6 @@ interface ShimlessRmaService {
           RmadErrorCode error);
   // Attempt to roll back to the previous RMA state.
   // Returns the updated state to display and an error code.
-  // TODO(crbug.com/1218175): Rename TransitionNextState for consistency with
-  // rmad d-bus API.
   TransitionPreviousState()
       => (RmaState state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
