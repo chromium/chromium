@@ -783,20 +783,23 @@ class WebLocalFrame : public WebFrame {
 
   // User activation -----------------------------------------------------------
 
-  // See blink::LocalFrame::NotifyUserActivation().
+  // See |blink::LocalFrame::NotifyUserActivation()|.
   virtual void NotifyUserActivation(
       mojom::UserActivationNotificationType notification_type) = 0;
 
-  // See blink::LocalFrame::HasStickyUserActivation().
+  // See |blink::Frame::HasStickyUserActivation()|.
   virtual bool HasStickyUserActivation() = 0;
 
-  // See blink::LocalFrame::HasTransientUserActivation().
+  // See |blink::Frame::HasTransientUserActivation()|.
   virtual bool HasTransientUserActivation() = 0;
 
-  // See blink::LocalFrame::ConsumeTransientUserActivation().
+  // See |blink::LocalFrame::ConsumeTransientUserActivation()|.
   virtual bool ConsumeTransientUserActivation(
       UserActivationUpdateSource update_source =
           UserActivationUpdateSource::kRenderer) = 0;
+
+  // See |blink::Frame::LastActivationWasRestricted()|.
+  virtual bool LastActivationWasRestricted() const = 0;
 
   // Testing ------------------------------------------------------------------
 

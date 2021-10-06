@@ -1175,6 +1175,93 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingUserGesture) {
           "});", receiver->id().c_str())));
 }
 
+IN_PROC_BROWSER_TEST_F(MessagingApiTest,
+                       RestrictedActivationTriggerBetweenExtensions) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      embedder_support::kDisablePopupBlocking);
+
+  const char kManifest[] = R"({
+    "name": "activation_state_thru_send_reply",
+    "version": "1.0",
+    "background": {
+      "scripts": ["background.js"]
+    },
+    "manifest_version": 2
+  })";
+
+  // The receiver replies back with its transient activation state after a
+  // delay.
+  TestExtensionDir receiver_dir;
+  receiver_dir.WriteManifest(kManifest);
+  receiver_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                         R"(
+        chrome.runtime.onMessageExternal.addListener(
+          (msg, sender, callback) => {
+            setTimeout(() =>
+              callback({active:navigator.userActivation.isActive}), 200);
+          });
+      )");
+  const Extension* receiver = LoadExtension(receiver_dir.UnpackedPath());
+  ASSERT_TRUE(receiver);
+
+  TestExtensionDir sender_dir;
+  sender_dir.WriteManifest(kManifest);
+  sender_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  const Extension* sender = LoadExtension(sender_dir.UnpackedPath());
+  ASSERT_TRUE(sender);
+
+  const char send_script_template[] = R"(
+    log = [];
+    log.push('sender-initial:' + navigator.userActivation.isActive);
+    chrome.runtime.sendMessage('%s', {}, response => {
+      log.push('receiver:' + response.active);
+      log.push('sender-received:' + navigator.userActivation.isActive);
+      window.domAutomationController.send(log.toString());
+    });
+    log.push('sender-sent:' + navigator.userActivation.isActive);
+  )";
+  std::string send_script =
+      base::StringPrintf(send_script_template, receiver->id().c_str());
+
+  // Without any user activation, neither the sender nor the receiver should be
+  // in active state at any moment.
+  EXPECT_EQ(
+      "sender-initial:false,sender-sent:false,receiver:false,"
+      "sender-received:false",
+      ExecuteScriptInBackgroundPage(
+          sender->id(), send_script,
+          extensions::browsertest_util::ScriptUserActivation::kDontActivate));
+
+  // With user activation before sending, the sender should be in active state
+  // all the time, and the receiver should be in active state.
+  //
+  // TODO(crbug.com/957633): The receiver should be inactive here.
+  EXPECT_EQ(
+      "sender-initial:true,sender-sent:true,receiver:true,"
+      "sender-received:true",
+      ExecuteScriptInBackgroundPage(
+          sender->id(), send_script,
+          extensions::browsertest_util::ScriptUserActivation::kActivate));
+
+  std::string send_and_consume_script = send_script + R"(
+    setTimeout(() => {
+      open().close();
+      log.push('sender-consumed:' + navigator.userActivation.isActive);
+    }, 0);
+  )";
+
+  // With user activation consumed right after sending, the sender should be in
+  // active state until consumption, and the receiver should be in active state.
+  //
+  // TODO(crbug.com/957633): The receiver should be inactive here.
+  EXPECT_EQ(
+      "sender-initial:true,sender-sent:true,sender-consumed:false,"
+      "receiver:true,sender-received:false",
+      ExecuteScriptInBackgroundPage(
+          sender->id(), send_and_consume_script,
+          extensions::browsertest_util::ScriptUserActivation::kActivate));
+}
+
 // Tests that a hosted app on a connectable site doesn't interfere with the
 // connectability of that site.
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, HostedAppOnWebsite) {

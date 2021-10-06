@@ -324,6 +324,7 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool HasStickyUserActivation() override;
   bool HasTransientUserActivation() override;
   bool ConsumeTransientUserActivation(UserActivationUpdateSource) override;
+  bool LastActivationWasRestricted() const override;
   void SetTargetToCurrentHistoryItem(const WebString& target) override;
   void UpdateCurrentHistoryItem() override;
   PageState CurrentHistoryItemToPageState() override;

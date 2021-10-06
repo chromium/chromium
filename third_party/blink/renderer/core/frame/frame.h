@@ -213,6 +213,12 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
     return user_activation_state_.HasBeenActive();
   }
 
+  // Returns if the last user activation for this frame was restricted in
+  // nature.
+  bool LastActivationWasRestricted() const {
+    return user_activation_state_.LastActivationWasRestricted();
+  }
+
   // Resets the user activation state of this frame.
   void ClearUserActivation() { user_activation_state_.Clear(); }
 

@@ -73,9 +73,13 @@ std::unique_ptr<Message> MessageFromJSONString(v8::Isolate* isolate,
     return nullptr;
   }
 
-  bool has_transient_user_activation =
-      web_frame ? web_frame->HasTransientUserActivation() : false;
-  return std::make_unique<Message>(message, has_transient_user_activation,
+  // The message should carry user activation information only if the last
+  // activation in |web_frame| was triggered by a real user interaction.  See
+  // |UserActivationState::LastActivationWasRestricted()|.
+  bool has_unrestricted_user_activation =
+      web_frame && web_frame->HasTransientUserActivation() &&
+      !web_frame->LastActivationWasRestricted();
+  return std::make_unique<Message>(message, has_unrestricted_user_activation,
                                    privileged_context);
 }
 

@@ -646,6 +646,10 @@ bool WebLocalFrameImpl::ConsumeTransientUserActivation(
   return LocalFrame::ConsumeTransientUserActivation(GetFrame(), update_source);
 }
 
+bool WebLocalFrameImpl::LastActivationWasRestricted() const {
+  return GetFrame()->LastActivationWasRestricted();
+}
+
 WebLocalFrame* WebLocalFrame::FrameForContext(v8::Local<v8::Context> context) {
   return WebLocalFrameImpl::FromFrame(ToLocalFrameIfNotDetached(context));
 }
