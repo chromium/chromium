@@ -13,8 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
@@ -63,8 +63,8 @@ public class ReaderModeInfoBar extends InfoBar {
         prompt.setText(R.string.reader_view_text_alt);
         prompt.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                 getContext().getResources().getDimension(R.dimen.infobar_text_size));
-        prompt.setTextColor(
-                ApiCompatibilityUtils.getColor(layout.getResources(), R.color.default_text_color));
+        prompt.setTextColor(AppCompatResources.getColorStateList(
+                getContext(), R.color.default_text_color_list));
         prompt.setGravity(Gravity.CENTER_VERTICAL);
         prompt.setOnClickListener(mNavigateListener);
 

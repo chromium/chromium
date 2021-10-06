@@ -12,8 +12,6 @@ import android.view.View.OnLayoutChangeListener;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
-import androidx.core.content.ContextCompat;
-
 import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -28,6 +26,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.translate.TranslateFeatureList;
@@ -226,9 +225,9 @@ public class TranslateCompactInfoBar
 
         mTabLayout = (TranslateTabLayout) content.findViewById(R.id.translate_infobar_tabs);
         if (mDefaultTextColor > 0) {
-            mTabLayout.setTabTextColors(
-                    ContextCompat.getColor(getContext(), R.color.default_text_color),
-                    ContextCompat.getColor(getContext(), R.color.tab_layout_selected_tab_color));
+            mTabLayout.setTabTextColors(SemanticColorUtils.getDefaultTextColor(getContext()),
+                    SemanticColorUtils.getDefaultTextColorAccent1(
+                            getContext()) /*tab_layout_selected_tab_color*/);
         }
         mTabLayout.addTabs(mOptions.sourceLanguageName(), mOptions.targetLanguageName());
 

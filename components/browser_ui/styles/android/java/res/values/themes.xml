@@ -65,9 +65,6 @@
         <item name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</item>
         <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
         <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_light</item>
-        <item name="default_icon_color_accent1">?attr/colorPrimary</item>
-        <!-- Common text colors. -->
-        <item name="default_text_color_accent1">?attr/colorPrimary</item>
     </style>
 
     <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />

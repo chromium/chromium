@@ -295,7 +295,7 @@
     <style name="TabLayoutStyle" parent="Widget.MaterialComponents.TabLayout">
         <item name="android:background">@android:color/transparent</item>
         <item name="tabIndicator">@drawable/tab_indicator</item>
-        <item name="tabIndicatorColor">?attr/default_icon_color_accent1</item>
+        <item name="tabIndicatorColor">@macro/tab_layout_selected_tab_color</item>
         <item name="tabIndicatorFullWidth">false</item>
         <item name="tabIndicatorHeight">@dimen/tab_indicator_height</item>
         <item name="tabMode">fixed</item>
@@ -303,7 +303,7 @@
         <item name="tabMaxWidth">0dp</item>
         <item name="tabTextAppearance">@style/TextAppearance.TextMediumThick</item>
         <item name="tabTextColor">@color/default_text_color_secondary_list</item>
-        <item name="tabSelectedTextColor">?attr/default_text_color_accent1</item>
+        <item name="tabSelectedTextColor">@macro/tab_layout_selected_tab_color</item>
     </style>
 
     <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">

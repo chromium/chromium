@@ -11,7 +11,7 @@
     <color name="tab_grid_card_title_text_color">@color/default_text_color_list</color>
     <color name="tab_grid_card_title_text_color_incognito">@color/default_text_color_light_list</color>
 
-    <color name="tab_group_number_text_color">@color/default_text_color</color>
+    <color name="tab_group_number_text_color">@color/default_text_color_list</color>
     <color name="tab_group_number_text_color_incognito">@color/default_text_color_light</color>
 
     <color name="tab_grid_card_action_button_tint_color">@color/default_icon_color</color>

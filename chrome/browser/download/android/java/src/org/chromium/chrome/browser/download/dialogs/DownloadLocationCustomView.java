@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.dialogs;
 import static org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.NO_SELECTED_ITEM_ID;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,6 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 
@@ -166,7 +168,8 @@ public class DownloadLocationCustomView
         if (mDialogType != DownloadLocationDialogType.LOCATION_SUGGESTION) return;
         String locationAvailableSpaceText =
                 StringUtils.getAvailableBytesForUi(getContext(), availableSpace);
-        int textColor = ContextCompat.getColor(getContext(), R.color.default_text_color);
+        ColorStateList textColor =
+                AppCompatResources.getColorStateList(getContext(), R.color.default_text_color_list);
         int barColor = ContextCompat.getColor(getContext(), R.color.explanation_text_color);
 
         // Show not enough space and change color to error.
@@ -174,7 +177,8 @@ public class DownloadLocationCustomView
             locationAvailableSpaceText = getContext().getResources().getString(
                     R.string.download_manager_list_item_description, locationAvailableSpaceText,
                     getContext().getText(R.string.download_location_not_enough_space));
-            textColor = ContextCompat.getColor(getContext(), R.color.input_underline_error_color);
+            textColor = ColorStateList.valueOf(
+                    ContextCompat.getColor(getContext(), R.color.input_underline_error_color));
             barColor = ContextCompat.getColor(getContext(), R.color.input_underline_error_color);
 
             DownloadLocationDialogMetrics.recordDownloadLocationSuggestionEvent(

@@ -6,6 +6,6 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
   <item android:alpha="@dimen/default_disabled_alpha"
       android:color="?attr/colorOnSurfaceVariant" android:state_enabled="false"/>
-  <item android:color="?attr/default_text_color_accent1" android:state_selected="true"/>
+  <item android:color="@macro/tab_layout_selected_tab_color" android:state_selected="true"/>
   <item android:color="?attr/colorOnSurfaceVariant" />
 </selector>

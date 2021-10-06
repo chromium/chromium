@@ -277,7 +277,7 @@ public class UpdateMenuItemHelper {
 
                 mMenuUiState.itemState = new MenuItemState();
                 mMenuUiState.itemState.title = R.string.menu_update_unsupported;
-                mMenuUiState.itemState.titleColorId = R.color.default_text_color;
+                mMenuUiState.itemState.titleColorId = R.color.default_text_color_list;
                 mMenuUiState.itemState.summary =
                         resources.getString(R.string.menu_update_unsupported_summary_default);
                 mMenuUiState.itemState.icon = R.drawable.ic_error_24dp_filled;

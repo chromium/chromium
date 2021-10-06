@@ -30,6 +30,7 @@ import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -138,7 +139,7 @@ public class StatusIndicatorViewBinderTest extends DummyUiChromeActivityTestCase
     @UiThreadTest
     public void testColorAndTint() {
         int bgColor = getActivity().getResources().getColor(R.color.default_bg_color);
-        int textColor = getActivity().getResources().getColor(R.color.default_text_color);
+        int textColor = SemanticColorUtils.getDefaultTextColor(getActivity());
         assertEquals("Wrong initial background color.", bgColor,
                 ((ColorDrawable) mContainer.getBackground()).getColor());
         assertEquals("Wrong initial text color", textColor, mStatusTextView.getCurrentTextColor());

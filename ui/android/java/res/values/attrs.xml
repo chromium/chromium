@@ -48,9 +48,6 @@
     <attr name="default_icon_color_secondary" format="color" />
     <attr name="default_icon_color_disabled" format="color" />
     <attr name="default_icon_color_disabled_inverse" format="color" />
-    <attr name="default_icon_color_accent1" format="color" />
-
-    <attr name="default_text_color_accent1" format="color" />
 
     <declare-styleable name="ButtonCompat">
         <!-- The color of the button background. -->

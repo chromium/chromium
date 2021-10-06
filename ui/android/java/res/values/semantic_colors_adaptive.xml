@@ -7,7 +7,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- TODO(huayinz): remove tools:ignore once these colors are used in ui/android -->
     <!-- Common text colors -->
-    <color name="default_text_color">@color/default_text_color_dark</color>
+    <color name="default_text_color_baseline">@color/default_text_color_dark</color>
     <!-- Text color used on dark background on light theme, and light background on dark theme. -->
     <color name="default_text_color_inverse">@color/default_text_color_light</color>
     <color name="default_text_color_secondary">@color/default_text_color_secondary_dark</color>
@@ -74,7 +74,7 @@
     <color name="default_control_color_active" tools:ignore="UnusedResources">@color/default_control_color_active_light</color>
 
     <!-- Chip colors -->
-    <color name="default_chip_assistive_text_color">@color/default_text_color</color>
+    <color name="default_chip_assistive_text_color">@color/default_text_color_baseline</color>
     <color name="chip_text_color_selected">@color/default_text_color_on_accent2_container</color>
     <color name="default_chip_assistive_text_color_secondary">@color/default_text_color_secondary</color>
     <color name="chip_bg_color">@color/default_bg_color</color>

@@ -5,7 +5,7 @@
 
 <resources>
     <!-- Common text colors -->
-    <color name="default_text_color">@color/default_text_color_light</color>
+    <color name="default_text_color_baseline">@color/default_text_color_light</color>
     <color name="default_text_color_inverse">@color/default_text_color_dark</color>
     <color name="default_text_color_secondary">@color/default_text_color_secondary_light</color>
     <color name="default_text_color_link">@color/default_text_color_link_light</color>

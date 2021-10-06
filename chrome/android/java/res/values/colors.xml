@@ -30,7 +30,7 @@
     <color name="data_reduction_chart_background_color">@color/default_bg_color_secondary</color>
 
     <!-- Compositor Tab Title Colors -->
-    <color name="compositor_tab_title_bar_text">@color/default_text_color</color>
+    <color name="compositor_tab_title_bar_text">@color/default_text_color_list</color>
     <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>
 
     <!-- Account Signin Colors -->
@@ -92,7 +92,7 @@
     <color name="media_viewer_bg">#000000</color>
     <color name="image_viewer_bg">#0E0E0E</color>
     <color name="thumbnail_placeholder_on_primary_bg" tools:ignore="UnusedResources">@color/default_bg_color_secondary</color>
-    <color name="tab_layout_selected_tab_color">@color/default_text_color_blue</color>
+    <macro name="tab_layout_selected_tab_color">@macro/default_text_color_accent1</macro>
     <color name="web_notification_text">#CCCCCC</color>
 
 </resources>

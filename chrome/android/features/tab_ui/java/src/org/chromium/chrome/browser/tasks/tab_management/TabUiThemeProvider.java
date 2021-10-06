@@ -79,9 +79,11 @@ public class TabUiThemeProvider {
     public static int getTabGroupNumberTextColor(
             Context context, boolean isIncognito, boolean isSelected) {
         if (!themeRefactorEnabled()) {
-            return ApiCompatibilityUtils.getColor(context.getResources(),
-                    isIncognito ? R.color.tab_group_number_text_color_incognito
-                                : R.color.tab_group_number_text_color);
+            return AppCompatResources
+                    .getColorStateList(context,
+                            isIncognito ? R.color.tab_group_number_text_color_incognito
+                                        : R.color.tab_group_number_text_color)
+                    .getDefaultColor();
         }
         if (isIncognito) {
             @ColorRes

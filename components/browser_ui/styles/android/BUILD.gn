@@ -6,8 +6,10 @@ import("//build/config/android/rules.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 android_library("java") {
-  sources =
-      [ "java/src/org/chromium/components/browser_ui/styles/ChromeColors.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/styles/ChromeColors.java",
+    "java/src/org/chromium/components/browser_ui/styles/SemanticColorUtils.java",
+  ]
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -203,6 +205,7 @@ android_resources("java_resources") {
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/drawables.xml",
+    "java/res/values/semantic_colors_dynamic.xml",
     "java/res/values/styles.xml",
     "java/res/values/themes.xml",
     "java/res/values/values.xml",

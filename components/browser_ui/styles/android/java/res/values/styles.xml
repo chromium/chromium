@@ -72,7 +72,7 @@
     <!-- AlertDialog styles -->
     <style name="Base.Theme.Chromium.AlertDialog"
         parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="android:textColorPrimary">@color/default_text_color</item>
+        <item name="android:textColorPrimary">@macro/default_text_color</item>
         <item name="android:windowBackground">@drawable/dialog_bg_tinted</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
         <item name="android:textColorHighlight">@color/text_highlight_color</item>
@@ -132,7 +132,7 @@
     </style>
 
     <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
-        <item name="android:indeterminateTint">?attr/default_icon_color_accent1</item>
+        <item name="android:indeterminateTint">@macro/default_icon_color_accent1</item>
     </style>
 
     <!-- Spinner styles -->
@@ -175,7 +175,7 @@
 
     <style name="ModernToolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
-        <item name="titleTextColor">@color/default_text_color</item>
+        <item name="titleTextColor">@macro/default_text_color</item>
         <item name="windowActionBarOverlay">true</item>
         <item name="android:background">@color/default_bg_color</item>
     </style>

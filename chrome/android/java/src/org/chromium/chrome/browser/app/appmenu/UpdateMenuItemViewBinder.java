@@ -82,8 +82,8 @@ class UpdateMenuItemViewBinder implements CustomViewBinder {
                 text.setText(model.get(AppMenuItemProperties.TITLE));
             } else {
                 text.setText(mItemState.title);
-                text.setTextColor(ApiCompatibilityUtils.getColor(
-                        view.getResources(), mItemState.titleColorId));
+                text.setTextColor(AppCompatResources.getColorStateList(
+                        view.getContext(), mItemState.titleColorId));
             }
         } else if (key == AppMenuItemProperties.TITLE_CONDENSED) {
             TextView text = view.findViewById(R.id.menu_item_text);
