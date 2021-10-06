@@ -1,5 +1,6 @@
 <style include="history-clusters-shared-style">
   :host {
+    align-items: center;
     display: flex;
     height: 64px;
   }
@@ -20,7 +21,9 @@
   }
 
   :host(:not([is-top-visit])) #header {
-    padding-inline-start: calc(var(--cluster-padding-horizontal) + var(--top-visit-favicon-size));
+    padding-inline-start: calc(var(--cluster-padding-horizontal) +
+                               var(--top-visit-favicon-size) +
+                               var(--favicon-margin));
   }
 
   :host-context(.focus-outline-visible) #header:focus {
@@ -41,12 +44,12 @@
   #page-info {
     display: flex;
     flex-direction: column;
-    line-height: 28px;
     min-width: 0;
   }
 
   #title-and-annotations {
     display: flex;
+    line-height: 28px;
   }
 
   .annotation {
@@ -68,14 +71,15 @@
     font-size: .875rem;  /* 14px */
   }
 
-  #hostname {
-    color: var(--url-hostname-color);
-  }
-
   :host([is-top-visit]) #title,
   :host([is-top-visit]) #hostname {
     font-size: 1.125rem;  /* 18px */
     font-weight: 500;
+  }
+
+  #hostname {
+    color: var(--url-hostname-color);
+    line-height: 20px;
   }
 
   #debug-info {
