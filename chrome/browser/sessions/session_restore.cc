@@ -589,6 +589,7 @@ class SessionRestoreImpl : public BrowserListObserver {
       if ((*i)->type == sessions::SessionWindow::TYPE_NORMAL) {
         has_normal_browser = true;
         last_normal_browser = browser;
+        browser->SetWindowUserTitle((*i)->user_title);
       }
 
       // 3. Determine whether the currently active tab should be closed.

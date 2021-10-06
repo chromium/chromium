@@ -1681,6 +1681,59 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TwoWindowsCloseOneRestoreOnlyOne) {
             new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWindowUserTitle) {
+  // Open one browser window and navigate it to url 1.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl1(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(
+      GetUrl1(),
+      browser()->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+
+  // Open a second window and navigate it to url 2.
+  Browser* browser2 = CreateBrowser(browser()->profile());
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser2, GetUrl2(), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_EQ(1, browser2->tab_strip_model()->count());
+  EXPECT_EQ(
+      GetUrl2(),
+      browser2->tab_strip_model()->GetWebContentsAt(0)->GetLastCommittedURL());
+
+  // Set a custom user title to this second browser window.
+  const std::string custom_user_title = "Window 2";
+  browser2->SetWindowUserTitle(custom_user_title);
+  ASSERT_EQ(custom_user_title, active_browser_list_->get(1)->user_title());
+
+  // Simulate an exit by shutting down the session service. If we don't do this
+  // the window close is treated as though the user closed the window and won't
+  // be restored.
+  SessionServiceFactory::ShutdownForProfile(browser()->profile());
+
+  // Then close all the browsers and "restart" Chromium.
+  CloseBrowserSynchronously(browser2);
+  QuitBrowserAndRestore(browser());
+
+  // The two browsers should be restored with their respective URLs.
+  ASSERT_EQ(2u, active_browser_list_->size());
+  EXPECT_EQ(GetUrl1(), active_browser_list_->get(0)
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(0)
+                           ->GetLastCommittedURL());
+  EXPECT_EQ(GetUrl2(), active_browser_list_->get(1)
+                           ->tab_strip_model()
+                           ->GetWebContentsAt(0)
+                           ->GetLastCommittedURL());
+
+  // The user title should be empty for first window as it did not have a
+  // custom title.
+  EXPECT_TRUE(active_browser_list_->get(0)->user_title().empty());
+
+  // The user title for second window should be restored.
+  EXPECT_EQ(custom_user_title, active_browser_list_->get(1)->user_title());
+}
+
 // Make sure after a restore the number of processes matches that of the number
 // of processes running before the restore. This creates a new tab so that
 // we should have two new tabs running.  (This test will pass in both
