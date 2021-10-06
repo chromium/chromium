@@ -18,6 +18,7 @@ static_library("structured") {
     "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
     "//components/metrics/structured",
+    "//components/metrics/structured:structured_events",
   ]
 
   if (is_chromeos_ash) {

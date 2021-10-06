@@ -11,13 +11,14 @@
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/structured_metrics_client.h"
+#include "components/metrics/structured/structured_mojo_events.h"
 
 namespace metrics {
 namespace structured {
 
 namespace {
 using RecordingDelegate = StructuredMetricsClient::RecordingDelegate;
-}
+}  // namespace
 
 // Singleton to record structured metrics on Chrome.
 //

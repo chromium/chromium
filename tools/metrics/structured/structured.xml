@@ -378,6 +378,31 @@
   </event>
 </project>
 
+<project name="StructuredMetrics">
+  <owner>jongahn@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <summary>
+    Structured Metrics is a logging framework for events. This project is used
+    for monitoring the framework itself.
+  </summary>
+
+  <event name="Initialization">
+    <summary>
+      Records metadata about initialization of Structured Metrics and will be
+      recorded immediately after initialization is successful. Will be sent once
+      per initialization during browser process initialization.
+    </summary>
+    <metric name="Platform" type="int">
+      <summary>
+        The platform for which the client is initialized on. 0: Uninitialized, 1:
+        ASH_CHROME, 2: LACROS_CHROME.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
