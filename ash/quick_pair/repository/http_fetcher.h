@@ -35,10 +35,16 @@ class HttpFetcher {
                                   const std::string& body,
                                   FetchCompleteCallback callback);
 
+  // Performs a DELETE request to the desired URL and returns the response, if
+  // available, as a string to the provided |callback|.
+  virtual void ExecuteDeleteRequest(const GURL& url,
+                                    FetchCompleteCallback callback);
+
  protected:
   enum class RequestType {
     GET = 0,
     POST = 1,
+    DELETE = 2,
   };
 };
 

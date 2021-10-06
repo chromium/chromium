@@ -17,5 +17,10 @@ void HttpFetcher::ExecutePostRequest(const GURL& url,
   NOTREACHED();
 }
 
+void HttpFetcher::ExecuteDeleteRequest(const GURL& url,
+                                       FetchCompleteCallback callback) {
+  NOTREACHED();
+}
+
 }  // namespace quick_pair
 }  // namespace ash

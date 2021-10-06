@@ -38,6 +38,8 @@ class OAuthHttpFetcher : public HttpFetcher, public OAuth2ApiCallFlow {
   void ExecutePostRequest(const GURL& url,
                           const std::string& body,
                           FetchCompleteCallback callback) override;
+  void ExecuteDeleteRequest(const GURL& url,
+                            FetchCompleteCallback callback) override;
 
  protected:
   // Reduce the visibility of OAuth2ApiCallFlow::Start() to avoid exposing

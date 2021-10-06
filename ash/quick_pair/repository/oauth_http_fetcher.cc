@@ -42,6 +42,12 @@ void OAuthHttpFetcher::ExecutePostRequest(const GURL& url,
   StartRequest(url, std::move(callback));
 }
 
+void OAuthHttpFetcher::ExecuteDeleteRequest(const GURL& url,
+                                            FetchCompleteCallback callback) {
+  request_type_ = RequestType::DELETE;
+  StartRequest(url, std::move(callback));
+}
+
 void OAuthHttpFetcher::StartRequest(const GURL& url,
                                     FetchCompleteCallback callback) {
   QP_LOG(VERBOSE) << __func__ << ": executing request to: " << url;
@@ -106,6 +112,7 @@ GURL OAuthHttpFetcher::CreateApiCallUrl() {
 std::string OAuthHttpFetcher::CreateApiCallBody() {
   switch (request_type_) {
     case RequestType::GET:
+    case RequestType::DELETE:
       return std::string();
 
     case RequestType::POST:
@@ -120,6 +127,9 @@ std::string OAuthHttpFetcher::GetRequestTypeForBody(const std::string& body) {
 
     case RequestType::POST:
       return "POST";
+
+    case RequestType::DELETE:
+      return "DELETE";
   }
 }
 
