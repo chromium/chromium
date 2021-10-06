@@ -1002,6 +1002,51 @@ TEST_F(HistoryBackendTest, KeywordGenerated) {
   ASSERT_EQ(0, backend_->db()->GetRowForURL(url, &row));
 }
 
+TEST_F(HistoryBackendTest, OpenerWithRedirect) {
+  ASSERT_TRUE(backend_.get());
+
+  base::Time visit_time = base::Time::Now() - base::Days(1);
+  GURL initial_url("http://google.com/c");
+  GURL server_redirect_url("http://google.com/a");
+  GURL client_redirect_url("http://google.com/b");
+
+  ContextID context_id1 = reinterpret_cast<ContextID>(1);
+  ContextID context_id2 = reinterpret_cast<ContextID>(2);
+
+  // Add an initial page.
+  int nav_entry_id = 2;
+  HistoryAddPageArgs initial_request(initial_url, visit_time, context_id1,
+                                     nav_entry_id, GURL(), RedirectList(),
+                                     ui::PAGE_TRANSITION_TYPED, false,
+                                     SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(initial_request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(initial_url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID initial_visit_id = visits[0].visit_id;
+
+  // Simulate the initial URL opening a page that then redirects.
+  HistoryAddPageArgs request(
+      client_redirect_url, base::Time::Now(), context_id2, 0, GURL(),
+      /*redirects=*/{server_redirect_url, client_redirect_url},
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true, false,
+      absl::nullopt, Opener(context_id1, nav_entry_id, initial_url));
+  backend_->AddPage(request);
+
+  visits.clear();
+  backend_->db()->GetAllVisitsInRange(visit_time, base::Time::Now(), 5,
+                                      &visits);
+  // There should be 3 visits: initial visit, server redirect, and client
+  // redirect.
+  ASSERT_EQ(visits.size(), 3u);
+  EXPECT_EQ(visits[1].opener_visit, initial_visit_id);
+  // Opener should only be populated on first visit of chain.
+  EXPECT_EQ(visits[2].opener_visit, 0);
+}
+
 TEST_F(HistoryBackendTest, ClientRedirect) {
   ASSERT_TRUE(backend_.get());
 
@@ -3277,7 +3322,7 @@ TEST_F(HistoryBackendTest, AnnotatedVisits) {
                                   ui::PAGE_TRANSITION_CHAIN_START |
                                   ui::PAGE_TRANSITION_CHAIN_END),
         /*hidden=*/false, SOURCE_BROWSED, /*should_increment_typed_count=*/true,
-        /*floc_allowed=*/false);
+        /*opener_visit=*/0);
   };
 
   const auto delete_url = [&](URLID id) { backend_->db_->DeleteURLRow(id); };

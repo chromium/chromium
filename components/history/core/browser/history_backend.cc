@@ -627,18 +627,18 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     }
   }
 
+  VisitID opener_visit = 0;
+  if (request.opener) {
+    opener_visit = tracker_.GetLastVisit(request.opener->context_id,
+                                         request.opener->nav_entry_id,
+                                         request.opener->url);
+  }
+
   if (!has_redirects) {
     // The single entry is both a chain start and end.
     ui::PageTransition t = ui::PageTransitionFromInt(
         request_transition | ui::PAGE_TRANSITION_CHAIN_START |
         ui::PAGE_TRANSITION_CHAIN_END);
-
-    VisitID opener_visit = 0;
-    if (request.opener) {
-      opener_visit = tracker_.GetLastVisit(request.opener->context_id,
-                                           request.opener->nav_entry_id,
-                                           request.opener->url);
-    }
 
     // No redirect case (one element means just the page itself).
     last_ids = AddPageVisit(request.url, request.time, last_ids.second, t,
@@ -742,14 +742,9 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
       ui::PageTransition t = ui::PageTransitionFromInt(
           ui::PageTransitionStripQualifier(request_transition) | redirect_info);
 
-      bool floc_allowed = false;
-
       // If this is the last transition, add a CHAIN_END marker
       if (redirect_index == (redirects.size() - 1)) {
         t = ui::PageTransitionFromInt(t | ui::PAGE_TRANSITION_CHAIN_END);
-        // Since request.floc_allowed is a property of the visit to request.url,
-        // it only applies to the final redirect.
-        floc_allowed = request.floc_allowed;
       }
 
       bool should_increment_typed_count = IsTypedIncrement(t);
@@ -762,11 +757,12 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
 
       // Record all redirect visits with the same timestamp. We don't display
       // them anyway, and if we ever decide to, we can reconstruct their order
-      // from the redirect chain.
+      // from the redirect chain. Only place the opener on the initial visit in
+      // the chain.
       last_ids = AddPageVisit(
           redirects[redirect_index], request.time, last_ids.second, t,
           request.hidden, request.visit_source, should_increment_typed_count,
-          floc_allowed, request.title);
+          redirect_index == 0 ? opener_visit : 0, request.title);
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
         if (request.consider_for_ntp_most_visited) {
