@@ -309,8 +309,8 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
   TestSchemeClassifier classifier;
   std::vector<std::u16string> ancestors = {u"parent", u"grandparent"};
 
-  // Verifies contents and description of the `AutocompleteMatch` returned from
-  // `bookmarks::TitledUrlMatchToAutocompleteMatch()`.
+  // Verifies contents and description of the AutocompleteMatch returned from
+  // |bookmarks::TitledUrlMatchToAutocompleteMatch()|.
   auto test = [&](std::string title, std::string url, bool has_url_match,
                   bool has_ancestor_match, std::string expected_contents,
                   std::string expected_description) {
