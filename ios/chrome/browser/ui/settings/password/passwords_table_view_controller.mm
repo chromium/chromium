@@ -43,6 +43,7 @@
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
@@ -78,6 +79,7 @@ using password_manager::metrics_util::PasswordCheckInteraction;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
   SectionIdentifierSavedPasswords,
+  SectionIdentifierPasswordsInOtherApps,
   SectionIdentifierBlocked,
   SectionIdentifierExportPasswordsButton,
   SectionIdentifierPasswordCheck,
@@ -87,6 +89,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeLinkHeader = kItemTypeEnumZero,
   ItemTypeHeader,
   ItemTypeSavePasswordsSwitch,
+  ItemTypePasswordsInOtherApps,
   ItemTypeManagedSavePasswords,
   ItemTypePasswordCheckStatus,
   ItemTypeCheckForProblemsButton,
@@ -196,6 +199,9 @@ void RemoveFormsToBeDeleted(
   TableViewLinkHeaderFooterItem* _manageAccountLinkItem;
   // The item related to the switch for the password manager setting.
   SettingsSwitchItem* _savePasswordsItem;
+  // The item that shows the current Auto-fill state and opens an
+  // autofill settings tutorial
+  TableViewDetailIconItem* _passwordsInOtherAppsDetailItem;
   // The item related to the enterprise managed save password setting.
   TableViewInfoButtonItem* _managedSavePasswordItem;
   // The item related to the password check status.
@@ -466,6 +472,16 @@ void RemoveFormsToBeDeleted(
         forSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   }
 
+  // Passwords in other apps
+  if (base::FeatureList::IsEnabled(kCredentialProviderExtensionPromo)) {
+    [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+    if (!_passwordsInOtherAppsDetailItem) {
+      _passwordsInOtherAppsDetailItem = [self passwordsInOtherAppsItem];
+    }
+    [model addItem:_passwordsInOtherAppsDetailItem
+        toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
+  }
+
   // Password check.
   [model addSectionWithIdentifier:SectionIdentifierPasswordCheck];
   if (!_passwordProblemsItem) {
@@ -612,6 +628,28 @@ void RemoveFormsToBeDeleted(
   savePasswordsItem.on = [_passwordManagerEnabled value];
   savePasswordsItem.accessibilityIdentifier = kSavePasswordSwitchTableViewId;
   return savePasswordsItem;
+}
+
+- (TableViewDetailIconItem*)passwordsInOtherAppsItem {
+  // TODO(crbug.com/1252116): will retrieve value of
+  // "passwordsInOtherAppsEnabled" from PasswordsInOtherAppsPromoCoordinator
+  // that isn't implemented yet
+  BOOL passwordsInOtherAppsEnabled = NO;
+
+  _passwordsInOtherAppsDetailItem = [[TableViewDetailIconItem alloc]
+      initWithType:ItemTypePasswordsInOtherApps];
+  _passwordsInOtherAppsDetailItem.text =
+      l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
+  _passwordsInOtherAppsDetailItem.detailText =
+      passwordsInOtherAppsEnabled ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+                                  : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  _passwordsInOtherAppsDetailItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _passwordsInOtherAppsDetailItem.accessibilityTraits |=
+      UIAccessibilityTraitButton;
+  _passwordsInOtherAppsDetailItem.accessibilityIdentifier =
+      kSettingsPasswordsInOtherAppsCellId;
+  return _passwordsInOtherAppsDetailItem;
 }
 
 - (TableViewInfoButtonItem*)managedSavePasswordItem {
@@ -1489,6 +1527,9 @@ void RemoveFormsToBeDeleted(
     case ItemTypeHeader:
     case ItemTypeSavePasswordsSwitch:
     case ItemTypeManagedSavePasswords:
+      break;
+    case ItemTypePasswordsInOtherApps:
+      // TODO(crbug.com/1252116): To be implemented;
       break;
     case ItemTypePasswordCheckStatus:
       [self showPasswordIssuesPage];

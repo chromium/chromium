@@ -26,4 +26,7 @@ NSString* const kSavePasswordSwitchTableViewId =
 NSString* const kSavePasswordManagedTableViewId =
     @"kSavePasswordSwitchTableViewId";
 
+NSString* const kSettingsPasswordsInOtherAppsCellId =
+    @"kSettingsPasswordsInOtherAppsCellId";
+
 NSString* const kPasswordIssuesTableViewId = @"kPasswordIssuesTableViewId";
