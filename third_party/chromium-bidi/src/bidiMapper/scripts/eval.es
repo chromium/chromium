@@ -158,16 +158,7 @@
       + '.' + (Math.random() + '').substr(2);
   }
 
-  function evaluate(script, args) {
-      const deserializedArgs = args.map((arg) => deserialize(arg));
-      const func = new Function(`return (\n${script}\n)`);
-      const result = func.apply(null, deserializedArgs);
-      const serializedResult = serialize(result);
-      return serializedResult;
-  };
-
   return {
-    evaluate,
     serialize,
     deserialize
   }

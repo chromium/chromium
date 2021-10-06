@@ -25,7 +25,6 @@ chai.use(chaiExclude);
 
 describe('Evaluator', function () {
     let EVALUATOR: {
-        evaluate: Function,
         serialize: (x: any) => CommonDataTypes.RemoteValue,
         deserialize: (x: CommonDataTypes.RemoteValue) => any
     };
