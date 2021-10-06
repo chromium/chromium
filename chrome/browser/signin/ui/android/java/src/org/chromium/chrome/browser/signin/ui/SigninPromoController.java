@@ -56,9 +56,13 @@ public class SigninPromoController {
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
 
+    /** Suffix strings for promo shown count preference. */
+    private static final String SETTINGS = "Settings";
+
     private @Nullable DisplayableProfileData mProfileData;
     private @Nullable ImpressionTracker mImpressionTracker;
     private final @AccessPoint int mAccessPoint;
+    // TODO(https://crbug.com/1254399): Remove this field. This is over counted.
     private final @Nullable String mImpressionCountName;
     private final String mImpressionUserActionName;
     private final String mImpressionWithAccountUserActionName;
@@ -157,7 +161,7 @@ public class SigninPromoController {
         boolean isPromoDismissed = preferencesManager.readBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED, false);
         return preferencesManager.readInt(
-                       ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_SETTINGS)
+                       getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS))
                 < MAX_IMPRESSIONS_SETTINGS
                 && !isPromoDismissed;
     }
@@ -176,6 +180,17 @@ public class SigninPromoController {
                     AccountUtils.getDefaultAccountIfFulfilled(accountManagerFacade.getAccounts());
         }
         return visibleAccount;
+    }
+
+    @VisibleForTesting
+    public static String getPromoShowCountPreferenceName(@AccessPoint int accessPoint) {
+        switch (accessPoint) {
+            case SigninAccessPoint.SETTINGS:
+                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(SETTINGS);
+            default:
+                throw new IllegalArgumentException(
+                        "Unexpected value for access point: " + accessPoint);
+        }
     }
 
     /**
@@ -381,6 +396,14 @@ public class SigninPromoController {
         }
     }
 
+    /**
+     * Increases promo show count by one.
+     */
+    public void increasePromoShowCount() {
+        SharedPreferencesManager.getInstance().incrementInt(
+                getPromoShowCountPreferenceName(mAccessPoint));
+    }
+
     private void setupColdState(PersonalizedSigninPromoView view) {
         final Context context = view.getContext();
         view.getImage().setImageResource(R.drawable.chrome_sync_logo);
@@ -477,6 +500,7 @@ public class SigninPromoController {
         }
     }
 
+    // TODO(https://crbug.com/1254399): Merge this method with getPromoShowCountPreferenceName
     @VisibleForTesting
     public static void setSigninPromoImpressionsCountBookmarksForTests(int count) {
         SharedPreferencesManager.getInstance().writeInt(
@@ -489,6 +513,7 @@ public class SigninPromoController {
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, isDeclined);
     }
 
+    // TODO(https://crbug.com/1254399): Merge this method with getPromoShowCountPreferenceName
     @VisibleForTesting
     public static int getSigninPromoImpressionsCountBookmarks() {
         return SharedPreferencesManager.getInstance().readInt(

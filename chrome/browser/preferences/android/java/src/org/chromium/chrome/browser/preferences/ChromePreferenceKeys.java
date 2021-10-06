@@ -863,6 +863,10 @@ public final class ChromePreferenceKeys {
     public static final String SIGNIN_ACCOUNT_RENAME_EVENT_INDEX =
             "prefs_sync_account_rename_event_index";
 
+    /** SigninPromo Show Count preference. */
+    public static final KeyPrefix SIGNIN_PROMO_SHOW_COUNT =
+            new KeyPrefix("Chrome.SigninPromo.ShowCount.*");
+
     /**
      * Generic signin and sync promo preferences.
      */
@@ -1119,6 +1123,7 @@ public final class ChromePreferenceKeys {
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,
                 SHARING_LAST_SHARED_COMPONENT_NAME,
                 SIGNIN_PROMO_IMPRESSIONS_COUNT_NTP,
+                SIGNIN_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_NTP_PROMO_EXPIRED,
                 START_NEXT_SHOW_ON_STARTUP_DECISION_MS,
                 START_SHOW_ON_STARTUP,

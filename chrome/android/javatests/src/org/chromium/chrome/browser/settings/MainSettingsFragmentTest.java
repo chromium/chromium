@@ -64,11 +64,13 @@ import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.signin.ui.SyncConsentActivityLauncher;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncTestRule;
@@ -153,6 +155,8 @@ public class MainSettingsFragmentTest {
             // Reset the actual service if the mock is used.
             TemplateUrlServiceFactory.setInstanceForTesting(mActualTemplateUrlService);
         }
+        SharedPreferencesManager.getInstance().removeKey(
+                SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
     }
 
     @Test
@@ -392,6 +396,17 @@ public class MainSettingsFragmentTest {
         // Launch settings activity again.
         mSettingsActivityTestRule.startSettingsActivity();
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testSyncPromoShownIsNotOverCounted() {
+        launchSettingsActivity();
+        onViewWaiting(allOf(withId(R.id.signin_promo_view_container), isDisplayed()));
+
+        int promoShowCount = SharedPreferencesManager.getInstance().readInt(
+                SigninPromoController.getPromoShowCountPreferenceName(SigninAccessPoint.SETTINGS));
+        Assert.assertEquals("Promo shown count should only be increased by 1", 1, promoShowCount);
     }
 
     private void launchSettingsActivity() {
