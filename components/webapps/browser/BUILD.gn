@@ -64,6 +64,7 @@ source_set("browser") {
       "android/app_banner_manager_android.h",
       "android/features.cc",
       "android/features.h",
+      "android/installable/installable_ambient_badge_client.h",
       "android/installable/installable_ambient_badge_infobar.cc",
       "android/installable/installable_ambient_badge_infobar.h",
       "android/installable/installable_ambient_badge_infobar_delegate.cc",

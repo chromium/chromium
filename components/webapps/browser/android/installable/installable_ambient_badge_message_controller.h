@@ -17,12 +17,15 @@ class WebContents;
 
 namespace webapps {
 
+class InstallableAmbientBadgeClient;
+
 // Message controller for a message shown to users when they visit a
 // progressive web app. Tapping primary button triggers the add to home screen
 // flow.
 class InstallableAmbientBadgeMessageController {
  public:
-  InstallableAmbientBadgeMessageController();
+  explicit InstallableAmbientBadgeMessageController(
+      InstallableAmbientBadgeClient* client);
   ~InstallableAmbientBadgeMessageController();
 
   // Returns true if the message was enqueued with EnqueueMessage() method, but
@@ -43,6 +46,7 @@ class InstallableAmbientBadgeMessageController {
   void HandleInstallButtonClicked();
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
 
+  InstallableAmbientBadgeClient* client_;
   std::unique_ptr<messages::MessageWrapper> message_;
 };
 

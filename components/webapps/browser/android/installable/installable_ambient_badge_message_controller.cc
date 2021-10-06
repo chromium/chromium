@@ -7,12 +7,15 @@
 #include "base/bind.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace webapps {
 
 InstallableAmbientBadgeMessageController::
-    InstallableAmbientBadgeMessageController() = default;
+    InstallableAmbientBadgeMessageController(
+        InstallableAmbientBadgeClient* client)
+    : client_(client) {}
 
 InstallableAmbientBadgeMessageController::
     ~InstallableAmbientBadgeMessageController() {
@@ -55,15 +58,16 @@ void InstallableAmbientBadgeMessageController::DismissMessage() {
 }
 
 void InstallableAmbientBadgeMessageController::HandleInstallButtonClicked() {
-  // TODO(crbug.com/1247374): Implement.
+  client_->AddToHomescreenFromBadge();
 }
 
 void InstallableAmbientBadgeMessageController::HandleMessageDismissed(
     messages::DismissReason dismiss_reason) {
   DCHECK(message_);
   message_.reset();
-  // TODO(crbug.com/1247374): Add a call to
-  // AppBannerManagerAndroid::BadgeDismissed to record metrics.
+  if (dismiss_reason == messages::DismissReason::GESTURE) {
+    client_->BadgeDismissed();
+  }
 }
 
 }  // namespace webapps

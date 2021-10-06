@@ -26,6 +26,7 @@
 #include "components/webapps/browser/android/add_to_homescreen_coordinator.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/features.h"
+#include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_jni_headers/AppBannerManager_jni.h"
@@ -61,7 +62,7 @@ bool gIgnoreChromeChannelForTesting = false;
 
 AppBannerManagerAndroid::AppBannerManagerAndroid(
     content::WebContents* web_contents)
-    : AppBannerManager(web_contents) {
+    : AppBannerManager(web_contents), message_controller_(this) {
   CreateJavaBannerManager(web_contents);
 }
 

@@ -5,7 +5,9 @@
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
+#include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webapps {
@@ -14,26 +16,46 @@ namespace {
 constexpr char16_t kAppName[] = u"App name";
 }  // namespace
 
+class MockInstallableAmbientBadgeClient : public InstallableAmbientBadgeClient {
+ public:
+  MockInstallableAmbientBadgeClient() = default;
+  ~MockInstallableAmbientBadgeClient() override = default;
+
+  MOCK_METHOD(void, AddToHomescreenFromBadge, (), (override));
+  MOCK_METHOD(void, BadgeDismissed, (), (override));
+};
+
 class InstallableAmbientBadgeMessageControllerTest
     : public content::RenderViewHostTestHarness {
  public:
+  InstallableAmbientBadgeMessageControllerTest();
+
   void SetUp() override;
   void TearDown() override;
 
   void EnqueueMessage();
   void DismissMessage(bool expected);
 
+  void TriggerActionClick();
+  void TriggerMessageDismissedWithGesture();
+
   InstallableAmbientBadgeMessageController* message_controller() {
     return &message_controller_;
   }
 
   messages::MessageWrapper* message_wrapper() { return message_wrapper_; }
+  MockInstallableAmbientBadgeClient& client_mock() { return client_mock_; }
 
  private:
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
+  MockInstallableAmbientBadgeClient client_mock_;
   InstallableAmbientBadgeMessageController message_controller_;
   messages::MessageWrapper* message_wrapper_ = nullptr;
 };
+
+InstallableAmbientBadgeMessageControllerTest::
+    InstallableAmbientBadgeMessageControllerTest()
+    : message_controller_(&client_mock_) {}
 
 void InstallableAmbientBadgeMessageControllerTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
@@ -66,6 +88,21 @@ void InstallableAmbientBadgeMessageControllerTest::DismissMessage(
   message_controller_.DismissMessage();
 }
 
+void InstallableAmbientBadgeMessageControllerTest::TriggerActionClick() {
+  message_wrapper()->HandleActionClick(base::android::AttachCurrentThread());
+  // Simulate call from Java to dismiss message on primary button click.
+  message_wrapper()->HandleDismissCallback(
+      base::android::AttachCurrentThread(),
+      static_cast<int>(messages::DismissReason::PRIMARY_ACTION));
+}
+
+void InstallableAmbientBadgeMessageControllerTest::
+    TriggerMessageDismissedWithGesture() {
+  message_wrapper()->HandleDismissCallback(
+      base::android::AttachCurrentThread(),
+      static_cast<int>(messages::DismissReason::GESTURE));
+}
+
 // Tests InstallableAmbientBadgeMessageController API: EnqueueMessage,
 // IsMessageEnqueued, DismissMessage.
 TEST_F(InstallableAmbientBadgeMessageControllerTest, APITest) {
@@ -87,6 +124,24 @@ TEST_F(InstallableAmbientBadgeMessageControllerTest, MessagePropertyValues) {
   EXPECT_FALSE(message_wrapper()->GetPrimaryButtonText().empty());
 
   DismissMessage(true);
+}
+
+// Tests that when the user taps on Install, client's AddToHomescreenFromBadge
+// method is called.
+TEST_F(InstallableAmbientBadgeMessageControllerTest, AddToHomeSceen) {
+  EnqueueMessage();
+  EXPECT_CALL(client_mock(), AddToHomescreenFromBadge);
+  EXPECT_CALL(client_mock(), BadgeDismissed).Times(0);
+  TriggerActionClick();
+}
+
+// Tests that when the user dismisses the message with a gesture, client's
+// BadgeDismissed method is called.
+TEST_F(InstallableAmbientBadgeMessageControllerTest, Dismiss) {
+  EnqueueMessage();
+  EXPECT_CALL(client_mock(), AddToHomescreenFromBadge).Times(0);
+  EXPECT_CALL(client_mock(), BadgeDismissed);
+  TriggerMessageDismissedWithGesture();
 }
 
 }  // namespace webapps

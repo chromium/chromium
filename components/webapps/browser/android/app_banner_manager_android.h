@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
-#include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
+#include "components/webapps/browser/android/installable/installable_ambient_badge_client.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_message_controller.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "url/gurl.h"
@@ -46,9 +46,8 @@ struct AddToHomescreenParams;
 //
 // TODO(crbug.com/1147268): remove remaining Chrome-specific functionality and
 // move to //components/webapps.
-class AppBannerManagerAndroid
-    : public AppBannerManager,
-      public InstallableAmbientBadgeInfoBarDelegate::Client {
+class AppBannerManagerAndroid : public AppBannerManager,
+                                public InstallableAmbientBadgeClient {
  public:
   explicit AppBannerManagerAndroid(content::WebContents* web_contents);
   AppBannerManagerAndroid(const AppBannerManagerAndroid&) = delete;
@@ -84,7 +83,7 @@ class AppBannerManagerAndroid
   // AppBannerManager overrides.
   void RequestAppBanner(const GURL& validated_url) override;
 
-  // InstallableAmbientBadgeInfoBarDelegate::Client overrides.
+  // InstallableAmbientBadgeClient overrides.
   void AddToHomescreenFromBadge() override;
   void BadgeDismissed() override;
 
