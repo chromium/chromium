@@ -38,14 +38,19 @@ export class DeviceHandler extends EventTarget {
      */
     this.mountStatus_ = {};
 
-    chrome.fileManagerPrivate.onDeviceChanged.addListener(
-        this.onDeviceChanged_.bind(this));
-    chrome.fileManagerPrivate.onMountCompleted.addListener(
-        this.onMountCompleted_.bind(this));
-    xfm.notifications.onClicked.addListener(
-        this.onNotificationClicked_.bind(this));
-    xfm.notifications.onButtonClicked.addListener(
-        this.onNotificationButtonClicked_.bind(this));
+    // Notifications in a SWA context are handled by the
+    // system_notification_manager.cc and thus we don't want this code
+    // duplicated in the background page.
+    if (!window.isSWA) {
+      chrome.fileManagerPrivate.onDeviceChanged.addListener(
+          this.onDeviceChanged_.bind(this));
+      chrome.fileManagerPrivate.onMountCompleted.addListener(
+          this.onMountCompleted_.bind(this));
+      xfm.notifications.onClicked.addListener(
+          this.onNotificationClicked_.bind(this));
+      xfm.notifications.onButtonClicked.addListener(
+          this.onNotificationButtonClicked_.bind(this));
+    }
   }
 
   /**
@@ -54,6 +59,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onDeviceChanged_(event) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onDeviceChangedInternal_(event);
     });
@@ -189,6 +197,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onMountCompleted_(event) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onMountCompletedInternal_(event);
     });
@@ -392,6 +403,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onNotificationClicked_(id) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onNotificationClickedInternal_(id, -1 /* index */);
     });
@@ -404,6 +418,9 @@ export class DeviceHandler extends EventTarget {
    * @private
    */
   onNotificationButtonClicked_(id, index) {
+    if (util.isSwaEnabled()) {
+      return;
+    }
     util.doIfPrimaryContext(() => {
       this.onNotificationClickedInternal_(id, index);
     });

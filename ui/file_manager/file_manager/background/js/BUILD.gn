@@ -258,6 +258,7 @@ js_unittest("device_handler_unittest.m") {
     "//ui/file_manager/file_manager/common/js:mock_chrome",
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/webui/resources/js:load_time_data.m",
