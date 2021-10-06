@@ -26,7 +26,7 @@ import './site_details_permission.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -49,9 +49,9 @@ interface SiteDetailsElement {
 
 const SiteDetailsElementBase =
     mixinBehaviors(
-        [I18nBehavior, WebUIListenerBehavior],
-        RouteObserverMixin(SiteSettingsMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+        [WebUIListenerBehavior],
+        RouteObserverMixin(SiteSettingsMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
       SiteSettingsMixinInterface & RouteObserverMixinInterface
     };
 

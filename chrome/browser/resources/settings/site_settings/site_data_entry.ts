@@ -16,7 +16,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
@@ -24,8 +24,8 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_br
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './local_data_browser_proxy.js';
 
 const SiteDataEntryElementBase =
-    mixinBehaviors([FocusRowBehavior, I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+    mixinBehaviors([FocusRowBehavior], I18nMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nMixinInterface};
 
 class SiteDataEntryElement extends SiteDataEntryElementBase {
   static get is() {

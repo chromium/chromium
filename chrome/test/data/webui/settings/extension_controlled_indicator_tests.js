@@ -30,18 +30,18 @@ suite('extension controlled indicator', function() {
 
   test('disable button tracks extensionCanBeDisabled', function() {
     assertTrue(indicator.extensionCanBeDisabled);
-    assertTrue(!!indicator.$$('cr-button'));
+    assertTrue(!!indicator.shadowRoot.querySelector('cr-button'));
 
     indicator.extensionCanBeDisabled = false;
     flush();
-    assertFalse(!!indicator.$$('cr-button'));
+    assertFalse(!!indicator.shadowRoot.querySelector('cr-button'));
   });
 
   test('label text and href', function() {
-    let imgSrc = indicator.$$('img').src;
+    let imgSrc = indicator.shadowRoot.querySelector('img').src;
     assertTrue(imgSrc.includes(indicator.extensionId));
 
-    let label = indicator.$$('span');
+    let label = indicator.shadowRoot.querySelector('span');
     assertTrue(!!label);
     let labelLink = label.querySelector('a');
     assertTrue(!!labelLink);
@@ -54,10 +54,10 @@ suite('extension controlled indicator', function() {
     indicator.extensionName = 'A Slightly Less Good Name (Can\'t Beat That ^)';
     flush();
 
-    imgSrc = indicator.$$('img').src;
+    imgSrc = indicator.shadowRoot.querySelector('img').src;
     assertTrue(imgSrc.includes(indicator.extensionId));
 
-    label = indicator.$$('span');
+    label = indicator.shadowRoot.querySelector('span');
     assertTrue(!!label);
     labelLink = label.querySelector('a');
     assertTrue(!!labelLink);
@@ -65,7 +65,7 @@ suite('extension controlled indicator', function() {
   });
 
   test('tapping disable button invokes browser proxy', function() {
-    const disableButton = indicator.$$('cr-button');
+    const disableButton = indicator.shadowRoot.querySelector('cr-button');
     assertTrue(!!disableButton);
     disableButton.click();
     return browserProxy.whenCalled('disableExtension')

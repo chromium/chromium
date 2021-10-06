@@ -17,8 +17,8 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared_css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * UI states a safety check child can be in. Defines the basic UI of the child.
@@ -30,9 +30,7 @@ export enum SafetyCheckIconStatus {
   WARNING = 3,
 }
 
-const SettingsSafetyCheckChildElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const SettingsSafetyCheckChildElementBase = I18nMixin(PolymerElement);
 
 export class SettingsSafetyCheckChildElement extends
     SettingsSafetyCheckChildElementBase {

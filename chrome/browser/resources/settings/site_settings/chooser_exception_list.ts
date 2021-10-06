@@ -13,7 +13,7 @@ import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import '../settings_shared_css.js';
 import './chooser_exception_list_entry.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
@@ -33,9 +33,9 @@ interface ChooserExceptionListElement {
 
 const ChooserExceptionListElementBase =
     mixinBehaviors(
-        [I18nBehavior, ListPropertyUpdateBehavior, WebUIListenerBehavior],
-        SiteSettingsMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nBehavior & ListPropertyUpdateBehavior &
+        [ListPropertyUpdateBehavior, WebUIListenerBehavior],
+        SiteSettingsMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface & ListPropertyUpdateBehavior &
       WebUIListenerBehavior & SiteSettingsMixinInterface
     };
 

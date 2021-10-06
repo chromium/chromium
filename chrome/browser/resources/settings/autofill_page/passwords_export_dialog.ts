@@ -14,8 +14,8 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="chromeos">
 import {BlockingRequestManager} from './blocking_request_manager.js';
@@ -46,9 +46,7 @@ const progressBarDelayMs: number = 100;
 const progressBarBlockMs: number = 1000;
 
 
-const PasswordsExportDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const PasswordsExportDialogElementBase = I18nMixin(PolymerElement);
 
 class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   static get is() {

@@ -7,14 +7,12 @@ import '../i18n_setup.js';
 import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from '//resources/js/i18n_mixin.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
-const ExtensionControlledIndicatorElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const ExtensionControlledIndicatorElementBase = I18nMixin(PolymerElement);
 
 class ExtensionControlledIndicatorElement extends
     ExtensionControlledIndicatorElementBase {

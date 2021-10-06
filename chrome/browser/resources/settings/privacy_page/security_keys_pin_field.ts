@@ -11,9 +11,9 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '../settings_shared_css.js';
 
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -30,9 +30,7 @@ export interface SettingsSecurityKeysPinFieldElement {
   };
 }
 
-const SettingsSecurityKeysPinFieldElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const SettingsSecurityKeysPinFieldElementBase = I18nMixin(PolymerElement);
 
 export class SettingsSecurityKeysPinFieldElement extends
     SettingsSecurityKeysPinFieldElementBase {

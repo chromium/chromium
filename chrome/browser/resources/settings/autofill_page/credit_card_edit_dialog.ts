@@ -17,8 +17,8 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -42,9 +42,7 @@ interface SettingsCreditCardEditDialogElement {
   };
 }
 
-const SettingsCreditCardEditDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const SettingsCreditCardEditDialogElementBase = I18nMixin(PolymerElement);
 
 class SettingsCreditCardEditDialogElement extends
     SettingsCreditCardEditDialogElementBase {

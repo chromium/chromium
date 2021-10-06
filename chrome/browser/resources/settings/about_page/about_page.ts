@@ -21,7 +21,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,8 +32,8 @@ import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, PromoteUpdaterStatus, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 
 const SettingsAboutPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior, I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior & I18nBehavior};
+    mixinBehaviors([WebUIListenerBehavior], I18nMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerBehavior & I18nMixinInterface};
 
 /** @polymer */
 export class SettingsAboutPageElement extends SettingsAboutPageElementBase {

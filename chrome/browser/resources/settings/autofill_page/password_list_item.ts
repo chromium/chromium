@@ -82,7 +82,7 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
    * Get the aria label for the More Actions button on this row.
    */
   private getMoreActionsLabel_(): string {
-    // Avoid using I18nBehavior.i18n, because it will filter sequences, which
+    // Avoid using I18nMixin.i18n, because it will filter sequences, which
     // are otherwise not illegal for usernames. Polymer still protects against
     // XSS injection.
     return loadTimeData.getStringF(

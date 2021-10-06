@@ -19,14 +19,15 @@ import './home_url_input.js';
 import '../controls/settings_dropdown_menu.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {BaseMixin} from '../base_mixin.js';
 import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {AppearancePageVisibility} from '../page_visibility.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
@@ -58,8 +59,7 @@ interface SettingsAppearancePageElement {
 }
 
 const SettingsAppearancePageElementBase =
-    mixinBehaviors([I18nBehavior], PrefsMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nBehavior & PrefsMixinInterface};
+    I18nMixin(PrefsMixin(BaseMixin(PolymerElement)));
 
 class SettingsAppearancePageElement extends SettingsAppearancePageElementBase {
   static get is() {

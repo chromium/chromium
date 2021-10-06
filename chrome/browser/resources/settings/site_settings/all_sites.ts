@@ -24,7 +24,7 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -83,13 +83,12 @@ type Constructor<T> = new (...args: any[]) => T;
 const AllSitesElementBase =
     mixinBehaviors(
         [
-          I18nBehavior,
           WebUIListenerBehavior,
         ],
         GlobalScrollTargetMixin(
-            RouteObserverMixin(SiteSettingsMixin(PolymerElement)) as unknown as
-            Constructor<PolymerElement>)) as {
-      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+            RouteObserverMixin(I18nMixin(SiteSettingsMixin(PolymerElement))) as
+            unknown as Constructor<PolymerElement>)) as {
+      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
       SiteSettingsMixinInterface & RouteObserverMixinInterface
     };
 

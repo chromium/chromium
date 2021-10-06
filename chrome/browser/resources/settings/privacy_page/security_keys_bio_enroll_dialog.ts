@@ -22,7 +22,7 @@ import '../site_favicon.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrFingerprintProgressArcElement} from 'chrome://resources/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -54,8 +54,8 @@ interface SettingsSecurityKeysBioEnrollDialogElement {
 }
 
 const SettingsSecurityKeysBioEnrollDialogElementBase =
-    mixinBehaviors([I18nBehavior, WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior & WebUIListenerBehavior};
+    mixinBehaviors([WebUIListenerBehavior], I18nMixin(PolymerElement)) as
+    {new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior};
 
 class SettingsSecurityKeysBioEnrollDialogElement extends
     SettingsSecurityKeysBioEnrollDialogElementBase {

@@ -34,13 +34,13 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 import {LanguageHelper, LanguagesModel, LanguageState} from './languages_types.js';
@@ -66,8 +66,7 @@ export interface SettingsLanguagesSubpageElement {
 }
 
 const SettingsLanguagesSubpageElementBase =
-    mixinBehaviors([I18nBehavior], PrefsMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nBehavior & PrefsMixinInterface};
+    I18nMixin(PrefsMixin(PolymerElement));
 
 export class SettingsLanguagesSubpageElement extends
     SettingsLanguagesSubpageElementBase {

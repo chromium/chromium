@@ -13,7 +13,7 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -33,9 +33,9 @@ export interface SiteDetailsPermissionElement {
 
 const SiteDetailsPermissionElementBase =
     mixinBehaviors(
-        [I18nBehavior, WebUIListenerBehavior],
-        SiteSettingsMixin(PolymerElement)) as {
-      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+        [WebUIListenerBehavior],
+        SiteSettingsMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
       SiteSettingsMixinInterface
     };
 

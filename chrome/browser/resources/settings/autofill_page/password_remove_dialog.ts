@@ -18,8 +18,8 @@ import './avatar_icon.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 
@@ -35,9 +35,7 @@ interface PasswordRemoveDialogElement {
   };
 }
 
-const PasswordRemoveDialogElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement) as
-    {new (): PolymerElement & I18nBehavior};
+const PasswordRemoveDialogElementBase = I18nMixin(PolymerElement);
 
 class PasswordRemoveDialogElement extends PasswordRemoveDialogElementBase {
   static get is() {

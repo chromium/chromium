@@ -22,7 +22,7 @@ import '../settings_shared_css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
@@ -96,9 +96,9 @@ interface SettingsClearBrowsingDataDialogElement {
 
 const SettingsClearBrowsingDataDialogElementBase =
     mixinBehaviors(
-        [I18nBehavior, WebUIListenerBehavior],
-        RouteObserverMixin(PolymerElement)) as {
-      new (): PolymerElement & WebUIListenerBehavior & I18nBehavior &
+        [WebUIListenerBehavior],
+        RouteObserverMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUIListenerBehavior & I18nMixinInterface &
       RouteObserverMixinInterface
     };
 

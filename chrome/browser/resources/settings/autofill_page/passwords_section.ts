@@ -33,7 +33,7 @@ import './avatar_icon.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -90,13 +90,12 @@ interface PasswordsSectionElement {
 const PasswordsSectionElementBase =
     mixinBehaviors(
         [
-          I18nBehavior,
           WebUIListenerBehavior,
           MergePasswordsStoreCopiesBehavior,
         ],
         PrefsMixin(GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
-            PasswordCheckMixin(PolymerElement))))) as {
-      new (): PolymerElement & I18nBehavior & WebUIListenerBehavior &
+            I18nMixin(PasswordCheckMixin(PolymerElement)))))) as {
+      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
       MergeExceptionsStoreCopiesMixinInterface &
       MergePasswordsStoreCopiesBehaviorInterface & PasswordCheckMixinInterface
     };
