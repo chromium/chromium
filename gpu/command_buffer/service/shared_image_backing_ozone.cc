@@ -134,6 +134,10 @@ bool SharedImageBackingOzone::ProduceLegacyMailbox(
   return false;
 }
 
+scoped_refptr<gfx::NativePixmap> SharedImageBackingOzone::GetNativePixmap() {
+  return pixmap_;
+}
+
 std::unique_ptr<SharedImageRepresentationDawn>
 SharedImageBackingOzone::ProduceDawn(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker,
