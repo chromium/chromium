@@ -14,7 +14,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Network, NetworkHealthProviderInterface, NetworkState, NetworkStateObserverInterface, NetworkStateObserverReceiver, NetworkType, TroubleshootingInfo} from './diagnostics_types.js';
-import {filterNameServers, formatMacAddress, getNetworkState, getNetworkType, isConnectedOrOnline, isNetworkMissingNameServers} from './diagnostics_utils.js';
+import {filterNameServers, formatMacAddress, getNetworkCardTitle, getNetworkState, getNetworkType, isConnectedOrOnline, isNetworkMissingNameServers} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
 
 const BASE_SUPPORT_URL = 'https://support.google.com/chromebook?p=diagnostics_';
@@ -198,7 +198,7 @@ Polymer({
    * @return {string}
    */
   getNetworkCardTitle_() {
-    return `${this.networkType_} (${this.networkState_})`;
+    return getNetworkCardTitle(this.networkType_, this.networkState_);
   },
 
   /**
