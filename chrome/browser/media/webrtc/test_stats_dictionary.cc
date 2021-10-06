@@ -149,7 +149,11 @@ bool TestStatsDictionary::GetBoolean(
 
 bool TestStatsDictionary::GetNumber(
     const std::string& key, double* out) const {
-  return stats_->GetDouble(key, out);
+  if (absl::optional<double> value = stats_->FindDoubleKey(key)) {
+    *out = *value;
+    return true;
+  }
+  return false;
 }
 
 bool TestStatsDictionary::GetString(

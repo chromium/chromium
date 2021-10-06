@@ -98,11 +98,10 @@ void TryAddingMetadata(
     return;
 
   // JavaScript time stamps don't fit in int.
-  double last_accessed_timestamp;
-  if (!browser_tab_metadata->GetDouble("lastAccessedTimeStamp",
-                                       &last_accessed_timestamp)) {
+  absl::optional<double> last_accessed_timestamp =
+      browser_tab_metadata->FindDoubleKey("lastAccessedTimeStamp");
+  if (!last_accessed_timestamp)
     return;
-  }
 
   int favicon_image_type_as_int;
   if (!browser_tab_metadata->GetInteger("favicon",
@@ -116,7 +115,7 @@ void TryAddingMetadata(
       ImageTypeToBitmap(favicon_image_type, kIconSize));
 
   auto metadata = phonehub::BrowserTabsModel::BrowserTabMetadata(
-      GURL(url), title, base::Time::FromJsTime(last_accessed_timestamp),
+      GURL(url), title, base::Time::FromJsTime(*last_accessed_timestamp),
       favicon);
 
   metadatas.push_back(metadata);
@@ -482,9 +481,10 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
       DictToAppMetadata(app_metadata_dict);
 
   // JavaScript time stamps don't fit in int.
-  double js_timestamp;
-  CHECK(notification_data_dict->GetDouble("timestamp", &js_timestamp));
-  auto timestamp = base::Time::FromJsTime(js_timestamp);
+  absl::optional<double> js_timestamp =
+      notification_data_dict->FindDoubleKey("timestamp");
+  CHECK(js_timestamp);
+  auto timestamp = base::Time::FromJsTime(*js_timestamp);
 
   int importance_as_int;
   CHECK(notification_data_dict->GetInteger("importance", &importance_as_int));

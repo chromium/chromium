@@ -1601,11 +1601,13 @@ testing::AssertionResult ExtensionTabsZoomTest::RunGetDefaultZoom(
   if (!get_zoom_settings_result)
     return testing::AssertionFailure() << "no result";
 
-  if (!get_zoom_settings_result->GetDouble("defaultZoomFactor",
-                                           default_zoom_factor)) {
+  absl::optional<double> default_zoom_factor_setting =
+      get_zoom_settings_result->FindDoubleKey("defaultZoomFactor");
+  if (!default_zoom_factor_setting) {
     return testing::AssertionFailure()
            << "default zoom factor not found in result";
   }
+  *default_zoom_factor = *default_zoom_factor_setting;
 
   return testing::AssertionSuccess();
 }

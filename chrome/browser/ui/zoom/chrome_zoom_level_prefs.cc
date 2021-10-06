@@ -97,14 +97,10 @@ void ChromeZoomLevelPrefs::SetDefaultZoomLevelPref(double level) {
 }
 
 double ChromeZoomLevelPrefs::GetDefaultZoomLevelPref() const {
-  double default_zoom_level = 0.0;
-
   const base::DictionaryValue* default_zoom_level_dictionary =
       pref_service_->GetDictionary(prefs::kPartitionDefaultZoomLevel);
-  // If no default has been previously set, the default returned is the
-  // value used to initialize default_zoom_level in this function.
-  default_zoom_level_dictionary->GetDouble(partition_key_, &default_zoom_level);
-  return default_zoom_level;
+  return default_zoom_level_dictionary->FindDoubleKey(partition_key_)
+      .value_or(0.0);
 }
 
 base::CallbackListSubscription

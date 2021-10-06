@@ -269,7 +269,7 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   // Now read back content settings and make sure we have the right values.
   int stored_visits;
   int stored_media_playbacks;
-  double stored_last_media_playback_time;
+  absl::optional<double> stored_last_media_playback_time;
   bool stored_has_high_score;
   std::unique_ptr<base::DictionaryValue> values =
       base::DictionaryValue::From(settings_map->GetWebsiteSetting(
@@ -278,13 +278,13 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   values->GetInteger(MediaEngagementScore::kVisitsKey, &stored_visits);
   values->GetInteger(MediaEngagementScore::kMediaPlaybacksKey,
                      &stored_media_playbacks);
-  values->GetDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                    &stored_last_media_playback_time);
+  stored_last_media_playback_time =
+      values->FindDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey);
   values->GetBoolean(MediaEngagementScore::kHasHighScoreKey,
                      &stored_has_high_score);
   EXPECT_EQ(stored_visits, example_num_visits + 1);
   EXPECT_EQ(stored_media_playbacks, example_media_playbacks + 2);
-  EXPECT_EQ(stored_last_media_playback_time,
+  EXPECT_EQ(*stored_last_media_playback_time,
             test_clock.Now().ToInternalValue());
 
   delete score;

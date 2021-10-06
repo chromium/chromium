@@ -245,18 +245,21 @@ void WebstoreStandaloneInstaller::OnWebstoreResponseParseSuccess(
     return;
   }
 
-  std::string error;
+  absl::optional<double> average_rating_setting =
+      webstore_data->FindDoubleKey(kAverageRatingKey);
 
   // Manifest, number of users, average rating and rating count are required.
   std::string manifest;
   if (!webstore_data->GetString(kManifestKey, &manifest) ||
       !webstore_data->GetString(kUsersKey, &localized_user_count_) ||
-      !webstore_data->GetDouble(kAverageRatingKey, &average_rating_) ||
+      !average_rating_setting ||
       !webstore_data->GetInteger(kRatingCountKey, &rating_count_)) {
     CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
                     webstore_install::kInvalidWebstoreResponseError);
     return;
   }
+
+  average_rating_ = *average_rating_setting;
 
   // Optional.
   show_user_count_ = true;

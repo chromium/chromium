@@ -222,27 +222,27 @@ ExtensionFunction::ResponseAction TtsSpeakFunction::Run() {
                         !gender_str.empty());
 
   double rate = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->FindKey(constants::kRateKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kRateKey, &rate));
+  if (base::Value* rate_value = options->FindKey(constants::kRateKey)) {
+    EXTENSION_FUNCTION_VALIDATE(rate_value->GetIfDouble());
+    rate = rate_value->GetIfDouble().value_or(rate);
     if (rate < 0.1 || rate > 10.0) {
       return RespondNow(Error(constants::kErrorInvalidRate));
     }
   }
 
   double pitch = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->FindKey(constants::kPitchKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kPitchKey, &pitch));
+  if (base::Value* pitch_value = options->FindKey(constants::kPitchKey)) {
+    EXTENSION_FUNCTION_VALIDATE(pitch_value->GetIfDouble());
+    pitch = pitch_value->GetIfDouble().value_or(pitch);
     if (pitch < 0.0 || pitch > 2.0) {
       return RespondNow(Error(constants::kErrorInvalidPitch));
     }
   }
 
   double volume = blink::mojom::kSpeechSynthesisDoublePrefNotSet;
-  if (options->FindKey(constants::kVolumeKey)) {
-    EXTENSION_FUNCTION_VALIDATE(
-        options->GetDouble(constants::kVolumeKey, &volume));
+  if (base::Value* volume_value = options->FindKey(constants::kVolumeKey)) {
+    EXTENSION_FUNCTION_VALIDATE(volume_value->GetIfDouble());
+    volume = volume_value->GetIfDouble().value_or(volume);
     if (volume < 0.0 || volume > 1.0) {
       return RespondNow(Error(constants::kErrorInvalidVolume));
     }

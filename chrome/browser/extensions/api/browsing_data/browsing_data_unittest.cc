@@ -148,8 +148,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     EXPECT_TRUE(result_value->GetAsDictionary(&result));
     base::DictionaryValue* options;
     EXPECT_TRUE(result->GetDictionary("options", &options));
-    double since;
-    EXPECT_TRUE(options->GetDouble("since", &since));
+    absl::optional<double> since = options->FindDoubleKey("since");
+    ASSERT_TRUE(since);
 
     double expected_since = 0;
     if (since_pref != browsing_data::TimePeriod::ALL_TIME) {
@@ -161,7 +161,7 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     // second, so we'll make sure the requested start time is within 10 seconds.
     // Since the smallest selectable period is an hour, that should be
     // sufficient.
-    EXPECT_LE(expected_since, since + 10.0 * 1000.0);
+    EXPECT_LE(expected_since, *since + 10.0 * 1000.0);
   }
 
   void SetPrefsAndVerifySettings(int data_type_flags,
