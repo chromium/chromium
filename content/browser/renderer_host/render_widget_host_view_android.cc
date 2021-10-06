@@ -1287,10 +1287,9 @@ bool RenderWidgetHostViewAndroid::RequestRepaintForTesting() {
                                      absl::nullopt);
 }
 
-
 void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
     uint32_t frame_token,
-    const gfx::ScrollOffset& root_scroll_offset) {
+    const gfx::Vector2dF& root_scroll_offset) {
   if (!viz::FrameTokenGT(frame_token, sync_compositor_last_frame_token_))
     return;
   sync_compositor_last_frame_token_ = frame_token;
@@ -1308,8 +1307,7 @@ void RenderWidgetHostViewAndroid::FrameTokenChangedForSynchronousCompositor(
         // trigger a new RenderFrameMetadata, and it may be out of date. This
         // is needed for devtools DOM node selection.
         cc::RenderFrameMetadata updated_metadata = *last_render_frame_metadata_;
-        updated_metadata.root_scroll_offset =
-            gfx::ScrollOffsetToVector2dF(root_scroll_offset);
+        updated_metadata.root_scroll_offset = root_scroll_offset;
         RenderFrameDevToolsAgentHost::SignalSynchronousSwapCompositorFrame(
             frame_host, updated_metadata);
       }

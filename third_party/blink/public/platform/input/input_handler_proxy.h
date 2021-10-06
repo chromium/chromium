@@ -174,8 +174,8 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void ReconcileElasticOverscrollAndRootScroll() override;
   void SetPrefersReducedMotion(bool prefers_reduced_motion) override;
   void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::ScrollOffset& total_scroll_offset,
-      const gfx::ScrollOffset& max_scroll_offset,
+      const gfx::Vector2dF& total_scroll_offset,
+      const gfx::Vector2dF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,
@@ -187,7 +187,7 @@ class BLINK_PLATFORM_EXPORT InputHandlerProxy
   void SetSynchronousInputHandler(
       SynchronousInputHandler* synchronous_input_handler) override;
   void SynchronouslySetRootScrollOffset(
-      const gfx::ScrollOffset& root_offset) override;
+      const gfx::Vector2dF& root_offset) override;
   void SynchronouslyZoomBy(float magnify_delta,
                            const gfx::Point& anchor) override;
 

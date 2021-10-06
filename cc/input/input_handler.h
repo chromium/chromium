@@ -24,7 +24,6 @@
 
 namespace gfx {
 class Point;
-class ScrollOffset;
 class SizeF;
 class Vector2dF;
 }  // namespace gfx
@@ -60,12 +59,12 @@ struct CC_EXPORT InputHandlerPointerResult {
       ui::ScrollGranularity::kScrollByPrecisePixel;
 
   // If the input handler processed the event as a scrollbar scroll, it will
-  // return a gfx::ScrollOffset that produces the necessary scroll. However,
+  // return a gfx::Vector2dF that produces the necessary scroll. However,
   // it is still the client's responsibility to generate the gesture scrolls
   // instead of the input handler performing it as a part of handling the
   // pointer event (due to the latency attribution that happens at the
   // InputHandlerProxy level).
-  gfx::ScrollOffset scroll_offset;
+  gfx::Vector2dF scroll_offset;
 
   // Used to determine which scroll_node needs to be scrolled. The primary
   // purpose of this is to avoid hit testing for gestures that already know
@@ -108,8 +107,8 @@ class CC_EXPORT InputHandlerClient {
   virtual void ReconcileElasticOverscrollAndRootScroll() = 0;
   virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;
   virtual void UpdateRootLayerStateForSynchronousInputHandler(
-      const gfx::ScrollOffset& total_scroll_offset,
-      const gfx::ScrollOffset& max_scroll_offset,
+      const gfx::Vector2dF& total_scroll_offset,
+      const gfx::Vector2dF& max_scroll_offset,
       const gfx::SizeF& scrollable_size,
       float page_scale_factor,
       float min_page_scale_factor,
@@ -297,7 +296,7 @@ class CC_EXPORT InputHandler {
   // input handler by the application (outside of input event handling). Offset
   // is expected in "content/page coordinates".
   virtual void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::ScrollOffset& root_content_offset) = 0;
+      const gfx::Vector2dF& root_content_offset) = 0;
 
   virtual void PinchGestureBegin() = 0;
   virtual void PinchGestureUpdate(float magnify_delta,
@@ -358,9 +357,9 @@ class CC_EXPORT InputHandler {
   // Called by the single-threaded UI Compositor to get or set the scroll offset
   // on the impl side. Returns false if |element_id| isn't in the active tree.
   virtual bool GetScrollOffsetForLayer(ElementId element_id,
-                                       gfx::ScrollOffset* offset) = 0;
+                                       gfx::Vector2dF* offset) = 0;
   virtual bool ScrollLayerTo(ElementId element_id,
-                             const gfx::ScrollOffset& offset) = 0;
+                             const gfx::Vector2dF& offset) = 0;
 
   virtual bool ScrollingShouldSwitchtoMainThread() = 0;
 

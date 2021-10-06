@@ -288,7 +288,7 @@ void ElementAnimations::OnTransformAnimated(
 }
 
 void ElementAnimations::OnScrollOffsetAnimated(
-    const gfx::ScrollOffset& scroll_offset,
+    const gfx::Vector2dF& scroll_offset,
     int target_property_id,
     gfx::KeyframeModel* keyframe_model) {
   if (KeyframeModelAffectsActiveElements(keyframe_model))
@@ -533,7 +533,7 @@ void ElementAnimations::OnTransformAnimated(
 
 void ElementAnimations::OnScrollOffsetAnimated(
     ElementListType list_type,
-    const gfx::ScrollOffset& scroll_offset,
+    const gfx::Vector2dF& scroll_offset,
     gfx::KeyframeModel* keyframe_model) {
   ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
   DCHECK(target_element_id);
@@ -543,14 +543,14 @@ void ElementAnimations::OnScrollOffsetAnimated(
       target_element_id, list_type, scroll_offset);
 }
 
-gfx::ScrollOffset ElementAnimations::ScrollOffsetForAnimation() const {
+gfx::Vector2dF ElementAnimations::ScrollOffsetForAnimation() const {
   if (animation_host_) {
     DCHECK(animation_host_->mutator_host_client());
     return animation_host_->mutator_host_client()->GetScrollOffsetForAnimation(
         element_id());
   }
 
-  return gfx::ScrollOffset();
+  return gfx::Vector2dF();
 }
 
 PropertyToElementIdMap ElementAnimations::GetPropertyToElementIdMap() const {

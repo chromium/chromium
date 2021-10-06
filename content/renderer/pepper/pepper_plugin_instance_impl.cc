@@ -118,6 +118,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
@@ -1201,12 +1203,11 @@ void PepperPluginInstanceImpl::ViewChanged(
   view_data_.css_scale *= viewport_to_dip_scale_;
   view_data_.device_scale /= viewport_to_dip_scale_;
 
-  gfx::ScrollOffset scroll_offset =
+  gfx::Vector2dF scroll_offset =
       container_->GetDocument().GetFrame()->GetScrollOffset();
   scroll_offset.Scale(viewport_to_dip_scale_);
 
-  gfx::Vector2d floored_scroll_offset =
-      ScrollOffsetToFlooredVector2d(scroll_offset);
+  gfx::Vector2d floored_scroll_offset = gfx::ToFlooredVector2d(scroll_offset);
   view_data_.scroll_offset =
       PP_MakePoint(floored_scroll_offset.x(), floored_scroll_offset.y());
 

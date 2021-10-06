@@ -17,7 +17,7 @@ CompositorScrollOffsetAnimationCurve::CompositorScrollOffsetAnimationCurve(
     FloatPoint target_value,
     ScrollType scroll_type)
     : curve_(cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
-          gfx::ScrollOffset(target_value.X(), target_value.Y()),
+          gfx::Vector2dF(target_value.X(), target_value.Y()),
           scroll_type)) {}
 
 CompositorScrollOffsetAnimationCurve::CompositorScrollOffsetAnimationCurve(
@@ -29,12 +29,11 @@ CompositorScrollOffsetAnimationCurve::~CompositorScrollOffsetAnimationCurve() =
 
 void CompositorScrollOffsetAnimationCurve::SetInitialValue(
     FloatPoint initial_value) {
-  curve_->SetInitialValue(
-      gfx::ScrollOffset(initial_value.X(), initial_value.Y()));
+  curve_->SetInitialValue(gfx::Vector2dF(initial_value.X(), initial_value.Y()));
 }
 
 FloatPoint CompositorScrollOffsetAnimationCurve::GetValue(double time) const {
-  gfx::ScrollOffset value = curve_->GetValue(base::Seconds(time));
+  gfx::Vector2dF value = curve_->GetValue(base::Seconds(time));
   return FloatPoint(value.x(), value.y());
 }
 
@@ -48,13 +47,13 @@ base::TimeDelta CompositorScrollOffsetAnimationCurve::Duration() const {
 }
 
 FloatPoint CompositorScrollOffsetAnimationCurve::TargetValue() const {
-  gfx::ScrollOffset target = curve_->target_value();
+  gfx::Vector2dF target = curve_->target_value();
   return FloatPoint(target.x(), target.y());
 }
 
 void CompositorScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta time,
                                                         FloatPoint new_target) {
-  curve_->UpdateTarget(time, gfx::ScrollOffset(new_target.X(), new_target.Y()));
+  curve_->UpdateTarget(time, gfx::Vector2dF(new_target.X(), new_target.Y()));
 }
 
 std::unique_ptr<gfx::AnimationCurve>

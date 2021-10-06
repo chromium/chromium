@@ -924,7 +924,7 @@ bool LayerTreeHost::DoUpdateLayers() {
 
 void LayerTreeHost::ApplyViewportChanges(
     const CompositorCommitData& commit_data) {
-  gfx::ScrollOffset inner_viewport_scroll_delta;
+  gfx::Vector2dF inner_viewport_scroll_delta;
   if (commit_data.inner_viewport_scroll.element_id)
     inner_viewport_scroll_delta =
         commit_data.inner_viewport_scroll.scroll_delta;
@@ -982,7 +982,7 @@ void LayerTreeHost::ApplyViewportChanges(
 
 void LayerTreeHost::UpdateScrollOffsetFromImpl(
     const ElementId& id,
-    const gfx::ScrollOffset& delta,
+    const gfx::Vector2dF& delta,
     const absl::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   if (IsUsingLayerLists()) {
     auto& scroll_tree = property_trees()->scroll_tree;
@@ -1909,7 +1909,7 @@ void LayerTreeHost::SetElementTransformMutated(
 void LayerTreeHost::SetElementScrollOffsetMutated(
     ElementId element_id,
     ElementListType list_type,
-    const gfx::ScrollOffset& scroll_offset) {
+    const gfx::Vector2dF& scroll_offset) {
   // Do nothing. Scroll deltas will be sent from the compositor thread back
   // to the main thread in the same manner as during non-animated
   // compositor-driven scrolling.
@@ -1932,7 +1932,7 @@ void LayerTreeHost::MaximumScaleChanged(ElementId element_id,
   property_trees()->MaximumAnimationScaleChanged(element_id, maximum_scale);
 }
 
-gfx::ScrollOffset LayerTreeHost::GetScrollOffsetForAnimation(
+gfx::Vector2dF LayerTreeHost::GetScrollOffsetForAnimation(
     ElementId element_id) const {
   return property_trees()->scroll_tree.current_scroll_offset(element_id);
 }

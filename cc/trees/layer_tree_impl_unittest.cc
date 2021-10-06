@@ -25,8 +25,7 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
     const gfx::PointF& bottom) {
   gfx::PointF start(base::clamp(top.x(), rect.x(), rect.right()),
                     base::clamp(top.y(), rect.y(), rect.bottom()));
-  gfx::PointF end =
-      start + gfx::Vector2dF(bottom.x() - top.x(), bottom.y() - top.y());
+  gfx::PointF end = start + (bottom - top);
   return {start, end};
 }
 

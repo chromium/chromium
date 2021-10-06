@@ -82,12 +82,11 @@ class ViewportAnchor {
     scroll_tree().ClampScrollToMaxScrollOffset(*inner_, tree_impl_);
     scroll_tree().ClampScrollToMaxScrollOffset(*outer_, tree_impl_);
 
-    gfx::ScrollOffset viewport_location =
+    gfx::Vector2dF viewport_location =
         scroll_tree().current_scroll_offset(inner_->element_id) +
         scroll_tree().current_scroll_offset(outer_->element_id);
 
-    gfx::Vector2dF delta =
-        viewport_in_content_coordinates_.DeltaFrom(viewport_location);
+    gfx::Vector2dF delta = viewport_in_content_coordinates_ - viewport_location;
 
     delta = scroll_tree().ScrollBy(*inner_, delta, tree_impl_);
     scroll_tree().ScrollBy(*outer_, delta, tree_impl_);
@@ -101,7 +100,7 @@ class ViewportAnchor {
   ScrollNode* inner_;
   ScrollNode* outer_;
   LayerTreeImpl* tree_impl_;
-  gfx::ScrollOffset viewport_in_content_coordinates_;
+  gfx::Vector2dF viewport_in_content_coordinates_;
 };
 
 std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
@@ -110,8 +109,7 @@ std::pair<gfx::PointF, gfx::PointF> GetVisibleSelectionEndPoints(
     const gfx::PointF& bottom) {
   gfx::PointF start(base::clamp(top.x(), rect.x(), rect.right()),
                     base::clamp(top.y(), rect.y(), rect.bottom()));
-  gfx::PointF end =
-      start + gfx::Vector2dF(bottom.x() - top.x(), bottom.y() - top.y());
+  gfx::PointF end = start + (bottom - top);
   return {start, end};
 }
 
@@ -275,7 +273,7 @@ void LayerTreeImpl::UpdateScrollbarGeometries() {
     auto* scroll_node = scroll_tree.FindNodeFromElementId(scrolling_element_id);
     if (!scroll_node)
       continue;
-    gfx::ScrollOffset current_offset =
+    gfx::Vector2dF current_offset =
         scroll_tree.current_scroll_offset(scrolling_element_id);
     gfx::SizeF scrolling_size(scroll_node->bounds);
     gfx::Size bounds_size(scroll_tree.container_bounds(scroll_node->id));
@@ -470,8 +468,8 @@ bool LayerTreeImpl::IsRootLayer(const LayerImpl* layer) const {
   return !layer_list_.empty() && layer_list_[0].get() == layer;
 }
 
-gfx::ScrollOffset LayerTreeImpl::TotalScrollOffset() const {
-  gfx::ScrollOffset offset;
+gfx::Vector2dF LayerTreeImpl::TotalScrollOffset() const {
+  gfx::Vector2dF offset;
   const auto& scroll_tree = property_trees()->scroll_tree;
 
   if (auto* inner_scroll = InnerViewportScrollNode()) {
@@ -484,8 +482,8 @@ gfx::ScrollOffset LayerTreeImpl::TotalScrollOffset() const {
   return offset;
 }
 
-gfx::ScrollOffset LayerTreeImpl::TotalMaxScrollOffset() const {
-  gfx::ScrollOffset offset;
+gfx::Vector2dF LayerTreeImpl::TotalMaxScrollOffset() const {
+  gfx::Vector2dF offset;
   const auto& scroll_tree = property_trees()->scroll_tree;
 
   if (viewport_property_ids_.inner_scroll != ScrollTree::kInvalidNodeId)

@@ -3475,7 +3475,7 @@ class LayerTreeHostTestStartPageScaleAnimation : public LayerTreeHostTest {
 
     scroll_layer_->SetBounds(gfx::Size(2 * root_layer->bounds().width(),
                                        2 * root_layer->bounds().height()));
-    scroll_layer_->SetScrollOffset(gfx::ScrollOffset());
+    scroll_layer_->SetScrollOffset(gfx::Vector2dF());
 
     SetupViewport(root_layer, scroll_layer_, root_layer->bounds());
 
@@ -3486,7 +3486,7 @@ class LayerTreeHostTestStartPageScaleAnimation : public LayerTreeHostTest {
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args) override {
-    gfx::ScrollOffset offset = CurrentScrollOffset(scroll_layer_.get());
+    gfx::Vector2dF offset = CurrentScrollOffset(scroll_layer_.get());
     SetScrollOffset(scroll_layer_.get(), offset + args.inner_delta);
     layer_tree_host()->SetPageScaleFactorAndLimits(args.page_scale_delta, 0.5f,
                                                    2.f);
@@ -3561,18 +3561,18 @@ class ViewportDeltasAppliedDuringPinch : public LayerTreeHostTest,
 
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args) override {
     EXPECT_TRUE(sent_gesture_);
-    EXPECT_EQ(gfx::ScrollOffset(50, 50), args.inner_delta);
+    EXPECT_EQ(gfx::Vector2dF(50, 50), args.inner_delta);
     EXPECT_EQ(2, args.page_scale_delta);
 
     auto* scroll_layer =
         layer_tree_host()->InnerViewportScrollLayerForTesting();
     EXPECT_EQ(scroll_layer->element_id(), last_scrolled_element_id_);
-    EXPECT_EQ(gfx::ScrollOffset(50, 50), last_scrolled_offset_);
+    EXPECT_EQ(gfx::Vector2dF(50, 50), last_scrolled_offset_);
     // The scroll offset in the scroll tree is typically updated from blink
     // which doesn't exist in this test. Because we preemptively apply the
     // scroll offset in LayerTreeHost::UpdateScrollOffsetFromImpl, the current
     // scroll offset will still be updated.
-    EXPECT_EQ(gfx::ScrollOffset(50, 50), CurrentScrollOffset(scroll_layer));
+    EXPECT_EQ(gfx::Vector2dF(50, 50), CurrentScrollOffset(scroll_layer));
     EndTest();
   }
 
@@ -3580,7 +3580,7 @@ class ViewportDeltasAppliedDuringPinch : public LayerTreeHostTest,
 
   // ScrollCallbacks
   void DidCompositorScroll(ElementId element_id,
-                           const gfx::ScrollOffset& scroll_offset,
+                           const gfx::Vector2dF& scroll_offset,
                            const absl::optional<TargetSnapAreaElementIds>&
                                snap_target_ids) override {
     last_scrolled_element_id_ = element_id;
@@ -3591,7 +3591,7 @@ class ViewportDeltasAppliedDuringPinch : public LayerTreeHostTest,
  private:
   bool sent_gesture_;
   ElementId last_scrolled_element_id_;
-  gfx::ScrollOffset last_scrolled_offset_;
+  gfx::Vector2dF last_scrolled_offset_;
   base::WeakPtrFactory<ViewportDeltasAppliedDuringPinch> weak_ptr_factory_{
       this};
 };

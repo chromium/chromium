@@ -6,7 +6,6 @@
 #define CC_INPUT_SCROLL_ELASTICITY_HELPER_H_
 
 #include "cc/cc_export.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -62,8 +61,8 @@ class CC_EXPORT ScrollElasticityHelper {
   virtual void SetStretchAmount(const gfx::Vector2dF& stretch_amount) = 0;
 
   // Functions for the scrolling of the root scroll layer.
-  virtual gfx::ScrollOffset ScrollOffset() const = 0;
-  virtual gfx::ScrollOffset MaxScrollOffset() const = 0;
+  virtual gfx::Vector2dF ScrollOffset() const = 0;
+  virtual gfx::Vector2dF MaxScrollOffset() const = 0;
   virtual void ScrollBy(const gfx::Vector2dF& delta) = 0;
 
   // Requests that another frame happens for the controller to continue ticking

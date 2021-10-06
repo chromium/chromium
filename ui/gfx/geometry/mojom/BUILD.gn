@@ -66,10 +66,6 @@ mojom("mojom") {
         mojom = "gfx.mojom.Vector3dF"
         cpp = "::gfx::Vector3dF"
       },
-      {
-        mojom = "gfx.mojom.ScrollOffset"
-        cpp = "::gfx::ScrollOffset"
-      },
     ]
 
     traits_headers = [ "geometry_mojom_traits.h" ]

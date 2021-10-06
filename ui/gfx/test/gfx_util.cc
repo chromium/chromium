@@ -18,7 +18,6 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -174,10 +173,6 @@ void PrintTo(const Rect& rect, ::std::ostream* os) {
 
 void PrintTo(const RectF& rect, ::std::ostream* os) {
   *os << rect.ToString();
-}
-
-void PrintTo(const ScrollOffset& offset, ::std::ostream* os) {
-  *os << offset.ToString();
 }
 
 void PrintTo(const Size& size, ::std::ostream* os) {

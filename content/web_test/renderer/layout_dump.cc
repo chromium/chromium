@@ -38,7 +38,7 @@ std::string DumpFrameHeaderIfNeeded(WebLocalFrame* frame) {
 
 std::string DumpFrameScrollPosition(WebLocalFrame* frame) {
   std::string result;
-  gfx::ScrollOffset offset = frame->GetScrollOffset();
+  gfx::Vector2dF offset = frame->GetScrollOffset();
   if (offset.x() > 0 || offset.y() > 0) {
     if (frame->Parent()) {
       auto* frame_proxy = static_cast<WebFrameTestProxy*>(frame->Client());

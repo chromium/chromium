@@ -643,7 +643,7 @@ gfx::Transform View::GetTransform() const {
     return gfx::Transform();
 
   gfx::Transform transform = layer()->transform();
-  gfx::ScrollOffset scroll_offset = layer()->CurrentScrollOffset();
+  gfx::Vector2dF scroll_offset = layer()->CurrentScrollOffset();
   // Offsets for layer-based scrolling are never negative, but the horizontal
   // scroll direction is reversed in RTL via canvas flipping.
   transform.Translate((GetMirrored() ? 1 : -1) * scroll_offset.x(),

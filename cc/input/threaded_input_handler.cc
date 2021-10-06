@@ -462,7 +462,7 @@ InputHandlerScrollResult ThreadedInputHandler::ScrollUpdate(
   }
 
   scroll_result.current_visual_offset =
-      ScrollOffsetToVector2dF(GetVisualScrollOffset(*CurrentlyScrollingNode()));
+      GetVisualScrollOffset(*CurrentlyScrollingNode());
   float scale_factor = ActiveTree().page_scale_factor_for_scroll();
   scroll_result.current_visual_offset.Scale(scale_factor);
 
@@ -489,15 +489,15 @@ void ThreadedInputHandler::AdjustScrollDeltaForScrollbarSnap(
   // properly set. Currently, track and arrow scrolls both use a direction
   // strategy; however, the track should be using an "end and direction"
   // strategy.
-  gfx::ScrollOffset current_position = GetVisualScrollOffset(*scroll_node);
+  gfx::Vector2dF current_position = GetVisualScrollOffset(*scroll_node);
   const SnapContainerData& data = scroll_node->snap_container_data.value();
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForDirection(
-          gfx::ScrollOffset(current_position.x(), current_position.y()),
-          gfx::ScrollOffset(scroll_state->delta_x(), scroll_state->delta_y()),
+          current_position,
+          gfx::Vector2dF(scroll_state->delta_x(), scroll_state->delta_y()),
           true);
 
-  gfx::ScrollOffset snap_position;
+  gfx::Vector2dF snap_position;
   TargetSnapAreaElementIds snap_target_ids;
   if (!data.FindSnapPosition(*strategy, &snap_position, &snap_target_ids))
     return;
@@ -693,13 +693,13 @@ void ThreadedInputHandler::RequestUpdateForSynchronousInputHandler() {
 }
 
 void ThreadedInputHandler::SetSynchronousInputHandlerRootScrollOffset(
-    const gfx::ScrollOffset& root_content_offset) {
+    const gfx::Vector2dF& root_content_offset) {
   TRACE_EVENT2(
       "cc", "ThreadedInputHandler::SetSynchronousInputHandlerRootScrollOffset",
       "offset_x", root_content_offset.x(), "offset_y", root_content_offset.y());
 
   gfx::Vector2dF physical_delta =
-      root_content_offset.DeltaFrom(GetViewport().TotalScrollOffset());
+      root_content_offset - GetViewport().TotalScrollOffset();
   physical_delta.Scale(ActiveTree().page_scale_factor_for_scroll());
 
   bool changed = !GetViewport()
@@ -879,7 +879,7 @@ void ThreadedInputHandler::DestroyScrollElasticityHelper() {
 }
 
 bool ThreadedInputHandler::GetScrollOffsetForLayer(ElementId element_id,
-                                                   gfx::ScrollOffset* offset) {
+                                                   gfx::Vector2dF* offset) {
   ScrollTree& scroll_tree = GetScrollTree();
   ScrollNode* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
   if (!scroll_node)
@@ -889,17 +889,15 @@ bool ThreadedInputHandler::GetScrollOffsetForLayer(ElementId element_id,
 }
 
 bool ThreadedInputHandler::ScrollLayerTo(ElementId element_id,
-                                         const gfx::ScrollOffset& offset) {
+                                         const gfx::Vector2dF& offset) {
   ScrollTree& scroll_tree = GetScrollTree();
   ScrollNode* scroll_node = scroll_tree.FindNodeFromElementId(element_id);
   if (!scroll_node)
     return false;
 
-  scroll_tree.ScrollBy(
-      *scroll_node,
-      ScrollOffsetToVector2dF(offset -
-                              scroll_tree.current_scroll_offset(element_id)),
-      &ActiveTree());
+  scroll_tree.ScrollBy(*scroll_node,
+                       offset - scroll_tree.current_scroll_offset(element_id),
+                       &ActiveTree());
   return true;
 }
 
@@ -933,22 +931,20 @@ bool ThreadedInputHandler::GetSnapFlingInfoAndSetAnimatingSnapTarget(
   gfx::Vector2dF natural_displacement_in_content =
       gfx::ScaleVector2d(natural_displacement_in_viewport, 1.f / scale_factor);
 
-  gfx::ScrollOffset current_offset = GetVisualScrollOffset(*scroll_node);
-  *out_initial_position = ScrollOffsetToVector2dF(current_offset);
+  gfx::Vector2dF current_offset = GetVisualScrollOffset(*scroll_node);
+  *out_initial_position = current_offset;
 
   // CC side always uses fractional scroll deltas.
   bool use_fractional_offsets = true;
-  gfx::ScrollOffset snap_offset;
   TargetSnapAreaElementIds snap_target_ids;
   std::unique_ptr<SnapSelectionStrategy> strategy =
       SnapSelectionStrategy::CreateForEndAndDirection(
-          current_offset, gfx::ScrollOffset(natural_displacement_in_content),
+          current_offset, natural_displacement_in_content,
           use_fractional_offsets);
-  if (!data.FindSnapPosition(*strategy, &snap_offset, &snap_target_ids))
+  if (!data.FindSnapPosition(*strategy, out_target_position, &snap_target_ids))
     return false;
   scroll_animating_snap_target_ids_ = snap_target_ids;
 
-  *out_target_position = ScrollOffsetToVector2dF(snap_offset);
   out_target_position->Scale(scale_factor);
   out_initial_position->Scale(scale_factor);
   return true;
@@ -1320,7 +1316,7 @@ InputHandler::ScrollStatus ThreadedInputHandler::TryScroll(
   // The a viewport node should be scrolled even if it has no scroll extent
   // since it'll scroll using the Viewport class which will generate browser
   // controls movement and overscroll delta.
-  gfx::ScrollOffset max_scroll_offset =
+  gfx::Vector2dF max_scroll_offset =
       scroll_tree.MaxScrollOffset(scroll_node->id);
   if (max_scroll_offset.x() <= 0 && max_scroll_offset.y() <= 0 &&
       !GetViewport().ShouldScroll(*scroll_node)) {
@@ -1597,13 +1593,12 @@ gfx::Vector2dF ThreadedInputHandler::ComputeScrollDelta(
   adjusted_scroll.Scale(1.f / scale_factor);
   adjusted_scroll = UserScrollableDelta(scroll_node, adjusted_scroll);
 
-  gfx::ScrollOffset old_offset =
+  gfx::Vector2dF old_offset =
       scroll_tree.current_scroll_offset(scroll_node.element_id);
-  gfx::ScrollOffset new_offset = scroll_tree.ClampScrollOffsetToLimits(
-      old_offset + gfx::ScrollOffset(adjusted_scroll), scroll_node);
+  gfx::Vector2dF new_offset = scroll_tree.ClampScrollOffsetToLimits(
+      old_offset + adjusted_scroll, scroll_node);
 
-  gfx::ScrollOffset scrolled = new_offset - old_offset;
-  return gfx::Vector2dF(scrolled.x(), scrolled.y());
+  return new_offset - old_offset;
 }
 
 bool ThreadedInputHandler::CalculateLocalScrollDeltaAndStartPoint(
@@ -1671,10 +1666,10 @@ gfx::Vector2dF ThreadedInputHandler::ScrollNodeWithViewportSpaceDelta(
                local_scroll_delta.y(), "is_outer", scrolls_outer_viewport);
 
   // Apply the scroll delta.
-  gfx::ScrollOffset previous_offset =
+  gfx::Vector2dF previous_offset =
       scroll_tree.current_scroll_offset(scroll_node.element_id);
   scroll_tree.ScrollBy(scroll_node, local_scroll_delta, &ActiveTree());
-  gfx::ScrollOffset scrolled =
+  gfx::Vector2dF scrolled =
       scroll_tree.current_scroll_offset(scroll_node.element_id) -
       previous_offset;
 
@@ -1683,8 +1678,7 @@ gfx::Vector2dF ThreadedInputHandler::ScrollNodeWithViewportSpaceDelta(
 
   // Get the end point in the layer's content space so we can apply its
   // ScreenSpaceTransform.
-  gfx::PointF actual_local_end_point =
-      local_start_point + gfx::Vector2dF(scrolled.x(), scrolled.y());
+  gfx::PointF actual_local_end_point = local_start_point + scrolled;
 
   // Calculate the applied scroll delta in viewport space coordinates.
   bool end_clipped;
@@ -1712,12 +1706,12 @@ gfx::Vector2dF ThreadedInputHandler::ScrollNodeWithLocalDelta(
   float page_scale_factor = compositor_delegate_.PageScaleFactor();
 
   ScrollTree& scroll_tree = GetScrollTree();
-  gfx::ScrollOffset previous_offset =
+  gfx::Vector2dF previous_offset =
       scroll_tree.current_scroll_offset(scroll_node.element_id);
   gfx::Vector2dF delta = local_delta;
   delta.Scale(1.f / page_scale_factor);
   scroll_tree.ScrollBy(scroll_node, delta, &ActiveTree());
-  gfx::ScrollOffset scrolled =
+  gfx::Vector2dF scrolled =
       scroll_tree.current_scroll_offset(scroll_node.element_id) -
       previous_offset;
   gfx::Vector2dF consumed_scroll(scrolled.x(), scrolled.y());
@@ -2030,7 +2024,7 @@ bool ThreadedInputHandler::SnapAtScrollEnd(SnapReason reason) {
     return false;
 
   SnapContainerData& data = scroll_node->snap_container_data.value();
-  gfx::ScrollOffset current_position = GetVisualScrollOffset(*scroll_node);
+  gfx::Vector2dF current_position = GetVisualScrollOffset(*scroll_node);
 
   // You might think that if a scroll never received a scroll update we could
   // just drop the snap. However, if the GSB+GSE arrived while we were mid-snap
@@ -2045,7 +2039,7 @@ bool ThreadedInputHandler::SnapAtScrollEnd(SnapReason reason) {
       latched_scroll_type_ == ui::ScrollInputType::kWheel &&
       last_scroll_state.delta_granularity() !=
           ui::ScrollGranularity::kScrollByPrecisePixel;
-  gfx::ScrollOffset last_scroll_delta = last_scroll_state.DeltaOrHint();
+  gfx::Vector2dF last_scroll_delta = last_scroll_state.DeltaOrHint();
 
   std::unique_ptr<SnapSelectionStrategy> strategy;
   if (imprecise_wheel_scrolling && !last_scroll_delta.IsZero() &&
@@ -2064,7 +2058,7 @@ bool ThreadedInputHandler::SnapAtScrollEnd(SnapReason reason) {
         did_scroll_y_for_scroll_gesture_);
   }
 
-  gfx::ScrollOffset snap_position;
+  gfx::Vector2dF snap_position;
   TargetSnapAreaElementIds snap_target_ids;
   if (!data.FindSnapPosition(*strategy, &snap_position, &snap_target_ids))
     return false;
@@ -2074,8 +2068,7 @@ bool ThreadedInputHandler::SnapAtScrollEnd(SnapReason reason) {
     compositor_delegate_.WillScrollContent(scroll_node->element_id);
   }
 
-  gfx::Vector2dF delta =
-      ScrollOffsetToVector2dF(snap_position - current_position);
+  gfx::Vector2dF delta = snap_position - current_position;
   bool did_animate = false;
   if (scroll_node->scrolls_outer_viewport) {
     gfx::Vector2dF scaled_delta(delta);
@@ -2103,7 +2096,7 @@ bool ThreadedInputHandler::IsAnimatingForSnap() const {
   return scroll_animating_snap_target_ids_ != TargetSnapAreaElementIds();
 }
 
-gfx::ScrollOffset ThreadedInputHandler::GetVisualScrollOffset(
+gfx::Vector2dF ThreadedInputHandler::GetVisualScrollOffset(
     const ScrollNode& scroll_node) const {
   if (scroll_node.scrolls_outer_viewport)
     return GetViewport().TotalScrollOffset();

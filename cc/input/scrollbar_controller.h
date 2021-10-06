@@ -216,14 +216,14 @@ class CC_EXPORT ScrollbarController {
   float ScreenSpaceScaleFactor() const;
 
   // Helper to convert scroll offset to autoscroll velocity.
-  float InitialDeltaToAutoscrollVelocity(gfx::ScrollOffset scroll_offset) const;
+  float InitialDeltaToAutoscrollVelocity(gfx::Vector2dF scroll_offset) const;
 
   // Returns the hit tested ScrollbarPart based on the position_in_widget.
   ScrollbarPart GetScrollbarPartFromPointerDown(
       const gfx::PointF position_in_widget) const;
 
   // Returns scroll offsets based on which ScrollbarPart was hit tested.
-  gfx::ScrollOffset GetScrollOffsetForScrollbarPart(
+  gfx::Vector2dF GetScrollOffsetForScrollbarPart(
       const ScrollbarPart scrollbar_part,
       const bool jump_key_modifier) const;
 

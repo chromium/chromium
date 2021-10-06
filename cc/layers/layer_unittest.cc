@@ -41,7 +41,6 @@
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/transform.h"
@@ -930,8 +929,8 @@ TEST_F(LayerTest, CheckPropertyChangeCausesCorrectBehavior) {
   // We can use any layer pointer here since we aren't syncing for real.
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetScrollable(gfx::Size(1, 1)));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetUserScrollable(true, false));
-  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetScrollOffset(
-      gfx::ScrollOffset(10, 10)));
+  EXPECT_SET_NEEDS_COMMIT(1,
+                          test_layer->SetScrollOffset(gfx::Vector2dF(10, 10)));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetNonFastScrollableRegion(
       Region(gfx::Rect(1, 1, 2, 2))));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetTransform(
@@ -1518,7 +1517,7 @@ TEST_F(LayerTest, AnimationSchedulesLayerUpdate) {
   // handled similarly to normal compositor scroll updates.
   EXPECT_CALL(*layer_tree_host_, SetNeedsUpdateLayers()).Times(0);
   layer_tree_host_->SetElementScrollOffsetMutated(
-      element_id, ElementListType::ACTIVE, gfx::ScrollOffset(10, 10));
+      element_id, ElementListType::ACTIVE, gfx::Vector2dF(10, 10));
   Mock::VerifyAndClearExpectations(layer_tree_host_.get());
 }
 

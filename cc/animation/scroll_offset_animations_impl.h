@@ -11,7 +11,7 @@
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/trees/mutator_host_client.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -35,8 +35,8 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
       delete;
 
   void AutoScrollAnimationCreate(ElementId element_id,
-                                 const gfx::ScrollOffset& target_offset,
-                                 const gfx::ScrollOffset& current_offset,
+                                 const gfx::Vector2dF& target_offset,
+                                 const gfx::Vector2dF& current_offset,
                                  float autoscroll_velocity,
                                  base::TimeDelta animation_start_offset);
 
@@ -44,13 +44,13 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl
   // animation. |animation_start_offset| causes us to start the animation
   // partway through.
   void MouseWheelScrollAnimationCreate(ElementId element_id,
-                                       const gfx::ScrollOffset& target_offset,
-                                       const gfx::ScrollOffset& current_offset,
+                                       const gfx::Vector2dF& target_offset,
+                                       const gfx::Vector2dF& current_offset,
                                        base::TimeDelta delayed_by,
                                        base::TimeDelta animation_start_offset);
 
   bool ScrollAnimationUpdateTarget(const gfx::Vector2dF& scroll_delta,
-                                   const gfx::ScrollOffset& max_scroll_offset,
+                                   const gfx::Vector2dF& max_scroll_offset,
                                    base::TimeTicks frame_monotonic_time,
                                    base::TimeDelta delayed_by);
 

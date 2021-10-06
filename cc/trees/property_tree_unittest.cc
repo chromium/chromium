@@ -618,17 +618,17 @@ TEST(ScrollTreeTest, GetPixelSnappedScrollOffsetNegativeOffset) {
   scroll_tree.Node(scroll_node_id)->element_id = element_id;
 
   // Set a scroll value close to 0.
-  scroll_tree.SetScrollOffset(element_id, gfx::ScrollOffset(0, 0.1));
+  scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF(0, 0.1));
   transform_tree.Node(transform_node_id)->scrolls = true;
   transform_tree.Node(transform_node_id)->scroll_offset =
-      gfx::ScrollOffset(0, 0.1);
+      gfx::Vector2dF(0, 0.1);
 
   // Pretend that the snap amount was slightly larger than 0.1.
   transform_tree.Node(transform_node_id)->snap_amount = gfx::Vector2dF(0, 0.2);
   transform_tree.Node(transform_node_id)->needs_local_transform_update = false;
 
   // The returned offset should be clamped at a minimum of 0.
-  gfx::ScrollOffset offset =
+  gfx::Vector2dF offset =
       scroll_tree.GetPixelSnappedScrollOffset(scroll_node_id);
   EXPECT_EQ(offset.y(), 0);
 }
@@ -672,7 +672,7 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
       scroll_node_id;
 
   // Push main scroll to pending.
-  main_scroll_tree.SetScrollOffset(element_id, gfx::ScrollOffset(0, 1));
+  main_scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF(0, 1));
   pending_scroll_tree.PushScrollUpdatesFromMainThread(
       &property_trees, host_impl.pending_tree(), use_fractional_deltas);
   const SyncedScrollOffset* scroll_offset =
@@ -684,7 +684,7 @@ TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
   pending_scroll_tree.SetScrollOffsetDeltaForTesting(element_id,
                                                      gfx::Vector2dF(0, 0.25));
   main_scroll_tree.CollectScrollDeltasForTesting(use_fractional_deltas);
-  EXPECT_EQ(gfx::ScrollOffset(0, 1),
+  EXPECT_EQ(gfx::Vector2dF(0, 1),
             main_scroll_tree.current_scroll_offset(element_id));
 
   // Rounding logic turned on should not cause property change on push.

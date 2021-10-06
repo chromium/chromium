@@ -5,6 +5,7 @@
 #include "cc/animation/element_animations.h"
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -256,9 +257,9 @@ TEST_F(ElementAnimationsTest,
   EXPECT_FALSE(
       animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET));
 
-  gfx::ScrollOffset initial_value(100.f, 300.f);
-  gfx::ScrollOffset provider_initial_value(150.f, 300.f);
-  gfx::ScrollOffset target_value(300.f, 200.f);
+  gfx::Vector2dF initial_value(100.f, 300.f);
+  gfx::Vector2dF provider_initial_value(150.f, 300.f);
+  gfx::Vector2dF target_value(300.f, 200.f);
 
   client_impl_.SetScrollOffsetForAnimation(provider_initial_value);
 
@@ -887,8 +888,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
 
   auto events = CreateEventsForTesting();
 
-  gfx::ScrollOffset initial_value(100.f, 300.f);
-  gfx::ScrollOffset target_value(300.f, 200.f);
+  gfx::Vector2dF initial_value(100.f, 300.f);
+  gfx::Vector2dF target_value(300.f, 200.f);
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));
@@ -958,8 +959,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionOnImplOnly) {
 
   auto events = CreateEventsForTesting();
 
-  gfx::ScrollOffset initial_value(100.f, 300.f);
-  gfx::ScrollOffset target_value(300.f, 200.f);
+  gfx::Vector2dF initial_value(100.f, 300.f);
+  gfx::Vector2dF target_value(300.f, 200.f);
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));
@@ -1007,8 +1008,8 @@ TEST_F(ElementAnimationsTest, UpdateStateWithoutAnimate) {
 
   // Add first scroll offset animation.
   AddScrollOffsetAnimationToAnimation(animation_impl_.get(),
-                                      gfx::ScrollOffset(100.f, 300.f),
-                                      gfx::ScrollOffset(100.f, 200.f));
+                                      gfx::Vector2dF(100.f, 300.f),
+                                      gfx::Vector2dF(100.f, 200.f));
 
   // Calling UpdateState after Animate should promote the animation to running
   // state.
@@ -1025,8 +1026,8 @@ TEST_F(ElementAnimationsTest, UpdateStateWithoutAnimate) {
 
   // Add second scroll offset animation.
   AddScrollOffsetAnimationToAnimation(animation_impl_.get(),
-                                      gfx::ScrollOffset(100.f, 200.f),
-                                      gfx::ScrollOffset(100.f, 100.f));
+                                      gfx::Vector2dF(100.f, 200.f),
+                                      gfx::Vector2dF(100.f, 100.f));
 
   // Calling UpdateState without Animate should NOT promote the animation to
   // running state.
@@ -1042,7 +1043,7 @@ TEST_F(ElementAnimationsTest, UpdateStateWithoutAnimate) {
             animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET)
                 ->run_state());
   EXPECT_VECTOR2DF_EQ(
-      gfx::ScrollOffset(100.f, 200.f),
+      gfx::Vector2dF(100.f, 200.f),
       client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
 }
 
@@ -1060,8 +1061,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
 
   auto events = CreateEventsForTesting();
 
-  gfx::ScrollOffset initial_value(500.f, 100.f);
-  gfx::ScrollOffset target_value(300.f, 200.f);
+  gfx::Vector2dF initial_value(500.f, 100.f);
+  gfx::Vector2dF target_value(300.f, 200.f);
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));
@@ -1091,8 +1092,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_EQ(initial_value,
             client_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
-  EXPECT_EQ(gfx::ScrollOffset(), client_impl_.GetScrollOffset(
-                                     element_id_, ElementListType::PENDING));
+  EXPECT_EQ(gfx::Vector2dF(), client_impl_.GetScrollOffset(
+                                  element_id_, ElementListType::PENDING));
 
   animation_impl_->Tick(kInitialTickTime);
 
@@ -1140,7 +1141,7 @@ TEST_F(ElementAnimationsTest, ScrollOffsetRemovalClearsScrollDelta) {
   auto events = CreateEventsForTesting();
 
   // First test the 1-argument version of RemoveKeyframeModel.
-  gfx::ScrollOffset target_value(300.f, 200.f);
+  gfx::Vector2dF target_value(300.f, 200.f);
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));
@@ -1263,8 +1264,8 @@ TEST_F(ElementAnimationsTest,
   TestAnimationDelegate delegate;
   animation_impl_->set_animation_delegate(&delegate);
 
-  gfx::ScrollOffset initial_value(100.f, 300.f);
-  gfx::ScrollOffset target_value(300.f, 200.f);
+  gfx::Vector2dF initial_value(100.f, 300.f);
+  gfx::Vector2dF target_value(300.f, 200.f);
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));
@@ -2069,8 +2070,8 @@ TEST_F(ElementAnimationsTest, ImplThreadTakeoverAnimationGetsDeleted) {
 
   // Add impl-only scroll offset animation.
   const int keyframe_model_id = 1;
-  gfx::ScrollOffset initial_value(100.f, 300.f);
-  gfx::ScrollOffset target_value(300.f, 200.f);
+  gfx::Vector2dF initial_value(100.f, 300.f);
+  gfx::Vector2dF target_value(300.f, 200.f);
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           target_value));

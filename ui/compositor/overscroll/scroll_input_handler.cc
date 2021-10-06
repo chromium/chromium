@@ -91,8 +91,8 @@ void ScrollInputHandler::ReconcileElasticOverscrollAndRootScroll() {}
 void ScrollInputHandler::SetPrefersReducedMotion(bool prefers_reduced_motion) {}
 
 void ScrollInputHandler::UpdateRootLayerStateForSynchronousInputHandler(
-    const gfx::ScrollOffset& total_scroll_offset,
-    const gfx::ScrollOffset& max_scroll_offset,
+    const gfx::Vector2dF& total_scroll_offset,
+    const gfx::Vector2dF& max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,

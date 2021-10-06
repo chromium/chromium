@@ -75,7 +75,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/skia_util.h"
@@ -927,10 +926,8 @@ void PdfViewWebPlugin::OnViewportChanged(
                                     css_to_device_pixel_scale),
       new_device_scale);
 
-  if (IsPrintPreview()) {
-    UpdateScroll(gfx::ScrollOffsetToVector2dF(
-        container_wrapper_->GetFrame()->GetScrollOffset()));
-  }
+  if (IsPrintPreview())
+    UpdateScroll(container_wrapper_->GetFrame()->GetScrollOffset());
 
   // Scrolling in the main PDF Viewer UI is already handled by
   // `HandleUpdateScrollMessage()`.

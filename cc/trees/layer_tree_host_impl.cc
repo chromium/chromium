@@ -132,7 +132,6 @@
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -947,16 +946,15 @@ void LayerTreeHostImpl::StartPageScaleAnimation(
   if (!InnerViewportScrollNode())
     return;
 
-  gfx::ScrollOffset scroll_total = active_tree_->TotalScrollOffset();
+  gfx::Vector2dF scroll_total = active_tree_->TotalScrollOffset();
   gfx::SizeF scrollable_size = active_tree_->ScrollableSize();
   gfx::SizeF viewport_size(
       active_tree_->InnerViewportScrollNode()->container_bounds);
 
   // TODO(miletus) : Pass in ScrollOffset.
-  page_scale_animation_ =
-      PageScaleAnimation::Create(ScrollOffsetToVector2dF(scroll_total),
-                                 active_tree_->current_page_scale_factor(),
-                                 viewport_size, scrollable_size);
+  page_scale_animation_ = PageScaleAnimation::Create(
+      scroll_total, active_tree_->current_page_scale_factor(), viewport_size,
+      scrollable_size);
 
   if (anchor_point) {
     gfx::Vector2dF anchor(target_offset);
@@ -2224,8 +2222,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 
   if (InnerViewportScrollNode()) {
     // TODO(miletus) : Change the metadata to hold ScrollOffset.
-    metadata.root_scroll_offset =
-        gfx::ScrollOffsetToVector2dF(active_tree_->TotalScrollOffset());
+    metadata.root_scroll_offset = active_tree_->TotalScrollOffset();
   }
 
   metadata.display_transform_hint = active_tree_->display_transform_hint();
@@ -2245,8 +2242,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
 RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
     FrameData* frame) {
   RenderFrameMetadata metadata;
-  metadata.root_scroll_offset =
-      gfx::ScrollOffsetToVector2dF(active_tree_->TotalScrollOffset());
+  metadata.root_scroll_offset = active_tree_->TotalScrollOffset();
 
   metadata.root_background_color = active_tree_->background_color();
   metadata.is_scroll_offset_at_top = active_tree_->TotalScrollOffset().y() == 0;
@@ -3874,7 +3870,7 @@ float LayerTreeHostImpl::CurrentBottomControlsShownRatio() const {
   return active_tree_->CurrentBottomControlsShownRatio();
 }
 
-gfx::ScrollOffset LayerTreeHostImpl::ViewportScrollOffset() const {
+gfx::Vector2dF LayerTreeHostImpl::ViewportScrollOffset() const {
   return viewport_->TotalScrollOffset();
 }
 
@@ -3910,10 +3906,10 @@ bool LayerTreeHostImpl::ScrollAnimationCreateInternal(
     return false;
   }
 
-  gfx::ScrollOffset current_offset =
+  gfx::Vector2dF current_offset =
       scroll_tree.current_scroll_offset(scroll_node.element_id);
-  gfx::ScrollOffset target_offset = scroll_tree.ClampScrollOffsetToLimits(
-      current_offset + gfx::ScrollOffset(delta), scroll_node);
+  gfx::Vector2dF target_offset = scroll_tree.ClampScrollOffsetToLimits(
+      current_offset + delta, scroll_node);
 
   // Start the animation one full frame in. Without any offset, the animation
   // doesn't start until next frame, increasing latency, and preventing our
@@ -3922,7 +3918,7 @@ bool LayerTreeHostImpl::ScrollAnimationCreateInternal(
 
   if (autoscroll_velocity) {
     mutator_host_->ImplOnlyAutoScrollAnimationCreate(
-        scroll_node.element_id, gfx::ScrollOffset(delta), current_offset,
+        scroll_node.element_id, delta, current_offset,
         autoscroll_velocity.value(), animation_start_offset);
   } else {
     mutator_host_->ImplOnlyScrollAnimationCreate(
@@ -4091,17 +4087,17 @@ bool LayerTreeHostImpl::AnimatePageScale(base::TimeTicks monotonic_time) {
   if (!page_scale_animation_)
     return false;
 
-  gfx::ScrollOffset scroll_total = active_tree_->TotalScrollOffset();
+  gfx::Vector2dF scroll_total = active_tree_->TotalScrollOffset();
 
   if (!page_scale_animation_->IsAnimationStarted())
     page_scale_animation_->StartAnimation(monotonic_time);
 
   active_tree_->SetPageScaleOnActiveTree(
       page_scale_animation_->PageScaleFactorAtTime(monotonic_time));
-  gfx::ScrollOffset next_scroll = gfx::ScrollOffset(
-      page_scale_animation_->ScrollOffsetAtTime(monotonic_time));
+  gfx::Vector2dF next_scroll =
+      gfx::Vector2dF(page_scale_animation_->ScrollOffsetAtTime(monotonic_time));
 
-  viewport().ScrollByInnerFirst(next_scroll.DeltaFrom(scroll_total));
+  viewport().ScrollByInnerFirst(next_scroll - scroll_total);
 
   if (page_scale_animation_->IsAnimationCompleteAtTime(monotonic_time)) {
     page_scale_animation_ = nullptr;
@@ -4757,7 +4753,7 @@ void LayerTreeHostImpl::SetMutatorsNeedRebuildPropertyTrees() {}
 void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
     ElementId element_id,
     LayerTreeImpl* tree,
-    const gfx::ScrollOffset& scroll_offset) {
+    const gfx::Vector2dF& scroll_offset) {
   if (!tree)
     return;
 
@@ -4839,7 +4835,7 @@ void LayerTreeHostImpl::SetElementTransformMutated(
 void LayerTreeHostImpl::SetElementScrollOffsetMutated(
     ElementId element_id,
     ElementListType list_type,
-    const gfx::ScrollOffset& scroll_offset) {
+    const gfx::Vector2dF& scroll_offset) {
   if (list_type == ElementListType::ACTIVE) {
     SetTreeLayerScrollOffsetMutated(element_id, active_tree(), scroll_offset);
     ShowScrollbarsForImplScroll(element_id);
@@ -4894,14 +4890,14 @@ void LayerTreeHostImpl::NotifyAnimationWorkletStateChange(
   }
 }
 
-gfx::ScrollOffset LayerTreeHostImpl::GetScrollOffsetForAnimation(
+gfx::Vector2dF LayerTreeHostImpl::GetScrollOffsetForAnimation(
     ElementId element_id) const {
   if (active_tree()) {
     return active_tree()->property_trees()->scroll_tree.current_scroll_offset(
         element_id);
   }
 
-  return gfx::ScrollOffset();
+  return gfx::Vector2dF();
 }
 
 bool LayerTreeHostImpl::CommitToActiveTree() const {

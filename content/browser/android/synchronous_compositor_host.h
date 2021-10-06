@@ -25,8 +25,8 @@
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/synchronous_compositor.mojom.h"
 #include "ui/android/view_android.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 struct DidOverscrollParams;
@@ -72,7 +72,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   void SetMemoryPolicy(size_t bytes_limit) override;
   void DidBecomeActive() override;
   void DidChangeRootLayerScrollOffset(
-      const gfx::ScrollOffset& root_offset) override;
+      const gfx::Vector2dF& root_offset) override;
   void SynchronouslyZoomBy(float zoom_delta, const gfx::Point& anchor) override;
   void OnComputeScroll(base::TimeTicks animation_time) override;
   void SetBeginFrameSource(viz::BeginFrameSource* begin_frame_source) override;
@@ -178,7 +178,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
 
   // Updated by both renderer and browser. This is in physical pixel when
   // use-zoom-for-dsf is enabled, otherwise in dip.
-  gfx::ScrollOffset root_scroll_offset_;
+  gfx::Vector2dF root_scroll_offset_;
 
   // Indicates that whether OnComputeScroll is called or overridden. The
   // fling_controller should advance the fling only when OnComputeScroll is not
@@ -192,7 +192,7 @@ class CONTENT_EXPORT SynchronousCompositorHost
   uint32_t did_activate_pending_tree_count_;
   uint32_t frame_metadata_version_ = 0u;
   // Physical pixel when use-zoom-for-dsf is enabled, otherwise in dip.
-  gfx::ScrollOffset max_scroll_offset_;
+  gfx::Vector2dF max_scroll_offset_;
   gfx::SizeF scrollable_size_;
   float page_scale_factor_ = 0.f;
   float min_page_scale_factor_ = 0.f;

@@ -28,7 +28,7 @@
 #include "cc/animation/worklet_animation.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/box_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -691,8 +691,8 @@ bool AnimationHost::HasTickingKeyframeModelForTesting(
 
 void AnimationHost::ImplOnlyAutoScrollAnimationCreate(
     ElementId element_id,
-    const gfx::ScrollOffset& target_offset,
-    const gfx::ScrollOffset& current_offset,
+    const gfx::Vector2dF& target_offset,
+    const gfx::Vector2dF& current_offset,
     float autoscroll_velocity,
     base::TimeDelta animation_start_offset) {
   DCHECK(scroll_offset_animations_impl_);
@@ -703,8 +703,8 @@ void AnimationHost::ImplOnlyAutoScrollAnimationCreate(
 
 void AnimationHost::ImplOnlyScrollAnimationCreate(
     ElementId element_id,
-    const gfx::ScrollOffset& target_offset,
-    const gfx::ScrollOffset& current_offset,
+    const gfx::Vector2dF& target_offset,
+    const gfx::Vector2dF& current_offset,
     base::TimeDelta delayed_by,
     base::TimeDelta animation_start_offset) {
   DCHECK(scroll_offset_animations_impl_);
@@ -715,7 +715,7 @@ void AnimationHost::ImplOnlyScrollAnimationCreate(
 
 bool AnimationHost::ImplOnlyScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
-    const gfx::ScrollOffset& max_scroll_offset,
+    const gfx::Vector2dF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,
     base::TimeDelta delayed_by) {
   DCHECK(scroll_offset_animations_impl_);

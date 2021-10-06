@@ -266,7 +266,7 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
     FloatPoint max_position = scrollable_area->ScrollOffsetToPosition(
         scrollable_area->MaximumScrollOffset());
     snap_container_data.set_max_position(
-        gfx::ScrollOffset(max_position.X(), max_position.Y()));
+        gfx::Vector2dF(max_position.X(), max_position.Y()));
 
     // Scroll-padding represents inward offsets from the corresponding edge of
     // the scrollport.
@@ -308,7 +308,7 @@ void SnapCoordinator::UpdateSnapContainerData(LayoutBox& snap_container) {
         cc::SnapStrictness::kProximity) {
       PhysicalSize size = container_rect.size;
       size.Scale(kProximityRatio);
-      gfx::ScrollOffset range(size.width.ToFloat(), size.height.ToFloat());
+      gfx::Vector2dF range(size.width.ToFloat(), size.height.ToFloat());
       snap_container_data.set_proximity_range(range);
     }
 

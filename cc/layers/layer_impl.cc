@@ -603,7 +603,7 @@ gfx::Rect LayerImpl::GetDamageRect() const {
   return gfx::Rect();
 }
 
-void LayerImpl::SetCurrentScrollOffset(const gfx::ScrollOffset& scroll_offset) {
+void LayerImpl::SetCurrentScrollOffset(const gfx::Vector2dF& scroll_offset) {
   DCHECK(IsActive());
   if (GetScrollTree().SetScrollOffset(element_id(), scroll_offset))
     layer_tree_impl()->DidUpdateScrollOffset(element_id());

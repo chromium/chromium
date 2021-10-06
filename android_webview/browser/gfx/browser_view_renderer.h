@@ -261,16 +261,12 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   // When zoom-for-dsf enabled |max_scroll_offset_unscaled_| and
   // |scroll_offset_unscaled_| is in physical pixel; otherwise, they are in dip
-  // TODO(miletus): Make scroll_offset_unscaled_ a gfx::ScrollOffset.
   gfx::Vector2dF scroll_offset_unscaled_;
-
-  // TODO(miletus): Make max_scroll_offset_unscaled_ a gfx::ScrollOffset.
   gfx::Vector2dF max_scroll_offset_unscaled_;
 
   // Used to prevent rounding errors from accumulating enough to generate
   // visible skew (especially noticeable when scrolling up and down in the same
   // spot over a period of time).
-  // TODO(miletus): Make overscroll_rounding_error_ a gfx::ScrollOffset.
   gfx::Vector2dF overscroll_rounding_error_;
 
   // The scroll to apply after the next scroll state update.

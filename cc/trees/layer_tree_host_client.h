@@ -13,7 +13,6 @@
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
@@ -30,7 +29,7 @@ struct WebVitalMetrics;
 
 struct ApplyViewportChangesArgs {
   // Scroll offset delta of the inner (visual) viewport.
-  gfx::ScrollOffset inner_delta;
+  gfx::Vector2dF inner_delta;
 
   // Elastic overscroll effect offset delta. This is used only on Mac. a.k.a
   // "rubber-banding" overscroll.

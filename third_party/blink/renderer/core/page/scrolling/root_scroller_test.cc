@@ -2835,7 +2835,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
     ASSERT_EQ(1, GetBrowserControls().TopShownRatio());
     ASSERT_EQ(1, GetBrowserControls().BottomShownRatio());
     WebView().MainFrameWidget()->ApplyViewportChangesForTesting(
-        {gfx::ScrollOffset(), gfx::Vector2dF(), 1, false, -1, -1,
+        {gfx::Vector2dF(), gfx::Vector2dF(), 1, false, -1, -1,
          cc::BrowserControlsState::kBoth});
     ASSERT_EQ(0, GetBrowserControls().TopShownRatio());
     ASSERT_EQ(0, GetBrowserControls().BottomShownRatio());

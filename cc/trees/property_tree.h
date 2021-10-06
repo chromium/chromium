@@ -25,7 +25,7 @@
 #include "cc/trees/sticky_position_constraint.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/scroll_offset.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/transform.h"
 
 namespace base {
@@ -49,7 +49,7 @@ struct ScrollNode;
 struct TransformNode;
 struct TransformCachedNodeData;
 
-typedef SyncedProperty<AdditionGroup<gfx::ScrollOffset>> SyncedScrollOffset;
+typedef SyncedProperty<AdditionGroup<gfx::Vector2dF>> SyncedScrollOffset;
 
 class PropertyTrees;
 
@@ -383,7 +383,7 @@ class ScrollCallbacks {
   // Called after the composited scroll offset changed.
   virtual void DidCompositorScroll(
       ElementId scroll_element_id,
-      const gfx::ScrollOffset&,
+      const gfx::Vector2dF&,
       const absl::optional<TargetSnapAreaElementIds>&) = 0;
   // Called after the hidden status of composited scrollbars changed. Note that
   // |scroll_element_id| is the element id of the scroll not of the scrollbars.
@@ -407,10 +407,10 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
 
   void clear();
 
-  gfx::ScrollOffset MaxScrollOffset(int scroll_node_id) const;
+  gfx::Vector2dF MaxScrollOffset(int scroll_node_id) const;
   void OnScrollOffsetAnimated(ElementId id,
                               int scroll_tree_index,
-                              const gfx::ScrollOffset& scroll_offset,
+                              const gfx::Vector2dF& scroll_offset,
                               LayerTreeImpl* layer_tree_impl);
   gfx::Size container_bounds(int scroll_node_id) const;
   gfx::SizeF scroll_bounds(int scroll_node_id) const;
@@ -429,7 +429,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // Returns the current scroll offset. On the main thread this would return the
   // value for the LayerTree while on the impl thread this is the current value
   // on the active tree.
-  const gfx::ScrollOffset current_scroll_offset(ElementId id) const;
+  const gfx::Vector2dF current_scroll_offset(ElementId id) const;
 
   // Returns the scroll offset taking into account any adjustments that may be
   // included due to pixel snapping.
@@ -441,7 +441,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // simple cases but we really should update the whole transform tree otherwise
   // we are ignoring any parent transform node that needs updating and thus our
   // snap amount can be incorrect.
-  const gfx::ScrollOffset GetPixelSnappedScrollOffset(int scroll_node_id) const;
+  const gfx::Vector2dF GetPixelSnappedScrollOffset(int scroll_node_id) const;
 
   // Collects deltas for scroll changes on the impl thread that need to be
   // reported to the main thread during the main frame. As such, should only be
@@ -468,27 +468,25 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   void PushScrollUpdatesFromPendingTree(PropertyTrees* pending_property_trees,
                                         LayerTreeImpl* active_tree);
 
-  void SetBaseScrollOffset(ElementId id,
-                           const gfx::ScrollOffset& scroll_offset);
+  void SetBaseScrollOffset(ElementId id, const gfx::Vector2dF& scroll_offset);
   // Returns true if the scroll offset is changed.
-  bool SetScrollOffset(ElementId id, const gfx::ScrollOffset& scroll_offset);
+  bool SetScrollOffset(ElementId id, const gfx::Vector2dF& scroll_offset);
   void SetScrollOffsetClobberActiveValue(ElementId id) {
     GetOrCreateSyncedScrollOffset(id)->set_clobber_active_value();
   }
   bool UpdateScrollOffsetBaseForTesting(ElementId id,
-                                        const gfx::ScrollOffset& offset);
+                                        const gfx::Vector2dF& offset);
   bool SetScrollOffsetDeltaForTesting(ElementId id,
                                       const gfx::Vector2dF& delta);
-  const gfx::ScrollOffset GetScrollOffsetBaseForTesting(ElementId id) const;
-  const gfx::ScrollOffset GetScrollOffsetDeltaForTesting(ElementId id) const;
+  const gfx::Vector2dF GetScrollOffsetBaseForTesting(ElementId id) const;
+  const gfx::Vector2dF GetScrollOffsetDeltaForTesting(ElementId id) const;
   void CollectScrollDeltasForTesting(bool use_fractional_deltas = false);
 
   gfx::Vector2dF ScrollBy(const ScrollNode& scroll_node,
                           const gfx::Vector2dF& scroll,
                           LayerTreeImpl* layer_tree_impl);
-  gfx::ScrollOffset ClampScrollOffsetToLimits(
-      gfx::ScrollOffset offset,
-      const ScrollNode& scroll_node) const;
+  gfx::Vector2dF ClampScrollOffsetToLimits(gfx::Vector2dF offset,
+                                           const ScrollNode& scroll_node) const;
 
   const SyncedScrollOffset* GetSyncedScrollOffset(ElementId id) const;
 
@@ -503,7 +501,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
 
   void NotifyDidCompositorScroll(
       ElementId scroll_element_id,
-      const gfx::ScrollOffset& scroll_offset,
+      const gfx::Vector2dF& scroll_offset,
       const absl::optional<TargetSnapAreaElementIds>& snap_target_ids);
   void NotifyDidChangeScrollbarsHidden(ElementId scroll_element_id,
                                        bool hidden);
@@ -518,7 +516,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   using PropertyTree::needs_update;
   using PropertyTree::set_needs_update;
 
-  using ScrollOffsetMap = base::flat_map<ElementId, gfx::ScrollOffset>;
+  using ScrollOffsetMap = base::flat_map<ElementId, gfx::Vector2dF>;
   using SyncedScrollOffsetMap =
       base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
 
@@ -535,8 +533,8 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   base::WeakPtr<ScrollCallbacks> callbacks_;
 
   SyncedScrollOffset* GetOrCreateSyncedScrollOffset(ElementId id);
-  gfx::ScrollOffset PullDeltaForMainThread(SyncedScrollOffset* scroll_offset,
-                                           bool use_fractional_deltas);
+  gfx::Vector2dF PullDeltaForMainThread(SyncedScrollOffset* scroll_offset,
+                                        bool use_fractional_deltas);
 };
 
 constexpr int kInvalidUpdateNumber = -1;

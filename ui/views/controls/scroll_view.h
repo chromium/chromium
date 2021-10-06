@@ -23,7 +23,7 @@ struct ElementId;
 }
 
 namespace gfx {
-class ScrollOffset;
+class Vector2dF;
 }
 
 namespace views {
@@ -285,17 +285,17 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Helpers to get and set the current scroll offset (either from the ui::Layer
   // or from the |contents_| origin offset).
-  gfx::ScrollOffset CurrentOffset() const;
-  void ScrollToOffset(const gfx::ScrollOffset& offset);
+  gfx::Vector2dF CurrentOffset() const;
+  void ScrollToOffset(const gfx::Vector2dF& offset);
 
   // Whether the ScrollView scrolls using ui::Layer APIs.
   bool ScrollsWithLayers() const;
 
   // Callback entrypoint when hosted Layers are scrolled by the Compositor.
-  void OnLayerScrolled(const gfx::ScrollOffset&, const cc::ElementId&);
+  void OnLayerScrolled(const gfx::Vector2dF&, const cc::ElementId&);
 
   // Updates accessory elements when |contents_| is scrolled.
-  void OnScrolled(const gfx::ScrollOffset& offset);
+  void OnScrolled(const gfx::Vector2dF& offset);
 
   // Horizontally scrolls the header (if any) to match the contents.
   void ScrollHeader();
@@ -310,7 +310,7 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
 
   // Shows/hides the overflow indicators depending on the position of the
   // scrolling content within the viewport.
-  void UpdateOverflowIndicatorVisibility(const gfx::ScrollOffset& offset);
+  void UpdateOverflowIndicatorVisibility(const gfx::Vector2dF& offset);
 
   // The current contents and its viewport. |contents_| is contained in
   // |contents_viewport_|.

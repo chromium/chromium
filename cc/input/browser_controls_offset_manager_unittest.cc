@@ -72,7 +72,7 @@ class MockBrowserControlsOffsetManagerClient
     return browser_controls_params_.only_expand_top_controls_at_page_top;
   }
 
-  gfx::ScrollOffset ViewportScrollOffset() const override {
+  gfx::Vector2dF ViewportScrollOffset() const override {
     return viewport_scroll_offset_;
   }
 
@@ -121,12 +121,12 @@ class MockBrowserControlsOffsetManagerClient
   }
 
   void SetViewportScrollOffset(float x, float y) {
-    viewport_scroll_offset_ = gfx::ScrollOffset(x, y);
+    viewport_scroll_offset_ = gfx::Vector2dF(x, y);
   }
 
   void ScrollVerticallyBy(float dy) {
     gfx::Vector2dF viewport_scroll_delta = manager()->ScrollBy({0.f, dy});
-    viewport_scroll_offset_.Add(gfx::ScrollOffset(viewport_scroll_delta));
+    viewport_scroll_offset_.Add(viewport_scroll_delta);
   }
 
  private:
@@ -144,7 +144,7 @@ class MockBrowserControlsOffsetManagerClient
   float top_controls_shown_ratio_;
   float browser_controls_show_threshold_;
   float browser_controls_hide_threshold_;
-  gfx::ScrollOffset viewport_scroll_offset_;
+  gfx::Vector2dF viewport_scroll_offset_;
 };
 
 TEST(BrowserControlsOffsetManagerTest, EnsureScrollThresholdApplied) {

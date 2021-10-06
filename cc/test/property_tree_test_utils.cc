@@ -4,6 +4,9 @@
 
 #include "cc/test/property_tree_test_utils.h"
 
+#include <memory>
+#include <utility>
+
 #include "cc/layers/picture_layer.h"
 #include "cc/layers/picture_layer_impl.h"
 #include "cc/trees/clip_node.h"
@@ -163,7 +166,7 @@ ScrollNode& CreateScrollNodeInternal(LayerType* layer,
   transform_node->should_be_snapped = true;
   transform_node->scrolls = true;
 
-  scroll_tree.SetScrollOffset(layer->element_id(), gfx::ScrollOffset());
+  scroll_tree.SetScrollOffset(layer->element_id(), gfx::Vector2dF());
   return *node;
 }
 
@@ -190,7 +193,7 @@ void SetupMaskPropertiesInternal(LayerType* masked_layer,
 
 template <typename LayerType>
 void SetScrollOffsetInternal(LayerType* layer,
-                             const gfx::ScrollOffset& scroll_offset) {
+                             const gfx::Vector2dF& scroll_offset) {
   DCHECK(layer->has_transform_node());
   auto* transform_node = GetTransformNode(layer);
   transform_node->scroll_offset = scroll_offset;
@@ -373,7 +376,7 @@ ScrollNode& CreateScrollNodeForUncompositedScroller(
     node->transform_id = transform_node->id;
   }
 
-  scroll_tree.SetScrollOffset(element_id, gfx::ScrollOffset());
+  scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF());
   return *node;
 }
 
@@ -388,7 +391,7 @@ void SetupMaskProperties(LayerImpl* masked_layer,
   SetupMaskPropertiesInternal(masked_layer, mask_layer);
 }
 
-void SetScrollOffset(Layer* layer, const gfx::ScrollOffset& scroll_offset) {
+void SetScrollOffset(Layer* layer, const gfx::Vector2dF& scroll_offset) {
   if (layer->layer_tree_host()->IsUsingLayerLists()) {
     if (CurrentScrollOffset(layer) != scroll_offset)
       layer->SetNeedsCommit();
@@ -399,14 +402,14 @@ void SetScrollOffset(Layer* layer, const gfx::ScrollOffset& scroll_offset) {
 }
 
 void SetScrollOffsetFromImplSide(Layer* layer,
-                                 const gfx::ScrollOffset& scroll_offset) {
+                                 const gfx::Vector2dF& scroll_offset) {
   if (layer->layer_tree_host()->IsUsingLayerLists())
     SetScrollOffsetInternal(layer, scroll_offset);
   else
     layer->SetScrollOffsetFromImplSide(scroll_offset);
 }
 
-void SetScrollOffset(LayerImpl* layer, const gfx::ScrollOffset& scroll_offset) {
+void SetScrollOffset(LayerImpl* layer, const gfx::Vector2dF& scroll_offset) {
   if (layer->IsActive())
     layer->SetCurrentScrollOffset(scroll_offset);
   SetScrollOffsetInternal(layer, scroll_offset);
@@ -491,17 +494,17 @@ RenderSurfaceImpl* GetRenderSurface(const LayerImpl* layer) {
   return effect_tree.GetRenderSurface(GetEffectNode(layer)->target_id);
 }
 
-gfx::ScrollOffset ScrollOffsetBase(const LayerImpl* layer) {
+gfx::Vector2dF ScrollOffsetBase(const LayerImpl* layer) {
   return GetPropertyTrees(layer)->scroll_tree.GetScrollOffsetBaseForTesting(
       layer->element_id());
 }
 
-gfx::ScrollOffset ScrollDelta(const LayerImpl* layer) {
+gfx::Vector2dF ScrollDelta(const LayerImpl* layer) {
   return GetPropertyTrees(layer)->scroll_tree.GetScrollOffsetDeltaForTesting(
       layer->element_id());
 }
 
-gfx::ScrollOffset CurrentScrollOffset(const Layer* layer) {
+gfx::Vector2dF CurrentScrollOffset(const Layer* layer) {
   auto result = GetPropertyTrees(layer)->scroll_tree.current_scroll_offset(
       layer->element_id());
   if (!layer->layer_tree_host()->IsUsingLayerLists())
@@ -509,12 +512,12 @@ gfx::ScrollOffset CurrentScrollOffset(const Layer* layer) {
   return result;
 }
 
-gfx::ScrollOffset CurrentScrollOffset(const LayerImpl* layer) {
+gfx::Vector2dF CurrentScrollOffset(const LayerImpl* layer) {
   return GetPropertyTrees(layer)->scroll_tree.current_scroll_offset(
       layer->element_id());
 }
 
-gfx::ScrollOffset MaxScrollOffset(const LayerImpl* layer) {
+gfx::Vector2dF MaxScrollOffset(const LayerImpl* layer) {
   return GetPropertyTrees(layer)->scroll_tree.MaxScrollOffset(
       layer->scroll_tree_index());
 }

@@ -708,7 +708,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void SetElementScrollOffsetMutated(
       ElementId element_id,
       ElementListType list_type,
-      const gfx::ScrollOffset& scroll_offset) override;
+      const gfx::Vector2dF& scroll_offset) override;
 
   void ElementIsAnimatingChanged(const PropertyToElementIdMap& element_id_map,
                                  ElementListType list_type,
@@ -723,7 +723,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       PaintWorkletInput::PropertyValue property_value) override {}
 
   void ScrollOffsetAnimationFinished() override {}
-  gfx::ScrollOffset GetScrollOffsetForAnimation(
+  gfx::Vector2dF GetScrollOffsetForAnimation(
       ElementId element_id) const override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
@@ -829,7 +829,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // client. This lets the client skip a commit if the value does not change.
   void UpdateScrollOffsetFromImpl(
       const ElementId&,
-      const gfx::ScrollOffset& delta,
+      const gfx::Vector2dF& delta,
       const absl::optional<TargetSnapAreaElementIds>&);
 
   const CompositorMode compositor_mode_;

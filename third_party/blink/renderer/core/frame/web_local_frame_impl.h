@@ -283,8 +283,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   std::unique_ptr<WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const WebAssociatedURLLoaderOptions&) override;
   void DeprecatedStopLoading() override;
-  gfx::ScrollOffset GetScrollOffset() const override;
-  void SetScrollOffset(const gfx::ScrollOffset&) override;
+  gfx::Vector2dF GetScrollOffset() const override;
+  void SetScrollOffset(const gfx::Vector2dF&) override;
   gfx::Size DocumentSize() const override;
   bool HasVisibleContent() const override;
   gfx::Rect VisibleContentRect() const override;

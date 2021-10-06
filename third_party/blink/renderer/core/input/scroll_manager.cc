@@ -742,9 +742,9 @@ void ScrollManager::AdjustForSnapAtScrollUpdate(
   FloatPoint current_position = scrollable_area->ScrollPosition();
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForDirection(
-          gfx::ScrollOffset(current_position.X(), current_position.Y()),
-          gfx::ScrollOffset(scroll_state_data->delta_x,
-                            scroll_state_data->delta_y),
+          gfx::Vector2dF(current_position.X(), current_position.Y()),
+          gfx::Vector2dF(scroll_state_data->delta_x,
+                         scroll_state_data->delta_y),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
 
   absl::optional<FloatPoint> snap_point =
@@ -907,8 +907,8 @@ bool ScrollManager::GetSnapFlingInfoAndSetAnimatingSnapTarget(
   *out_initial_position = gfx::Vector2dF(current_position);
   std::unique_ptr<cc::SnapSelectionStrategy> strategy =
       cc::SnapSelectionStrategy::CreateForEndAndDirection(
-          gfx::ScrollOffset(*out_initial_position),
-          gfx::ScrollOffset(natural_displacement),
+          gfx::Vector2dF(*out_initial_position),
+          gfx::Vector2dF(natural_displacement),
           RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled());
   absl::optional<FloatPoint> snap_end =
       scrollable_area->GetSnapPositionAndSetTarget(*strategy);

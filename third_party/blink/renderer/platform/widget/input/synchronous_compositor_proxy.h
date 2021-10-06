@@ -19,8 +19,8 @@
 #include "third_party/blink/public/mojom/input/synchronous_compositor.mojom-blink.h"
 #include "third_party/blink/public/platform/input/synchronous_input_handler_proxy.h"
 #include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_layer_tree_frame_sink.h"
-#include "ui/gfx/geometry/scroll_offset.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace power_scheduler {
 class PowerModeVoter;
@@ -53,8 +53,8 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
           compositor_request);
 
   // blink::SynchronousInputHandler overrides.
-  void UpdateRootLayerState(const gfx::ScrollOffset& total_scroll_offset,
-                            const gfx::ScrollOffset& max_scroll_offset,
+  void UpdateRootLayerState(const gfx::Vector2dF& total_scroll_offset,
+                            const gfx::Vector2dF& max_scroll_offset,
                             const gfx::SizeF& scrollable_size,
                             float page_scale_factor,
                             float min_page_scale_factor,
@@ -91,7 +91,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   void SetMemoryPolicy(uint32_t bytes_limit) final;
   void ReclaimResources(uint32_t layer_tree_frame_sink_id,
                         Vector<viz::ReturnedResource> resources) final;
-  void SetScroll(const gfx::ScrollOffset& total_scroll_offset) final;
+  void SetScroll(const gfx::Vector2dF& total_scroll_offset) final;
   void BeginFrame(const viz::BeginFrameArgs& args,
                   const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&
                       timing_details) final;
@@ -142,8 +142,8 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   uint32_t version_ = 0;
   // |total_scroll_offset_| and |max_scroll_offset_| are in physical pixel when
   // use-zoom-for-dsf is enabled, otherwise in dip.
-  gfx::ScrollOffset total_scroll_offset_;  // Modified by both.
-  gfx::ScrollOffset max_scroll_offset_;
+  gfx::Vector2dF total_scroll_offset_;  // Modified by both.
+  gfx::Vector2dF max_scroll_offset_;
   gfx::SizeF scrollable_size_;
   float page_scale_factor_;
   float min_page_scale_factor_;

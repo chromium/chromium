@@ -19,10 +19,6 @@
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
-namespace gfx {
-class ScrollOffset;
-}
-
 namespace cc {
 
 class Animation;
@@ -163,20 +159,20 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void ImplOnlyAutoScrollAnimationCreate(
       ElementId element_id,
-      const gfx::ScrollOffset& target_offset,
-      const gfx::ScrollOffset& current_offset,
+      const gfx::Vector2dF& target_offset,
+      const gfx::Vector2dF& current_offset,
       float autoscroll_velocity,
       base::TimeDelta animation_start_offset) override;
 
   void ImplOnlyScrollAnimationCreate(
       ElementId element_id,
-      const gfx::ScrollOffset& target_offset,
-      const gfx::ScrollOffset& current_offset,
+      const gfx::Vector2dF& target_offset,
+      const gfx::Vector2dF& current_offset,
       base::TimeDelta delayed_by,
       base::TimeDelta animation_start_offset) override;
   bool ImplOnlyScrollAnimationUpdateTarget(
       const gfx::Vector2dF& scroll_delta,
-      const gfx::ScrollOffset& max_scroll_offset,
+      const gfx::Vector2dF& max_scroll_offset,
       base::TimeTicks frame_monotonic_time,
       base::TimeDelta delayed_by) override;
 

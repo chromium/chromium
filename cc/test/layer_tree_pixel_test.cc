@@ -257,8 +257,7 @@ scoped_refptr<SolidColorLayer> LayerTreePixelTest::CreateSolidColorLayer(
   layer->SetHitTestable(true);
   layer->SetBounds(rect.size());
   layer->SetPosition(gfx::PointF(rect.origin()));
-  layer->SetOffsetToTransformParent(
-      gfx::Vector2dF(rect.origin().x(), rect.origin().y()));
+  layer->SetOffsetToTransformParent(gfx::Vector2dF(rect.OffsetFromOrigin()));
   layer->SetBackgroundColor(color);
   return layer;
 }

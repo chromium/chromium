@@ -62,8 +62,8 @@ void SynchronousCompositorProxy::SetLayerTreeFrameSink(
 }
 
 void SynchronousCompositorProxy::UpdateRootLayerState(
-    const gfx::ScrollOffset& total_scroll_offset,
-    const gfx::ScrollOffset& max_scroll_offset,
+    const gfx::Vector2dF& total_scroll_offset,
+    const gfx::Vector2dF& max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,
@@ -301,7 +301,7 @@ void SynchronousCompositorProxy::BeginFrame(
 }
 
 void SynchronousCompositorProxy::SetScroll(
-    const gfx::ScrollOffset& new_total_scroll_offset) {
+    const gfx::Vector2dF& new_total_scroll_offset) {
   if (total_scroll_offset_ == new_total_scroll_offset)
     return;
   total_scroll_offset_ = new_total_scroll_offset;

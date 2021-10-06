@@ -64,7 +64,7 @@ class MockScrollCallbacks : public CompositorScrollCallbacks {
  public:
   MOCK_METHOD3(DidCompositorScroll,
                void(CompositorElementId,
-                    const gfx::ScrollOffset&,
+                    const gfx::Vector2dF&,
                     const absl::optional<cc::TargetSnapAreaElementIds>&));
   MOCK_METHOD2(DidChangeScrollbarsHidden, void(CompositorElementId, bool));
 
@@ -1089,7 +1089,7 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
   const cc::TransformNode& transform_node =
       *transform_tree.Node(scroll_node.transform_id);
   EXPECT_TRUE(transform_node.local.IsIdentity());
-  EXPECT_EQ(gfx::ScrollOffset(-7, -9), transform_node.scroll_offset);
+  EXPECT_EQ(gfx::Vector2dF(-7, -9), transform_node.scroll_offset);
   EXPECT_EQ(kNotScrollingOnMain, scroll_node.main_thread_scrolling_reasons);
 
   auto* layer = NonScrollableLayerAt(0);
@@ -1114,10 +1114,10 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeComposited) {
 
   absl::optional<cc::TargetSnapAreaElementIds> targets;
   EXPECT_CALL(ScrollCallbacks(),
-              DidCompositorScroll(scroll_node.element_id,
-                                  gfx::ScrollOffset(1, 2), targets));
+              DidCompositorScroll(scroll_node.element_id, gfx::Vector2dF(1, 2),
+                                  targets));
   GetPropertyTrees().scroll_tree.NotifyDidCompositorScroll(
-      scroll_node.element_id, gfx::ScrollOffset(1, 2), targets);
+      scroll_node.element_id, gfx::Vector2dF(1, 2), targets);
 
   EXPECT_CALL(ScrollCallbacks(),
               DidChangeScrollbarsHidden(scroll_node.element_id, true));
@@ -1228,7 +1228,7 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollNodes) {
   const cc::TransformNode& transform_node_a =
       *transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
-  EXPECT_EQ(gfx::ScrollOffset(-11, -13), transform_node_a.scroll_offset);
+  EXPECT_EQ(gfx::Vector2dF(-11, -13), transform_node_a.scroll_offset);
 
   const cc::ScrollNode& scroll_node_b = *scroll_tree.Node(3);
   CheckCcScrollNode(*scroll_b, scroll_node_b);
@@ -1239,7 +1239,7 @@ TEST_P(PaintArtifactCompositorTest, NestedScrollNodes) {
   const cc::TransformNode& transform_node_b =
       *transform_tree.Node(scroll_node_b.transform_id);
   EXPECT_TRUE(transform_node_b.local.IsIdentity());
-  EXPECT_EQ(gfx::ScrollOffset(-37, -41), transform_node_b.scroll_offset);
+  EXPECT_EQ(gfx::Vector2dF(-37, -41), transform_node_b.scroll_offset);
 }
 
 TEST_P(PaintArtifactCompositorTest, ScrollHitTestLayerOrder) {
@@ -1377,7 +1377,7 @@ TEST_P(PaintArtifactCompositorTest, AncestorScrollNodes) {
   const cc::TransformNode& transform_node_a =
       *transform_tree.Node(scroll_node_a.transform_id);
   EXPECT_TRUE(transform_node_a.local.IsIdentity());
-  EXPECT_EQ(gfx::ScrollOffset(-11, -13), transform_node_a.scroll_offset);
+  EXPECT_EQ(gfx::Vector2dF(-11, -13), transform_node_a.scroll_offset);
 }
 
 TEST_P(PaintArtifactCompositorTest, MergeSimpleChunks) {
@@ -3878,7 +3878,7 @@ TEST_P(PaintArtifactCompositorTest, ViewportPageScale) {
   // The max scroll offset should be scaled by the page scale factor (see:
   // |ScrollTree::MaxScrollOffset|). This adjustment scales the contents from
   // 27x32 to 54x64 so the max scroll offset becomes (54-20)/2 x (64-10)/2.
-  EXPECT_EQ(gfx::ScrollOffset(17, 27), max_scroll_offset);
+  EXPECT_EQ(gfx::Vector2dF(17, 27), max_scroll_offset);
 }
 
 enum {
@@ -4513,9 +4513,9 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
   EXPECT_EQ(scroll_element_id, scroll_node->element_id);
   EXPECT_EQ(scroll_element_id, scroll_layer->element_id());
   EXPECT_EQ(scroll_node->id, scroll_layer->scroll_tree_index());
-  EXPECT_EQ(gfx::ScrollOffset(-7, -9),
+  EXPECT_EQ(gfx::Vector2dF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_element_id));
-  EXPECT_EQ(gfx::ScrollOffset(-7, -9), transform_node->scroll_offset);
+  EXPECT_EQ(gfx::Vector2dF(-7, -9), transform_node->scroll_offset);
 
   auto& host = GetLayerTreeHost();
   host.CompositeForTest(base::TimeTicks::Now(), true);
@@ -4527,10 +4527,10 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
       scroll_element_id, FloatPoint(-10, -20)));
   EXPECT_TRUE(host.LayersThatShouldPushProperties().contains(scroll_layer));
   EXPECT_TRUE(host.proxy()->CommitRequested());
-  EXPECT_EQ(gfx::ScrollOffset(-10, -20),
+  EXPECT_EQ(gfx::Vector2dF(-10, -20),
             scroll_tree.current_scroll_offset(scroll_element_id));
   // DirectlySetScrollOffset doesn't update transform node.
-  EXPECT_EQ(gfx::ScrollOffset(-7, -9), transform_node->scroll_offset);
+  EXPECT_EQ(gfx::Vector2dF(-7, -9), transform_node->scroll_offset);
   EXPECT_FALSE(transform_tree.needs_update());
 }
 

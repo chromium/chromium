@@ -1234,9 +1234,9 @@ bool PaintArtifactCompositor::DirectlySetScrollOffset(
   auto* property_trees = root_layer_->layer_tree_host()->property_trees();
   if (!property_trees->element_id_to_scroll_node_index.contains(element_id))
     return false;
-  PropertyTreeManager::DirectlySetScrollOffset(
-      *root_layer_->layer_tree_host(), element_id,
-      gfx::ScrollOffset(scroll_offset));
+  PropertyTreeManager::DirectlySetScrollOffset(*root_layer_->layer_tree_host(),
+                                               element_id,
+                                               gfx::Vector2dF(scroll_offset));
   return true;
 }
 

@@ -8,8 +8,8 @@
 
 namespace gfx {
 class Point;
-class ScrollOffset;
 class SizeF;
+class Vector2dF;
 }  // namespace gfx
 
 namespace blink {
@@ -20,13 +20,12 @@ class SynchronousInputHandler {
 
   // Informs the Android WebView embedder of the current root scroll and page
   // scale state.
-  virtual void UpdateRootLayerState(
-      const gfx::ScrollOffset& total_scroll_offset,
-      const gfx::ScrollOffset& max_scroll_offset,
-      const gfx::SizeF& scrollable_size,
-      float page_scale_factor,
-      float min_page_scale_factor,
-      float max_page_scale_factor) = 0;
+  virtual void UpdateRootLayerState(const gfx::Vector2dF& total_scroll_offset,
+                                    const gfx::Vector2dF& max_scroll_offset,
+                                    const gfx::SizeF& scrollable_size,
+                                    float page_scale_factor,
+                                    float min_page_scale_factor,
+                                    float max_page_scale_factor) = 0;
 };
 
 // Android WebView requires synchronous scrolling from the WebView application.
@@ -47,7 +46,7 @@ class SynchronousInputHandlerProxy {
   // SynchronousInputHandler should be given back the result in case it differs
   // from what was sent.
   virtual void SynchronouslySetRootScrollOffset(
-      const gfx::ScrollOffset& root_offset) = 0;
+      const gfx::Vector2dF& root_offset) = 0;
 
   // Similar to SetRootScrollOffset above, to control the zoom level, ie scale
   // factor. Note |magnify_delta| is an incremental rather than absolute value.

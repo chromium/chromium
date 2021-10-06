@@ -26,7 +26,7 @@
 namespace gfx {
 class Point;
 class PointF;
-class ScrollOffset;
+class Vector2dF;
 }  // namespace gfx
 
 namespace cc {
@@ -71,7 +71,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
       const gfx::PointF& viewport_point) override;
   void RequestUpdateForSynchronousInputHandler() override;
   void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::ScrollOffset& root_content_offset) override;
+      const gfx::Vector2dF& root_content_offset) override;
   void PinchGestureBegin() override;
   void PinchGestureUpdate(float magnify_delta,
                           const gfx::Point& anchor) override;
@@ -94,9 +94,9 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   ScrollElasticityHelper* CreateScrollElasticityHelper() override;
   void DestroyScrollElasticityHelper() override;
   bool GetScrollOffsetForLayer(ElementId element_id,
-                               gfx::ScrollOffset* offset) override;
+                               gfx::Vector2dF* offset) override;
   bool ScrollLayerTo(ElementId element_id,
-                     const gfx::ScrollOffset& offset) override;
+                     const gfx::Vector2dF& offset) override;
   bool ScrollingShouldSwitchtoMainThread() override;
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement_in_viewport,
@@ -184,7 +184,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
 
   // This method gets the scroll offset for a regular scroller, or the combined
   // visual and layout offsets of the viewport.
-  gfx::ScrollOffset GetVisualScrollOffset(const ScrollNode& scroll_node) const;
+  gfx::Vector2dF GetVisualScrollOffset(const ScrollNode& scroll_node) const;
   bool IsScrolledBy(LayerImpl* child, ScrollNode* ancestor);
   bool IsAnimatingForSnap() const;
 

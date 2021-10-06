@@ -124,14 +124,14 @@ TEST_F(AnimationHostTest, ImplOnlyScrollAnimationUpdateTargetIfDetached) {
   client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
 
-  gfx::ScrollOffset target_offset(0., 2.);
-  gfx::ScrollOffset current_offset(0., 1.);
+  gfx::Vector2dF target_offset(0., 2.);
+  gfx::Vector2dF current_offset(0., 1.);
   host_impl_->ImplOnlyScrollAnimationCreate(element_id_, target_offset,
                                             current_offset, base::TimeDelta(),
                                             base::TimeDelta());
 
   gfx::Vector2dF scroll_delta(0, 0.5);
-  gfx::ScrollOffset max_scroll_offset(0., 3.);
+  gfx::Vector2dF max_scroll_offset(0., 3.);
 
   base::TimeTicks time;
 
@@ -291,7 +291,7 @@ void CreateScrollingNodeForElement(ElementId element_id,
 
 void SetScrollOffset(PropertyTrees* property_trees,
                      ElementId element_id,
-                     gfx::ScrollOffset offset) {
+                     gfx::Vector2dF offset) {
   // Update both scroll and transform trees
   property_trees->scroll_tree.SetScrollOffset(element_id, offset);
   TransformNode* transform_node =
@@ -317,14 +317,14 @@ TEST_F(AnimationHostTest, LayerTreeMutatorUpdateReflectsScrollAnimations) {
   CreateScrollingNodeForElement(element_id, &property_trees);
 
   // Set an initial scroll value.
-  SetScrollOffset(&property_trees, element_id, gfx::ScrollOffset(10, 10));
+  SetScrollOffset(&property_trees, element_id, gfx::Vector2dF(10, 10));
 
   scoped_refptr<MockAnimation> mock_scroll_animation(
       new MockAnimation(animation_id1));
   EXPECT_CALL(*mock_scroll_animation, Tick(_))
       .WillOnce(InvokeWithoutArgs([&]() {
         // Scroll to 20% of the max value.
-        SetScrollOffset(&property_trees, element_id, gfx::ScrollOffset(20, 20));
+        SetScrollOffset(&property_trees, element_id, gfx::Vector2dF(20, 20));
       }));
 
   // Ensure scroll animation is ticking.
@@ -398,7 +398,7 @@ TEST_F(AnimationHostTest, TickScrollLinkedAnimation) {
             KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY);
 
   auto& scroll_tree = property_trees.scroll_tree;
-  SetScrollOffset(&property_trees, element_id_, gfx::ScrollOffset(0, 20));
+  SetScrollOffset(&property_trees, element_id_, gfx::Vector2dF(0, 20));
   EXPECT_TRUE(host_impl_->TickAnimations(base::TimeTicks(),
                                          property_trees.scroll_tree, false));
 
@@ -447,7 +447,7 @@ TEST_F(AnimationHostTest, ScrollTimelineOffsetUpdatedByScrollAnimation) {
   EXPECT_CALL(*mock_scroll_animation, Tick(_))
       .WillOnce(InvokeWithoutArgs([&]() {
         // Scroll to 20% of the max value.
-        SetScrollOffset(&property_trees, element_id_, gfx::ScrollOffset(0, 20));
+        SetScrollOffset(&property_trees, element_id_, gfx::Vector2dF(0, 20));
       }));
 
   // Ensure scroll animation is ticking.

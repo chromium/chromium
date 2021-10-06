@@ -1384,8 +1384,8 @@ void InputHandlerProxy::SetPrefersReducedMotion(bool prefers_reduced_motion) {
 }
 
 void InputHandlerProxy::UpdateRootLayerStateForSynchronousInputHandler(
-    const gfx::ScrollOffset& total_scroll_offset,
-    const gfx::ScrollOffset& max_scroll_offset,
+    const gfx::Vector2dF& total_scroll_offset,
+    const gfx::Vector2dF& max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,
@@ -1434,7 +1434,7 @@ void InputHandlerProxy::SetSynchronousInputHandler(
 }
 
 void InputHandlerProxy::SynchronouslySetRootScrollOffset(
-    const gfx::ScrollOffset& root_offset) {
+    const gfx::Vector2dF& root_offset) {
   DCHECK(synchronous_input_handler_);
   input_handler_->SetSynchronousInputHandlerRootScrollOffset(root_offset);
 }

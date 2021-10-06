@@ -267,7 +267,7 @@ void Viewport::PinchEnd(const gfx::Point& anchor, bool snap_to_min) {
           gfx::PointF(anchor + pinch_anchor_adjustment_);
       adjusted_anchor =
           gfx::ScalePoint(adjusted_anchor, min_scale / page_scale);
-      adjusted_anchor += ScrollOffsetToVector2dF(TotalScrollOffset());
+      adjusted_anchor += TotalScrollOffset();
       host_impl_->StartPageScaleAnimation(
           ToRoundedVector2d(adjusted_anchor.OffsetFromOrigin()), true,
           min_scale, kSnapToMinZoomAnimationDuration);
@@ -325,8 +325,8 @@ gfx::Vector2dF Viewport::AdjustOverscroll(const gfx::Vector2dF& delta) const {
   return adjusted;
 }
 
-gfx::ScrollOffset Viewport::MaxTotalScrollOffset() const {
-  gfx::ScrollOffset offset;
+gfx::Vector2dF Viewport::MaxTotalScrollOffset() const {
+  gfx::Vector2dF offset;
 
   offset += scroll_tree().MaxScrollOffset(InnerScrollNode()->id);
 
@@ -336,8 +336,8 @@ gfx::ScrollOffset Viewport::MaxTotalScrollOffset() const {
   return offset;
 }
 
-gfx::ScrollOffset Viewport::TotalScrollOffset() const {
-  gfx::ScrollOffset offset;
+gfx::Vector2dF Viewport::TotalScrollOffset() const {
+  gfx::Vector2dF offset;
 
   if (!InnerScrollNode())
     return offset;

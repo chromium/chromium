@@ -10,7 +10,7 @@ namespace cc {
 
 std::unique_ptr<SnapSelectionStrategy>
 SnapSelectionStrategy::CreateForEndPosition(
-    const gfx::ScrollOffset& current_position,
+    const gfx::Vector2dF& current_position,
     bool scrolled_x,
     bool scrolled_y,
     SnapTargetsPrioritization prioritization) {
@@ -19,8 +19,8 @@ SnapSelectionStrategy::CreateForEndPosition(
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForDirection(gfx::ScrollOffset current_position,
-                                          gfx::ScrollOffset step,
+SnapSelectionStrategy::CreateForDirection(gfx::Vector2dF current_position,
+                                          gfx::Vector2dF step,
                                           bool use_fractional_offsets,
                                           SnapStopAlwaysFilter filter) {
   return std::make_unique<DirectionStrategy>(current_position, step, filter,
@@ -28,17 +28,15 @@ SnapSelectionStrategy::CreateForDirection(gfx::ScrollOffset current_position,
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForEndAndDirection(
-    gfx::ScrollOffset current_position,
-    gfx::ScrollOffset displacement,
-    bool use_fractional_offsets) {
+SnapSelectionStrategy::CreateForEndAndDirection(gfx::Vector2dF current_position,
+                                                gfx::Vector2dF displacement,
+                                                bool use_fractional_offsets) {
   return std::make_unique<EndAndDirectionStrategy>(
       current_position, displacement, use_fractional_offsets);
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForTargetElement(
-    gfx::ScrollOffset current_position) {
+SnapSelectionStrategy::CreateForTargetElement(gfx::Vector2dF current_position) {
   return std::make_unique<EndPositionStrategy>(
       current_position, true /* scrolled_x */, true /* scrolled_y */,
       SnapTargetsPrioritization::kRequire);
@@ -75,11 +73,11 @@ bool EndPositionStrategy::ShouldSnapOnY() const {
   return scrolled_y_;
 }
 
-gfx::ScrollOffset EndPositionStrategy::intended_position() const {
+gfx::Vector2dF EndPositionStrategy::intended_position() const {
   return current_position_;
 }
 
-gfx::ScrollOffset EndPositionStrategy::base_position() const {
+gfx::Vector2dF EndPositionStrategy::base_position() const {
   return current_position_;
 }
 
@@ -112,11 +110,11 @@ bool DirectionStrategy::ShouldSnapOnY() const {
   return step_.y() != 0;
 }
 
-gfx::ScrollOffset DirectionStrategy::intended_position() const {
+gfx::Vector2dF DirectionStrategy::intended_position() const {
   return current_position_ + step_;
 }
 
-gfx::ScrollOffset DirectionStrategy::base_position() const {
+gfx::Vector2dF DirectionStrategy::base_position() const {
   return current_position_;
 }
 
@@ -186,11 +184,11 @@ bool EndAndDirectionStrategy::ShouldSnapOnY() const {
   return displacement_.y() != 0;
 }
 
-gfx::ScrollOffset EndAndDirectionStrategy::intended_position() const {
+gfx::Vector2dF EndAndDirectionStrategy::intended_position() const {
   return current_position_ + displacement_;
 }
 
-gfx::ScrollOffset EndAndDirectionStrategy::base_position() const {
+gfx::Vector2dF EndAndDirectionStrategy::base_position() const {
   return current_position_ + displacement_;
 }
 

@@ -5226,7 +5226,7 @@ TEST_F(LegacySWPictureLayerImplTest, ScrollPropagatesToPending) {
 
   SetupDefaultTrees(layer_bounds);
 
-  active_layer()->SetCurrentScrollOffset(gfx::ScrollOffset(0.0, 50.0));
+  active_layer()->SetCurrentScrollOffset(gfx::Vector2dF(0.0, 50.0));
   UpdateDrawProperties(host_impl()->active_tree());
   EXPECT_EQ("0,50 100x100", active_layer()
                                 ->HighResTiling()

@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"
+#include "build/build_config.h"
 #include "cc/layers/nine_patch_layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/texture_layer.h"
@@ -263,8 +264,7 @@ class ScrollingLayerTreePerfTest : public LayerTreeHostPerfTestJsonReader {
       return;
     static const gfx::Vector2d delta = gfx::Vector2d(0, 10);
     SetScrollOffset(scrollable_.get(),
-                    gfx::ScrollOffsetWithDelta(
-                        CurrentScrollOffset(scrollable_.get()), delta));
+                    CurrentScrollOffset(scrollable_.get()) + delta);
   }
 
  private:

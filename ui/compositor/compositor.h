@@ -67,7 +67,6 @@ class DelegatedInkPointRenderer;
 }  // namespace mojom
 struct PresentationFeedback;
 class Rect;
-class ScrollOffset;
 class Size;
 }
 
@@ -256,8 +255,8 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   // Gets or sets the scroll offset for the given layer in step with the
   // cc::InputHandler. Returns true if the layer is active on the impl side.
   bool GetScrollOffsetForLayer(cc::ElementId element_id,
-                               gfx::ScrollOffset* offset) const;
-  bool ScrollLayerTo(cc::ElementId element_id, const gfx::ScrollOffset& offset);
+                               gfx::Vector2dF* offset) const;
+  bool ScrollLayerTo(cc::ElementId element_id, const gfx::Vector2dF& offset);
 
   // Mac path for transporting vsync parameters to the display. Other platforms
   // update it via the BrowserCompositorLayerTreeFrameSink directly.
