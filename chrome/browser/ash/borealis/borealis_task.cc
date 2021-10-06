@@ -152,7 +152,7 @@ void StartBorealisVm::RunInternal(BorealisContext* context) {
             .GetExtraDisk();
 
     if (file) {
-      base::ScopedFD fd = base::ScopedFD(file->TakePlatformFile());
+      base::ScopedFD fd(file->TakePlatformFile());
       request.add_fds(vm_tools::concierge::StartVmRequest::STORAGE);
       chromeos::ConciergeClient::Get()->StartTerminaVmWithFd(
           std::move(fd), std::move(request),
