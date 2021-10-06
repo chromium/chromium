@@ -1416,6 +1416,12 @@ config("default_warnings") {
       # maps to -Wno-deprecated-declarations in clang-cl.
       "/wd4996",
     ]
+    if (!is_clang) {
+      # TODO(thakis): Remove this once
+      # https://swiftshader-review.googlesource.com/c/SwiftShader/+/57968 has
+      # rolled into angle.
+      cflags += [ "/wd4244" ]
+    }
   } else {
     if (is_apple && !is_nacl) {
       # When compiling Objective-C, warns if a method is used whose
