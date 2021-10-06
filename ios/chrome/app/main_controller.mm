@@ -376,6 +376,8 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 @synthesize isColdStart = _isColdStart;
 @synthesize appLaunchTime = _appLaunchTime;
 @synthesize isFirstRun = _isFirstRun;
+@synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
+@synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
 
 #pragma mark - Application lifecycle
 

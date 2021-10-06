@@ -12,6 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -54,6 +55,13 @@
 #endif
 
 namespace {
+// The key to a NSUserDefaults entry logging the number of times classes are
+// loaded before a scene is attached.
+NSString* const kLoadTimePreferenceKey = @"LoadTimePreferenceKey";
+
+// The time when Objective C objects are loaded.
+base::TimeTicks g_load_time;
+
 // The amount of time (in seconds) to wait for the user to start a new task.
 const NSTimeInterval kFirstUserActionTimeout = 30.0;
 
@@ -84,6 +92,19 @@ base::TimeDelta TimeDeltaSinceAppLaunchFromProcess() {
   return base::Seconds(-date.timeIntervalSinceNow);
 }
 }  // namespace
+
+// A class to log the "load" time in uma.
+@interface ObjectLoadTimeLogger : NSObject
+@end
+
+@implementation ObjectLoadTimeLogger
++ (void)load {
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setInteger:[defaults integerForKey:kLoadTimePreferenceKey] + 1
+                forKey:kLoadTimePreferenceKey];
+  g_load_time = base::TimeTicks::Now();
+}
+@end
 
 namespace metrics_mediator {
 NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
@@ -213,21 +234,41 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   if (![startupInformation isColdStart])
     return;
 
-  const base::TimeDelta startDuration =
-      base::TimeTicks::Now() - [startupInformation appLaunchTime];
-
-  const base::TimeDelta startDurationFromProcess =
+  base::TimeTicks now = base::TimeTicks::Now();
+  const base::TimeDelta processStartToNowTime =
       TimeDeltaSinceAppLaunchFromProcess();
+  const base::TimeDelta loadToNowTime = now - g_load_time;
+  const base::TimeDelta mainToNowTime =
+      now - [startupInformation appLaunchTime];
+  const base::TimeDelta didFinishLaunchingToNowTime =
+      now - [startupInformation didFinishLaunchingTime];
+  const base::TimeDelta sceneConnectionToNowTime =
+      now - [startupInformation firstSceneConnectionTime];
+
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  int consecutiveLoads = [defaults integerForKey:kLoadTimePreferenceKey];
+  [defaults removeObjectForKey:kLoadTimePreferenceKey];
 
   base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTimeV2",
-                          startDurationFromProcess);
+                          processStartToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToLoad",
+                          processStartToNowTime - loadToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToMainCall",
+                          processStartToNowTime - mainToNowTime);
+  base::UmaHistogramTimes(
+      "Startup.TimeFromProcessCreationToDidFinishLaunchingCall",
+      processStartToNowTime - didFinishLaunchingToNowTime);
+  base::UmaHistogramTimes("Startup.TimeFromProcessCreationToSceneConnection",
+                          processStartToNowTime - sceneConnectionToNowTime);
+  base::UmaHistogramCounts100("Startup.ConsecutiveLoadsWithoutLaunch",
+                              consecutiveLoads);
 
   if ([connectionInformation startupParameters]) {
     base::UmaHistogramTimes("Startup.ColdStartWithExternalURLTime",
-                            startDuration);
+                            mainToNowTime);
   } else {
     base::UmaHistogramTimes("Startup.ColdStartWithoutExternalURLTime",
-                            startDuration);
+                            mainToNowTime);
   }
 }
 

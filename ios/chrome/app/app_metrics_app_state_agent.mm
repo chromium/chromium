@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
 #import "ios/chrome/browser/ui/main/scene_controller.h"
@@ -25,6 +26,10 @@
 // This flag is set when the first scene has activated since the startup, and
 // never reset during the app's lifetime.
 @property(nonatomic, assign) BOOL firstSceneHasActivated;
+
+// This flag is set when the first scene has connected since the startup, and
+// never reset during the app's lifetime.
+@property(nonatomic, assign) BOOL firstSceneHasConnected;
 
 @end
 
@@ -60,6 +65,12 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (!self.firstSceneHasConnected) {
+    self.appState.startupInformation.firstSceneConnectionTime =
+        base::TimeTicks::Now();
+    self.firstSceneHasConnected = YES;
+  }
+
   if (self.appState.initStage <= InitStageSafeMode) {
     return;
   }

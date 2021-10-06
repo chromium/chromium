@@ -518,6 +518,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Startup.ConsecutiveLoadsWithoutLaunch" units="count"
+    expires_after="2022-09-30">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    [IOS] The number of time +load was called but no scene was activated.
+    Recorded when first scene is becomes active.
+  </summary>
+</histogram>
+
 <histogram name="Startup.CreateFirstProfile" units="ms" expires_after="never">
 <!-- expires-never: used to diagnose regressions to Startup.FirstWebContents.NonEmptyPaint3 -->
 
@@ -771,6 +781,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     determined. This is based off observing the number of hard faults that occur
     during startup prior to Startup.BrowserMessageLoopStartTime. The threshold
     for cold startup was updated Jan 2020, a bump in the metric is expected.
+  </summary>
+</histogram>
+
+<histogram name="Startup.TimeFromProcessCreationToDidFinishLaunchingCall"
+    units="ms" expires_after="2022-09-30">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    [IOS] The duration between process spawn (returned by sysctl) and call to
+    [UIApplicationDelegate didFinishLaunching:]. Recorded when first scene is
+    becomes active.
+  </summary>
+</histogram>
+
+<histogram name="Startup.TimeFromProcessCreationToLoad" units="ms"
+    expires_after="2022-09-30">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    [IOS] The duration between process spawn (returned by sysctl) and library
+    load (logged on +load method). Recorded when first scene is becomes active.
+  </summary>
+</histogram>
+
+<histogram name="Startup.TimeFromProcessCreationToMainCall" units="ms"
+    expires_after="2022-09-30">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    [IOS] The duration between process spawn (returned by sysctl) and call to
+    main. Recorded when first scene is becomes active.
+  </summary>
+</histogram>
+
+<histogram name="Startup.TimeFromProcessCreationToSceneConnection" units="ms"
+    expires_after="2022-09-30">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>ajuma@chromium.org</owner>
+  <summary>
+    [IOS] The duration between process spawn (returned by sysctl) and call to
+    the first scene connection. Recorded when first scene is becomes active.
   </summary>
 </histogram>
 

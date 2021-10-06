@@ -24,6 +24,10 @@ class TimeTicks;
 @property(nonatomic, assign) base::TimeTicks appLaunchTime;
 // An object to record metrics related to the user's first action.
 @property(nonatomic, readonly) FirstUserActionRecorder* firstUserActionRecorder;
+// Tick of the call to didFinishLaunching, used for UMA.
+@property(nonatomic, assign) base::TimeTicks didFinishLaunchingTime;
+// Tick of the first scene connection, used for UMA.
+@property(nonatomic, assign) base::TimeTicks firstSceneConnectionTime;
 
 // Keeps track of the restore state during startup.
 @property(nonatomic, strong) CrashRestoreHelper* restoreHelper;
