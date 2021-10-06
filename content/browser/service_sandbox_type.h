@@ -37,8 +37,9 @@ class NetworkService;
 template <>
 inline sandbox::policy::SandboxType
 content::GetServiceSandboxType<network::mojom::NetworkService>() {
-  return IsNetworkSandboxEnabled() ? sandbox::policy::SandboxType::kNetwork
-                                   : sandbox::policy::SandboxType::kNoSandbox;
+  return GetContentClient()->browser()->ShouldSandboxNetworkService()
+             ? sandbox::policy::SandboxType::kNetwork
+             : sandbox::policy::SandboxType::kNoSandbox;
 }
 
 #endif  // CONTENT_BROWSER_SERVICE_SANDBOX_TYPE_H_

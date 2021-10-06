@@ -937,7 +937,6 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
     return base::FeatureList::IsEnabled(features::kGpuAppContainer);
 
   if (sandbox_type == SandboxType::kNetwork) {
-    DCHECK(sandbox::policy::features::IsWinNetworkServiceSandboxEnabled());
     return true;
   }
 
