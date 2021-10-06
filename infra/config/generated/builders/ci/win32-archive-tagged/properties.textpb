@@ -1,4 +1,13 @@
 {
+  "$build/archive": {
+    "source_side_spec_path": [
+      "chromium",
+      "src",
+      "infra",
+      "archive_config",
+      "win-tagged.json"
+    ]
+  },
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?prod",
