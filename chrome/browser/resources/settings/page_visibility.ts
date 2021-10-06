@@ -6,45 +6,39 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 /**
  * Specifies page visibility based on incognito status and Chrome OS guest mode.
- * @typedef {{
- *   a11y: (boolean|undefined),
- *   advancedSettings: (boolean|undefined),
- *   appearance: (boolean|undefined|AppearancePageVisibility),
- *   autofill: (boolean|undefined),
- *   defaultBrowser: (boolean|undefined),
- *   downloads: (boolean|undefined),
- *   languages: (boolean|undefined),
- *   onStartup: (boolean|undefined),
- *   people: (boolean|undefined),
- *   privacy: (boolean|undefined|PrivacyPageVisibility),
- *   reset: (boolean|undefined),
- * }}
  */
-export let PageVisibility;
+export type PageVisibility = {
+  a11y?: boolean,
+  advancedSettings?: boolean,
+  appearance?: boolean|AppearancePageVisibility,
+  autofill?: boolean,
+  defaultBrowser?: boolean,
+  downloads?: boolean,
+  extensions?: boolean,
+  languages?: boolean,
+  onStartup?: boolean,
+  people?: boolean,
+  privacy?: boolean|PrivacyPageVisibility,
+  reset?: boolean,
+  safetyCheck?: boolean,
+};
 
-/**
- * @typedef {{
- *   bookmarksBar: boolean,
- *   homeButton: boolean,
- *   pageZoom: boolean,
- *   setTheme: boolean,
- * }}
- */
-export let AppearancePageVisibility;
+export type AppearancePageVisibility = {
+  bookmarksBar: boolean,
+  homeButton: boolean,
+  pageZoom: boolean,
+  setTheme: boolean,
+};
 
-/**
- * @typedef {{
- *   networkPrediction: boolean,
- *   searchPrediction: boolean,
- * }}
- */
-export let PrivacyPageVisibility;
+export type PrivacyPageVisibility = {
+  networkPrediction: boolean,
+  searchPrediction: boolean,
+};
 
 /**
  * Dictionary defining page visibility.
- * @type {!PageVisibility}
  */
-export let pageVisibility;
+export let pageVisibility: PageVisibility;
 
 if (loadTimeData.getBoolean('isGuest')) {
   // "if not chromeos" and "if chromeos" in two completely separate blocks
@@ -117,6 +111,6 @@ if (loadTimeData.getBoolean('isGuest')) {
   // </if>
 }
 
-export function setPageVisibilityForTesting(testVisibility) {
+export function setPageVisibilityForTesting(testVisibility: PageVisibility) {
   pageVisibility = testVisibility;
 }

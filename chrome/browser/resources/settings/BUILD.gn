@@ -136,7 +136,7 @@ preprocess_if_expr("preprocess") {
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "open_window_proxy.ts",
-    "page_visibility.js",
+    "page_visibility.ts",
     "people_page/sync_browser_proxy.js",
     "people_page/profile_info_browser_proxy.js",
     "prefs/prefs_mixin.ts",
@@ -147,7 +147,7 @@ preprocess_if_expr("preprocess") {
     "privacy_page/security_keys_browser_proxy.ts",
     "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "reset_page/reset_browser_proxy.ts",
-    "route.js",
+    "route.ts",
     "router.js",
     "safety_check_page/safety_check_browser_proxy.ts",
     "search_engines_page/search_engines_browser_proxy.ts",
@@ -155,7 +155,7 @@ preprocess_if_expr("preprocess") {
     "setting_id_param_util.ts",
     "settings.ts",
     "settings_page/main_page_mixin.ts",
-    "settings_routes.js",
+    "settings_routes.ts",
     "site_settings/constants.ts",
     "site_settings/cookie_info.ts",
     "site_settings/local_data_browser_proxy.ts",
@@ -397,12 +397,9 @@ js_type_check("closure_compile_local") {
     ":extension_control_browser_proxy",
     ":i18n_setup",
     ":lifetime_browser_proxy",
-    ":page_visibility",
-    ":route",
     ":router",
     ":setting_id_param_util",
     ":settings",
-    ":settings_routes",
   ]
 }
 
@@ -437,19 +434,6 @@ js_library("lifetime_browser_proxy") {
   extra_deps = [ ":build_ts" ]
 }
 
-js_library("page_visibility") {
-  deps = [ "//ui/webui/resources/js:load_time_data.m" ]
-}
-
-js_library("route") {
-  deps = [
-    ":page_visibility",
-    ":router",
-    ":settings_routes",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
 js_library("router") {
   deps = [
     "//ui/webui/resources/js:assert.m",
@@ -465,10 +449,6 @@ js_library("setting_id_param_util") {
     "//ui/webui/resources/js:load_time_data.m",
   ]
   extra_deps = [ ":build_ts" ]
-}
-
-js_library("settings_routes") {
-  deps = [ ":router" ]
 }
 
 group("polymer3_elements") {
@@ -618,7 +598,7 @@ ts_library("build_ts") {
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "on_startup_page/startup_urls_page.ts",
     "open_window_proxy.ts",
-    "page_visibility.js",
+    "page_visibility.ts",
     "people_page/people_page.ts",
     "people_page/profile_info_browser_proxy.js",
     "people_page/signout_dialog.js",
@@ -662,7 +642,7 @@ ts_library("build_ts") {
     "reset_page/reset_page.ts",
     "reset_page/reset_profile_banner.ts",
     "reset_page/reset_profile_dialog.ts",
-    "route.js",
+    "route.ts",
     "router.js",
     "safety_check_page/safety_check_browser_proxy.ts",
     "safety_check_page/safety_check_child.ts",
@@ -689,7 +669,7 @@ ts_library("build_ts") {
     "settings_page/settings_animated_pages.ts",
     "settings_page/settings_section.ts",
     "settings_page/settings_subpage.ts",
-    "settings_routes.js",
+    "settings_routes.ts",
     "settings_shared_css.ts",
     "settings_ui/settings_ui.ts",
     "settings_vars_css.ts",

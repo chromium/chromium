@@ -11,9 +11,8 @@ import {SettingsRoutes} from './settings_routes.js';
 /**
  * Add all of the child routes that originate from the privacy route,
  * regardless of whether the privacy section under basic or advanced.
- * @param {!SettingsRoutes} r
  */
-function addPrivacyChildRoutes(r) {
+function addPrivacyChildRoutes(r: SettingsRoutes) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
@@ -95,10 +94,9 @@ function addPrivacyChildRoutes(r) {
 
 /**
  * Adds Route objects for each path.
- * @return {!SettingsRoutes}
  */
-function createBrowserSettingsRoutes() {
-  const r = /** @type {!SettingsRoutes} */ ({});
+function createBrowserSettingsRoutes(): SettingsRoutes {
+  const r = {} as SettingsRoutes;
 
   // Root pages.
   r.BASIC = new Route('/');
@@ -220,22 +218,21 @@ function createBrowserSettingsRoutes() {
 }
 
 /**
- * @return {!Router} A router with the browser settings routes.
+ * @return A router with the browser settings routes.
  */
-export function buildRouter() {
+export function buildRouter(): Router {
   return new Router(createBrowserSettingsRoutes());
 }
 
 Router.setInstance(buildRouter());
 
-window.addEventListener('popstate', function(event) {
+window.addEventListener('popstate', function() {
   // On pop state, do not push the state onto the window.history again.
   const routerInstance = Router.getInstance();
   routerInstance.setCurrentRoute(
       routerInstance.getRouteForPath(window.location.pathname) ||
-          routerInstance.getRoutes().BASIC,
+          (routerInstance.getRoutes() as SettingsRoutes).BASIC,
       new URLSearchParams(window.location.search), true);
 });
 
-export const routes =
-    /** @type {!SettingsRoutes} */ (Router.getInstance().getRoutes());
+export const routes = Router.getInstance().getRoutes() as SettingsRoutes;
