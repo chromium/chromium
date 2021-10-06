@@ -1075,7 +1075,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
     content::RenderFrameHostWrapper main_frame(web_contents->GetMainFrame());
     content::RenderFrameHostWrapper child_frame(
         ChildFrameAt(main_frame.get(), 0));
-    ASSERT_TRUE(child_frame.get());
+    ASSERT_TRUE(child_frame);
     const std::string kChildHost = child_frame->GetLastCommittedURL().host();
 
     // The extension shouldn't be able to intercept the xhr requests since it
@@ -1102,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
       ChildFrameAt(main_frame.get(), 0));
   const std::string kChildHost = child_frame->GetLastCommittedURL().host();
 
-  ASSERT_TRUE(child_frame.get());
+  ASSERT_TRUE(child_frame);
   EXPECT_TRUE(HasSeenWebRequestInBackgroundPage(extension, profile(), "a.com"));
   EXPECT_FALSE(
       HasSeenWebRequestInBackgroundPage(extension, profile(), "b.com"));
@@ -4270,14 +4270,13 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(page_with_iframe_url, web_contents->GetLastCommittedURL());
 
-  // Since frames are returned in breadth first order, and there's only one
-  // iframe, the iframe should be the second frame in this vector.
-  std::vector<content::RenderFrameHost*> all_frames =
-      web_contents->GetAllFrames();
-  ASSERT_EQ(2u, all_frames.size());
+  content::RenderFrameHostWrapper child_frame(
+      ChildFrameAt(web_contents->GetMainFrame(), 0));
+  ASSERT_TRUE(child_frame);
+
   GURL redirected_url =
       embedded_test_server()->GetURL("redirected.test", "/hello.html");
-  ASSERT_EQ(redirected_url, all_frames[1]->GetLastCommittedURL());
+  ASSERT_EQ(redirected_url, child_frame->GetLastCommittedURL());
 
   // Check the parameters passed to the URLLoaderFactory.
   absl::optional<network::ResourceRequest> resource_request =

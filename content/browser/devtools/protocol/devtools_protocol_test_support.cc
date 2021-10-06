@@ -290,15 +290,6 @@ void DevToolsProtocolTest::DispatchProtocolMessage(
   }
 }
 
-std::vector<std::string> DevToolsProtocolTest::GetAllFrameUrls() {
-  std::vector<std::string> urls;
-  for (RenderFrameHost* render_frame_host :
-       shell()->web_contents()->GetAllFrames()) {
-    urls.push_back(RemovePort(render_frame_host->GetLastCommittedURL()));
-  }
-  return urls;
-}
-
 void DevToolsProtocolTest::AgentHostClosed(DevToolsAgentHost* agent_host) {
   if (!agent_host_can_close_)
     NOTREACHED();

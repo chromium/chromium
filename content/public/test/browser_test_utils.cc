@@ -885,14 +885,18 @@ bool WaitForLoadStop(WebContents* web_contents) {
 
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
                                      bool trigger_user_activation) {
-  for (auto* frame : web_contents->GetAllFrames()) {
-    if (trigger_user_activation)
-      frame->ExecuteJavaScriptWithUserGestureForTests(std::u16string());
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+      [](bool trigger_user_activation, RenderFrameHost* render_frame_host) {
+        if (trigger_user_activation) {
+          render_frame_host->ExecuteJavaScriptWithUserGestureForTests(
+              std::u16string());
+        }
 
-    // Disable the hang monitor, otherwise there will be a race between the
-    // beforeunload dialog and the beforeunload hang timer.
-    frame->DisableBeforeUnloadHangMonitorForTesting();
-  }
+        // Disable the hang monitor, otherwise there will be a race between the
+        // beforeunload dialog and the beforeunload hang timer.
+        render_frame_host->DisableBeforeUnloadHangMonitorForTesting();
+      },
+      trigger_user_activation));
 }
 
 bool IsLastCommittedEntryOfPageType(WebContents* web_contents,

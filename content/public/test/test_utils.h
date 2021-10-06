@@ -390,6 +390,8 @@ class RenderFrameHostWrapper {
   RenderFrameHost& operator*() const;
   RenderFrameHost* operator->() const;
 
+  explicit operator bool() const { return get() != nullptr; }
+
  private:
   const GlobalRenderFrameHostId rfh_id_;
 

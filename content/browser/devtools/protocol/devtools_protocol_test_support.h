@@ -123,8 +123,6 @@ class DevToolsProtocolTest : virtual public ContentBrowserTest,
   void ProcessNavigationsAnyOrder(
       std::vector<ExpectedNavigation> expected_navigations);
 
-  std::vector<std::string> GetAllFrameUrls();
-
   void set_agent_host_can_close() { agent_host_can_close_ = true; }
 
   void SetSecurityExplanationCert(

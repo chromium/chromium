@@ -1894,15 +1894,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
       GetUnseasonedPdfFrames(guest_contents);
   ASSERT_EQ(pdf_frames.size(), 1u);
 
-  std::vector<content::RenderFrameHost*> frames =
-      GetActiveWebContents()->GetAllFrames();
-  ASSERT_EQ(frames.size(), 4u);
-  EXPECT_EQ(frames[1]->GetLastCommittedURL(),
+  content::RenderFrameHost* iframe = ChildFrameAt(GetActiveWebContents(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_EQ(iframe->GetLastCommittedURL(),
             embedded_test_server()->GetURL("/title1.html"));
 
   EXPECT_EQ(pdf_frames[0]->GetLastCommittedOrigin(),
-            frames[1]->GetLastCommittedOrigin());
-  EXPECT_NE(pdf_frames[0]->GetProcess(), frames[1]->GetProcess());
+            iframe->GetLastCommittedOrigin());
+  EXPECT_NE(pdf_frames[0]->GetProcess(), iframe->GetProcess());
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, HistoryNavigation) {
