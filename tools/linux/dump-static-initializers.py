@@ -27,6 +27,7 @@ they reference.
 from __future__ import print_function
 
 import optparse
+import os
 import re
 import subprocess
 import sys
@@ -46,7 +47,15 @@ class Demangler(object):
   """A wrapper around c++filt to provide a function to demangle symbols."""
 
   def __init__(self, toolchain):
-    self.cppfilt = subprocess.Popen([toolchain + 'c++filt'],
+    # llvm toolchain uses cxx rather than c++.
+    path = toolchain + 'cxxfilt'
+    if not os.path.exists(path):
+      path = toolchain + 'c++filt'
+    if not os.path.exists(path):
+      # Android currently has an issue where the llvm toolchain in the ndk does
+      # not contain c++filt. Hopefully fixed in next NDK update...
+      path = 'c++filt'
+    self.cppfilt = subprocess.Popen([path],
                                     stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE,
                                     universal_newlines=True)
