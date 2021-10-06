@@ -33,6 +33,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -231,6 +232,11 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     SetObscuredGlyphSpacing(kPasswordGlyphSpacing);
     SetBorder(nullptr);
     UpdatePalette(palette);
+
+    // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+    // able to submit accessibility checks, but this focusable View needs to
+    // add a name so that the screen reader knows what to announce.
+    SetProperty(views::kSkipAccessibilityPaintChecks, true);
   }
   LoginTextfield(const LoginTextfield&) = delete;
   LoginTextfield& operator=(const LoginTextfield&) = delete;

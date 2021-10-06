@@ -192,7 +192,10 @@ void MessagePopupView::ChildPreferredSizeChanged(views::View* child) {
 }
 
 void MessagePopupView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  message_view_->GetAccessibleNodeData(node_data);
+  // TODO(pbos): Consider removing the test-only constructor that has
+  // `message_view_` as nullptr.
+  if (message_view_)
+    message_view_->GetAccessibleNodeData(node_data);
   node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
