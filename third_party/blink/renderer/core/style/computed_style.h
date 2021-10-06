@@ -2671,8 +2671,9 @@ class ComputedStyle : public ComputedStyleBase,
     return EBoxSizing::kContentBox;
   }
 
-  bool DisableForceDark() const {
-    return ColorSchemeOnly() || HasFilterInducingProperty();
+  bool ForceDark() const {
+    return DarkColorScheme() && ColorSchemeForced() &&
+           !HasFilterInducingProperty();
   }
 
  private:

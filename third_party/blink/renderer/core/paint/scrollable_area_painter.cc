@@ -66,9 +66,8 @@ void ScrollableAreaPainter::PaintResizer(GraphicsContext& context,
     context.SetStrokeColor(Color(217, 217, 217));
     context.SetStrokeThickness(1.0f);
     context.SetFillColor(Color::kTransparent);
-    AutoDarkMode auto_dark_mode(
-        PaintAutoDarkMode(box->StyleRef(), box->GetDocument(),
-                          DarkModeFilter::ElementRole::kBackground));
+    AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+        box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
     context.DrawRect(larger_corner, auto_dark_mode);
   }
 }
@@ -124,7 +123,6 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
 
   AutoDarkMode auto_dark_mode(
       PaintAutoDarkMode(GetScrollableArea().GetLayoutBox()->StyleRef(),
-                        GetScrollableArea().GetLayoutBox()->GetDocument(),
                         DarkModeFilter::ElementRole::kBackground));
 
   // Draw a dark line, to ensure contrast against a light background

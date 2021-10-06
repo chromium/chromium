@@ -2383,7 +2383,6 @@ class FrameColorOverlay final : public FrameOverlay::Delegate {
     graphics_context.FillRect(
         rect, color_,
         PaintAutoDarkMode(view->GetLayoutView()->StyleRef(),
-                          view->GetLayoutView()->GetDocument(),
                           DarkModeFilter::ElementRole::kBackground));
   }
 

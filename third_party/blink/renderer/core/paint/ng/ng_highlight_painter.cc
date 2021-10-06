@@ -204,7 +204,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
                                                selection_style_.fill_color);
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, document, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
 
   if (!rotation) {
     PaintRect(context, RectInPhysicalSpace(), color, auto_dark_mode);
@@ -296,8 +296,8 @@ void NGHighlightPainter::Paint(Phase phase) {
   const auto& text_node = To<Text>(*fragment_item_.GetNode());
   const StringView text = cursor_.CurrentText();
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      style_, node_->GetDocument(), DarkModeFilter::ElementRole::kText));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kText));
 
   for (const DocumentMarker* marker : markers_) {
     const unsigned marker_start_offset =

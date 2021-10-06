@@ -126,7 +126,7 @@ void NGTextCombinePainter::PaintEmphasisMark(const TextPaintStyle& text_style,
                   style_.GetTextEmphasisPosition());
   PaintEmphasisMarkForCombinedText(
       text_style, emphasis_mark_font,
-      PaintAutoDarkMode(style_, document, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kText));
 }
 
 }  // namespace blink

@@ -105,7 +105,6 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   FloatRect src_rect(bounding_box.value());
   context.DrawImage(paint_worklet_image.get(), Image::kSyncDecode,
                     PaintAutoDarkMode(clip_path_owner.StyleRef(),
-                                      clip_path_owner.GetDocument(),
                                       DarkModeFilter::ElementRole::kBackground),
                     src_rect, &src_rect, SkBlendMode::kSrcOver,
                     kRespectImageOrientation);

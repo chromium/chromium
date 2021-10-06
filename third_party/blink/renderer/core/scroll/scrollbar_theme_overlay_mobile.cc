@@ -73,9 +73,8 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                            rect);
 
   const auto* box = scrollbar.GetScrollableArea()->GetLayoutBox();
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(box->StyleRef(), box->GetDocument(),
-                        DarkModeFilter::ElementRole::kBackground));
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
   context.FillRect(rect, color_, auto_dark_mode);
 }
 

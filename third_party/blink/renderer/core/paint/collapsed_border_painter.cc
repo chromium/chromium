@@ -356,9 +356,8 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
       TableCellPainter(cell_).PaintRectNotIncludingVisualOverflow(
           paint_state.PaintOffset()));
 
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(cell_.StyleRef(), cell_.GetDocument(),
-                        DarkModeFilter::ElementRole::kBackground));
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      cell_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
 
   // We never paint diagonals at the joins.  We simply let the border with the
   // highest precedence paint on top of borders with lower precedence.

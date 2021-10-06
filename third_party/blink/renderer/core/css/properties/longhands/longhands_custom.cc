@@ -1666,24 +1666,28 @@ const CSSValue* ColorScheme::InitialValue() const {
 }
 
 void ColorScheme::ApplyInitial(StyleResolverState& state) const {
+  Settings* settings = state.GetDocument().GetSettings();
+  bool force_dark = settings ? settings->GetForceDarkModeEnabled() : false;
   state.Style()->SetColorScheme(Vector<AtomicString>());
-  state.Style()->SetDarkColorScheme(false);
-  state.Style()->SetColorSchemeOnly(false);
+  state.Style()->SetDarkColorScheme(force_dark);
+  state.Style()->SetColorSchemeForced(force_dark);
 }
 
 void ColorScheme::ApplyInherit(StyleResolverState& state) const {
   state.Style()->SetColorScheme(state.ParentStyle()->ColorScheme());
   state.Style()->SetDarkColorScheme(state.ParentStyle()->DarkColorScheme());
-  state.Style()->SetColorSchemeOnly(state.ParentStyle()->ColorSchemeOnly());
+  state.Style()->SetColorSchemeForced(state.ParentStyle()->ColorSchemeForced());
 }
 
 void ColorScheme::ApplyValue(StyleResolverState& state,
                              const CSSValue& value) const {
+  Settings* settings = state.GetDocument().GetSettings();
+  bool force_dark = settings ? settings->GetForceDarkModeEnabled() : false;
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kNormal);
     state.Style()->SetColorScheme(Vector<AtomicString>());
-    state.Style()->SetDarkColorScheme(false);
-    state.Style()->SetColorSchemeOnly(false);
+    state.Style()->SetDarkColorScheme(force_dark);
+    state.Style()->SetColorSchemeForced(force_dark);
   } else if (const auto* scheme_list = DynamicTo<CSSValueList>(value)) {
     bool prefers_dark =
         state.GetDocument().GetStyleEngine().GetPreferredColorScheme() ==
@@ -1705,7 +1709,8 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
             has_light = true;
             break;
           case CSSValueID::kOnly:
-            has_only = true;
+            if (RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled())
+              has_only = true;
             break;
           default:
             break;
@@ -1715,10 +1720,10 @@ void ColorScheme::ApplyValue(StyleResolverState& state,
       }
     }
     state.Style()->SetColorScheme(color_schemes);
-    state.Style()->SetDarkColorScheme(has_dark && (!has_light || prefers_dark));
-    if (RuntimeEnabledFeatures::CSSColorSchemeOnlyEnabled())
-      state.Style()->SetColorSchemeOnly(has_only);
-
+    bool dark_scheme =
+        (has_dark && (prefers_dark || !has_light)) || (force_dark && !has_only);
+    state.Style()->SetDarkColorScheme(dark_scheme);
+    state.Style()->SetColorSchemeForced(!has_dark && dark_scheme);
     if (has_dark) {
       // Record kColorSchemeDarkSupportedOnRoot if dark is present (though dark
       // may not be used). This metric is also recorded in

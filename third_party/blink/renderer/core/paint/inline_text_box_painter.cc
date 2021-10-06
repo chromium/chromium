@@ -402,9 +402,8 @@ void InlineTextBoxPainter::Paint(const PaintInfo& paint_info,
   DOMNodeId node_id = GetNodeHolder(
       LineLayoutAPIShim::LayoutObjectFrom(inline_text_box_.GetLineLayoutItem())
           ->GetNode());
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      style_to_use, inline_text_box_.GetLineLayoutItem().GetDocument(),
-      DarkModeFilter::ElementRole::kText));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style_to_use, DarkModeFilter::ElementRole::kText));
 
   if (!paint_selected_text_only) {
     // Paint text decorations except line-through.
@@ -588,7 +587,6 @@ void InlineTextBoxPainter::PaintSingleMarkerBackgroundRun(
       font, inline_text_box_.ConstructTextRun(style), local_origin, sel_height,
       background_color,
       PaintAutoDarkMode(style,
-                        inline_text_box_.GetLineLayoutItem().GetDocument(),
                         DarkModeFilter::ElementRole::kText),
       start_pos, end_pos);
 }
@@ -864,9 +862,9 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
 
   GraphicsContextStateSaver state_saver(context);
 
-  context.FillRect(FloatRect(selection_rect), c,
-                   PaintAutoDarkMode(style, layout_item.GetDocument(),
-                                     DarkModeFilter::ElementRole::kText));
+  context.FillRect(
+      FloatRect(selection_rect), c,
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
   return selection_rect;
 }
 
@@ -942,9 +940,8 @@ void InlineTextBoxPainter::PaintTextMarkerForeground(
   TextPainter text_painter(paint_info.context, font, run, text_origin, box_rect,
                            inline_text_box_.IsHorizontal());
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      style, inline_text_box_.GetLineLayoutItem().GetDocument(),
-      DarkModeFilter::ElementRole::kText));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
 
   text_painter.Paint(paint_offsets.first, paint_offsets.second,
                      inline_text_box_.Len(), text_style, kInvalidDOMNodeId,
@@ -982,7 +979,6 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
   context.DrawHighlightForText(
       font, run, FloatPoint(box_origin), box_rect.Height().ToInt(), color,
       PaintAutoDarkMode(style,
-                        inline_text_box_.GetLineLayoutItem().GetDocument(),
                         DarkModeFilter::ElementRole::kText),
       paint_offsets.first, paint_offsets.second);
 }

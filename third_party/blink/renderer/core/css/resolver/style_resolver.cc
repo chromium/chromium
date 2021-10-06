@@ -1153,6 +1153,12 @@ scoped_refptr<ComputedStyle> StyleResolver::InitialStyleForElement() const {
       frame && !GetDocument().Printing() ? frame->PageZoomFactor() : 1);
   initial_style->SetEffectiveZoom(initial_style->Zoom());
   initial_style->SetInForcedColorsMode(GetDocument().InForcedColorsMode());
+  if (auto* settings = GetDocument().GetSettings()) {
+    if (settings->GetForceDarkModeEnabled()) {
+      initial_style->SetDarkColorScheme(true);
+      initial_style->SetColorSchemeForced(true);
+    }
+  }
   initial_style->SetTapHighlightColor(
       ComputedStyleInitialValues::InitialTapHighlightColor());
 
@@ -2026,6 +2032,8 @@ void StyleResolver::PropagateStyleToViewport() {
                    mojom::blink::ScrollBehavior::kAuto);
     PROPAGATE_FROM(document_element_style, DarkColorScheme, SetDarkColorScheme,
                    false);
+    PROPAGATE_FROM(document_element_style, ColorSchemeForced,
+                   SetColorSchemeForced, false);
     PROPAGATE_FROM(document_element_style, ScrollbarGutter, SetScrollbarGutter,
                    kScrollbarGutterAuto);
     PROPAGATE_FROM(document_element_style, ForcedColorAdjust,

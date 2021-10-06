@@ -392,7 +392,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, document, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
 
   const unsigned length = fragment_paint_info.to - fragment_paint_info.from;
   const unsigned start_offset = fragment_paint_info.from;

@@ -174,8 +174,7 @@ void LineBoxListPainter::PaintBackplate(
   for (const auto backplate : backplates) {
     paint_info.context.FillRect(
         FloatRect(backplate), backplate_color,
-        PaintAutoDarkMode(style, layout_object.GetDocument(),
-                          DarkModeFilter::ElementRole::kBackground));
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   }
 }
 

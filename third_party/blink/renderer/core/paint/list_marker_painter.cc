@@ -100,8 +100,8 @@ void ListMarkerPainter::PaintSymbol(const PaintInfo& paint_info,
   context.SetStrokeThickness(1.0f);
   IntRect snapped_rect = PixelSnappedIntRect(marker);
   const AtomicString& type = style.ListStyleType()->GetCounterStyleName();
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      style, object->GetDocument(), DarkModeFilter::ElementRole::kListSymbol));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kListSymbol));
   if (type == "disc") {
     context.FillEllipse(FloatRect(snapped_rect), auto_dark_mode);
   } else if (type == "circle") {
@@ -148,9 +148,9 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
 
   GraphicsContext& context = local_paint_info.context;
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_list_marker_.StyleRef(), layout_list_marker_.GetDocument(),
-      DarkModeFilter::ElementRole::kListSymbol));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(layout_list_marker_.StyleRef(),
+                        DarkModeFilter::ElementRole::kListSymbol));
 
   if (layout_list_marker_.IsImage()) {
     // Since there is no way for the developer to specify decode behavior, use

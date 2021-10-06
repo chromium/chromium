@@ -442,9 +442,8 @@ void NGTablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
   WritingModeConverter grid_converter(fragment_.Style().GetWritingDirection(),
                                       grid_paint_rect.size);
 
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(fragment_.Style(), fragment_.GetDocument(),
-                        DarkModeFilter::ElementRole::kBackground));
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      fragment_.Style(), DarkModeFilter::ElementRole::kBackground));
 
   for (NGTableCollapsedEdge edge = NGTableCollapsedEdge(*collapsed_borders, 0);
        edge.Exists(); ++edge) {

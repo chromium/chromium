@@ -132,8 +132,7 @@ StyleEngine::StyleEngine(Document& document)
   if (document.IsInMainFrame())
     viewport_resolver_ = MakeGarbageCollected<ViewportStyleResolver>(document);
   if (auto* settings = GetDocument().GetSettings()) {
-    if (!settings->GetForceDarkModeEnabled())
-      preferred_color_scheme_ = settings->GetPreferredColorScheme();
+    preferred_color_scheme_ = settings->GetPreferredColorScheme();
     UpdateColorSchemeMetrics();
   }
   if (Platform::Current() && Platform::Current()->ThemeEngine())
@@ -2408,11 +2407,6 @@ void StyleEngine::UpdateColorScheme() {
     if (value.IsValid())
       preferred_color_scheme_ = CSSValueIDToPreferredColorScheme(value.Id());
   }
-  if (!SupportsDarkColorScheme() && settings->GetForceDarkModeEnabled()) {
-    // Make sure we don't match (prefers-color-scheme: dark) when forced
-    // darkening is enabled.
-    preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
-  }
   if (GetDocument().Printing())
     preferred_color_scheme_ = mojom::blink::PreferredColorScheme::kLight;
 
@@ -2500,17 +2494,12 @@ void StyleEngine::UpdateColorSchemeBackground(bool color_scheme_changed) {
       else if (SupportsDarkColorScheme())
         root_color_scheme = mojom::blink::ColorScheme::kDark;
     }
-    auto* settings = GetDocument().GetSettings();
-    bool force_dark_enabled = settings && settings->GetForceDarkModeEnabled();
     color_scheme_background_ =
-        root_color_scheme == mojom::blink::ColorScheme::kLight &&
-                !force_dark_enabled
+        root_color_scheme == mojom::blink::ColorScheme::kLight
             ? Color::kWhite
             : Color(0x12, 0x12, 0x12);
     if (GetDocument().IsInMainFrame()) {
-      if (root_color_scheme == mojom::blink::ColorScheme::kDark ||
-          (root_color_scheme == mojom::blink::ColorScheme::kLight &&
-           force_dark_enabled)) {
+      if (root_color_scheme == mojom::blink::ColorScheme::kDark) {
         use_color_adjust_background =
             LocalFrameView::UseColorAdjustBackground::kIfBaseNotTransparent;
       }

@@ -154,8 +154,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
                                 const PaintFlags& flags,
                                 SkPathFillType fill_type) {
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_svg_shape_.StyleRef(), layout_svg_shape_.GetDocument(),
-      DarkModeFilter::ElementRole::kSVG));
+      layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:
       context.DrawRect(layout_svg_shape_.ObjectBoundingBox(), flags,
@@ -180,8 +179,7 @@ void SVGShapePainter::StrokeShape(GraphicsContext& context,
   DCHECK(layout_svg_shape_.StyleRef().HasVisibleStroke());
 
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_svg_shape_.StyleRef(), layout_svg_shape_.GetDocument(),
-      DarkModeFilter::ElementRole::kSVG));
+      layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
 
   switch (layout_svg_shape_.GeometryCodePath()) {
     case kRectGeometryFastPath:

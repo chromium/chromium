@@ -759,7 +759,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
     context.Save();
     context.FillRect(
         FloatRect(r), Color(),
-        PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+        PaintAutoDarkMode(ComputedStyleRef(),
                           DarkModeFilter::ElementRole::kBackground),
         SkBlendMode::kClear);
     // Place the icon near the upper left, like the missing image icon
@@ -769,7 +769,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
         FloatPoint(r.PixelSnappedOffset()) + icon_size.ScaledBy(0.5f);
     context.DrawImage(
         broken_canvas, Image::kSyncDecode,
-        PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+        PaintAutoDarkMode(ComputedStyleRef(),
                           DarkModeFilter::ElementRole::kBackground),
         FloatRect(upper_left, icon_size));
     context.Restore();
@@ -794,7 +794,7 @@ void HTMLCanvasElement::Paint(GraphicsContext& context,
         OffscreenCanvasFrame()->Bitmap()->MakeUnaccelerated();
     context.DrawImage(
         image_for_printing.get(), Image::kSyncDecode,
-        PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+        PaintAutoDarkMode(ComputedStyleRef(),
                           DarkModeFilter::ElementRole::kBackground),
         FloatRect(PixelSnappedIntRect(r)));
     return;
@@ -849,7 +849,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
       DCHECK(!snapshot->IsTextureBacked());
       context.DrawImage(
           snapshot.get(), Image::kSyncDecode,
-          PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+          PaintAutoDarkMode(ComputedStyleRef(),
                             DarkModeFilter::ElementRole::kBackground),
           FloatRect(PixelSnappedIntRect(r)), &src_rect, composite_operator);
     }
@@ -858,7 +858,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     if (!context_->CreationAttributes().alpha) {
       context.FillRect(
           FloatRect(r), Color(0, 0, 0),
-          PaintAutoDarkMode(ComputedStyleRef(), GetDocument(),
+          PaintAutoDarkMode(ComputedStyleRef(),
                             DarkModeFilter::ElementRole::kBackground));
     }
   }

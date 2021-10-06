@@ -65,7 +65,7 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
                              pixel_snapped_background_rect);
     context.FillRect(
         pixel_snapped_background_rect, base_background_color,
-        PaintAutoDarkMode(layout_view_.StyleRef(), document,
+        PaintAutoDarkMode(layout_view_.StyleRef(),
                           DarkModeFilter::ElementRole::kBackground),
         should_clear_canvas ? SkBlendMode::kSrc : SkBlendMode::kSrcOver);
   }
@@ -273,9 +273,8 @@ void ViewPainter::PaintRootElementGroup(
     return;
   }
 
-  AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(layout_view_.StyleRef(), document,
-                        DarkModeFilter::ElementRole::kBackground));
+  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
+      layout_view_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
 
   // Compute the enclosing rect of the view, in root element space.
   //

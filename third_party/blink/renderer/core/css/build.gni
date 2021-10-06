@@ -679,6 +679,7 @@ blink_core_tests_css = [
   "font_face_cache_test.cc",
   "font_size_functions_test.cc",
   "font_update_invalidation_test.cc",
+  "force_dark_test.cc",
   "invalidation/invalidation_set_test.cc",
   "invalidation/pending_invalidations_test.cc",
   "invalidation/style_invalidator_test.cc",

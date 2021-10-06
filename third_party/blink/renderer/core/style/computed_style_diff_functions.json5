@@ -260,7 +260,7 @@
                 "lighting-color", "shape-rendering", "clip-rule", "fill-rule",
                 "color-interpolation", "color-interpolation-filters", "paint-order",
                 "fill", "fill-opacity", "stroke", "stroke-opacity",
-                "-internal-visited-stroke", "stroke-dashoffset"],
+                "-internal-visited-stroke", "stroke-dashoffset", "ColorSchemeForced"],
         methods_to_diff: [
           {
             method: "Visibility()",

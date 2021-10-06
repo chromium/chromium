@@ -756,8 +756,8 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   // When painting outlines, we ignore outer/inner radii.
   const auto force_rectangular = !outer_.IsRounded() && !inner_.IsRounded();
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      style_, document_, DarkModeFilter::ElementRole::kBackground));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
 
   // outer stripe
   const LayoutRectOutsets outer_third_outsets =
@@ -795,13 +795,13 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
         // 4-side, solid, uniform-width, rectangular border => one drawRect()
         DrawSolidBorderRect(
             context_, outer_.Rect(), FirstEdge().Width(), FirstEdge().color,
-            PaintAutoDarkMode(style_, document_,
+            PaintAutoDarkMode(style_,
                               DarkModeFilter::ElementRole::kBackground));
       } else {
         // 4-side, solid border => one drawDRRect()
         DrawBleedAdjustedDRRect(
             context_, bleed_avoidance_, outer_, inner_, FirstEdge().color,
-            PaintAutoDarkMode(style_, document_,
+            PaintAutoDarkMode(style_,
                               DarkModeFilter::ElementRole::kBackground));
       }
     } else {
@@ -831,8 +831,8 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
 
     context_.SetFillColor(FirstEdge().color);
     context_.FillPath(
-        path, PaintAutoDarkMode(style_, document_,
-                                DarkModeFilter::ElementRole::kBackground));
+        path,
+        PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
     return true;
   }
 
@@ -842,13 +842,11 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
 BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
                                    const PhysicalRect& border_rect,
                                    const ComputedStyle& style,
-                                   const Document& document,
                                    BackgroundBleedAvoidance bleed_avoidance,
                                    PhysicalBoxSides sides_to_include)
     : context_(context),
       border_rect_(border_rect),
       style_(style),
-      document_(document),
       bleed_avoidance_(bleed_avoidance),
       sides_to_include_(sides_to_include),
       visible_edge_count_(0),
@@ -885,7 +883,6 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
 
 BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
                                    const ComputedStyle& style,
-                                   const Document& document,
                                    const PhysicalRect& border_rect,
                                    int width,
                                    int inner_outset_x,
@@ -895,7 +892,6 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       outer_outset_x_(inner_outset_x + width),
       outer_outset_y_(inner_outset_y + width),
       style_(style),
-      document_(document),
       bleed_avoidance_(kBackgroundBleedNone),
       sides_to_include_(PhysicalBoxSides()),
       visible_edge_count_(0),
@@ -1255,8 +1251,7 @@ void BoxBorderPainter::PaintOneBorderSide(
         miter1 != kNoMiter ? floorf(adjacent_edge1.Width()) : 0,
         miter2 != kNoMiter ? floorf(adjacent_edge2.Width()) : 0,
         /*antialias*/ true,
-        PaintAutoDarkMode(style_, document_,
-                          DarkModeFilter::ElementRole::kBackground));
+        PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
   }
 }
 
@@ -1310,8 +1305,7 @@ void BoxBorderPainter::DrawBoxSideFromPath(const Path& border_path,
   context_.SetFillColor(color);
   context_.DrawRect(
       RoundedIntRect(outer_.Rect()),
-      PaintAutoDarkMode(style_, document_,
-                        DarkModeFilter::ElementRole::kBackground));
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground));
 }
 
 void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
@@ -1348,8 +1342,7 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
   // https://bugs.chromium.org/p/chromium/issues/detail?id=344234
   context_.StrokePath(
       centerline_path,
-      PaintAutoDarkMode(style_, document_,
-                        DarkModeFilter::ElementRole::kBackground),
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground),
       centerline_path.length(), border_thickness);
 }
 
@@ -1364,8 +1357,7 @@ void BoxBorderPainter::DrawWideDottedBoxSideFromPath(
   // https://bugs.webkit.org/show_bug.cgi?id=58711
   context_.StrokePath(
       border_path,
-      PaintAutoDarkMode(style_, document_,
-                        DarkModeFilter::ElementRole::kBackground),
+      PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kBackground),
       border_path.length(), border_thickness);
 }
 

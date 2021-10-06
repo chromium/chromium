@@ -2073,12 +2073,9 @@ Color LocalFrameView::DocumentBackgroundColor() {
 
   Color doc_bg =
       background_source->ResolveColor(GetCSSPropertyBackgroundColor());
-  if (Settings* settings = frame_->GetSettings()) {
-    if (settings->GetForceDarkModeEnabled() &&
-        !background_source->StyleRef().DarkColorScheme()) {
-      doc_bg = EnsureDarkModeFilter().InvertColorIfNeeded(
-          doc_bg.Rgb(), DarkModeFilter::ElementRole::kBackground);
-    }
+  if (background_source->StyleRef().ColorSchemeForced()) {
+    doc_bg = EnsureDarkModeFilter().InvertColorIfNeeded(
+        doc_bg.Rgb(), DarkModeFilter::ElementRole::kBackground);
   }
   if (blend_with_base)
     return result.Blend(doc_bg);

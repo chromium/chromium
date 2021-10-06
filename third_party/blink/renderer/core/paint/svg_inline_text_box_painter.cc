@@ -281,8 +281,7 @@ void SVGInlineTextBoxPainter::PaintSelectionBackground(
             fragment, fragment_with_range.start_position,
             fragment_with_range.end_position, style),
         background_color,
-        PaintAutoDarkMode(style, layout_item.GetDocument(),
-                          DarkModeFilter::ElementRole::kSVG));
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSVG));
   }
 }
 
@@ -377,9 +376,8 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
       FloatRect(decoration_origin,
                 FloatSize(fragment.width, thickness / scaling_factor)));
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      decoration_style, decoration_layout_object->GetDocument(),
-      DarkModeFilter::ElementRole::kSVG));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(decoration_style, DarkModeFilter::ElementRole::kSVG));
 
   for (int i = 0; i < 3; i++) {
     switch (decoration_style.PaintOrderType(i)) {
@@ -520,7 +518,6 @@ void SVGInlineTextBoxPainter::PaintText(const PaintInfo& paint_info,
   context.DrawText(scaled_font, text_run_paint_info, text_origin, flags,
                    text_layout_object.EnsureNodeId(),
                    PaintAutoDarkMode(text_layout_object.StyleRef(),
-                                     text_layout_object.GetDocument(),
                                      DarkModeFilter::ElementRole::kSVG));
   // TODO(npm): Check that there are non-whitespace characters. See
   // crbug.com/788444.
@@ -758,8 +755,7 @@ void SVGInlineTextBoxPainter::PaintTextMarkerBackground(
     paint_info.context.SetFillColor(color);
     paint_info.context.FillRect(
         fragment_rect,
-        PaintAutoDarkMode(style, InlineLayoutObject().GetDocument(),
-                          DarkModeFilter::ElementRole::kSVG));
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSVG));
   }
 }
 

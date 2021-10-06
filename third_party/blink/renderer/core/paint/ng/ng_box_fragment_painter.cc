@@ -1286,8 +1286,7 @@ void NGBoxFragmentPainter::PaintColumnRules(
   PhysicalRect previous_column;
   bool past_first_column_in_row = false;
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, box_fragment_.GetDocument(),
-                        DarkModeFilter::ElementRole::kBackground));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   for (const NGLink& child : box_fragment_.Children()) {
     if (!child->IsColumnBox()) {
       // Column spanner. Continue in the next row, if there are 2 columns or
@@ -1632,8 +1631,7 @@ void NGBoxFragmentPainter::PaintBackplate(NGInlineCursor* line_boxes,
   for (const auto backplate : backplates) {
     paint_info.context.FillRect(
         FloatRect(backplate), backplate_color,
-        PaintAutoDarkMode(style, box_fragment_.GetDocument(),
-                          DarkModeFilter::ElementRole::kBackground));
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
   }
 }
 

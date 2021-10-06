@@ -212,7 +212,6 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
-                          layout_replaced_.GetDocument(),
                           DarkModeFilter::ElementRole::kBackground));
   }
 }

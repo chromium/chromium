@@ -111,8 +111,8 @@ void PaintPieces(GraphicsContext& context,
       nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
       PixelSnappedIntRect(border_image_rect), border_widths, sides_to_include);
 
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      style, document, DarkModeFilter::ElementRole::kBackground));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
 
   ScopedInterpolationQuality interpolation_quality_scope(
       context, style.GetInterpolationQuality());

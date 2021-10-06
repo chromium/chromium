@@ -367,7 +367,7 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
       tick_rect.SetY(tick_position);
     paint_info.context.FillRect(
         tick_rect, o.ResolveColor(GetCSSPropertyColor()),
-        PaintAutoDarkMode(o.StyleRef(), o.GetDocument(),
+        PaintAutoDarkMode(o.StyleRef(),
                           DarkModeFilter::ElementRole::kBackground));
   }
 }

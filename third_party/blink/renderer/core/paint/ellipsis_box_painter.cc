@@ -76,7 +76,7 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
                            ellipsis_box_.IsHorizontal());
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, document, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
 
   text_painter.Paint(0, ellipsis_box_.EllipsisStr().length(),
                      ellipsis_box_.EllipsisStr().length(), text_style,

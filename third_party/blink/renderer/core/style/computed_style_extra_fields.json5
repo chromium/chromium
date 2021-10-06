@@ -976,7 +976,7 @@
       inherited: true,
     },
     {
-      name: "ColorSchemeOnly",
+      name: "ColorSchemeForced",
       field_template: "primitive",
       type_name: "bool",
       default_value: "false",

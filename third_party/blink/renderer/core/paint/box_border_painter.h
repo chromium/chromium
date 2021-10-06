@@ -15,7 +15,6 @@
 namespace blink {
 
 class ComputedStyle;
-class Document;
 class Path;
 struct PhysicalRect;
 
@@ -28,23 +27,21 @@ class BoxBorderPainter {
   static void PaintBorder(GraphicsContext& context,
                           const PhysicalRect& border_rect,
                           const ComputedStyle& style,
-                          const Document& document,
                           BackgroundBleedAvoidance bleed_avoidance,
                           PhysicalBoxSides sides_to_include) {
-    BoxBorderPainter(context, border_rect, style, document, bleed_avoidance,
+    BoxBorderPainter(context, border_rect, style, bleed_avoidance,
                      sides_to_include)
         .Paint();
   }
 
   static void PaintSingleRectOutline(GraphicsContext& context,
                                      const ComputedStyle& style,
-                                     const Document& document,
                                      const PhysicalRect& border_rect,
                                      int width,
                                      int inner_outset_x,
                                      int inner_outset_y) {
-    BoxBorderPainter(context, style, document, border_rect, width,
-                     inner_outset_x, inner_outset_y)
+    BoxBorderPainter(context, style, border_rect, width, inner_outset_x,
+                     inner_outset_y)
         .Paint();
   }
 
@@ -81,13 +78,11 @@ class BoxBorderPainter {
   BoxBorderPainter(GraphicsContext&,
                    const PhysicalRect& border_rect,
                    const ComputedStyle&,
-                   const Document&,
                    BackgroundBleedAvoidance,
                    PhysicalBoxSides sides_to_include);
   // For PaintSingleRectOutline().
   BoxBorderPainter(GraphicsContext&,
                    const ComputedStyle&,
-                   const Document&,
                    const PhysicalRect& border_rect,
                    int width,
                    int inner_outset_x,
@@ -175,9 +170,6 @@ class BoxBorderPainter {
   const LayoutUnit outer_outset_x_;
   const LayoutUnit outer_outset_y_;
   const ComputedStyle& style_;
-  // TODO(crbug.com/1224806): Remove this once ComputedStyle fully controls
-  // auto dark mode.
-  const Document& document_;
   const BackgroundBleedAvoidance bleed_avoidance_;
   const PhysicalBoxSides sides_to_include_;
 

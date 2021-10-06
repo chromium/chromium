@@ -36,8 +36,7 @@ void FrameSetPainter::PaintColumnBorder(const PaintInfo& paint_info,
   // meet at a join.
 
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_frame_set_.StyleRef(), layout_frame_set_.GetDocument(),
-      DarkModeFilter::ElementRole::kBackground));
+      layout_frame_set_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
 
   // Fill first.
   GraphicsContext& context = paint_info.context;
@@ -66,8 +65,7 @@ void FrameSetPainter::PaintRowBorder(const PaintInfo& paint_info,
   // meet at a join.
 
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_frame_set_.StyleRef(), layout_frame_set_.GetDocument(),
-      DarkModeFilter::ElementRole::kBackground));
+      layout_frame_set_.StyleRef(), DarkModeFilter::ElementRole::kBackground));
 
   // Fill first.
   GraphicsContext& context = paint_info.context;

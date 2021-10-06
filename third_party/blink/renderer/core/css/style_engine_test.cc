@@ -1577,10 +1577,10 @@ TEST_F(StyleEngineTest, MediaQueriesChangeColorSchemeForcedDarkMode) {
 
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>
-      @media (prefers-color-scheme: light) {
+      @media (prefers-color-scheme: dark) {
         body { color: green }
       }
-      @media (prefers-color-scheme: dark) {
+      @media (prefers-color-scheme: light) {
         body { color: red }
       }
     </style>
@@ -1999,9 +1999,8 @@ TEST_F(StyleEngineTest, PreferredColorSchemeMetric) {
   EXPECT_TRUE(IsUseCounted(WebFeature::kPreferredColorSchemeDark));
 }
 
-// The preferred color scheme setting can differ from the preferred color
-// scheme when forced dark mode is enabled. This is so that forced dark mode
-// does not invert pages that support dark mode.
+// The preferred color scheme setting used to differ from the preferred color
+// scheme when forced dark mode was enabled. Test that it is no longer the case.
 TEST_F(StyleEngineTest, PreferredColorSchemeSettingMetric) {
   ColorSchemeHelper color_scheme_helper(GetDocument());
   color_scheme_helper.SetPreferredColorScheme(
@@ -2018,7 +2017,7 @@ TEST_F(StyleEngineTest, PreferredColorSchemeSettingMetric) {
   ClearUseCounter(WebFeature::kPreferredColorSchemeDarkSetting);
   GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
 
-  EXPECT_FALSE(IsUseCounted(WebFeature::kPreferredColorSchemeDark));
+  EXPECT_TRUE(IsUseCounted(WebFeature::kPreferredColorSchemeDark));
   EXPECT_TRUE(IsUseCounted(WebFeature::kPreferredColorSchemeDarkSetting));
 }
 

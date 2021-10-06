@@ -91,7 +91,6 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
   paint_info.context.DrawImage(
       image.get(), decode_mode,
       PaintAutoDarkMode(layout_svg_image_.StyleRef(),
-                        layout_svg_image_.GetDocument(),
                         DarkModeFilter::ElementRole::kSVG),
       dest_rect, &src_rect, SkBlendMode::kSrcOver, respect_orientation);
 

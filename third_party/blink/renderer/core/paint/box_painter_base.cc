@@ -609,8 +609,7 @@ bool PaintBGColorWithPaintWorklet(const Document* document,
   FloatRect src_rect(FloatPoint(), dest_rect.Rect().Size());
   context.DrawImageRRect(
       paint_worklet_image.get(), Image::kSyncDecode,
-      PaintAutoDarkMode(style, *document,
-                        DarkModeFilter::ElementRole::kBackground),
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
       dest_rect, src_rect);
   return true;
 }
@@ -722,8 +721,7 @@ inline bool PaintFastBottomLayer(const Document* document,
                                       context)) {
       context.FillRoundedRect(
           color_border, info.color,
-          PaintAutoDarkMode(style, *document,
-                            DarkModeFilter::ElementRole::kBackground));
+          PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     }
   }
 
@@ -740,8 +738,7 @@ inline bool PaintFastBottomLayer(const Document* document,
   // kSync by default.
   context.DrawImageRRect(
       image, Image::kSyncDecode,
-      PaintAutoDarkMode(style, *document,
-                        DarkModeFilter::ElementRole::kBackground),
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
       image_border, src_rect, composite_op, info.respect_image_orientation);
 
   DidDrawImage(node, *image, *info.image,
@@ -858,8 +855,7 @@ void PaintFillLayerBackground(const Document* document,
                                       context)) {
       context.FillRect(
           background_rect, info.color,
-          PaintAutoDarkMode(style, *document,
-                            DarkModeFilter::ElementRole::kBackground));
+          PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
     }
   }
 
@@ -874,8 +870,7 @@ void PaintFillLayerBackground(const Document* document,
         FloatRect(image->Rect()), FloatRect(scrolled_paint_rect));
     DrawTiledBackground(
         context, image, geometry, composite_op,
-        PaintAutoDarkMode(style, *document,
-                          DarkModeFilter::ElementRole::kBackground),
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
         info.respect_image_orientation);
     DidDrawImage(node, *image, *info.image,
                  context.GetPaintController().CurrentPaintChunkProperties(),
@@ -1082,8 +1077,8 @@ void BoxPainterBase::PaintBorder(const ImageResourceObserver& obj,
     return;
   }
 
-  BoxBorderPainter::PaintBorder(info.context, rect, style, document,
-                                bleed_avoidance, sides_to_include);
+  BoxBorderPainter::PaintBorder(info.context, rect, style, bleed_avoidance,
+                                sides_to_include);
 }
 
 void BoxPainterBase::PaintMaskImages(const PaintInfo& paint_info,

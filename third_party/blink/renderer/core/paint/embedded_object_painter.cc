@@ -81,9 +81,9 @@ void EmbeddedObjectPainter::PaintReplaced(const PaintInfo& paint_info,
                                        kReplacementTextRoundedRectRadius));
   context.SetFillColor(
       ScaleAlpha(Color::kWhite, kReplacementTextRoundedRectOpacity));
-  AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
-      layout_embedded_object_.StyleRef(), layout_embedded_object_.GetDocument(),
-      DarkModeFilter::ElementRole::kBackground));
+  AutoDarkMode auto_dark_mode(
+      PaintAutoDarkMode(layout_embedded_object_.StyleRef(),
+                        DarkModeFilter::ElementRole::kBackground));
   context.FillPath(rounded_background_rect, auto_dark_mode);
 
   FloatRect text_rect(FloatPoint(), text_geometry);

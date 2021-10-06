@@ -175,10 +175,9 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
     context.SetStrokeStyle(kSolidStroke);
     context.SetStrokeColor(Color::kLightGray);
     context.SetFillColor(Color::kTransparent);
-    context.DrawRect(
-        paint_rect,
-        PaintAutoDarkMode(layout_image_.StyleRef(), layout_image_.GetDocument(),
-                          DarkModeFilter::ElementRole::kBackground));
+    context.DrawRect(paint_rect, PaintAutoDarkMode(
+                                     layout_image_.StyleRef(),
+                                     DarkModeFilter::ElementRole::kBackground));
     return;
   }
 
@@ -264,12 +263,11 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
     }
   }
 
-  context.DrawImage(
-      image.get(), decode_mode,
-      PaintAutoDarkMode(layout_image_.StyleRef(), layout_image_.GetDocument(),
-                        DarkModeFilter::ElementRole::kBackground),
-      FloatRect(pixel_snapped_dest_rect), &src_rect, SkBlendMode::kSrcOver,
-      respect_orientation);
+  context.DrawImage(image.get(), decode_mode,
+                    PaintAutoDarkMode(layout_image_.StyleRef(),
+                                      DarkModeFilter::ElementRole::kBackground),
+                    FloatRect(pixel_snapped_dest_rect), &src_rect,
+                    SkBlendMode::kSrcOver, respect_orientation);
 
   if (ImageResourceContent* image_content = image_resource.CachedImage()) {
     if ((IsA<HTMLImageElement>(node) || IsA<HTMLVideoElement>(node)) &&

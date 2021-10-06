@@ -823,6 +823,7 @@ void PaintFocusRing(GraphicsContext& context,
   const float outer_ring_width = FocusRingOuterStrokeWidth(style);
   const float inner_ring_width = FocusRingInnerStrokeWidth(style);
   const int offset = FocusRingOffset(style);
+
   Color outer_color =
       style.DarkColorScheme() ? Color(0x10, 0x10, 0x10) : Color::kWhite;
   AutoDarkMode auto_dark_mode(
@@ -880,7 +881,7 @@ void OutlinePainter::PaintOutlineRects(
   if (united_outline_rect == pixel_snapped_outline_rects[0]) {
     int outline_offset = OutlineOffsetForPainting(style);
     BoxBorderPainter::PaintSingleRectOutline(
-        paint_info.context, style, document, outline_rects[0],
+        paint_info.context, style, outline_rects[0],
         OutlineWidthForPainting(style),
         AdjustedOutlineOffsetX(united_outline_rect, outline_offset),
         AdjustedOutlineOffsetY(united_outline_rect, outline_offset));

@@ -230,10 +230,10 @@ TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
       "(prefers-color-scheme: dark)");
   EXPECT_TRUE(media_query->matches());
   GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
-  EXPECT_FALSE(media_query->matches());
+  EXPECT_TRUE(media_query->matches());
 
   GetDocument().head()->AppendChild(CreateColorSchemeMeta("light"));
-  EXPECT_FALSE(media_query->matches());
+  EXPECT_TRUE(media_query->matches());
 
   SetColorScheme("dark");
   EXPECT_TRUE(media_query->matches());
