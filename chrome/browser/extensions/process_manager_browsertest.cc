@@ -158,8 +158,8 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
   explicit NavigationCompletedObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents),
         message_loop_runner_(new content::MessageLoopRunner) {
-    web_contents->ForEachFrame(
-        base::BindRepeating(&AddFrameToSet, base::Unretained(&frames_)));
+    web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
+        &AddFrameToSet, base::Unretained(&live_original_frames_)));
   }
 
   NavigationCompletedObserver(const NavigationCompletedObserver&) = delete;
@@ -167,32 +167,34 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
       delete;
 
   void Wait() {
-    if (!AreAllFramesInTab())
+    if (!AllLiveRenderFrameHostsAreCurrent())
       message_loop_runner_->Run();
   }
 
   void RenderFrameDeleted(content::RenderFrameHost* rfh) override {
-    if (frames_.erase(rfh) != 0 && message_loop_runner_->loop_running() &&
-        AreAllFramesInTab()) {
+    if (live_original_frames_.erase(rfh) != 0 &&
+        message_loop_runner_->loop_running() &&
+        AllLiveRenderFrameHostsAreCurrent()) {
       message_loop_runner_->Quit();
     }
   }
 
  private:
-  // Check whether all frames that were recorded at the construction of this
-  // class are still part of the tab.
-  bool AreAllFramesInTab() {
+  // Checks whether the RenderFrameHosts that were current when this class was
+  // constructed and that are still alive are all current (e.g. not pending
+  // deletion). If there is a non-current RenderFrameHost that is still alive,
+  // this returns false.
+  bool AllLiveRenderFrameHostsAreCurrent() {
     std::set<content::RenderFrameHost*> current_frames;
-    web_contents()->ForEachFrame(
+    web_contents()->GetMainFrame()->ForEachRenderFrameHost(
         base::BindRepeating(&AddFrameToSet, base::Unretained(&current_frames)));
-    for (content::RenderFrameHost* frame : frames_) {
-      if (!base::Contains(current_frames, frame))
-        return false;
-    }
-    return true;
+
+    return base::STLSetDifference<std::set<content::RenderFrameHost*>>(
+               live_original_frames_, current_frames)
+               .size() == 0;
   }
 
-  std::set<content::RenderFrameHost*> frames_;
+  std::set<content::RenderFrameHost*> live_original_frames_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 

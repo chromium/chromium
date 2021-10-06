@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
         ExecuteScriptAndGetValue(frame_host, "window.screen.width").GetInt();
     EXPECT_EQ(width, main_frame_screen_width);
   };
-  shell()->web_contents()->ForEachFrame(
+  shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
       base::BindLambdaForTesting(check_screen_width));
 }
 

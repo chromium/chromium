@@ -287,13 +287,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
     run_loop.Run();
 
     frame_count = 0;
-    preview_dialog->ForEachFrame(
+    preview_dialog->GetMainFrame()->ForEachRenderFrameHost(
         base::BindRepeating(&CountFrames, base::Unretained(&frame_count)));
   } while (frame_count < kExpectedFrameCount);
   ASSERT_EQ(kExpectedFrameCount, frame_count);
 
   // Make sure all the frames in the dialog has access to the PDF plugin.
-  preview_dialog->ForEachFrame(
+  preview_dialog->GetMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating(&CheckPdfPluginForRenderFrame));
 
   PrintPreviewDone();

@@ -1236,7 +1236,7 @@ class SavePageOriginalVsSavedComparisonTest
 
     if (GetParam() == content::SAVE_PAGE_TYPE_AS_MHTML) {
       std::set<url::Origin> origins;
-      GetCurrentTab(browser())->ForEachFrame(
+      GetCurrentTab(browser())->GetMainFrame()->ForEachRenderFrameHost(
           base::BindRepeating(&CheckFrameForMHTML, base::Unretained(&origins)));
       int unique_origins = origins.size();
       EXPECT_EQ(expected_number_of_frames_in_saved_page, unique_origins)
