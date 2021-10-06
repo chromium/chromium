@@ -19,17 +19,23 @@ import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {assert} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
-import {dom, DomIf, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
+import {dom, DomIf, FlattenedNodesObserver, html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, RouteObserverMixin, Router} from '../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
+import {SettingsSubpageElement} from './settings_subpage.js';
 
+type FocusConfig = Map<string, (string|Element|(() => void))>;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- */
-const SettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement);
+interface SettingsAnimatedPagesElement {
+  $: {
+    animatedPages: IronPagesElement,
+  };
+}
+
+const SettingsAnimatedPagesElementBase = RouteObserverMixin(PolymerElement) as
+    {new (): PolymerElement & RouteObserverMixinInterface};
 
 /** @polymer */
 class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
@@ -57,37 +63,33 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
        * subpage. The key of the map holds a Route path, and the value holds
        * either a query selector that identifies the desired element, an element
        * or a function to be run when a neon-animation-finish event is handled.
-       * @type {?Map<string, (string|Element|Function)>}
        */
       focusConfig: Object,
     };
   }
+
+  section: string;
+  focusConfig: FocusConfig|null = null;
+  private previousRoute_: Route|null;
+  private lightDomReady_: boolean = false;
+  private queuedRouteChange_: {oldRoute?: Route, newRoute: Route}|null = null;
+
+  private lightDomObserver_: FlattenedNodesObserver|null;
 
   constructor() {
     super();
 
     // Observe the light DOM so we know when it's ready.
     this.lightDomObserver_ =
-        dom(this).observeNodes(this.lightDomChanged_.bind(this));
+        new FlattenedNodesObserver(this, this.lightDomChanged_.bind(this));
 
     /**
      * The last "previous" route reported by the router.
-     * @private {?Route}
      */
     this.previousRoute_ = null;
-
-    /** @private {boolean} */
-    this.lightDomReady_ = false;
-
-    /** @private {?{oldRoute: ?Route, newRoute: Route}} */
-    this.queuedRouteChange_ = null;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onIronSelect_(e) {
+  private onIronSelect_(e: Event) {
     // Ignore bubbling 'iron-select' events not originating from
     // |animatedPages| itself.
     if (e.target !== this.$.animatedPages) {
@@ -110,7 +112,8 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
     if (this.previousRoute_ &&
         !Router.getInstance().lastRouteChangeWasPopstate()) {
       const subpage = /** @type {{focusBackButton: Function}} */ (
-          this.querySelector('settings-subpage.iron-selected'));
+          this.querySelector<SettingsSubpageElement>(
+              'settings-subpage.iron-selected'));
       if (subpage) {
         subpage.focusBackButton();
         return;
@@ -145,9 +148,9 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
       } else {
         handler = () => {
           if (typeof pathConfig === 'string') {
-            pathConfig = assert(this.querySelector(pathConfig));
+            pathConfig = assert(this.querySelector(pathConfig)!);
           }
-          focusWithoutInk(/** @type {!Element} */ (pathConfig));
+          focusWithoutInk(pathConfig as Element);
         };
       }
       handler();
@@ -156,36 +159,34 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
 
   /**
    * Called initially once the effective children are ready.
-   * @private
    */
-  lightDomChanged_() {
+  private lightDomChanged_() {
     if (this.lightDomReady_) {
       return;
     }
 
     this.lightDomReady_ = true;
-    dom(this).unobserveNodes(this.lightDomObserver_);
+    this.lightDomObserver_!.disconnect();
+    this.lightDomObserver_ = null;
     this.runQueuedRouteChange_();
   }
 
   /**
    * Calls currentRouteChanged with the deferred route change info.
-   * @private
    */
-  runQueuedRouteChange_() {
+  private runQueuedRouteChange_() {
     if (!this.queuedRouteChange_) {
       return;
     }
 
     microTask.run(() => {
       this.currentRouteChanged(
-          this.queuedRouteChange_.newRoute, this.queuedRouteChange_.oldRoute);
+          this.queuedRouteChange_!.newRoute, this.queuedRouteChange_!.oldRoute);
     });
   }
 
-  /** @protected */
-  currentRouteChanged(newRoute, oldRoute) {
-    this.previousRoute_ = oldRoute;
+  currentRouteChanged(newRoute: Route, oldRoute?: Route) {
+    this.previousRoute_ = oldRoute || null;
 
     if (newRoute.section === this.section && newRoute.isSubpage()) {
       this.switchToSubpage_(newRoute, oldRoute);
@@ -196,11 +197,8 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
 
   /**
    * Selects the subpage specified by |newRoute|.
-   * @param {!Route} newRoute
-   * @param {!Route} oldRoute
-   * @private
    */
-  switchToSubpage_(newRoute, oldRoute) {
+  private switchToSubpage_(newRoute: Route, oldRoute: Route|undefined) {
     // Don't manipulate the light DOM until it's ready.
     if (!this.lightDomReady_) {
       this.queuedRouteChange_ = this.queuedRouteChange_ || {oldRoute, newRoute};
@@ -214,11 +212,11 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
 
   /**
    * Ensures that the template enclosing the subpage is stamped.
-   * @private
    */
-  ensureSubpageInstance_() {
+  private ensureSubpageInstance_() {
     const routePath = Router.getInstance().getCurrentRoute().path;
-    const domIf = this.querySelector(`dom-if[route-path='${routePath}']`);
+    const domIf =
+        this.querySelector<DomIf>(`dom-if[route-path='${routePath}']`);
 
     // Nothing to do if the subpage isn't wrapped in a <dom-if> or the template
     // is already stamped.
@@ -227,14 +225,9 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
     }
 
     // Set the subpage's id for use by neon-animated-pages.
-    const content =
-        /**
-           @type {!{_contentForTemplate:
-               function(!HTMLTemplateElement):!HTMLElement}}
-         */
-        (DomIf)._contentForTemplate(
-            /** @type {!HTMLTemplateElement} */ (domIf.firstElementChild));
-    const subpage = content.querySelector('settings-subpage');
+    const content = DomIf._contentForTemplate(
+        domIf.firstElementChild as HTMLTemplateElement);
+    const subpage = content!.querySelector('settings-subpage')!;
     subpage.setAttribute('route-path', routePath);
 
     // Carry over the
@@ -257,7 +250,7 @@ class SettingsAnimatedPagesElement extends SettingsAnimatedPagesElementBase {
     //
     // Note that the dom-if should always use the property and settings-subpage
     // should always use the attribute.
-    if (domIf.hasAttribute('no-search') || domIf.noSearch) {
+    if (domIf.hasAttribute('no-search') || (domIf as any)['noSearch']) {
       subpage.setAttribute('no-search', '');
     }
 

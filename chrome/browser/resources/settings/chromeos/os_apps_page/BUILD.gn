@@ -42,7 +42,6 @@ js_library("os_apps_page") {
     "..:os_route.m",
     "..:prefs_behavior",
     "../../:router",
-    "../../settings_page:settings_animated_pages",
     "./app_management_page:constants",
     "./app_management_page:store_client",
     "./app_notifications_page:mojo_interface_provider",

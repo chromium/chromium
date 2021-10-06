@@ -36,7 +36,6 @@ js_library("bluetooth_page") {
     "..:os_route.m",
     "..:prefs_behavior",
     "../..:router",
-    "../../settings_page:settings_animated_pages",
     "//services/device/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",

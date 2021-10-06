@@ -65,7 +65,6 @@ js_library("personalization_page.m") {
     "..:deep_linking_behavior.m",
     "..:os_route.m",
     "../..:router",
-    "../../settings_page:settings_animated_pages",
     "../ambient_mode_page:ambient_mode_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:load_time_data.m",

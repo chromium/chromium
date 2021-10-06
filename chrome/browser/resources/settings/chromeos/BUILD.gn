@@ -327,6 +327,7 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "privacy_page/secure_dns.js",
     "setting_id_param_util.js",
     "settings_page_css.js",
+    "settings_page/settings_animated_pages.js",
     "settings_page/settings_section.js",
     "settings_page/settings_subpage.js",
     "settings_shared_css.js",
@@ -560,7 +561,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "people_page/sync_controls.js",
     "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
-    "settings_page/settings_animated_pages.js",
   ]
 }
 

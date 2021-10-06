@@ -293,7 +293,7 @@ preprocess_if_expr("preprocess_generated") {
     "search_engines_page/search_engines_page.ts",
     "search_page/search_page.ts",
     "settings_main/settings_main.ts",
-    "settings_page/settings_animated_pages.js",
+    "settings_page/settings_animated_pages.ts",
     "settings_page/settings_section.ts",
     "settings_page/settings_subpage.ts",
     "settings_ui/settings_ui.ts",
@@ -383,7 +383,6 @@ group("closure_compile") {
   deps = [
     ":closure_compile_local",
     "people_page:closure_compile",
-    "settings_page:closure_compile",
   ]
 
   if (is_chromeos_ash) {
@@ -687,7 +686,7 @@ ts_library("build_ts") {
     "settings_menu/settings_menu.ts",
     "settings_page_css.ts",
     "settings_page/main_page_mixin.ts",
-    "settings_page/settings_animated_pages.js",
+    "settings_page/settings_animated_pages.ts",
     "settings_page/settings_section.ts",
     "settings_page/settings_subpage.ts",
     "settings_routes.js",

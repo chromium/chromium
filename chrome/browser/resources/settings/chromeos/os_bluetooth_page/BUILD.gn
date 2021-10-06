@@ -26,7 +26,6 @@ js_library("os_bluetooth_page") {
     ":os_bluetooth_devices_subpage",
     ":os_bluetooth_pairing_dialog",
     ":os_bluetooth_summary",
-    "../../settings_page:settings_animated_pages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:cros_bluetooth_config",
     "//ui/webui/resources/js:i18n_behavior.m",

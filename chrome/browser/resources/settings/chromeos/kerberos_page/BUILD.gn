@@ -59,7 +59,6 @@ js_library("kerberos_page") {
   deps = [
     "..:os_route.m",
     "../..:router",
-    "../../settings_page:settings_animated_pages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
