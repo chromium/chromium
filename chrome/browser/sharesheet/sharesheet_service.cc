@@ -67,8 +67,8 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
   ShowBubble(web_contents->GetTopLevelNativeWindow(), std::move(intent),
-             /*contains_hosted_document=*/false, source,
-             std::move(delivered_callback), std::move(close_callback));
+             contains_hosted_document, source, std::move(delivered_callback),
+             std::move(close_callback));
 }
 
 void SharesheetService::ShowBubble(gfx::NativeWindow native_window,
