@@ -84,9 +84,9 @@ bool SubresourceFilterContentSettingsManager::ShouldShowUIForSite(
   if (!dict)
     return true;
 
-  double last_shown_time_double = 0;
-  if (dict->GetDouble(kInfobarLastShownTimeKey, &last_shown_time_double)) {
-    base::Time last_shown = base::Time::FromDoubleT(last_shown_time_double);
+  if (absl::optional<double> last_shown_time =
+          dict->FindDoubleKey(kInfobarLastShownTimeKey)) {
+    base::Time last_shown = base::Time::FromDoubleT(*last_shown_time);
     if (clock_->Now() - last_shown < kDelayBeforeShowingInfobarAgain)
       return false;
   }

@@ -822,10 +822,8 @@ void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
   params.GetInteger(kAttributeMinHeight, &min_height);
   params.GetInteger(kAttributeMinWidth, &min_width);
 
-  double element_height = 0.0;
-  double element_width = 0.0;
-  params.GetDouble(kElementHeight, &element_height);
-  params.GetDouble(kElementWidth, &element_width);
+  double element_height = params.FindDoublePath(kElementHeight).value_or(0.0);
+  double element_width = params.FindDoublePath(kElementWidth).value_or(0.0);
 
   // Set the normal size to the element size so that the guestview will fit
   // the element initially if autosize is disabled.

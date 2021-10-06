@@ -420,15 +420,15 @@ bool AppBannerSettingsHelper::WasLaunchedRecently(
       const base::DictionaryValue* value;
       it.value().GetAsDictionary(&value);
 
-      double internal_time;
-      if (it.key() == kInstantAppsKey ||
-          !value->GetDouble(
-              kBannerEventKeys[APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN],
-              &internal_time)) {
+      if (it.key() == kInstantAppsKey)
         continue;
-      }
 
-      if ((now - base::Time::FromInternalValue(internal_time)) <=
+      absl::optional<double> internal_time = value->FindDoubleKey(
+          kBannerEventKeys[APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN]);
+      if (!internal_time)
+        continue;
+
+      if ((now - base::Time::FromInternalValue(*internal_time)) <=
           recent_last_launch_in_days) {
         return true;
       }

@@ -168,9 +168,10 @@ void QuirksManager::OnIccFilePathRequestCompleted(
     return;
   }
 
-  double last_check = 0.0;
-  local_state_->GetDictionary(prefs::kQuirksClientLastServerCheck)
-      ->GetDouble(IdToHexString(product_id), &last_check);
+  double last_check =
+      local_state_->GetDictionary(prefs::kQuirksClientLastServerCheck)
+          ->FindDoubleKey(IdToHexString(product_id))
+          .value_or(0.0);
 
   const base::TimeDelta time_since =
       base::Time::Now() - base::Time::FromDoubleT(last_check);

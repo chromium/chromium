@@ -106,12 +106,11 @@ void DataUseTrackerPrefs::UpdateUsagePref(const std::string& pref_name,
     return;
 
   DictionaryPrefUpdate pref_updater(pref_service_, pref_name);
-  double todays_traffic = 0;
   std::string todays_key = GetCurrentMeasurementDateAsString();
 
   const base::DictionaryValue* user_pref_dict =
       pref_service_->GetDictionary(pref_name);
-  user_pref_dict->GetDouble(todays_key, &todays_traffic);
+  double todays_traffic = user_pref_dict->FindDoubleKey(todays_key).value_or(0);
   pref_updater->SetDouble(
       todays_key,
       todays_traffic + (static_cast<double>(message_size_bytes) / 1024.0));

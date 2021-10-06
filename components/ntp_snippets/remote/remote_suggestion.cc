@@ -117,10 +117,9 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
     snippet->image_dominant_color_ = image_dominant_color;
   }
 
-  double score;
-  if (dict.GetDouble("score", &score)) {
-    snippet->score_ = score;
-  }
+  absl::optional<double> score = dict.FindDoubleKey("score");
+  if (score)
+    snippet->score_ = *score;
 
   const base::DictionaryValue* notification_info = nullptr;
   if (dict.GetDictionary("notificationInfo", &notification_info)) {
