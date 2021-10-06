@@ -222,7 +222,8 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
 
 assert(!(llvm_force_head_revision && use_goma),
        "can't use goma with trunk clang")
-assert(!(llvm_force_head_revision && use_remoteexec), "can't use rbe with trunk clang")
+assert(!(llvm_force_head_revision && use_remoteexec),
+       "can't use rbe with trunk clang")
 
 # default_include_dirs ---------------------------------------------------------
 #
@@ -1551,9 +1552,9 @@ config("default_warnings") {
 
 config("chromium_code") {
   if (is_win) {
-    cflags = [ "/W4" ]  # Warning level 4.
-
     if (is_clang) {
+      cflags = [ "/W4" ]  # Warning level 4.
+
       # Opt in to additional [[nodiscard]] on standard library methods.
       defines = [ "_HAS_NODISCARD" ]
     }
@@ -1644,8 +1645,10 @@ config("no_chromium_code") {
   defines = []
 
   if (is_win) {
+    if (is_clang) {
+      cflags += [ "/W3" ]  # Warning level 3.
+    }
     cflags += [
-      "/W3",  # Warning level 3.
       "/wd4800",  # Disable warning when forcing value to bool.
       "/wd4267",  # TODO(jschuh): size_t to int.
       "/wd4996",  # Deprecated function warning.
