@@ -1668,6 +1668,18 @@ ci.chromium_builder(
     schedule = "triggered",
     triggered_by = [],
     execution_timeout = 7 * time.hour,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "chromium",
+                "src",
+                "infra",
+                "archive_config",
+                "mac-tagged.json",
+            ],
+        },
+    },
 )
 
 ci.chromium_builder(
@@ -1705,6 +1717,18 @@ ci.chromium_builder(
     schedule = "triggered",
     triggered_by = [],
     execution_timeout = 7 * time.hour,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "source_side_spec_path": [
+                "chromium",
+                "src",
+                "infra",
+                "archive_config",
+                "mac-tagged.json",
+            ],
+        },
+    },
 )
 
 ci.chromium_builder(
