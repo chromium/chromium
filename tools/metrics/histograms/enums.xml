@@ -59843,6 +59843,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="LTE"/>
   <int value="8" label="UMTS"/>
   <int value="9" label="Unknown"/>
+  <int value="10" label="5GNR"/>
 </enum>
 
 <enum name="NetworkCellularUsage">
