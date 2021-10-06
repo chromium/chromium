@@ -70,6 +70,7 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Property;
 using ::testing::Return;
@@ -147,9 +148,9 @@ class CollectUserDataActionTest : public testing::Test {
   content::TestBrowserContext browser_context_;
   std::unique_ptr<content::WebContents> web_contents_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
-  MockPersonalDataManager mock_personal_data_manager_;
-  MockWebsiteLoginManager mock_website_login_manager_;
-  MockActionDelegate mock_action_delegate_;
+  NiceMock<MockPersonalDataManager> mock_personal_data_manager_;
+  NiceMock<MockWebsiteLoginManager> mock_website_login_manager_;
+  NiceMock<MockActionDelegate> mock_action_delegate_;
   UserData user_data_;
   UserModel user_model_;
 };
@@ -2499,7 +2500,7 @@ TEST_F(CollectUserDataActionTest, RecordAddressUseOnlyOnce) {
   action.ProcessAction(callback_.Get());
 }
 
-TEST_F(CollectUserDataActionTest, TestInitiallyCompleteUMALogging) {
+TEST_F(CollectUserDataActionTest, LogsUMAPrefilledSuccess) {
   base::HistogramTester histogram_tester;
 
   ActionProto action_proto;
@@ -2521,8 +2522,7 @@ TEST_F(CollectUserDataActionTest, TestInitiallyCompleteUMALogging) {
       &address, "Marion", "Mitchell", "Morrison", "marion@me.xyz", "Fox",
       "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "16505678910");
 
-  std::string card_guid = base::GenerateGUID();
-  autofill::CreditCard credit_card(card_guid, kFakeUrl);
+  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetCreditCardInfo(&credit_card, "Marion Mitchell",
                                     "4111 1111 1111 1111", "01", "2050",
                                     address.guid());
@@ -2541,6 +2541,13 @@ TEST_F(CollectUserDataActionTest, TestInitiallyCompleteUMALogging) {
           Return(std::vector<autofill::CreditCard*>({&credit_card})));
   ON_CALL(mock_personal_data_manager_, GetProfileByGUID(address_guid))
       .WillByDefault(Return(&address));
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        // Do not select anything here, the data is expected to be complete
+        // through default selection.
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      }));
 
   std::unique_ptr<CollectUserDataAction> action =
       std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
@@ -2554,5 +2561,105 @@ TEST_F(CollectUserDataActionTest, TestInitiallyCompleteUMALogging) {
       Metrics::PaymentRequestPrefilled::PREFILLED_SUCCESS, 1u);
 }
 
+TEST_F(CollectUserDataActionTest, LogsUMANotPrefilledSuccess) {
+  base::HistogramTester histogram_tester;
+
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+  auto* contact_details_proto =
+      collect_user_data_proto->mutable_contact_details();
+  contact_details_proto->set_contact_details_name("contact");
+  contact_details_proto->set_request_payer_name(true);
+  contact_details_proto->set_request_payer_email(true);
+  contact_details_proto->set_request_payer_phone(true);
+
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      }));
+
+  std::unique_ptr<CollectUserDataAction> action =
+      std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
+                                              action_proto);
+  action->ProcessAction(callback_.Get());
+  // We can't wait for the callback_ to be called and destroy the action there,
+  // it will trigger a "heap use after free" error.
+  action.reset();  // Destroy to write histogram entries.
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.PaymentRequest.Prefilled",
+      Metrics::PaymentRequestPrefilled::NOTPREFILLED_SUCCESS, 1u);
+}
+
+TEST_F(CollectUserDataActionTest, LogsUMAAutofillChangedSuccess) {
+  base::HistogramTester histogram_tester;
+
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+
+  auto* contact_details_proto =
+      collect_user_data_proto->mutable_contact_details();
+  contact_details_proto->set_contact_details_name("contact");
+  contact_details_proto->set_request_payer_name(true);
+  contact_details_proto->set_request_payer_email(true);
+  contact_details_proto->set_request_payer_phone(true);
+
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(
+          Invoke([this](CollectUserDataOptions* collect_user_data_options) {
+            // Notify before EndAction() is called.
+            mock_personal_data_manager_.NotifyPersonalDataObserver();
+            std::move(collect_user_data_options->confirm_callback)
+                .Run(&user_data_, &user_model_);
+          }));
+
+  std::unique_ptr<CollectUserDataAction> action =
+      std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
+                                              action_proto);
+
+  action->ProcessAction(callback_.Get());
+  // We can't wait for the callback_ to be called and destroy the action there,
+  // it will trigger a "heap use after free" error.
+  action.reset();  // Destroy to write histogram entries.
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.PaymentRequest.AutofillChanged",
+      Metrics::PaymentRequestAutofillInfoChanged::CHANGED_SUCCESS, 1u);
+}
+
+TEST_F(CollectUserDataActionTest, LogsUMAAutofillNotChangedSuccess) {
+  base::HistogramTester histogram_tester;
+
+  ActionProto action_proto;
+  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
+  collect_user_data_proto->set_request_terms_and_conditions(false);
+
+  auto* contact_details_proto =
+      collect_user_data_proto->mutable_contact_details();
+  contact_details_proto->set_contact_details_name("contact");
+  contact_details_proto->set_request_payer_name(true);
+  contact_details_proto->set_request_payer_email(true);
+  contact_details_proto->set_request_payer_phone(true);
+
+  EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+        // No PDM change.
+        std::move(collect_user_data_options->confirm_callback)
+            .Run(&user_data_, &user_model_);
+      }));
+
+  std::unique_ptr<CollectUserDataAction> action =
+      std::make_unique<CollectUserDataAction>(&mock_action_delegate_,
+                                              action_proto);
+
+  action->ProcessAction(callback_.Get());
+  // We can't wait for the callback_ to be called and destroy the action there,
+  // it will trigger a "heap use after free" error.
+  action.reset();  // Destroy to write histogram entries.
+  histogram_tester.ExpectUniqueSample(
+      "Android.AutofillAssistant.PaymentRequest.AutofillChanged",
+      Metrics::PaymentRequestAutofillInfoChanged::NOTCHANGED_SUCCESS, 1u);
+}
 }  // namespace
 }  // namespace autofill_assistant
