@@ -1046,6 +1046,11 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
   component->set_repair_status(
       rmad::ComponentsRepairState::ComponentRepairStatus::
           RMAD_REPAIR_STATUS_ORIGINAL);
+  // This is not the expected state from rmad, but allows us to confirm the flag
+  // is cleared by SetComponentList
+  components_repair_state.mutable_state()
+      ->mutable_components_repair()
+      ->set_mainboard_rework(true);
   std::vector<rmad::GetStateReply> fake_states = {
       components_repair_state,
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -1065,6 +1070,7 @@ TEST_F(ShimlessRmaServiceTest, SetComponentList) {
         EXPECT_EQ(state.components_repair().components(1).repair_status(),
                   rmad::ComponentsRepairState::ComponentRepairStatus::
                       RMAD_REPAIR_STATUS_ORIGINAL);
+        EXPECT_EQ(state.components_repair().mainboard_rework(), false);
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
@@ -1155,8 +1161,8 @@ TEST_F(ShimlessRmaServiceTest, ReworkMainboard) {
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   fake_rmad_client_()->check_state_callback =
       base::BindRepeating([](const rmad::RmadState& state) {
-        // TODO(gavindodd): Check the rework_mainboard flag when it is in
-        // rmad.proto.
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kComponentsRepair);
+        EXPECT_EQ(state.components_repair().mainboard_rework(), true);
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(

@@ -335,6 +335,7 @@ void ShimlessRmaService::SetComponentList(
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
+  state_proto_.mutable_components_repair()->set_mainboard_rework(false);
   state_proto_.mutable_components_repair()->clear_components();
   state_proto_.mutable_components_repair()->mutable_components()->Reserve(
       component_list.size());
@@ -356,8 +357,7 @@ void ShimlessRmaService::ReworkMainboard(ReworkMainboardCallback callback) {
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  // TODO(gavindodd): set mainboard_rework flag when new rmad.proto is in
-  // third_party
+  state_proto_.mutable_components_repair()->set_mainboard_rework(true);
   TransitionNextStateGeneric(std::move(callback));
 }
 
