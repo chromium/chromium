@@ -32,6 +32,8 @@ class SendTabToSelfClientService : public KeyedService,
   SendTabToSelfClientService& operator=(const SendTabToSelfClientService&) =
       delete;
 
+  void Shutdown() override;
+
   // Keeps track of when the model is loaded so that updates to the
   // model can be pushed afterwards.
   void SendTabToSelfModelLoaded() override;

@@ -33,7 +33,9 @@ SendTabToSelfClientService::SendTabToSelfClientService(
   SetupHandlerRegistry(profile);
 }
 
-SendTabToSelfClientService::~SendTabToSelfClientService() {
+SendTabToSelfClientService::~SendTabToSelfClientService() = default;
+
+void SendTabToSelfClientService::Shutdown() {
   model_->RemoveObserver(this);
   model_ = nullptr;
 }
