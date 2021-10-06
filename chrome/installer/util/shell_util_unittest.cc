@@ -1146,11 +1146,15 @@ TEST_F(ShellUtilRegistryTest, AddFileAssociations) {
     EXPECT_EQ(L"D:\\test.ico,0", value);
   }
 
-  // .test1 should be default-associated with our test app.
+  // .test1 should not be default-associated with our test app. Programmatically
+  // becoming the default handler can be surprising to users, and risks
+  // overwriting affected file types' implicit default handlers, which are
+  // cached by Windows.
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
                                     L"Software\\Classes\\.test1", KEY_READ));
-  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-  EXPECT_EQ(L"TestApp", value);
+
+  // .test 1 should have our app in its Open With list.
+  EXPECT_NE(ERROR_SUCCESS, key.ReadValue(L"", &value));
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER,
                      L"Software\\Classes\\.test1\\OpenWithProgids", KEY_READ));
@@ -1197,11 +1201,6 @@ TEST_F(ShellUtilRegistryTest, DeleteFileAssociations) {
             key.Open(HKEY_CURRENT_USER,
                      L"Software\\Classes\\.test2\\OpenWithProgids", KEY_READ));
   EXPECT_FALSE(key.HasValue(L"TestApp"));
-
-  // .test1 should no longer have a default handler.
-  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
-                                    L"Software\\Classes\\.test1", KEY_READ));
-  EXPECT_FALSE(key.HasValue(L""));
 
   // .test2 should still have the other app as its default handler.
   ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER,
@@ -1266,10 +1265,10 @@ TEST_F(ShellUtilRegistryTest, GetFileAssociationsAndAppName) {
       ShellUtil::GetFileAssociationsAndAppName(kTestProgid));
   EXPECT_TRUE(empty_file_associations_and_app_name.app_name.empty());
 
-  // Add file associations and test that GetFileAssociationsAndAppName returns
-  // the registered file associations and app name. Pass kTestApplicationName
-  // for the open command, to handle the win7 case, which returns the open
-  // command executable name as the app_name.
+  // Add file associations and test that GetFileAssociationsAndAppName
+  // returns the registered file associations and app name. Pass
+  // kTestApplicationName for the open command, to handle the Win 7 case, which
+  // returns the open command executable name as the app_name.
   ASSERT_TRUE(ShellUtil::AddFileAssociations(
       kTestProgid, OpenCommand(), kTestApplicationName, kTestFileTypeName,
       base::FilePath(kTestIconPath), base::FilePath(kTestFileTypeIconPath),
