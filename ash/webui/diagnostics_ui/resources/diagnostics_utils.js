@@ -180,7 +180,13 @@ export function getRoutineGroups(type, isArcEnabled) {
  * @return {string}
  */
 export function getSubnetMaskFromRoutingPrefix(prefix) {
-  assert(prefix > 0 && prefix <= 32);
+  assert(prefix >= 0 && prefix <= 32);
+
+  // A routing prefix can not be 0. Zero indicates an unset value.
+  if (prefix === 0) {
+    return '';
+  }
+
   let zeroes = 32 - prefix;
   // Note: 0xffffffff is 32 bits, all set to 1.
   // Use << to knock off |zeroes| number of bits and then use that same number

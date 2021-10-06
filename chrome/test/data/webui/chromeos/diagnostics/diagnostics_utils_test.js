@@ -24,6 +24,8 @@ export function diagnosticsUtilsTestSuite() {
   });
 
   test('ConvertRoutingPrefixToSubnetMask', () => {
+    // '0' indicates an unset value.
+    assertEquals(getSubnetMaskFromRoutingPrefix(0), '');
     assertEquals(getSubnetMaskFromRoutingPrefix(1), '128.0.0.0');
     assertEquals(getSubnetMaskFromRoutingPrefix(2), '192.0.0.0');
     assertEquals(getSubnetMaskFromRoutingPrefix(3), '224.0.0.0');
