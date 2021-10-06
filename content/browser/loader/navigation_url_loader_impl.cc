@@ -385,7 +385,7 @@ void NavigationURLLoaderImpl::StartImpl(
         CreateURLLoaderThrottles(), global_request_id_.request_id,
         network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
         kNavigationUrlLoaderTrafficAnnotation,
-        base::ThreadTaskRunnerHandle::Get());
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
     return;
   }
 
@@ -400,7 +400,7 @@ void NavigationURLLoaderImpl::StartImpl(
         CreateURLLoaderThrottles(), global_request_id_.request_id,
         network::mojom::kURLLoadOptionNone, resource_request_.get(), this,
         kNavigationUrlLoaderTrafficAnnotation,
-        base::ThreadTaskRunnerHandle::Get());
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
     return;
   }
 
@@ -522,7 +522,7 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     // Non-intercepted requests usually go through the regular network
     // URLLoader, which does mime sniffing.
     throttles.push_back(std::make_unique<blink::MimeSniffingThrottle>(
-        base::ThreadTaskRunnerHandle::Get()));
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse})));
 
     default_loader_used_ = false;
     // If |url_loader_| already exists, this means we are following a redirect
@@ -534,7 +534,7 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
         std::move(single_request_factory), std::move(throttles),
         global_request_id_.request_id, network::mojom::kURLLoadOptionNone,
         resource_request_.get(), this, kNavigationUrlLoaderTrafficAnnotation,
-        base::ThreadTaskRunnerHandle::Get());
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 
     subresource_loader_params_ =
         interceptor->MaybeCreateSubresourceLoaderParams();
@@ -594,7 +594,7 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
       std::move(factory), CreateURLLoaderThrottles(),
       global_request_id_.request_id, options, resource_request_.get(),
       this /* client */, kNavigationUrlLoaderTrafficAnnotation,
-      base::ThreadTaskRunnerHandle::Get());
+      GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
 }
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
@@ -619,7 +619,7 @@ void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
         std::move(factory), CreateURLLoaderThrottles(),
         global_request_id_.request_id, options, resource_request_.get(),
         this /* client */, kNavigationUrlLoaderTrafficAnnotation,
-        base::ThreadTaskRunnerHandle::Get());
+        GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
   }
 }
 
@@ -1034,7 +1034,9 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
       if (will_return_unsafe_redirect)
         bypass_redirect_checks_ = true;
       response_loader_receiver_.reset();
-      response_loader_receiver_.Bind(std::move(response_client_receiver));
+      response_loader_receiver_.Bind(
+          std::move(response_client_receiver),
+          GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
       default_loader_used_ = false;
       url_loader_.reset();     // Consumed above.
       response_body_.reset();  // Consumed above.

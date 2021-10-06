@@ -40,6 +40,11 @@ namespace features {
 // of all chrometto performance improvements.
 constexpr base::Feature kBrowserPrioritizeInputQueue{
     "BrowserPrioritizeInputQueue", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// When NavigationTaskQueue is enabled, the browser will schedule some tasks
+// related to navigation network responses in a kHighest priority queue.
+constexpr base::Feature kNavigationNetworkResponseQueue{
+    "NavigationNetworkResponseQueue", base::FEATURE_DISABLED_BY_DEFAULT};
 }  // namespace features
 
 namespace {
@@ -148,6 +153,14 @@ QueueType BaseBrowserTaskExecutor::GetQueueType(
         if (base::FeatureList::IsEnabled(
                 features::kBrowserPrioritizeInputQueue)) {
           return QueueType::kUserInput;
+        }
+        // Defer to traits.priority() below.
+        break;
+
+      case BrowserTaskType::kNavigationNetworkResponse:
+        if (base::FeatureList::IsEnabled(
+                features::kNavigationNetworkResponseQueue)) {
+          return QueueType::kNavigationNetworkResponse;
         }
         // Defer to traits.priority() below.
         break;

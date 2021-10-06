@@ -65,6 +65,8 @@ const char* GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "ui_user_visible_tq";
     case BrowserTaskQueues::QueueType::kUserInput:
       return "ui_user_input_tq";
+    case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
+      return "ui_navigation_network_response_tq";
   }
 }
 
@@ -84,6 +86,8 @@ const char* GetIOTaskQueueName(BrowserTaskQueues::QueueType queue_type) {
       return "io_user_visible_tq";
     case BrowserTaskQueues::QueueType::kUserInput:
       return "io_user_input_tq";
+    case BrowserTaskQueues::QueueType::kNavigationNetworkResponse:
+      return "io_navigation_network_response_tq";
   }
 }
 
@@ -185,6 +189,9 @@ BrowserTaskQueues::BrowserTaskQueues(
   // User Input queue
   GetBrowserTaskQueue(QueueType::kUserInput)
       ->SetQueuePriority(QueuePriority::kHighestPriority);
+
+  GetBrowserTaskQueue(QueueType::kNavigationNetworkResponse)
+      ->SetQueuePriority(QueuePriority::kHighPriority);
 
   // Control queue
   control_queue_ =

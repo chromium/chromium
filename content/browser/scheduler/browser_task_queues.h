@@ -69,7 +69,11 @@ class CONTENT_EXPORT BrowserTaskQueues {
     // This is higher priority than kUserBlocking.
     kUserInput,
 
-    kMaxValue = kUserInput
+    // For tasks processing navigation network request's response from the
+    // network service.
+    kNavigationNetworkResponse,
+
+    kMaxValue = kNavigationNetworkResponse
   };
 
   static constexpr size_t kNumQueueTypes =
