@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.NewCredentialUsername"
-    units="IOSCredentialProviderNewCredentialUsername"
+    enum="IOSCredentialProviderNewCredentialUsername"
     expires_after="2022-03-31">
   <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
@@ -206,7 +206,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordCreated"
-    units="IOSCredentialProviderPasswordCreated" expires_after="2022-03-31">
+    enum="IOSCredentialProviderPasswordCreated" expires_after="2022-03-31">
   <owner>javierrobles@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
