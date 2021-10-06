@@ -22,6 +22,30 @@
 
 namespace web_app {
 
+TEST(FileHandlerUtilsTest, GetFileExtensionsFromFileHandler) {
+  apps::FileHandler file_handler;
+  file_handler.action = GURL("https://app.site/open-foo");
+  {
+    apps::FileHandler::AcceptEntry accept_entry;
+    accept_entry.mime_type = "application/foo";
+    accept_entry.file_extensions.insert(".foo");
+    file_handler.accept.push_back(accept_entry);
+  }
+  {
+    apps::FileHandler::AcceptEntry accept_entry;
+    accept_entry.mime_type = "application/foobar";
+    accept_entry.file_extensions.insert(".foobar");
+    file_handler.accept.push_back(accept_entry);
+  }
+
+  std::set<std::string> file_extensions =
+      GetFileExtensionsFromFileHandler(file_handler);
+
+  EXPECT_EQ(2u, file_extensions.size());
+  EXPECT_THAT(file_extensions,
+              testing::UnorderedElementsAre(".foo", ".foobar"));
+}
+
 TEST(FileHandlerUtilsTest, GetFileExtensionsFromFileHandlers) {
   apps::FileHandlers file_handlers;
 
@@ -62,6 +86,28 @@ TEST(FileHandlerUtilsTest, GetFileExtensionsFromFileHandlers) {
   EXPECT_EQ(4u, file_extensions.size());
   EXPECT_THAT(file_extensions,
               testing::UnorderedElementsAre(".foo", ".foobar", ".bar", ".baz"));
+}
+
+TEST(FileHandlerUtilsTest, GetMimeTypesFromFileHandler) {
+  apps::FileHandler file_handler;
+  file_handler.action = GURL("https://app.site/open-foo");
+  {
+    apps::FileHandler::AcceptEntry accept_entry;
+    accept_entry.mime_type = "application/foo";
+    accept_entry.file_extensions.insert(".foo");
+    file_handler.accept.push_back(accept_entry);
+  }
+  {
+    apps::FileHandler::AcceptEntry accept_entry;
+    accept_entry.mime_type = "application/foobar";
+    accept_entry.file_extensions.insert(".foobar");
+    file_handler.accept.push_back(accept_entry);
+  }
+  std::set<std::string> mime_types = GetMimeTypesFromFileHandler(file_handler);
+
+  EXPECT_EQ(2u, mime_types.size());
+  EXPECT_THAT(mime_types, testing::UnorderedElementsAre("application/foo",
+                                                        "application/foobar"));
 }
 
 TEST(FileHandlerUtilsTest, GetMimeTypesFromFileHandlers) {

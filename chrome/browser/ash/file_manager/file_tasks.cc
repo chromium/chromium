@@ -664,17 +664,10 @@ bool IsGoodMatchFileHandler(const apps::FileHandlerInfo& file_handler_info,
 bool IsGoodMatchAppsFileHandler(
     const apps::FileHandler& file_handler,
     const std::vector<extensions::EntryInfo>& entries) {
-  // TODO(crbug.com/938103): Duplicates functionality from
-  // FileHandlerManager::GetMimeTypesFromFileHandlers and
-  // ::GetFileExtensionsFromFileHandlers.
-  std::set<std::string> mime_types;
-  std::set<std::string> file_extensions;
-  for (const auto& accept_entry : file_handler.accept) {
-    mime_types.insert(accept_entry.mime_type);
-    file_extensions.insert(accept_entry.file_extensions.begin(),
-                           accept_entry.file_extensions.end());
-  }
-
+  std::set<std::string> mime_types =
+      apps::GetMimeTypesFromFileHandler(file_handler);
+  std::set<std::string> file_extensions =
+      apps::GetFileExtensionsFromFileHandler(file_handler);
   if (mime_types.count("*") || mime_types.count("*/*") ||
       file_extensions.count("*"))
     return false;

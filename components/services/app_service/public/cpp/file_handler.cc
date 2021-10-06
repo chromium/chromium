@@ -50,9 +50,19 @@ std::set<std::string> GetMimeTypesFromFileHandlers(
     const FileHandlers& file_handlers) {
   std::set<std::string> mime_types;
   for (const auto& file_handler : file_handlers) {
-    for (const auto& accept_entry : file_handler.accept)
-      mime_types.insert(accept_entry.mime_type);
+    std::set<std::string> file_handler_mime_types =
+        GetMimeTypesFromFileHandler(file_handler);
+    mime_types.insert(file_handler_mime_types.begin(),
+                      file_handler_mime_types.end());
   }
+  return mime_types;
+}
+
+std::set<std::string> GetMimeTypesFromFileHandler(
+    const FileHandler& file_handler) {
+  std::set<std::string> mime_types;
+  for (const auto& accept_entry : file_handler.accept)
+    mime_types.insert(accept_entry.mime_type);
   return mime_types;
 }
 
@@ -60,10 +70,20 @@ std::set<std::string> GetFileExtensionsFromFileHandlers(
     const FileHandlers& file_handlers) {
   std::set<std::string> file_extensions;
   for (const auto& file_handler : file_handlers) {
-    for (const auto& accept_entry : file_handler.accept)
-      file_extensions.insert(accept_entry.file_extensions.begin(),
-                             accept_entry.file_extensions.end());
+    std::set<std::string> file_handler_file_extensions =
+        GetFileExtensionsFromFileHandler(file_handler);
+    file_extensions.insert(file_handler_file_extensions.begin(),
+                           file_handler_file_extensions.end());
   }
+  return file_extensions;
+}
+
+std::set<std::string> GetFileExtensionsFromFileHandler(
+    const FileHandler& file_handler) {
+  std::set<std::string> file_extensions;
+  for (const auto& accept_entry : file_handler.accept)
+    file_extensions.insert(accept_entry.file_extensions.begin(),
+                           accept_entry.file_extensions.end());
   return file_extensions;
 }
 
