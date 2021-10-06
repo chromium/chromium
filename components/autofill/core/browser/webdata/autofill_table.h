@@ -721,6 +721,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion94AddPromoCodeColumnsToOfferData();
   bool MigrateToVersion95AddVirtualCardMetadata();
   bool MigrateToVersion96AddAutofillProfileDisallowConfirmableMergesColumn();
+  bool MigrateToVersion98RemoveStatusColumnMaskedCreditCards();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.

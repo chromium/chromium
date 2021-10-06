@@ -283,7 +283,6 @@ void FullCardRequest::OnDidGetRealPan(
       } else if (response_details.card_type ==
                  AutofillClient::PaymentsRpcCardType::kServerCard) {
         request_->card.set_record_type(CreditCard::FULL_SERVER_CARD);
-        request_->card.SetServerStatus(CreditCard::OK);
       } else {
         NOTREACHED();
       }

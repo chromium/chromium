@@ -59,12 +59,6 @@ class CreditCard : public AutofillDataModel {
     VIRTUAL_CARD,
   };
 
-  // The status of this card. Only used for server cards.
-  enum ServerStatus {
-    EXPIRED,
-    OK,
-  };
-
   // The Issuer for the card. This must stay in sync with the proto enum in
   // autofill_specifics.proto.
   enum Issuer {
@@ -121,10 +115,6 @@ class CreditCard : public AutofillDataModel {
   // Network issuer strings are defined at the bottom of this file, e.g.
   // kVisaCard.
   void SetNetworkForMaskedCard(base::StringPiece network);
-
-  // Sets/gets the status of a server card.
-  void SetServerStatus(ServerStatus status);
-  ServerStatus GetServerStatus() const;
 
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;
@@ -414,10 +404,6 @@ class CreditCard : public AutofillDataModel {
   // For server cards (both MASKED and UNMASKED) this is the ID assigned by the
   // server to uniquely identify this card.
   std::string server_id_;
-
-  // The status of the card, as reported by the server. Not valid for local
-  // cards.
-  ServerStatus server_status_;
 
   // The identifier of the billing address for this card.
   std::string billing_address_id_;

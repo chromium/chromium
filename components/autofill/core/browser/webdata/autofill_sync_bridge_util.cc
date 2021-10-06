@@ -24,25 +24,6 @@ using sync_pb::AutofillWalletSpecifics;
 
 namespace autofill {
 namespace {
-sync_pb::WalletMaskedCreditCard::WalletCardStatus LocalToServerStatus(
-    const CreditCard& card) {
-  switch (card.GetServerStatus()) {
-    case CreditCard::OK:
-      return sync_pb::WalletMaskedCreditCard::VALID;
-    case CreditCard::EXPIRED:
-      return sync_pb::WalletMaskedCreditCard::EXPIRED;
-  }
-}
-
-CreditCard::ServerStatus ServerToLocalStatus(
-    sync_pb::WalletMaskedCreditCard::WalletCardStatus status) {
-  switch (status) {
-    case sync_pb::WalletMaskedCreditCard::VALID:
-      return CreditCard::OK;
-    case sync_pb::WalletMaskedCreditCard::EXPIRED:
-      return CreditCard::EXPIRED;
-  }
-}
 
 sync_pb::WalletMaskedCreditCard::WalletCardType WalletCardTypeFromCardNetwork(
     const std::string& network) {
@@ -92,7 +73,6 @@ const char* CardNetworkFromWalletCardType(
 CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   CreditCard result(CreditCard::MASKED_SERVER_CARD, card.id());
   result.SetNumber(base::UTF8ToUTF16(card.last_four()));
-  result.SetServerStatus(ServerToLocalStatus(card.status()));
   result.SetNetworkForMaskedCard(CardNetworkFromWalletCardType(card.type()));
   result.SetRawInfo(CREDIT_CARD_NAME_FULL,
                     base::UTF8ToUTF16(card.name_on_card()));
@@ -262,7 +242,6 @@ void SetAutofillWalletSpecificsFromServerCard(
     wallet_card->set_billing_address_id(card.billing_address_id());
   }
 
-  wallet_card->set_status(LocalToServerStatus(card));
   if (card.HasRawInfo(CREDIT_CARD_NAME_FULL)) {
     wallet_card->set_name_on_card(TruncateUTF8(
         base::UTF16ToUTF8(card.GetRawInfo(CREDIT_CARD_NAME_FULL))));

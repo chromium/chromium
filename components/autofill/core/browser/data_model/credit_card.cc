@@ -158,7 +158,6 @@ CreditCard::CreditCard(const std::string& guid, const std::string& origin)
       network_(kGenericCard),
       expiration_month_(0),
       expiration_year_(0),
-      server_status_(OK),
       card_issuer_(ISSUER_UNKNOWN),
       instrument_id_(0) {}
 
@@ -370,16 +369,6 @@ bool CreditCard::IsNicknameValid(const std::u16string& nickname) {
 void CreditCard::SetNetworkForMaskedCard(base::StringPiece network) {
   DCHECK_EQ(MASKED_SERVER_CARD, record_type());
   network_ = std::string(network);
-}
-
-void CreditCard::SetServerStatus(ServerStatus status) {
-  DCHECK_NE(LOCAL_CARD, record_type());
-  server_status_ = status;
-}
-
-CreditCard::ServerStatus CreditCard::GetServerStatus() const {
-  DCHECK_NE(LOCAL_CARD, record_type());
-  return server_status_;
 }
 
 AutofillMetadata CreditCard::GetMetadata() const {
@@ -600,7 +589,6 @@ void CreditCard::operator=(const CreditCard& credit_card) {
   expiration_month_ = credit_card.expiration_month_;
   expiration_year_ = credit_card.expiration_year_;
   server_id_ = credit_card.server_id_;
-  server_status_ = credit_card.server_status_;
   billing_address_id_ = credit_card.billing_address_id_;
   bank_name_ = credit_card.bank_name_;
   temp_card_first_name_ = credit_card.temp_card_first_name_;
@@ -685,15 +673,6 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
   comparison = nickname_.compare(credit_card.nickname_);
   if (comparison != 0)
     return comparison;
-
-  if (static_cast<int>(server_status_) <
-      static_cast<int>(credit_card.server_status_)) {
-    return -1;
-  }
-  if (static_cast<int>(server_status_) >
-      static_cast<int>(credit_card.server_status_)) {
-    return 1;
-  }
 
   if (static_cast<int>(card_issuer_) <
       static_cast<int>(credit_card.card_issuer_)) {

@@ -372,7 +372,8 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForFullServerCard) {
   card_unmask_delegate()->OnUnmaskPromptClosed();
 }
 
-// Verify getting the CVC for an unmasked server card with expiration date in the past.
+// Verify getting the CVC for an unmasked server card with expiration date in
+// the past.
 TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
   EXPECT_CALL(*result_delegate(), OnFullCardRequestSucceeded(
                                       testing::Ref(*request()),
@@ -390,7 +391,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredFullServerCard) {
   test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12",
                           base::StringPrintf("%d", today.year - 1).c_str(),
                           "1");
-  full_server_card.SetServerStatus(CreditCard::OK);
   request()->GetFullCard(
       full_server_card, AutofillClient::UnmaskCardReason::kAutofill,
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());
@@ -421,7 +421,6 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForExpiredMaskedServerCard) {
   test::SetCreditCardInfo(&full_server_card, nullptr, "4111", "12",
                           base::StringPrintf("%d", today.year - 1).c_str(),
                           "1");
-  full_server_card.SetServerStatus(CreditCard::OK);
   request()->GetFullCard(
       full_server_card, AutofillClient::UnmaskCardReason::kAutofill,
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr());

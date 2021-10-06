@@ -2457,7 +2457,6 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
   inputs[1].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"1997");
   inputs[1].SetRawInfo(CREDIT_CARD_NUMBER, u"1111");
   inputs[1].SetNetworkForMaskedCard(kVisaCard);
-  inputs[1].SetServerStatus(CreditCard::EXPIRED);
   std::u16string nickname = u"Grocery card";
   inputs[1].SetNickname(nickname);
   inputs[1].set_card_issuer(CreditCard::Issuer::GOOGLE);
@@ -2486,9 +2485,6 @@ TEST_F(AutofillTableTest, SetGetServerCards) {
 
   EXPECT_EQ(inputs[0], *outputs[0]);
   EXPECT_EQ(inputs[1], *outputs[1]);
-
-  EXPECT_EQ(CreditCard::OK, outputs[0]->GetServerStatus());
-  EXPECT_EQ(CreditCard::EXPIRED, outputs[1]->GetServerStatus());
 
   EXPECT_TRUE(outputs[0]->nickname().empty());
   EXPECT_EQ(nickname, outputs[1]->nickname());
@@ -2713,7 +2709,6 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"1997");
   inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"1111");
   inputs[0].SetNetworkForMaskedCard(kVisaCard);
-  inputs[0].SetServerStatus(CreditCard::EXPIRED);
   inputs[0].SetNickname(u"Grocery card");
   inputs[0].set_instrument_id(1);
   inputs[0].set_virtual_card_enrollment_state(
@@ -2733,7 +2728,6 @@ TEST_F(AutofillTableTest, SetServerCardsData) {
   outputs[0]->set_guid(std::string());
 
   EXPECT_EQ(inputs[0], *outputs[0]);
-  EXPECT_EQ(CreditCard::EXPIRED, outputs[0]->GetServerStatus());
 
   EXPECT_EQ(CreditCard::VirtualCardEnrollmentState::ENROLLED,
             outputs[0]->virtual_card_enrollment_state());
