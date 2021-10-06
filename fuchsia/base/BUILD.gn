@@ -72,6 +72,7 @@ source_set("message_port") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
   ]
 }

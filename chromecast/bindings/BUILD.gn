@@ -46,6 +46,7 @@ if (is_fuchsia) {
       "//components/cast/message_port",
       "//fuchsia:cast_fidl",
       "//fuchsia/base:message_port",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     ]
   }
 }

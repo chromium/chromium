@@ -5,6 +5,7 @@
 #ifndef CHROMECAST_BINDINGS_BINDINGS_MANAGER_FUCHSIA_H_
 #define CHROMECAST_BINDINGS_BINDINGS_MANAGER_FUCHSIA_H_
 
+#include <fuchsia/mem/cpp/fidl.h>
 #include <map>
 #include <string>
 

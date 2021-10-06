@@ -4,11 +4,12 @@
 
 #include "fuchsia/base/message_port.h"
 
-#include <stdint.h>
-
+#include <fuchsia/mem/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 #include <lib/fit/function.h>
 #include <lib/fpromise/result.h>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

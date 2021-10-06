@@ -6,6 +6,7 @@
 #define FUCHSIA_ENGINE_BROWSER_FRAME_IMPL_H_
 
 #include <fuchsia/logger/cpp/fidl.h>
+#include <fuchsia/mem/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/inspect/cpp/vmo/types.h>

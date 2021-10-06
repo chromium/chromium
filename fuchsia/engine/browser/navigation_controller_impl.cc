@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/navigation_controller_impl.h"
 
+#include <fuchsia/mem/cpp/fidl.h>
 #include <lib/fpromise/result.h>
 
 #include "base/bits.h"

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <fuchsia/mem/cpp/fidl.h>
+
 #include "base/callback_helpers.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/test/test_future.h"

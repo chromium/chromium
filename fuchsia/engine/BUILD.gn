@@ -151,6 +151,7 @@ component("web_engine_core") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.media.sessions2",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.settings",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.gfx",
     "//third_party/fuchsia-sdk/sdk/pkg/fit-promise",
@@ -483,6 +484,7 @@ test("web_engine_browsertests") {
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.input.virtualkeyboard",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.input3",
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/gfx",
@@ -599,6 +601,7 @@ test("web_engine_integration_tests") {
     "//media/fuchsia/audio:test_support",
     "//media/fuchsia/camera:test_support",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mediacodec",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sys",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]

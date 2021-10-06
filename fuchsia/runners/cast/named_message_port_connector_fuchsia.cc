@@ -4,6 +4,7 @@
 
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"
 
+#include <fuchsia/mem/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
 #include <memory>
 #include <string>

@@ -1735,6 +1735,7 @@ component("base") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
       "//third_party/fuchsia-sdk/sdk/pkg/async",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",

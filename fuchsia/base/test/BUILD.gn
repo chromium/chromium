@@ -28,6 +28,7 @@ source_set("test_support") {
     "//fuchsia/base:modular",
     "//net",
     "//net:test_support",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
     "//url",
