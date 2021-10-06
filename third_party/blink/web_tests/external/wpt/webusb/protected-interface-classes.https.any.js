@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<script src="/resources/testharness.js"></script>
-<script src="/resources/testharnessreport.js"></script>
-<script src="/resources/test-only-api.js"></script>
-<script src="/webusb/resources/usb-helpers.js"></script>
-<body>
-<script>
+// META: script=/resources/test-only-api.js
+// META: script=/webusb/resources/usb-helpers.js
 'use strict';
 
 async function runTestForInterfaceClass(interfaceClass) {
@@ -92,5 +87,3 @@ usb_test(() => runTestForInterfaceClass(0x10),
          'Protected audio/video interface cannot be claimed');
 usb_test(() => runTestForInterfaceClass(0xE0),
          'Protected wireless controller interface cannot be claimed');
-</script>
-</body>

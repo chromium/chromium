@@ -125,6 +125,7 @@ bool WebUsbServiceImpl::HasDevicePermission(
 }
 
 std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
+  // Specified in https://wicg.github.io/webusb#protected-interface-classes
   std::vector<uint8_t> classes = {
       device::mojom::kUsbAudioClass,       device::mojom::kUsbHidClass,
       device::mojom::kUsbMassStorageClass, device::mojom::kUsbSmartCardClass,
