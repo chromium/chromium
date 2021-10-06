@@ -29,7 +29,8 @@ enum class StructuredMetricsError {
   kEventWriteError = 7,
   kEventSerializationError = 8,
   kUninitializedClient = 13,
-  kMaxValue = kUninitializedClient,
+  kInvalidEventParsed = 14,
+  kMaxValue = kInvalidEventParsed,
 };
 
 // Whether a single event was recorded correctly, or otherwise what error state

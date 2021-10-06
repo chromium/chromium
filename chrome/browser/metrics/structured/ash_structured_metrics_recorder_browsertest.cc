@@ -102,6 +102,8 @@ IN_PROC_BROWSER_TEST_F(AshStructuredMetricsRecorderTest,
   run_loop.Run();
 }
 
+// TODO(jongahn): Add a test that verifies behavior if an invalid event is sent.
+
 }  // namespace structured
 
 }  // namespace metrics
