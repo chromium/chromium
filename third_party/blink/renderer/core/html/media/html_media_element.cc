@@ -2035,8 +2035,6 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
       jumped = true;
     }
 
-    web_media_player_->SetAutoplayInitiated(true);
-
     UpdateLayoutObject();
   }
 
@@ -2082,6 +2080,8 @@ void HTMLMediaElement::SetReadyState(ReadyState state) {
     ScheduleEvent(event_type_names::kCanplaythrough);
   }
 
+  web_media_player_->SetAutoplayInitiated(
+      autoplay_policy_->WasAutoplayInitiated());
   UpdatePlayState();
 }
 

@@ -85,6 +85,7 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
   MOCK_CONST_METHOD0(GetNetworkState, NetworkState());
   MOCK_CONST_METHOD0(WouldTaintOrigin, bool());
   MOCK_METHOD1(SetLatencyHint, void(double));
+  MOCK_METHOD1(SetAutoplayInitiated, void(bool));
   MOCK_METHOD1(EnabledAudioTracksChanged, void(const WebVector<TrackId>&));
   MOCK_METHOD1(SelectedVideoTrackChanged, void(TrackId*));
   MOCK_METHOD4(
@@ -563,6 +564,7 @@ TEST_P(HTMLMediaElementTest, CouldPlayIfEnoughDataRespondsToEnded) {
   EXPECT_TRUE(CouldPlayIfEnoughData());
 
   // Playback can only end once the ready state is above kHaveMetadata.
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   EXPECT_FALSE(Media()->paused());
   EXPECT_FALSE(Media()->ended());
@@ -588,6 +590,7 @@ TEST_P(HTMLMediaElementTest, CouldPlayIfEnoughDataRespondsToError) {
   EXPECT_NE(mock_wmpi, nullptr);
   EXPECT_TRUE(CouldPlayIfEnoughData());
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveMetadata);
   EXPECT_FALSE(Media()->paused());
   EXPECT_FALSE(Media()->ended());
@@ -630,6 +633,7 @@ TEST_P(HTMLMediaElementTest, CouldPlayIfEnoughDataInfiniteStreamNeverEnds) {
   EXPECT_CALL(*MockMediaPlayer(), CurrentTime())
       .WillRepeatedly(Return(std::numeric_limits<double>::infinity()));
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveMetadata);
   EXPECT_FALSE(Media()->paused());
   EXPECT_FALSE(Media()->ended());
@@ -778,6 +782,7 @@ TEST_P(HTMLMediaElementTest, DefaultTracksAreEnabled) {
 
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   ASSERT_EQ(1u, Media()->audioTracks().length());
@@ -793,6 +798,7 @@ TEST_P(HTMLMediaElementTest, VisibilityObserverCreatedForLazyLoad) {
 
   EXPECT_CALL(*MockMediaPlayer(), DidLazyLoad()).WillRepeatedly(Return(true));
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   EXPECT_EQ(HasLazyLoadObserver(), GetParam() == MediaTestParam::kVideo);
 }
@@ -806,6 +812,7 @@ TEST_P(HTMLMediaElementTest, ContextPaused) {
   Media()->Play();
 
   test::RunPendingTasks();
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   EXPECT_FALSE(Media()->paused());
@@ -843,6 +850,7 @@ TEST_P(HTMLMediaElementTest, GcMarkingNoAllocHasActivity) {
   Media()->Play();
 
   test::RunPendingTasks();
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   SetError(MakeGarbageCollected<MediaError>(MediaError::kMediaErrDecode, ""));
 
@@ -866,6 +874,7 @@ TEST_P(HTMLMediaElementTest, CapturesRedirectedSrc) {
   GURL redirected_url("https://redirected.com");
   EXPECT_CALL(*MockMediaPlayer(), GetSrcAfterRedirects())
       .WillRepeatedly(Return(redirected_url));
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   EXPECT_EQ(Media()->downloadURL(), redirected_url);
@@ -878,6 +887,7 @@ TEST_P(HTMLMediaElementTest, EmptyRedirectedSrcUsesOriginal) {
   Media()->Play();
   test::RunPendingTasks();
   EXPECT_EQ(Media()->downloadURL(), Media()->currentSrc());
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
   EXPECT_EQ(Media()->downloadURL(), Media()->currentSrc());
 }
@@ -952,9 +962,11 @@ TEST_P(HTMLMediaElementTest, OnTimeUpdate_ReadyState) {
   EXPECT_CALL(*MockMediaPlayer(), GetSrcAfterRedirects)
       .WillRepeatedly(Return(GURL()));
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveCurrentData);
   testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 }
@@ -969,6 +981,7 @@ TEST_P(HTMLMediaElementTest, OnTimeUpdate_Seeking) {
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveCurrentData);
 
   EXPECT_CALL(*MockMediaPlayer(), OnTimeUpdate());
@@ -989,6 +1002,7 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_InitiallyTrue) {
 
   EXPECT_TRUE(Media()->IsShowPosterFlagSet());
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1000,6 +1014,7 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterPlay) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1015,6 +1030,7 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterSeek) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
   test::RunPendingTasks();
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(false));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1032,6 +1048,7 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterAutoPlay) {
   Media()->SetBooleanAttribute(html_names::kAutoplayAttr, true);
   test::RunPendingTasks();
 
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveEnoughData);
   test::RunPendingTasks();
 
@@ -1062,6 +1079,7 @@ TEST_P(HTMLMediaElementTest, ShowPosterFlag_FalseAfterPlayBeforeReady) {
   EXPECT_FALSE(Media()->IsShowPosterFlagSet());
 
   // Pretend we have data to begin playback
+  EXPECT_CALL(*MockMediaPlayer(), SetAutoplayInitiated(true));
   SetReadyState(HTMLMediaElement::kHaveFutureData);
 
   // We should have data, be playing, and the show poster flag should be unset
