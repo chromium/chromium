@@ -178,8 +178,7 @@ class CORE_EXPORT FrameLoader final {
 
   void DidFinishSameDocumentNavigation(const KURL&,
                                        WebFrameLoadType,
-                                       HistoryItem*,
-                                       bool may_restore_scroll_offset);
+                                       HistoryItem*);
 
   // This will attempt to detach the current document. It will dispatch unload
   // events and abort XHR requests. Returns true if the frame is ready to
