@@ -7173,6 +7173,7 @@ crbug.com/1222126 http/tests/devtools/resource-har-headers.js [ Skip ]
 crbug.com/1222126 http/tests/devtools/resource-har-conversion.js [ Skip ]
 crbug.com/1222126 http/tests/devtools/network/network-choose-preview-view.js [ Skip ]
 crbug.com/1222126 http/tests/devtools/network/json-preview.js [ Skip ]
+crbug.com/1215072 http/tests/devtools/elements/copy-styles.js [ Skip ]
 
 # Skip devtools test hitting an unexpected tracing infrastructure exception 2021-10-04
 crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.js [ Skip ]
