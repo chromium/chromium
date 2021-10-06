@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Recibe notificacións cando baixen os prezos</translation>
 <translation id="1657719826150349398">Mover pestana cara abaixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana}other{<ph name="TABS_COUNT_MANY" /> pestanas}}</translation>
+<translation id="2118649612461486615">Información da tenda</translation>
+<translation id="2162620598375156287">Agora <ph name="CURRENT_PRICE" /> en <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Quitar <ph name="TABS_COUNT_ONE" /> pestana seleccionada do grupo.}other{Quitar <ph name="TABS_COUNT_MANY" /> pestanas seleccionadas do grupo.}}</translation>
 <translation id="2479148705183875116">Ir a Configuración</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2613747923081026172">Crear grupo</translation>
 <translation id="2662028055331606429">Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Visitar sitio</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2759453070259087442">Despregar grupo de pestanas <ph name="TITLE_OF_GROUP" /> (contén <ph name="NUMBER_OF_TABS" /> pestanas).</translation>
 <translation id="2801787514987684416">Queres ver a información da tenda?</translation>
 <translation id="2928243913527329289">Google | Acerca desta tenda</translation>
 <translation id="2977480621796371840">Quitar do grupo</translation>
+<translation id="3052964831964880138">Baixada de prezo de <ph name="PRICE_DROP" /> no seguinte produto: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">valoración</translation>
+<translation id="3267416433995960648">Desactivar alerta</translation>
 <translation id="3291470810748040983">Recibirás unha alerta cando haxa un prezo máis baixo nunha das pestanas que tes abertas</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6054741997831917303">O prezo deste artigo baixou recentemente de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecciona pestanas</translation>
+<translation id="6228793724645064692">(valoración da tenda)</translation>
+<translation id="6333260925957816943">Información sobre esta tenda</translation>
 <translation id="6510648526783655549">Pechar franxa de pestanas</translation>
+<translation id="6549021453810473782">Ver información da tenda</translation>
 <translation id="6562820390860419811">Mover pestana cara á esquerda</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6840760312327750441">Para agrupar varias pestanas, mantén premida unha delas e despois arrástraa ata outra.</translation>
 <translation id="6856809498882026482">Ocultar modo de selección múltiple</translation>
+<translation id="7129458170538955174">A folla de información sobre esta tenda está aberta a media pantalla</translation>
 <translation id="7151209024774799310">Quitar pestanas do grupo</translation>
 <translation id="7204204600596740190">Modo de selección múltiple</translation>
+<translation id="7326879924029668159">Consulta a política de devolución e outra información</translation>
 <translation id="7352298686197644113">Descubre que artigo baixou de prezo nunha das pestanas que tes abertas</translation>
 <translation id="753732157349120914">Selector de pestanas</translation>
 <translation id="7559245342362162951">Mostrar as pestanas do grupo nunha grade en pantalla completa</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> (<ph name="REVIEWS_COUNT_ONE" /> recensión)}other{Valoración: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> (<ph name="REVIEWS_COUNT_MANY" /> recensións)}}</translation>
 <translation id="7885132941432959125">Mover pestana cara á dereita</translation>
 <translation id="7966321538264951561">Ignorar estas suxestións.</translation>
+<translation id="8029301326595421733">A folla de información sobre esta tenda está aberta a pantalla completa</translation>
 <translation id="814503310257431685">Ver todo</translation>
 <translation id="8205266828577616993">Mover pestana cara arriba</translation>
 <translation id="8304833501377495048">Non queres que se volva mostrar esta franxa de pestanas?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Prezo máis baixo</translation>
 <translation id="8749939518995770034">Franxa de pestanas pechada</translation>
 <translation id="8820741577754260431">Consulta as baixadas de prezo nas túas pestanas</translation>
+<translation id="9090098097337832354">A folla de información sobre esta tenda está pechada</translation>
 <translation id="9150694013019234766">Cambia dunha pestana a outra no grupo de pestanas da parte inferior da pantalla</translation>
 <translation id="9169594135889675189">Engadir nova pestana ao grupo</translation>
 <translation id="959682366969460160">Organízate</translation>

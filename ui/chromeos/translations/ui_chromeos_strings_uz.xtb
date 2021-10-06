@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Norveg</translation>
 <translation id="1433628812591023318">Windows tizmiga nusxalanishi kerak fayllarni Parallels Desktop oynasiga tashlang.</translation>
 <translation id="1435838927755162558">Jildni Parallels Desktopga ulashish</translation>
+<translation id="1439919885608649279">Gullari bor odam</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869"><ph name="FILENAME" /> faylini yuklab bo‘lmadi. Google Drive omborida yetarli bo‘sh joy yo‘q.</translation>
 <translation id="1482884275703521657">Fin</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Faylni o‘zgartirib bo‘lmadi.</translation>
 <translation id="1673103856845176271">Faylga ruxsat havfsizlik maqsadlarida cheklangan.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Velosiped</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ta element arxivlanmoqda...</translation>
 <translation id="1722687688096767818">Profil kiritilmoqda...</translation>
 <translation id="1726100011689679555">Nom serverlari (NS)</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Oldindan ko‘rib bo‘lmaydi</translation>
 <translation id="1812302367230252929">Amxara (transliteratsiya)</translation>
 <translation id="1813278315230285598">Xizmatlar</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Diqqat!<ph name="END_BOLD" /> Bu vaqtinchalik fayllar diskda joy bo‘shatish uchun avtomatik o‘chirib yuborilishi mumkin. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Axborot yuklanmoqda...</translation>
 <translation id="1834290891154666894">Subyektning muqobil nomi bilan mos keladigan xato yozuv topildi</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Nuqta bilan boshlanuvchi nomlar tizim fayllari uchun ajratilgan. Boshqa nom tanlang.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2084108471225856927">Qurilma sozlamalari</translation>
+<translation id="2084809735218147718">Rahmat deb yozish</translation>
 <translation id="2085470240340828803">“<ph name="FILENAME" />” nomli fayl allaqachon mavjud. Kerakli amalni tanlang.</translation>
 <translation id="2088690981887365033">VPN tarmoq</translation>
 <translation id="2122305276694332719">Yashirin tarmoqlarga avtomatik ulanish tavsiya etilmaydi, chunki qurilmangiz va tarmoq sozlamalaringiz boshqalarga koʻrinishi mumkin.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Linux bilan oʻrnatish</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ta element oʻchirib tashlansinmi?</translation>
 <translation id="2230062665678605299">“<ph name="FOLDER_NAME" />” jildini yaratib bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Qahvasi bor odam</translation>
 <translation id="2251368349685848079">Chiqitdondan tiklash</translation>
 <translation id="2282155092769082568">Avtomatik sozlash uchun URL manzil:</translation>
 <translation id="2288278176040912387">Patefon</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Fayllarning umumiy hajmi</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ta fayl <ph name="FOLDER_NAME" /> jildiga nusxalanmoqda</translation>
 <translation id="2448312741937722512">Turi</translation>
+<translation id="2452444014801043526">Megafoni bor odam</translation>
 <translation id="2464079411014186876">Muzqaymoq</translation>
 <translation id="2464089476039395325">HTTP proksi-server</translation>
 <translation id="2467267713099745100">Tarmoq: <ph name="NETWORK_TYPE" />, faolsizlantirilgan</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF hujjat</translation>
 <translation id="2888807692577297075">&lt;b&gt;“<ph name="SEARCH_STRING" />”&lt;/b&gt; so‘rovi bo‘yicha hech qanday fayl topilmadi</translation>
 <translation id="2894654529758326923">Ma’lumot</translation>
-<translation id="2902312830803030883">Boshqa amallar</translation>
 <translation id="2902734494705624966">Kengaytirilgan AQSH klaviaturasi</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estoncha</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">Fransuz (Kanada)</translation>
 <translation id="3003189754374775221">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoya: <ph name="NETWORK_PROVIDER_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Ulanish</translation>
 <translation id="3003633581067744647">Eskiz shaklida</translation>
+<translation id="3016566519832145558">Diqqat! Bu vaqtinchalik fayllar diskda joy boʻshatish uchun avtomatik oʻchirib yuborilishi mumkin.</translation>
 <translation id="3029114385395636667">Docs, Sheets va Slides internetsiz ishlashi uchun Google Docs oflayn rejimini yoqing.</translation>
 <translation id="303198083543495566">Geografiya</translation>
 <translation id="3047197340186497470">Xitoy (Dayi)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS hosti</translation>
 <translation id="3113153474486991170">“<ph name="PATH" />” faylni bu joydan ochilmadi. Uni ochish uchun “Mening fayllarim” jildiga nusxalang.</translation>
 <translation id="3113592018909187986">Sizda 1 ta urinish qoldi. Yangi PIN kodni sozlamaguncha bu tarmoqdan foydalana olmaysiz.</translation>
+<translation id="3124404833828281817">Uyqusragan odam</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN kod xato. Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (qurilmada o‘rnatilgan)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.com manziliga o‘tish...</translation>
 <translation id="3553048479571901246">Fayllarni <ph name="APP_NAME" /> ilovasidan ochishdan avval ularni Windows fayllari jildiga nusxalang.</translation>
 <translation id="3556731189587832921">Ingliz (AQSH) va kompyuter uchun xalqaro klaviatura</translation>
+<translation id="3567221313191587603">Faylni tanlab, oflaynda ochilishi uchun <ph name="OFFLINE_CHECKBOX_NAME" /> ustiga bosing.</translation>
 <translation id="357479282490346887">Litvan tili</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> oflaynda ochish uchun yuklab olinmadi</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Mobil profil, tarmoq <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> oʻrnatilmoqda</translation>
 <translation id="4646813851450205600">Chex va Qwerty klaviaturasi</translation>
 <translation id="4656293982926141856">Bu kompyuterdan</translation>
+<translation id="4656777537938206294">Fayllarni oflaynga nusxalash</translation>
+<translation id="4658782175094886150">Qordagi odam</translation>
 <translation id="4669606053856530811">“<ph name="SOURCE_NAME" />” foydalanuvchilariga ulashmasangiz, ular bu obyektlardan foydalana olmasliklari mumkin.</translation>
 <translation id="4690246192099372265">Shved tili</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -496,6 +504,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5330145655348521461">Ushbu fayllar boshqa ish stolida ochilgan. Ularni ko‘rish uchun <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) profiliga o‘ting.</translation>
 <translation id="5330512191124428349">Fayl haqida</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> nusxasi <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> xizmatiga zaxiralanmoqda</translation>
+<translation id="535792325654997756">Mushuklari bor odam</translation>
 <translation id="5358764674931277">Kadrlar chastotasi</translation>
 <translation id="5368191757080475556">Jildni Linuxga ulashish</translation>
 <translation id="5402367795255837559">Brayl yozuvi</translation>
@@ -551,6 +560,8 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5833610766403489739">Fayl topilmadi. Yuklanmalarni saqlash jildi sozlamasini tekshiring va qaytadan urinib ko‘ring.</translation>
 <translation id="5838451609423551646">Barcha elementlar tanlovi bekor qilindi.</translation>
 <translation id="5838825566232597749">AQSH (Workman, xalqaro)</translation>
+<translation id="5845721951356578987">Hamshira</translation>
+<translation id="5861477046012235702">Geymer</translation>
 <translation id="5864471791310927901">DHCP topilmadi</translation>
 <translation id="5896749729057314184">Tarmoq: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, faolsizlantirilgan, signal kuchi <ph name="SIGNAL_STRENGTH" />%, tafsilotlar</translation>
 <translation id="5911887972742538906">Linux ilovasini o‘rnatishda xatolik yuz berdi.</translation>
@@ -579,6 +590,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6146563240635539929">Videolar</translation>
 <translation id="6150853954427645995">Bu fayldan internet yo‘qligida foydalanish uchun, internetga ulaning va har bir fayl ustiga sichqonchaning o‘ng tugmasini bosib, “<ph name="OFFLINE_CHECKBOX_NAME" />” bandini tanlang.</translation>
 <translation id="6164412158936057769">Kapalaklar</translation>
+<translation id="6165508094623778733">Batafsil</translation>
 <translation id="6170470584681422115">Sendvich</translation>
 <translation id="6187719147498869044">Venger</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> bilan ochish</translation>
@@ -649,6 +661,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6861394552169064235">Fors</translation>
 <translation id="6862635236584086457">Bu jildga saqlangan barcha fayllar avtomatik ravishda onlaynga zaxiralanadi</translation>
 <translation id="6864328437977279120">Sanskrit</translation>
+<translation id="6874758081814639712">Tay chi bilan shugʻullanuvchi odam</translation>
 <translation id="6876155724392614295">Velosiped</translation>
 <translation id="6878261347041253038">Devanagari klaviaturasi (Fonetik)</translation>
 <translation id="6885780034956018177">Shilliq qurt</translation>
@@ -879,6 +892,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8743164338060742337">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Ulanish</translation>
 <translation id="8750438273876807512">Faylni tanlab, <ph name="ICON" /> ustiga bosing va javon ichidagi fayllarga tezkor kirish uchun “Javonga mahkamlash” bandini tanlang.</translation>
 <translation id="8787254343425541995">Umumiy tarmoqlarga proksi-serverlardan foydalanishga ruxsat berish</translation>
+<translation id="8790981080411996443">Oʻsimlik sugʻoruvchi odam</translation>
 <translation id="8798099450830957504">Standart</translation>
 <translation id="8802459921616481935">Chiqitdonga tashlash</translation>
 <translation id="8808686172382650546">Mushuk</translation>
@@ -891,6 +905,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="8874184842967597500">Ulanmagan</translation>
 <translation id="8900820606136623064">Venger tili</translation>
 <translation id="8903931173357132290">Bitiruvchi</translation>
+<translation id="8912078710089354287">Dumini likkillatayotgan it</translation>
 <translation id="8919081441417203123">Datcha</translation>
 <translation id="8965697826696209160">Bo‘sh joy yetarli emas.</translation>
 <translation id="8970501467542182729">Bu fayl Mac platformasi uchun ishlab chiqilgan. U qurilmangizdagi Chrome OS da ishga tushmaydi. Chrome OS da fayllarni ochish haqida <ph name="BEGIN_LINK_HELP" />batafsil<ph name="END_LINK_HELP" />.</translation>
@@ -917,6 +932,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9144340019284012223">Katalan</translation>
 <translation id="914873105831852105">PIN kod xato. Sizda 1 ta urinish qoldi.</translation>
 <translation id="9153934054460603056">Identifikatsiya ma’lumotlari va parolni saqlash</translation>
+<translation id="9171921933192916600">Ashaddiy kitobxon</translation>
 <translation id="9172592259078059678">Gujarot tili transliteratsiyasi</translation>
 <translation id="9173120999827300720">Ingliz (AQSH) va xalqaro klaviatura</translation>
 <translation id="9174050671906956834">Chiqitdondagi fayllar 30 kundan keyin butunlay tozalab tashlanadi.</translation>
@@ -929,6 +945,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="943972244133411984">Tahrirlovchi</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> ta element (<ph name="FROM_ENTRY_NAME" /> — <ph name="TO_ENTRY_NAME" />) tanlandi.</translation>
+<translation id="965477715979482472">Ingliz (Janubiy Afrika)</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="988685240266037636">“<ph name="FILE_NAME" />” nomli fayl allaqachon mavjud. Almashtirilsinmi?</translation>
 <translation id="992401651319295351">Sizda <ph name="RETRIES" /> ta urinish qoldi. Yangi PIN kodni sozlamaguncha bu tarmoqdan foydalana olmaysiz.</translation>

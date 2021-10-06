@@ -66,6 +66,7 @@
 <translation id="133801305381959373">ಯಾವುದೇ ಮುಂದಿನ ಎಡಿಟ್ ಮಾಡಬಹುದಾದ ಪಠ್ಯ ಫೀಲ್ಡ್ ಇಲ್ಲ</translation>
 <translation id="1342835525016946179">ಲೇಖನ</translation>
 <translation id="1346059596910821859">ಸಲಹೆ</translation>
+<translation id="1354356357730355833">ನಕಲಿಸಿ</translation>
 <translation id="135978014023467274">ನೀವು ChromeVox 63 ಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಿರುವಿರಿ!</translation>
 <translation id="1360699455582016846">ರೂಟಿಂಗ್ ಕೀ <ph name="ROUTING_KEY_NUMBER" /> ಕೆಳಗಿರುವ ಐಟಂ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1377925789329510816">ಇದು ಕೊನೆಯ ಶಿರೋನಾಮೆ. ಈ ಪುಟದಲ್ಲಿ ಮೊದಲ ಶಿರೋನಾಮೆಗೆ ವ್ರ್ಯಾಪ್ ಮಾಡಲು ಹುಡುಕಾಟ+H ಅಥವಾ ಎರಡನೇ ಶಿರೋನಾಮೆಗೆ ಹೋಗಲು ಹುಡುಕಾಟ+Shift+H ಒತ್ತಿ.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="2675533876313964202">ತಿಳಿ ಹಸಿರು</translation>
 <translation id="2684412629217766642">ChromeVox ಟುಟೋರಿಯಲ್ ಮುಚ್ಚು</translation>
+<translation id="2692503699962701720">ಎಲಿಮೆಂಟ್‌ನ ಪ್ರಕಾರಗಳು ಮತ್ತು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿದ ಪಠ್ಯವನ್ನು ಹೇಳುವಾಗ ಪಿಚ್ ಬದಲಿಸಿ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">ಅಭ್ಯರ್ಥಿಯ ಪಠ್ಯ ಪರಿವರ್ತನೆ</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ತೆರೆದ ಆವರಣ}one{# ತೆರೆದ ಆವರಣಗಳು}other{# ತೆರೆದ ಆವರಣಗಳು}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">ಪೋರ್ಟ್ರೇಟ್</translation>
 <translation id="3286390186030710347">ಸ್ಲೈಡರ್</translation>
 <translation id="3300348286427369683">ಸಮೃದ್ಧ ಪಠ್ಯ ಬೆಂಬಲ. ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳು, ಬ್ರೈಲ್ ಕರ್ಸರ್ ರೌಟಿಂಗ್, ಆಯ್ಕೆ, ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಸಮೃದ್ಧ ಪಠ್ಯ ಕ್ಷೇತ್ರಗಳನ್ನು ಇದೀಗ ChromeVox ಬೆಂಬಲಿಸುತ್ತದೆ.</translation>
+<translation id="3300733168898541351">ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="3307886118343381874">ಕೋಷ್ಟಕದ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="3312997241656799641">ಮುಂದಿನ ಭೇಟಿ ನೀಡಿದ ಲಿಂಕ್</translation>
 <translation id="3313245066383501820">ChromeVox ಮಾರ್ಪಡಿಸುವ ಕೀ</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">ಫಾರ್ಮ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3414400929511680526">ಅಲೈಸ್ ನೀಲಿ</translation>
 <translation id="3418936350470374046">ಕೆಳಗೆ ಯಾವುದೇ ಸೆಲ್ ಇಲ್ಲ</translation>
+<translation id="3419269701801640163">ಅಂಟಿಸಿ</translation>
 <translation id="3435494200763325275">ಟ್ಯಾಬ್ ನ್ಯಾವಿಗೇಷನ್ ಮುಂದುವರೆದಿದೆ</translation>
 <translation id="344800400831402066">ಪೆರು</translation>
 <translation id="3457000393508828486">ಭಾಗಶಃ ಒತ್ತಿದಾಗ</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">ಕೆಳಗೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="4035381225449278841">ವಸಂತಕಾಲ</translation>
+<translation id="4038098586530338813">ಪುನಃ ಮಾಡಿ</translation>
 <translation id="4047216625641135770">ಗುರುತು</translation>
 <translation id="4047910800766704982">ನಿಮ್ಮ ಸಾಧನವು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿರುವಾಗ ನೀವು ಸ್ವಾಭಾವಿಕ, ಮಾನವ ತರಹದ ಧ್ವನಿಯನ್ನು ಬಳಸಬಹುದು. ಪ್ರಕ್ರಿಯೆಗೊಳಿಸುವುದಕ್ಕಾಗಿ ಪಠ್ಯವನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ನೀವು ಇದನ್ನು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಅಳಿಸಬಹುದು.</translation>
 <translation id="4053520724192563562">ನಿಂಬೆ ಹಸಿರು</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">ಮಧ್ಯಮ ಸ್ಲೇಟ್ ನೀಲಿ</translation>
 <translation id="5140016802771803559">ರೆಬೆಕ್ಕಾ ನೇರಳೆ</translation>
 <translation id="5142101052131610456">ಎಲ್ಲಾ ಪಾಠಗಳು</translation>
+<translation id="5152605892605507188">ಬಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="5158275234811857234">ಕವರ್</translation>
 <translation id="516076699907426116">ಮುಂದುವರಿಸಲು, ಮುಂದಿನ ಪಾಠದ ಬಟನ್ ಅನ್ನು ಹುಡುಕಲು ಸ್ಪರ್ಶದ ಮೂಲಕ ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಿ. ಮುಂದುವರಿಸಲು, ನಂತರ ಡಬಲ್-ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="5170206230005240598">ಬ್ರೈಲಿ ಶೀರ್ಷಿಕೆಗಳು ಸಕ್ರಿಯವಾಗಿವೆ</translation>
 <translation id="5183440668879371625">ಬ್ರೈಲಿ ಹಿಂದಿನ ಸಾಲು</translation>
 <translation id="5189244881767082992">ಸಾಲು</translation>
+<translation id="5234747236692380506"><ph name="TEXT" /> ಅನ್ನು ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="5263034204789987535">ಕಾರ್ನ್ ಸಿಲ್ಕ್</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ಅಂತ್ಯ</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">ಶೀರ್ಷಿಕೆ 4</translation>
 <translation id="6150023170003443621">ಹಳದಿ ಹಸಿರು</translation>
 <translation id="6158882249329863701">ಸಾಲು <ph name="TABLECELLROWINDEX" /> ಕಾಲಮ್ <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">ಎಡಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="6164829606128959761">ಮೀಟರ್</translation>
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6166362019018438352">ಬ್ರೈಲ್ ಶೀರ್ಷಿಕೆಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="6910969481785184048">ಆನ್, ಆಫ್ ಮತ್ತು ನಿಲ್ಲಿಸುವಿಕೆ</translation>
 <translation id="6919104639734799681">ಕೋಷ್ಟಕಗಳ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
+<translation id="692135145298539227">ಅಳಿಸಿ</translation>
+<translation id="6935674530832500465">ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="6945221475159498467">ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6949846980769640811">ಮಧ್ಯಮ ಅಕ್ವಾ ಮರೈನ್</translation>
 <translation id="6951482098621102657">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 5 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
@@ -912,7 +922,6 @@
 <translation id="7439060726180460871">ಡೈರೆಕ್ಟರಿ</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">ನಿಮ್ಮ ಸ್ವಾಭಾವಿಕ ಧ್ವನಿಯನ್ನು ಬಳಸಬೇಕೇ?</translation>
-<translation id="7484805699335881122">ಎಲಿಮೆಂಟ್ ಪ್ರಕಾರಗಳನ್ನು ಮಾತನಾಡುವಾಗ ಪಿಚ್ ಮತ್ತು ಉಲ್ಲೇಖಿಸಿದ, ಅಳಿಸಿದ, ಬೋಲ್ಡ್, ಆವರಣ ಅಥವಾ ದೊಡ್ಡಕ್ಷರ ಪಠ್ಯವನ್ನು ಬದಲಾಯಿಸಿ.</translation>
 <translation id="7491962110804786152">ಟ್ಯಾಬ್</translation>
 <translation id="7492497529767769458">ಮುಂದಿನ ವಿಭಾಗಕ್ಕೆ ಸರಿಸಿ. ಉದಾಹರಣೆಗಳು ಸ್ಥಿತಿ ಟ್ರೇ ಮತ್ತು ಲಾಂಚರ್ ಅನ್ನು ಒಳಗೊಂಡಿವೆ.</translation>
 <translation id="7505149250476994901">ಅಕ್ಷರದ ಮೊದಲು "ದೊಡ್ಡಕ್ಷರ" ಎಂದು ಹೇಳಿ</translation>
@@ -1010,6 +1019,7 @@
 <translation id="8129445297241948503">ಮೇಲೆ ಯಾವುದೇ ಸೆಲ್ ಇಲ್ಲ</translation>
 <translation id="8138880386467279117">ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="8146613869421949343">ಮುಂದೆ, ನೀವು ಹುಡುಕಾಟದ ಕೀ ಬಗ್ಗೆ ಕಲಿಯುವಿರಿ. ChromeVox ಕಮಾಂಡ್‌ಗಳಿಗಾಗಿ ಹುಡುಕಾಟದ ಕೀಯನ್ನು ಇತರ ಕೀಗಳೊಂದಿಗೆ ಬಳಸಲಾಗುತ್ತದೆ. ಎಡ Shift ಕೀ ಮೇಲ್ಭಾಗದಲ್ಲಿಯೇ ಹುಡುಕಾಟದ ಕೀ ಇರುತ್ತದೆ. ಮುಂದುವರಿಯಲು, ಹುಡುಕಾಟದ ಕೀಯನ್ನು ಒತ್ತಿರಿ.</translation>
+<translation id="8158033275290782295">ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="816818801578874684">ಇದು ಮೊದಲ ಶೀರ್ಷಿಕೆ. ಮುಂದಿನ ಶೀರ್ಷಿಕೆಗೆ ಹೋಗಲು ಹುಡುಕಾಟ + H ಅನ್ನು ಒತ್ತಿರಿ.</translation>
 <translation id="8173092779156526980">ನಾಲ್ಕು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ಅಂಡರ್‌ಸ್ಕೋರ್}one{# ಅಂಡರ್‌ಸ್ಕೋರ್‌ಗಳು}other{# ಅಂಡರ್‌ಸ್ಕೋರ್‌ಗಳು}}</translation>
@@ -1028,12 +1038,14 @@
 <translation id="826825447994856889">ಪರಿಚಯ</translation>
 <translation id="827266600368092403">ಪ್ರಾರಂಭ ಅಥವಾ ಅಂತ್ಯದ ಆಯ್ಕೆ</translation>
 <translation id="827422111966801947">ಇಂಡಿಗೊ</translation>
+<translation id="827496561804786391">ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8276439074553447000">ಹಿಂದೆ ಗಮನಹರಿಸಿದಂತಹ ಐಟಂಗೆ ಹೋಗಿ</translation>
 <translation id="8279039817939141096">ಇದರ ಕಾರ್ಯವಿಧಾನವನ್ನು ತಿಳಿದುಕೊಳ್ಳಲು QWERTY ಕೀ, ರಿಫ್ರೆಶ್ ಮಾಡಬಹುದಾದ ಬ್ರೇಲ್ ಕೀಯನ್ನು ಒತ್ತಿರಿ ಅಥವಾ ಗೆಸ್ಚರ್ ಅನ್ನು ಸ್ಪರ್ಶಿಸಿ. ನಿರ್ಗಮಿಸಲು control ಜೊತೆಗೆ w, space ಜೊತೆಗೆ Z, ಎರಡು ಬೆರಳುಗಳಿಂದ ಎಡಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ ಅಥವಾ escape ಒತ್ತಿರಿ.</translation>
 <translation id="8283603667300770666">ಮುಂದಿನ ಫಾರ್ಮ್ ಕ್ಷೇತ್ರ</translation>
 <translation id="8310185481635255431">ಯಾವುದೇ ಮುಂದಿನ ಲಿಂಕ್ ಇಲ್ಲ</translation>
 <translation id="831207808878314375">ವಿವರಣೆ</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">ಎಲ್ಲದರ ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
 <translation id="8316881042119029234">ಓಲ್ಡ್ ಲೇಸ್</translation>
 <translation id="8324974933005349667">ಪಠ್ಯದಿಂದ ಧ್ವನಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಿ</translation>
 <translation id="8326783648485765113">ಹುಲ್ಲುಹಾಸಿನ ಹಸಿರು</translation>
@@ -1125,6 +1137,7 @@
 <translation id="9077305471618729969">ತಿಳಿ ಸಾಗರ ಹಸಿರು</translation>
 <translation id="9080299285199342830">ಮುಕ್ತಾಯಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="9089864840575085222">ಸೈಕಲ್ ಟೈಪಿಂಗ್ ಇಕೋ</translation>
+<translation id="9099429023611373837">ಕತ್ತರಿಸಿ</translation>
 <translation id="9108370397979208512">ಮ್ಯಾಥ್</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{ಶೇಕಡಾ}one{# ಶೇಕಡಾ ಚಿಹ್ನೆಗಳು}other{# ಶೇಕಡಾ ಚಿಹ್ನೆಗಳು}}</translation>

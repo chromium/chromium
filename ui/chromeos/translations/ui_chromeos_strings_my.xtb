@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">နော်ဝေ</translation>
 <translation id="1433628812591023318">Parallels Desktop တွင် ဖိုင်များဆွဲချရန် ဖိုင်ကို Windows ဖိုင်များသို့ ရွှေ့ရပါမည်။</translation>
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
+<translation id="1439919885608649279">ပန်းများနှင့်လူ</translation>
 <translation id="1471718551822868769">ဆလိုဗက်</translation>
 <translation id="1474339897586437869">" <ph name="FILENAME" /> " ကို အပ်လုဒ် လုပ်မရခဲ့ပါ။ သင်၏ Google Drive ထဲတွင် နေရာ မလုံလောက်ပါ။</translation>
 <translation id="1482884275703521657">ဖင်လန်</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">ဖိုင်ကို မွမ်းမံ မပေးနိုင်ခဲ့ပါ။</translation>
 <translation id="1673103856845176271">လုံခြုံရေးအချက်လက်များကြောင့် ဤဖိုင်အား အသုံးပြု၍ မရပါ။</translation>
 <translation id="169515659049020177">Shift ကီး</translation>
+<translation id="1715848075824334077">စက်ဘီးစီးခြင်း</translation>
 <translation id="1722487484194605434">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ဇစ်လုပ်နေသည်…</translation>
 <translation id="1722687688096767818">ပရိုဖိုင် ပေါင်းထည့်နေသည်...</translation>
 <translation id="1726100011689679555">အမည်ဆာဗာများ</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">အစမ်းကြည့်၍မရနိုင်ပါ</translation>
 <translation id="1812302367230252929">အမ်ဟာရစ်ခ် အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="1813278315230285598">ဝန်​ဆောင်​မှု​များ</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />သတိထားရန်:<ph name="END_BOLD" />  ဒီဖိုင်များမှာ ယာယီဖြစ်ကြပြီး ဒီစ်က် နေရာ လွတ်လာရေး အတွက် အလိုအလျောက် ဖျက်ခံရနိုင်သည်။  <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ပင်ဂွင်</translation>
 <translation id="183183971458492120">အချက်အလက်များကို ဖွင့်နေသည်...</translation>
 <translation id="1834290891154666894">မှန်ကန်မှုမရှိသည့် အကြောင်းအရာ၏ အခြားအမည် ကိုက်ညီမှု ထည့်သွင်းခြင်း</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">အစက်ဖြင့်စသော အမည်များသည် စနစ်တွက် ဖြစ်သည်။ ကျေးဇူးပြု၍ အခြားအမည်ရွေးပါ။</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2084108471225856927">စက်ပစ္စည်းဆက်တင်များ</translation>
+<translation id="2084809735218147718">ကျေးဇူးတင်ကြောင်း လက်မှတ်ထိုးနေသူ</translation>
 <translation id="2085470240340828803">ဖိုင် အမည် "<ph name="FILENAME" />" ရှိနှင့်နေပြီ။ သင် ဘယ်လို လုပ်စေချင်ပါသလဲ?</translation>
 <translation id="2088690981887365033">VPN ကွန်ရက်</translation>
 <translation id="2122305276694332719">ဝှက်ထားသည့် ကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ခြင်းဖြင့် အခြားသူများသည် သင့်စက်ပစ္စည်းနှင့် အချို့သော ကွန်ရက်ဆက်တင်များကို မြင်ရနိုင်သောကြောင့် အကြံမပြုပါ။</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Linux ဖြင့် ထည့်သွင်းရန်</translation>
 <translation id="2225536596944493418">အကြောင်းအရာ <ph name="NUMBER_OF_ITEMS" />ခုကို ဖျက်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="2230062665678605299">ဖိုလ်ဒါ  "<ph name="FOLDER_NAME" />"ကို ဖန်တီး မရခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">ကော်ဖီသောက်နေသူ</translation>
 <translation id="2251368349685848079">အမှိုက်ပုံးမှ ပြန်ယူရန်</translation>
 <translation id="2282155092769082568">အလိုအလျောက် စီစဉ်သတ်မှတ်ခြင်း URL −</translation>
 <translation id="2288278176040912387">ကစားသူ မှတ်တမ်းတင်</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">စုစုပေါင်းဖိုင် အရွယ်အစား</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ခုကို <ph name="FOLDER_NAME" /> သို့ မိတ္တူကူးနေသည်</translation>
 <translation id="2448312741937722512">ပုံစံ</translation>
+<translation id="2452444014801043526">အော်လန်နှင့်လူ</translation>
 <translation id="2464079411014186876">ရေခဲမုန့်</translation>
 <translation id="2464089476039395325">HTTP ပရောက်စီ</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ပိတ်ထားသည်</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF စာရွက်စာတမ်း</translation>
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;နှင့် တိုက်ဆိုင်သည့် အရာများ မရှိ</translation>
 <translation id="2894654529758326923">အချက်အလက်များ</translation>
-<translation id="2902312830803030883">နောက်ထပ် လုပ်ဆောင်ချက်များ</translation>
 <translation id="2902734494705624966">တိုးချဲ့ US</translation>
 <translation id="290843123675549676">မာရာသီ</translation>
 <translation id="2923240520113693977">အက်စ်တိုနီယမ်</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">ပြင်သစ် (ကနေဒါ)</translation>
 <translation id="3003189754374775221">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="3003633581067744647">ပုံသေးမြင်ကွင်းသို့ ပြောင်းရန်</translation>
+<translation id="3016566519832145558">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။</translation>
 <translation id="3029114385395636667">Docs၊ Sheets နှင့် Slides ကို အော့ဖ်လိုင်းသုံးရန် 'Google Docs အော့ဖ်လိုင်း' ဖွင့်ပါ။</translation>
 <translation id="303198083543495566">ပထဝီ</translation>
 <translation id="3047197340186497470">တရုတ် တာ့ရီ</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS လက်ခံဝန်ဆောင်ပေးသည့်ပရောက်စီ</translation>
 <translation id="3113153474486991170">ဤနေရာမှ “<ph name="PATH" />” ကို ဖွင့်၍မရပါ။ ဖွင့်ရန် “ကျွန်ုပ်၏ဖိုင်များ” သို့ မိတ္တူကူးပါ။</translation>
 <translation id="3113592018909187986">သင့်တွင် ကြိုးစားခွင့် 1 ကြိမ် ကျန်သည်။ ပင်နံပါတ်အသစ် မသတ်မှတ်မချင်း ဤကွန်ရက်ကို သုံးနိုင်မည်မဟုတ်ပါ။</translation>
+<translation id="3124404833828281817">စိတ်ကူးယဉ်နေသူ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (စက်ပစ္စည်းကို အသုံးပြုထားသည်)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.com သို့သွားရန်...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ဖြင့် ဖိုင်များဖွင့်ရန် ၎င်းတို့ကို ဝင်းဒိုး ဖိုင်တွဲသို့ ဦးစွာမိတ္တူကူးပါ။</translation>
 <translation id="3556731189587832921">နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
+<translation id="3567221313191587603">သင့်ဖိုင်များကို အော့ဖ်လိုင်း ကြည့်ရှုခွင့်ရရန် ဖိုင်တစ်ဖိုင်ရွေးပြီး <ph name="OFFLINE_CHECKBOX_NAME" /> ကိုဖွင့်ပိတ်လုပ်ပါ။</translation>
 <translation id="357479282490346887">လီသွေနီယံ</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ကို အော့ဖ်လိုင်းသုံးနိုင်အောင် ပြုလုပ်၍မရပါ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">မိုဘိုင်းပရိုဖိုင် ထည့်သွင်းနေသည်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty ကီးဘုတ်ဖြင့် ချက်</translation>
 <translation id="4656293982926141856">ဒီကွန်ပျူတာ</translation>
+<translation id="4656777537938206294">ဖိုင်များကို အော့ဖ်လိုင်းသုံးနိုင်ရန် ပြုလုပ်ခြင်း</translation>
+<translation id="4658782175094886150">နှင်းတောထဲကလူ</translation>
 <translation id="4669606053856530811">ဤအရာများကို '<ph name="SOURCE_NAME" />' ၏ အဖွဲ့ဝင်များနှင့် မျှဝေထားခြင်း မရှိလျင် ၎င်းတို့သည် အသုံးပြုခွင့် ဆုံးရှုံးနိုင်ပါသည်။</translation>
 <translation id="4690246192099372265">ဆွီဒင်</translation>
 <translation id="4693155481716051732">ဆူရှီ</translation>
@@ -496,6 +504,7 @@
 <translation id="5330145655348521461">ဤဖိုင်များကို အခြား ဒက်စ်တော့မှာ ဖွင့်ထားသည်။  ၎င်းကို ကြည့်ရန် <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)သို့ သွားပါ။</translation>
 <translation id="5330512191124428349">အချက်အလက်ရယူရန်</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> ကို <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> သို့ မိတ္ထူကူးနေသည်</translation>
+<translation id="535792325654997756">ကြောင်များနှင့်လူ</translation>
 <translation id="5358764674931277">ဖရိမ်ပြနှုန်း</translation>
 <translation id="5368191757080475556">Linux နှင့် ဖိုင်တွဲကို မျှဝေရန်</translation>
 <translation id="5402367795255837559">မျက်မမြင်စာ</translation>
@@ -551,6 +560,8 @@
 <translation id="5833610766403489739">ဒီဖိုင်မှာ တစ်နေရာရာကို ရောက်သွားပြီ။ ကျေးဇူးပြုပြီး သင်၏ ဒေါင်းလုဒ် နေရာ ဆက်တင်ကို စစ်ကြည့်ပြီး ထပ်စမ်းပါ။</translation>
 <translation id="5838451609423551646">ထည့်သွင်းမှုအားလုံးကို ရွေးချယ်မှုမှ ဖယ်ရှားထားသည်။</translation>
 <translation id="5838825566232597749">US Workman နိုင်ငံတကာ</translation>
+<translation id="5845721951356578987">သူနာပြု</translation>
+<translation id="5861477046012235702">ဂိမ်းကစားသူ</translation>
 <translation id="5864471791310927901">DHCP ရှာဖွေမှု မအောင်မြင်ခဲ့</translation>
 <translation id="5896749729057314184">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊<ph name="NETWORK_NAME" />၊ ဖွင့်မထားပါ၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
 <translation id="5911887972742538906">သင်၏ Linux အပလီကေးရှင်းကို ထည့်သွင်းရာတွင် အမှားအယွင်းရှိနေသည်။</translation>
@@ -579,6 +590,7 @@
 <translation id="6146563240635539929">ဗီယီယိုများ</translation>
 <translation id="6150853954427645995">အော့ဖ်လိုင်းအသုံးပြုမှုအတွက် ဤဖိုင်အား သိမ်းရန် အွန်လိုင်းပြန်တက်ပြီး ဖိုင်အား ညာဘက်ကလစ်ခေါက်၍  <ph name="OFFLINE_CHECKBOX_NAME" /> ရွေးချယ်စရာအား ရွေးချယ်ပါ။</translation>
 <translation id="6164412158936057769">လိပ်ပြာများ</translation>
+<translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6170470584681422115">အသားညှပ်ပေါင်မုန့်</translation>
 <translation id="6187719147498869044">ဟန်ဂေရီ</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ဖြင့်ဖွင့်ပါ</translation>
@@ -649,6 +661,7 @@
 <translation id="6861394552169064235">ပါရှား</translation>
 <translation id="6862635236584086457">ဒီဖိုလ်ဒါ ထဲမှာ သိမ်းဆည်းထားသည့် ဖိုင်များ အားလုံးကို အွန်လိုင်းမှာ အလိုအလျောက် ဘက်အာပ် လုပ်ပေးသည်</translation>
 <translation id="6864328437977279120">သင်္သကရိုက်</translation>
+<translation id="6874758081814639712">ထိုက်ချိကစားနေသူ</translation>
 <translation id="6876155724392614295">စက်ဘီး</translation>
 <translation id="6878261347041253038">ဒေဝနာဂရီ ကီးဘုတ် (Phonetic)</translation>
 <translation id="6885780034956018177">ခရု</translation>
@@ -879,6 +892,7 @@
 <translation id="8743164338060742337">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /> လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ ချိတ်ဆက်ရန်</translation>
 <translation id="8750438273876807512">ဖိုင်တစ်ဖိုင်ကို တို့ထိ၍ဖိထားပြီး <ph name="ICON" /> ကို တို့ပါ၊ ထို့နောက် စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် "စင်တွင်ပင်ထိုးရန်" ကို ရွေးပါ။</translation>
 <translation id="8787254343425541995">မျှဝေထားသော ကွန်ယက်များအတွက် ပရောက်စီများကို ခွင့်ပြုမည်</translation>
+<translation id="8790981080411996443">အပင်ရေလောင်းနေသူ</translation>
 <translation id="8798099450830957504">ပုံသေ</translation>
 <translation id="8802459921616481935">‘အမှိုက်ပုံး’ သို့ ရွှေ့ရန်</translation>
 <translation id="8808686172382650546">ကြောင်</translation>
@@ -891,6 +905,7 @@
 <translation id="8874184842967597500">ချိတ်ဆက် မထား</translation>
 <translation id="8900820606136623064">ဟန်ဂေရီ</translation>
 <translation id="8903931173357132290">ဘွဲ့ရပုဂ္ဂိုလ်</translation>
+<translation id="8912078710089354287">အမြီးလှုပ်နေသည့်ခွေး</translation>
 <translation id="8919081441417203123">ဒိန်းမတ်</translation>
 <translation id="8965697826696209160">နေရာ လုံလုံလောက်လောက် မရှိပါ။</translation>
 <translation id="8970501467542182729">ဤဖိုင်ကို Macintosh ဆော့ဖ်ဝဲသုံးသည့် ကွန်ပျူတာအတွက် ထုတ်လုပ်ထားသည်။ ၎င်းကို Chrome OS သုံးသော သင့်စက်ပစ္စည်းတွင် ဖွင့်၍မရပါ။ Chrome OS တွင် ဖိုင်များဖွင့်ခြင်းအကြောင်း <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာပါ<ph name="END_LINK_HELP" />။</translation>
@@ -917,6 +932,7 @@
 <translation id="9144340019284012223">ကတ်တလန်</translation>
 <translation id="914873105831852105">ပင်နံပါတ် မမှန်ပါ။ သင့်တွင် ကြိုးစားခွင့် 1 ကြိမ် ကျန်သည်။</translation>
 <translation id="9153934054460603056">အထောက်အထား နှင့် စကားဝှက် သိမ်းရန်</translation>
+<translation id="9171921933192916600">စာကြမ်းပိုး</translation>
 <translation id="9172592259078059678">ဂူဂျာရသီ အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="9173120999827300720">နိုင်ငံတကာကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="9174050671906956834">အမှိုက်ပုံးရှိ ဖိုင်များကို ရက် ၃၀ ကြာပြီးနောက် အပြီးဖျက်သည်။</translation>
@@ -929,6 +945,7 @@
 <translation id="943972244133411984">ပြုပြင်ထားသူ</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> မှ<ph name="TO_ENTRY_NAME" /> သို့ ထည့်သွင်းမှု အပိုင်းအခြား <ph name="ENTRY_COUNT" /> ခု ကို ရွေးထားသည်။</translation>
+<translation id="965477715979482472">အင်္ဂလိပ် (တောင်အာဖရိက)</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" အမည်ဖြင့် ဖိုင်ရှိပြီးဖြစ်ပါသည်။ ၎င်းကို အစားထိုးလိုပါသလား။</translation>
 <translation id="992401651319295351">သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။ ပင်နံပါတ်အသစ် မသတ်မှတ်မချင်း ဤကွန်ရက်ကို သုံးနိုင်မည်မဟုတ်ပါ။</translation>

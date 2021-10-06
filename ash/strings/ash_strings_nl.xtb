@@ -24,6 +24,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1119348796022671382">De kleurenmodus 'Met een thema' stelt de kleuren van de interface af op de kleuren van je achtergrond.</translation>
 <translation id="112308213915226829">Plank automatisch verbergen</translation>
 <translation id="1148499908455722006">Dialoogvenster met informatie openen voor <ph name="USER_NAME" /></translation>
+<translation id="1150989369772528668">Agenda</translation>
 <translation id="1153356358378277386">Gekoppelde apparaten</translation>
 <translation id="1165712434476988950">Start het apparaat opnieuw op om de update toe te passen.</translation>
 <translation id="1175572348579024023">Scrollen</translation>
@@ -63,6 +64,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
+<translation id="1364382257761975320">Gebruik je vingerafdruk om je Chromebook te ontgrendelen</translation>
 <translation id="1383597849754832576">Kan spraakbestanden niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="1391102559483454063">Aan</translation>
@@ -102,6 +104,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1698760176351776263">IPv6-adres: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Bureau: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Netwerkinstellingen</translation>
+<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Live ondertiteling staat aan.</translation>
 <translation id="1720011244392820496">Wifi-synchronisatie aanzetten</translation>
 <translation id="1743570585616704562">Niet herkend</translation>
@@ -159,6 +162,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2127372758936585790">Laag-vermogen-lader</translation>
 <translation id="2132302418721800944">Opname van volledig scherm maken</translation>
 <translation id="2135456203358955318">Vastgezet vergrootglas</translation>
+<translation id="2148716181193084225">Vandaag</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
 <translation id="2170530631236737939">Swipe met 3 vingers omlaag om het overzicht te sluiten</translation>
 <translation id="2208323208084708176">Samengestelde desktopmodus</translation>
@@ -183,10 +187,12 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2352467521400612932">Stylusinstellingen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> activeren</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
+<translation id="2367186422933365202">Kan niet inloggen op je Chromebook</translation>
 <translation id="2369165858548251131">Chinees voor 'hallo'</translation>
 <translation id="2390318262976603432">Landinstellingen</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Mediabediening</translation>
+<translation id="2402411679569069051">Gebruik je vingerafdruk of ontgrendel je telefoon om je Chromebook te ontgrendelen</translation>
 <translation id="2405664212338326887">Niet verbonden</translation>
 <translation id="2408955596600435184">Je pincode opgeven</translation>
 <translation id="2412593942846481727">Update beschikbaar</translation>
@@ -236,6 +242,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2825619548187458965">Plank</translation>
 <translation id="2841907151129139818">Overgeschakeld naar tabletmodus</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
+<translation id="2860184359326882502">Beste resultaat</translation>
 <translation id="2865888419503095837">Netwerkinfo</translation>
 <translation id="2872961005593481000">Afsluiten</translation>
 <translation id="2878884018241093801">Geen recente items</translation>
@@ -285,8 +292,10 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3207953481422525583">Gebruikersinstellingen</translation>
 <translation id="3217205077783620295">Volume staat aan. Als je het uitzet, hoor je geen audio.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> andere meldingen</translation>
+<translation id="3227137524299004712">Microfoon</translation>
 <translation id="324366796737464147">Ruisonderdrukking</translation>
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Zet bluetooth aan op je telefoon om je Chromebook te ontgrendelen</translation>
 <translation id="3255483164551725916">Wat kun je doen?</translation>
 <translation id="3269597722229482060">Klikken met rechtermuisknop</translation>
 <translation id="3289674678944039601">Opladen via adapter</translation>
@@ -320,6 +329,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3477079411857374384">Ctrl-Shift-spatiebalk</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definitie</translation>
+<translation id="3509391053705095206">Kan je telefoon niet vinden. Zorg dat bluetooth aanstaat op je telefoon.</translation>
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
 <translation id="3513798432020909783">Account wordt beheerd door <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Verbonden met <ph name="NUM_DEVICES" /> apparaten</translation>
@@ -351,9 +361,11 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3702846122927433391">Bevolking van Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">Bezig met laden...</translation>
+<translation id="3708186454126126312">Eerder verbonden</translation>
 <translation id="371370241367527062">Microfoon aan voorzijde</translation>
 <translation id="3713734891607377840">Openen na afronding</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
+<translation id="3744282433224562605">Geef het wachtwoord op om je Chromebook je ontgrendelen</translation>
 <translation id="3771549900096082774">Modus voor hoog contrast</translation>
 <translation id="3773700760453577392">Een beheerder heeft geen toestemming gegeven voor toegang tot meerdere accounts voor <ph name="USER_EMAIL" />. Alle gebruikers moeten uitloggen om door te gaan.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> koppelen</translation>
@@ -378,6 +390,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3900355044994618856">Je sessie loopt over <ph name="SESSION_TIME_REMAINING" /> af</translation>
 <translation id="3901991538546252627">Verbinding maken met <ph name="NAME" /></translation>
 <translation id="3923494859158167397">Geen mobiele netwerken ingesteld</translation>
+<translation id="3932043219784172185">Geen apparaat aangesloten</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="394485226368336402">Audio-instellingen</translation>
 <translation id="3945319193631853098">Tik om het instellen af te ronden</translation>
@@ -406,17 +419,19 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4129129681837227511">Als je meldingen op je vergrendelscherm wilt zien, ontgrendel je het scherm om de instellingen te wijzigen</translation>
 <translation id="4146833061457621061">Speel muziek</translation>
 <translation id="4157822100366708405">Instellingen voor donker thema</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> - <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">D</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4195877955194704651">Knop 'Automatische klikken'</translation>
 <translation id="4197790712631116042">Uit</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> is niet beschikbaar.</translation>
+<translation id="4201051445878709314">Vorige maand tonen</translation>
 <translation id="4209973997261364186">Wifi staat aan</translation>
 <translation id="4212472694152630271">Overschakelen naar pincode</translation>
 <translation id="4215497585250573029">VPN-instellingen</translation>
 <translation id="4217571870635786043">Dicteren</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, geïnstalleerde app, onderbroken</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Geen simkaart</translation>
 <translation id="4261870227682513959">Instellingen voor meldingen tonen. Meldingen staan uit</translation>
@@ -445,6 +460,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="439598569299422042">Onderbroken, <ph name="SIZE_INFO" /></translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
+<translation id="4406883609789734330">Live ondertiteling</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> staat uit.</translation>
 <translation id="4421231901400348175">De controle over je scherm wordt gedeeld met <ph name="HELPER_NAME" /> via externe support.</translation>
 <translation id="4424159417645388645">Bureau 5</translation>
@@ -464,6 +480,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4485060137115666462">Door met de rechtermuisknop te klikken of de selectie lang ingedrukt te houden, kan de Assistent informatie laten zien zoals de definitie, vertaling of eenheidsconversie voor je selectie.</translation>
 <translation id="4505050298327493054">Actief bureaublad.</translation>
 <translation id="4513946894732546136">Feedback</translation>
+<translation id="4518404433291145981">Ontgrendel eerst je telefoon om je Chromebook te ontgrendelen</translation>
 <translation id="4527045527269911712">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tot volledig opgeladen</translation>
 <translation id="4538824937723742295">Screenshot van volledig scherm maken</translation>
@@ -490,7 +507,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="4665114317261903604">Niet storen aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Apparaat ontgrendelen met oudercode</translation>
 <translation id="4702647871202761252">Privacyscherm staat uit</translation>
-<translation id="4705716602320768426">Feedback geven</translation>
 <translation id="4706121060329443414">Download wordt later geprobeerd. Voorlopig wordt spraak naar Google gestuurd voor verwerking.</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4734965478015604180">Horizontaal</translation>
@@ -547,12 +563,15 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5075554201838155866">Ondertiteling starten</translation>
 <translation id="5078796286268621944">Onjuiste pincode</translation>
 <translation id="5083553833479578423">Ontgrendel meer functies van de Assistent.</translation>
+<translation id="5117590920725113268">Volgende maand tonen</translation>
 <translation id="5136175204352732067">Ander toetsenbord aangesloten</translation>
+<translation id="5147567197700016471">Ontgrendeld</translation>
 <translation id="5155897006997040331">Leesnelheid</translation>
 <translation id="5166918508782100047">Instellingen voor Snelle antwoorden</translation>
 <translation id="5168181903108465623">Cast-apparaten beschikbaar</translation>
 <translation id="5170568018924773124">Tonen in map</translation>
 <translation id="5176318573511391780">Opname van gedeeltelijk scherm maken</translation>
+<translation id="5199367439331364630">Geef het wachtwoord op om in te loggen op je Chromebook</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 andere melding}other{# andere meldingen}}</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
 <translation id="5208059991603368177">Aan</translation>
@@ -570,8 +589,10 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5308380583665731573">Verbinding maken</translation>
 <translation id="5313326810920013265">Bluetooth-instellingen</translation>
 <translation id="5314219114274263156">Schermopname gemaakt</translation>
+<translation id="5319712128756744240">Nieuw apparaat koppelen</translation>
 <translation id="5322611492012084517">Kan je telefoon niet vinden</translation>
 <translation id="5329548388331921293">Verbinden...</translation>
+<translation id="5330201449517439522">Tik of klik voor toegang</translation>
 <translation id="5331975486040154427">USB-C-apparaat (poort links aan de achterkant)</translation>
 <translation id="5352250171825660495">Donker thema staat aan</translation>
 <translation id="5379115545237091094">Te veel pogingen</translation>
@@ -581,6 +602,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5428899915242071344">Selecteren starten</translation>
 <translation id="5430931332414098647">Instant-tethering</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
+<translation id="5433020815079095860">Audio-invoer</translation>
 <translation id="544691375626129091">Alle beschikbare gebruikers zijn al aan deze sessie toegevoegd.</translation>
 <translation id="54609108002486618">Beheerd</translation>
 <translation id="5465662442746197494">Heb je hulp nodig?</translation>
@@ -629,6 +651,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="5825969630400862129">Instellingen voor verbonden apparaten</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5837036133683224804"><ph name="ROUTE_TITLE" /> in <ph name="RECEIVER_NAME" /> stopzetten</translation>
+<translation id="584525477304726060">Vasthouden om te maximaliseren</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5867217927013474703">Netwerkinformatie ophalen</translation>
@@ -734,6 +757,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6667908387435388584">Maak verbinding met de hotspot van je telefoon, demp en lokaliseer je apparaat en bekijk recente Chrome-tabbladen die op je telefoon zijn geopend</translation>
 <translation id="6670153871843998651">Bureau 3</translation>
 <translation id="6671495933530132209">Afbeelding kopiëren</translation>
+<translation id="6671661918848783005">Kan je Chromebook niet ontgrendelen</translation>
 <translation id="6692996468359469499">Informatie over je selectie bekijken</translation>
 <translation id="6696025732084565524">Je afneembare toetsenbord heeft een essentiële update nodig</translation>
 <translation id="6700713906295497288">IME-menuknop</translation>
@@ -744,6 +768,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6751052314767925245">Afgedwongen door je beheerder</translation>
 <translation id="6751826523481687655">Bijhouden van prestaties staat aan</translation>
 <translation id="6752912906630585008">Bureaublad <ph name="REMOVED_DESK" /> verwijderd en samengevoegd met bureaublad <ph name="RECEIVE_DESK" /></translation>
+<translation id="6754441615189976839">Z</translation>
 <translation id="6757237461819837179">Er wordt geen media afgespeeld</translation>
 <translation id="6777216307882431711">De aangesloten USB-C-apparaten worden van stroom voorzien</translation>
 <translation id="6790428901817661496">Spelen</translation>
@@ -764,6 +789,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="6910714959251846841">Deze update vereist een powerwash van je apparaat. Meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="6921188888306725546">Sneltoetsen zijn verbeterd</translation>
+<translation id="6931576957638141829">Opslaan in</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="6961121602502368900">Geluid van telefoon kan niet worden uitgezet in je werkprofiel</translation>
 <translation id="6961840794482373852">De sneltoets Alt + pijl-omhoog is veranderd. Als je de toets Page Up wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-omhoog.</translation>
@@ -781,6 +807,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
 <translation id="7042322267639375032">Statusgedeelte samenvouwen</translation>
 <translation id="7045595904618419789">Vergrootglas starten</translation>
+<translation id="7055381872777910864">W</translation>
 <translation id="7055910611768509537">De stylus is langer dan een week niet gebruikt</translation>
 <translation id="7066646422045619941">Dit netwerk is uitgezet door je beheerder.</translation>
 <translation id="7067196344162293536">Automatisch draaien</translation>
@@ -849,6 +876,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="7579778809502851308">Schermopname</translation>
 <translation id="7590883480672980941">Invoerinstellingen</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
+<translation id="7595633564847427181">M</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
 <translation id="7618774594543487847">Neutraal</translation>
@@ -898,6 +926,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="79341161159229895">Account wordt beheerd door <ph name="FIRST_PARENT_EMAIL" /> en <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Druk op <ph name="SHORTCUT_KEY_NAME" /> + V om het klembord te bekijken. De laatste 5 items die je hebt gekopieerd, worden opgeslagen op het klembord.</translation>
 <translation id="7955885781510802139">Modus voor hoog contrast</translation>
+<translation id="7968693143708939792">Map selecteren...</translation>
 <translation id="7977927628060636163">Mobiele netwerken zoeken…</translation>
 <translation id="7980780401175799550">Probeer nieuwe manieren om te navigeren in Chrome OS</translation>
 <translation id="7982789257301363584">Netwerk</translation>
@@ -1006,6 +1035,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="8818320199597151042">Profiel verwijderen. Wacht een paar minuten.</translation>
 <translation id="8825863694328519386">Swipe vanaf de linkerkant om terug te gaan</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8834539327799336565">Momenteel verbonden</translation>
 <translation id="8841375032071747811">Knop Terug</translation>
 <translation id="8843682306134542540">Draaivergrendeling aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Zoeken+Esc</translation>

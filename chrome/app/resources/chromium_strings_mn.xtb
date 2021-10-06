@@ -36,6 +36,7 @@
 <translation id="2343156876103232566">Та эндээс Android утсандаа дугаар илгээхийн тулд хоёр төхөөрөмжийн аль алинаас нь Chromium-д нэвтэрнэ үү.</translation>
 <translation id="2347108572062610441">Энэ өргөтгөл нь таныг Chromium эхлүүлэх үед хуудас дээр харуулах зүйлийг өөрчилсөн.</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" өргөтгөл нь таныг Chromium эхлүүлэх үед хуудасны харуулах зүйлийг өөрчилсөн.</translation>
+<translation id="2401032172288869980">Chromium-д энэ сайтад зориулж камер болон микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="2483889755041906834">Chromium-д</translation>
 <translation id="2485422356828889247">Устгах</translation>
 <translation id="2535480412977113886">Таны бүртгэлийн мэдээлэл хэтэрхий хуучирсан байгаа учраас Chromium OS-аас таны өгөгдлийг sync хийж чадсангүй.</translation>
@@ -151,6 +152,7 @@
 <translation id="5820394555380036790">Chromium-н үйлдлийн систем</translation>
 <translation id="5854740544000584380">Chromium үйлдлийн системийг <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамж<ph name="END_LINK_CROS_OSS" />-аар боломжтой болгосон.</translation>
 <translation id="5862307444128926510">Chromium-д тавтай морил</translation>
+<translation id="5883558403894052917">Эдгээр зүйл хортой программ агуулж байгааг Chromium олж мэдлээ:</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх</translation>
 <translation id="5987687638152509985">Синкийг эхлүүлэхийн тулд Chromium-г шинэчлэх</translation>
@@ -168,6 +170,7 @@
 <translation id="6183079672144801177">Та Chromium-д өөрийн <ph name="TARGET_DEVICE_NAME" />-с нэвтэрсэн эсэхээ шалгаад, дахин илгээхээр оролдоно уу.</translation>
 <translation id="6212496753309875659">Энэ компьютерт Chromium-ийн хамгийн сүүлийн үеийн хувилбар байна. Хэрэв программ ажиллахгүй байвал Chromium-ийг устгаад, дахин суурьлуулж үзнэ үү.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium-г одоо дахин ажиллуулна}=1{Chromium-г 1 секундийн дотор дахин ажиллуулна}other{Chromium-г # секундийн дотор дахин ажиллуулна}}</translation>
+<translation id="6241367896540709610">Файл татахын тулд Chromium-д хадгалах санд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="6248213926982192922">Chromium-ыг анхдагч веб хөтөч болгох</translation>
 <translation id="6266342355635466082">Chromium нь шинэчлэлтийг шалгах боломжгүй байна. Интернэт холболтоо шалгаж үзнэ үү.</translation>
 <translation id="6268381023930128611">Chromium-с гарах уу?</translation>
@@ -188,7 +191,9 @@
 <translation id="6570579332384693436">Зөв бичгийн алдааг засахын тулд Chromium таны текстийн талбарт бичсэн текстийг Google-д илгээдэг</translation>
 <translation id="6598877126913850652">Chromium-н мэдэгдлийн тохиргоо руу очих</translation>
 <translation id="6613594504749178791">Таныг Chromium дахин эхлүүлэхэд өөрчлөлт идэвхжинэ.</translation>
+<translation id="665732753414869868">Таны эргэн тойрны 3D газрын зургийг үүсгэхийн тулд Chromium-д камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="6676384891291319759">Интернэтэд нэвтрэх</translation>
+<translation id="6709350901466051922">Chromium-д энэ сайтад зориулж микрофоны зөвшөөрөл шаардлагатай</translation>
 <translation id="6717134281241384636">Таны профайлыг ашиглах боломжгүй байна. Учир нь энэ Chromium-ийн шинэ хувилбараас ирсэн байна.
 
 Зарим функц ажиллахгүй байж болно. профайлын өөр зааварчилгааг тодорхойлж өгөх эсвэл Chromium-ийн шинэ хувилбарыг ашиглана уу.</translation>
@@ -200,6 +205,7 @@
 <translation id="6847869444787758381">Хэрэв таны нууц үг алдагдсан байвал Chromium танд мэдэгдэнэ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-д хуулсан)</translation>
+<translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" хортой программ агуулж байгааг Chromium олж мэдлээ</translation>
 <translation id="6893813176749746474">Chromium нь шинэчлэгдсэн байгаа хэдий ч та үүнийг доод тал нь 30 хоногийн турш ашиглаагүй байна.</translation>
 <translation id="691026815377248078">Үргэлжлүүлэн хослуулахын тулд Chromium-д Bluetooth-н 
  хандалт шаардлагатай. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -208,6 +214,7 @@
 <translation id="6990124437352146030">Энэ сайтыг ашиглахын тулд Chromium-д таны микрофонд хандах зөвшөөрөл шаардлагатай</translation>
 <translation id="705851970750939768">Chromium-г шинэчлэх</translation>
 <translation id="7067091210845072982">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chromium танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ.</translation>
+<translation id="718435575166326686">Chromium-д энэ сайтад зориулж камерын зөвшөөрөл шаардлагатай</translation>
 <translation id="7196312274710523067">Chromium-г эхлүүлж чадсангүй. Дахин оролдоно уу.</translation>
 <translation id="7197677400338048821">Chromium таны нууц үгсийг шалгах боломжгүй байна. 24 цагийн дараа дахин оролдоно уу.</translation>
 <translation id="7223968959479464213">Бодлогын менежер - Chromium</translation>
@@ -229,10 +236,6 @@
       Chromium үйлдлийн системийнхээ тохиргоо<ph name="LINK_END" /> дотроос хайна уу</translation>
 <translation id="761356813943268536">Chromium нь таны камер болон микрофоныг ашиглаж байна.</translation>
 <translation id="7617377681829253106">Chromium сайжирлаа</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Эхлэхийнхээ өмнө танд өгөгдлийн тань хамгийн шинэ нөөцлөлт байгаа эсэхийг шалгана уу. Chromium OS-г суулгаснаар таны хатуу диск дээрх бүх өгөгдлийг давхарлаж бичих болно.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google нь аливаа өгөгдлийг алдахад хариуцлага хүлээхгүй бөгөөд Chromium OS-г гэрчилгээгүй загвар дээр ажиллана гэсэн баталгаа өгөхгүй. Гэрчилгээтэй загварын талаар нэмэлт мэдээлэл авахын тулд [TBD]-д зочилно уу.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS-г суулгах болон өгөгдлийг устгах талаар нэмэлт мэдээлэл авах: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Хэрэв та үргэлжлүүлэхэд бэлэн бол “Chromium OS-г суулгах”-ыг товшсоноор бид таныг ердөө хэдхэн хялбар алхмаар суулгахад чиглүүлэх болно. Бид таны компьютерт аливаа өөрчлөлтийг хийхээсээ өмнө танаас баталгаажуулахыг дахин асууна.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium таны өгөгдмөл хөтөч биш юм</translation>
 <translation id="7689606757190482937">Төхөөрөмжүүддээ Chromium-г синк хийж, хувийн болгох</translation>
 <translation id="7729447699958282447">Таны домэйн хаяг өгөгдөл суурьлуулах боломжгүй байгаа тул Chromium-д таны өгөгдлийг оруулах боломжгүй байгаа болно.</translation>
@@ -247,6 +250,7 @@
 <translation id="7975919845073681630">Энэ нь Chromium-н хоёр дахь суулгалт тул таны өгөгдмөл хөтчөөр сонгох боломжгүй.</translation>
 <translation id="8013436988911883588">Chromium-д хандалт олгосны дараа веб сайтууд таны хандалтыг асуух боломжтой болно.</translation>
 <translation id="8045118833343856403">Дараах бүртгэлүүд Chromium-н ямар ч профайлд нэвтрээгүй байна. Хэрэв та бүртгэлийг өөр профайлд ашиглахыг хүсвэл эхлээд тухайн профайлыг хасна уу.</translation>
+<translation id="8105840573057009683">Chromium-д энэ сайтад зориулж байршлын зөвшөөрөл шаардлагатай</translation>
 <translation id="81770708095080097">Энэ файл аюултай тул Chromium блоклосон байна.</translation>
 <translation id="8248265253516264921">Хэрэв зурагт хэрэгтэй тайлбар байхгүй бол Chromium танд тайлбар өгөхөөр оролдох болно. Тайлбар үүсгэхийн тулд зургийг Google-д илгээнэ. Та үүнийг хүссэн үедээ тохиргоонд унтрааж болно.</translation>
 <translation id="8266560134891435528">Та нэвтрээгүй байгаа тул Chromium таны нууц үгсийг шалгах боломжгүй байна</translation>

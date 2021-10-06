@@ -34,6 +34,7 @@
 <translation id="2343156876103232566">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chromium hisobingizga kiring.</translation>
 <translation id="2347108572062610441">Bu kengaytma Chromium ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
 <translation id="2396765026452590966">“<ph name="EXTENSION_NAME" />” kengaytmasi Chromium ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
+<translation id="2401032172288869980">Chromium bu saytda kamera va mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="2483889755041906834">Chromium brauzerida</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
 <translation id="2535480412977113886">Chromium OS ma’lumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>
@@ -149,6 +150,7 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
+<translation id="5883558403894052917">Chromium tarkibida zararli dasturi bor quyidagi fayllarni aniqladi:</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish</translation>
 <translation id="5987687638152509985">Sinxronizatsiyani boshlash uchun Chromium brauzerini yangilang</translation>
@@ -166,6 +168,7 @@
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chromium hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
 <translation id="6212496753309875659">Bu kompyuterda allaqachon Chromium‘ning so‘nggi versiyasi o‘rnatilgan. Agar dastur ishlamayotgan bo‘lsa, uni o‘chirib qaytadan o‘rnatib ko‘ring.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium hozir qayta ishga tushadi}=1{Chromium 1 soniyadan keyin qayta ishga tushadi}other{Chromium # soniyadan keyin qayta ishga tushadi}}</translation>
+<translation id="6241367896540709610">Chromium bu fayllarni yuklab olishi uchun xotiraga saqlash ruxsati kerak</translation>
 <translation id="6248213926982192922">Chromium‘ni standart brauzer etib tayinlash</translation>
 <translation id="6266342355635466082">Chromium yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="6268381023930128611">Chromium’dan chiqmoqchimisiz?</translation>
@@ -186,7 +189,9 @@
 <translation id="6570579332384693436">Imloni tekshirish uchun Chromium siz kiritgan matnni Google serverlariga yuboradi</translation>
 <translation id="6598877126913850652">Chromium bildirishnomalar sozlamalarini ochish</translation>
 <translation id="6613594504749178791">O‘zgartirishlar Chromium qaytadan ishga tushirilganda kuchga kiradi.</translation>
+<translation id="665732753414869868">Chromium atrofingiz 3D xxaritasini yaratishi uchun kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="6676384891291319759">Internetga ulanish</translation>
+<translation id="6709350901466051922">Chromium bu saytda mikrofondan foydalanishiga ruxsat kerak</translation>
 <translation id="6717134281241384636">Profilingizdan foydalanib bo‘lmaydi, chunki u yanada yangiroq Chromium versiyasiga ta’luqli.
 
 Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tayinlang yoki yangiroq Chromium versiyasidan foydalaning.</translation>
@@ -198,6 +203,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6847869444787758381">Parollaringiz oshkor etilsa, Chromium bu haqida xabar qiladi</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium brauzeriga nusxalandi)</translation>
+<translation id="6873893289264747459">Chromium “<ph name="EXTENSION_NAME" />” kengaytmasi tarkibida zararli dastur aniqladi</translation>
 <translation id="6893813176749746474">Chromium yangilandi, lekin siz undan 30 kun davomida foydalanmadingiz.</translation>
 <translation id="691026815377248078">Chromium ulanishi uchun Bluetooth orqali kirish ruxsati 
  kerak. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -206,6 +212,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="6990124437352146030">Bu sayt mikrofoningizdan foydalanishi uchun Chromium brauzeriga ruxsat berishingiz lozim</translation>
 <translation id="705851970750939768">Chromium‘ni yangilash</translation>
 <translation id="7067091210845072982">Agar rasmga foydali tavsif berilmagan boʻlsa, Chromium uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi.</translation>
+<translation id="718435575166326686">Chromium bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="7196312274710523067">Chromium ishga tushmadi. Qayta urining.</translation>
 <translation id="7197677400338048821">Chromium parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining.</translation>
 <translation id="7223968959479464213">Vazifalar menejeri – Chromium</translation>
@@ -229,10 +236,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
       Chromium brauzeri sozlamalarini<ph name="LINK_END" /> tekshiring.</translation>
 <translation id="761356813943268536">Chromium kamera va mikrofoningizdan foydalanmoqda.</translation>
 <translation id="7617377681829253106">Chromium ancha yaxshilanmoqda</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Boshlashdan avval barcha maʼlumotlaringiz zaxiralanganini tekshiring. Chromium OS oʻrnatilganda diskdagi barcha maʼlumotlaringiz tozalanadi va ustidan tizim fayllari yoziladi.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google har qanday axborot yoʻqotishlar uchun javobgar emas va Chromium OS tekshirilmagan modellarda ishlashiga kafolat bermaydi. Ishonchli modellar roʻyxati bilan [TBD] saytida tanishish mumkin.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chrome OS oʻrnatilishi va axborotlar tozalanishi haqida batafsil: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Davom etishga tayyor boʻlsangiz ”Chromium OS tizimini oʻrnatish” tugmasini bosing va keyingi qadamlar bilan tanishing. Kompyuterga oʻzgartirishlar kiritilishidan avval tasdiqlash uchun yana bir imkoningiz bor.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium standart brauzer sifatida tayinlanmagan</translation>
 <translation id="7689606757190482937">Chromiumni barcha qurilmalaringizda sinxronlang va o‘zingizga moslab oling</translation>
 <translation id="7729447699958282447">Chromium domeningizda Sync xizmati yo‘qligi sababli ma’lumotlaringizni sinxronlay olmadi.</translation>
@@ -247,6 +250,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7975919845073681630">Chromium takroran o‘rnatilgan, shuning uchun u asosiy brauzer bo‘la olmaydi.</translation>
 <translation id="8013436988911883588">Chromium saytlarga ulanganda sizdan ruxsat so‘raydi.</translation>
 <translation id="8045118833343856403">Quyidagi hisoblar hech qaysi Chromium profiliga kirmagan. Hisobni boshqa profilda ishlatishni xohlasangiz, avval u profilni olib tashlang.</translation>
+<translation id="8105840573057009683">Chromium bu saytda joylashuv axborotidan foydalanishiga ruxsat kerak</translation>
 <translation id="81770708095080097">Bu fayl xavfli edi va u Chromium tomonidan bloklandi.</translation>
 <translation id="8248265253516264921">Agar rasmga foydali tavsif berilmagan boʻlsa, Chromium uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi. Bu sozlamani istalgan vaqtda faolsizlantirish mumkin.</translation>
 <translation id="8266560134891435528">Chromium parollaringizni faqat hisobingizga kirganingizdan keyin tekshira oladi</translation>

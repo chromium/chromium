@@ -79,6 +79,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="4512952200932940229">Copyright 2021 Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
 <translation id="4563926062592110512">Klient odpojen: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> není nakonfigurován správně. Vyberte jiný výchozí prohlížeč a poté předávání adres URL zapněte znovu.</translation>
 <translation id="4635770493235256822">Vzdálená zařízení</translation>
 <translation id="4660011489602794167">Zobrazit klávesnici</translation>
 <translation id="4703799847237267011">Relace funkce Chromoting byla ukončena.</translation>
@@ -109,6 +110,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="5750083143895808682">Jste přihlášeni pomocí účtu <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znovu připojit</translation>
 <translation id="5810269635982033450">Obrazovka se chová jako trackpad</translation>
+<translation id="5823554426827907568">Uživatel <ph name="CLIENT_USERNAME" /> požádal o přístup k zobrazení obrazovky a ovládání vaší klávesnice a myši. Pokud tento požadavek nečekáte, stiskněte „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Jinak připojení povolte výběrem možnosti „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, až budete připraveni.</translation>
 <translation id="5823658491130719298">Na počítači, ke kterému chcete vzdáleně přistupovat, otevřete Chrome a navštivte stránku <ph name="INSTALLATION_LINK" />.</translation>
 <translation id="5841343754884244200">Možnosti zobrazení</translation>
 <translation id="6033507038939587647">Možnosti klávesnice</translation>
@@ -130,7 +132,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="6963936880795878952">Připojení ke vzdálenému počítači jsou dočasně zablokována, protože došlo k několika pokusům o připojení s nesprávným kódem PIN. Zkuste to znovu později.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Opravdu chcete zakázat vzdálená připojení k počítači <ph name="HOSTNAME" />? Pokud později své rozhodnutí změníte, bude nutné připojení povolit přímo z uvedeného počítače.</translation>
-<translation id="6998890551706945177">Uživatel <ph name="CLIENT_USERNAME" /> požádal o přístup k zobrazení a ovládání vašeho počítače. Pokud tohoto uživatele neznáte nebo před sdílením potřebujete provést změny, stiskněte <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />.  Jinak připojení povolte stisknutím možnosti <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />.</translation>
 <translation id="7019153418965365059">Neznámá chyba hostitele: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Vzdálená pomoc</translation>
 <translation id="7026930240735156896">Postupujte podle pokynů k nastavení počítače pro vzdálený přístup</translation>
@@ -169,6 +170,7 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 Chcete-li udělit toto oprávnění, klikněte na tlačítko <ph name="BUTTON_NAME" /> níže. Na panelu Přístupnost, který se otevře, pak zaškrtněte políčko vedle položky <ph name="SERVICE_SCRIPT_NAME" />.
 
 Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte její zaškrtnutí a poté ji zaškrtněte znovu.</translation>
+<translation id="8305209735512572429">Proces vzdáleného přístupu k webovému ověření</translation>
 <translation id="8383794970363966105">Chcete-li používat Chromoting, budete do zařízení muset přidat účet Google.</translation>
 <translation id="8386846956409881180">Hostitel je nakonfigurován s neplatnými identifikačními údaji OAuth.</translation>
 <translation id="8397385476380433240">Udělte aplikaci <ph name="PRODUCT_NAME" /> oprávnění</translation>

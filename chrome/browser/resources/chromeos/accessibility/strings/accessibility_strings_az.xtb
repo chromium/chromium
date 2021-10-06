@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Sonrakı redaktə edilə bilən mətn sahəsi yoxdur</translation>
 <translation id="1342835525016946179">məqalə</translation>
 <translation id="1346059596910821859">İpucu</translation>
+<translation id="1354356357730355833">kopyalayın</translation>
 <translation id="135978014023467274">ChromeVox 63-ü güncəllədiniz!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> yönləndirmə açarının altındakı elementə klikləyin</translation>
 <translation id="1377925789329510816">Bu sonuncu başlıqdır. Bu səhifədəki ilk başlığa qayıtmaq üçün Search+H və ya ikinci başlığa keçmək üçün Search+Shift+H basın.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">təzələyin</translation>
 <translation id="2675533876313964202">Sarımtıl Yaşıl</translation>
 <translation id="2684412629217766642">ChromeVox Dərsliyini Bağlayın</translation>
+<translation id="2692503699962701720">Element növləri və formatlanmış mətni səsləndirərkən tonu dəyişin</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Mətn çevirmə namizədi</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{açıq mötərizə}other{# açıq mötərizə}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">portret</translation>
 <translation id="3286390186030710347">Slayder</translation>
 <translation id="3300348286427369683">Zəngin mətn dəstəyi. ChromeVox artıq keçid əmrləri, brayl kursor yönləndirməsi, seçim və daha çoxu daxil olmaqla zəngin mətn sahələrini dəstəkləyir.</translation>
+<translation id="3300733168898541351">ləğv edin</translation>
 <translation id="3307886118343381874">Cədvəlin sonuna gedin</translation>
 <translation id="3312997241656799641">Növbəti daxil olunan link</translation>
 <translation id="3313245066383501820">ChromeVox dəyişdirici açarı</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Formaların siyahısını göstərin</translation>
 <translation id="3414400929511680526">Alice Mavisi</translation>
 <translation id="3418936350470374046">Aşağıda heç bir xana yoxdur</translation>
+<translation id="3419269701801640163">əlavə edin</translation>
 <translation id="3435494200763325275">Tabda naviqasiyanın davamı</translation>
 <translation id="344800400831402066">Tünd-narıncı</translation>
 <translation id="3457000393508828486">Qismən basılmış</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Aşağı sürüşdürün</translation>
 <translation id="4035381225449278841">Yaz</translation>
+<translation id="4038098586530338813">yenidən edin</translation>
 <translation id="4047216625641135770">Qeyd</translation>
 <translation id="4047910800766704982">Cihazınız onlayn olduqda təbii, insana səsinə bənzər bir səs istifadə edə bilərsiniz. Mətn işlənmək üçün Google'a göndəriləcək. Bunu istənilən vaxt Ayarlarda deaktiv edə bilərsiniz.</translation>
 <translation id="4053520724192563562">Laym</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">Boz Çalarlı Mavi</translation>
 <translation id="5140016802771803559">Tünd-bənövşəyi</translation>
 <translation id="5142101052131610456">Bütün dərslər</translation>
+<translation id="5152605892605507188">sağa köçürün</translation>
 <translation id="5158275234811857234">Üzlük</translation>
 <translation id="516076699907426116">Davam etmək üçün "Toxunma ilə kəşf edin" düyməsinə toxunaraq Növbəti dərs düyməsini tapın Sonra davam etmək üçün iki dəfə toxunun.</translation>
 <translation id="5170206230005240598">Brayl başlıqları aktivdir</translation>
 <translation id="5183440668879371625">Brayl öncəki xətt</translation>
 <translation id="5189244881767082992">Xətt</translation>
+<translation id="5234747236692380506"><ph name="TEXT" /> yazın</translation>
 <translation id="5263034204789987535">Qarğıdalı sarısı</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Son</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">Başlıq 4</translation>
 <translation id="6150023170003443621">Sarımtıl Yaşıl</translation>
 <translation id="6158882249329863701">sıra <ph name="TABLECELLROWINDEX" /> sütun <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">sola köçürün</translation>
 <translation id="6164829606128959761">metr</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6166362019018438352">Brayl subtitrləri deaktiv edildi</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">Silinib</translation>
 <translation id="6910969481785184048">Yandırın, Söndürün və Dayandırın</translation>
 <translation id="6919104639734799681">Cədvəllərin siyahısını göstərin</translation>
+<translation id="692135145298539227">silin</translation>
+<translation id="6935674530832500465">aşağı köçürün</translation>
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6949846980769640811">Orta Göyümtül Yaşıl</translation>
 <translation id="6951482098621102657">Sonrakı 5-ci səviyyə başlığı yoxdur</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">Kataloq</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Təbii səsdən istifadə edilsin?</translation>
-<translation id="7484805699335881122">Element növləri və dırnaqda, silinmiş, qalın hərflə, mötərizədə və ya böyük hərflə yazılmış mətni səsləndirərkən tonu dəyişin.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Növbəti bölməyə keçin. Status Bölməsi və Başladıcı nümunə olaraq göstərilə bilər.</translation>
 <translation id="7505149250476994901">Hərfdən əvvəl "böyük hərflə" deyin</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">Yuxarıda xana yoxdur</translation>
 <translation id="8138880386467279117">Toxunun</translation>
 <translation id="8146613869421949343">Növbəti olaraq Axtarış düyməsi haqqında öyrənəcəksiniz. Axtarış düyməsi ChromeVox əmrləri üçün digər düymələr ilə birlikdə istifadə edilir. Axtarış düyməsi sol Shift düyməsinin düz üzərindədir. Davam etmək üçün Axtarış düyməsinə basın.</translation>
+<translation id="8158033275290782295">hamısını seçin</translation>
 <translation id="816818801578874684">Bu, birinci başlıqdır. Növbəti başlığa keçmək üçün Axtarış + H üzərinə basın.</translation>
 <translation id="8173092779156526980">Barmaqlarınızı sola sürüşdürün</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{alt xətt}other{# alt xətt}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">Giriş</translation>
 <translation id="827266600368092403">Seçimi başladın və ya bitirin</translation>
 <translation id="827422111966801947">İndiqo</translation>
+<translation id="827496561804786391">yuxarı köçürün</translation>
 <translation id="8276439074553447000">Əvvəlki fokuslanan elementə keçin</translation>
 <translation id="8279039817939141096">Rejimin funksiyasını öyrənmək üçün hər hansı standart düyməyə, brayl düyməsinə basın və ya jestə toxunun. Çıxış üçün ctrl+w, boşluq+Z düyməsinə basın, iki barmaqla sola sürüşdürün, yaxud esc düyməsinə basın.</translation>
 <translation id="8283603667300770666">Növbəti forma sahəsi</translation>
 <translation id="8310185481635255431">Sonrakı keçid yoxdur</translation>
 <translation id="831207808878314375">Təsvir</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">bütün seçimləri silin</translation>
 <translation id="8316881042119029234">Açıq-sarı</translation>
 <translation id="8324974933005349667">Mətndən-Nitqə ayarlarını fərdiləşdirin</translation>
 <translation id="8326783648485765113">Çəmən Yaşılı</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">Açıq Dəniz Yaşılı</translation>
 <translation id="9080299285199342830">Sona keçin</translation>
 <translation id="9089864840575085222">Dairə yazmaq səsi</translation>
+<translation id="9099429023611373837">kəsin</translation>
 <translation id="9108370397979208512">riyaziyyat</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{faiz}other{# faiz işarəsi}}</translation>

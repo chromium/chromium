@@ -36,6 +36,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2343156876103232566">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chromium“ abiejuose įrenginiuose.</translation>
 <translation id="2347108572062610441">Šis plėtinys pakeitė, kuris puslapis rodomas paleidus „Chromium“.</translation>
 <translation id="2396765026452590966">Plėtinys „<ph name="EXTENSION_NAME" />“ pakeitė, kuris puslapis rodomas paleidus „Chromium“.</translation>
+<translation id="2401032172288869980">„Chromium“ reikalingi fotoaparato ir mikrofono leidimai šioje svetainėje</translation>
 <translation id="2483889755041906834">Naudojant „Chromium“</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
 <translation id="2535480412977113886">„Chromium“ OS negali sinchronizuoti duomenų, nes paskyros išsami prisijungimo informacija yra pasenusi.</translation>
@@ -153,6 +154,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="5820394555380036790">„Chromium“ OS</translation>
 <translation id="5854740544000584380">„Chromium“ OS, kaip ir <ph name="BEGIN_LINK_LINUX_OSS" />„Linux“ kūrimo aplinka<ph name="END_LINK_LINUX_OSS" />, pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5862307444128926510">Sveiki, tai „Chromium“</translation>
+<translation id="5883558403894052917">„Chromium“ aptiko kenkėjišką programą šiuose elementuose:</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5903106910045431592">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo</translation>
 <translation id="5987687638152509985">Atnaujinkite „Chromium“, kad galėtumėte pradėti sinchronizuoti</translation>
@@ -170,6 +172,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="6183079672144801177">Įsitikinkite, kad esate prisijungę prie „Chromium“ naudodami „<ph name="TARGET_DEVICE_NAME" />“, ir bandykite siųsti iš naujo.</translation>
 <translation id="6212496753309875659">Šiame kompiuteryje jau yra naujesnės versijos „Chromium“. Jei programinė įranga neveikia, pašalinkite „Chromium“ ir bandykite dar kartą.</translation>
 <translation id="6219195342503754812">{0,plural, =0{„Chromium“ bus paleista iš naujo dabar}=1{„Chromium“ bus paleista iš naujo po 1 sekundės}one{„Chromium“ bus paleista iš naujo po # sekundės}few{„Chromium“ bus paleista iš naujo po # sekundžių}many{„Chromium“ bus paleista iš naujo po # sekundės}other{„Chromium“ bus paleista iš naujo po # sekundžių}}</translation>
+<translation id="6241367896540709610">„Chromium“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
 <translation id="6248213926982192922">Padaryti „Chromium“ numatytąja naršykle</translation>
 <translation id="6266342355635466082">„Chromium“ negali tikrinti naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="6268381023930128611">Atsijungti nuo „Chromium“?</translation>
@@ -190,7 +193,9 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="6570579332384693436">Kad ištaisytų rašybos klaidas, „Chromium“ siunčia „Google“ tekstą, kurį įvedate teksto laukuose</translation>
 <translation id="6598877126913850652">Eiti į „Chromium“ pranešimų nustatymus</translation>
 <translation id="6613594504749178791">Pakeitimai įsigalios kitą kartą iš naujo paleidus „Chromium“.</translation>
+<translation id="665732753414869868">„Chromium“ reikalingas fotoaparato leidimas, kad būtų galima sukurti trimatį aplinkos žemėlapį</translation>
 <translation id="6676384891291319759">Interneto prieiga</translation>
+<translation id="6709350901466051922">„Chromium“ reikalingas mikrofono leidimas šioje svetainėje</translation>
 <translation id="6717134281241384636">Jūsų profilis nenaudojamas, nes jis iš naujesnės versijos „Chromium“.
 
 Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalogą arba naudokite naujesnės versijos „Chromium“.</translation>
@@ -202,6 +207,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6847869444787758381">„Chromium“ praneš, jei slaptažodžiai bus pažeisti</translation>
 <translation id="6857782730669500492">„Chromium“ – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="6863361426438995919">„Google Pay“ (nukopijuota į „Chromium“)</translation>
+<translation id="6873893289264747459">„Chromium“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6893813176749746474">„Chromium“ atnaujinta, bet jos nenaudojote mažiausiai 30 dienų.</translation>
 <translation id="691026815377248078">„Chromium“ reikia pasiekti „Bluetooth“, kad galėtų sieti 
  toliau. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -210,6 +216,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6990124437352146030">„Chromium“ reikia leidimo, kad galėtų naudoti mikrofoną šioje svetainėje</translation>
 <translation id="705851970750939768">Atnaujinti „Chromium“</translation>
 <translation id="7067091210845072982">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“.</translation>
+<translation id="718435575166326686">„Chromium“ reikalingas fotoaparato leidimas šioje svetainėje</translation>
 <translation id="7196312274710523067">Nepavyko paleisti „Chromium“. Bandykite dar kartą.</translation>
 <translation id="7197677400338048821">„Chromium“ negali patikrinti jūsų slaptažodžių. Bandykite dar kartą po 24 val.</translation>
 <translation id="7223968959479464213">Užduočių tvarkytuvė – „Chromium“</translation>
@@ -233,10 +240,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
       naršyklės „Chromium“ nustatymuose<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">„Chromium“ naudoja jūsų fotoaparatą ir mikrofoną.</translation>
 <translation id="7617377681829253106">„Chromium“ dabar dar tobulesnė</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Prieš pradėdami įsitikinkite, kad turite naujausią atsarginę duomenų kopiją. Įdiegiant „Chromium“ OS bus perrašyti visi standžiajame diske esantys duomenys.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />„Google“ neatsako už jokius prarastus duomenis ir neužtikrina, kad „Chromium“ OS veiks nesertifikuotuose modeliuose. Norėdami sužinoti daugiau apie sertifikuotus modelius, apsilankykite adresu [TBD].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Sužinokite daugiau apie „Chromium“ OS diegimą ir duomenų ištrynimą: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Jei esate pasiruošę tęsti, spustelėkite „Įdiegti „Chromium“ OS“ ir mes padėsime atlikti diegimą keliais paprastais veiksmais. Prieš atliekant kompiuteryje pakeitimus turėsite dar kartą patvirtinti savo pasirinkimą.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">„Chromium“ nėra numatytoji naršyklė</translation>
 <translation id="7689606757190482937">Sinchronizuokite ir suasmeninkite „Chromium“ skirtinguose įrenginiuose</translation>
 <translation id="7729447699958282447">„Chromium“ negali sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
@@ -251,6 +254,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7975919845073681630">Tai yra antrinis „Chromium“ diegimas, todėl ji negali būti nustatyta kaip numatytoji naršyklė.</translation>
 <translation id="8013436988911883588">Kai „Chromium“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.</translation>
 <translation id="8045118833343856403">Toliau nurodytos paskyros nėra prisijungusios prie jokių „Chromium“ profilių. Jei norite naudoti paskyrą kitame profilyje, pirmiausia pašalinkite tą profilį.</translation>
+<translation id="8105840573057009683">„Chromium“ reikalingas leidimas pasiekti vietovės duomenis šioje svetainėje</translation>
 <translation id="81770708095080097">Šis failas pavojingas, todėl „Chromium“ jį užblokavo.</translation>
 <translation id="8248265253516264921">Jei nebus naudingo vaizdo aprašo, „Chromium“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“. Šią parinktį galite bet kada išjungti skiltyje „Nustatymai“.</translation>
 <translation id="8266560134891435528">„Chromium“ negali patikrinti jūsų slaptažodžių, nes esate neprisijungę</translation>

@@ -67,6 +67,7 @@
 <translation id="133801305381959373">Δεν υπάρχει επόμενο πεδίο κειμένου με δυνατότητα επεξεργασίας.</translation>
 <translation id="1342835525016946179">άρθρο</translation>
 <translation id="1346059596910821859">Συμβουλή</translation>
+<translation id="1354356357730355833">αντιγραφή</translation>
 <translation id="135978014023467274">Έγινε ενημέρωση στο ChromeVox 63!</translation>
 <translation id="1360699455582016846">Κάντε κλικ στο στοιχείο κάτω από το πλήκτρο δρομολόγησης <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Αυτή είναι η τελευταία επικεφαλίδα. Πατήστε Search+H για να περικλείσετε την πρώτη επικεφαλίδα, ή Search+Shift+H για να μεταβείτε στην δεύτερη επικεφαλίδα σε αυτήν τη σελίδα.</translation>
@@ -243,6 +244,7 @@
 <translation id="267442004702508783">ανανέωση</translation>
 <translation id="2675533876313964202">Κιτρινοπράσινο</translation>
 <translation id="2684412629217766642">Κλείσιμο οδηγού ChromeVox</translation>
+<translation id="2692503699962701720">Αλλαγή τόνου κατά την εκφώνηση τύπων στοιχείων και μορφοποιημένου κειμένου</translation>
 <translation id="2697408785920771974">ενσωματωμένη αυτόματη συμπλήρωση</translation>
 <translation id="2697786971245905543">Υποψήφια επιλογή μετατροπής κειμένου</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{άνοιγμα παρένθεσης}other{# άνοιγμα παρενθέσεων}}</translation>
@@ -353,6 +355,7 @@
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
 <translation id="3286390186030710347">Ρυθμιστικό</translation>
 <translation id="3300348286427369683">Υποστήριξη εμπλουτισμένου κειμένου. Το ChromeVox υποστηρίζει πλέον πεδία εμπλουτισμένου κειμένου, όπως εντολές μετάβασης, δρομολόγηση δρομέα μπράιγ, επιλογή και άλλα.</translation>
+<translation id="3300733168898541351">αναίρεση</translation>
 <translation id="3307886118343381874">Μετάβαση στο τέλος του πίνακα</translation>
 <translation id="3312997241656799641">Επόμενος σύνδεσμος που έχετε επισκεφτεί</translation>
 <translation id="3313245066383501820">Το πλήκτρο τροποποίησης ChromeVox</translation>
@@ -373,6 +376,7 @@
 <translation id="3406283310380167331">Εμφάνιση λίστας φορμών</translation>
 <translation id="3414400929511680526">Ωχρό μπλε</translation>
 <translation id="3418936350470374046">Δεν υπάρχει κελί παρακάτω.</translation>
+<translation id="3419269701801640163">επικόλληση</translation>
 <translation id="3435494200763325275">Συνέχεια πλοήγησης σε καρτέλες</translation>
 <translation id="344800400831402066">Περού</translation>
 <translation id="3457000393508828486">Έχει πατηθεί μερικώς</translation>
@@ -453,6 +457,7 @@
 <translation id="4006140876663370126">εικόνα</translation>
 <translation id="4021716437419160885">Κύλιση προς τα κάτω</translation>
 <translation id="4035381225449278841">Άνοιξη</translation>
+<translation id="4038098586530338813">επανάληψη</translation>
 <translation id="4047216625641135770">Επισήμανση</translation>
 <translation id="4047910800766704982">Όταν η συσκευή σας είναι συνδεδεμένη στο διαδίκτυο, μπορείτε να χρησιμοποιείτε μια φυσική φωνή που μοιάζει με τη φωνή ενός ανθρώπου. Το κείμενο θα σταλεί στην Google για επεξεργασία. Μπορείτε να απενεργοποιήσετε αυτήν τη ρύθμιση ανά πάσα στιγμή στις Ρυθμίσεις.</translation>
 <translation id="4053520724192563562">Λαχανί</translation>
@@ -603,11 +608,13 @@
 <translation id="5138912041966667164">Μεσαίο μπλε γκρι</translation>
 <translation id="5140016802771803559">Μοβ Ρεββέκα</translation>
 <translation id="5142101052131610456">Όλα τα μαθήματα</translation>
+<translation id="5152605892605507188">μετακίνηση δεξιά</translation>
 <translation id="5158275234811857234">Εξώφυλλο</translation>
 <translation id="516076699907426116">Για να συνεχίσετε, εντοπίστε το κουμπί Επόμενο μάθημα, κάνοντας εξερεύνηση με άγγιγμα. Στη συνέχεια, πατήστε δύο φορές για να συνεχίσετε.</translation>
 <translation id="5170206230005240598">Οι υπότιτλοι μπράιγ ενεργοποιήθηκαν.</translation>
 <translation id="5183440668879371625">Προηγούμενη γραμμή μπράιγ</translation>
 <translation id="5189244881767082992">Γραμμή</translation>
+<translation id="5234747236692380506">πληκτρολόγηση <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Μετάξι καλαμποκιού</translation>
 <translation id="5263344797180442561">κεφαλίδα 2</translation>
 <translation id="528468243742722775">Τέλος</translation>
@@ -745,6 +752,7 @@
 <translation id="6142308968191113180">Επικεφαλίδα 4</translation>
 <translation id="6150023170003443621">Κιτρινοπράσινο</translation>
 <translation id="6158882249329863701">σειρά <ph name="TABLECELLROWINDEX" /> στήλη <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">μετακίνηση αριστερά</translation>
 <translation id="6164829606128959761">μετρητής</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6166362019018438352">Οι υπότιτλοι μπράιγ απενεργοποιήθηκαν.</translation>
@@ -834,6 +842,8 @@
 <translation id="6910211073230771657">Διαγράφηκε</translation>
 <translation id="6910969481785184048">Ενεργοποίηση, απενεργοποίηση και διακοπή</translation>
 <translation id="6919104639734799681">Εμφάνιση λίστας πινάκων</translation>
+<translation id="692135145298539227">διαγραφή</translation>
+<translation id="6935674530832500465">μετακίνηση κάτω</translation>
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6949846980769640811">Μεσαίο ακουαμαρίν</translation>
 <translation id="6951482098621102657">Δεν υπάρχει επόμενη κεφαλίδα επιπέδου 5.</translation>
@@ -914,7 +924,6 @@
 <translation id="7439060726180460871">Κατάλογος</translation>
 <translation id="744163271241493234">κωδικός πρόσβασης</translation>
 <translation id="7465123027577412805">Χρήση φυσικής φωνής;</translation>
-<translation id="7484805699335881122">Αλλάξτε τόνο όταν εκφωνείτε τους τύπους στοιχείων και το κείμενο με εισαγωγικά, διαγραφή, έντονους χαρακτήρες, παρένθεση ή κεφαλαίους χαρακτήρες.</translation>
 <translation id="7491962110804786152">καρτέλα</translation>
 <translation id="7492497529767769458">Μεταβείτε στην επόμενη ενότητα. Στα παραδείγματα περιλαμβάνονται η Περιοχή κατάστασης και η Εφαρμογή εκκίνησης.</translation>
 <translation id="7505149250476994901">Πείτε "κεφαλαίο" πριν από το γράμμα</translation>
@@ -1012,6 +1021,7 @@
 <translation id="8129445297241948503">Δεν υπάρχει κελί επάνω.</translation>
 <translation id="8138880386467279117">Άγγιγμα</translation>
 <translation id="8146613869421949343">Στη συνέχεια, θα μάθετε σχετικά με το πλήκτρο αναζήτησης. Το πλήκτρο αναζήτησης χρησιμοποιείται σε συνδυασμό με άλλα πλήκτρα για εντολές ChromeVox. Το πλήκτρο αναζήτησης βρίσκεται ακριβώς πάνω από το αριστερό πλήκτρο Shift. Για να συνεχίσετε, πιέστε το πλήκτρο αναζήτησης.</translation>
+<translation id="8158033275290782295">επιλογή όλων</translation>
 <translation id="816818801578874684">Αυτή είναι η πρώτη επικεφαλίδα. Πιέστε Αναζήτηση + H για να μεταβείτε στην επόμενη επικεφαλίδα.</translation>
 <translation id="8173092779156526980">Σύρετε με τέσσερα δάχτυλα προς τα αριστερά.</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{σύμβολο υπογράμμισης}other{# σύμβολα υπογράμμισης}}</translation>
@@ -1030,12 +1040,14 @@
 <translation id="826825447994856889">Εισαγωγή</translation>
 <translation id="827266600368092403">Αρχή ή τέλος επιλογής</translation>
 <translation id="827422111966801947">Λουλάκι</translation>
+<translation id="827496561804786391">μετακίνηση επάνω</translation>
 <translation id="8276439074553447000">Μετάβαση στο προηγούμενο αντικείμενο με δυνατότητα εστίασης</translation>
 <translation id="8279039817939141096">Πατήστε ένα πλήκτρο qwerty, ένα κουμπί μπράιγ με δυνατότητα ανανέωσης ή κάντε μια κίνηση αφής για να μάθετε πώς λειτουργεί. Για έξοδο, πατήστε τα πλήκτρα Control και w, το πλήκτρο διαστήματος και το πλήκτρο Z, σύρετε αριστερά με δύο δάχτυλα ή πατήστε το πλήκτρο Escape.</translation>
 <translation id="8283603667300770666">Επόμενο πεδίο φόρμας</translation>
 <translation id="8310185481635255431">Δεν υπάρχει επόμενος σύνδεσμος.</translation>
 <translation id="831207808878314375">Ορισμός</translation>
 <translation id="8313653172105209786">κατάλογος</translation>
+<translation id="8314546933558091113">αποεπιλογή όλων</translation>
 <translation id="8316881042119029234">Παλιά δαντέλα</translation>
 <translation id="8324974933005349667">Εξατομίκευση ρυθμίσεων μετατροπής κειμένου σε ομιλία</translation>
 <translation id="8326783648485765113">Πράσινο χλόης</translation>
@@ -1127,6 +1139,7 @@
 <translation id="9077305471618729969">Ανοιχτό γαλαζοπράσινο</translation>
 <translation id="9080299285199342830">Μετάβαση στο τέλος</translation>
 <translation id="9089864840575085222">Επανάληψη εκφώνησης πληκτρολόγησης</translation>
+<translation id="9099429023611373837">αποκοπή</translation>
 <translation id="9108370397979208512">μαθηματικά</translation>
 <translation id="9108589040018540527">γραμμή κύλισης</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{σύμβολο "τοις εκατό"}other{# σύμβολα "τοις εκατό"}}</translation>

@@ -39,7 +39,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="174539241580958092">Google Chrome ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chrome, nato poskusite znova poslati.</translation>
-<translation id="1810203443153428607">Z namestitvijo sistema Chrome OS bodo prepisani vsi podatki v napravi.</translation>
 <translation id="1812689907177901597">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chrome</translation>
 <translation id="1860536484129686729">Chrome potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>
 <translation id="1873233029667955273">Google Chrome ni privzeti brskalnik</translation>
@@ -57,6 +56,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2290014774651636340">Manjkajo ključi za Google API. Nekatere funkcije Google Chroma bodo onemogočene.</translation>
 <translation id="2290095356545025170">Ali ste prepričani, da želite odstraniti Google Chrome?</translation>
 <translation id="2309047409763057870">To je sekundarna namestitev Google Chroma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
+<translation id="2345992953227471816">Chrome je ugotovil, da te razširitve vsebujejo zlonamerno programsko opremo:</translation>
 <translation id="2348335408836342058">Chrome potrebuje dovoljenje za dostop do fotoaparata in mikrofona za to spletno mesto</translation>
 <translation id="234869673307233423">Chrome ne more preveriti vaših gesel. Poskusite pozneje.</translation>
 <translation id="235650106824528204">Podatke v Chromu, ki se ustvarijo med uporabo tega profila (na primer zaznamke, zgodovino, gesla in druge nastavitve), lahko odstrani skrbnik delovnega profila. <ph name="LEARN_MORE" /></translation>
@@ -86,6 +86,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2885378588091291677">Upravitelj opravil</translation>
 <translation id="2888126860611144412">O brskalniku Chrome</translation>
 <translation id="2926676257163822632">Šibka gesla je preprosto ugotoviti. Chromu omogočite, da <ph name="BEGIN_LINK" />ustvari zapletena gesla za vas in jih shrani<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">Chrome potrebuje dovoljenje za fotoaparat za to spletno mesto.</translation>
 <translation id="2929907241665500097">Chrome se ni posodobil, prišlo je do napake. <ph name="BEGIN_LINK" />Odpravite težave s posodobitvijo Chroma in neuspelimi posodobitvami Chroma.<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Še zadnji opomnik: Z namestitvijo <ph name="BEGIN_BOLD" />bo izbrisan celotni trdi disk<ph name="END_BOLD" />. Poskrbite za varnostno kopijo pomembnih podatkov.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Ko se namestitev začne, je ni mogoče preklicati.<ph name="END_PARAGRAPH2" /></translation>
@@ -114,6 +115,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3582972582564653026">V vseh svojih napravah sinhronizirajte in prilagodite Chrome</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="3622797965165704966">Zdaj je Chrome lažje uporabljati z Google Računom in v računalnikih, ki so v skupni rabi.</translation>
+<translation id="3673813398384385993">Chrome je ugotovil, da razširitev »<ph name="EXTENSION_NAME" />« vsebuje zlonamerno programsko opremo.</translation>
 <translation id="3718181793972440140">S tem bo iz te naprave izbrisan 1 element. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Zaradi razširitve »<ph name="EXTENSION_NAME" />« se je spremenila stran, ki je prikazana, ko zaženete Chrome.</translation>
 <translation id="3779473566290487688">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete OS X 10.11 ali novejšega. V tem računalniku je nameščen OS X 10.10.</translation>
@@ -130,6 +132,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4149882025268051530">Namestitvenemu programu ni uspelo razširiti arhiva. Ponovno prenesite program Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome znova zaženite v enem dnevu}one{Chrome znova zaženite v # dnevu}two{Chrome znova zaženite v # dnevih}few{Chrome znova zaženite v # dnevih}other{Chrome znova zaženite v # dnevih}}</translation>
 <translation id="4205939740494406371">Chrome ne more preveriti vaših gesel. Poskusite znova čez 24 ur ali <ph name="BEGIN_LINK" />preverite gesla v računu Google<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Chrome potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="4251615635259297716">Želite svoje podatke v Chromu povezati s tem računom?</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
@@ -174,15 +177,12 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="521447420733633466">Če napravo souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chrome tako, kot želijo.</translation>
 <translation id="5251420635869119124">Gostje lahko uporabljajo Chrome, ne da bi za seboj pustili kar koli.</translation>
 <translation id="5251679006894510177">Skoraj je posodobljen. Znova zaženite Chrome, da dokončate posodobitev. Anonimna okna se ne bodo znova odprla.</translation>
+<translation id="5334487786912937552">Chrome potrebuje dovoljenje za dostop do shrambe za prenos datotek.</translation>
 <translation id="5386244825306882791">Določa tudi, katera stran je prikazana, ko zaženete Chrome ali iščete v naslovni vrstici.</translation>
 <translation id="5394833366792865639">Deljenje zavihka v Chromu</translation>
 <translation id="5430073640787465221">Datoteka z nastavitvami je poškodovana ali neveljavna.
 
 Google Chrome ne more obnoviti vaših nastavitev.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Preden začnemo, poskrbite, da imate aktualno varnostno kopijo podatkov. Z namestitvijo sistema Chrome OS bodo prepisani vsi podatki na trdem disku.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ni odgovoren za kakršno koli izgubo podatkov in ne jamči, da bo sistem Chrome OS deloval na nepotrjenih modelih naprav. Če želite izvedeti več o potrjenih modelih, obiščite [še ni znano].<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Preberite več o nameščanju sistema Chrome OS in izbrisu podatkov: [URL še ni znan]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Če ste pripravljeni nadaljevati, kliknite »Namesti Chrome OS« in vodili vas bomo skozi namestitev v nekaj preprostih korakih. Preden izvedemo kakršne koli spremembe v računalniku, boste imeli še eno možnost za potrditev.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Namesti Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome poskuša prikazati gesla.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -214,10 +214,12 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6291549208091401781">Google Chrome je že nameščen za vse uporabnike v računalniku.</translation>
 <translation id="6368958679917195344">Sistem Chrome OS uporablja dodatno <ph name="BEGIN_LINK_CROS_OSS" />odprtokodno programsko opremo<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6418662306461808273">Želite preklopiti na obstoječi profil v Chromu?</translation>
+<translation id="6506909944137591434">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> različica Google Chroma za razvijalce</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
 <translation id="6676384891291319759">Dostop do interneta</translation>
 <translation id="6679975945624592337">Naj se Google Chrome izvaja v ozadju</translation>
+<translation id="6696915334902295848">Chrome potrebuje dovoljenje za mikrofon za to spletno mesto.</translation>
 <translation id="6739177684496155661">Želite nadaljevati v novem profilu v Chromu?</translation>
 <translation id="6750954913813541382">Chrome zaradi odpravljanja napak pri črkovanju Googlu pošlje besedilo, ki ga vnesete v brskalnik</translation>
 <translation id="677276454032249905">Želite vseeno zapreti Chrome?</translation>
@@ -257,6 +259,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7761834446675418963">Kliknite ime, da odprete Chrome in začnete brskati.</translation>
 <translation id="7777080907402804672">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
 <translation id="7781002470561365167">Na voljo je nova različica brskalnika Google Chrome.</translation>
+<translation id="778331955594035129">Chrome potrebuje dovoljenje za lokacijo za to spletno mesto.</translation>
 <translation id="7787950393032327779">Videti je, da profil uporablja drug proces brskalnika Google Chrome (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chrome je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome poskuša kopirati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="7808348361785373670">Odstranitev iz Chroma ...</translation>

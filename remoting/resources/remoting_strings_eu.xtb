@@ -79,6 +79,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Eskubide guztiak erreserbatuta.</translation>
 <translation id="4513946894732546136">Iritzia</translation>
 <translation id="4563926062592110512"><ph name="CLIENT_USERNAME" /> bezeroa deskonektatu da.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ez dago behar bezala konfiguratuta. Aukeratu beste web-arakatzaile lehenetsi bat eta, ondoren, gaitu berriro URLak desbideratzeko aukera.</translation>
 <translation id="4635770493235256822">Urruneko gailuak</translation>
 <translation id="4660011489602794167">Erakutsi teklatua</translation>
 <translation id="4703799847237267011">Chromoting saioa amaitu duzu.</translation>
@@ -109,6 +110,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> gisa hasi duzu saioa.</translation>
 <translation id="579702532610384533">Konektatu berriro</translation>
 <translation id="5810269635982033450">Pantailak ukipen-panel baten lanak egiten ditu</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> erabiltzaileak pantaila ikusteko, eta teklatua eta sagua kontrolatzeko baimena eskatu du. Ez bazenuen espero eskaera, sakatu "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />". Bestela, hautatu "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />", prest zaudenean konektatzeko baimena emateko.</translation>
 <translation id="5823658491130719298">Urrunetik atzitu nahi duzun ordenagailuan, ireki Chrome eta joan <ph name="INSTALLATION_LINK" /> helbidera</translation>
 <translation id="5841343754884244200">Bistaratze-aukerak</translation>
 <translation id="6033507038939587647">Teklatuaren aukerak</translation>
@@ -130,7 +132,6 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="6963936880795878952">Urruneko ordenagailuarekiko konexioak aldi baterako blokeatu dira, norbait balio ez duen PIN bat erabilita konektatzen saiatu delako. Saiatu berriro geroago.</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6985691951107243942">Ziur <ph name="HOSTNAME" /> ostalarirako urruneko konexioak desgaitu nahi dituzula? Iritziz aldatzen bazara, konexioak berriro gaitzeko, ordenagailua erabili beharko duzu.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> erabiltzaileak ordenagailua ikusteko eta kontrolatzeko baimena eskatu du. Sakatu ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' pertsona hori ezagutzen ez baduzu edo partekatu aurretik aldaketaren bat egin behar baduzu.  Bestela, hautatu ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' konektatzeko baimena emateko.</translation>
 <translation id="7019153418965365059">Ostalariaren errore ezezaguna: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Urruneko laguntza</translation>
 <translation id="7026930240735156896">Jarraitu ordenagailua urrunetik atzitzeko konfiguratzeko argibideei</translation>
@@ -169,6 +170,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia. Erabilerraztasun-eginbideen hobespen-panela irekitzen denean, markatu "<ph name="SERVICE_SCRIPT_NAME" />" elementuaren ondoan dagoen koadroa.
 
 "'<ph name="SERVICE_SCRIPT_NAME" />" dagoeneko markatuta badago, desmarka ezazu eta marka ezazu berriro.</translation>
+<translation id="8305209735512572429">Web Authentication APIaren urruneko prozesua</translation>
 <translation id="8383794970363966105">Chromoting erabili ahal izateko, Google-ko kontu bat gehitu beharko duzu gailuan.</translation>
 <translation id="8386846956409881180">Balio ez duten OAuth kredentzialekin dago konfiguratuta ostalaria.</translation>
 <translation id="8397385476380433240">Eman <ph name="PRODUCT_NAME" /> atzitzeko baimena</translation>

@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Đã tạm dừng quá trình tải xuống</translation>
 <translation id="1415402041810619267">URL đã được cắt bớt</translation>
 <translation id="1446450296470737166">Cho phép kiểm soát hoàn toàn thiết bị MIDI</translation>
-<translation id="1509960214886564027">Các tính năng trên nhiều trang web có thể hoạt động không đúng cách</translation>
 <translation id="1620510694547887537">Máy ảnh</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1647582022260550163">Bạn có chắc chắn muốn đặt lại quyền, xóa cookie và dữ liệu trang web không?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Được cho phép, ngoại trừ cookie của bên thứ ba</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
 <translation id="1994173015038366702">URL trang web</translation>
+<translation id="2004697686368036666">Các tính năng trên một số trang web có thể không hoạt động</translation>
 <translation id="2025115093177348061">Thực tế tăng cường</translation>
 <translation id="2030769033451695672">Nhấn để quay lại <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Cho phép cookie của một trang web cụ thể.</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
 <translation id="4165986682804962316">Cài đặt trang web</translation>
+<translation id="4176463684765177261">Đã tắt</translation>
 <translation id="4200726100658658164">Mở phần Cài đặt vị trí</translation>
 <translation id="4226663524361240545">Thông báo có thể làm rung thiết bị</translation>
 <translation id="4259722352634471385">Điều hướng bị chặn: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Tạm dừng video</translation>
 <translation id="5887687176710214216">Lần truy cập gần đây nhất: hôm qua</translation>
 <translation id="5916664084637901428">Bật</translation>
+<translation id="59174027418879706">Được kích hoạt</translation>
 <translation id="5922853908706496913">Đang chia sẻ màn hình của bạn</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
 <translation id="5975083100439434680">Thu nhỏ</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Chặn cookie của bên thứ ba</translation>
 <translation id="6216432067784365534">Tùy chọn <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Gỡ cài đặt "<ph name="APP_NAME" />"?</translation>
+<translation id="6233545266937675277">Yêu cầu xem các trang web ở chế độ dành cho máy tính</translation>
 <translation id="6262279340360821358">Đã chặn <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Các trang web có thể xin phép gửi thông báo</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}other{Đã chặn <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> và <ph name="NUM_MORE" /> quyền khác}}</translation>
 <translation id="6554732001434021288">Lần truy cập gần đây nhất: <ph name="NUM_DAYS" /> ngày trước</translation>
 <translation id="6561560012278703671">Dùng thông báo nhẹ nhàng hơn (chặn thông báo bật lên làm phiền bạn)</translation>
+<translation id="6593061639179217415">Trang web cho máy tính</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Nội dung được bảo vệ</translation>
 <translation id="662080504995468778">Ở lại</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Hủy chọn</translation>
 <translation id="7846621471902887024">Bạn sẽ bị đăng xuất khỏi tất cả các trang web.</translation>
 <translation id="7882806643839505685">Cho phép phát âm thanh trên một trang web cụ thể.</translation>
+<translation id="7940722705963108451">Nhắc tôi</translation>
 <translation id="7986741934819883144">Chọn một người liên hệ</translation>
-<translation id="7993619969781047893">Các tính năng trên một số trang web có thể hoạt động không đúng cách</translation>
 <translation id="7999064672810608036">Bạn có chắc chắn muốn xóa tất cả dữ liệu cục bộ, bao gồm cookie và đặt lại tất cả các quyền cho trang web này không?</translation>
 <translation id="8007176423574883786">Tắt cho thiết bị này</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Đã ẩn</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
+<translation id="8154912474061769055">Các tính năng trên nhiều trang web có thể không hoạt động</translation>
 <translation id="8197286292360124385">Đã cho phép <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8206354486702514201">Cài đặt này được quản trị viên của bạn thực thi.</translation>
 <translation id="8211406090763984747">Kết nối an toàn</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>
 <translation id="8261506727792406068">Xóa</translation>
+<translation id="8267092878336850213">Yêu cầu xem các trang web ở chế độ dành cho thiết bị di động</translation>
 <translation id="8300705686683892304">Do ứng dụng quản lý</translation>
 <translation id="8324158725704657629">Không hỏi lại</translation>
 <translation id="8372893542064058268">Cho phép Đồng bộ hóa dưới nền cho trang web cụ thể.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Xóa văn bản nhập</translation>
 <translation id="868929229000858085">Tìm kiếm trong danh bạ</translation>
 <translation id="8702612070107455751">Mọi dữ liệu ngoại tuyến sẽ bị xóa.</translation>
+<translation id="8712637175834984815">Bỏ qua</translation>
 <translation id="8719283222052720129">Bật quyền cho <ph name="APP_NAME" /> trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Thử lại</translation>
 <translation id="8730621377337864115">Xong</translation>

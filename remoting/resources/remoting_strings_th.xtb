@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">ข้อเสนอแนะ</translation>
 <translation id="4563926062592110512">ไคลเอ็นต์ที่ยกเลิกการเชื่อมต่อ: <ph name="CLIENT_USERNAME" /></translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ได้รับการกำหนดค่าไม่ถูกต้อง โปรดเลือกเว็บเบราว์เซอร์เริ่มต้นรายการอื่นแล้วเปิดใช้การส่งต่อ URL อีกครั้ง</translation>
 <translation id="4635770493235256822">อุปกรณ์ระยะไกล</translation>
 <translation id="4660011489602794167">แสดงแป้นพิมพ์</translation>
 <translation id="4703799847237267011">เซสชัน Chromoting ของคุณได้สิ้นสุดลงแล้ว</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">ลงชื่อเข้าใช้ด้วย <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="579702532610384533">เชื่อมต่อใหม่</translation>
 <translation id="5810269635982033450">หน้าจอทำหน้าที่เหมือนแทร็กแพด</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ขอสิทธิ์เข้าถึงเพื่อดูหน้าจอ รวมถึงควบคุมแป้นพิมพ์และเมาส์ของคุณ กด "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" หากคุณไม่คาดว่าจะได้รับคำขอนี้ ไม่เช่นนั้นให้เลือก ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' เพื่ออนุญาตการเชื่อมต่อเมื่อพร้อม</translation>
 <translation id="5823658491130719298">ในคอมพิวเตอร์ที่ต้องการเข้าถึงจากระยะไกล ให้เปิด Chrome แล้วไปที่ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ตัวเลือกการแสดงผล</translation>
 <translation id="6033507038939587647">ตัวเลือกแป้นพิมพ์</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">การเชื่อมต่อกับคอมพิวเตอร์ระยะไกลถูกบล็อกไว้ชั่วคราว เนื่องจากมีผู้พยายามเชื่อมต่อกับคอมพิวเตอร์ดังกล่าวโดยใช้ PIN ที่ไม่ถูกต้อง โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6985691951107243942">คุณแน่ใจหรือไม่ว่าต้องการปิดใช้งานการเชื่อมต่อระยะไกลกับ <ph name="HOSTNAME" /> หากคุณเปลี่ยนใจภายหลัง คุณจะต้องไปที่คอมพิวเตอร์เครื่องนั้นเพื่อเปิดใช้งานการเชื่อมต่ออีกครั้ง</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ขอสิทธิ์เข้าถึงเพื่อดูและควบคุมคอมพิวเตอร์ของคุณ กด ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' หากคุณไม่รู้จักบุคคลนี้ หรือหากต้องการเปลี่ยนแปลงก่อนแชร์  ไม่เช่นนั้นให้เลือก ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' เพื่ออนุญาตการเชื่อมต่อ</translation>
 <translation id="7019153418965365059">ข้อผิดพลาดของโฮสต์ที่ไม่รู้จัก: <ph name="HOST_OFFLINE_REASON" /></translation>
 <translation id="701976023053394610">ความช่วยเหลือจากระยะไกล</translation>
 <translation id="7026930240735156896">ทำตามวิธีการเพื่อตั้งค่าคอมพิวเตอร์สำหรับการเข้าถึงระยะไกล</translation>
@@ -169,6 +170,7 @@
 หากต้องการให้สิทธิ์นี้ ให้คลิกปุ่ม "<ph name="BUTTON_NAME" />" ด้านล่าง จากนั้นเลือกช่องข้าง "<ph name="SERVICE_SCRIPT_NAME" />" ในแผงค่ากำหนด "การเข้าถึง" ที่เปิดขึ้นมา
 
 หากมีการเลือก "<ph name="SERVICE_SCRIPT_NAME" />" ไว้แล้ว ให้ยกเลิกการเลือกแล้วเลือกอีกครั้ง</translation>
+<translation id="8305209735512572429">กระบวนการทำงานระยะไกลของการตรวจสอบสิทธิ์ผ่านเว็บ</translation>
 <translation id="8383794970363966105">ในการใช้ Chromoting คุณจะต้องเพิ่มบัญชี Google ลงในอุปกรณ์ของคุณ</translation>
 <translation id="8386846956409881180">โฮสต์ได้รับการกำหนดค่าด้วยข้อมูลรับรอง OAuth ที่ไม่ถูกต้อง</translation>
 <translation id="8397385476380433240">ให้สิทธิ์แก่ <ph name="PRODUCT_NAME" /></translation>

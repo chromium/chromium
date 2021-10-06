@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">نروژی</translation>
 <translation id="1433628812591023318">‏برای رها کردن فایل‌ها در Parallels Desktop، فایل موردنظر باید به فایل‌های Windows منتقل شود.</translation>
 <translation id="1435838927755162558">‏هم‌رسانی پوشه با Parallels Desktop</translation>
+<translation id="1439919885608649279">شخصی میان گل‌ها</translation>
 <translation id="1471718551822868769">اسلوواکی</translation>
 <translation id="1474339897586437869">‏«<ph name="FILENAME" />» بارگذاری نشد. فضای کافی در Google Drive شما وجود ندارد.</translation>
 <translation id="1482884275703521657">فنلاندی</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">امکان تغییر این فایل وجود نداشت.</translation>
 <translation id="1673103856845176271">دسترسی به این فایل به دلایل امنیتی ممکن نبود.</translation>
 <translation id="169515659049020177">تبدیل</translation>
+<translation id="1715848075824334077">دوچرخه‌سواری</translation>
 <translation id="1722487484194605434">در حال فشرده‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="1722687688096767818">درحال افزودن نمایه…</translation>
 <translation id="1726100011689679555">سرورهای نام</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">پیش‌نمایشی وجود ندارد</translation>
 <translation id="1812302367230252929">نویسه‌گردانی آمهاریک</translation>
 <translation id="1813278315230285598">سرویس‌ها</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />احتیاط:<ph name="END_BOLD" /> این فایل‌ها موقتی هستند و ممکن است به صورت خودکار حذف شوند تا فضای آزاد دیسک بیشتر شود. <ph name="BEGIN_LINK" />بیشتر بیاموزید<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">پنگوئن</translation>
 <translation id="183183971458492120">درحال بارگیری اطلاعات...</translation>
 <translation id="1834290891154666894">ورودی مربوط به «مطابقت نام جایگزین موضوع» نامعتبر است</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">نام‌هایی که با نقطه شروع می‌شوند برای سیستم رزرو شده‌ند. لطفاً" نام دیگری انتخاب کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2084108471225856927">تنظیمات دستگاه</translation>
+<translation id="2084809735218147718">تشکر با زبان اشاره</translation>
 <translation id="2085470240340828803">فایلی با نام «<ph name="FILENAME" />» از قبل وجود دارد. می‌خواهید چه کاری انجام دهید؟</translation>
 <translation id="2088690981887365033">‏شبکه VPN</translation>
 <translation id="2122305276694332719">اتصال خودکار به شبکه‌ای پنهان به دیگران امکان می‌دهد دستگاه و برخی تنظیمات شبکه‌تان را ببینند، و توصیه نمی‌شود.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">‏نصب با Linux</translation>
 <translation id="2225536596944493418">مطمئنید می‌خواهید <ph name="NUMBER_OF_ITEMS" /> مورد را حذف کنید؟</translation>
 <translation id="2230062665678605299">پوشه «<ph name="FOLDER_NAME" />» را نمی‌توان ایجاد کرد.<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">شخصی قهوه در دست</translation>
 <translation id="2251368349685848079">بازیابی از حذف‌شده‌ها</translation>
 <translation id="2282155092769082568">نشانی وب پیکربندی خودکار</translation>
 <translation id="2288278176040912387">ضبط صوت</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">حجم کل فایل</translation>
 <translation id="2428749644083375155">درحال کپی کردن <ph name="NUMBER_OF_ITEMS" /> مورد در <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">نوع</translation>
+<translation id="2452444014801043526">شخصی با بلندگوی دستی</translation>
 <translation id="2464079411014186876">بستنی</translation>
 <translation id="2464089476039395325">‏پروکسی HTTP</translation>
 <translation id="2467267713099745100">شبکه <ph name="NETWORK_TYPE" />، خاموش</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">‏سند PDF</translation>
 <translation id="2888807692577297075">‏هیچ موردی با &lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt; مطابق نیست</translation>
 <translation id="2894654529758326923">اطلاعات</translation>
-<translation id="2902312830803030883">کنش‌های بیشتر</translation>
 <translation id="2902734494705624966">گسترده آمریکایی</translation>
 <translation id="290843123675549676">ماراتی</translation>
 <translation id="2923240520113693977">استونیایی</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">فرانسوی (کانادا)</translation>
 <translation id="3003189754374775221">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />, قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، اتصال</translation>
 <translation id="3003633581067744647">تغییر وضعیت به نمای تصویر کوچک</translation>
+<translation id="3016566519832145558">احتیاط: این فایل‌ها موقتی هستند و ممکن است برای آزادسازی فضای دیسک به‌طور خودکار حذف شوند.</translation>
 <translation id="3029114385395636667">‏برای دسترسی آفلاین به «سندنگار»، «کاربرگ‌نگار»، و «اسلایدنگار»، «سندنگار Google آفلاین» را فعال کنید.</translation>
 <translation id="303198083543495566">جغرافیا</translation>
 <translation id="3047197340186497470">چینی (دایی)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">‏میزبان SOCKS</translation>
 <translation id="3113153474486991170">نمی‌توان «<ph name="PATH" />» را از این مکان باز کرد. لطفاً آن را برای باز کردن در «فایل‌های من» کپی کنید.</translation>
 <translation id="3113592018909187986">۱ تلاش دیگر دارید. تا زمانی‌که پین جدیدی راه‌اندازی نکنید، نمی‌توانید از این شبکه استفاده کنید.</translation>
+<translation id="3124404833828281817">شخصی درحال رویاپردازی</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">پین نامعتبر است. <ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (پشتیبان‌گیری‌شده در سخت‌افزار)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">‏رفتن به drive.google.com…</translation>
 <translation id="3553048479571901246">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را در پوشه فایل‌های Windows کپی کنید.</translation>
 <translation id="3556731189587832921">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی رایانه</translation>
+<translation id="3567221313191587603">فایلی انتخاب کنید و برای دسترسی آفلاین به فایل‌هایتان، <ph name="OFFLINE_CHECKBOX_NAME" /> را روشن کنید.</translation>
 <translation id="357479282490346887">لیتوانیایی</translation>
 <translation id="3592251141500063301">نمی‌توان <ph name="FILE_NAME" /> را به‌صورت آفلاین دردسترس قرار داد</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">درحال نصب نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">‏چکی با صفحه‌کلید Qwerty</translation>
 <translation id="4656293982926141856">این رایانه</translation>
+<translation id="4656777537938206294">تنظیم فایل برای دسترسی آفلاین</translation>
+<translation id="4658782175094886150">شخصی در برف</translation>
 <translation id="4669606053856530811">اگر این موارد با اعضای «<ph name="SOURCE_NAME" />» هم‌رسانی نشوند، دسترسی را از دست خواهند داد.</translation>
 <translation id="4690246192099372265">سوئدی</translation>
 <translation id="4693155481716051732">سوشی</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">این فایل‌ها در میزکار دیگری باز شده‌اند. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
 <translation id="5330512191124428349">دریافت اطلاعات</translation>
 <translation id="5335458522276292100">‏درحال پشتیبان‌گیری از <ph name="FILE_COUNT" /> در <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">شخصی با گربه</translation>
 <translation id="5358764674931277">نرخ فریم</translation>
 <translation id="5368191757080475556">‏هم‌رسانی پوشه با Linux</translation>
 <translation id="5402367795255837559">بریل</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">این فایل در جایی سرگردان شده است. لطفاً تنظیم محل دانلودتان را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="5838451609423551646">همه ورودی‌ها از موارد انتخابی برداشته شد.</translation>
 <translation id="5838825566232597749">‏بین‌المللی US Workman</translation>
+<translation id="5845721951356578987">پرستار</translation>
+<translation id="5861477046012235702">بازیکن</translation>
 <translation id="5864471791310927901">‏بررسی DHCP انجام نشد</translation>
 <translation id="5896749729057314184">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />،‏ <ph name="NETWORK_NAME" />،‏ غیرفعال، قدرت سیگنال: <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="5911887972742538906">‏هنگام نصب برنامه Linux خطایی روی داد.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">ویدیو</translation>
 <translation id="6150853954427645995">برای ذخیره این فایل جهت استفاده آفلاین، دوباره انلاین شوید، روی فایل کلیک راست کنید و گزینه <ph name="OFFLINE_CHECKBOX_NAME" /> را انتخاب کنید.</translation>
 <translation id="6164412158936057769">پروانه‌ها</translation>
+<translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
 <translation id="6187719147498869044">مجاری</translation>
 <translation id="6189412234224385711">بازکردن با <ph name="EXTENSION_NAME" /></translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">فارسی</translation>
 <translation id="6862635236584086457">از همه فایل‌های ذخیره شده در این پوشه به‌صورت خودکار و آنلاین نسخهٔ پشتیبان تهیه می‌شود</translation>
 <translation id="6864328437977279120">سانسکریت</translation>
+<translation id="6874758081814639712">شخصی درحال تمرین تای چی</translation>
 <translation id="6876155724392614295">دوچرخه‌</translation>
 <translation id="6878261347041253038">صفحه‌کلید دواناگری (آوایی)</translation>
 <translation id="6885780034956018177">حلزون</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="NETWORK_PROVIDER_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، اتصال</translation>
 <translation id="8750438273876807512">برای دسترسی سریع به فایل‌های داخل قفسه، فایلی را لمس کنید و نگه دارید، روی <ph name="ICON" /> ضربه بزنید، و «سنجاق کردن به قفسه» را انتخاب کنید.</translation>
 <translation id="8787254343425541995">پراکسی‌های شبکه‌های مشترک مجاز باشند</translation>
+<translation id="8790981080411996443">شخصی درحال آبیاری گیاهان</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8802459921616481935">انتقال به «حذف‌شده‌ها»</translation>
 <translation id="8808686172382650546">گربه</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">متصل نیست</translation>
 <translation id="8900820606136623064">مجارستانی</translation>
 <translation id="8903931173357132290">فارغ‌التحصیل</translation>
+<translation id="8912078710089354287">سگ درحال تکان دادن دم</translation>
 <translation id="8919081441417203123">دانمارکی</translation>
 <translation id="8965697826696209160">فضای کافی وجود ندارد.</translation>
 <translation id="8970501467542182729">‏این فایل برای رایانه‌ای که از نرم‌افزار Macintosh استفاده می‌کند طراحی شده است. این فایل با دستگاه شما که سیستم‌عامل Chrome را اجرا می‌کند سازگار نیست. درباره باز کردن فایل‌ها در Chrome OS <ph name="BEGIN_LINK_HELP" />بیشتر بدانید<ph name="END_LINK_HELP" />.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">کاتالان</translation>
 <translation id="914873105831852105">پین نامعتبر است. ۱ تلاش دیگر دارید.</translation>
 <translation id="9153934054460603056">ذخیره شناسه و رمز عبور</translation>
+<translation id="9171921933192916600">کتاب‌باز</translation>
 <translation id="9172592259078059678">نویسه‌گردانی گجراتی</translation>
 <translation id="9173120999827300720">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی</translation>
 <translation id="9174050671906956834">موارد موجود در «حذف‌شده‌ها» بعداز ٣۰ روز برای همیشه حذف می‌شود.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">اصلاح‌شده توسط</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947144732524271678">مجموعه‌ای از <ph name="ENTRY_COUNT" /> ورودی، از <ph name="FROM_ENTRY_NAME" /> تا <ph name="TO_ENTRY_NAME" /> انتخاب شد.</translation>
+<translation id="965477715979482472">انگلیسی (آفریقای جنوبی)</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="988685240266037636">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. می‌خواهید آن را جایگزین کنید؟</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> تلاش دیگر دارید. تا زمانی‌که پین جدیدی راه‌اندازی نکنید، نمی‌توانید از این شبکه استفاده کنید.</translation>

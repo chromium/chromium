@@ -53,6 +53,7 @@
 <translation id="1404323374378969387">Νορβηγικά</translation>
 <translation id="1433628812591023318">Για να αποθέσετε αρχεία στο Parallels Desktop, το αρχείο θα πρέπει να μετακινηθεί στα αρχεία των Windows.</translation>
 <translation id="1435838927755162558">Κοινή χρήση φακέλου με το Parallels Desktop</translation>
+<translation id="1439919885608649279">Άτομο με λουλούδια</translation>
 <translation id="1471718551822868769">Σλοβακικά</translation>
 <translation id="1474339897586437869">Το αρχείο "<ph name="FILENAME" />" δεν ανέβηκε. Δεν υπάρχει επαρκής ελεύθερος χώρος στο Google Drive σας.</translation>
 <translation id="1482884275703521657">Φινλανδικά</translation>
@@ -79,6 +80,7 @@
 <translation id="1665611772925418501">Δεν ήταν δυνατή η τροποποίηση του αρχείου.</translation>
 <translation id="1673103856845176271">Για λόγους ασφαλείας, η πρόσβαση στο αρχείο δεν ήταν δυνατή.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Ποδηλασία</translation>
 <translation id="1722487484194605434">Συμπίεση <ph name="NUMBER_OF_ITEMS" /> στοιχείων...</translation>
 <translation id="1722687688096767818">Προσθήκη προφίλ…</translation>
 <translation id="1726100011689679555">Διακομιστές ονομάτων</translation>
@@ -96,7 +98,6 @@
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
 <translation id="1813278315230285598">Υπηρεσίες</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Προσοχή:<ph name="END_BOLD" /> Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
 <translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
 <translation id="1834290891154666894">Μη έγκυρη εισαγωγή αντιστοιχίας εναλλακτικού ονόματος υποκειμένου</translation>
@@ -126,6 +127,7 @@
 <translation id="2070909990982335904">Τα ονόματα που αρχίζουν με τελεία προορίζονται για το σύστημα. Επιλέξτε ένα άλλο όνομα.</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2084108471225856927">Ρυθμίσεις συσκευής</translation>
+<translation id="2084809735218147718">Άτομο που λέει ευχαριστώ στη νοηματική γλώσσα</translation>
 <translation id="2085470240340828803">Υπάρχει ήδη αρχείο με το όνομα "<ph name="FILENAME" />". Τι θέλετε να γίνει;</translation>
 <translation id="2088690981887365033">Δίκτυο VPN</translation>
 <translation id="2122305276694332719">Η αυτόματη σύνδεση σε ένα κρυφό δίκτυο επιτρέπει σε άλλα άτομα να βλέπουν τη συσκευή σας και ορισμένες ρυθμίσεις δικτύου σας και δεν συνιστάται.</translation>
@@ -141,6 +143,7 @@
 <translation id="2208919847696382164">Εγκατάσταση με Linux</translation>
 <translation id="2225536596944493418">Είστε βέβαιοι ότι θέλετε να διαγράψετε <ph name="NUMBER_OF_ITEMS" /> στοιχεία;</translation>
 <translation id="2230062665678605299">Δεν είναι δυνατή η δημιουργία του φακέλου "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Άτομο με καφέ</translation>
 <translation id="2251368349685848079">Επαναφορά από τον κάδο</translation>
 <translation id="2282155092769082568">Αυτόματη διαμόρφωση URL</translation>
 <translation id="2288278176040912387">Πικάπ</translation>
@@ -164,6 +167,7 @@
 <translation id="2425665904502185219">Συνολικό μέγεθος αρχείου</translation>
 <translation id="2428749644083375155">Αντιγραφή <ph name="NUMBER_OF_ITEMS" /> στοιχείων στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Τύπος</translation>
+<translation id="2452444014801043526">Άτομο με μεγάφωνο</translation>
 <translation id="2464079411014186876">Παγωτό</translation>
 <translation id="2464089476039395325">Διακομιστής μεσολάβησης HTTP</translation>
 <translation id="2467267713099745100">Δίκτυο <ph name="NETWORK_TYPE" />, ανενεργό</translation>
@@ -212,7 +216,6 @@
 <translation id="2887525882758501333">Έγγραφο PDF</translation>
 <translation id="2888807692577297075">Δεν υπάρχουν στοιχεία σε αντιστοιχία με το &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Πληροφορίες</translation>
-<translation id="2902312830803030883">Περισσότερες ενέργειες</translation>
 <translation id="2902734494705624966">Εκτεταμένο ΗΠΑ</translation>
 <translation id="290843123675549676">Μαραθικά</translation>
 <translation id="2923240520113693977">Εσθονικά
@@ -229,6 +232,7 @@
 <translation id="299638574917407533">Γαλλικά (Καναδά)</translation>
 <translation id="3003189754374775221">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Σύνδεση</translation>
 <translation id="3003633581067744647">Εναλλαγή σε προβολή μικρογραφιών</translation>
+<translation id="3016566519832145558">Προσοχή: Αυτά τα αρχεία είναι προσωρινά και ενδέχεται να διαγραφούν αυτόματα για να απελευθερωθεί χώρος στη μονάδα δίσκου.</translation>
 <translation id="3029114385395636667">Ενεργοποιήστε τα Έγγραφα Google εκτός σύνδεσης για να κάνετε τα Έγγραφα, τα Υπολογιστικά φύλλα και τις Παρουσιάσεις διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="303198083543495566">Γεωγραφία</translation>
 <translation id="3047197340186497470">Κινεζικά Dayi</translation>
@@ -239,6 +243,7 @@
 <translation id="3085752524577180175">Κεντρικός υπολογιστής SOCKS</translation>
 <translation id="3113153474486991170">Δεν ήταν δυνατό το άνοιγμα του <ph name="PATH" /> από αυτήν την τοποθεσία. Αντιγράψτε το στον φάκελο Τα αρχεία μου για άνοιγμα.</translation>
 <translation id="3113592018909187986">Απομένει 1 ακόμη προσπάθεια. Δεν θα μπορείτε να χρησιμοποιήσετε αυτό το δίκτυο μέχρι να ρυθμίσετε ένα νέο PIN.</translation>
+<translation id="3124404833828281817">Άτομο που ονειροπολεί</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Μη έγκυρο PIN. Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (βασιζόμενο σε υλικό)</translation>
@@ -293,6 +298,7 @@
 <translation id="3549797760399244642">Μετάβαση στη διεύθυνση drive.google.com…</translation>
 <translation id="3553048479571901246">Για να ανοίξετε αρχεία με την εφαρμογή <ph name="APP_NAME" />, αρχικά, αντιγράψτε τα στον φάκελο Αρχεία Windows.</translation>
 <translation id="3556731189587832921">Αγγλικά (ΗΠΑ) με Διεθνές πληκτρολόγιο υπολογιστή</translation>
+<translation id="3567221313191587603">Για να έχετε πρόσβαση στα αρχεία σας εκτός σύνδεσης, επιλέξτε ένα αρχείο και ενεργοποιήστε το στοιχείο <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="357479282490346887">Λιθουανικά
 </translation>
 <translation id="3592251141500063301">Το αρχείο <ph name="FILE_NAME" /> δεν μπορεί να γίνει διαθέσιμο εκτός σύνδεσης.</translation>
@@ -405,6 +411,8 @@
 <translation id="4642769377300286600">Εγκατάσταση προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Τσεχικά με πληκτρολόγιο QWERTY</translation>
 <translation id="4656293982926141856">Αυτός ο υπολογιστής</translation>
+<translation id="4656777537938206294">Κάντε τα αρχεία διαθέσιμα εκτός σύνδεσης</translation>
+<translation id="4658782175094886150">Άτομο στο χιόνι</translation>
 <translation id="4669606053856530811">Τα μέλη του "<ph name="SOURCE_NAME" />" θα χάσουν την πρόσβαση, εκτός εάν αυτά τα στοιχεία είναι κοινόχρηστα για τα συγκεκριμένα μέλη.</translation>
 <translation id="4690246192099372265">Σουηδικά</translation>
 <translation id="4693155481716051732">Σούσι</translation>
@@ -509,6 +517,7 @@
 <translation id="5330145655348521461">Αυτά τα αρχεία άνοιξαν σε διαφορετικό προφίλ. Μεταφερθείτε στο προφίλ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) για να τα δείτε.</translation>
 <translation id="5330512191124428349">Λήψη πληροφοριών</translation>
 <translation id="5335458522276292100">Δημιουργία αντιγράφων ασφαλείας για <ph name="FILE_COUNT" /> αρχεία στο <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Άτομο με γάτες</translation>
 <translation id="5358764674931277">Ρυθμός καρέ</translation>
 <translation id="5368191757080475556">Κοινοποίηση φακέλου με Linux</translation>
 <translation id="5402367795255837559">Μπράιγ</translation>
@@ -565,6 +574,8 @@
 <translation id="5833610766403489739">Αυτό το αρχείο χάθηκε κάπου. Ελέγξτε τη ρύθμιση της τοποθεσίας λήψης σας και δοκιμάστε ξανά.</translation>
 <translation id="5838451609423551646">Καταργήθηκαν όλες οι καταχωρίσεις από την επιλογή.</translation>
 <translation id="5838825566232597749">Διεθνές ΗΠΑ Workman</translation>
+<translation id="5845721951356578987">Νοσοκόμος</translation>
+<translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Αποτυχία αναζήτησης DHCP</translation>
 <translation id="5896749729057314184">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Απενεργοποιημένο, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="5911887972742538906">Παρουσιάστηκε σφάλμα κατά την εγκατάσταση της εφαρμογής σας Linux.</translation>
@@ -593,6 +604,7 @@
 <translation id="6146563240635539929">Βίντεο</translation>
 <translation id="6150853954427645995">Για να αποθηκεύσετε αυτό το αρχείο για χρήση εκτός σύνδεσης, συνδεθείτε ξανά στο διαδίκτυο, κάντε δεξί κλικ στο αρχείο και ενεργοποιήστε την επιλογή <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Πεταλούδες</translation>
+<translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6170470584681422115">Σάντουιτς</translation>
 <translation id="6187719147498869044">Ουγγρικά</translation>
 <translation id="6189412234224385711">Άνοιγμα με <ph name="EXTENSION_NAME" /></translation>
@@ -664,6 +676,7 @@
 <translation id="6861394552169064235">Περσικά</translation>
 <translation id="6862635236584086457">Για όλα τα αρχεία που αποθηκεύονται σε αυτόν το φάκελο δημιουργούνται αυτόματα αντίγραφα ασφαλείας στο διαδίκτυο</translation>
 <translation id="6864328437977279120">Σανσκριτικά</translation>
+<translation id="6874758081814639712">Άτομο που κάνει Τάι Τσι</translation>
 <translation id="6876155724392614295">Ποδήλατο</translation>
 <translation id="6878261347041253038">Πληκτρολόγιο Ντεβαναγκάρι (Φωνητικό)</translation>
 <translation id="6885780034956018177">Σαλιγκάρι</translation>
@@ -901,6 +914,7 @@
 <translation id="8743164338060742337">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Σύνδεση</translation>
 <translation id="8750438273876807512">Αγγίξτε παρατεταμένα ένα αρχείο και πατήστε το εικονίδιο <ph name="ICON" /> και, στη συνέχεια, επιλέξτε "Καρφίτσωμα στο ράφι" για γρήγορη πρόσβαση στα αρχεία που βρίσκονται στο ράφι.</translation>
 <translation id="8787254343425541995">Να επιτρέπονται οι διακομιστές μεσολάβησης για κοινόχρηστα δίκτυα</translation>
+<translation id="8790981080411996443">Άτομο που ποτίζει φυτά</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8802459921616481935">Μετακίνηση στον κάδο</translation>
 <translation id="8808686172382650546">Γάτα</translation>
@@ -914,6 +928,7 @@
 <translation id="8900820606136623064">Ουγγρικά
 </translation>
 <translation id="8903931173357132290">Απόφοιτος</translation>
+<translation id="8912078710089354287">Σκύλος που κουνάει την ουρά του</translation>
 <translation id="8919081441417203123">Δανικά
 </translation>
 <translation id="8965697826696209160">Δεν υπάρχει αρκετός χώρος.</translation>
@@ -941,6 +956,7 @@
 <translation id="9144340019284012223">Καταλανικά</translation>
 <translation id="914873105831852105">Μη έγκυρο PIN. Απομένει 1 ακόμη προσπάθεια.</translation>
 <translation id="9153934054460603056">Αποθήκευση ταυτότητας και κωδικού πρόσβασης</translation>
+<translation id="9171921933192916600">Βιβλιοφάγος</translation>
 <translation id="9172592259078059678">Μεταγραφή Γκουγιαράτι</translation>
 <translation id="9173120999827300720">Αγγλικά (ΗΠΑ) με Διεθνές πληκτρολόγιο</translation>
 <translation id="9174050671906956834">Τα στοιχεία στον Κάδο απορριμμάτων διαγράφονται μόνιμα μετά από 30 ημέρες.</translation>
@@ -953,6 +969,7 @@
 <translation id="943972244133411984">Τροποποιήθηκε από</translation>
 <translation id="945522503751344254">Αποστολή σχολίων</translation>
 <translation id="947144732524271678">Επιλέχθηκε ένα εύρος <ph name="ENTRY_COUNT" /> καταχωρίσεων από το <ph name="FROM_ENTRY_NAME" /> έως το <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">Αγγλικά (Νότια Αφρική)</translation>
 <translation id="981121421437150478">Εκτός σύνδεσης</translation>
 <translation id="988685240266037636">Υπάρχει ήδη ένα αρχείο με την ονομασία "<ph name="FILE_NAME" />". Θέλετε να το αντικαταστήσετε;</translation>
 <translation id="992401651319295351">Απομένουν <ph name="RETRIES" /> προσπάθειες. Δεν θα μπορείτε να χρησιμοποιήσετε αυτό το δίκτυο μέχρι να ρυθμίσετε ένα νέο PIN.</translation>

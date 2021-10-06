@@ -66,6 +66,7 @@
 <translation id="133801305381959373">କୌଣସି ପରବର୍ତ୍ତୀ ସମ୍ପାଦନଯୋଗ୍ୟ ଟେକ୍ସଟ୍ ଫିଲ୍ଡ ନାହିଁ</translation>
 <translation id="1342835525016946179">ଆର୍ଟିକଲ୍‍</translation>
 <translation id="1346059596910821859">ପରାମର୍ଶ</translation>
+<translation id="1354356357730355833">କପି କରନ୍ତୁ</translation>
 <translation id="135978014023467274">ଆପଣଙ୍କୁ ChromeVox 63ରେ ଅପ୍‍‍ଡେଟ୍ କରାଯାଇଛି!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> ରାଉଟିଂ କୀ' ଅଧୀନରେ ଥିବା ଆଇଟମ୍ ଉପରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1377925789329510816">ଏହା ହେଉଛି ଅନ୍ତିମ ଶୀର୍ଷକ। ଏହି ପୃଷ୍ଠାର ପ୍ରଥମ ଶୀର୍ଷକକୁ ଯିବା ପାଇଁ Search+H କିମ୍ବା ଦ୍ଵିତୀୟ ଶୀର୍ଷକକୁ ଯିବା ପାଇଁ Search+Shift+Hକୁ ଦବାନ୍ତୁ।</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">ରିଫ୍ରେଶ୍ କରନ୍ତୁ</translation>
 <translation id="2675533876313964202">ଚାର୍ଟ୍ରିୟୁଜ୍</translation>
 <translation id="2684412629217766642">ChromeVox ଟ୍ୟୁଟୋରିଆଲ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="2692503699962701720">ବିଭିନ୍ନ ପ୍ରକାରର ଉପାଦାନ ଏବଂ ଫର୍ମାଟ କରାଯାଇଥିବା ଟେକ୍ସଟ କହିବା ସମୟରେ ପିଚ ବଦଳାନ୍ତୁ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">ଟେକ୍ସଟକୁ ରୂପାନ୍ତର କରୁଥିବା ପ୍ରାର୍ଥୀ</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ବାମପଟର ଚନ୍ଦ୍ର ବନ୍ଧନୀ}other{#ଟି ବାମପଟର ଚନ୍ଦ୍ର ବନ୍ଧନୀ}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">ପୋଟ୍ରେଟ୍‌</translation>
 <translation id="3286390186030710347">ସ୍ଲାଇଡର୍</translation>
 <translation id="3300348286427369683">ରିଚ୍ ଟେକ୍ସଟ୍ ସମର୍ଥନ। ChromeVox ବର୍ତ୍ତମାନ ଜମ୍ପ୍ କମାଣ୍ଡଗୁଡ଼ିକ, ବ୍ରେଲ୍ଲୀ କର୍ସର୍ ରାଉଟିଂ, ଚୟନ ଏବଂ ଆହୁରି ଅନେକ ସମେତ ରିଚ୍ ଟେକ୍ସଟ୍ କ୍ଷେତ୍ରଗୁଡ଼ିକୁ ସମର୍ଥନ କରେ।</translation>
+<translation id="3300733168898541351">ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="3307886118343381874">ଟେବଲ୍‍ର ଶେଷକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3312997241656799641">ପରେ ଦେଖାଯାଇଥିବା ଲିଙ୍କ</translation>
 <translation id="3313245066383501820">ChromeVox ସଂଶୋଧନ କୀ</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">ଫର୍ମଗୁଡ଼ିକର ତାଲିକା ଦେଖାନ୍ତୁ</translation>
 <translation id="3414400929511680526">ଆଲିସ୍ ନୀଳ</translation>
 <translation id="3418936350470374046">ନିମ୍ନରେ କୌଣସି ସେଲ୍ ନାହିଁ</translation>
+<translation id="3419269701801640163">ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="3435494200763325275">ଟାବ୍ ନାଭିଗେସନ୍ ଜାରି ଅଛି</translation>
 <translation id="344800400831402066">ପେରୁ</translation>
 <translation id="3457000393508828486">ଆଶିଂକ ଭାବରେ ଦବାଗଲା</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">ତଳକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="4035381225449278841">ବସନ୍ତ</translation>
+<translation id="4038098586530338813">ପୁଣି କରନ୍ତୁ</translation>
 <translation id="4047216625641135770">ଟିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="4047910800766704982">ଆପଣଙ୍କ ଡିଭାଇସ୍ ଅନଲାଇନ୍ ଥିଲେ ଆପଣ ଏକ ପ୍ରକୃତ, ମଣିଷ-ପରି ଭଏସ୍ ବ୍ୟବହାର କରିପାରିବେ। ପ୍ରକ୍ରିୟାକରଣ ପାଇଁ Googleକୁ ଟେକ୍ସଟି ପଠାଯିବ। ଆପଣ ଏହାକୁ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="4053520724192563562">ଲାଇମ୍ ସବୁଜ</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">ମଧ୍ୟମ ସ୍ଲେଟ ନୀଳ</translation>
 <translation id="5140016802771803559">ରେବେକା ବାଇଗଣୀ</translation>
 <translation id="5142101052131610456">ସମସ୍ତ ଲେସନ୍</translation>
+<translation id="5152605892605507188">ଡାହାଣକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="5158275234811857234">କଭର୍</translation>
 <translation id="516076699907426116">ଜାରି ରଖିବାକୁ, ପରବର୍ତ୍ତୀ ଲେସନ୍ ବଟନ୍ ଖୋଜିବା ପାଇଁ ସ୍ପର୍ଶ ଦ୍ୱାରା ଏକ୍ସପ୍ଲୋର୍ କରନ୍ତୁ। ତା’ପରେ ଜାରି ରଖିବାକୁ ଦୁଇଥର-ଟାପ୍ କରନ୍ତୁ।</translation>
 <translation id="5170206230005240598">ବ୍ରେଲି କ୍ୟାପ୍ସନଗୁଡ଼ିକୁ ସକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5183440668879371625">ପୂର୍ବବର୍ତ୍ତୀ ଲାଇନ୍ ବ୍ରେଲିରେ ଲେଖନ୍ତୁ</translation>
 <translation id="5189244881767082992">ରେଖା</translation>
+<translation id="5234747236692380506"><ph name="TEXT" /> ଟାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="5263034204789987535">କର୍ନସିଲ୍‌କ</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ସମାପ୍ତ କରନ୍ତୁ</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">ଶୀର୍ଷକ 4</translation>
 <translation id="6150023170003443621">ହଳଦିଆ ସବୁଜ</translation>
 <translation id="6158882249329863701">ଧାଡ଼ି <ph name="TABLECELLROWINDEX" /> ସ୍ତମ୍ଭ <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">ବାମକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="6164829606128959761">ମିଟର୍</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6166362019018438352">ବ୍ରେଲି କ୍ୟାପ୍ସନଗୁଡ଼ିକୁ ଅକ୍ଷମ କରାଯାଇଛି</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">ଡିଲିଟ୍ କରାଗଲା</translation>
 <translation id="6910969481785184048">ଚାଲୁ, ବନ୍ଦ ଏବଂ ଅଟକାଇବା</translation>
 <translation id="6919104639734799681">ଟେବଲ୍‍ଗୁଡ଼ିକର ତାଲିକା ଦେଖାନ୍ତୁ</translation>
+<translation id="692135145298539227">ବିଲୋପ</translation>
+<translation id="6935674530832500465">ତଳକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="6945221475159498467">ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6949846980769640811">ମଧ୍ୟମ ନୀଳ ସବୁଜ</translation>
 <translation id="6951482098621102657">କୌଣସି ପରବର୍ତ୍ତୀ ସ୍ତର 5 ହେଡିଂ ନାହିଁ</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">ଡିରେକ୍ଟୋରୀ</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">ପ୍ରକୃତ ଭଏସ୍ ବ୍ୟବହାର କରିବେ?</translation>
-<translation id="7484805699335881122">ବିଭିନ୍ନ ପ୍ରକାର ଉପାଦାନ ଏବଂ ଉଦ୍ଧୃତ କରାଯାଇଥିବା, ଡିଲିଟ୍ କରାଯାଇଥିବା, ବୋଲ୍ଡ୍ କରାଯାଇଥିବା, ବନ୍ଧନୀରେ ରଖାଯାଇଥିବା କିମ୍ବା କେପିଟାଲାଇଜ୍ ହୋଇଥିବା ଟେକ୍ସଟ୍ କହିବା ସମୟରେ ପିଚ୍ ବଦଳାନ୍ତୁ।</translation>
 <translation id="7491962110804786152">ଟାବ୍</translation>
 <translation id="7492497529767769458">ପରବର୍ତ୍ତୀ ବିଭାଗକୁ ଯାଆନ୍ତୁ। ଉଦାହରଣରେ ସ୍ଥିତି ଟ୍ରେ ଏବଂ ଲଞ୍ଚର୍ ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।</translation>
 <translation id="7505149250476994901">ଅକ୍ଷର ପୂର୍ବରୁ "କ୍ୟାପ୍" କୁହନ୍ତୁ</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">ଉପରେ କୌଣସି ସେଲ୍ ନାହିଁ</translation>
 <translation id="8138880386467279117">ସ୍ପର୍ଶ</translation>
 <translation id="8146613869421949343">ତା'ପରେ, ଆପଣ Search କୀ ବିଷୟରେ ଜାଣିବେ। ChromeVox କମାଣ୍ଡଗୁଡ଼ିକ ପାଇଁ ଅନ୍ୟ କୀଗୁଡ଼ିକ ସହ Search କୀ ବ୍ୟବହାର କରାଯାଏ। Search କୀ ବାମ Shift କୀ'ର ଠିକ୍ ଉପରେ ଅଛି। ଜାରି ରଖିବାକୁ, Search କୀ ଦବାନ୍ତୁ।</translation>
+<translation id="8158033275290782295">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="816818801578874684">ଏହା ପ୍ରଥମ ହେଡିଂ ଅଟେ। ପରବର୍ତ୍ତୀ ହେଡିଂକୁ ଯିବା ପାଇଁ Search + H କୀ ଦବାନ୍ତୁ।</translation>
 <translation id="8173092779156526980">ଚାରି ଆଙ୍ଗୁଠିରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ଟି ଅଣ୍ଡରସ୍କୋର୍‌}other{#ଟି ଅଣ୍ଡରସ୍କୋର୍‌}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">ପରିଚୟ</translation>
 <translation id="827266600368092403">ଚୟନ ଆରମ୍ଭ କିମ୍ବା ଶେଷ କରନ୍ତୁ</translation>
 <translation id="827422111966801947">ଘନନୀଳ</translation>
+<translation id="827496561804786391">ଉପରକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="8276439074553447000">ପୂର୍ବବର୍ତ୍ତୀ ଫୋକସ୍‍‍ଯୋଗ୍ୟ ଆଇଟମ୍‍କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8279039817939141096">ଏହାର ଫଙ୍କସନ୍ ବିଷୟରେ ଜାଣିବାକୁ ଏକ qwerty କୀ, ରିଫ୍ରେସ୍ କରାଯାଇପାରୁଥିବା ବ୍ରେଲି କୀ'କୁ ଦବାନ୍ତୁ କିମ୍ବା ଜେଶ୍ଚରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ। ବାହାରିଯିବାକୁ w ସହିତ Control କୀ, Z ସହିତ Space କୀ'କୁ ଦବାନ୍ତୁ, ଦୁଇ ଆଙ୍ଗୁଠି ସାହାଯ୍ୟରେ ବାମକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ କିମ୍ବା Escape କୀ'କୁ ଦବାନ୍ତୁ।</translation>
 <translation id="8283603667300770666">ପରବର୍ତ୍ତୀ ଫର୍ମ କ୍ଷେତ୍ର</translation>
 <translation id="8310185481635255431">କୌଣସି ପରବର୍ତ୍ତୀ ଲିଙ୍କ୍ ନାହିଁ</translation>
 <translation id="831207808878314375">ପରିଭାଷା</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">ସମସ୍ତ ଅଚୟନ କରନ୍ତୁ</translation>
 <translation id="8316881042119029234">ପୁରୁଣା ଲେସ୍</translation>
 <translation id="8324974933005349667">ଟେକ୍ସଟ୍‍ରୁ ସ୍ପିଚ୍ ସେଟିଂସ୍‍କୁ ବ୍ୟକ୍ତିଗତ କରନ୍ତୁ</translation>
 <translation id="8326783648485765113">ଲନ୍ ସବୁଜ</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">ହାଲୁକା ସାମୁଦ୍ରିକ ସବୁଜ</translation>
 <translation id="9080299285199342830">ଶେଷକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="9089864840575085222">ଟାଇପିଂ ଇକୋର ଚକ୍ର</translation>
+<translation id="9099429023611373837">କଟ୍ କରନ୍ତୁ</translation>
 <translation id="9108370397979208512">ଗଣିତ</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{ଶତକଡ଼ା}other{# ଟି ଶତକଡ଼ା ଚିହ୍ନ}}</translation>

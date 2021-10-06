@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Lejupielāde pārtraukta</translation>
 <translation id="1415402041810619267">URL ir saīsināts</translation>
 <translation id="1446450296470737166">Pilnīga MIDI ierīču pārvaldība</translation>
-<translation id="1509960214886564027">Daudzās vietnēs funkcijas var nedarboties</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1647582022260550163">Vai tiešām vēlaties atiestatīt atļaujas un notīrīt sīkfailus un vietņu datus?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Atļauti, izņemot trešo pušu sīkfailus</translation>
 <translation id="1989112275319619282">Pārlūkot</translation>
 <translation id="1994173015038366702">Vietnes URL</translation>
+<translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2025115093177348061">Papildinātā realitāte</translation>
 <translation id="2030769033451695672">Pieskarieties, lai atgrieztos cilnē <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Atsaukt</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Atļaut sīkfailus konkrētai vietnei.</translation>
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
+<translation id="4176463684765177261">Atspējota</translation>
 <translation id="4200726100658658164">Atvērt atrašanās vietu iestatījumus</translation>
 <translation id="4226663524361240545">Saņemot paziņojumu, ierīce var vibrēt.</translation>
 <translation id="4259722352634471385">Navigācija ir bloķēta: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Apturēt video atskaņošanu</translation>
 <translation id="5887687176710214216">Pēdējoreiz apmeklēta vakar</translation>
 <translation id="5916664084637901428">Iesl.</translation>
+<translation id="59174027418879706">Iespējots</translation>
 <translation id="5922853908706496913">Notiek jūsu ekrāna kopīgošana</translation>
 <translation id="5939518447894949180">Atiestatīt</translation>
 <translation id="5975083100439434680">Tālināt</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Bloķēt trešo pušu sīkfailus</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />: iespējas</translation>
 <translation id="6231752747840485235">Vai atinstalēt lietotni <ph name="APP_NAME" />?</translation>
+<translation id="6233545266937675277">Vietnēs pieprasīt datoriem paredzēto skatu</translation>
 <translation id="6262279340360821358">Bloķētas: <ph name="PERMISSION_1" /> un <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vietnēs var lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}zero{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}one{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}other{Bloķētas: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> un vēl <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Pēdējoreiz apmeklēta pirms <ph name="NUM_DAYS" /> dienām</translation>
 <translation id="6561560012278703671">Izmantot neuzkrītošāku ziņojumapmaiņu (bloķēt paziņojumu uzvednes, lai tās jūs netraucētu)</translation>
+<translation id="6593061639179217415">Vietne datoriem</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Aizsargāts saturs</translation>
 <translation id="662080504995468778">Palikt</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Atcelt atlasi</translation>
 <translation id="7846621471902887024">Jūs tiksiet izrakstīts no visām vietnēm.</translation>
 <translation id="7882806643839505685">Atļaut skaņu konkrētai vietnei</translation>
+<translation id="7940722705963108451">Atgādināt</translation>
 <translation id="7986741934819883144">Kontaktpersonas atlase</translation>
-<translation id="7993619969781047893">Noteiktās vietnēs funkcijas var nedarboties</translation>
 <translation id="7999064672810608036">Vai tiešām vēlaties notīrīt visus ar šo vietni saistītos lokālos datus, tostarp sīkfailus, un atiestatīt visas atļaujas?</translation>
 <translation id="8007176423574883786">Izslēgts šai ierīcei</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Izslēgta skaņa</translation>
 <translation id="813082847718468539">Skatīt informāciju par vietni</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
+<translation id="8154912474061769055">Daudzās vietnēs funkcijas var nedarboties.</translation>
 <translation id="8197286292360124385">Atļauta: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8206354486702514201">Šo iestatījumu ievieš jūsu administrators.</translation>
 <translation id="8211406090763984747">Savienojums ir drošs</translation>
 <translation id="8249310407154411074">Pārvietot uz augšdaļu</translation>
 <translation id="8261506727792406068">Dzēst</translation>
+<translation id="8267092878336850213">Vietnēs pieprasīt mobilām ierīcēm paredzēto skatu</translation>
 <translation id="8300705686683892304">Pārvalda lietotne</translation>
 <translation id="8324158725704657629">Nejautāt atkārtoti</translation>
 <translation id="8372893542064058268">Atļaut sinhronizāciju fonā konkrētai vietnei</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Notīrīt ievadi</translation>
 <translation id="868929229000858085">Meklējiet kontaktpersonas</translation>
 <translation id="8702612070107455751">Visi bezsaistē saglabātie dati tiks notīrīti.</translation>
+<translation id="8712637175834984815">Sapratu!</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" /> ieslēdziet atļauju lietotnei <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8730621377337864115">Gatavs</translation>

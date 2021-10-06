@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Không có trường văn bản có thể chỉnh sửa nào tiếp theo</translation>
 <translation id="1342835525016946179">bài viết</translation>
 <translation id="1346059596910821859">Mẹo</translation>
+<translation id="1354356357730355833">sao chép</translation>
 <translation id="135978014023467274">Bạn đã cập nhật lên ChromeVox 63!</translation>
 <translation id="1360699455582016846">Hãy nhấp vào mục bên dưới phím định tuyến <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Đây là tiêu đề cuối cùng. Nhấn Search+H để bao gồm tiêu đề đầu tiên hoặc Search+Shift+H để chuyển tới tiêu đề thứ hai trên trang này.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">làm mới</translation>
 <translation id="2675533876313964202">Màu lục nhạt</translation>
 <translation id="2684412629217766642">Đóng hướng dẫn ChromeVox</translation>
+<translation id="2692503699962701720">Thay đổi cao độ khi nói các loại thành phần và văn bản được định dạng</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Đề xuất chuyển đổi văn bản</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{dấu mở ngoặc}other{# dấu mở ngoặc}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">dọc</translation>
 <translation id="3286390186030710347">Thanh trượt</translation>
 <translation id="3300348286427369683">Hỗ trợ văn bản đa dạng thức. ChromeVox hiện hỗ trợ các trường văn bản đa dạng thức, bao gồm cả lệnh di chuyển, định tuyến con trỏ chữ nổi, lựa chọn và các trường khác.</translation>
+<translation id="3300733168898541351">hủy</translation>
 <translation id="3307886118343381874">Đi tới cuối bảng</translation>
 <translation id="3312997241656799641">Liên kết đã truy cập tiếp theo</translation>
 <translation id="3313245066383501820">Phím bổ trợ ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Hiển thị danh sách biểu mẫu</translation>
 <translation id="3414400929511680526">Màu xanh lam Alice</translation>
 <translation id="3418936350470374046">Không có ô nào bên dưới</translation>
+<translation id="3419269701801640163">dán</translation>
 <translation id="3435494200763325275">Thao tác bằng phím Tab (Tiếp tục)</translation>
 <translation id="344800400831402066">Màu Peru</translation>
 <translation id="3457000393508828486">Được nhấn một phần</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Cuộn xuống</translation>
 <translation id="4035381225449278841">Mùa xuân</translation>
+<translation id="4038098586530338813">làm lại</translation>
 <translation id="4047216625641135770">Đánh dấu</translation>
 <translation id="4047910800766704982">Bạn có thể dùng giọng nói tự nhiên khi thiết bị của bạn có kết nối mạng. Dữ liệu văn bản sẽ được gửi đến Google để xử lý. Bạn có thể tắt tính năng này bất kỳ lúc nào trong phần Cài đặt.</translation>
 <translation id="4053520724192563562">Màu xanh vàng chanh</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">Màu lam xám đen hài hòa</translation>
 <translation id="5140016802771803559">Màu tím Rebecca</translation>
 <translation id="5142101052131610456">Tất cả bài học</translation>
+<translation id="5152605892605507188">di chuyển sang phải</translation>
 <translation id="5158275234811857234">Trang bìa</translation>
 <translation id="516076699907426116">Để tiếp tục, hãy dùng tính năng khám phá bằng cách chạm để tìm nút Bài học tiếp theo. Sau đó, hãy nhấn đúp để tiếp tục.</translation>
 <translation id="5170206230005240598">Đã bật phụ đề chữ nổi</translation>
 <translation id="5183440668879371625">Dòng chữ nổi trước</translation>
 <translation id="5189244881767082992">Dòng</translation>
+<translation id="5234747236692380506">nhập <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Màu râu ngô</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Kết thúc</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">Tiêu đề 4</translation>
 <translation id="6150023170003443621">Màu lục vàng</translation>
 <translation id="6158882249329863701">hàng <ph name="TABLECELLROWINDEX" /> cột <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">di chuyển sang trái</translation>
 <translation id="6164829606128959761">thước đo</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6166362019018438352">Đã tắt phụ đề chữ nổi</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">Đã xóa</translation>
 <translation id="6910969481785184048">Bật, tắt và dừng</translation>
 <translation id="6919104639734799681">Hiển thị danh sách bảng</translation>
+<translation id="692135145298539227">xóa</translation>
+<translation id="6935674530832500465">di chuyển xuống</translation>
 <translation id="6945221475159498467">Chọn</translation>
 <translation id="6949846980769640811">Màu xanh nước biển hài hòa</translation>
 <translation id="6951482098621102657">Không có tiêu đề cấp 5 nào tiếp theo</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">Thư mục</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Bạn có muốn dùng giọng nói tự nhiên?</translation>
-<translation id="7484805699335881122">Thay đổi cao độ khi nói các loại thành phần và văn bản được trích dẫn, bị xóa, được in đậm, nằm trong ngoặc đơn hoặc viết hoa.</translation>
 <translation id="7491962110804786152">thẻ</translation>
 <translation id="7492497529767769458">Chuyển đến phần tiếp theo. Các ví dụ bao gồm Khay trạng thái và Trình chạy.</translation>
 <translation id="7505149250476994901">Nói "hoa" sau chữ cái</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">Không có ô nào phía trên</translation>
 <translation id="8138880386467279117">Cảm ứng</translation>
 <translation id="8146613869421949343">Tiếp theo, bạn sẽ tìm hiểu về phím Tìm kiếm. Phím Tìm kiếm được dùng kết hợp với những phím khác để thao tác các lệnh của ChromeVox. Phím Tìm kiếm nằm ngay phía trên phím Shift ở bên trái. Để tiếp tục, hãy nhấn phím Tìm kiếm.</translation>
+<translation id="8158033275290782295">chọn tất cả</translation>
 <translation id="816818801578874684">Đây là tiêu đề đầu tiên. Hãy nhấn tổ hợp phím Tìm kiếm + H để chuyển đến tiêu đề tiếp theo.</translation>
 <translation id="8173092779156526980">Vuốt sang trái bằng 4 ngón tay</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{dấu gạch dưới}other{# dấu gạch dưới}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">Giới thiệu</translation>
 <translation id="827266600368092403">Lựa chọn bắt đầu hoặc kết thúc</translation>
 <translation id="827422111966801947">Màu chàm</translation>
+<translation id="827496561804786391">di chuyển lên</translation>
 <translation id="8276439074553447000">Nhảy tới mục có thể đặt tiêu điểm trước</translation>
 <translation id="8279039817939141096">Bạn có thể nhấn một phím trên bàn phím qwerty, phím chữ nổi có thể làm mới hoặc dùng cử chỉ chạm để tìm hiểu chức năng của chế độ này. Nhấn tổ hợp phím Control và w, phím cách và Z, vuốt sang trái bằng 2 ngón tay hoặc nhấn phím Escape để thoát.</translation>
 <translation id="8283603667300770666">Trường biểu mẫu tiếp theo</translation>
 <translation id="8310185481635255431">Không có đường liên kết nào tiếp theo</translation>
 <translation id="831207808878314375">Định nghĩa</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">bỏ chọn tất cả</translation>
 <translation id="8316881042119029234">Màu ren cũ</translation>
 <translation id="8324974933005349667">Cá nhân hóa các tùy chọn cài đặt Văn bản sang lời nói</translation>
 <translation id="8326783648485765113">Màu xanh cỏ</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">Màu xanh biển nhạt</translation>
 <translation id="9080299285199342830">Chuyển đến phần cuối</translation>
 <translation id="9089864840575085222">Nói khi nhập theo chu trình</translation>
+<translation id="9099429023611373837">cắt</translation>
 <translation id="9108370397979208512">toán học</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{dấu phần trăm}other{# dấu phần trăm}}</translation>

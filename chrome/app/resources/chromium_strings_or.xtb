@@ -36,6 +36,7 @@
 <translation id="2343156876103232566">ଏଠାରୁ ଆପଣଙ୍କ Android ଫୋନକୁ ଏକ ନମ୍ବର ପଠାଇବାକୁ, ଉଭୟ ଡିଭାଇସରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="2347108572062610441">ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌ ଏହା ପରିବର୍ତ୍ତନ କରିଛି ଯେ ଯେତେବେଳେ ଆପଣ Chromium ଆରମ୍ଭ କରନ୍ତି, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠା ଦେଖାଯିବ।</translation>
 <translation id="2396765026452590966">ଆପଣ ଯେତେବେଳେ Chromium ଆରମ୍ଭ କରିବେ, ସେତେବେଳେ କେଉଁ ପୃଷ୍ଠାଗୁଡ଼ିକ ଦେଖାଯିବ ତାହା "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନ୍‌ସନ୍ ବଦଳାଇଦିଏ।</translation>
+<translation id="2401032172288869980">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="2483889755041906834">Chromiumରେ</translation>
 <translation id="2485422356828889247">ଅନ୍‍ଇନ୍‍ଷ୍ଟଲ୍‌ କରନ୍ତୁ</translation>
 <translation id="2535480412977113886">ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ସାଇନ୍ ଇନ୍ ବିବରଣୀ ପୁରୁଣା ହୋଇଥିବା ଯୋଗୁଁ Chromium OS ଆପଣଙ୍କର ଡାଟା ସିଙ୍କ କରିପାରିଲା ନାହିଁ।</translation>
@@ -153,6 +154,7 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS <ph name="BEGIN_LINK_LINUX_OSS" />Linux ଡେଭଲପମେଣ୍ଟ ପରିବେଶ<ph name="END_LINK_LINUX_OSS" /> ପରି ଅତିରିକ୍ତ <ph name="BEGIN_LINK_CROS_OSS" />ଓପନ୍ ସୋର୍ସ ସଫ୍ଟୱେର୍<ph name="END_LINK_CROS_OSS" /> ଦ୍ୱାରା ସମ୍ଭବପର ହୋଇଛି।</translation>
 <translation id="5862307444128926510">Chromiumକୁ ସ୍ଵାଗତ</translation>
+<translation id="5883558403894052917">ଏହି ଆଇଟମଗୁଡ଼ିକରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି:</translation>
 <translation id="5895138241574237353">ପୁନଃଆରମ୍ଭ</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍</translation>
 <translation id="5987687638152509985">ସିଙ୍କ୍ କରିବା ଆରମ୍ଭ କରିବାକୁ Chromium ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
@@ -170,6 +172,7 @@
 <translation id="6183079672144801177">ଆପଣ ଆପଣଙ୍କ <ph name="TARGET_DEVICE_NAME" />ରେ Chromiumରେ ସାଇନ୍ ଇନ୍ କରିଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ ଏବଂ ତା'ପରେ ପୁଣି ପଠାଇବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6212496753309875659">ଏହି କମ୍ପ୍ୟୁଟର୍‌ରେ ପୂର୍ବରୁ Chromiumର ସବୁଠାରୁ ନିକଟତମ ସଂସ୍କରଣ ଅଛି। ଯଦି ସଫ୍ଟୱେର୍‌ଟି କାମ କରୁନାହିଁ, ତେବେ Chromiumକୁ ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ କରି ପୁଣିଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6219195342503754812">{0,plural, =0{ବର୍ତ୍ତମାନ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}=1{1 ସେକେଣ୍ଡରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}other{# ସେକେଣ୍ଡରେ Chromium ପୁଣି ଲଞ୍ଚ ହେବ}}</translation>
+<translation id="6241367896540709610">ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରିବା ପାଇଁ Chromium ଷ୍ଟୋରେଜ୍ ଆକ୍ସେସ୍ କରିବାର ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6248213926982192922">Chromiumକୁ ଏକ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ କରନ୍ତୁ</translation>
 <translation id="6266342355635466082">Chromium ଅପଡେଟଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। ଆପଣଙ୍କର ଇଣ୍ଟର୍ନେଟ୍ ସଂଯୋଗ ଯାଞ୍ଚ କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="6268381023930128611">Chromiumରୁ ସାଇନ୍ ଆଉଟ୍ କରିବେ କି?</translation>
@@ -190,7 +193,9 @@
 <translation id="6570579332384693436">ବନାନ ତ୍ରୁଟି ଠିକ୍ କରିବା ପାଇଁ, Chromium ଟେକ୍ସଟ୍ କ୍ଷେତ୍ରରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଏ</translation>
 <translation id="6598877126913850652">Chromium ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍‌କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6613594504749178791">ପରବର୍ତ୍ତୀ ସମୟରେ Chromiumକୁ ପୁଣି ଲଞ୍ଚ କରିବାବେଳେ ଆପଣ କରିଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ଲାଗୁ ହେବ।</translation>
+<translation id="665732753414869868">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱର ଏକ 3D ମ୍ୟାପ୍ ତିଆରି କରିବା ପାଇଁ Chromium କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6676384891291319759">ଇଣ୍ଟର୍ନେଟ୍ ପ୍ରବେଶ କରନ୍ତୁ</translation>
+<translation id="6709350901466051922">ଏହି ସାଇଟ୍ ପାଇଁ Chromium ମାଇକ୍ରୋଫୋନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6717134281241384636">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍ ବ୍ୟବହୃତ ହୋଇପାରିବ ନାହିଁ କାରଣ ଏହା Chromiumର ଏକ ନୂତନ ସଂସ୍କରଣରୁ ଅଟେ।
 
 କିଛି ବୈଶିଷ୍ଟ୍ୟ ହୁଏତ ଉପଲବ୍ଧ ନଥାଇପାରେ। ଦୟାକରି ଏକ ଭିନ୍ନ ପ୍ରୋଫାଇଲ୍ ଡିରେକ୍ଟୋରୀ ନିର୍ଦ୍ଦିଷ୍ଟ କରନ୍ତୁ କିମ୍ବା Chromiumର ଏକ ନୂତନ ସଂସ୍କରଣ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
@@ -202,6 +207,7 @@
 <translation id="6847869444787758381">ଆପଣଙ୍କର ପାସ୍‍ୱାର୍ଡଗୁଡ଼ିକ କେବେ ବି ଚୋରି ହୋଇଛି କି ନାହିଁ ତାହା Chromium ଆପଣଙ୍କୁ ଜାଣିବାକୁ ଦିଏ</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google ପେ (Chromiumକୁ କପି କରାଯାଇଛି)</translation>
+<translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />"ରେ ମାଲୱେର୍ ଥିବା Chromium ଜାଣିବାକୁ ପାଇଛି</translation>
 <translation id="6893813176749746474">Chromium ଅପ୍‌ଡେଟ୍‌ କରାଯାଇଛି, କିନ୍ତୁ ଆପଣ ଏହାକୁ ଅତିକମ୍‌ରେ 30 ଦିନ ହେଲା ବ୍ୟବହାର କରିନାହାନ୍ତି।</translation>
 <translation id="691026815377248078">ପେୟାରିଂ ଜାରି ରଖିବା ପାଇଁ Chromium ବ୍ଲୁଟୁଥ୍ ଆକ୍ସେସ୍ ଆବଶ୍ୟକ କରେ। <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium ଇନ୍‍କ&amp;ଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
@@ -209,6 +215,7 @@
 <translation id="6990124437352146030">ଏହି ସାଇଟ୍ ପାଇଁ ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‌କୁ ଆକ୍ସେସ୍ କରିବାକୁ Chromium ଅନୁମତି ଆବଶ୍ୟକ କରୁଛି</translation>
 <translation id="705851970750939768">Chromiumକୁ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="7067091210845072982">ଯଦି ଗୋଟିଏ ଛବିରେ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chromium ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି।</translation>
+<translation id="718435575166326686">ଏହି ସାଇଟ୍ ପାଇଁ Chromium କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="7196312274710523067">Chromium ଲଞ୍ଚ କରାଯାଇପାରିଲା ନାହିଁ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7197677400338048821">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। 24 ଘଣ୍ଟା ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="7223968959479464213">ଟାସ୍କ ପରିଚାଳକ - Chromium</translation>
@@ -231,10 +238,6 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7585853947355360626">ଯଦି ଏହି ପୃଷ୍ଠାରେ ଏକ ସେଟିଂ ଦେଖାଯାଉ ନାହିଁ, ତେବେ ଆପଣଙ୍କର <ph name="LINK_BEGIN" />Chromium OS ସେଟିଂସ୍‌<ph name="LINK_END" />ରେ ଦେଖନ୍ତୁ</translation>
 <translation id="761356813943268536">Chromium ଆପଣଙ୍କର କ୍ୟାମେରା ଏବଂ ମାଇକ୍ରୋଫୋନ୍‌ ବ୍ୟବହାର କରୁଛି।</translation>
 <translation id="7617377681829253106">Chromium ବର୍ତ୍ତମାନ ଆହୁରି ଉନ୍ନତ ହୋଇଛି</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />ଆମେ ଆରମ୍ଭ କରିବା ପୂର୍ବରୁ, ଦୟାକରି ଆପଣଙ୍କ ପାଖରେ ଆପଣଙ୍କ ଡାଟାର ଏକ ଅପ୍-ଟୁ-ଡେଟ୍ ବ୍ୟାକଅପ୍ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ। Chromium OS ଇନଷ୍ଟଲ୍ କଲେ ଆପଣଙ୍କ ହାର୍ଡ ଡ୍ରାଇଭରେ ଥିବା ସମସ୍ତ ଡାଟାକୁ ଓଭରରାଇଟ୍ କରାଯିବ।<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google କୌଣସି ଡାଟା ନଷ୍ଟ ପାଇଁ ଦାୟୀ ନୁହେଁ ଏବଂ ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ହୋଇନଥିବା ମଡେଲଗୁଡ଼ିକରେ Chromium OS କାମ କରିବ ବୋଲି Google କୌଣସି ଗ୍ୟାରେଣ୍ଟି ଦିଏ ନାହିଁ। ସ୍ୱୀକୃତିପ୍ରାପ୍ତ ମଡେଲଗୁଡ଼ିକ ବିଷୟରେ ଅଧିକ ଜାଣିବା ପାଇଁ ଦୟାକରି [TBD]କୁ ଭିଜିଟ୍ କରନ୍ତୁ।<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS ଇନଷ୍ଟଲ୍ କରିବା ଏବଂ ଡାଟା ଲିଭାଇବା ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />ଯଦି ଆପଣ ଆଗକୁ ବଢ଼ିବାକୁ ପ୍ରସ୍ତୁତ ଅଛନ୍ତି ତେବେ “Chromium OS ଇନଷ୍ଟଲ୍ କରନ୍ତୁ”ରେ କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ କେବଳ କିଛି ସହଜ ଷ୍ଟେପ୍ ମାଧ୍ୟମରେ ଇନଷ୍ଟଲେସନ୍ ପ୍ରକ୍ରିୟାରେ ଆମେ ଆପଣଙ୍କୁ ଗାଇଡ୍ କରିବୁ। ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରରେ ଆମେ କୌଣସି ପରିବର୍ତ୍ତନ କରିବା ପୂର୍ବରୁ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ ଅନ୍ୟ ଏକ ସୁଯୋଗ ରହିବ।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ନୁହେଁ</translation>
 <translation id="7689606757190482937">ଆପଣଙ୍କର ଡିଭାଇସ୍‍ଗୁଡ଼ିକରେ Chromium‍କୁ ସିଙ୍କ୍ ଓ ବ୍ୟକ୍ତିଗତକୃତ କରନ୍ତୁ</translation>
 <translation id="7729447699958282447">Chromium ଆପଣଙ୍କ ଡାଟାକୁ ସିଙ୍କ୍ କରିପାରିଲା ନାହିଁ କାରଣ ଆପଣଙ୍କ ଡୋମେନ୍ ପାଇଁ ସିଙ୍କ୍ ଉପଲବ୍ଧ ନାହିଁ।</translation>
@@ -249,6 +252,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7975919845073681630">ଏହା Chromiumର ଏକ ସେକେଣ୍ଡାରୀ ଇନ୍‍ଷ୍ଟଲେସନ୍‌ ଏବଂ ଏହାକୁ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="8013436988911883588">ଥରେ Chromiumର ଆକ୍ସେସ୍ ହେବା ପରେ, ୱେବ୍‌ସାଇଟ୍ ଆପଣଙ୍କୁ ଆକ୍ସେସ୍ ପାଇଁ ପଚାରିବାରେ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="8045118833343856403">ନିମ୍ନୋକ୍ତ ଆକାଉଣ୍ଟଗୁଡ଼ିକ କୌଣସି Chromium ପ୍ରୋଫାଇଲରେ ସାଇନ୍ ଇନ୍ କରାଯାଇନାହିଁ। ଯଦି ଆପଣ ଅନ୍ୟ ଏକ ପ୍ରୋଫାଇଲରେ ଏକ ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ ପ୍ରଥମେ ସେହି ପ୍ରୋଫାଇଲକୁ କାଢ଼ି ଦିଅନ୍ତୁ।</translation>
+<translation id="8105840573057009683">ଏହି ସାଇଟ୍ ପାଇଁ Chromium ଲୋକେସନ୍ ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="81770708095080097">ଏହି ଫାଇଲ୍ ବିପଜ୍ଜନକ ଅଟେ, ତେଣୁ Chromium ଏହାକୁ ବ୍ଲକ୍ କରିଛି।</translation>
 <translation id="8248265253516264921">ଯଦି ଗୋଟିଏ ଛବିରେ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chromium ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି। ଆପଣ ଯେକୌଣସି ସମୟରେ ସେଟିଂସ୍‌ରେ ଏହାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="8266560134891435528">ଆପଣ ସାଇନ୍ ଇନ୍ କରିନଥିବା ଯୋଗୁଁ Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>

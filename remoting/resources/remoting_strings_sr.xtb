@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Ауторска права 2021. Аутори Chromium-а. Сва права задржана.</translation>
 <translation id="4513946894732546136">Повратне информације</translation>
 <translation id="4563926062592110512">Клијент чија је веза прекинута: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> није исправно конфигурисан. Одаберите други подразумевани веб-прегледач, па поново омогућите прослеђивање URL-ова.</translation>
 <translation id="4635770493235256822">Удаљени уређаји</translation>
 <translation id="4660011489602794167">Прикажи тастатуру</translation>
 <translation id="4703799847237267011">Сесија Chromoting-а се завршила.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">Пријављени сте као <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Поново се повежи</translation>
 <translation id="5810269635982033450">Екран служи као додирна табла</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> захтева приступ за преглед екрана и контролисање тастатуре и миша. Притисните <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> ако не очекујете овај захтев. У супротном, изаберите <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> да бисте дозволили повезивање када будете спремни.</translation>
 <translation id="5823658491130719298">На рачунару ком желите даљински да приступате отворите Chrome и посетите <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опције приказа</translation>
 <translation id="6033507038939587647">Опције тастатуре</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Повезивање са удаљеним рачунаром је привремено блокирано зато што је неко покушавао да се повеже са њим помоћу неважећег PIN-а. Пробајте поново касније.</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6985691951107243942">Желите ли стварно да онемогућите даљинско повезивање са хостом <ph name="HOSTNAME" />? Ако се предомислите, треба да посетите тај рачунар да бисте поново омогућили везе.</translation>
-<translation id="6998890551706945177">Администратор <ph name="CLIENT_USERNAME" /> је тражио приступ за преглед и контролисање вашег рачунара. Притисните „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'“ ако не знате ову особу или ако треба да унесете било које промене пре дељења.  У супротном изаберите „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ да бисте дозволили повезивање.</translation>
 <translation id="7019153418965365059">Непозната грешка у вези са хостом: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Даљинска помоћ</translation>
 <translation id="7026930240735156896">Пратите упутства да бисте подесили рачунар за даљински приступ</translation>
@@ -169,6 +170,7 @@
 Да бисте дали ову дозволу, кликните на <ph name="BUTTON_NAME" /> у наставку. У окну подешавања за Приступачност које се отвара означите поље поред ставке <ph name="SERVICE_SCRIPT_NAME" />.
 
 Ако је поље поред ставке <ph name="SERVICE_SCRIPT_NAME" /> већ означено, уклоните ознаку, па га поново означите.</translation>
+<translation id="8305209735512572429">Процес даљинског управљања потврдом идентитета на вебу</translation>
 <translation id="8383794970363966105">Да бисте користили Chromoting, морате да додате Google налог на уређај.</translation>
 <translation id="8386846956409881180">Хост је конфигурисан помоћу неважећих OAuth акредитива.</translation>
 <translation id="8397385476380433240">Дајте дозволу: <ph name="PRODUCT_NAME" /></translation>

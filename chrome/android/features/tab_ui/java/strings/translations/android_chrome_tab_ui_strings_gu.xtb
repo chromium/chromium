@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">કિંમતમાં ઘટાડો થાય ત્યારે નોટિફિકેશન મેળવો</translation>
 <translation id="1657719826150349398">ટૅબને નીચે ખસેડો</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
+<translation id="2118649612461486615">સ્ટોરની માહિતી</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> પર હવે <ph name="CURRENT_PRICE" /> કિંમત છે</translation>
 <translation id="2277224997687551299">ગ્રૂપના નામમાં ફેરફાર કરો</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_ONE" /> ટૅબ કાઢી નાખો.}one{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}other{ગ્રૂપમાંથી પસંદ કરેલી <ph name="TABS_COUNT_MANY" /> ટૅબ કાઢી નાખો.}}</translation>
 <translation id="2479148705183875116">સેટિંગ પર જાઓ</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">જૂથ</translation>
 <translation id="2613747923081026172">ગ્રૂપ બનાવો</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ</translation>
+<translation id="266935134738038806">સાઇટની મુલાકાત લો</translation>
 <translation id="2671423594960767771">જૂથ શેર કરો</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.</translation>
 <translation id="2801787514987684416">સ્ટોરની માહિતી જોઈએ?</translation>
 <translation id="2928243913527329289">Google | આ સ્ટોર વિશે</translation>
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
 <translation id="3194464645767632461">રેટિંગ</translation>
+<translation id="3267416433995960648">અલર્ટ બંધ કરો</translation>
 <translation id="3291470810748040983">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થશે, ત્યારે તમને અલર્ટ મળશે</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6054741997831917303">આ આઇટમની કિંમત તાજેતરમાં <ph name="PREVIOUS_PRICE" />થી ઘટીને <ph name="NEW_PRICE" /> થઈ ગઈ છે</translation>
 <translation id="6193448654517602979">ટૅબ પસંદ કરો</translation>
+<translation id="6228793724645064692">(સ્ટોરનું રેટિંગ)</translation>
+<translation id="6333260925957816943">આ સ્ટોર વિશેની માહિતી</translation>
 <translation id="6510648526783655549">ટૅબ સ્ટ્રિપ બંધ કરો</translation>
+<translation id="6549021453810473782">સ્ટોરની માહિતી જુઓ</translation>
 <translation id="6562820390860419811">ટૅબને ડાબે ખસેડો</translation>
 <translation id="6615455863669487791">મને બતાવો</translation>
 <translation id="6840760312327750441">ટૅબનું ગ્રૂપ બનાવવા માટે, ટૅબને સ્પર્શ કરી રાખો. પછી, ટૅબને બીજા ટૅબ પર ખેંચો.</translation>
 <translation id="6856809498882026482">એક કરતાં વધુ પસંદગી કરવાનો મોડ છુપાવો</translation>
+<translation id="7129458170538955174">આ સ્ટોર વિશેની માહિતી અડધી સ્ક્રીન પર ખુલી છે</translation>
 <translation id="7151209024774799310">ગ્રૂપમાંથી ટૅબ કાઢી નાખો</translation>
 <translation id="7204204600596740190">એક કરતાં વધુ પસંદગી કરવાનો મોડ</translation>
+<translation id="7326879924029668159">પરત કરવાની પૉલિસી અને બીજું ઘણું બધું જુઓ</translation>
 <translation id="7352298686197644113">તમારી ખુલ્લી ટૅબમાં કઈ આઇટમની કિંમત ઓછી થઈ છે, તે જુઓ</translation>
 <translation id="753732157349120914">ટૅબ સ્વિચર</translation>
 <translation id="7559245342362162951">ગ્રુપના ટૅબને પૂર્ણસ્ક્રીન ગ્રિડમાં બતાવો</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> રેટિંગ, <ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ}}</translation>
 <translation id="7885132941432959125">ટૅબને જમણે ખસેડો</translation>
 <translation id="7966321538264951561">સૂચનોને છોડી દો.</translation>
+<translation id="8029301326595421733">આ સ્ટોર વિશેની માહિતી સંપૂર્ણ સ્ક્રીન પર ખુલી છે</translation>
 <translation id="814503310257431685">બધા જુઓ</translation>
 <translation id="8205266828577616993">ટૅબ ઉપર ખસેડો</translation>
 <translation id="8304833501377495048">ટૅબ સ્ટ્રિપ ફરીથી ન બતાવીએ?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">ઓછી કિંમત</translation>
 <translation id="8749939518995770034">ટૅબ સ્ટ્રિપ બંધ કરી</translation>
 <translation id="8820741577754260431">તમારી ટૅબ પર કિંમતમાં ઘટાડા વિશેની માહિતી જુઓ</translation>
+<translation id="9090098097337832354">આ સ્ટોર વિશેની માહિતી બતાવવાની બંધ કરી છે</translation>
 <translation id="9150694013019234766">સ્ક્રીનના નીચેના ભાગમાં, તમારા ટૅબ ગ્રૂપમાં એકથી વધુ ટૅબની વચ્ચે સ્વિચ કરો</translation>
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>
 <translation id="959682366969460160">સંગઠિત રહો</translation>

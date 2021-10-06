@@ -79,6 +79,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4512952200932940229">Telif hakkı 2021 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4563926062592110512">İstemcinin bağlantısı kesildi: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> doğru yapılandırılmamış. Lütfen farklı bir varsayılan web tarayıcısı seçip URL yönlendirmeyi tekrar etkinleştirin.</translation>
 <translation id="4635770493235256822">Uzak cihazlar</translation>
 <translation id="4660011489602794167">Klavyeyi göster</translation>
 <translation id="4703799847237267011">Chromoting oturumunuz sonlandırıldı.</translation>
@@ -109,6 +110,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> olarak oturum açtınız.</translation>
 <translation id="579702532610384533">Yeniden bağlan</translation>
 <translation id="5810269635982033450">Ekran dokunmatik yüzey gibi çalışır</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> kullanıcısı, ekranınızı görüp klavye ve farenizi kontrol etmek için erişim istedi. Bu istekten haberiniz yoksa "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" seçeneğine basın. Haberiniz varsa da hazır olduğunuzda bağlantıya izin vermek için "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" seçeneğini işaretleyin.</translation>
 <translation id="5823658491130719298">Uzaktan erişmek istediğiniz bilgisayarda Chrome'u açın ve <ph name="INSTALLATION_LINK" /> bağlantısını ziyaret edin</translation>
 <translation id="5841343754884244200">Görüntüleme seçenekleri</translation>
 <translation id="6033507038939587647">Klavye seçenekleri</translation>
@@ -130,7 +132,6 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="6963936880795878952">Bir kullanıcı geçersiz PIN ile bağlanmaya çalıştığından uzak bilgisayara yapılan bağlantılar geçici olarak engellenmiştir. Lütfen daha sonra tekrar deneyin.</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" /> adlı ana bilgisayara uzaktan bağlantıları devre dışı bırakmak istediğinizden emin misiniz? Daha sonra fikrinizi değiştirirseniz, bağlantıları yeniden etkinleştirmek için söz konusu bilgisayarı ziyaret etmeniz gerekecektir.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" />, bilgisayarınızı görmek ve kontrol etmek için erişim istedi. Bu kullanıcıyı tanımıyorsanız veya paylaşmadan önce değişiklik yapmanız gerekiyorsa "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" seçeneğine basın.  Paylaşmak istiyorsanız da bağlantıya izin vermek için "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" seçeneğini işaretleyin.</translation>
 <translation id="7019153418965365059">Tanınmayan ana makine hatası: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Uzaktan Yardım</translation>
 <translation id="7026930240735156896">Bilgisayarınıza uzaktan erişimi kurmak için talimatları uygulayın</translation>
@@ -169,6 +170,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıklayarak "Erişilebilirlik" tercihleri bölmesini açın ve ardından, "<ph name="SERVICE_SCRIPT_NAME" />" öğesinin yanındaki kutuyu işaretleyin.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" zaten işaretliyse işaretini kaldırıp yeniden işaretleyin.</translation>
+<translation id="8305209735512572429">Web Kimlik Doğrulama Uzaktan Erişim İşlemi</translation>
 <translation id="8383794970363966105">Chromoting'i kullanmak için cihazınıza Google Hesabı eklemeniz gerekir.</translation>
 <translation id="8386846956409881180">Ana makine, geçersiz OAuth kimlik bilgileriyle yapılandırılmış.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> için izin ver</translation>

@@ -116,6 +116,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="2074131957428911366">ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬೇಕು ಎಂಬುದನ್ನು <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಯಾವಾಗ ಬೇಕಾದರೂ ಆರಿಸಿಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
+<translation id="2080769225927880590">ಮಾನ್ಯವಾದ ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="209018056901015185">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="2103075008456228677">history.google.com ತೆರೆಯಿರಿ</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ಐಟಂಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ</translation>
@@ -219,6 +220,7 @@
 <translation id="3131206671572504478">ಎಲ್ಲವನ್ನೂ ನಿರ್ಬಂಧಿಸಿ</translation>
 <translation id="313283613037595347">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್ ರಚಿಸಿ</translation>
 <translation id="3153862085237805241">ಕಾರ್ಡ್‌ ಅನ್ನು ಉಳಿಸಿ</translation>
+<translation id="315401415709252194">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯ ಪ್ರಕಾರ ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="3157387275655328056">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಿ</translation>
 <translation id="3157684681743766797">ಎಲ್ಲವನ್ನೂ ಗುರುತಿಸಿ…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -229,6 +231,7 @@
 <translation id="3184767182050912705"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿಕೊಂಡು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="3207960819495026254">ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3224641773458703735">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ಕೋಡ್ ಅನ್ನು ಹೊಂದಿಸಬೇಕು.</translation>
+<translation id="3230318355092723906">ಸಿಂಕ್ ಆಫ್ ಆಗಿರುವಾಗ, ನೀವು ಈಗಲೂ ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನೋಡಬಹುದು. ನೀವು ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಿದರೆ, ಅವುಗಳು ನಿಮ್ಮ ಖಾತೆಗೆ ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.</translation>
 <translation id="3240426699337459095">ಲಿಂಕ್ ನಕಲಿಸಲಾಗಿದೆ</translation>
 <translation id="3244271242291266297">ಮಿಮೀ</translation>
 <translation id="3252394070589632019"><ph name="NUM_SUGGESTIONS" /> ರಲ್ಲಿ <ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /></translation>
@@ -311,7 +314,6 @@
 <translation id="4038354071007134711">ಫೈಲ್‌ ತೆರೆಯಬಹುದಾದ ಯಾವುದೇ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಈ ಸಾಧನದಲ್ಲಿ ಇಲ್ಲ.</translation>
 <translation id="4042870976416480368">ಪುಟದಲ್ಲಿ ಹುಡುಕಿ</translation>
 <translation id="4049507953662678203">ನೀವು ನೆಟ್‌‌ವರ್ಕ್ ಸಂಪರ್ಕ ಹೊಂದಿರುವಿರಾ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="4079195788735381731">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಿದೆ</translation>
 <translation id="408404951701638773">ಇದೀಗ ಹುಡುಕಾಟ ಪಟ್ಟಿಯನ್ನು ತಲುಪುವುದು ಸುಲಭವಾಗಿದೆ</translation>
 <translation id="411254640334432676">ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="4112644173421521737">ಹುಡುಕಿ</translation>
@@ -355,6 +357,7 @@
 <translation id="4619564267100705184">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4619615317237390068">ಇತರ ಸಾಧನಗಳಿಂದ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="4620246317052452550">ನೀವು ಓದಿದ ಪುಟಗಳು</translation>
+<translation id="4620888520263267479">ಲಿಂಕ್ ಪೂರ್ವವೀಕ್ಷಣೆಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4630540211544979320">ಪುಟಗಳನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="4634124774493850572">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
 <translation id="4636930964841734540">ಮಾಹಿತಿ</translation>
@@ -452,6 +455,7 @@
 <translation id="5556459405103347317">ಮರುಲೋಡ್‌</translation>
 <translation id="5580834567471114021">ನಂತರಕ್ಕಾಗಿ ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಬೇಕೆ?</translation>
 <translation id="5592679540098330836"><ph name="NAME" /> ರವರಿಗಾಗಿ ಸಿಂಕ್ ಆನ್ ಮಾಡು</translation>
+<translation id="560322036295180549">ನಿಮ್ಮ ಸಂಸ್ಥೆಯವರು ಆಫ್ ಮಾಡಿದ್ದಾರೆ.</translation>
 <translation id="5614553682702429503">ಪಾಸ್‌ವರ್ಡ್ ಉಳಿಸುವುದೇ?</translation>
 <translation id="5626245204502895507">ಈ ಸಮಯದಲ್ಲಿ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="5631164295104953411">ಪಾವತಿ ವಿಧಾನವನ್ನು ಸೇರಿಸಿ</translation>
@@ -467,6 +471,8 @@
 <translation id="5737974891429562743">ಖಾತೆಯ ಸೈನ್-ಇನ್ ವಿವರಗಳು ಹಳೆಯದಾಗಿವೆ. ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ.</translation>
 <translation id="5738887413654608789">ನಿಮ್ಮ ಸುತ್ತಲಿನಲ್ಲಿರುವುದನ್ನು ಆಧರಿಸಿ, ಸಂಬಂಧಿಸಿದ ವೆಬ್ ಪುಟಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಇದು ನಿಮಗೆ ಅನುಮತಿಸುತ್ತದೆ.</translation>
 <translation id="5758631781033351321">ನಿಮ್ಮ ಓದುವ ಪಟ್ಟಿಯನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
+<translation id="575902488528307720">ಚಿತ್ರಕ್ಕಾಗಿ ಹುಡುಕಿ</translation>
+<translation id="5781453543752460388">ಫೋಟೋಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5782227691023083829">ಅನುವಾದ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="5803566855766646066">ಈ ಹೊಸ ಕಾರ್ಡ್ ಅನ್ನು ತ್ಯಜಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="5812974770859303494">ಇದಕ್ಕೆ ಸೇರಿಸಿ...</translation>
@@ -504,6 +510,7 @@
 <translation id="6042308850641462728">ಇನ್ನಷ್ಟು</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ನಿಮ್ಮ ಕತೆಗಳು ಮತ್ತು ಚಟುವಟಿಕೆಯನ್ನು ಇಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
+<translation id="6064824697233747382">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯ ಪ್ರಕಾರ ನೀವು ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="6066301408025741299">ರದ್ದುಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="60829778314739003">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="6084848228346514841">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -519,6 +526,7 @@
 <translation id="6189413832092199491">ಓದದಿರುವುದು</translation>
 <translation id="6196207969502475924">ಧ್ವನಿ ಹುಡುಕಾಟ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />ನೀವು ಏನನ್ನು ಸಿಂಕ್ ಮಾಡಬಹುದು ಎಂಬುದನ್ನು ನೋಡಿ<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>
 <translation id="6223816392543092032">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮದೇ ಆದ ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು, ಇತಿಹಾಸ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇತರ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ.</translation>
 <translation id="6232329973559504466">ಅಜ್ಞಾತ ಹುಡುಕಾಟ</translation>
@@ -603,10 +611,12 @@
 <translation id="6801927553864092214">ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು, ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6807889908376551050">ಎಲ್ಲಾ ತೋರಿಸಿ...</translation>
 <translation id="681368974849482173">ಐಟಂ ರಚಿಸಲಾಗಿದೆ</translation>
+<translation id="681450999322335505">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಿದೆ.</translation>
 <translation id="6830804042318138535">ಇನ್ನಷ್ಟು ಓದಿ</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಲು, ಅದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="6851516051005285358">ಡೆಸ್ಕ್‌ಟಾಪ್‌ ಸೈಟ್‌ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
+<translation id="6856384753476268833">ನಿಮ್ಮ ಸಂಸ್ಥೆಯವರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ.</translation>
 <translation id="6858855187367714033">ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6859944681507688231">QR ಕೋಡ್ ಅಥವಾ ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಕ್ಯಾಮರಾವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>
 <translation id="6869389390665537774">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ನೀವು ನೋಡಬಹುದು ಅಥವಾ ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ಅವುಗಳನ್ನು ತೆರವುಗೊಳಿಸಬಹುದು</translation>
@@ -628,7 +638,6 @@
 <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="7006788746334555276">ವಿಷಯ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="7015203776128479407">ಪ್ರಾರಂಭಿಕ ಸಿಂಕ್ ಸೆಟಪ್ ಮುಗಿದಿಲ್ಲ. ಸಿಂಕ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7053983685419859001">ನಿರ್ಬಂಧಿಸು</translation>
 <translation id="7062545763355031412">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಖಾತೆಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -651,7 +660,6 @@
 <translation id="7265758999917665941">ಈ ಸೈಟ್‌ಗೆ ಎಂದಿಗೂ ಬೇಡ</translation>
 <translation id="7272437679830969316">ನಿಮ್ಮ ಗುರುತನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ನಕಲಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="7291368939935408496">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...</translation>
-<translation id="7293171162284876153">ಸಿಂಕ್ ಪ್ರಾರಂಭಿಸಲು, "ನಿಮ್ಮ Chrome ಡೇಟಾ ಸಿಂಕ್ ಮಾಡಿ" ಆಯ್ಕೆಯನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="7313347584264171202">ನಿಮ್ಮ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಕಾಣಬಹುದು</translation>
 <translation id="7319242366286515846">ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK" />ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> ಪ್ರತಿಶತ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -707,6 +715,7 @@
 <translation id="7856733331829174190">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="7859704718976024901">ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ</translation>
 <translation id="7887198238286927132">ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, Chrome ಈ ಫೀಲ್ಡ್ ಅನ್ನು ಸ್ವಯಂ ಭರ್ತಿ ಮಾಡುವುದಿಲ್ಲ.</translation>
+<translation id="7911190106180361398">ಎಲ್ಲವನ್ನೂ ಸಿಂಕ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ...</translation>
 <translation id="794799177247607889">ಲಾಗ್ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -716,6 +725,7 @@
 
 ವಿವಿಧ ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, ಉದಾಹರಣೆಗೆ, ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸೈಟ್‌ಗಳು ಕುಕೀಗಳನ್ನು ಬಳಸಬಹುದು.</translation>
 <translation id="7971521879845308059">ಪಾಪ್-ಅಪ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಿ</translation>
+<translation id="797413074872316787">ಸಾಧನಗಳಾದ್ಯಂತ ಸಿಂಕ್ ಮಾಡಲು ಮತ್ತು ವೈಯಕ್ತೀಕರಿಸಲು, ಸಿಂಕ್ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="7982789257301363584">ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="7993619969781047893">ಕೆಲವು ಸೈಟ್‌ಗಳಲ್ಲಿನ ಫೀಚರ್‌ಗಳು ಕಾರ್ಯನಿರ್ವಹಿಸುವುದನ್ನು ನಿಲ್ಲಿಸಬಹುದು</translation>
 <translation id="800361585186029508">Google Chrome ನಲ್ಲಿ ಇನ್‌ಪುಟ್ ಮಾಡಿದ URL ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
@@ -734,8 +744,8 @@
 <translation id="8080028325999236607">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="8105368624971345109">ಆಫ್ ಮಾಡು</translation>
 <translation id="8114753159095730575">ಫೈಲ್‌ ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವ ಸೌಲಭ್ಯ ಲಭ್ಯವಿದೆ. ಪರದೆಯ ಕೆಳಗಿನ ಭಾಗದಲ್ಲಿ ಆಯ್ಕೆಗಳು ಲಭ್ಯವಿವೆ.</translation>
-<translation id="8131740175452115882">ದೃಢೀಕರಿಸು</translation>
 <translation id="8156478151976189188">ಪಾಸ್‌ವರ್ಡ್ ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
 <translation id="8205564605687841303">ರದ್ದುಮಾಡಿ</translation>
 <translation id="8206354486702514201">ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಜಾರಿಗೊಳಿಸಲಾಗಿದೆ.</translation>
@@ -761,7 +771,6 @@
 <translation id="8487667956631253959">ಆನ್</translation>
 <translation id="8487700953926739672">ಆಫ್‌ಲೈನ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="8490978609246021741">ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ</translation>
-<translation id="8495097701594799854">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ಆಫ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="850600235656508448">ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="8517375800490286174">ಓಪನ್ ಸೋರ್ಸ್ ಪರವಾನಗಿಗಳು</translation>
@@ -834,6 +843,7 @@
 <translation id="9203116392574189331">ಹ್ಯಾಂಡ್ಆಫ್</translation>
 <translation id="9223358826628549784">ಕ್ರ್ಯಾಶ್ ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ.</translation>
 <translation id="952704832371081537">ರದ್ದುಮಾಡಿ</translation>
+<translation id="981498610235328462">ಕೆಲವು ಖಾತೆಗಳ ಮೂಲಕ ಮಾತ್ರ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆ ನಿಮಗೆ ಅನುಮತಿ ನೀಡುತ್ತದೆ. ಅನುಮತಿಸದ ಖಾತೆಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="984509647832111802">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ.</translation>
 <translation id="988141524645182168">ಇತರ ಸಾಧನಗಳು</translation>
 <translation id="989988560359834682">ವಿಳಾಸವನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>

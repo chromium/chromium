@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">norska</translation>
 <translation id="1433628812591023318">För att kunna släppa en fil i Parallels Desktop behöver du först flytta den till Windows.</translation>
 <translation id="1435838927755162558">Dela mappen med Parallels Desktop</translation>
+<translation id="1439919885608649279">Person med blommor</translation>
 <translation id="1471718551822868769">slovakiska</translation>
 <translation id="1474339897586437869"><ph name="FILENAME" /> laddades inte upp. Det fanns inte tillräckligt mycket ledigt utrymme på Google Drive.</translation>
 <translation id="1482884275703521657">finska</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Det gick inte att ändra filen.</translation>
 <translation id="1673103856845176271">Det gick inte att öppna filen av säkerhetsskäl.</translation>
 <translation id="169515659049020177">Skift</translation>
+<translation id="1715848075824334077">Någon som cyklar</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> objekt komprimeras ...</translation>
 <translation id="1722687688096767818">Lägger till profil …</translation>
 <translation id="1726100011689679555">Namnservrar</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Ingen förhandsgranskning</translation>
 <translation id="1812302367230252929">amhariska, translitterering</translation>
 <translation id="1813278315230285598">Tjänster</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Varning!<ph name="END_BOLD" />  De här filerna är tillfälliga och kan tas bort automatiskt för att frigöra utrymme på hårddisken.  <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Läser in information …</translation>
 <translation id="1834290891154666894">Ogiltig inmatning för matchning av ämnets andra namn</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Namn som börjar med en punkt är reserverade för systemet. Välj ett annat namn.</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2084108471225856927">Enhetsinställningar</translation>
+<translation id="2084809735218147718">Person som säger tack på teckenspråk</translation>
 <translation id="2085470240340828803">Det finns redan en fil med namnet <ph name="FILENAME" />. Vad vill du göra?</translation>
 <translation id="2088690981887365033">VPN-nätverk</translation>
 <translation id="2122305276694332719">Med automatisk anslutning till ett dolt nätverk kan andra se enheten och vissa nätverksinställningar. Detta rekommenderas inte.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Installera med Linux</translation>
 <translation id="2225536596944493418">Vill du ta bort <ph name="NUMBER_OF_ITEMS" /> objekt?</translation>
 <translation id="2230062665678605299">Det går inte att skapa mappen <ph name="FOLDER_NAME" />. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Person med en kopp kaffe</translation>
 <translation id="2251368349685848079">Återställ från papperskorgen</translation>
 <translation id="2282155092769082568">Webbadress för automatisk konfiguration:</translation>
 <translation id="2288278176040912387">Skivspelare</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Total filstorlek</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> objekt kopieras till <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2452444014801043526">Person med en megafon</translation>
 <translation id="2464079411014186876">Glass</translation>
 <translation id="2464089476039395325">HTTP-proxy</translation>
 <translation id="2467267713099745100">Nätverkstyp: <ph name="NETWORK_TYPE" />, inaktiverat</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF-dokument</translation>
 <translation id="2888807692577297075">Inga objekt matchar &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Information</translation>
-<translation id="2902312830803030883">Fler åtgärder</translation>
 <translation id="2902734494705624966">USA (utökat)</translation>
 <translation id="290843123675549676">marathi</translation>
 <translation id="2923240520113693977">estniska</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">franska (Kanada)</translation>
 <translation id="3003189754374775221">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, anslut</translation>
 <translation id="3003633581067744647">Byt till miniatyrvy</translation>
+<translation id="3016566519832145558">Obs! De här filerna är tillfälliga och kan tas bort automatiskt för att frigöra utrymme på hårddisken.</translation>
 <translation id="3029114385395636667">Aktivera Google Dokument Offline om du vill komma åt Dokument, Kalkylark och Presentationer offline.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3047197340186497470">kinesiska (dayi)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS-värd</translation>
 <translation id="3113153474486991170">Det gick inte att öppna <ph name="PATH" /> från den här platsen. Kopiera den till Mina filer innan du öppnar.</translation>
 <translation id="3113592018909187986">Du har 1 försök kvar Du kan inte använda det här nätverket förrän du har ställt in en ny pinkod.</translation>
+<translation id="3124404833828281817">Någon som dagdrömmer</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Ogiltig pinkod. Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (med maskinvarustöd)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Besök drive.google.com ...</translation>
 <translation id="3553048479571901246">Om du vill öppna filer med <ph name="APP_NAME" /> måste du först kopiera dem till Windows-mappen.</translation>
 <translation id="3556731189587832921">engelska (USA) med internationellt PC-tangentbord</translation>
+<translation id="3567221313191587603">Välj en fil och aktivera <ph name="OFFLINE_CHECKBOX_NAME" /> för att få offlineåtkomst till filer.</translation>
 <translation id="357479282490346887">litauiska</translation>
 <translation id="3592251141500063301">Det gick inte att göra <ph name="FILE_NAME" /> tillgänglig offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Installerar mobilprofil, Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">tjeckiska med QWERTY-tangentbord</translation>
 <translation id="4656293982926141856">Den här datorn</translation>
+<translation id="4656777537938206294">Gör filer tillgängliga offline</translation>
+<translation id="4658782175094886150">Person i snön</translation>
 <translation id="4669606053856530811">De som använder <ph name="SOURCE_NAME" /> förlorar åtkomsten till objekten såvida de inte delas med dem.</translation>
 <translation id="4690246192099372265">svenska</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">Filerna öppnades på ett annat skrivbord. Byt till <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) om du vill visa dem.</translation>
 <translation id="5330512191124428349">Mer information</translation>
 <translation id="5335458522276292100">Säkerhetskopierar <ph name="FILE_COUNT" /> på <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Person med katter</translation>
 <translation id="5358764674931277">Bildfrekvens</translation>
 <translation id="5368191757080475556">Dela mappen med Linux</translation>
 <translation id="5402367795255837559">Punktskrift</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">Den här filen verkar ha gått sin väg. Kontrollera inställningen för nedladdade filer och försök igen.</translation>
 <translation id="5838451609423551646">Alla poster har avmarkerats.</translation>
 <translation id="5838825566232597749">US Workman (internationellt)</translation>
+<translation id="5845721951356578987">Sjuksköterska</translation>
+<translation id="5861477046012235702">Spelare</translation>
 <translation id="5864471791310927901">DHCP-förfrågan misslyckades</translation>
 <translation id="5896749729057314184">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inaktiverat, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="5911887972742538906">Ett fel uppstod under installationen av Linux-programmet.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">Videor</translation>
 <translation id="6150853954427645995">Om du vill spara filen för användning offline ansluter du till internet igen, högerklickar på filen och väljer sedan alternativet <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Fjärilar</translation>
+<translation id="6165508094623778733">Läs mer</translation>
 <translation id="6170470584681422115">Smörgås</translation>
 <translation id="6187719147498869044">ungerska</translation>
 <translation id="6189412234224385711">Öppna med <ph name="EXTENSION_NAME" /></translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">persiska</translation>
 <translation id="6862635236584086457">Alla filer som sparas i den här mappen säkerhetskopieras online automatiskt</translation>
 <translation id="6864328437977279120">sanskrit</translation>
+<translation id="6874758081814639712">Taijiutövare</translation>
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6878261347041253038">Tangentbord för devanagari (fonetiskt)</translation>
 <translation id="6885780034956018177">Snigel</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, anslut</translation>
 <translation id="8750438273876807512">Om du snabbt vill kunna komma åt dina filer i hyllan trycker du länge på en fil och trycker på <ph name="ICON" />. Välj sedan Fäst på hyllan.</translation>
 <translation id="8787254343425541995">Tillåt proxyservrar för delade nätverk</translation>
+<translation id="8790981080411996443">Person som vattnar blommor</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8802459921616481935">Flytta till papperskorgen</translation>
 <translation id="8808686172382650546">Katt</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8900820606136623064">ungerska</translation>
 <translation id="8903931173357132290">Kandidat</translation>
+<translation id="8912078710089354287">Hund som viftar på svansen</translation>
 <translation id="8919081441417203123">danska</translation>
 <translation id="8965697826696209160">Det finns inte tillräckligt med ledigt utrymme.</translation>
 <translation id="8970501467542182729">Den här filen är avsedd för en Macintosh. Den är inte kompatibel med din enhet, som har Chrome OS. <ph name="BEGIN_LINK_HELP" />Läs mer<ph name="END_LINK_HELP" /> om att öppna filer i Chrome OS.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">katalanska</translation>
 <translation id="914873105831852105">Ogiltig pinkod. Du har 1 försök kvar</translation>
 <translation id="9153934054460603056">Spara identitet och lösenord</translation>
+<translation id="9171921933192916600">Bokmal</translation>
 <translation id="9172592259078059678">gujarati, translitterering</translation>
 <translation id="9173120999827300720">engelska (USA) med internationellt tangentbord</translation>
 <translation id="9174050671906956834">Objekt i papperskorgen raderas permanent efter 30 dagar.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">Ändrades av</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> poster har markerats från och med <ph name="FROM_ENTRY_NAME" /> till och med <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">engelska (Sydafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Vill du ersätta den?</translation>
 <translation id="992401651319295351">Du har <ph name="RETRIES" /> försök kvar. Du kan inte använda det här nätverket förrän du har ställt in en ny pinkod.</translation>

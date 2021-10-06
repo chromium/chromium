@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">डाउनलोड रोका गया</translation>
 <translation id="1415402041810619267">यूआरएल छोटा हो गया</translation>
 <translation id="1446450296470737166">MIDI डिवाइस के पूरे नियंत्रण की अनुमति दें</translation>
-<translation id="1509960214886564027">शायद कई साइटों पर सुविधाएं ठीक से काम न करें</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1647582022260550163">क्या आप वाकई में कुकी और साइट डेटा मिटाना चाहते हैं और अनुमतियों को रीसेट करना चाहते हैं?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">तृतीय-पक्ष को छोड़कर अनुमति है</translation>
 <translation id="1989112275319619282">ब्राउज़ करें</translation>
 <translation id="1994173015038366702">साइट URL</translation>
+<translation id="2004697686368036666">हो सकता है कि कुछ साइटों पर खास सुविधाएं काम न करें</translation>
 <translation id="2025115093177348061">ऑगमेंटेड रिएलिटी (एआर)</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> पर वापस जाने के लिए टैप करें</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">किसी खास साइट के लिए कुकी की मंज़ूरी दें.</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
+<translation id="4176463684765177261">बंद किया गया</translation>
 <translation id="4200726100658658164">जगह की सेटिंग खोलें</translation>
 <translation id="4226663524361240545">नोटिफ़िकेशन से डिवाइस में कंपन हो सकता है</translation>
 <translation id="4259722352634471385">मार्गदर्शक अवरोधित है: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">वीडियो रोकें</translation>
 <translation id="5887687176710214216">साइट पर पिछली बार कल गए</translation>
 <translation id="5916664084637901428">चालू है</translation>
+<translation id="59174027418879706">चालू किया गया</translation>
 <translation id="5922853908706496913">आपकी स्क्रीन शेयर की जा रही है</translation>
 <translation id="5939518447894949180">रीसेट करें</translation>
 <translation id="5975083100439434680">ज़ूम आउट</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> विकल्प</translation>
 <translation id="6231752747840485235">क्या आपको '<ph name="APP_NAME" />' अनइंस्टॉल करना है?</translation>
+<translation id="6233545266937675277">साइटों के डेस्कटॉप व्यू का अनुरोध करें</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> और <ph name="PERMISSION_2" /> को ब्लॉक किया गया</translation>
 <translation id="6270391203985052864">साइटें आपको सूचनाएं भेजने के लिए पूछ सकती हैं</translation>
 <translation id="6295158916970320988">सभी साइटें</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधा को ब्लॉक किया गया}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="NUM_MORE" /> अन्य सुविधाओं को ब्लॉक किया गया}}</translation>
 <translation id="6554732001434021288">साइट पर पिछली बार <ph name="NUM_DAYS" /> दिन पहले गए</translation>
 <translation id="6561560012278703671">बिना आवाज़ के मैसेज पाएं (सूचनाओं में आवाज़ को रोकता है, ताकि आपके काम में रुकावट न आए)</translation>
+<translation id="6593061639179217415">डेस्कटॉप साइट</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> जीबी</translation>
 <translation id="6612358246767739896">सुरक्षित सामग्री</translation>
 <translation id="662080504995468778">इसपर रहें</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">चुना गया हटाएं</translation>
 <translation id="7846621471902887024">आप सभी साइटों से साइन आउट हो जाएंगे.</translation>
 <translation id="7882806643839505685">किसी खास साइट के लिए आवाज़ की अनुमति दें.</translation>
+<translation id="7940722705963108451">मुझे याद दिलाएं</translation>
 <translation id="7986741934819883144">कोई संपर्क चुनें</translation>
-<translation id="7993619969781047893">शायद कुछ साइटों पर सुविधाएं ठीक से काम न करें</translation>
 <translation id="7999064672810608036">क्‍या आप वाकई कुकी सहित इस वेबसाइट का सभी स्‍थानीय डेटा साफ़ करना और इसकी सभी अनुमतियों को रीसेट करना चाहते हैं?</translation>
 <translation id="8007176423574883786">इस डिवाइस के लिए बंद कर दिया गया है</translation>
 <translation id="802154636333426148">डाउनलोड विफल रहा</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">आवाज़ बंद की गई</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
+<translation id="8154912474061769055">हो सकता है कि कई साइटों पर कुछ खास सुविधाएं काम न करें</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="8200772114523450471">फिर से शुरू करें</translation>
 <translation id="8206354486702514201">इस सेटिंग को आपके व्‍यवस्थापक द्वारा लागू किया जाता है.</translation>
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
 <translation id="8249310407154411074">सबसे ऊपर ले जाएं</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
+<translation id="8267092878336850213">साइटों के मोबाइल व्यू का अनुरोध करें</translation>
 <translation id="8300705686683892304">ऐप्लिकेशन प्रबंधित करता है</translation>
 <translation id="8324158725704657629">दोबारा न पूछें</translation>
 <translation id="8372893542064058268">किसी विशिष्ट साइट के लिए पृष्ठभूमि समन्वयन की अनुमति दें.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">इनपुट साफ़ करें</translation>
 <translation id="868929229000858085">अपने संपर्क खोजें</translation>
 <translation id="8702612070107455751">ऑफ़लाइन डेटा को मिटा दिया जाएगा.</translation>
+<translation id="8712637175834984815">समझ लिया</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android की सेटिंग<ph name="END_LINK" /> में जाकर, <ph name="APP_NAME" /> के लिए अनुमति चालू करें.</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
 <translation id="8730621377337864115">हो गया</translation>

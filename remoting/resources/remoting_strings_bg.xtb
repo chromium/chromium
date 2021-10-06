@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Авторски права 2021 г. Авторите на Chromium. Всички права запазени.</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4563926062592110512">Връзката с клиентската програма е прекъсната: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Конфигурацията за <ph name="URL_FORWARDER_NAME" /> е неправилна. Моля, изберете друг уеб браузър по подразбиране, след което активирайте отново препращането на URL адреси.</translation>
 <translation id="4635770493235256822">Отдалечени устройства</translation>
 <translation id="4660011489602794167">Показване на клавиатурата</translation>
 <translation id="4703799847237267011">Сесията ви в Chromoting приключи.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">Влязохте като <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Повторно свързване</translation>
 <translation id="5810269635982033450">Екранът работи като тракпад</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> поиска достъп с цел да вижда екрана ви и да управлява клавиатурата и мишката ви. Натиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“, ако не очаквате тази заявка. В противен случай изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, за да разрешите осъществяването на връзката, когато имате готовност.</translation>
 <translation id="5823658491130719298">Отворете Chrome на компютъра, до който искате да осъществите отдалечен достъп, и посетете <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опции за изгледа</translation>
 <translation id="6033507038939587647">Опции за клавиатурата</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Връзките с отдалечения компютър са временно блокирани, защото някой опита да се свърже с него посредством невалиден ПИН код. Моля, пробвайте отново по-късно.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Наистина ли искате да деактивирате отдалечените връзки с/ъс <ph name="HOSTNAME" />? Ако промените решението си, ще трябва да посетите този компютър, за да ги активирате отново.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> поиска достъп с цел да вижда и управлява компютъра ви. Натиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“, ако не познавате този човек или ако трябва да извършите промени, преди да споделите компютъра си.  В противен случай изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, за да разрешите осъществяването на връзка.</translation>
 <translation id="7019153418965365059">Неразпозната грешка в хоста: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Отдалечено съдействие</translation>
 <translation id="7026930240735156896">Изпълнете инструкциите, за да настроите компютъра си за отдалечен достъп.</translation>
@@ -169,6 +170,7 @@
 За да направите това, кликнете върху „<ph name="BUTTON_NAME" />“ по-долу. Ще се отвори панелът за предпочитанията за достъпност. Поставете отметка в квадратчето до <ph name="SERVICE_SCRIPT_NAME" />.
 
 Ако до <ph name="SERVICE_SCRIPT_NAME" /> има отметка, премахнете я и я поставете отново.</translation>
+<translation id="8305209735512572429">Процес за отдалечено удостоверяване в мрежата</translation>
 <translation id="8383794970363966105">За да използвате Chromoting, ще се наложи да добавите профил в Google към устройството си.</translation>
 <translation id="8386846956409881180">Хостът е конфигуриран с невалидни идентификационни данни за OAuth.</translation>
 <translation id="8397385476380433240">Предоставяне на разрешение на <ph name="PRODUCT_NAME" /></translation>

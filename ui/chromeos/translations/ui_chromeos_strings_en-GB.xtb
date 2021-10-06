@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Norwegian</translation>
 <translation id="1433628812591023318">To drop files in Parallels Desktop, the file must be moved to Windows files.</translation>
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
+<translation id="1439919885608649279">Person with flowers</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" was not uploaded. There is not enough free space in your Google Drive.</translation>
 <translation id="1482884275703521657">Finnish</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">The file could not be modified.</translation>
 <translation id="1673103856845176271">The file could not be accessed for security reasons.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Cycling</translation>
 <translation id="1722487484194605434">Zipping <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="1722687688096767818">Adding profile…</translation>
 <translation id="1726100011689679555">Name servers</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">No preview available</translation>
 <translation id="1812302367230252929">Amharic transliteration</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Caution:<ph name="END_BOLD" />  These files are temporary and may be automatically deleted to free up disk space.  <ph name="BEGIN_LINK" />Learn More<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Loading information...</translation>
 <translation id="1834290891154666894">Invalid subject alternative name match entry</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Names starting with dot are reserved for the system. Please choose another name.</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2084108471225856927">Device settings</translation>
+<translation id="2084809735218147718">Signing thank you</translation>
 <translation id="2085470240340828803">A file named "<ph name="FILENAME" />" already exists. What do you want to do?</translation>
 <translation id="2088690981887365033">VPN network</translation>
 <translation id="2122305276694332719">Automatically connecting to a hidden network allows others to see your device and some network settings, and is not recommended.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Install with Linux</translation>
 <translation id="2225536596944493418">Are you sure that you want to delete <ph name="NUMBER_OF_ITEMS" /> items?</translation>
 <translation id="2230062665678605299">Unable to create folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Person with coffee</translation>
 <translation id="2251368349685848079">Restore from bin</translation>
 <translation id="2282155092769082568">Auto-configuration URL:</translation>
 <translation id="2288278176040912387">Record player</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Total file size</translation>
 <translation id="2428749644083375155">Copying <ph name="NUMBER_OF_ITEMS" /> items to <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Types</translation>
+<translation id="2452444014801043526">Person with megaphone</translation>
 <translation id="2464079411014186876">Ice cream</translation>
 <translation id="2464089476039395325">HTTP Proxy</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> network, off</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF document</translation>
 <translation id="2888807692577297075">No items match &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Information</translation>
-<translation id="2902312830803030883">More actions</translation>
 <translation id="2902734494705624966">US extended</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonian</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">French (Canada)</translation>
 <translation id="3003189754374775221">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="3003633581067744647">Switch to thumbnail view</translation>
+<translation id="3016566519832145558">Caution: These files are temporary and may be automatically deleted to free up disk space.</translation>
 <translation id="3029114385395636667">Enable Google Docs Offline to make Docs, Sheets and Slides available offline.</translation>
 <translation id="303198083543495566">Geography</translation>
 <translation id="3047197340186497470">Chinese Dayi</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS Host</translation>
 <translation id="3113153474486991170">Could not open '<ph name="PATH" />' from this location. Please copy to 'My files' to open.</translation>
 <translation id="3113592018909187986">You have one remaining attempt. You won't be able to use this network until you set up a new PIN.</translation>
+<translation id="3124404833828281817">Person daydreaming</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Invalid PIN. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardware-backed)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Go to drive.google.com...</translation>
 <translation id="3553048479571901246">To open files with <ph name="APP_NAME" />, first copy them to the Windows files folder.</translation>
 <translation id="3556731189587832921">English (US) with International PC keyboard</translation>
+<translation id="3567221313191587603">Select a file, and toggle <ph name="OFFLINE_CHECKBOX_NAME" /> on for offline access to your files.</translation>
 <translation id="357479282490346887">Lithuanian</translation>
 <translation id="3592251141500063301">Could not make <ph name="FILE_NAME" /> available offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Installing mobile profile, network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Czech with QWERTY keyboard</translation>
 <translation id="4656293982926141856">This computer</translation>
+<translation id="4656777537938206294">Make files available offline</translation>
+<translation id="4658782175094886150">Person in snow</translation>
 <translation id="4669606053856530811">Members of '<ph name="SOURCE_NAME" />' will lose access unless these items are shared with them.</translation>
 <translation id="4690246192099372265">Swedish</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">These files opened on a different desktop. Move to <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) to view it.</translation>
 <translation id="5330512191124428349">Get info</translation>
 <translation id="5335458522276292100">Backing up <ph name="FILE_COUNT" /> to <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Person with cats</translation>
 <translation id="5358764674931277">Frame rate</translation>
 <translation id="5368191757080475556">Share folder with Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">This file has wandered off somewhere. Please check your download location setting and try again.</translation>
 <translation id="5838451609423551646">Removed all entries from selection.</translation>
 <translation id="5838825566232597749">US Workman international</translation>
+<translation id="5845721951356578987">Nurse</translation>
+<translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">DHCP look-up failed</translation>
 <translation id="5896749729057314184">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, unactivated, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="5911887972742538906">An error occurred during installation of your Linux application.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">Videos</translation>
 <translation id="6150853954427645995">To save this file for offline use, get back online, right-click the file and select the <ph name="OFFLINE_CHECKBOX_NAME" /> option.</translation>
 <translation id="6164412158936057769">Butterflies</translation>
+<translation id="6165508094623778733">Learn more</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hungarian</translation>
 <translation id="6189412234224385711">Open with <ph name="EXTENSION_NAME" /></translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">Persian</translation>
 <translation id="6862635236584086457">All files saved in this folder are backed up online automatically</translation>
 <translation id="6864328437977279120">Sanskrit</translation>
+<translation id="6874758081814639712">Person doing tai chi</translation>
 <translation id="6876155724392614295">Cycle</translation>
 <translation id="6878261347041253038">Devanagari keyboard (Phonetic)</translation>
 <translation id="6885780034956018177">Snail</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, connect</translation>
 <translation id="8750438273876807512">Touch &amp; hold a file and tap <ph name="ICON" />, and select 'Pin to shelf' for quick access to your files in shelf.</translation>
 <translation id="8787254343425541995">Allow proxies for shared networks</translation>
+<translation id="8790981080411996443">Person watering plants</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8802459921616481935">Move to bin</translation>
 <translation id="8808686172382650546">Cat</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8900820606136623064">Hungarian</translation>
 <translation id="8903931173357132290">Graduate</translation>
+<translation id="8912078710089354287">Dog wagging tail</translation>
 <translation id="8919081441417203123">Danish</translation>
 <translation id="8965697826696209160">There is not enough space.</translation>
 <translation id="8970501467542182729">This file is designed for a computer using Macintosh software. This is not compatible with your device which runs Chrome OS. <ph name="BEGIN_LINK_HELP" />Learn more<ph name="END_LINK_HELP" /> about opening files on Chrome OS.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">Invalid PIN. You have one remaining attempt.</translation>
 <translation id="9153934054460603056">Save identity and password</translation>
+<translation id="9171921933192916600">Bookworm</translation>
 <translation id="9172592259078059678">Gujarati (transliteration)</translation>
 <translation id="9173120999827300720">English (US) with International keyboard</translation>
 <translation id="9174050671906956834">Items in the bin are deleted forever after 30 days.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">Modified by</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947144732524271678">Selected a range of <ph name="ENTRY_COUNT" /> entries from <ph name="FROM_ENTRY_NAME" /> to <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">English (South Africa)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">A file named '<ph name="FILE_NAME" />' already exists. Do you want to replace it?</translation>
 <translation id="992401651319295351">You have <ph name="RETRIES" /> remaining attempts. You won't be able to use this network until you set up a new PIN.</translation>

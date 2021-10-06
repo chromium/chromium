@@ -37,7 +37,6 @@
 <translation id="174539241580958092">সাইন ইনে ত্রুটির কারণে Google Chrome আপনার ডেটা সিঙ্ক করতে পারেনি৷</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
-<translation id="1810203443153428607">Chrome OS ইনস্টল করলে আপনার ডিভাইসে থাকা সব ডেটা মুছে যাবে।</translation>
 <translation id="1812689907177901597">এটি বন্ধ করার মানে হল, আপনি Chrome-এ সাইন-ইন না করে Gmail এর মতো Google সাইটগুলিতে সাইন-ইন করতে পারেন</translation>
 <translation id="1860536484129686729">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরায় অ্যাক্সেস দিতে হবে</translation>
 <translation id="1873233029667955273">Google Chrome আপনার ডিফল্ট ব্রাউজার নয়</translation>
@@ -55,6 +54,7 @@
 <translation id="2290014774651636340">Google এপিআই কীগুলি অনুপস্থিত৷ Google Chrome-এর কিছু বৈশিষ্ট্য নিষ্ক্রিয় হয়ে যাবে৷</translation>
 <translation id="2290095356545025170">আপনি কি Google Chrome আনইনস্টল করার ব্যাপারে নিষ্চিত ?</translation>
 <translation id="2309047409763057870">এটা Google Chrome-এর সেকেন্ডারি ইনস্টলেশন এবং একে আপনার ডিফল্ট ব্রাউজার করা যাবে না।</translation>
+<translation id="2345992953227471816">Chrome এইসব আইটেমে ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে:</translation>
 <translation id="2348335408836342058">এই সাইটটির জন্য Chrome কে আপনার ক্যামেরা এবং মাইক্রোফোনে অ্যাক্সেস দিতে হবে</translation>
 <translation id="234869673307233423">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="235650106824528204">এই প্রোফাইল ব্যবহার করার সময় জেনারেট হওয়া Chrome ডেটা (যেমন বুকমার্ক, ইতিহাস, পাসওয়ার্ড ও অন্যান্য সেটিংস) অফিস প্রোফাইল অ্যাডমিনিস্ট্রেটর মুছে দিতে পারেন। <ph name="LEARN_MORE" /></translation>
@@ -84,6 +84,7 @@
 <translation id="2885378588091291677">কার্য পরিচালক</translation>
 <translation id="2888126860611144412">Chrome সম্বন্ধে</translation>
 <translation id="2926676257163822632">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। Chrome-কে <ph name="BEGIN_LINK" />আপনার জন্য শক্তিশালী পাসওয়ার্ড তৈরি করার ও সেটি মনে রাখার<ph name="END_LINK" /> অনুমতি দিন।</translation>
+<translation id="2926952073016206995">এই সাইটের জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="2929907241665500097">Chrome আপডেট করা যায়নি, কোনও সমস্যা হয়েছে। <ph name="BEGIN_LINK" />Chrome-এ আপডেট করতে না পারার সমস্যা ও আপডেট করা যায়নি এমন সমস্যার সমাধান করুন।<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />শেষ বারের মতো রিমাইন্ডার: ইনস্টল করা হলে <ph name="BEGIN_BOLD" />আপনার হার্ড ড্রাইভের সমস্ত ডেটা মুছে যাবে<ph name="END_BOLD" />। প্রয়োজনীয় সমস্ত ডেটার ব্যাক-আপ নেওয়া হয়েছে কিনা দেখে নিন।<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করা একবার শুরু হয়ে গেলে আর বন্ধ করা যাবে না।<ph name="END_PARAGRAPH2" /></translation>
@@ -112,6 +113,7 @@
 <translation id="3582972582564653026">আপনার সব ডিভাইস জুড়ে Chrome সিঙ্ক করুন এবং নিজের মতো সাজিয়ে নিন</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন}=1{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার ছদ্মবেশী উইন্ডো আবার খুলবে না।}one{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}other{একটি আপডেট প্রয়োগ করতে আপনার অ্যাডমিনিস্ট্রেটর আপনাকে Chrome আবার চালু করতে বলছেন। আপনার #টি ছদ্মবেশী উইন্ডো আবার খুলবে না।}}</translation>
 <translation id="3622797965165704966">এখন আপনার Google অ্যাকাউন্ট ও শেয়ার করা কম্পিউটারগুলিতে Chrome ব্যবহার করা আরো সহজ৷</translation>
+<translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />"-এ ম্যালওয়্যার আছে বলে খুঁজে পেয়েছে</translation>
 <translation id="3718181793972440140">এটি এই ডিভাইস থেকে ১টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="3735758079232443276">আপনি Chrome চালু করলে কোন পৃষ্ঠাটি দেখানো হবে তা "<ph name="EXTENSION_NAME" />" এক্সটেনশনটি পরিবর্তন করেছে।</translation>
 <translation id="3779473566290487688">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে OS X 10.11 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে OS X 10.10 ভার্সন ব্যবহার করা হচ্ছে।</translation>
@@ -128,6 +130,7 @@
 <translation id="4149882025268051530">ইনস্টলারটি আর্কাইভ আনকমপ্রেস করা যায়নি৷ অনুগ্রহ করে আবার Google Chrome ডাউনলোড করুন৷</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome এক দিনের মধ্যে আবার লঞ্চ করুন}one{Chrome # দিনের মধ্যে আবার লঞ্চ করুন}other{Chrome # দিনের মধ্যে আবার লঞ্চ করুন}}</translation>
 <translation id="4205939740494406371">Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না। ২৪ ঘণ্টা পরে আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টে পাসওয়ার্ড চেক করুন<ph name="END_LINK" />।</translation>
+<translation id="4242034826641750751">এই সাইটের জন্য Chrome-এর ক্যামেরা ও মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="424864128008805179">Chrome থেকে সাইন-আউট করবেন?</translation>
 <translation id="4251615635259297716">এই অ্যাকাউন্টে আপনার Chrome ডেটা লিঙ্ক করবেন?</translation>
 <translation id="4281844954008187215">পরিষেবার শর্তাদি</translation>
@@ -172,13 +175,10 @@
 <translation id="521447420733633466">যদি আপনি কোনও ডিভাইস শেয়ার করেন, তাহলে বন্ধু ও পরিবারের লোকজন পৃথকভাবে ব্রাউজ করতে পারবেন এবং তাদের পছন্দ অনুযায়ী Chrome সেট-আপ করতে পারবেন</translation>
 <translation id="5251420635869119124">অতিথিগণ কোনো কিছুর জন্য অভাব বোধ না করেই Chrome ব্যবহার করতে পারবেন৷</translation>
 <translation id="5251679006894510177">প্রায় আপডেট হয়ে গেছে! আপডেট প্রসেস সম্পূর্ণ করতে, Chrome আবার চালু করুন। বন্ধ করা একই ছদ্মবেশী উইন্ডো আবার খোলা যায় না।</translation>
+<translation id="5334487786912937552">ফাইল ডাউনলোড করতে Chrome-এর স্টোরেজ অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="5386244825306882791">আপনি Chrome শুরু করলে বা Omnibox থেকে সার্চ করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="5394833366792865639">একটি Chrome ট্যাব শেয়ার করুন</translation>
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />শুরু করার আগে দেখে নিন, আপনার ডেটা সংক্রান্ত ব্যাক-আপ আপ-টু-ডেট করা আছে কিনা। Chrome OS ইনস্টল করলে আপনার হার্ড ড্রাইভে থাকা সব ডেটা মুছে যাবে।<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google কোনও ডেটা নষ্টের জন্য দায়ী হবে না এবং সার্টিফায়েড নয় এমন কোনও মডেলে কাজ Chrome OS কাজ করবে, এই গ্যারেন্টিও দিচ্ছে না। সার্টিফায়েড মডেল সম্বন্ধে আরও জানতে [TBD] দেখুন।<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chrome OS ইনস্টল করা ও ডেটা মুছে দেওয়া সম্বন্ধে আরও জানুন: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />শুরু করার জন্য প্রস্তুত থাকলে, “Chrome OS ইনস্টল করুন” বিকল্পে ক্লিক করুন। আমরা কয়েকটি সহজ পদ্ধতিতে ইনস্টল করার ব্যাপারে আপনাকে গাইড করব। আপনার কম্পিউটারে আমরা কোনও পরিবর্তন করার আগে, কনফার্ম করার জন্য আপনি আরেকটি সুযোগ পাবেন।<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS ইনস্টল করুন</translation>
 <translation id="556024056938947818">Google Chrome পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে৷</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -210,10 +210,12 @@
 <translation id="6291549208091401781">Google Chrome ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
 <translation id="6368958679917195344">Chrome OS সম্ভবত অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" /> দিয়ে তৈরি৷</translation>
 <translation id="6418662306461808273">বর্তমান Chrome প্রোফাইলে পাল্টাতে চান?</translation>
+<translation id="6506909944137591434">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS সিস্টেম</translation>
 <translation id="6676384891291319759">ইন্টারনেটটি অ্যাক্সেস করুন</translation>
 <translation id="6679975945624592337">Google Chrome-কে ব্যাকগ্রাউন্ডে চলতে দিন</translation>
+<translation id="6696915334902295848">এই সাইটের জন্য Chrome-এর মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6739177684496155661">নতুন Chrome প্রোফাইলে কাজ চালিয়ে যেতে চান?</translation>
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
 <translation id="677276454032249905">তা স্বত্তেও Chrome বন্ধ করতে চান?</translation>
@@ -253,6 +255,7 @@
 <translation id="7761834446675418963">Chrome খোলার জন্য আপনার নামের উপরে ক্লিক করুন এবং ব্রাউজ করা শুরু করুন৷</translation>
 <translation id="7777080907402804672">যদি ছবিতে প্রয়োজনীয় বিবরণ দেওয়া না থাকে, তাহলে Chrome আপনাকে একটি বিবরণ দেওয়ার চেষ্টা করবে। বিবরণ তৈরির জন্য, Google-এ ছবি পাঠানো হয়। সেটিংসে গিয়ে আপনি যেকোনও সময়ে এটি বন্ধ করতে পারেন।</translation>
 <translation id="7781002470561365167">Google Chrome-এর একটি নতুন ভার্সন উপলভ্য।</translation>
+<translation id="778331955594035129">এই সাইটের জন্য Chrome-এর লোকেশন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="7787950393032327779">অন্য একটি কম্পিউটারে (<ph name="HOST_NAME" />) প্রোফাইলটি অন্য Google Chrome প্রক্রিয়া (<ph name="PROCESS_ID" />) দ্বারা ব্যবহৃত হচ্ছে বলে মনে হচ্ছে৷ Chrome প্রোফাইলটিকে লক করেছে যাতে এটি বিকৃত না হয়ে যায়৷ যদি আপনি নিশ্চিত হন যে আর কোনো প্রক্রিয়া এই প্রোফাইলটিকে ব্যবহার করছে না, তবে আপনি প্রোফাইলটিকে আনলক করতে পারেন এবং Chrome কে পুনরায় লঞ্চ করতে পারেন৷</translation>
 <translation id="7801699035218095297">Google Chrome পাসওয়ার্ড কপি করার চেষ্টা করছে। এর অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="7808348361785373670">Chrome থেকে সরান...</translation>

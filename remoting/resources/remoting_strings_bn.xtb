@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">কপিরাইট ২০২১ The Chromium Authors. সর্বস্বত্ত্ব সংরক্ষিত।</translation>
 <translation id="4513946894732546136">প্রতিক্রিয়া</translation>
 <translation id="4563926062592110512">ক্লায়েন্ট বিচ্ছিন্ন হয়েছে: <ph name="CLIENT_USERNAME" />৷</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> সঠিকভাবে কনফিগার করা হয়নি। অন্য একটি ডিফল্ট ওয়েব ব্রাউজার বেছে নিয়ে URL ফরোয়ার্ড করার সুবিধা চালু করুন।</translation>
 <translation id="4635770493235256822">দূরবর্তী ডিভাইস</translation>
 <translation id="4660011489602794167">কীবোর্ড দেখান</translation>
 <translation id="4703799847237267011">আপনার Chromoting অধিবেশন শেষ হয়েছে৷</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করেছেন।</translation>
 <translation id="579702532610384533">পুনরায সংযোগ করুন</translation>
 <translation id="5810269635982033450">স্ক্রিন একটি ট্র্যাকপ্যাডের মত কাজ করে</translation>
+<translation id="5823554426827907568">আপনার স্ক্রিন দেখার জন্য এবং আপনার কীবোর্ড ও মাউজে অ্যাক্সেস পাওয়ার জন্য, <ph name="CLIENT_USERNAME" /> আপনাকে অনুরোধ করেছেন। আপনি এই অনুরোধটি না চাইলে ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' প্রেস করুন। অন্যথায় কানেকশন রেডি হয়ে গেলে তাতে অনুমতি দেওয়ার জন্য ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বেছে নিন।</translation>
 <translation id="5823658491130719298">যে কম্পিউটারটি আপনি রিমোটভাবে অ্যাক্সেস করতে চান সেটিতে Chrome খুলে <ph name="INSTALLATION_LINK" />-এ যান</translation>
 <translation id="5841343754884244200">দেখার বিকল্প</translation>
 <translation id="6033507038939587647">কীবোর্ড বিকল্পগুলি</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">রিমোট কম্পিউটারের কানেকশন সাময়িকভাবে বন্দ করা হয়েছে কারণ কেউ ভুল PIN এর মাধ্যমে এতে কানেক্ট করার চেষ্টা করছিল৷ অনুগ্রহ করে পরে আবার চেষ্টা করুন৷</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" />এ রিমোট কানেকশন বন্ধ করার ব্যাপারে আপনি কি নিশ্চিত? আপনি যদি মন বদলান, তাহলে কানেকশনগুলি পুনঃচালু করতে আপনাকে এই কম্পিউটারে যেতে হবে৷</translation>
-<translation id="6998890551706945177">আপনার কম্পিউটার দেখার এবং নিয়ন্ত্রণের অ্যাক্সেস পাওয়ার জন্য, <ph name="CLIENT_USERNAME" /> আপনাকে অনুরোধ করেছেন। আপনি এই ব্যক্তিকে না চিনলে অথবা শেয়ার করার আগে কোনও পরিবর্তন করতে চাইলে ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' প্রেস করুন।  অন্যথায় কানেকশনের অনুমতি দিতে ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' প্রেস করুন।</translation>
 <translation id="7019153418965365059">অস্বীকৃত হোস্ট ত্রুটি: <ph name="HOST_OFFLINE_REASON" />।</translation>
 <translation id="701976023053394610">রিমোট সহায়তা</translation>
 <translation id="7026930240735156896">রিমোট অ্যাক্সেসের জন্য আপনার কম্পিউটার সেট-আপ করতে নির্দেশাবলী অনুসরণ করুন</translation>
@@ -169,6 +170,7 @@
 এই অনুমতি দিতে, নিচে '<ph name="BUTTON_NAME" />' বোতামে ক্লিক করুন। 'অ্যাক্সেসিবিলিটি' অভিরুচির প্যানেল খুলুন এবং '<ph name="SERVICE_SCRIPT_NAME" />'-এর পাশের বক্সে টিকচিহ্ন দিন।
 
 '<ph name="SERVICE_SCRIPT_NAME" />' বক্সে আগে থেকেই টিক চিহ্ন দেওয়া থাকলে, সেটি সরিয়ে আবার টিক চিহ্ন দিন।</translation>
+<translation id="8305209735512572429">ওয়েব যাচাইকরণের রিমোটিং প্রসেস</translation>
 <translation id="8383794970363966105">Chromoting ব্যবহারের জন্য, আপনাকে আপনার ডিভাইসে একটি Google অ্যাকাউন্ট যোগ করতে হবে৷</translation>
 <translation id="8386846956409881180">হোস্ট ভুল OAuth সার্টিফিকেটের সঙ্গে কনফিগার করা আছে।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />-কে অনুমতি দিন</translation>

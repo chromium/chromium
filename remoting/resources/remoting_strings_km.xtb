@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">រក្សាសិទ្ធិដោយ Chromium Authors ឆ្នាំ 2021។ រក្សាសិទ្ធិគ្រប់យ៉ាង។</translation>
 <translation id="4513946894732546136">មតិ</translation>
 <translation id="4563926062592110512">អតិថិជនបានផ្តាច់៖ <ph name="CLIENT_USERNAME" />។</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> មិនត្រូវបានកំណត់​រចនាសម្ព័ន្ធ​បានត្រឹមត្រូវទេ។ សូមជ្រើសរើសកម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើមផ្សេង បន្ទាប់មកបើកការបញ្ជូន URL បន្តម្ដងទៀត។</translation>
 <translation id="4635770493235256822">ឧបករណ៍ពីចម្ងាយ</translation>
 <translation id="4660011489602794167">បង្ហាញក្តារចុច</translation>
 <translation id="4703799847237267011">វេន Chromoting របស់អ្នកត្រូវបានបញ្ចប់។</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">បានចូលជា <ph name="EMAIL_ADDRESS" /> ។</translation>
 <translation id="579702532610384533">ភ្ជាប់ឡើងវិញ</translation>
 <translation id="5810269635982033450">អេក្រង់​ដំណើរការ​ដូចជា​ផ្ទាំងប៉ះ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> បានស្នើសុំចូលប្រើ ដើម្បីមើលអេក្រង់របស់អ្នក ព្រមទាំងគ្រប់គ្រងក្ដារចុច និងកណ្ដុររបស់អ្នក។ ចុច ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ប្រសិនបើអ្នកមិនយល់ព្រមលើសំណើនេះទេ។ បើមិនដូច្នោះទេ សូមជ្រើសរើស ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ដើម្បីអនុញ្ញាតការតភ្ជាប់ នៅពេលរួចរាល់។</translation>
 <translation id="5823658491130719298">បើក Chrome រួចចូល <ph name="INSTALLATION_LINK" /> នៅលើ​កុំព្យូទ័រ​ដែលអ្នក​ចង់ចូល​ប្រើពី​ចម្ងាយ</translation>
 <translation id="5841343754884244200">ជម្រើស​នៃ​ការបង្ហាញ</translation>
 <translation id="6033507038939587647">ជម្រើស​ក្ដារចុច</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">ការតភ្ជាប់ទៅកុំព្យូទ័រពីចម្ងាយត្រូវបានរារាំងជាបណ្តោះអាសន្ន ដោយសារមាននរណាម្នាក់កំពុងព្យាយាមភ្ជាប់ទៅវាដោយប្រើកូដ PIN ដែលមិនត្រឹមត្រូវ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="6985691951107243942">តើអ្នកប្រាកដថាចង់បិទដំណើរការការភ្ជាប់ពីចម្ងាយទៅ <ph name="HOSTNAME" /> ទេ? ប្រសិនបើអ្នកប្តូរចិត្ត អ្នកត្រូវទៅកាន់កុំព្យូទ័រនោះដើម្បីបើកដំណើរការការភ្ជាប់ឡើងវិញ។</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> បានស្នើសុំសិទ្ធិចូលប្រើ ដើម្បីមើល និងគ្រប់គ្រងកុំព្យូទ័ររបស់អ្នក។ សូមចុច ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ប្រសិនបើអ្នកមិនស្គាល់បុគ្គលនេះ ឬប្រសិនបើអ្នកត្រូវការធ្វើការផ្លាស់ប្ដូរ មុនពេលចែករំលែក។  បើមិនដូច្នោះទេ សូមជ្រើសរើស ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ដើម្បីអនុញ្ញាតការតភ្ជាប់។</translation>
 <translation id="7019153418965365059">កំហុសម៉ាស៊ីនចែករំលែកដែលមិនអាចសម្គាល់បាន៖ <ph name="HOST_OFFLINE_REASON" />។</translation>
 <translation id="701976023053394610">ជំនួយការពីចម្ងាយ</translation>
 <translation id="7026930240735156896">សូម​អនុវត្ត​តាម​ការណែនាំ​ ដើម្បី​រៀបចំកុំព្យូទ័រ​របស់អ្នក​សម្រាប់​ការចូលប្រើ​ពីចម្ងាយ</translation>
@@ -169,6 +170,7 @@
 ដើម្បីផ្ដល់​ការអនុញ្ញាតនេះ សូមចុច '<ph name="BUTTON_NAME" />' ខាងក្រោម។ នៅក្នុង​ផ្ទាំងចំណូលចិត្ត 'ភាពងាយស្រួល' ដែលបើក សូមធីក​ប្រអប់​នៅជិត '<ph name="SERVICE_SCRIPT_NAME" />'។
 
 ប្រសិនបើ​បានធីក '<ph name="SERVICE_SCRIPT_NAME" />' រួចហើយ សូម​ដោះធីក រួចធីកវា​ម្ដងទៀត។</translation>
+<translation id="8305209735512572429">Web Authentication Remoting Process</translation>
 <translation id="8383794970363966105">ដើម្បីប្រើ Chromoting អ្នកត្រូវបន្ថែមគណនី Google ទៅឧបករណ៍របស់អ្នក។</translation>
 <translation id="8386846956409881180">ម៉ាស៊ីនចែករំលែកត្រូវបានកំណត់រចនាសម្ព័ន្ធដោយប្រើព័ត៌មានអត្តសញ្ញាណ OAuth ដែលគ្មានសុពលភាព។</translation>
 <translation id="8397385476380433240">ផ្ដល់ការអនុញ្ញាតឱ្យ <ph name="PRODUCT_NAME" /></translation>

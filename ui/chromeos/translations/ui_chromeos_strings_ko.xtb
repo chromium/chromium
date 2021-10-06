@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">노르웨이어</translation>
 <translation id="1433628812591023318">Parallels Desktop에 파일을 드롭하려면 파일을 Windows 파일 폴더로 이동해야 합니다.</translation>
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
+<translation id="1439919885608649279">꽃에 둘러싸인 사람</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />'이(가) 업로드되지 않았습니다. Google Drive에 충분한 여유 공간이 없습니다.</translation>
 <translation id="1482884275703521657">핀란드어</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">파일을 수정하지 못했습니다.</translation>
 <translation id="1673103856845176271">보안 상의 이유로 파일에 액세스하지 못했습니다.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">자전거 타는 사람</translation>
 <translation id="1722487484194605434">항목 <ph name="NUMBER_OF_ITEMS" />개 압축 중...</translation>
 <translation id="1722687688096767818">프로필 추가 중...</translation>
 <translation id="1726100011689679555">네임서버</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">미리보기 없음</translation>
 <translation id="1812302367230252929">암하라어(음역)</translation>
 <translation id="1813278315230285598">서비스</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />주의:<ph name="END_BOLD" /> 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="183183971458492120">정보 로드 중...</translation>
 <translation id="1834290891154666894">잘못된 제목 보조 이름 일치 항목</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">점(.)으로 시작하는 이름은 시스템 전용입니다. 다른 이름을 선택하세요.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2084108471225856927">기기 설정</translation>
+<translation id="2084809735218147718">고맙다는 노래를 부르는 사람</translation>
 <translation id="2085470240340828803">이름이 '<ph name="FILENAME" />'인 파일이 이미 존재합니다. 원하는 작업을 선택하세요.</translation>
 <translation id="2088690981887365033">VPN 네트워크</translation>
 <translation id="2122305276694332719">숨겨진 네트워크에 자동 연결하면 다른 사용자가 내 기기 및 일부 네트워크 설정을 볼 수 있으므로 권장되지 않습니다.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Linux 앱 설치</translation>
 <translation id="2225536596944493418">선택한 <ph name="NUMBER_OF_ITEMS" />개의 항목을 삭제하시겠습니까?</translation>
 <translation id="2230062665678605299">'<ph name="FOLDER_NAME" />' 폴더를 생성할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">커피를 마시는 사람</translation>
 <translation id="2251368349685848079">휴지통에서 복원</translation>
 <translation id="2282155092769082568">자동설정 URL:</translation>
 <translation id="2288278176040912387">레코드 플레이어</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">전체 파일 크기</translation>
 <translation id="2428749644083375155">항목 <ph name="NUMBER_OF_ITEMS" />개를 <ph name="FOLDER_NAME" /> 폴더에 복사 중</translation>
 <translation id="2448312741937722512">유형</translation>
+<translation id="2452444014801043526">메가폰을 든 사람</translation>
 <translation id="2464079411014186876">아이스크림</translation>
 <translation id="2464089476039395325">HTTP 프록시</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> 네트워크, 연결 없음</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF 문서</translation>
 <translation id="2888807692577297075">&lt;b&gt;'<ph name="SEARCH_STRING" />'&lt;/b&gt;와(과) 일치하는 항목 없음</translation>
 <translation id="2894654529758326923">정보</translation>
-<translation id="2902312830803030883">추가 작업</translation>
 <translation id="2902734494705624966">영어(미국) 확장</translation>
 <translation id="290843123675549676">마라타어</translation>
 <translation id="2923240520113693977">에스토니아어</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">프랑스어(캐나다)</translation>
 <translation id="3003189754374775221">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="3003633581067744647">썸네일 이미지 보기로 전환</translation>
+<translation id="3016566519832145558">주의: 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다.</translation>
 <translation id="3029114385395636667">Docs, Sheets, Slides를 오프라인에서 사용할 수 있도록 Google Docs 오프라인을 사용 설정하세요.</translation>
 <translation id="303198083543495566">위치</translation>
 <translation id="3047197340186497470">중국어(대이수입법)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS 호스트</translation>
 <translation id="3113153474486991170">이 위치에서 "<ph name="PATH" />" 경로를 열 수 없습니다. 열려면 '내 파일'로 복사하세요.</translation>
 <translation id="3113592018909187986">기회가 1번 남았습니다. 새 PIN을 설정할 때까지 이 네트워크를 사용할 수 없습니다.</translation>
+<translation id="3124404833828281817">공상에 빠진 사람</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />](하드웨어에 백업됨)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.com 사이트로 이동...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> 앱으로 파일을 열려면 먼저 파일을 Windows 파일 폴더에 복사하세요.</translation>
 <translation id="3556731189587832921">영어(미국, 국제 PC 키보드)</translation>
+<translation id="3567221313191587603">파일을 선택하고 <ph name="OFFLINE_CHECKBOX_NAME" />으로 전환하여 파일에 오프라인으로 액세스하세요.</translation>
 <translation id="357479282490346887">리투아니아어</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> 파일을 오프라인에서 사용하도록 설정할 수 없습니다.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">모바일 프로필 설치 중, 네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">체코어(쿼티 키보드)</translation>
 <translation id="4656293982926141856">이 컴퓨터</translation>
+<translation id="4656777537938206294">파일을 오프라인에서 사용할 수 있도록 설정</translation>
+<translation id="4658782175094886150">눈 맞는 사람</translation>
 <translation id="4669606053856530811">이 항목을 '<ph name="SOURCE_NAME" />'의 멤버와 공유하지 않으면 이 팀의 멤버가 항목에 더 이상 액세스할 수 없게 됩니다.</translation>
 <translation id="4690246192099372265">스웨덴어</translation>
 <translation id="4693155481716051732">초밥</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">파일이 다른 데스크톱에서 열려 있습니다. 파일을 보려면 <ph name="USER_NAME" />(<ph name="MAIL_ADDRESS" />)(으)로 이동하세요.</translation>
 <translation id="5330512191124428349">정보 보기</translation>
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />에 파일 <ph name="FILE_COUNT" />개 백업 중</translation>
+<translation id="535792325654997756">고양이들과 함께 있는 사람</translation>
 <translation id="5358764674931277">프레임 속도</translation>
 <translation id="5368191757080475556">Linux와 폴더 공유</translation>
 <translation id="5402367795255837559">점자</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">파일이 어디론가 사라졌습니다. 다운로드 위치 설정을 확인하고 다시 시도해 주세요.</translation>
 <translation id="5838451609423551646">모든 항목이 선택 해제되었습니다.</translation>
 <translation id="5838825566232597749">미국 워크맨(국제)</translation>
+<translation id="5845721951356578987">간호사</translation>
+<translation id="5861477046012235702">게이머</translation>
 <translation id="5864471791310927901">DHCP 조회 실패</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째 네트워크, <ph name="NETWORK_NAME" />, 비활성화됨, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="5911887972742538906">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">동영상</translation>
 <translation id="6150853954427645995">오프라인에서 사용하기 위해 이 파일을 저장하려면 온라인으로 돌아가서 마우스 오른쪽 버튼으로 파일을 클릭한 다음 <ph name="OFFLINE_CHECKBOX_NAME" /> 옵션을 선택하세요.</translation>
 <translation id="6164412158936057769">나비</translation>
+<translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170470584681422115">샌드위치</translation>
 <translation id="6187719147498869044">헝가리어</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" />(으)로 열기</translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">페르시아어</translation>
 <translation id="6862635236584086457">이 폴더에 저장된 모든 파일은 온라인으로 자동 백업됨</translation>
 <translation id="6864328437977279120">산스크리트어</translation>
+<translation id="6874758081814639712">태극권을 하는 사람</translation>
 <translation id="6876155724392614295">자전거</translation>
 <translation id="6878261347041253038">데바나가리 키보드(음역)</translation>
 <translation id="6885780034956018177">달팽이</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 연결</translation>
 <translation id="8750438273876807512">실행기에서 파일에 빠르게 액세스하려면 파일을 길게 터치한 다음 <ph name="ICON" /> 아이콘을 탭하고 '실행기에 고정'을 선택하세요.</translation>
 <translation id="8787254343425541995">공유 네트워크에서 프록시 허용</translation>
+<translation id="8790981080411996443">식물에 물을 주는 사람</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8802459921616481935">휴지통으로 이동</translation>
 <translation id="8808686172382650546">고양이</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">연결되지 않음</translation>
 <translation id="8900820606136623064">헝가리어</translation>
 <translation id="8903931173357132290">졸업생</translation>
+<translation id="8912078710089354287">꼬리를 흔드는 개</translation>
 <translation id="8919081441417203123">덴마크어</translation>
 <translation id="8965697826696209160">저장 공간이 부족합니다.</translation>
 <translation id="8970501467542182729">이 파일은 Macintosh 소프트웨어를 사용하는 컴퓨터용으로 설계되었습니다. 따라서 Chrome OS를 실행하는 기기와는 호환되지 않습니다. Chrome OS에서 파일을 여는 방법을 <ph name="BEGIN_LINK_HELP" />자세히 알아보세요<ph name="END_LINK_HELP" />.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">카탈로니아어</translation>
 <translation id="914873105831852105">잘못된 PIN입니다. 기회가 1번 남았습니다.</translation>
 <translation id="9153934054460603056">ID와 비밀번호 저장</translation>
+<translation id="9171921933192916600">책벌레</translation>
 <translation id="9172592259078059678">구자라트어(음역)</translation>
 <translation id="9173120999827300720">영어(미국, 국제 키보드)</translation>
 <translation id="9174050671906956834">30일 후 휴지통에 있는 항목이 완전히 삭제됩니다.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">수정한 사용자</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />부터 <ph name="TO_ENTRY_NAME" />까지 <ph name="ENTRY_COUNT" />개를 선택했습니다.</translation>
+<translation id="965477715979482472">영어(남아프리카공화국)</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="988685240266037636">이름이 '<ph name="FILE_NAME" />'인 파일이 이미 존재합니다. 덮어쓰시겠습니까?</translation>
 <translation id="992401651319295351">기회가 <ph name="RETRIES" />번 남았습니다. 새 PIN을 설정할 때까지 이 네트워크를 사용할 수 없습니다.</translation>

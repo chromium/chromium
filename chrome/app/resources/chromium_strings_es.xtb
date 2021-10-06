@@ -36,6 +36,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2343156876103232566">Para enviar un número desde aquí a tu teléfono Android, inicia sesión en Chromium con ambos dispositivos.</translation>
 <translation id="2347108572062610441">Esta extensión ha cambiado la página que se muestra al iniciar Chromium.</translation>
 <translation id="2396765026452590966">La extensión <ph name="EXTENSION_NAME" /> ha cambiado la página que se muestra al iniciar Chromium.</translation>
+<translation id="2401032172288869980">Chromium necesita los permisos del micrófono y de la cámara para este sitio</translation>
 <translation id="2483889755041906834">En Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2535480412977113886">Chromium OS no ha podido sincronizar los datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
@@ -153,6 +154,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS se ha creado gracias a <ph name="BEGIN_LINK_CROS_OSS" />software libre<ph name="END_LINK_CROS_OSS" /> adicional, como el <ph name="BEGIN_LINK_LINUX_OSS" />entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Te damos la bienvenida a Chromium</translation>
+<translation id="5883558403894052917">Chromium ha detectado que estos elementos contienen software malicioso:</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" />, inicio de sesión en la red</translation>
 <translation id="5987687638152509985">Actualiza Chromium para iniciar la sincronización</translation>
@@ -170,6 +172,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6183079672144801177">Comprueba que hayas iniciado sesión en Chromium con tu <ph name="TARGET_DEVICE_NAME" /> y, después, prueba a enviarlo de nuevo.</translation>
 <translation id="6212496753309875659">Este ordenador ya cuenta con una versión más reciente de Chromium. Si el software no funciona, desinstala Chromium y vuelve a intentarlo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se reiniciará ahora}=1{Chromium se reiniciará dentro de 1 segundo}other{Chromium se reiniciará dentro de # segundos}}</translation>
+<translation id="6241367896540709610">Chromium necesita el permiso de acceso al almacenamiento para descargar archivos</translation>
 <translation id="6248213926982192922">Establecer Chromium como navegador predeterminado</translation>
 <translation id="6266342355635466082">Chromium no puede comprobar si hay actualizaciones. Revisa tu conexión a Internet.</translation>
 <translation id="6268381023930128611">¿Cerrar sesión en Chromium?</translation>
@@ -190,7 +193,9 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="6570579332384693436">Para corregir errores ortográficos, Chromium envía a Google el texto que escribes en los campos de texto</translation>
 <translation id="6598877126913850652">Ir a los ajustes de notificaciones de Chromium</translation>
 <translation id="6613594504749178791">Los cambios se aplicarán la próxima vez que reinicies Chromium.</translation>
+<translation id="665732753414869868">Chromium necesita el permiso de la cámara para crear un mapa 3D de tu entorno</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
+<translation id="6709350901466051922">Chromium necesita el permiso del micrófono para este sitio</translation>
 <translation id="6717134281241384636">No se puede utilizar tu perfil porque procede de una versión de Chromium más actualizada.
 
 Es posible que algunas funciones no estén disponibles. Especifica un directorio de perfil diferente o utiliza una versión más actualizada de Chromium.</translation>
@@ -202,6 +207,7 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="6847869444787758381">Chromium te avisará si tus contraseñas están en riesgo</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiada en Chromium)</translation>
+<translation id="6873893289264747459">Chromium ha detectado que "<ph name="EXTENSION_NAME" />" contiene software malicioso</translation>
 <translation id="6893813176749746474">Chromium se ha actualizado, pero llevas al menos 30 días sin utilizarlo.</translation>
 <translation id="691026815377248078">Chromium necesita acceso al Bluetooth para continuar 
  con la vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -210,6 +216,7 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="6990124437352146030">Chromium necesita permiso para acceder al micrófono en este sitio web</translation>
 <translation id="705851970750939768">Actualizar Chromium</translation>
 <translation id="7067091210845072982">Si una imagen no tiene ninguna descripción útil, Chromium intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google.</translation>
+<translation id="718435575166326686">Chromium necesita el permiso de la cámara para este sitio</translation>
 <translation id="7196312274710523067">No se ha podido iniciar Chromium. Inténtalo de nuevo.</translation>
 <translation id="7197677400338048821">Chromium no puede comprobar tus contraseñas. Vuelve a intentarlo en 24 horas.</translation>
 <translation id="7223968959479464213">Administrador de tareas - Chromium</translation>
@@ -233,10 +240,6 @@ Chromium no puede recuperar tu configuración.</translation>
       configuración de Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium está utilizando la cámara y el micrófono.</translation>
 <translation id="7617377681829253106">Chromium mejor que nunca</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Antes de empezar, asegúrate de tener una copia de seguridad actualizada de tus datos. Al instalar Chromium OS, se sobrescribirán todos los datos de tu disco duro.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google no se responsabiliza de la pérdida de datos y no asegura que Chromium OS funcione en modelos no certificados. Visita [TBD] para obtener más información sobre los modelos certificados.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Más información sobre cómo instalar Chromium OS y el borrado de datos: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Si tienes todo listo para continuar, haz clic en "Instalar Chromium OS" y te guiaremos por el proceso de instalación en tan solo un par de pasos sencillos. Tendrás otra oportunidad para confirmar los cambios en tu ordenador antes de que los apliquemos.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium no es tu navegador predeterminado</translation>
 <translation id="7689606757190482937">Sincroniza y personaliza Chromium en todos tus dispositivos</translation>
 <translation id="7729447699958282447">Chromium no ha podido sincronizar los datos porque la función de sincronización no está disponible para tu dominio.</translation>
@@ -251,6 +254,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="7975919845073681630">Esta instalación de Chromium es secundaria, por lo que no se puede establecer como navegador predeterminado.</translation>
 <translation id="8013436988911883588">Una vez que Chromium tenga acceso, los sitios web podrán solicitarlo también.</translation>
 <translation id="8045118833343856403">Estas cuentas no han iniciado sesión en ningún perfil de Chromium. Si quieres usar una cuenta en otro perfil, quita ese perfil primero.</translation>
+<translation id="8105840573057009683">Chromium necesita el permiso de ubicación para este sitio</translation>
 <translation id="81770708095080097">Este archivo es peligroso, por lo que Chromium lo ha bloqueado.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene ninguna descripción útil, Chromium intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
 <translation id="8266560134891435528">Chromium no puede comprobar tus contraseñas porque no has iniciado sesión</translation>

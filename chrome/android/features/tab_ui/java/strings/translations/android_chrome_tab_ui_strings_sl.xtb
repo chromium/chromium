@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Prejmite obvestila ob znižanju cen.</translation>
 <translation id="1657719826150349398">Premakni zavihek navzdol</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> zavihek}one{<ph name="TABS_COUNT_MANY" /> zavihek}two{<ph name="TABS_COUNT_MANY" /> zavihka}few{<ph name="TABS_COUNT_MANY" /> zavihki}other{<ph name="TABS_COUNT_MANY" /> zavihkov}}</translation>
+<translation id="2118649612461486615">Podatki o trgovini</translation>
+<translation id="2162620598375156287">Zdaj <ph name="CURRENT_PRICE" /> na <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Urejanje imena skupine</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Odstrani <ph name="TABS_COUNT_ONE" /> izbran zavihek iz skupine.}one{Odstrani <ph name="TABS_COUNT_MANY" /> izbran zavihek iz skupine.}two{Odstrani <ph name="TABS_COUNT_MANY" /> izbrana zavihka iz skupine.}few{Odstrani <ph name="TABS_COUNT_MANY" /> izbrane zavihke iz skupine.}other{Odstrani <ph name="TABS_COUNT_MANY" /> izbranih zavihkov iz skupine.}}</translation>
 <translation id="2479148705183875116">V nastavitve</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Združi</translation>
 <translation id="2613747923081026172">Ustvarjanje skupine</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Na spletno mesto</translation>
 <translation id="2671423594960767771">Deli skupino</translation>
 <translation id="2759453070259087442">Razširitev skupine zavihkov <ph name="TITLE_OF_GROUP" /> s toliko zavihki: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Si želite ogledati podatke o trgovini?</translation>
 <translation id="2928243913527329289">Google | O tej trgovini</translation>
 <translation id="2977480621796371840">Odstrani iz skupine</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">ocena</translation>
+<translation id="3267416433995960648">Izklopi opozorilo</translation>
 <translation id="3291470810748040983">Ko bo na odprtem zavihku nižja cena, boste prejeli opozorilo.</translation>
 <translation id="3328308545011660196">Predlog: Videti je, da je toliko sorodnih zavihkov: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="6054741997831917303">Cena tega izdelka je bila nedavno <ph name="PREVIOUS_PRICE" />, zdaj je <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Izberite zavihke</translation>
+<translation id="6228793724645064692">(ocena trgovine)</translation>
+<translation id="6333260925957816943">Informacije o tej trgovini</translation>
 <translation id="6510648526783655549">Zapri trak z zavihki</translation>
+<translation id="6549021453810473782">Ogled podatkov o trgovini</translation>
 <translation id="6562820390860419811">Premakni zavihek v levo</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6840760312327750441">Če želite združiti zavihke v skupino, pridržite zavihek. Nato ga povlecite na drug zavihek.</translation>
 <translation id="6856809498882026482">Skrij način z več izbirami</translation>
+<translation id="7129458170538955174">Informacije o tej trgovini, odprte pri polovični višini.</translation>
 <translation id="7151209024774799310">Odstrani zavihke iz skupine</translation>
 <translation id="7204204600596740190">Način z več izbirami</translation>
+<translation id="7326879924029668159">Oglejte si pravilnik o vračilih in drugo.</translation>
 <translation id="7352298686197644113">Oglejte si, kateri izdelek na odprtih zavihkih ima nižjo ceno.</translation>
 <translation id="753732157349120914">Preklop med zavihki</translation>
 <translation id="7559245342362162951">Zavihke skupine pokaži v celozaslonski mreži</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> mnenje}one{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenje}two{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenji}few{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenja}other{Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> mnenj}}</translation>
 <translation id="7885132941432959125">Premakni zavihek v desno</translation>
 <translation id="7966321538264951561">Opustitev predlogov.</translation>
+<translation id="8029301326595421733">Informacije o tej trgovini, odprte pri polni višini.</translation>
 <translation id="814503310257431685">Prikaži vse</translation>
 <translation id="8205266828577616993">Premakni zavihek navzgor</translation>
 <translation id="8304833501377495048">Ne želite več prikazati traku z zavihki?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8749939518995770034">Zaprt trak z zavihki</translation>
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>
+<translation id="9090098097337832354">Informacije o tej trgovini so zaprte.</translation>
 <translation id="9150694013019234766">Preklapljanje med zavihki v skupini zavihkov pri dnu zaslona</translation>
 <translation id="9169594135889675189">Skupini dodaj nov zavihek</translation>
 <translation id="959682366969460160">Postanite bolj organizirani</translation>

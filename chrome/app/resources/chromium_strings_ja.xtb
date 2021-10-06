@@ -34,6 +34,7 @@
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
 <translation id="2347108572062610441">この拡張機能により、Chromium の起動時に表示されるページが変更されました。</translation>
 <translation id="2396765026452590966">拡張機能「<ph name="EXTENSION_NAME" />」により、Chromium の起動時に表示されるページが変更されました。</translation>
+<translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="2483889755041906834">Chromium 内</translation>
 <translation id="2485422356828889247">アンインストール</translation>
 <translation id="2535480412977113886">アカウントのログイン情報が最新ではないため、Chromium OS はデータを同期できませんでした。</translation>
@@ -151,6 +152,7 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS も <ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />も追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
+<translation id="5883558403894052917">Chromium で次のアイテムに不正なソフトウェアが含まれていることが検出されました。</translation>
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ネットワークにログイン</translation>
 <translation id="5987687638152509985">同期を開始するには、Chromium を更新します</translation>
@@ -168,6 +170,7 @@
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> で Chromium にログインしていることを確認してから、もう一度送信してください。</translation>
 <translation id="6212496753309875659">新しいバージョンの Chromium が既にインストールされています。ソフトウェアが動作しない場合は、Chromium をアンインストールしてからもう一度お試しください。</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium は今すぐ再起動されます}=1{Chromium は 1 秒後に再起動されます}other{Chromium は # 秒後に再起動されます}}</translation>
+<translation id="6241367896540709610">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
 <translation id="6248213926982192922">Chromium を既定のブラウザにする</translation>
 <translation id="6266342355635466082">Chromium がアップデートを確認できません。インターネット接続を確認してみてください。</translation>
 <translation id="6268381023930128611">Chromium からログアウトしますか？</translation>
@@ -188,7 +191,9 @@
 <translation id="6570579332384693436">スペルミスを修正するために、テキスト欄に入力したテキストが Chromium から Google に送信されます</translation>
 <translation id="6598877126913850652">Chromium の通知設定に移動</translation>
 <translation id="6613594504749178791">変更内容は次に Chromium を再起動したときに有効になります。</translation>
+<translation id="665732753414869868">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
+<translation id="6709350901466051922">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
 <translation id="6717134281241384636">バージョンが新しい Chromium のプロフィールは使用できません。
 
 一部の機能が利用できない可能性があります。別の場所のプロフィールを指定するか、新しいバージョンの Chromium をご使用ください。</translation>
@@ -200,6 +205,7 @@
 <translation id="6847869444787758381">Chromium では、特定のパスワードが侵害された事実の有無がわかります</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay（Chromium にコピー）</translation>
+<translation id="6873893289264747459">Chromium で「<ph name="EXTENSION_NAME" />」に不正なソフトウェアが含まれていることが検出されました</translation>
 <translation id="6893813176749746474">Chromium が更新されましたが、30 日以上使用されていません。</translation>
 <translation id="691026815377248078">Chromium でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
@@ -207,6 +213,7 @@
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
 <translation id="705851970750939768">Chromium を更新</translation>
 <translation id="7067091210845072982">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
+<translation id="718435575166326686">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
 <translation id="7196312274710523067">Chromium を起動できませんでした。もう一度お試しください。</translation>
 <translation id="7197677400338048821">Chromium でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
 <translation id="7223968959479464213">タスク マネージャ - Chromium</translation>
@@ -230,10 +237,6 @@
       Chromium OS の設定<ph name="LINK_END" />を確認してください</translation>
 <translation id="761356813943268536">Chromium がカメラとマイクを使用しています。</translation>
 <translation id="7617377681829253106">進化する Chromium</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />インストールを開始する前に、最新のデータがバックアップされていることをご確認ください。Chromium OS をインストールすると、ハードドライブのデータはすべて上書きされます。<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google はデータの消失について一切の責任を負わず、未認定のモデルで Chromium OS が動作することも保証しませんのであらかじめご了承ください。認定モデルについて詳しくは、[TBD] をご覧ください。<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS のインストールとデータの消去について: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />インストールの準備ができたら、[Chromium OS をインストール] をクリックすると、いくつかの簡単なステップに沿って、インストールを行っていただけます。パソコンに実際に変更を加える前に、インストールを確認するメッセージがもう一度表示されます。<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium はデフォルトのブラウザとして設定されていません</translation>
 <translation id="7689606757190482937">同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="7729447699958282447">お使いのドメインでは同期を利用できないため、Chromium はデータを同期できませんでした。</translation>
@@ -248,6 +251,7 @@
 <translation id="7975919845073681630">この Chromium はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
 <translation id="8013436988911883588">Chromium にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="8045118833343856403">以下のアカウントは Chromium プロファイルにログインしていません。別のプロファイルでアカウントを使用する場合は、最初にそのプロファイルを削除してください。</translation>
+<translation id="8105840573057009683">このサイトを利用するには、Chromium で位置情報の使用を許可する必要があります</translation>
 <translation id="81770708095080097">このファイルは危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="8248265253516264921">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
 <translation id="8266560134891435528">ログインしていないため、Chromium でパスワードを確認できません</translation>

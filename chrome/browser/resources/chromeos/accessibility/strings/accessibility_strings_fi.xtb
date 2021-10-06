@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Ei seuraavia muokattavia tekstikenttiä</translation>
 <translation id="1342835525016946179">artikkeli</translation>
 <translation id="1346059596910821859">Vinkki</translation>
+<translation id="1354356357730355833">kopioi</translation>
 <translation id="135978014023467274">ChromeVox päivitettiin versioon 63!</translation>
 <translation id="1360699455582016846">Valitse reititysavaimen <ph name="ROUTING_KEY_NUMBER" /> alla oleva kohde</translation>
 <translation id="1377925789329510816">Tämä on viimeinen otsikko. Siirry ensimmäiseen otsikkoon painamalla Haku + H tai tämän sivun toiseen otsikkoon painamalla Haku + Vaihto + H.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">Päivitä.</translation>
 <translation id="2675533876313964202">Chartreuse</translation>
 <translation id="2684412629217766642">Sulje ChromeVox-opetusohjelma</translation>
+<translation id="2692503699962701720">Muuta äänenkorkeutta, kun ääneen luetaan elementtityyppejä ja muotoiltua tekstiä</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Tekstimuunnoksen vaihtoehto</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{vasen kaarisulje}other{# vasenta kaarisuljetta}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">pystysuunta</translation>
 <translation id="3286390186030710347">Liukusäädin</translation>
 <translation id="3300348286427369683">Rich Text ‑tuki. ChromeVox tukee nyt Rich Text ‑kenttiä ja niiden ominaisuuksia, kuten siirtymiskomentoja, pistekirjoitusosoittimen ohjausta ja valintaa.</translation>
+<translation id="3300733168898541351">kumoa</translation>
 <translation id="3307886118343381874">Siirry taulukon loppuun</translation>
 <translation id="3312997241656799641">Seuraava käyty linkki</translation>
 <translation id="3313245066383501820">ChromeVox-muokkausnäppäin</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Näytä muotojen luettelo</translation>
 <translation id="3414400929511680526">Vaalea syvänsininen</translation>
 <translation id="3418936350470374046">Ei alla olevia soluja</translation>
+<translation id="3419269701801640163">liitä</translation>
 <translation id="3435494200763325275">Lisää sarkaimella siirtymisestä</translation>
 <translation id="344800400831402066">Perunruskea</translation>
 <translation id="3457000393508828486">Painettu osittain</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">kuva</translation>
 <translation id="4021716437419160885">Vieritä alas</translation>
 <translation id="4035381225449278841">Kevät</translation>
+<translation id="4038098586530338813">toista</translation>
 <translation id="4047216625641135770">Merkintä</translation>
 <translation id="4047910800766704982">Kun laitteesi on yhteydessä verkkoon, voit käyttää luonnollista ja ihmisellistä ääntä. Teksti lähetetään Googlelle käsiteltäväksi. Voit poistaa tämän käytöstä milloin tahansa asetuksista.</translation>
 <translation id="4053520724192563562">Lime</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">Keskitumma liuskekivensininen</translation>
 <translation id="5140016802771803559">Rebecca-violetti</translation>
 <translation id="5142101052131610456">Kaikki harjoitukset</translation>
+<translation id="5152605892605507188">siirry oikealle</translation>
 <translation id="5158275234811857234">Kansi</translation>
 <translation id="516076699907426116">Jatka etsimällä Seuraava harjoitus ‑painike kosketuksella tutkimalla. Jatka sitten kaksoisnapauttamalla.</translation>
 <translation id="5170206230005240598">Pistekirjoitustekstitys käytössä</translation>
 <translation id="5183440668879371625">Pistekirjoituksen edellinen rivi</translation>
 <translation id="5189244881767082992">Rivi</translation>
+<translation id="5234747236692380506">kirjoita <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Popkorni</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Loppu</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">Otsikko 4</translation>
 <translation id="6150023170003443621">Keltavihreä</translation>
 <translation id="6158882249329863701">rivi <ph name="TABLECELLROWINDEX" /> sarake <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">siirry vasemmalle</translation>
 <translation id="6164829606128959761">mittari</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
 <translation id="6166362019018438352">Pistekirjoitustekstitys pois käytöstä</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">Poistettu</translation>
 <translation id="6910969481785184048">Käynnistäminen, sulkeminen ja mykistäminen</translation>
 <translation id="6919104639734799681">Näytä taulukoiden luettelo</translation>
+<translation id="692135145298539227">poista</translation>
+<translation id="6935674530832500465">siirry alas</translation>
 <translation id="6945221475159498467">Valitse</translation>
 <translation id="6949846980769640811">Keskitumma vedensininen</translation>
 <translation id="6951482098621102657">Ei seuraavia tason 5 otsikoita</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">Hakemisto</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Käytetäänkö luonnollista ääntä?</translation>
-<translation id="7484805699335881122">Muuta äänenkorkeutta, kun ääneen luetaan elementtityyppejä ja lainattua, poistettua, lihavoitua, sulkeissa olevaa tai isolla kirjoitettua tekstiä.</translation>
 <translation id="7491962110804786152">sarkain</translation>
 <translation id="7492497529767769458">Siirry seuraavaan osioon. Näitä ovat esimerkiksi tila-alue ja Käynnistysohjelma.</translation>
 <translation id="7505149250476994901">Sano "iso kirjain" ennen kirjainta</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">Ei yläpuolella olevia soluja</translation>
 <translation id="8138880386467279117">Kosketus</translation>
 <translation id="8146613869421949343">Seuraavaksi saat tietoja hakunäppäimestä. Hakunäppäintä käytetään yhdessä muiden näppäinten kanssa ChromeVox-komentoina. Hakunäppäin on heti vasemman vaihtonäppäimen yläpuolella. Jatka painamalla hakunäppäintä.</translation>
+<translation id="8158033275290782295">valitse kaikki</translation>
 <translation id="816818801578874684">Tämä on ensimmäinen otsikko. Siirry seuraavaan otsikkoon painamalla Haku + H.</translation>
 <translation id="8173092779156526980">Pyyhkäise vasemmalle neljällä sormella</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{alaviiva}other{# alaviivaa}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">Johdanto</translation>
 <translation id="827266600368092403">Aloita tai lopeta valinta</translation>
 <translation id="827422111966801947">Indigo</translation>
+<translation id="827496561804786391">siirry ylös</translation>
 <translation id="8276439074553447000">Siirry edelliseen aktivoitavaan kohteeseen</translation>
 <translation id="8279039817939141096">Kokeile qwerty-näppäintä, päivitettävää pistekirjoitusnäppäintä tai kosketuselettä, niin näet sen toiminnan. Sulje tila painamalla Control ja w, välilyönti ja Z tai Esc tai pyyhkäisemällä vasemmalle kahdella sormella.</translation>
 <translation id="8283603667300770666">Seuraava lomakekenttä</translation>
 <translation id="8310185481635255431">Ei seuraavia linkkejä</translation>
 <translation id="831207808878314375">Määritelmä</translation>
 <translation id="8313653172105209786">hakem.</translation>
+<translation id="8314546933558091113">poista kaikki valinnat</translation>
 <translation id="8316881042119029234">Pitsi</translation>
 <translation id="8324974933005349667">Personoi Tekstistä puheeksi ‑asetukset</translation>
 <translation id="8326783648485765113">Ruohonvihreä</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">Vaalea merenvihreä</translation>
 <translation id="9080299285199342830">Siirry loppuun</translation>
 <translation id="9089864840575085222">Ota kirjoituksen puhuminen käyttöön tai pois käytöstä</translation>
+<translation id="9099429023611373837">leikkaa</translation>
 <translation id="9108370397979208512">matematiikka</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{prosentti}other{# prosenttimerkkiä}}</translation>

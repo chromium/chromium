@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Норвежский</translation>
 <translation id="1433628812591023318">Чтобы загрузить файлы в Parallels Desktop, переместите их в папку "Файлы Windows".</translation>
 <translation id="1435838927755162558">Предоставление Parallels Desktop доступа к папке</translation>
+<translation id="1439919885608649279">Человек с цветами</translation>
 <translation id="1471718551822868769">Словацкий</translation>
 <translation id="1474339897586437869">Не удалось загрузить <ph name="FILENAME" />. Не хватает пространства на Google Диске.</translation>
 <translation id="1482884275703521657">Финский</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Не удалось изменить файл.</translation>
 <translation id="1673103856845176271">Доступ к файлу ограничен по соображениям безопасности.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Человек на велосипеде</translation>
 <translation id="1722487484194605434">Архивирование объектов (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="1722687688096767818">Добавление профиля…</translation>
 <translation id="1726100011689679555">Серверы имен</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Предпросмотр недоступен</translation>
 <translation id="1812302367230252929">Амхарский, транслитерация</translation>
 <translation id="1813278315230285598">Службы</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание!<ph name="END_BOLD" /> Эти файлы являются временными и могут быть автоматически удалены, чтобы освободить место на диске. <ph name="BEGIN_LINK" />Подробнее...<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Загрузка данных…</translation>
 <translation id="1834290891154666894">Недопустимая запись совпадения с альтернативным именем субъекта</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Названия, начинающиеся с точки, зарезервированы для системных файлов. Выберите другое название.</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2084108471225856927">Настройки устройства</translation>
+<translation id="2084809735218147718">Человек пишет благодарственное письмо</translation>
 <translation id="2085470240340828803">Файл <ph name="FILENAME" /> уже существует. Выберите необходимое действие.</translation>
 <translation id="2088690981887365033">Сеть VPN</translation>
 <translation id="2122305276694332719">Включать этот параметр не рекомендуется, так как при автоматическом подключении к скрытой сети другие пользователи могут увидеть ваше устройство и некоторые сетевые настройки.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Установить с помощью Linux</translation>
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Человек с чашкой кофе</translation>
 <translation id="2251368349685848079">Восстановить из корзины</translation>
 <translation id="2282155092769082568">URL автоматической настройки:</translation>
 <translation id="2288278176040912387">Патефон</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Общий размер файлов</translation>
 <translation id="2428749644083375155">Копирование объектов (<ph name="NUMBER_OF_ITEMS" />) в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2452444014801043526">Человек с рупором</translation>
 <translation id="2464079411014186876">Мороженое</translation>
 <translation id="2464089476039395325">HTTP-прокси</translation>
 <translation id="2467267713099745100">Сеть <ph name="NETWORK_TYPE" /> отключена</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">Документ PDF</translation>
 <translation id="2888807692577297075">Запросу &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; не соответствует ни один файл.</translation>
 <translation id="2894654529758326923">Подробные сведения</translation>
-<translation id="2902312830803030883">Другие действия</translation>
 <translation id="2902734494705624966">США (расширенная)</translation>
 <translation id="290843123675549676">Маратхи</translation>
 <translation id="2923240520113693977">Эстонский</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">Французский (Канада)</translation>
 <translation id="3003189754374775221">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", оператор – <ph name="NETWORK_PROVIDER_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключиться</translation>
 <translation id="3003633581067744647">Показать в виде уменьшенных изображений</translation>
+<translation id="3016566519832145558">Внимание! Это временные файлы. Они могут быть автоматически удалены, чтобы освободить место на диске.</translation>
 <translation id="3029114385395636667">Чтобы работать с документами, таблицами и презентациями Google, когда вы не в Сети, включите расширение "Google Документы офлайн".</translation>
 <translation id="303198083543495566">Место съемки</translation>
 <translation id="3047197340186497470">Китайский, даи</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS-прокси</translation>
 <translation id="3113153474486991170">Не удалось открыть "<ph name="PATH" />" из этого каталога. Чтобы открыть объект, скопируйте его в каталог "Мои файлы".</translation>
 <translation id="3113592018909187986">Осталась одна попытка. Вы не сможете использовать эту сеть, пока не зададите новый PIN-код.</translation>
+<translation id="3124404833828281817">Мечтатель</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Недействительный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> (<ph name="ISSUED_TO" />). Поддерживается аппаратным обеспечением.</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Перейти на drive.google.com…</translation>
 <translation id="3553048479571901246">Чтобы открыть файлы с помощью приложения "<ph name="APP_NAME" />", скопируйте их в папку "Файлы Windows".</translation>
 <translation id="3556731189587832921">Английский (США), международная раскладка (ПК)</translation>
+<translation id="3567221313191587603">Чтобы файл был доступен офлайн, выберите его и установите флажок "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="357479282490346887">Литовский</translation>
 <translation id="3592251141500063301">Не удается скачать файл "<ph name="FILE_NAME" />" для офлайн-доступа.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Установка мобильного профиля, сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Чешский, раскладка QWERTY</translation>
 <translation id="4656293982926141856">С компьютера</translation>
+<translation id="4656777537938206294">Доступ к файлам в офлайн-режиме</translation>
+<translation id="4658782175094886150">Человек в снегу</translation>
 <translation id="4669606053856530811">Пользователи общего диска "<ph name="SOURCE_NAME" />" больше не смогут использовать эти объекты, если к ним не будет включен общий доступ.</translation>
 <translation id="4690246192099372265">Шведский</translation>
 <translation id="4693155481716051732">Суши</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">Эти файлы открыты на другом рабочем столе. Чтобы увидеть их, переключитесь на профиль пользователя <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Сведения о файле</translation>
 <translation id="5335458522276292100">Сохранение файлов (<ph name="FILE_COUNT" />) на <ph name="BEGIN_LINK" />Google Диске<ph name="END_LINK" />…</translation>
+<translation id="535792325654997756">Человек с кошками</translation>
 <translation id="5358764674931277">Частота кадров</translation>
 <translation id="5368191757080475556">Предоставление доступа к папке для Linux</translation>
 <translation id="5402367795255837559">Шрифт Брайля</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">Файл не найден. Проверьте параметр места для скачивания и повторите попытку.</translation>
 <translation id="5838451609423551646">Выбор отменен.</translation>
 <translation id="5838825566232597749">США (Workman, международная)</translation>
+<translation id="5845721951356578987">Медсестра</translation>
+<translation id="5861477046012235702">Геймер</translation>
 <translation id="5864471791310927901">Поиск DHCP завершен со сбоем</translation>
 <translation id="5896749729057314184">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активирована, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подробная информация</translation>
 <translation id="5911887972742538906">При установке приложения для Linux произошла ошибка.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">Видео</translation>
 <translation id="6150853954427645995">Чтобы работать с этим файлом в офлайн-режиме, подключитесь к Интернету, нажмите правой кнопкой мыши на документ и выберите вариант "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="6164412158936057769">Бабочки</translation>
+<translation id="6165508094623778733">Подробнее</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
 <translation id="6187719147498869044">Венгерский</translation>
 <translation id="6189412234224385711">Открыть с помощью расширения "<ph name="EXTENSION_NAME" />"</translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">Персидский</translation>
 <translation id="6862635236584086457">Для всех файлов, сохраненных в этой папке, автоматически создается резервная копия в Интернете</translation>
 <translation id="6864328437977279120">Санскрит</translation>
+<translation id="6874758081814639712">Человек занимается тай-чи</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6878261347041253038">Раскладка деванагари (фонетическая)</translation>
 <translation id="6885780034956018177">Улитка</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", оператор – <ph name="NETWORK_PROVIDER_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подключиться</translation>
 <translation id="8750438273876807512">Нажмите и удерживайте файл, затем нажмите на значок <ph name="ICON" /> и выберите "Закрепить на панели запуска".</translation>
 <translation id="8787254343425541995">Использовать прокси-серверы для общих сетей</translation>
+<translation id="8790981080411996443">Человек поливает цветы</translation>
 <translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8802459921616481935">Переместить в корзину</translation>
 <translation id="8808686172382650546">Кот</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">Не подключено</translation>
 <translation id="8900820606136623064">Венгерский</translation>
 <translation id="8903931173357132290">Выпускник</translation>
+<translation id="8912078710089354287">Собака виляет хвостом</translation>
 <translation id="8919081441417203123">Датский</translation>
 <translation id="8965697826696209160">Недостаточно свободного места.</translation>
 <translation id="8970501467542182729">Этот файл разработан для ПК под управлением macOS. Его нельзя открыть в системе Chrome OS, установленной на вашем устройстве. Подробнее <ph name="BEGIN_LINK_HELP" />об открытии файлов в Chrome OS<ph name="END_LINK_HELP" />…</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">Каталанский</translation>
 <translation id="914873105831852105">Недействительный PIN-код. Осталась 1 попытка.</translation>
 <translation id="9153934054460603056">Сохранить идентификационные данные и пароль</translation>
+<translation id="9171921933192916600">Книголюб</translation>
 <translation id="9172592259078059678">Гуджарати, транслитерация</translation>
 <translation id="9173120999827300720">Английский (США), международная раскладка</translation>
 <translation id="9174050671906956834">Объекты в корзине удаляются навсегда через 30 дней.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">Кем изменено</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="947144732524271678">Выбраны объекты от "<ph name="FROM_ENTRY_NAME" />" до "<ph name="TO_ENTRY_NAME" />" (всего <ph name="ENTRY_COUNT" />).</translation>
+<translation id="965477715979482472">Английский (ЮАР)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл "<ph name="FILE_NAME" />" уже существует. Заменить его?</translation>
 <translation id="992401651319295351">Осталось попыток: <ph name="RETRIES" />. Вы не сможете использовать эту сеть, пока не зададите новый PIN-код.</translation>

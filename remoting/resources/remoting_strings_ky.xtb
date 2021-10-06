@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Бардык укуктар корголгон.</translation>
 <translation id="4513946894732546136">Пикир билдирүү</translation>
 <translation id="4563926062592110512">Кардар ажыратылды: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> туура конфигурацияланган жок. Башка веб серепчини (демейки) тандап, URL багыттоону кайрадан иштетиңиз.</translation>
 <translation id="4635770493235256822">Алыскы түзмөктөр</translation>
 <translation id="4660011489602794167">Баскычтопту көрсөтүү</translation>
 <translation id="4703799847237267011">Chromoting сеансыңыз аяктады.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">Аккаунтка <ph name="EMAIL_ADDRESS" /> менен кирдиңиз.</translation>
 <translation id="579702532610384533">Кайра туташуу</translation>
 <translation id="5810269635982033450">Экранды компьютердин сенсордук тактасы катары иштетүү</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көрүү жана баскычтоп менен чычканды көзөмөлдөөгө уруксат сурады. Бул сурамды күтпөсөңүз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' баскычын басыңыз. Же болбосо, даяр болгондо туташууга уруксат берүү үчүн ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' баскычын тандаңыз.</translation>
 <translation id="5823658491130719298">Алыстан колдонгуңуз келген компьютерден Chrome'ду ачып, <ph name="INSTALLATION_LINK" /> баракчасына өтүңүз</translation>
 <translation id="5841343754884244200">Көрүнүштү жөндөө</translation>
 <translation id="6033507038939587647">Баскычтоп параметрлери</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Кимдир-бирөө алыскы компьютерге туура эмес PIN-код менен киргенге аракет кылып жаткандыктан, ушул компьютерге болгон туташуулар убактылуу бөгөттөлдү. Бир аздан кийин кайталап көрүңүз.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" /> менен алыстан туташуу мүмкүнчүлүгүн чын эле өчүргүңүз келеби? Өчүргүңүз келбесе, туташууну кайра иштетүү үчүн ал компьютерге өтүшүңүз керек.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> компьютериңизди көрүп жана көзөмөлдөөгө уруксат сурады. Бул адамды билбесеңиз же бөлүшүүдөн мурда кандайдыр бир өзгөртүүлөрдү киргизүү үчүн «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» баскычын басыңыз.  Же болбосо, туташууга уруксат берүү үчүн «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» баскычын тандаңыз.</translation>
 <translation id="7019153418965365059">Белгисиз хост катасы: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Алыстан жардам берүү</translation>
 <translation id="7026930240735156896">Компьютериңизге алыстан кирүүнү жөндөө үчүн нускамаларды аткарыңыз</translation>
@@ -169,6 +170,7 @@
 Бул уруксатты берүү үчүн төмөндөгү "<ph name="BUTTON_NAME" />" баскычын чыкылдатып, "Атайын мүмкүнчүлүктөр" параметрин ачыңыз да "<ph name="SERVICE_SCRIPT_NAME" />" тушунда жайгашкан кутучаны белгилеңиз.
 
 Эгер "<ph name="SERVICE_SCRIPT_NAME" />" мурунтан эле белгиленген болсо, ал белгилөөнү өчүрүп, кайра кошсоңуз болот.</translation>
+<translation id="8305209735512572429">Web Authentication'ди алыстан башкаруу процесси</translation>
 <translation id="8383794970363966105">Chromoting'ди колдонуу үчүн түзмөгүңүзгө Google аккаунтун кошуу керек.</translation>
 <translation id="8386846956409881180">Хост жараксыз OAuth далдаштырма дайындары менен конфигурацияланган.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> кызматына уруксат берүү</translation>

@@ -66,6 +66,7 @@
 <translation id="133801305381959373">ફેરફાર કરી શકાય તેવી કોઈ આગલી ટેક્સ્ટ ફીલ્ડ નથી</translation>
 <translation id="1342835525016946179">લેખ</translation>
 <translation id="1346059596910821859">ટિપ</translation>
+<translation id="1354356357730355833">કૉપિ કરો</translation>
 <translation id="135978014023467274">તમને ChromeVox 63 પર અપડેટ કરવામાં આવ્યા છે!</translation>
 <translation id="1360699455582016846">રૂટિંગ કી <ph name="ROUTING_KEY_NUMBER" /> હેઠળની આઇટમને ક્લિક કરો</translation>
 <translation id="1377925789329510816">આ છેલ્લું મથાળું છે. આ પેજ પર સીધા જ પ્રથમ મથાળા પર જવા માટે શોધ+H, અથવા બીજા મથાળા પર જવા માટે શોધ+Shift+H દબાવો.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">રિફ્રેશ કરો</translation>
 <translation id="2675533876313964202">શાર્ટ્રૂઝ</translation>
 <translation id="2684412629217766642">ChromeVox ટ્યૂટોરિઅલ બંધ કરો</translation>
+<translation id="2692503699962701720">તત્વના પ્રકારો અને ફૉર્મેટ કરેલી ટેક્સ્ટ બોલતી વખતે પિચ બદલો</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">ટેક્સ્ટ રૂપાંતરણનો સુઝાવ</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ખુલતો કૌંસ}one{# ખુલતાં કૌંસ}other{# ખુલતાં કૌંસ}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">પોર્ટ્રેટ</translation>
 <translation id="3286390186030710347">સ્લાઇડર</translation>
 <translation id="3300348286427369683">રિચ ટેક્સ્ટ સહાય. ChromeVox હવે રિચ ટેક્સ્ટ ફીલ્ડને સહાય કરે છે, જેમાં જમ્પ આદેશો, બ્રેઇલ કર્સરનું રાઉટિંગ, પસંદગી અને બીજા ઘણા બધાનો સમાવેશ થાય છે.</translation>
+<translation id="3300733168898541351">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="3307886118343381874">કોષ્ટકની સમાપ્તિ પર જાઓ</translation>
 <translation id="3312997241656799641">આગલી મુલાકાત લીધેલી લિંક</translation>
 <translation id="3313245066383501820">ChromeVox સંશોધક કી</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">ફોર્મ્સની સૂચિ બતાવો</translation>
 <translation id="3414400929511680526">એલિસ બ્લૂ</translation>
 <translation id="3418936350470374046">નીચે કોઈ સેલ નથી</translation>
+<translation id="3419269701801640163">પેસ્ટ કરો</translation>
 <translation id="3435494200763325275">Tab કી વડે નૅવિગેશનનો પાઠ ચાલુ છે</translation>
 <translation id="344800400831402066">પેરુ</translation>
 <translation id="3457000393508828486">આંશિક રૂપે દબાયેલું</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">નીચે સ્ક્રોલ કરો</translation>
 <translation id="4035381225449278841">વસંતઋતુ</translation>
+<translation id="4038098586530338813">ફરી કરો</translation>
 <translation id="4047216625641135770">માર્ક કરો</translation>
 <translation id="4047910800766704982">જ્યારે તમારું ડિવાઇસ ઑનલાઇન હોય ત્યારે તમે માણસ જેવા, નૈસર્ગિક અવાજનો ઉપયોગ કરી શકો છો. પ્રક્રિયા માટે ટેક્સ્ટ Googleને મોકલવામાં આવશે. તમે કોઈપણ સમયે સેટિંગમાં જઈને આને બંધ કરી શકો છો.</translation>
 <translation id="4053520724192563562">લીંબુ જેવો લીલો</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">મધ્યમ સ્લેટ ભૂરો</translation>
 <translation id="5140016802771803559">રેબેકા જાંબલી</translation>
 <translation id="5142101052131610456">બધા પાઠ</translation>
+<translation id="5152605892605507188">જમણે ખસેડો</translation>
 <translation id="5158275234811857234">કવર</translation>
 <translation id="516076699907426116">ચાલુ રાખવા માટે, 'આગલો પાઠ' બટન શોધવા માટે, ટચ કરીને શોધખોળ કરો. પછી ચાલુ રાખવા માટે બે વાર ટૅપ કરો.</translation>
 <translation id="5170206230005240598">બ્રેઇલ કૅપ્શન ચાલુ કર્યા છે</translation>
 <translation id="5183440668879371625">પાછલી પંક્તિને બ્રેઇલમાં લખો</translation>
 <translation id="5189244881767082992">લાઇન</translation>
+<translation id="5234747236692380506">ટાઇપ કરો <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">મકાઈ જેવો સોનેરી</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">સમાપ્ત</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">મથાળું 4</translation>
 <translation id="6150023170003443621">પીળો લીલો</translation>
 <translation id="6158882249329863701">પંક્તિ <ph name="TABLECELLROWINDEX" /> કૉલમ <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">ડાબે ખસેડો</translation>
 <translation id="6164829606128959761">મીટર</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6166362019018438352">બ્રેઇલ કૅપ્શન બંધ કર્યા છે</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">કાઢી નાખ્યું</translation>
 <translation id="6910969481785184048">ચાલુ કરો, બંધ કરો અને રોકો</translation>
 <translation id="6919104639734799681">કોષ્ટકોની સૂચિ બતાવો</translation>
+<translation id="692135145298539227">કાઢી નાખો</translation>
+<translation id="6935674530832500465">નીચે ખસેડો</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6949846980769640811">મધ્યમ વાદળી લીલો</translation>
 <translation id="6951482098621102657">કોઈ આગલું 'લેવલ 5' મથાળું નથી</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">ડિરેક્ટરી</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">નૈસર્ગિક અવાજનો ઉપયોગ કરીએ?</translation>
-<translation id="7484805699335881122">તત્ત્વના પ્રકાર અને અવતરણ ચિહ્નમાં મૂકેલી, ડિલીટ કરેલી, ઘાટી કરેલી, કૌંસમાં લખેલી કે કૅપિટલ મૂળાક્ષરોમાં લખેલી ટેક્સ્ટ બોલતી વખતે પિચ બદલો.</translation>
 <translation id="7491962110804786152">ટેબ</translation>
 <translation id="7492497529767769458">આગળના વિભાગ પર ખસેડો. ઉદાહરણોમાં સ્ટેટસ ટ્રે અને લૉન્ચર શામેલ છે.</translation>
 <translation id="7505149250476994901">અક્ષર પહેલાં "કૅપિટલ" બોલો</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">ઉપર કોઈ સેલ નથી</translation>
 <translation id="8138880386467279117">ટચ કરો</translation>
 <translation id="8146613869421949343">આગળ, તમે શોધ કી વિશે જાણકારી મેળવશો. ChromeVox આદેશો માટે શોધ કીને અન્ય કી સાથે ઉપયોગમાં લેવા આવે છે. શોધ કી એ ડાબી Shift કીની એકદમ ઉપર આવેલી છે. આગળ વધવા માટે, શોધ કી દબાવો.</translation>
+<translation id="8158033275290782295">તમામ પસંદ કરો</translation>
 <translation id="816818801578874684">આ પહેલું મથાળું છે. આગલા મથાળા પર જવા માટે શોધ + H દબાવો.</translation>
 <translation id="8173092779156526980">ચાર આંગળીઓ વડે ડાબે સ્વાઇપ કરો</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{અંડરસ્કોર}one{# અંડરસ્કોર}other{# અંડરસ્કોર}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">પ્રસ્તાવના</translation>
 <translation id="827266600368092403">પસંદગી શરૂ અથવા સમાપ્ત કરો</translation>
 <translation id="827422111966801947">ઘેરો ભૂરો</translation>
+<translation id="827496561804786391">ઉપર ખસેડો</translation>
 <translation id="8276439074553447000">પાછલી ફોકસ કરવા યોગ્ય આઇટમ પર જમ્પ કરો</translation>
 <translation id="8279039817939141096">કોઈ qwerty કી, રિફ્રેશ કરી શકાય એવી બ્રેઇલ કી અથવા ટચ સંકેતના કાર્ય જાણવા માટે તેને દબાવો. બહાર નીકળવા માટે 'w' સાથે 'control' કી, 'Z' સાથે સ્પેસ કી દબાવો, તમે બે આંગળી વડે ડાબી બાજુએ સ્વાઇપ કરી શકો છો અથવા 'escape' કી દબાવી શકો છો.</translation>
 <translation id="8283603667300770666">આગલું ફોર્મ ફીલ્ડ</translation>
 <translation id="8310185481635255431">કોઈ આગલી લિંક નથી</translation>
 <translation id="831207808878314375">વ્યાખ્યા</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">તમામ નાપસંદ કરો</translation>
 <translation id="8316881042119029234">જૂની લેસ</translation>
 <translation id="8324974933005349667">'ટેક્સ્ટ-ટૂ-સ્પીચ' સેટિંગને વ્યક્તિગત કરો</translation>
 <translation id="8326783648485765113">ઘેરો લીલો</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">આછો દરિયાઈ લીલો</translation>
 <translation id="9080299285199342830">સમાપ્તિ પર જાઓ</translation>
 <translation id="9089864840575085222">લખાણ પડઘાનું આવર્તન</translation>
+<translation id="9099429023611373837">કટ કરો</translation>
 <translation id="9108370397979208512">ગણિત</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{ટકાવારી}one{# ટકાવારીની નિશાની}other{# ટકાવારીની નિશાની}}</translation>

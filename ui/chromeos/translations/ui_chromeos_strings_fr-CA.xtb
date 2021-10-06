@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Norvégien</translation>
 <translation id="1433628812591023318">Pour déposer des fichiers dans Parallels Desktop, le fichier doit être déplacé vers le dossier Fichiers Windows.</translation>
 <translation id="1435838927755162558">Partager le dossier avec Parallels Desktop</translation>
+<translation id="1439919885608649279">Personne avec des fleurs</translation>
 <translation id="1471718551822868769">Slovaque</translation>
 <translation id="1474339897586437869">Le fichier « <ph name="FILENAME" /> » n'a pas été mis à jour. Il n'y a pas suffisamment d'espace libre au sein de votre Google Disque.</translation>
 <translation id="1482884275703521657">Finnois</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Le fichier n'a pas pu être modifié.</translation>
 <translation id="1673103856845176271">Le fichier n'est pas accessible pour des raisons de sécurité.</translation>
 <translation id="169515659049020177">Maj</translation>
+<translation id="1715848075824334077">Vélo</translation>
 <translation id="1722487484194605434">Compression de <ph name="NUMBER_OF_ITEMS" /> éléments en cours…</translation>
 <translation id="1722687688096767818">Ajout du profil en cours…</translation>
 <translation id="1726100011689679555">Serveurs de noms</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Attention<ph name="END_BOLD" />. Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />.</translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="183183971458492120">Chargement des informations en cours…</translation>
 <translation id="1834290891154666894">Entrée de correspondance de nom alternatif de sujet incorrect</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Les noms commençant par un point sont réservés pour le système. Veuillez choisir un autre nom.</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2084108471225856927">Paramètres de l'appareil</translation>
+<translation id="2084809735218147718">Personne chantant des remerciements</translation>
 <translation id="2085470240340828803">Un fichier nommé « <ph name="FILENAME" /> » existe déjà. Que voulez-vous faire?</translation>
 <translation id="2088690981887365033">Réseau privé virtuel</translation>
 <translation id="2122305276694332719">La connexion automatique à un réseau masqué permet aux autres personnes de voir votre appareil et certains paramètres réseau, et n'est pas recommandée.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Installer avec Linux</translation>
 <translation id="2225536596944493418">Voulez-vous vraiment supprimer <ph name="NUMBER_OF_ITEMS" /> éléments?</translation>
 <translation id="2230062665678605299">Impossible de créer le dossier « <ph name="FOLDER_NAME" /> ». <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Personne avec un café</translation>
 <translation id="2251368349685848079">Restaurer à partir de la corbeille</translation>
 <translation id="2282155092769082568">URL d'autoconfiguration :</translation>
 <translation id="2288278176040912387">Tourne-disque</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Taille totale du fichier</translation>
 <translation id="2428749644083375155">Copie de <ph name="NUMBER_OF_ITEMS" /> éléments dans le dossier <ph name="FOLDER_NAME" /> en cours…</translation>
 <translation id="2448312741937722512">Type</translation>
+<translation id="2452444014801043526">Personne avec un mégaphone</translation>
 <translation id="2464079411014186876">Crème glacée</translation>
 <translation id="2464089476039395325">Mandataire HTTP</translation>
 <translation id="2467267713099745100">Réseau <ph name="NETWORK_TYPE" />; désactivé</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">Document PDF</translation>
 <translation id="2888807692577297075">Aucun élément ne correspond à votre recherche sur &lt;b&gt;« <ph name="SEARCH_STRING" /> »&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Information</translation>
-<translation id="2902312830803030883">Autres actions</translation>
 <translation id="2902734494705624966">Clavier étendu américain</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonien</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">Français (Canada)</translation>
 <translation id="3003189754374775221">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, puissance du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="3003633581067744647">Passer en mode d'affichage de miniatures</translation>
+<translation id="3016566519832145558">Attention : Ces fichiers sont temporaires et ils peuvent être automatiquement supprimés pour libérer de l'espace disque.</translation>
 <translation id="3029114385395636667">Activez Google Documents hors ligne pour rendre vos fichiers Documents, Feuilles de calcul et Présentations accessibles hors ligne.</translation>
 <translation id="303198083543495566">Géographie</translation>
 <translation id="3047197340186497470">Chinois (Dayi)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">Hôte SOCKS</translation>
 <translation id="3113153474486991170">Impossible d'ouvrir « <ph name="PATH" /> » à partir de cet endroit. Veuillez copier l'élément sous « Mes fichiers » pour l'ouvrir.</translation>
 <translation id="3113592018909187986">Il vous reste une tentative. Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas configuré un nouveau NIP.</translation>
+<translation id="3124404833828281817">Personne rêvassant</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (intégré au matériel)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Accéder à drive.google.com...</translation>
 <translation id="3553048479571901246">Pour ouvrir des fichiers avec <ph name="APP_NAME" />, copiez-les d'abord dans le dossier des fichiers Windows.</translation>
 <translation id="3556731189587832921">Anglais (É.-U.) avec clavier international (PC)</translation>
+<translation id="3567221313191587603">Sélectionnez un fichier et activez le commutateur <ph name="OFFLINE_CHECKBOX_NAME" /> pour accéder à vos fichiers hors ligne.</translation>
 <translation id="357479282490346887">Lituanien</translation>
 <translation id="3592251141500063301">Impossible de rendre <ph name="FILE_NAME" /> accessible en mode hors ligne</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />   <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Installation du profil cellulaire, réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tchèque avec clavier QWERTY</translation>
 <translation id="4656293982926141856">Cet ordinateur</translation>
+<translation id="4656777537938206294">Rendre les fichiers accessibles hors ligne</translation>
+<translation id="4658782175094886150">Personne dans la neige</translation>
 <translation id="4669606053856530811">Les membres de « <ph name="SOURCE_NAME" /> » perdront l'accès à ces éléments à moins que ces derniers soient partagés avec eux.</translation>
 <translation id="4690246192099372265">Suédois</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -498,6 +506,7 @@
 <translation id="5330145655348521461">Ces fichiers sont ouverts sur un autre bureau. Utilisez le compte de <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) pour les afficher.</translation>
 <translation id="5330512191124428349">En savoir plus</translation>
 <translation id="5335458522276292100">Sauvegarde de <ph name="FILE_COUNT" /> dans <ph name="BEGIN_LINK" />Google Disque<ph name="END_LINK" /> en cours…</translation>
+<translation id="535792325654997756">Personne avec des chats</translation>
 <translation id="5358764674931277">Fréquence d'images</translation>
 <translation id="5368191757080475556">Partager le dossier avec Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -553,6 +562,8 @@
 <translation id="5833610766403489739">Ce fichier a été égaré. Veuillez vérifier l'emplacement de votre dossier de téléchargement et essayez de nouveau.</translation>
 <translation id="5838451609423551646">Toutes les entrées ont été supprimées de la sélection.</translation>
 <translation id="5838825566232597749">Workman international américain</translation>
+<translation id="5845721951356578987">Infirmière</translation>
+<translation id="5861477046012235702">Joueur</translation>
 <translation id="5864471791310927901">Échec de la vérification DHCP</translation>
 <translation id="5896749729057314184">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, non activé, force du signal : <ph name="SIGNAL_STRENGTH" />%, renseignements</translation>
 <translation id="5911887972742538906">Une erreur s'est produite lors de l'installation de votre application Linux.</translation>
@@ -581,6 +592,7 @@
 <translation id="6146563240635539929">Vidéos</translation>
 <translation id="6150853954427645995">Pour enregistrer ce fichier pour une utilisation hors connexion, reconnectez-vous, cliquez avec le bouton droit sur le fichier, et sélectionnez l’option <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Papillons</translation>
+<translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hongrois</translation>
 <translation id="6189412234224385711">Ouvrir avec <ph name="EXTENSION_NAME" /></translation>
@@ -651,6 +663,7 @@
 <translation id="6861394552169064235">Persan</translation>
 <translation id="6862635236584086457">Tous les fichiers enregistrés dans ce dossier sont automatiquement sauvegardés en ligne</translation>
 <translation id="6864328437977279120">Sanskrit</translation>
+<translation id="6874758081814639712">Personne faisant du tai-chi</translation>
 <translation id="6876155724392614295">Vélo</translation>
 <translation id="6878261347041253038">Clavier devanagari (phonétique)</translation>
 <translation id="6885780034956018177">Escargot</translation>
@@ -881,6 +894,7 @@
 <translation id="8743164338060742337">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puissance du signal de <ph name="NETWORK_PROVIDER_NAME" /> : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, connexion</translation>
 <translation id="8750438273876807512">Maintenez le doigt sur un fichier et touchez l'icône <ph name="ICON" />, puis sélectionnez « Épingler sur l'étagère » afin d'accéder rapidement à vos fichiers sur l'étagère.</translation>
 <translation id="8787254343425541995">Autoriser les mandataires pour les réseaux partagés</translation>
+<translation id="8790981080411996443">Personne arrosant des plantes</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8802459921616481935">Déplacer vers la corbeille</translation>
 <translation id="8808686172382650546">Chat</translation>
@@ -893,6 +907,7 @@
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8900820606136623064">Hongrois</translation>
 <translation id="8903931173357132290">Diplômé</translation>
+<translation id="8912078710089354287">Chien remuant la queue</translation>
 <translation id="8919081441417203123">Danois</translation>
 <translation id="8965697826696209160">Il n'y a pas suffisamment d'espace.</translation>
 <translation id="8970501467542182729">Ce fichier est conçu pour un ordinateur fonctionnant sous un système d'exploitation Macintosh. Il est incompatible avec votre appareil, puisque celui-ci exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />Apprenez-en plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS.</translation>
@@ -919,6 +934,7 @@
 <translation id="9144340019284012223">Catalan</translation>
 <translation id="914873105831852105">NIP incorrect. Il vous reste 1 tentative.</translation>
 <translation id="9153934054460603056">Enregistrer le nom d'utilisateur et le mot de passe</translation>
+<translation id="9171921933192916600">Dévoreur de livres</translation>
 <translation id="9172592259078059678">Gujarati (translittération)</translation>
 <translation id="9173120999827300720">Anglais (É.-U.) avec clavier international</translation>
 <translation id="9174050671906956834">Les éléments placés dans la corbeille sont supprimés définitivement après 30 jours.</translation>
@@ -931,6 +947,7 @@
 <translation id="943972244133411984">Modifié par</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="947144732524271678">Vous avez sélectionné une plage de <ph name="ENTRY_COUNT" /> entrées, de <ph name="FROM_ENTRY_NAME" /> à <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">Anglais (Afrique du Sud)</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="988685240266037636">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Voulez-vous le remplacer?</translation>
 <translation id="992401651319295351">Il vous reste <ph name="RETRIES" /> tentatives. Vous ne pourrez pas utiliser ce réseau tant que vous n'aurez pas configuré un nouveau NIP.</translation>

@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Norueguês</translation>
 <translation id="1433628812591023318">Para arrastar arquivos até o Parallels Desktop, é necessário primeiro movê-los para a pasta "Arquivos" do Windows.</translation>
 <translation id="1435838927755162558">Compartilhar pasta com o Parallels Desktop</translation>
+<translation id="1439919885608649279">Pessoa com flores</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1474339897586437869">Não foi feito o upload de "<ph name="FILENAME" />". Não há espaço livre suficiente no seu Google Drive.</translation>
 <translation id="1482884275703521657">Finlandês</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Não foi possível modificar o arquivo.</translation>
 <translation id="1673103856845176271">Não foi possível acessar o arquivo por motivos de segurança.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Ciclismo</translation>
 <translation id="1722487484194605434">Compactando <ph name="NUMBER_OF_ITEMS" /> itens…</translation>
 <translation id="1722687688096767818">Adicionando perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Nenhuma visualização disponível</translation>
 <translation id="1812302367230252929">Amárico (transliteração)</translation>
 <translation id="1813278315230285598">Serviços</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Atenção:<ph name="END_BOLD" /> Estes arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pinguim</translation>
 <translation id="183183971458492120">Carregando informações…</translation>
 <translation id="1834290891154666894">Entrada inválida de correspondência do nome alternativo do assunto</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Nomes começando com um ponto estão reservados para o sistema. Favor escolher outro nome.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2084108471225856927">Configurações do dispositivo</translation>
+<translation id="2084809735218147718">"Obrigado" na língua de sinais</translation>
 <translation id="2085470240340828803">Já existe um arquivo chamado "<ph name="FILENAME" />". O que você quer fazer?</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
 <translation id="2122305276694332719">A conexão automática a uma rede oculta não é recomendada porque permite que outras pessoas vejam seu dispositivo e algumas configurações de rede.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Instalar com o Linux</translation>
 <translation id="2225536596944493418">Tem certeza de que quer excluir <ph name="NUMBER_OF_ITEMS" /> itens?</translation>
 <translation id="2230062665678605299">Não é possível criar a pasta "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Pessoa com café</translation>
 <translation id="2251368349685848079">Restaurar da lixeira</translation>
 <translation id="2282155092769082568">URL de configuração automática</translation>
 <translation id="2288278176040912387">Gravador</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Tamanho total do arquivo</translation>
 <translation id="2428749644083375155">Copiando <ph name="NUMBER_OF_ITEMS" /> itens para <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2452444014801043526">Pessoa com megafone</translation>
 <translation id="2464079411014186876">Sorvete</translation>
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Rede <ph name="NETWORK_TYPE" />, desativada</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">Documento PDF</translation>
 <translation id="2888807692577297075">Nenhum item corresponde a &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informações</translation>
-<translation id="2902312830803030883">Mais ações</translation>
 <translation id="2902734494705624966">EUA estendido</translation>
 <translation id="290843123675549676">Marati</translation>
 <translation id="2923240520113693977">Estoniano</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">Francês (Canadá)</translation>
 <translation id="3003189754374775221">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, conectar</translation>
 <translation id="3003633581067744647">Alternar para a visualização de miniaturas</translation>
+<translation id="3016566519832145558">Atenção: esses arquivos são temporários e podem ser excluídos automaticamente para liberar espaço em disco.</translation>
 <translation id="3029114385395636667">Ative o Documentos Google off-line para usar o Documentos, Planilhas e Apresentações off-line.</translation>
 <translation id="303198083543495566">Região geográfica</translation>
 <translation id="3047197340186497470">Chinês (dayi)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3113153474486991170">Não foi possível abrir "<ph name="PATH" />" nesse local. Copie-o para "Meus arquivos" para abrir.</translation>
 <translation id="3113592018909187986">Você tem 1 tentativa restante. Não será possível usar esta rede até que um novo PIN seja configurado.</translation>
+<translation id="3124404833828281817">Pessoa sonhadora</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN inválido. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (no hardware)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Ir para drive.google.com...</translation>
 <translation id="3553048479571901246">Para abrir arquivos usando <ph name="APP_NAME" />, primeiro os copie para a pasta de arquivos do Windows.</translation>
 <translation id="3556731189587832921">Inglês (EUA) com teclado internacional de PC</translation>
+<translation id="3567221313191587603">Selecione um arquivo e ative a opção <ph name="OFFLINE_CHECKBOX_NAME" /> para acessá-lo off-line.</translation>
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3592251141500063301">Não foi possível disponibilizar <ph name="FILE_NAME" /> off-line</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Instalando perfil móvel, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tcheco com teclado Qwerty</translation>
 <translation id="4656293982926141856">Neste computador</translation>
+<translation id="4656777537938206294">Disponibilizar arquivos off-line</translation>
+<translation id="4658782175094886150">Pessoa na neve</translation>
 <translation id="4669606053856530811">Membros de '<ph name="SOURCE_NAME" />' perderão acesso a menos que esses itens sejam compartilhados com eles.</translation>
 <translation id="4690246192099372265">Sueco</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">Estes arquivos estão abertos em uma área de trabalho diferente. Mude para <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para vê-los.</translation>
 <translation id="5330512191124428349">Ver informações</translation>
 <translation id="5335458522276292100">Fazendo backup de <ph name="FILE_COUNT" /> arquivo(s) para o <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Pessoa com gatos</translation>
 <translation id="5358764674931277">Frame rate</translation>
 <translation id="5368191757080475556">Compartilhar pasta com o Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">Este arquivo está perdido em algum lugar. Verifique sua configuração de local de download e tente novamente.</translation>
 <translation id="5838451609423551646">Todas as entradas removidas da seleção.</translation>
 <translation id="5838825566232597749">Workman internacional dos EUA</translation>
+<translation id="5845721951356578987">Profissional de enfermagem</translation>
+<translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Falha ao procurar DHCP</translation>
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inativa, intensidade do sinal <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="5911887972742538906">Ocorreu um erro durante a instalação do aplicativo Linux.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">Vídeos</translation>
 <translation id="6150853954427645995">Para salvar este arquivo para uso off-line, fique on-line novamente, clique com o botão direito no arquivo e selecione a opção <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Borboletas</translation>
+<translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6170470584681422115">Sanduíche</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6189412234224385711">Abrir com <ph name="EXTENSION_NAME" /></translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">Persa</translation>
 <translation id="6862635236584086457">Todos os arquivos salvos nessa pasta são salvos em backup on-line automaticamente</translation>
 <translation id="6864328437977279120">Sânscrito</translation>
+<translation id="6874758081814639712">Pessoa fazendo tai chi</translation>
 <translation id="6876155724392614295">Bicicleta</translation>
 <translation id="6878261347041253038">Teclado devanágari (fonético)</translation>
 <translation id="6885780034956018177">Caracol</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo administrador, conectar</translation>
 <translation id="8750438273876807512">Toque em um arquivo, mantenha-o pressionado e toque em <ph name="ICON" />. Em seguida, selecione "Fixar na estante" para ter acesso rápido a ele pela estante.</translation>
 <translation id="8787254343425541995">Permitir proxies para redes compartilhadas</translation>
+<translation id="8790981080411996443">Pessoa regando plantas</translation>
 <translation id="8798099450830957504">Padrão</translation>
 <translation id="8802459921616481935">Mover para a lixeira</translation>
 <translation id="8808686172382650546">Gato</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8903931173357132290">Formando</translation>
+<translation id="8912078710089354287">Cachorro abanando o rabo</translation>
 <translation id="8919081441417203123">Dinamarquês</translation>
 <translation id="8965697826696209160">Não há espaço suficiente.</translation>
 <translation id="8970501467542182729">Esse arquivo foi criado para computadores que usam o software Macintosh. Ele não é compatível com seu dispositivo Chrome OS. <ph name="BEGIN_LINK_HELP" />Saiba mais<ph name="END_LINK_HELP" /> sobre como abrir arquivos no Chrome OS.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">Catalão</translation>
 <translation id="914873105831852105">PIN inválido. Você tem 1 tentativa restante.</translation>
 <translation id="9153934054460603056">Salvar identidade e senha</translation>
+<translation id="9171921933192916600">Pessoa que ama ler</translation>
 <translation id="9172592259078059678">Guzerate (transliteração)</translation>
 <translation id="9173120999827300720">Inglês (EUA) com teclado internacional</translation>
 <translation id="9174050671906956834">Os itens na lixeira são excluídos definitivamente após 30 dias.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar comentários</translation>
 <translation id="947144732524271678">Foram selecionadas <ph name="ENTRY_COUNT" /> entradas de <ph name="FROM_ENTRY_NAME" /> até <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">Inglês (África do Sul)</translation>
 <translation id="981121421437150478">Off-line</translation>
 <translation id="988685240266037636">Já existe um arquivo chamado "<ph name="FILE_NAME" />". Você quer substitui-lo?</translation>
 <translation id="992401651319295351">Você tem <ph name="RETRIES" /> tentativas restantes. Não será possível usar esta rede até que um novo PIN seja configurado.</translation>

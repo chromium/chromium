@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">קבלת הודעות כשיזוהו הנחות</translation>
 <translation id="1657719826150349398">העברת הכרטיסייה למטה</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}many{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
+<translation id="2118649612461486615">פרטי החנות</translation>
+<translation id="2162620598375156287">עכשיו במחיר <ph name="CURRENT_PRICE" /> ב-<ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">עריכת שם הקבוצה</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{הסרת כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה מהקבוצה.}two{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}many{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}other{הסרת <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו מהקבוצה.}}</translation>
 <translation id="2479148705183875116">למעבר אל ההגדרות</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">קבוצה</translation>
 <translation id="2613747923081026172">יצירת קבוצה</translation>
 <translation id="2662028055331606429">דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">כניסה לאתר</translation>
 <translation id="2671423594960767771">שיתוף קבוצה</translation>
 <translation id="2759453070259087442">הרחבת קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>
 <translation id="2801787514987684416">להציג את פרטי החנות?</translation>
 <translation id="2928243913527329289">‏Google | מידע על החנות הזו</translation>
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
+<translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">דירוג</translation>
+<translation id="3267416433995960648">כיבוי ההתראה</translation>
 <translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6054741997831917303">המחיר של הפריט הזה ירד לאחרונה מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">בחירת כרטיסיות</translation>
+<translation id="6228793724645064692">(דירוג החנות)</translation>
+<translation id="6333260925957816943">מידע על החנות הזו</translation>
 <translation id="6510648526783655549">סגירת שורת הכרטיסיות</translation>
+<translation id="6549021453810473782">הצגת פרטי החנות</translation>
 <translation id="6562820390860419811">העברת הכרטיסייה ימינה</translation>
 <translation id="6615455863669487791">איך עושים את זה?</translation>
 <translation id="6840760312327750441">כדי לקבץ כרטיסיות, יש ללחוץ לחיצה ארוכה על כרטיסייה. בזמן הלחיצה, יש לגרור אותה אל כרטיסייה אחרת.</translation>
 <translation id="6856809498882026482">הסתרת מצב הבחירה המרובה</translation>
+<translation id="7129458170538955174">המידע על החנות הזו פתוח בחצי הגובה</translation>
 <translation id="7151209024774799310">הסרת כרטיסיות מהקבוצה</translation>
 <translation id="7204204600596740190">מצב בחירה מרובה</translation>
+<translation id="7326879924029668159">מדיניות החזרת המוצרים ומידע נוסף</translation>
 <translation id="7352298686197644113">הצגת הפריטים שמופיעים עם מחיר נמוך יותר בכרטיסיות הפתוחות שלך</translation>
 <translation id="753732157349120914">מחליף הכרטיסיות</translation>
 <translation id="7559245342362162951">הצגת כרטיסיות הקבוצה ברשת מסך מלא</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, ביקורת אחת (<ph name="REVIEWS_COUNT_ONE" />)}two{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}many{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}other{דירוג של <ph name="CURRENT_RATING" /> מתוך <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ביקורות}}</translation>
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
 <translation id="7966321538264951561">סגירת ההצעות.</translation>
+<translation id="8029301326595421733">המידע על החנות הזו פתוח בגובה מלא</translation>
 <translation id="814503310257431685">הצגת הכול</translation>
 <translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="8304833501377495048">לא להציג שוב את שורת הכרטיסיות בעתיד?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">מחיר נמוך יותר</translation>
 <translation id="8749939518995770034">שורת הכרטיסיות נסגרה</translation>
 <translation id="8820741577754260431">הצגת הנחות בכרטיסיות</translation>
+<translation id="9090098097337832354">המידע על החנות הזו נסגר</translation>
 <translation id="9150694013019234766">מעבר בין כרטיסיות בקבוצת הכרטיסיות שבחלק התחתון של המסך</translation>
 <translation id="9169594135889675189">הוספת כרטיסייה חדשה לקבוצה</translation>
 <translation id="959682366969460160">ארגון הפריטים</translation>

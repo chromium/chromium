@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">നോർവീജിയൻ</translation>
 <translation id="1433628812591023318">Parallels Desktop-ലേക്ക് ഫയലുകൾ ചേർക്കാൻ അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് നീക്കണം.</translation>
 <translation id="1435838927755162558">Parallels Desktop ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
+<translation id="1439919885608649279">പൂക്കൾ പിടിച്ചിരിക്കുന്ന വ്യക്തി</translation>
 <translation id="1471718551822868769">സ്ലോവാക്</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" അപ്‌ലോഡുചെയ്‌തില്ല. നിങ്ങളുടെ Google ഡ്രൈവിൽ മതിയായ ഇടമില്ല.</translation>
 <translation id="1482884275703521657">ഫിന്നിഷ്</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">ഫയൽ പരിഷ്‌ക്കരിക്കാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="1673103856845176271">സുരക്ഷാ കാരണങ്ങളാൽ ഫയൽ ആക്‌സസ്സുചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">സൈക്ലിംഗ്</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ സിപ്പ് ചെയ്യുന്നു...</translation>
 <translation id="1722687688096767818">പ്രൊഫെെൽ ചേർക്കുന്നു...</translation>
 <translation id="1726100011689679555">നെയിം സെർവറുകൾ</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">പ്രിവ്യൂ ലഭ്യമല്ല</translation>
 <translation id="1812302367230252929">അമാറിക് ലിപ്യന്തരണം</translation>
 <translation id="1813278315230285598">സേവനങ്ങള്‍</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />മുന്നറിയിപ്പ്:<ph name="END_BOLD" />  ഡിസ്ക് സ്പേസ് സ്വന്തന്ത്രമാക്കുന്നതിന് ഈ ഫയലുകളെ താൽക്കാലികമായി, ഒരു പക്ഷെ ഓട്ടോമാറ്റിക് ആയി ഇല്ലാതാക്കും.  <ph name="BEGIN_LINK" />കൂടുതൽ അറിയുക<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">പെൻഗ്വിൻ</translation>
 <translation id="183183971458492120">വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു...</translation>
 <translation id="1834290891154666894">സബ്ജക്റ്റ് ഓൾട്ടർനേറ്റീവ് നെയിം പൊരുത്തത്തിന്റെ എൻട്രി അസാധുവാണ്</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">ഡോട്ടോട് കൂടി ആരംഭിക്കുന്ന പേരുകൾ സിസ്റ്റത്തിനായി കരുതി വച്ചിരിക്കുന്നു. മറ്റൊരു പേര് ദയവായി തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2084108471225856927">ഉപകരണ ക്രമീകരണം</translation>
+<translation id="2084809735218147718">നന്ദി അറിയിക്കുന്ന വ്യക്തി</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" എന്ന പേരിൽ ഒരു ഫയൽ ഇതിനകം നിലവിലുണ്ട്. നിങ്ങൾ എന്തുചെയ്യാൻ പോകുന്നു?</translation>
 <translation id="2088690981887365033">VPN നെറ്റ്‍വർക്ക്</translation>
 <translation id="2122305276694332719">മറച്ച നെറ്റ്‌വർക്കിലേക്ക് സ്വയമേവ കണക്‌റ്റ് ചെയ്യുന്നതിലൂടെ നിങ്ങളുടെ ഉപകരണവും ചില നെറ്റ്‌വർക്ക് ക്രമീകരണവും കാണാൻ മറ്റുള്ളവരെ അനുവദിക്കുന്നതിനാൽ അത് ശുപാർശചെയ്യുന്നില്ല.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Linux ഉപയോഗിച്ച് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ ഇല്ലാതാക്കണമെന്ന് ഉറപ്പാണോ?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" ഫോൾഡർ സൃഷ്‌ടിക്കാനാവില്ല. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">കോഫി പിടിച്ചിരിക്കുന്ന വ്യക്തി</translation>
 <translation id="2251368349685848079">ട്രാഷിൽ നിന്നും പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="2282155092769082568">സ്വയമേവ കോൺഫിഗറേഷൻ URL:</translation>
 <translation id="2288278176040912387">റെക്കോർഡ് പ്ലേയർ</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">മൊത്തം ഫയൽ വലുപ്പം</translation>
 <translation id="2428749644083375155"><ph name="FOLDER_NAME" /> ഫോൾഡറിലേക്ക് <ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ പകർത്തുന്നു</translation>
 <translation id="2448312741937722512">തരം</translation>
+<translation id="2452444014801043526">മെഗാഫോൺ പിടിച്ചിരിക്കുന്ന വ്യക്തി</translation>
 <translation id="2464079411014186876">ഐസ്‌ക്രീം</translation>
 <translation id="2464089476039395325">HTTP പ്രോക്‌സി</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> നെറ്റ്‍വർക്ക്, ഓഫാണ്</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF പ്രമാണം</translation>
 <translation id="2888807692577297075">ഇനങ്ങളൊന്നും &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; എന്നതുമായി പൊരുത്തപ്പെടുന്നില്ല്ല</translation>
 <translation id="2894654529758326923">വിവരം</translation>
-<translation id="2902312830803030883">കൂടുതൽ‍ പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="2902734494705624966">യുഎസ് വിപുലീകൃതം</translation>
 <translation id="290843123675549676">മറാഠി</translation>
 <translation id="2923240520113693977">എസ്റ്റോണിയന്‍</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">ഫ്രഞ്ച് (കാനഡ)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="3003633581067744647">ലഘുചിത്ര കാഴ്ച്ചയിലേക്ക് മാറുക</translation>
+<translation id="3016566519832145558">മുന്നറിയിപ്പ്: ഇവ താൽക്കാലിക ഫയലുകളാണ് ഡിസ്ക്കിൽ ഇടമുണ്ടാക്കാൻ സ്വയമേവ ഇല്ലാതാക്കിയേക്കാം.</translation>
 <translation id="3029114385395636667">Docs, Sheets, Slides എന്നിവ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കാൻ Google ഓഫ്‌ലൈൻ ഡോക്‌സ് പ്രവർത്തനക്ഷമമാക്കുക.</translation>
 <translation id="303198083543495566">ഭൂമിശാസ്‌ത്രം</translation>
 <translation id="3047197340186497470">ചൈനീസ് ദായി</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS ഹോസ്റ്റ്</translation>
 <translation id="3113153474486991170">ഈ ലൊക്കേഷനിൽ നിന്ന് "<ph name="PATH" />" തുറക്കാനാകുന്നില്ല. തുറക്കാൻ "എന്റെ ഫയലുകൾ" എന്നതിലേക്ക് പകർത്തുക.</translation>
 <translation id="3113592018909187986">നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്. പുതിയ പിൻ സജ്ജീകരിക്കുന്നത് വരെ നിങ്ങൾക്ക് ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകില്ല.</translation>
+<translation id="3124404833828281817">പകൽക്കിനാവ് കാണുന്ന വ്യക്തി</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">പിൻ അസാധുവാണ്. നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ഹാർഡ്‌വെയർ പിന്തുണയുള്ളത്)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.com-ലേക്ക് പോകുക...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ഉപയോഗിച്ച് ഫയലുകൾ തുറക്കാൻ, ആദ്യം അവയെ Windows ഫയലുകൾ എന്ന ഫോൾഡറിലേക്ക് പകർത്തുക.</translation>
 <translation id="3556731189587832921">അന്താരാഷ്ട്ര PC കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
+<translation id="3567221313191587603">നിങ്ങളുടെ ഫയലുകൾ ഓഫ്‌ലൈനിൽ ആക്‌സസ് ചെയ്യാൻ, ഒരു ഫയൽ തിരഞ്ഞെടുത്ത് <ph name="OFFLINE_CHECKBOX_NAME" /> ഓണാക്കുക.</translation>
 <translation id="357479282490346887">ലിത്വാനിയന്‍</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കാനായില്ല</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">മൊബെെൽ പ്രൊഫെെൽ ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു, <ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Qwerty കീബോർഡ് ഉള്ള ചെക്ക്</translation>
 <translation id="4656293982926141856">ഈ കമ്പ്യൂട്ടറിൽ</translation>
+<translation id="4656777537938206294">ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുക</translation>
+<translation id="4658782175094886150">മഞ്ഞിൽ നിൽക്കുന്ന വ്യക്തി</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' എന്നതിലെ അംഗങ്ങളുമായി ഈ ഇനങ്ങൾ പങ്കിട്ടില്ലെങ്കിൽ അവർക്ക് അവയിലേക്കുള്ള ആക്‌സസ് ‌നഷ്‌ടമാകും.</translation>
 <translation id="4690246192099372265">സ്വീഡിഷ്</translation>
 <translation id="4693155481716051732">സുഷി</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">ഈ ഫയലുകൾ മറ്റൊരു ഡെസ്‌ക്‌ടോപ്പിലാണ് തുറന്നിരിക്കുന്നത്. അത് കാണാൻ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) എന്നതിലേക്ക് നീക്കുക.</translation>
 <translation id="5330512191124428349">വിവരം സ്വീകരിക്കുക</translation>
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google ഡ്രൈവിലേക്ക്<ph name="END_LINK" /> <ph name="FILE_COUNT" /> ബാക്കപ്പ് ചെയ്യുന്നു</translation>
+<translation id="535792325654997756">വ്യക്തിയും പൂച്ചകളും</translation>
 <translation id="5358764674931277">ഫ്രെയിം എണ്ണം</translation>
 <translation id="5368191757080475556">Linux ഉപയോഗിച്ച് ഫോൾഡർ പങ്കിടുക</translation>
 <translation id="5402367795255837559">ബ്രെയ്‌ലി</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">നിങ്ങളുടെ ഫയൽ മറ്റെവിടെയോ ആണ്. നിങ്ങളുടെ ഡൗൺലോഡ് ലൊക്കേഷൻ ക്രമീകരണം പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="5838451609423551646">തിരഞ്ഞെടുക്കലിൽ നിന്ന് എല്ലാ എൻട്രികളും നീക്കം ചെയ്‌തു.</translation>
 <translation id="5838825566232597749">യുഎസ് വർക്ക്‌മാൻ ഇന്റർനാഷണൽ</translation>
+<translation id="5845721951356578987">നഴ്‌സ്</translation>
+<translation id="5861477046012235702">ഗെയിമർ</translation>
 <translation id="5864471791310927901">DHCP തിരയൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" />-ാമത്തെ നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, സജീവമാക്കിയിട്ടില്ല, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, വിശദാംശങ്ങൾ</translation>
 <translation id="5911887972742538906">നിങ്ങളുടെ Linux അപ്ലിക്കേഷൻ ഇൻസ്‌റ്റാൾ ചെയ്യുന്ന സമയത്ത് ഒരു പിശക് സംഭവിച്ചു.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">വീഡിയോകൾ</translation>
 <translation id="6150853954427645995">ഓഫ്‌ലൈൻ ഉപയോഗത്തിനായി ഈ ഫയൽ സംരക്ഷിക്കുന്നതിന്, ഓൺലൈനിലേക്ക് മടങ്ങി, ഫയലിൽ വലത് ക്ലിക്ക് ചെയ്യുക അതിനുശേഷം <ph name="OFFLINE_CHECKBOX_NAME" /> ഓപ്‌ഷൻ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6164412158936057769">ചിത്രശലഭങ്ങൾ</translation>
+<translation id="6165508094623778733">കൂടുതലറിയുക</translation>
 <translation id="6170470584681422115">സാന്‍ഡ്‌വിച്ച്‌</translation>
 <translation id="6187719147498869044">ഹംഗേറിയൻ</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ഉപയോഗിച്ച് തുറക്കുക</translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">പേർഷ്യൻ</translation>
 <translation id="6862635236584086457">ഈ ഫോൾഡറിൽ സംരക്ഷിച്ചിരിക്കുന്ന എല്ലാ ഫയലുകളും ഓൺലൈനിൽ സ്വയമേവ ബാക്കപ്പ് ചെയ്യപ്പെടുന്നതാണ്</translation>
 <translation id="6864328437977279120">സംസ്‌കൃതം</translation>
+<translation id="6874758081814639712">തായ് ചി ചെയ്യുന്ന വ്യക്തി</translation>
 <translation id="6876155724392614295">ബൈക്കോടിക്കുക</translation>
 <translation id="6878261347041253038">ദേവനാഗരി കീബോർഡ് (സ്വരസൂചകം)</translation>
 <translation id="6885780034956018177">ഒച്ച്</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8750438273876807512">ഷെൽഫിലെ നിങ്ങളുടെ ഫയലുകളിലേക്ക് അതിവേഗ ആക്‌സസ് ലഭിക്കാൻ, ഒരു ഫയൽ സ്‌പർശിച്ച് പിടിച്ച് <ph name="ICON" /> ടാപ്പ് ചെയ്യുക, തുടർന്ന് "ഷെൽഫിലേക്ക് പിൻ ചെയ്യുക" തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="8787254343425541995">പങ്കിട്ട നെറ്റ്‌വർക്കുകൾക്കായി പ്രോക്സികൾ അനുവദിക്കുക</translation>
+<translation id="8790981080411996443">ചെടികൾ നനയ്ക്കുന്ന വ്യക്തി</translation>
 <translation id="8798099450830957504">ഡിഫോൾട്ട്</translation>
 <translation id="8802459921616481935">ട്രാഷിലേക്ക് നീക്കുക</translation>
 <translation id="8808686172382650546">പൂച്ച</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">കണക്റ്റല്ല</translation>
 <translation id="8900820606136623064">ഹംഗേറിയന്‍</translation>
 <translation id="8903931173357132290">ഗ്രാജ്വേറ്റ്</translation>
+<translation id="8912078710089354287">വാലാട്ടുന്ന നായ</translation>
 <translation id="8919081441417203123">ഡാനിഷ്</translation>
 <translation id="8965697826696209160">പര്യാപ്‌തമായ ഇടമില്ല.</translation>
 <translation id="8970501467542182729">ഈ ഫയൽ, Macintosh സോഫ്റ്റ്‌വെയർ ഉപയോഗിക്കുന്ന ഒരു കമ്പ്യൂട്ടറിനായി രൂപകൽപ്പന ചെയ്തിരിക്കുന്നു. Chrome OS-ൽ റൺ ചെയ്യുന്ന നിങ്ങളുടെ ഉപകരണത്തിന് ഇത് അനുയോജ്യമല്ല. Chrome OS-ൽ ഫയലുകൾ തുറക്കുന്നതിനെ കുറിച്ച് <ph name="BEGIN_LINK_HELP" />കൂടുതലറിയുക<ph name="END_LINK_HELP" />.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">കാറ്റലൻ</translation>
 <translation id="914873105831852105">പിൻ അസാധുവാണ്. നിങ്ങൾക്ക് ഒരു ശ്രമം കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="9153934054460603056">ഐഡന്‍റിറ്റിയും പാസ്‌വേഡും സംരക്ഷിക്കുക</translation>
+<translation id="9171921933192916600">പുസ്തകപ്പുഴു</translation>
 <translation id="9172592259078059678">ഗുജറാത്തി ലിപ്യന്തരണം</translation>
 <translation id="9173120999827300720">അന്താരാഷ്ട്ര കീബോർഡ് ഉള്ള ഇംഗ്ലീഷ് (യുഎസ്)</translation>
 <translation id="9174050671906956834">ട്രാഷിലെ ഇനങ്ങൾ 30 ദിവസത്തിന് ശേഷം ശാശ്വതമായി ഇല്ലാതാക്കും.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">പരിഷ്‌ക്കരിച്ചത്</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-ൽ നിന്ന് <ph name="TO_ENTRY_NAME" />-ലേക്ക് <ph name="ENTRY_COUNT" /> എൻട്രികളുള്ള ഒരു ശ്രേണി തിരഞ്ഞെടുത്തു.</translation>
+<translation id="965477715979482472">ഇംഗ്ലീഷ് (ദക്ഷിണാഫ്രിക്ക)</translation>
 <translation id="981121421437150478">ഓഫ്‌ലൈൻ</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" എന്ന് പേരുള്ള ഫയൽ മുമ്പേ നിലവിലുണ്ട്. ഇത് മാറ്റി പകരം വയ്ക്കണോ?</translation>
 <translation id="992401651319295351">നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്. പുതിയ പിൻ സജ്ജീകരിക്കുന്നത് വരെ നിങ്ങൾക്ക് ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാനാകില്ല.</translation>

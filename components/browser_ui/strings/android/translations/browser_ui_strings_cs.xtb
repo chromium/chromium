@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1446450296470737166">Povolit úplné ovládání zařízení MIDI</translation>
-<translation id="1509960214886564027">Mnoho webů může přestat fungovat</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1647582022260550163">Opravdu chcete resetovat oprávnění a vymazat soubory cookie a údaje o webu?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Povoleno, s výjimkou souborů cookie třetí strany</translation>
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="1994173015038366702">Adresa URL webu</translation>
+<translation id="2004697686368036666">Některé weby mohou přestat fungovat</translation>
 <translation id="2025115093177348061">Rozšířená realita</translation>
 <translation id="2030769033451695672">Klepnutím se vrátíte na web <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Povolit soubory cookie pro konkrétní web.</translation>
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
+<translation id="4176463684765177261">Vypnuto</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Pozastavit video</translation>
 <translation id="5887687176710214216">Naposledy navštíveno včera</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
+<translation id="59174027418879706">Povoleno</translation>
 <translation id="5922853908706496913">Sdílíte obrazovku</translation>
 <translation id="5939518447894949180">Resetovat</translation>
 <translation id="5975083100439434680">Oddálit</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Blokovat soubory cookie třetích stran</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – možnosti</translation>
 <translation id="6231752747840485235">Odinstalovat aplikaci <ph name="APP_NAME" />?</translation>
+<translation id="6233545266937675277">Požadovat zobrazení webů pro počítače</translation>
 <translation id="6262279340360821358">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou zablokována</translation>
 <translation id="6270391203985052864">Weby mohou žádat o oprávnění zasílat vám oznámení</translation>
 <translation id="6295158916970320988">Všechny weby</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Blokovaná oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="6554732001434021288">Naposledy navštíveno před <ph name="NUM_DAYS" /> dny</translation>
 <translation id="6561560012278703671">Použít méně rušivou zprávu (blokuje žádosti o zobrazení oznámení)</translation>
+<translation id="6593061639179217415">Stránky pro počítač</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chráněný obsah</translation>
 <translation id="662080504995468778">Zůstat</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Zrušit výběr</translation>
 <translation id="7846621471902887024">Budete odhlášeni ze všech webů.</translation>
 <translation id="7882806643839505685">Zapne zvuk na konkrétním webu.</translation>
+<translation id="7940722705963108451">Připomenout</translation>
 <translation id="7986741934819883144">Výběr kontaktu</translation>
-<translation id="7993619969781047893">Některé weby mohou přestat fungovat</translation>
 <translation id="7999064672810608036">Opravdu chcete vymazat všechna místní data tohoto webu, včetně souborů cookie, a resetovat všechna jeho oprávnění?</translation>
 <translation id="8007176423574883786">Vypnuto v tomto zařízení</translation>
 <translation id="802154636333426148">Stažení se nezdařilo</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Ztlumeno</translation>
 <translation id="813082847718468539">Zobrazit informace o stránkách</translation>
 <translation id="8131740175452115882">Potvrdit</translation>
+<translation id="8154912474061769055">Mnoho webů může přestat fungovat</translation>
 <translation id="8197286292360124385">Oprávnění <ph name="PERMISSION_1" /> je povoleno</translation>
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="8206354486702514201">Toto nastavení je vyžadováno administrátorem.</translation>
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
 <translation id="8249310407154411074">Přesunout na začátek</translation>
 <translation id="8261506727792406068">Smazat</translation>
+<translation id="8267092878336850213">Požadovat mobilní zobrazení webů</translation>
 <translation id="8300705686683892304">Spravováno aplikací</translation>
 <translation id="8324158725704657629">Příště se neptat</translation>
 <translation id="8372893542064058268">Povolit synchronizaci na pozadí konkrétnímu webu.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Vymazat vstup</translation>
 <translation id="868929229000858085">Vyhledat v kontaktech</translation>
 <translation id="8702612070107455751">Veškerá data offline budou vymazána.</translation>
+<translation id="8712637175834984815">Hotovo</translation>
 <translation id="8719283222052720129">Zapněte v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" /> oprávnění pro aplikaci <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
 <translation id="8730621377337864115">Hotovo</translation>

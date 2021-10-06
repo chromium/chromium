@@ -78,6 +78,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">କ୍ଲାଏଣ୍ଟ ବିଚ୍ଛିନ୍ନ ହୋଇଛନ୍ତି: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />କୁ ସଠିକ୍ ଭାବରେ କନଫିଗର୍ କରାଯାଇନାହିଁ। ଦୟାକରି ଏକ ଭିନ୍ନ ଡିଫଲ୍ଟ ୱେବ୍ ବ୍ରାଉଜର୍ ବାଛି, URL ଫରୱାର୍ଡିଂକୁ ପୁଣି ସକ୍ଷମ କରନ୍ତୁ।</translation>
 <translation id="4635770493235256822">ରିମୋଟ୍‌ ଡିଭାଇସ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="4660011489602794167">କୀବୋର୍ଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="4703799847237267011">ଆପଣଙ୍କର Chromoting ସମୟ ଅବଧି ସମାପ୍ତ ହୋଇଯାଇଛି।</translation>
@@ -108,6 +109,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" />ରେ ସାଇନ୍-ଇନ୍ କରିଛନ୍ତି।</translation>
 <translation id="579702532610384533">ପୁନଃସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5810269635982033450">ଏକ ଟ୍ରାକ୍‌ପ୍ୟାଡ୍ ଭଳି ସ୍କ୍ରିନ୍ କାର୍ଯ୍ୟ କରେ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଦେଖିବା ଏବଂ ଆପଣଙ୍କ କୀବୋର୍ଡ ଓ ମାଉସକୁ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଆକ୍ସେସର ଅନୁରୋଧ କରିଛନ୍ତି। ଯଦି ଆପଣ ଏହି ଅନୁରୋଧ ପାଇବାକୁ ଆଶା କରୁନାହାଁନ୍ତି, ତେବେ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''କୁ ଦବାନ୍ତୁ। ନଚେତ ସଂଯୋଗଟି ପ୍ରସ୍ତୁତ ହେଲେ ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="5823658491130719298">କମ୍ପ୍ୟୁଟର୍‌ରେ ଆପଣ ରିମୋଟ୍ ଭାବରେ ଆକ୍ସେସ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି, Chrome ଖୋଲନ୍ତୁ ଏବଂ <ph name="INSTALLATION_LINK" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5841343754884244200">ପ୍ରଦର୍ଶନ ବିକଳ୍ପ</translation>
 <translation id="6033507038939587647">କୀ-ବୋର୍ଡ୍ ବିକଳ୍ପସମୂହ</translation>
@@ -129,7 +131,6 @@
 <translation id="6963936880795878952">ରିମୋଟ୍‍ କମ୍ପ୍ୟୁଟର୍‌କୁ ସଂଯୋଗ ଅସ୍ଥାୟୀରୂପେ ଅବରୋଧ କରାଯାଇଛି କାରଣ କେହିଜଣେ ଏକ ଅବୈଧ ପିନ୍‌ରେ ଏହାକୁ ସଂଯୋଗ କରିବାକୁ ଚେଷ୍ଟା କରୁଥିଲେ। ଦୟାକରି, ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6985691951107243942">ଆପଣ କ"ଣ ନିଶ୍ଚିତ ଭାବରେ <ph name="HOSTNAME" />ରେ ରିମୋଟ୍ ସଂଯୋଗ ଅକ୍ଷମ କରିବାକୁ ଚାହୁଁଛନ୍ତି? ଯଦି ଆପଣ ଆପଣଙ୍କର ମନ ପରିବର୍ତ୍ତନ କରନ୍ତି, ତେବେ ସଂଯୋଗକୁ ପୁନଃସକ୍ଷମ କରିବା ପାଇଁ ଆପଣଙ୍କୁ ସେହି କମ୍ପ୍ୟୁଟର୍‍କୁ ଯିବାକୁ ହେବ।</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରକୁ ଦେଖିବା ଏବଂ ନିୟନ୍ତ୍ରଣ କରିବା ପାଇଁ ଆକ୍ସେସର ଅନୁରୋଧ କରିଛନ୍ତି। ଯଦି ଆପଣ ଏହି ବ୍ୟକ୍ତିଙ୍କୁ ଜାଣିନାହାଁନ୍ତି କିମ୍ବା ଆପଣଙ୍କୁ ସେୟାର୍ କରିବା ପୂର୍ବରୁ କୌଣସି ପରିବର୍ତ୍ତନ କରିବାର ଆବଶ୍ୟକତା ଅଛି, ତେବେ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''କୁ ଦବାନ୍ତୁ।  ଅନ୍ୟଥା ସଂଯୋଗକୁ ଅନୁମତି ଦେବା ପାଇଁ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="7019153418965365059">ଚିହ୍ନଟ ହୋଇନଥିବା ହୋଷ୍ଟ ତ୍ରୁଟି: <ph name="HOST_OFFLINE_REASON" />।</translation>
 <translation id="701976023053394610">ରିମୋଟ୍ ସହାୟତା</translation>
 <translation id="7026930240735156896">ରିମୋଟ୍‌ ଆକ୍ସେସ୍‌ ପାଇଁ ଆପଣଙ୍କର କମ୍ପ୍ୟୁଟର୍‌ ସେଟ୍‌ ଅପ୍‌ କରିବାକୁ ନିର୍ଦ୍ଦେଶାବଳୀ ଅନୁସରଣ କରନ୍ତୁ</translation>
@@ -168,6 +169,7 @@
 ଏହି ଅନୁମତିକୁ ମଞ୍ଜୁର କରିବା ପାଇଁ, ନିମ୍ନରେ ଥିବା <ph name="BUTTON_NAME" />ରେ କ୍ଲିକ୍ କରନ୍ତୁ। 'ଆକ୍ସେସିବିଲିଟୀ' ପସନ୍ଦ ପେନ୍ ଖୋଲିବା ପରେ <ph name="SERVICE_SCRIPT_NAME" /> ପାଖରେ ଥିବା ବାକ୍ସରେ ଚେକ୍ କରନ୍ତୁ।
 
 ଯଦି '<ph name="SERVICE_SCRIPT_NAME" />'କୁ ପୂର୍ବରୁ ଚେକ୍ କରାଯାଇଛି, ତେବେ ଏହାକୁ ଅନଚେକ୍ କରି ପୁଣି ଚେକ୍ କରନ୍ତୁ।</translation>
+<translation id="8305209735512572429">ୱେବ୍ ପ୍ରମାଣୀକରଣ ରିମୋଟିଂ ପ୍ରକ୍ରିୟା</translation>
 <translation id="8383794970363966105">Chromoting ବ୍ୟବହାର କରିବାକୁ, ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଆପଣ ଗୋଟିଏ Google ଆକାଉଣ୍ଟ ଯୋଗକରିବାକୁ ଆବଶ୍ୟକ ପଡ଼ିବ।</translation>
 <translation id="8386846956409881180">ଅବୈଧ OAuth କ୍ରେଡେନ୍‌ସିଆଲ୍ ସହିତ ହୋଷ୍ଟ କନ୍‌ଫିଗର୍ ହୋଇଛି।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>

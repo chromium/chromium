@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">‏حق نشر ۲۰۲۱ Chromium Authors کلیه حقوق محفوظ است.</translation>
 <translation id="4513946894732546136">بازخورد</translation>
 <translation id="4563926062592110512">کلاینت قطع شد: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> درست پیکربندی نشده است. لطفاً مرورگر وب پیش‌فرض دیگری انتخاب کنید و سپس بازارسال نشانی وب را دوباره فعال کنید.</translation>
 <translation id="4635770493235256822">دستگاه‌های کنترل ازراه‌دور</translation>
 <translation id="4660011489602794167">نمایش صفحه‌کلید</translation>
 <translation id="4703799847237267011">‏جلسه کار با Chrome پایان یافته است.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">واردشده به سیستم به‌عنوان <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">اتصال مجدد</translation>
 <translation id="5810269635982033450">صفحه نمایش مانند ترک‌پد عمل می‌کند</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> درخواست دسترسی کرده تا صفحه‌تان را ببیند و صفحه‌کلید و موشواره‌تان را کنترل کند. اگر انتظار چنین درخواستی را ندارید، «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» را فشار دهید. درغیراین‌صورت، هر وقت آماده بودید «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» را انتخاب کنید تا اتصال مجاز شود.</translation>
 <translation id="5823658491130719298">‏در رایانه‌ای که می‌خواهید از راه‌ دور به آن دسترسی پیدا کنید، Chrome را باز کنید و به <ph name="INSTALLATION_LINK" /> بروید</translation>
 <translation id="5841343754884244200">گزینه‌های نمایش</translation>
 <translation id="6033507038939587647">گزینه‌های صفحه‌کلید</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">اتصالات به رایانه راه دور به‌صورت موقت مسدود می‌شود، چون شخصی سعی داشت با پین نامعتبر به آن متصل شود. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6985691951107243942">آیا مطمئنید که می‌خواهید اتصالات راه دور به <ph name="HOSTNAME" /> را غیرفعال کنید؟ اگر نظرتان عوض شود، باید از همان رایانه اتصالات را مجدداً فعال کنید.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> برای دیدن و کنترل رایانه‌تان، درخواست دسترسی کرده است. اگر این فرد را نمی‌شناسید یا اگر می‌خواهید پیش‌از هم‌رسانی، تغییراتی ایجاد کنید، «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» را فشار دهید.  درغیراین‌صورت، برای اجازه به اتصال «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» را انتخاب کنید</translation>
 <translation id="7019153418965365059">خطای نامشخص میزبان: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">راهنمایی ازراه‌دور</translation>
 <translation id="7026930240735156896">با دنبال کردن دستورالعمل‌ها، رایانه‌تان را برای دسترسی از راه دور تنظیم کنید</translation>
@@ -169,6 +170,7 @@
 برای ارائه این اجازه، روی «<ph name="BUTTON_NAME" />» در زیر کلیک کنید. در قاب «دسترس‌پذیری» که باز می‌شود، کادر کنار «<ph name="SERVICE_SCRIPT_NAME" />» را علامت بزنید.
 
 اگر «<ph name="SERVICE_SCRIPT_NAME" />» قبلاً علامت زده شده است، علامت آن را بردارید و دوباره علامت بزنید.</translation>
+<translation id="8305209735512572429">فرایند اصالت‌سنجی وب با کنترل ازراه‌دور</translation>
 <translation id="8383794970363966105">‏برای استفاده از کار با Chrome ازراه‌دور، باید یک حساب Google به دستگاهتان اضافه کنید.</translation>
 <translation id="8386846956409881180">‏میزبان با اعتبارنامه OAuth نامعتبری پیکربندی شده است.</translation>
 <translation id="8397385476380433240">اعطای مجوز به <ph name="PRODUCT_NAME" /></translation>

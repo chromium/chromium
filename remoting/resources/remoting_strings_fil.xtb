@@ -79,6 +79,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="4512952200932940229">Copyright 2021 Ang Mga May-akda ng Chromium. Nakalaan ang Lahat ng Karapatan.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Naputol ang koneksyon ng client: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Hindi naka-configure nang tama ang <ph name="URL_FORWARDER_NAME" />. Pumili ng ibang default na web browser at pagkatapos ay i-enable ulit ang pag-forward ng URL.</translation>
 <translation id="4635770493235256822">Mga malayong device</translation>
 <translation id="4660011489602794167">Ipakita ang keyboard</translation>
 <translation id="4703799847237267011">Natapos na ang iyong session ng Chromoting.</translation>
@@ -109,6 +110,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="5750083143895808682">Naka-sign in bilang <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Muling kumonekta</translation>
 <translation id="5810269635982033450">Gumagana ang screen tulad ng trackpad</translation>
+<translation id="5823554426827907568">Humiling si <ph name="CLIENT_USERNAME" /> ng access para makita ang iyong screen at kontrolin ang keyboard at mouse mo. Pindutin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' kung hindi mo inaasahan ang kahilingang ito. Kung hindi, piliin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para payagan ang koneksyon kapag handa na ito.</translation>
 <translation id="5823658491130719298">Sa computer na gusto mong i-access nang malayuan, buksan ang Chrome at bisitahin ang <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Mga opsyon sa display</translation>
 <translation id="6033507038939587647">Mga opsyon sa keyboard</translation>
@@ -130,7 +132,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="6963936880795878952">Pansamantalang naka-block ang mga koneksyon sa malayuang computer dahil may sumubok na kumonekta rito gamit ang di-wastong PIN. Pakisubukang muli sa ibang pagkakataon.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Sigurado ka bang nais mong hindi paganahin ang mga malayuang koneksyon sa <ph name="HOSTNAME" />? Kung magbago ang iyong isip, kakailanganin mong bisitahin ang computer na iyon upang muling paganahin ang mga koneksyon.</translation>
-<translation id="6998890551706945177">Humiling si <ph name="CLIENT_USERNAME" /> ng access para tingnan at kontrolin ang iyong computer. Pindutin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' kung hindi mo kilala ang taong ito o kung kailangan mong gumawa ng anumang pagbabago bago magbahagi.  Kung hindi, piliin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para payagan ang koneksyon.</translation>
 <translation id="7019153418965365059">Hindi alam na error sa host: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Malayuang Tulong</translation>
 <translation id="7026930240735156896">Sundin ang mga tagubilin para i-set up ang iyong computer para sa malayuang pag-access</translation>
@@ -169,6 +170,7 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 Para ibigay ang pahintulot na ito, i-click ang '<ph name="BUTTON_NAME" />' sa ibaba. Sa magbubukas na pane ng mga kagustuhan sa 'Accessibility,' lagyan ng check ang kahon sa tabi ng '<ph name="SERVICE_SCRIPT_NAME" />.'
 
 Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito at pagkatapos ay lagyan ulit ito ng check.</translation>
+<translation id="8305209735512572429">Proseso ng Pag-remote sa Pag-authenticate sa Web</translation>
 <translation id="8383794970363966105">Upang magamit ang Chromoting, kakailanganin mong magdagdag ng Google Account sa iyong device.</translation>
 <translation id="8386846956409881180">Na-configure ang host gamit ang mga di-wastong kredensyal sa OAuth.</translation>
 <translation id="8397385476380433240">Magbigay ng pahintulot sa <ph name="PRODUCT_NAME" /></translation>

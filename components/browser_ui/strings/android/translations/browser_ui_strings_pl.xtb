@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
-<translation id="1509960214886564027">Funkcje wielu stron mogą nie działać prawidłowo</translation>
 <translation id="1620510694547887537">Aparat</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1647582022260550163">Czy na pewno chcesz zresetować uprawnienia oraz wyczyścić pliki cookie i dane witryn?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Dozwolone, z wyjątkiem witryn innych firm</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="1994173015038366702">URL strony</translation>
+<translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
 <translation id="2025115093177348061">Rzeczywistość rozszerzona</translation>
 <translation id="2030769033451695672">Kliknij, by wrócić na <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Cofnij</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Zezwalaj na pliki cookie z określonej strony internetowej.</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="4165986682804962316">Ustawienia witryn</translation>
+<translation id="4176463684765177261">Wyłączone</translation>
 <translation id="4200726100658658164">Otwórz ustawienia lokalizacji</translation>
 <translation id="4226663524361240545">Powiadomienia będą sygnalizowane wibracjami</translation>
 <translation id="4259722352634471385">Adres zablokowany: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Wstrzymaj film</translation>
 <translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
 <translation id="5916664084637901428">Włączone</translation>
+<translation id="59174027418879706">Włączony</translation>
 <translation id="5922853908706496913">Udostępnianie ekranu</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5975083100439434680">Pomniejsz</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – opcje</translation>
 <translation id="6231752747840485235">Odinstalować aplikację „<ph name="APP_NAME" />”?</translation>
+<translation id="6233545266937675277">Żądaj witryn w wersji komputerowej</translation>
 <translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Strony mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ostatnio używano <ph name="NUM_DAYS" /> dni temu</translation>
 <translation id="6561560012278703671">Pokazuj wiadomości dyskretnie (blokuje powiadomienia, by Ci nie przeszkadzały)</translation>
+<translation id="6593061639179217415">Wersja na komputer</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Treść chroniona</translation>
 <translation id="662080504995468778">Zostań</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Anuluj wybór</translation>
 <translation id="7846621471902887024">Wylogujemy Cię ze wszystkich stron.</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
+<translation id="7940722705963108451">Przypomnij mi</translation>
 <translation id="7986741934819883144">Wybierz kontakt</translation>
-<translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="7999064672810608036">Na pewno chcesz usunąć wszystkie dane lokalne (w tym pliki cookie) i zresetować uprawnienia tej witryny?</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
+<translation id="8154912474061769055">W wielu witrynach mogą nie działać funkcje</translation>
 <translation id="8197286292360124385">Dozwolone: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Wznów</translation>
 <translation id="8206354486702514201">O tym ustawieniu decyduje administrator.</translation>
 <translation id="8211406090763984747">Połączenie jest bezpieczne</translation>
 <translation id="8249310407154411074">Przenieś na początek</translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8267092878336850213">Żądaj witryn w wersji mobilnej</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
 <translation id="8324158725704657629">Nie pytaj ponownie</translation>
 <translation id="8372893542064058268">Zezwalaj na synchronizowanie w tle z określoną stroną.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="868929229000858085">Wyszukaj w kontaktach</translation>
 <translation id="8702612070107455751">Wszystkie dane offline zostaną wyczyszczone.</translation>
+<translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8719283222052720129">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienie w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8730621377337864115">Gotowe</translation>

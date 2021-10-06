@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">የቅጂ መብት 2021 የChromium አዘጋጆች። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="4513946894732546136">ግብረ መልስ</translation>
 <translation id="4563926062592110512">የደንበኛው ግንኙነት ተቋርጧል፦ <ph name="CLIENT_USERNAME" />።</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> በትክክል አልተዋቀረም። እባክዎ የተለየ ነባሪ የድር አሳሽ ይምረጡ እና ከዚያ ዩአርኤል ማስተላለፍን እንደገና ያንቁ።</translation>
 <translation id="4635770493235256822">የርቀት መሣሪያዎች</translation>
 <translation id="4660011489602794167">የቁልፍ ሰሌዳን አሳይ</translation>
 <translation id="4703799847237267011">የChromoting ክፍለ-ጊዜዎ ተጠናቅቋል።</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">እንደ <ph name="EMAIL_ADDRESS" /> ሆነው ገብተዋል።</translation>
 <translation id="579702532610384533">ዳግም ያገናኙ</translation>
 <translation id="5810269635982033450">ማያ ገጽ እንደ የመከታተያ ፓድ ይሆናል</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ማያ ገጽዎን ለማየት እና የእርስዎን ቁልፍ ሰሌዳ እና መዳፊት ለመቆጣጠር መዳረሻን ጠይቋል። ይህን ጥያቄ እየጠበቁ ካልሆነ ከሆነ «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»ን ይጫኑ። አለበለዚያ ዝግጁ ሲሆኑ ግንኙነትን ለመፍቀድ «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />»ን ይምረጡ።</translation>
 <translation id="5823658491130719298">በርቀት ሊደርሱበት በሚፈልጉት ኮምፒውተር ላይ Chromeን ይክፈቱና <ph name="INSTALLATION_LINK" />ን ይጎብኙ</translation>
 <translation id="5841343754884244200">የማሳያ አማራጮች</translation>
 <translation id="6033507038939587647">የቁልፍ ሰሌዳ አማራጮች</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">የሆነ ሰው ልክ ባልሆነ ፒን ከርቀት ኮምፒውተሩ ጋር ለመገናኘት ስለሞከረ ከእሱ ጋር ያሉ ግንኙነቶች ለጊዜው ታግደዋል። እባክዎ ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6985691951107243942">እርግጠኛ ነዎት ከ<ph name="HOSTNAME" /> ጋር ያሉትን የርቀት ግንኙነቶች ማሰናከል ይፈልጋሉ? ሐሳብዎን ከቀየሩ ግንኙነቶችን ዳግም ለማንቃት ያንን ኮምፒውተር መጎብኘት ይኖርብዎታል።</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> የእርስዎን ኮምፒውተር ለማየት እና ለመቆጣጠር መዳረሻን ጠይቋል። እኚህን ሰው የማያውቋቸው ከሆነ ወይም ከማጋራትዎ በፊት ማናቸውንም ለውጦች ማድረግ ከፈለጉ «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»ን ይጫኑ።  አለበለዚያ ግንኙነትን ለመፍቀድ «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />»ን ይምረጡ።</translation>
 <translation id="7019153418965365059">ያልታወቀ የአስተናጋጅ ስህተት፦ <ph name="HOST_OFFLINE_REASON" />።</translation>
 <translation id="701976023053394610">የርቀት እርዳታ</translation>
 <translation id="7026930240735156896">ኮምፒውተርዎን ለርቀት መዳረሻ ለማዋቀር መመሪያዎቹን ይከተሉ</translation>
@@ -169,6 +170,7 @@
 ይህን ፈቃድ ለመስጠት ከታች የ«ተደራሽነት» መቃኑን የሚከፍተውን «<ph name="BUTTON_NAME" />»ን ጠቅ ያድርጉ፣ ከ«<ph name="SERVICE_SCRIPT_NAME" />» ቀጥሎ ያለውን ሳጥን ምልክት ያድርጉበት።
 
 «<ph name="SERVICE_SCRIPT_NAME" />» አስቀድሞ ምልክት የተደረገበት ከሆነ ምልክቱን ያንሱትና ዳግም ያድርጉበት።</translation>
+<translation id="8305209735512572429">የድር ማረጋገጫ የርቀት ሂደት</translation>
 <translation id="8383794970363966105">Chromotingን ለመጠቀም የአንድ የGoogle መለያ በመሣሪያዎ ላይ ማከል አለብዎት።</translation>
 <translation id="8386846956409881180">አስተናጋጅ ልክ ባልሆኑ የOAuth ምስክርነቶች ነው የተዋቀረው።</translation>
 <translation id="8397385476380433240">ለ<ph name="PRODUCT_NAME" /> ፈቃድ ይስጡ</translation>

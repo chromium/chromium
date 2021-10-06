@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Dapatkan pemberitahuan apabila harga turun</translation>
 <translation id="1657719826150349398">Alihkan tab ke bawah</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2118649612461486615">Maklumat kedai</translation>
+<translation id="2162620598375156287">Sekarang <ph name="CURRENT_PRICE" /> pada <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Edit nama kumpulan</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Alih keluar <ph name="TABS_COUNT_ONE" /> tab yang dipilih daripada kumpulan.}other{Alih keluar <ph name="TABS_COUNT_MANY" /> tab yang dipilih daripada kumpulan.}}</translation>
 <translation id="2479148705183875116">Pergi ke Tetapan</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Kumpulan</translation>
 <translation id="2613747923081026172">Buat kumpulan</translation>
 <translation id="2662028055331606429">Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Lawati laman</translation>
 <translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2759453070259087442">Kembangkan kumpulan tab <ph name="TITLE_OF_GROUP" /> dengan <ph name="NUMBER_OF_TABS" /> tab.</translation>
 <translation id="2801787514987684416">Lihat maklumat kedai?</translation>
 <translation id="2928243913527329289">Google | Perihal kedai ini</translation>
 <translation id="2977480621796371840">Alih keluar daripada kumpulan</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> penurunan harga pada <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">rating</translation>
+<translation id="3267416433995960648">Matikan makluman</translation>
 <translation id="3291470810748040983">Anda akan mendapat makluman apabila terdapat harga yang lebih murah dalam tab yang terbuka</translation>
 <translation id="3328308545011660196">Cadangan: <ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6054741997831917303">Baru-baru ini harga item ini jatuh daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Pilih tab</translation>
+<translation id="6228793724645064692">(rating kedai)</translation>
+<translation id="6333260925957816943">Maklumat tentang kedai ini</translation>
 <translation id="6510648526783655549">Tutup jalur tab</translation>
+<translation id="6549021453810473782">Lihat maklumat kedai</translation>
 <translation id="6562820390860419811">Alihkan tab ke kiri</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
 <translation id="6840760312327750441">Untuk menghimpunkan tab, sentuh &amp; tahan tab. Kemudian, seret tab itu ke tab lain.</translation>
 <translation id="6856809498882026482">Sembunyikan mod berbilang pilihan</translation>
+<translation id="7129458170538955174">Maklumat tentang kedai ini dibuka pada ketinggian separuh</translation>
 <translation id="7151209024774799310">Alih keluar tab daripada kumpulan</translation>
 <translation id="7204204600596740190">Mod berbilang pilihan</translation>
+<translation id="7326879924029668159">Lihat dasar pemulangan dan pelbagai lagi</translation>
 <translation id="7352298686197644113">Lihat item yang lebih murah dalam tab yang terbuka</translation>
 <translation id="753732157349120914">Penukar Tab</translation>
 <translation id="7559245342362162951">Tunjukkan tab kumpulan dalam grid skrin penuh</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ulasan}other{Rating <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ulasan}}</translation>
 <translation id="7885132941432959125">Alihkan tab ke kanan</translation>
 <translation id="7966321538264951561">Tolak cadangan.</translation>
+<translation id="8029301326595421733">Maklumat tentang kedai ini dibuka pada ketinggian penuh</translation>
 <translation id="814503310257431685">Lihat semua</translation>
 <translation id="8205266828577616993">Alihkan tab ke atas</translation>
 <translation id="8304833501377495048">Jangan tunjukkan jalur tab lagi?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Lebih murah</translation>
 <translation id="8749939518995770034">Jalur tab ditutup</translation>
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>
+<translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
 <translation id="9150694013019234766">Beralih antara tab dalam kumpulan tab anda berhampiran bahagian bawah skrin</translation>
 <translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>
 <translation id="959682366969460160">Jadi teratur</translation>

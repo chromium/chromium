@@ -8,8 +8,9 @@
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> అన్‌ప్లగ్ చేశారు.</translation>
 <translation id="1473110567575736769">3 సెకన్ల టైమర్</translation>
-<translation id="1478594628797167447">స్కానర్</translation>
 <translation id="1545749641540134597">QR కోడ్‌ను స్కాన్ చేయండి</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">సాధారణ</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ఏదీ రికార్డ్ చేయలేదు</translation>
@@ -24,14 +25,15 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> యాక్టివ్‌గా ఉంది</translation>
 <translation id="2144806332417375165">అనుకూల వీడియో పారామీటర్‌లు</translation>
 <translation id="2175927920773552910">QR కోడ్</translation>
-<translation id="2268107369530950373">స్కానర్ మోడ్‌కు మారండి</translation>
 <translation id="229579744168541441">డిస్క్‌కు ఎగుమతి చేయి</translation>
 <translation id="2320741269052147773">ఎడమ వైపునకు ప్యాన్ చేయి</translation>
 <translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>
 <translation id="2501853267655415902">రికార్డింగ్ ఆపివేయబడింది</translation>
 <translation id="2501953888035679275">మీ కెమెరాతో ఫోటోలను తీయండి, వీడియోలను రికార్డ్ చేయండి.</translation>
+<translation id="2517472476991765520">స్కాన్ చేయి</translation>
 <translation id="2549985041256363841">రికార్డింగ్‌ను ప్రారంభించు</translation>
 <translation id="2599796128805996109">వెనుకవైపు కెమెరా</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />సె</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> ప్లగ్-ఇన్ చేశారు.</translation>
 <translation id="2968794441791257519">కెమెరాతో తీసిన ఫోటోలు మరియు వీడియోలు డౌన్‌లోడ్‌లు ఫోల్డర్‌కు తరలించబడతాయి. మీరు వాటిని ఫైల్స్‌లో యాక్సెస్ చేయవచ్చు. 
 
@@ -45,8 +47,10 @@
 <translation id="3259149966178251584">కెమెరా రిజల్యూషన్</translation>
 <translation id="3260401663013584785">డాక్యుమెంట్‌ను గుర్తించడం సాధ్యపడలేదు</translation>
 <translation id="3448774564454087943">వీడియో చాలా చిన్నగా ఉన్నందున అది సేవ్ కాలేదు</translation>
+<translation id="346539236881580388">మళ్లీ తీయండి</translation>
 <translation id="3517926952904427380">పోర్ట్రెయిట్ ఫోటోను తీయలేకపోయింది</translation>
 <translation id="3569311554794739032">మీరు <ph name="FILE" />ను ఖచ్చితంగా తీసివేయాలనుకుంటున్నారా?</translation>
+<translation id="3573890771273113519">స్కాన్ మోడ్‌కు స్విచ్ అవ్వండి</translation>
 <translation id="3810838688059735925">వీడియో</translation>
 <translation id="3838931309141338733">బార్‌కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="3892148308691398805">టెక్స్ట్‌ను కాపీ చేయి</translation>
@@ -68,8 +72,10 @@
 <translation id="5152121255775685072">గ్యాలరీకి వెళ్లు</translation>
 <translation id="520537883758714667">డాక్యుమెంట్ స్కానింగ్ ఇప్పుడు అందుబాటులో ఉంది</translation>
 <translation id="5268823927180092501">అన్ని కెమెరాలలో డాక్యుమెంట్ మోడ్‌ను ఎనేబుల్ చేయండి</translation>
+<translation id="5317780077021120954">సేవ్ చేయి</translation>
 <translation id="5444515100983837161">డాక్యుమెంట్‌లోని అన్ని అంచులు ఫ్రేమ్ లోపల వచ్చేటట్టుగా ఉంచుతుంది. డాక్యుమెంట్, బ్యాక్‌గ్రౌండ్ రెండూ వేర్వేరు రంగులలో ఉన్నప్పుడు స్కానింగ్ బాగా పని చేస్తుంది.</translation>
 <translation id="5671277269877808209">చతురస్రం</translation>
+<translation id="5746169159649715125">PDF లాగా సేవ్ చేయి</translation>
 <translation id="5753488212459587150">నిపుణుల మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="5759254179196327752">డాక్యుమెంట్‌ను స్కాన్ చేయండి</translation>
 <translation id="5775960006311140197">నిపుణుల మోడ్</translation>
@@ -84,6 +90,7 @@
 
 మీ ఫీడ్‌బ్యాక్ ఇమేజ్ లేదా వీడియో క్వాలిటీ గురించి అయితే, దయచేసి నమూనా ఫోటో లేదా వీడియోను జోడించి, అందులో తప్పు ఏమిటో వివరించండి. (ఉదాహరణకు, ఫోటో మరీ మసకగా ఉండటం, లేదా తీయాల్సిన దానిపై ఫోకస్ చేయకపోవడం వంటివి)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> మెగా పిక్సెల్</translation>
+<translation id="6527303717912515753">భాగస్వామ్యం చేయి</translation>
 <translation id="667999046851023355">పత్రం</translation>
 <translation id="6681668084120808868">ఫోటోను తీయి</translation>
 <translation id="6778482348691154169">ఫోటో తీయలేకపోయింది</translation>
@@ -95,17 +102,20 @@
 <translation id="7243947652761655814">వీడియో రిజల్యూషన్</translation>
 <translation id="7337660886763914220">ఫైల్ సిస్టమ్ ఎర్రర్‌లు.</translation>
 <translation id="7450541714075000668">టెక్స్ట్ కాపీ చేయబడింది</translation>
+<translation id="7488619942230388918">GIF వీడియోను రికార్డ్ చేయండి</translation>
 <translation id="7557677699350329807">తర్వాతి కెమెరాకు మార్చు</translation>
 <translation id="7607002721634913082">పాజ్ చెయ్యబడింది</translation>
 <translation id="7608223098072244877">4 బై 4</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">సాధారణ వీడియోను రికార్డ్ చేయండి</translation>
 <translation id="7983668134180549431">టెక్స్ట్ గుర్తించబడింది.</translation>
 <translation id="8067883171444229417">వీడియోను ప్లే చేయి</translation>
 <translation id="8120146556401698679">ప్యాన్ చేయి టిల్ట్ చేయి జూమ్ చేయి</translation>
 <translation id="8131740175452115882">నిర్ధారించు</translation>
 <translation id="8145038249676204903">ఫోటోను తీయడానికి మార్చు</translation>
+<translation id="8167081290930651932">ఫోటో ఫార్మాట్‌లో సేవ్ చేయండి</translation>
 <translation id="8239780215768881278">స్నాప్‌షాట్ వీడియోను తీయండి</translation>
 <translation id="8261506727792406068">తొలగించు</translation>
 <translation id="8425673304802773841">కిందికి టిల్ట్ చేయి</translation>
@@ -119,5 +129,6 @@
 <translation id="8903921497873541725">దగ్గరికి జూమ్ చేయి</translation>
 <translation id="9045010116236796332">డాక్యుమెంట్‌లోని అన్ని అంచులు ఫ్రేమ్ లోపల వచ్చేటట్టుగా ఉంచండి</translation>
 <translation id="9045155556724273246">10 సెకన్లు</translation>
+<translation id="906331135292332864">ఇమేజ్‌ను ప్రాసెస్ చేస్తోంది...</translation>
 <translation id="945522503751344254">ఫీడ్‌బ్యాక్ పంపండి</translation>
 </translationbundle>

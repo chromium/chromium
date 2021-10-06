@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">ភាសា​ន័រវែស</translation>
 <translation id="1433628812591023318">ត្រូវតែផ្លាស់ទី​ឯកសារ​ទៅថតឯកសារ​របស់ Windows សិន ទើបអាចទម្លាក់​ឯកសារនោះ​ទៅក្នុង Parallels Desktop បាន។</translation>
 <translation id="1435838927755162558">ចែករំលែក​ថត​ជាមួយ Parallels Desktop</translation>
+<translation id="1439919885608649279">មនុស្ស​កាន់ផ្កា</translation>
 <translation id="1471718551822868769">ភាសា​ស្លូវ៉ាគី</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" មិនត្រូវបានអាប់ឡូតទេ ពីព្រោះមិនមានទំហំផ្ទុកគ្រប់គ្រាន់នៅក្នុង Google ថាសរបស់អ្នក។</translation>
 <translation id="1482884275703521657">ភាសា​ហ្វាំងឡង់</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">ឯកសារនេះមិនអាចកែសម្រួលទេ។</translation>
 <translation id="1673103856845176271">ឯកសារនេះមិនអាចត្រូវបានចូលប្រើទេដោយសារហេតុផលសុវត្ថិភាព។</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">កំពុងជិះកង់</translation>
 <translation id="1722487484194605434">កំពុងបង្រួមធាតុ <ph name="NUMBER_OF_ITEMS" /> ...</translation>
 <translation id="1722687688096767818">កំពុងបញ្ចូល​កម្រងព័ត៌មាន...</translation>
 <translation id="1726100011689679555">ដាក់​ឈ្មោះ​ឲ្យ​ម៉ាស៊ីន​មេ</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">ការមើលជាមុនមិនអាចប្រើបានទេ</translation>
 <translation id="1812302367230252929">ការសរសេរ​តាមសូរសព្ទ​ជាភាសា​អំហារិក</translation>
 <translation id="1813278315230285598">សេវាកម្ម</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ប្រុងប្រយ័ត្ន៖<ph name="END_BOLD" />  ឯកសារនេះគឺបណ្តោះអាសន្ន ហើយអាចត្រូវបានលុបដោយស្វ័យប្រវត្តិដើម្បីទុកចន្លោះផ្ទុកទិន្នន័យ។  <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ភីនខ្វីន</translation>
 <translation id="183183971458492120">កំពុង​ផ្ទុក​ព័ត៌មាន...</translation>
 <translation id="1834290891154666894">ការបញ្ចូល​ភាពត្រូវគ្នា​នៃឈ្មោះជំនួស​នៃប្រធានបទ​មិនត្រឹមត្រូវ</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">ឈ្មោះដែលចាប់ផ្តើមជាមួយសញ្ញាចុចត្រូវបានរក្សាទុកសម្រាប់ប្រព័ន្ធ។ សូមជ្រើសរើសឈ្មោះដ៏ទៃទៀត។</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="2084108471225856927">ការកំណត់ឧបករណ៍</translation>
+<translation id="2084809735218147718">កំពុងបង្ហាញ​កាយវិការ​អរគុណ</translation>
 <translation id="2085470240340828803">ឯកសារដែលមានឈ្មោះ "<ph name="FILENAME" />" មានរួចទៅហើយ។ តើអ្នកចង់ធ្វើដូចម្តេច?</translation>
 <translation id="2088690981887365033">បណ្ដាញ VPN</translation>
 <translation id="2122305276694332719">ការតភ្ជាប់ទៅបណ្ដាញដែលបានលាក់ដោយស្វ័យប្រវត្តិ​​អាចឱ្យអ្នកដទៃ​អាចមើលឃើញការកំណត់បណ្ដាញមួយចំនួន​ និងឧបករណ៍​របស់អ្នក ដូច្នេះយើង​សូមណែនាំមិន​ឱ្យធ្វើការតភ្ជាប់​ទេ។</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">ដំឡើង​តាមរយៈ Linux</translation>
 <translation id="2225536596944493418">តើអ្នកប្រាកដថា​ចង់លុបធាតុ <ph name="NUMBER_OF_ITEMS" /> ដែរទេ?</translation>
 <translation id="2230062665678605299">មិនអាចបង្កើតថតឯកសារ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">មនុស្ស​កាន់កែវកាហ្វេ</translation>
 <translation id="2251368349685848079">ស្ដារពី​ធុងសំរាម</translation>
 <translation id="2282155092769082568">ការកំណត់រចនាសម្ព័ន្ធ URL ដោយស្វ័យប្រវត្តិ៖</translation>
 <translation id="2288278176040912387">ឧបករណ៍ចាក់ថាស</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">ទំហំឯកសារសរុប</translation>
 <translation id="2428749644083375155">កំពុងចម្លងធាតុ <ph name="NUMBER_OF_ITEMS" /> ទៅ <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">ប្រភេទ</translation>
+<translation id="2452444014801043526">មនុស្សកាន់​ឧបករណ៍​បំពងសំឡេង</translation>
 <translation id="2464079411014186876">ការ៉េម​</translation>
 <translation id="2464089476039395325">ប្រូកស៊ី HTTP</translation>
 <translation id="2467267713099745100">បណ្ដាញ <ph name="NETWORK_TYPE" />, ត្រូវបាន​បិទ</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">ឯកសារ PDF</translation>
 <translation id="2888807692577297075">គ្មានធាតុត្រូវគ្នាទេ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ព័ត៌មាន</translation>
-<translation id="2902312830803030883">សកម្មភាព​ច្រើនទៀត</translation>
 <translation id="2902734494705624966">US extended</translation>
 <translation id="290843123675549676">ភាសា​ម៉ារ៉ាទី</translation>
 <translation id="2923240520113693977">ភាសាអេស្តូនី</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">ភាសា​បារាំង (កាណាដា)</translation>
 <translation id="3003189754374775221">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ភ្ជាប់</translation>
 <translation id="3003633581067744647">ប្តូរទៅ​ទិដ្ឋភាព​ជា​រូបភាពតូចៗ</translation>
+<translation id="3016566519832145558">ប្រុងប្រយ័ត្ន៖ ឯកសារទាំងនេះ​គឺជាឯកសារ​បណ្ដោះអាសន្ន និងអាចត្រូវបានលុប​ដោយស្វ័យប្រវត្តិ ដើម្បីបង្កើន​ទំហំផ្ទុកថាស។</translation>
 <translation id="3029114385395636667">បើក Google ឯកសារ​គ្មានអ៊ីនធឺណិត ដើម្បីអាចប្រើ​ឯកសារ បញ្ជី និង​បទបង្ហាញ​បានពេលគ្មានអ៊ីនធឺណិត។</translation>
 <translation id="303198083543495566">ភូមិសាស្ដ្រ</translation>
 <translation id="3047197340186497470">ភាសាចិនដាយី</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">ម៉ាស៊ីន SOCKS</translation>
 <translation id="3113153474486991170">មិនអាចបើក "<ph name="PATH" />" ពីទីតាំងនេះបានទេ។ សូមចម្លងទៅ "ឯកសាររបស់ខ្ញុំ" ដើម្បីបើក។</translation>
 <translation id="3113592018909187986">អ្នកអាចព្យាយាមបាន 1 ដងទៀត។ អ្នកនឹងមិនអាចប្រើបណ្ដាញនេះបានទេ រហូតទាល់តែអ្នករៀបចំកូដ PIN ថ្មី។</translation>
+<translation id="3124404833828281817">មនុស្ស​កំពុង​ស្រមើស្រមៃ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">កូដ PIN មិនត្រឹមត្រូវទេ។ អ្នកអាចព្យាយាមបាន <ph name="RETRIES" /> ដងទៀត។</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (នៅក្នុង​ផ្នែក​រឹង)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">ទៅកាន់ drive.google.com...</translation>
 <translation id="3553048479571901246">ដើម្បីបើកឯកសារដោយប្រើ <ph name="APP_NAME" /> សូមចម្លងឯកសារទាំងនោះទៅក្នុងថតឯកសារ Windows ជាមុនសិន។</translation>
 <translation id="3556731189587832921">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើក្ដារចុច​កុំព្យូទ័រ​អន្តរជាតិ</translation>
+<translation id="3567221313191587603">ជ្រើសរើស​ឯកសារ រួចបើក <ph name="OFFLINE_CHECKBOX_NAME" /> ដើម្បីឱ្យអាច​ចូលប្រើ​ឯកសារ​របស់អ្នកបាន​ពេលគ្មានអ៊ីនធឺណិត។</translation>
 <translation id="357479282490346887">ភាសាលីទុយអានី</translation>
 <translation id="3592251141500063301">មិនអាចទាញយក <ph name="FILE_NAME" /> មកប្រើពេលគ្មានអ៊ីនធឺណិតបានទេ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">កំពុងដំឡើង​កម្រងព័ត៌មាន​ឧបករណ៍ចល័ត បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">ភាសាឆែក​ដែលប្រើ​ក្ដារចុច Qwerty</translation>
 <translation id="4656293982926141856">កុំព្យូទ័រនេះ</translation>
+<translation id="4656777537938206294">កំណត់ឱ្យ​អាចប្រើ​ឯកសារបាន​ពេលគ្មាន​អ៊ីនធឺណិត</translation>
+<translation id="4658782175094886150">មនុស្ស​នៅក្រោម​ព្រិលធ្លាក់</translation>
 <translation id="4669606053856530811">សមាជិករបស់ '<ph name="SOURCE_NAME" />' នឹងបាត់បង់សិទ្ធិ​ចូលប្រើ ប្រសិនបើធាតុទាំងនេះ​មិនត្រូវបានចែករំលែកដល់ពួកគេទេ។</translation>
 <translation id="4690246192099372265">ភាសាស៊ុយអែដ</translation>
 <translation id="4693155481716051732">ស៊ូស៊ី</translation>
@@ -496,6 +504,7 @@
 <translation id="5330145655348521461">ឯកសារទាំងនេះត្រូវបានបើកនៅលើដេស៍ថបដ៏ទៃ។ ផ្លាស់ទីទៅ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) ដើម្បីមើលវា។</translation>
 <translation id="5330512191124428349">ទទួលយកព័ត៌មាន</translation>
 <translation id="5335458522276292100">កំពុង​បម្រុង​ទុក <ph name="FILE_COUNT" /> ទៅកាន់ <ph name="BEGIN_LINK" />Google ថាស<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">មនុស្ស​កាន់ឆ្មា</translation>
 <translation id="5358764674931277">អត្រា​ហ្រេ្វម</translation>
 <translation id="5368191757080475556">ចែករំលែក​ថតជាមួយ Linux</translation>
 <translation id="5402367795255837559">ប្រែល</translation>
@@ -551,6 +560,8 @@
 <translation id="5833610766403489739">ឯកសារបានវង្វេងបាត់ទៅណាហើយ។ សូមពិនិត្យការកំណត់ទីតាំងទាញយករបស់អ្នក ហើយព្យាយាមម្តងទៀត។</translation>
 <translation id="5838451609423551646">បានលុបធាតុទាំងអស់​ចេញពីការជ្រើសរើស។</translation>
 <translation id="5838825566232597749">US Workman អន្តរជាតិ</translation>
+<translation id="5845721951356578987">គិលានុបដ្ឋាយិកា</translation>
+<translation id="5861477046012235702">អ្នកលេង​ហ្គេម</translation>
 <translation id="5864471791310927901">DHCP lookup បានបរាជ័យ</translation>
 <translation id="5896749729057314184">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, បានបិទដំណើរការ, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="5911887972742538906">មានបញ្ហា​កើតឡើង អំឡុង​ពេលដំឡើង​កម្មវិធី Linux របស់អ្នក។</translation>
@@ -579,6 +590,7 @@
 <translation id="6146563240635539929">វីដេអូ</translation>
 <translation id="6150853954427645995">ដើម្បីរក្សាទុកឯកសារទាំងនេះសម្រាប់ការប្រើនៅក្រៅបណ្តាញ ភ្ជាប់ទៅអ៊ីនធឺណិត ហើយចុចកណ្តុរខាងស្តាំលើឯកសារ ហើយជ្រើសរើសជម្រើស <ph name="OFFLINE_CHECKBOX_NAME" />។</translation>
 <translation id="6164412158936057769">មេអំបៅ</translation>
+<translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6170470584681422115">សាំងវិច</translation>
 <translation id="6187719147498869044">ភាសា​ហុងគ្រី</translation>
 <translation id="6189412234224385711">បើកជាមួយ <ph name="EXTENSION_NAME" /></translation>
@@ -649,6 +661,7 @@
 <translation id="6861394552169064235">ភាសាពែក្ស</translation>
 <translation id="6862635236584086457">ឯកសារទាំងអស់ត្រូវបានរក្សាទុកនៅក្នុងថតឯកសារនេះត្រូវបានបម្រុងនៅលើអ៊ីនធឺណិតដោយស្វ័យប្រវត្តិ</translation>
 <translation id="6864328437977279120">ភាសា​សំស្ក្រឹត</translation>
+<translation id="6874758081814639712">មនុស្ស​កំពុងហាត់​ថៃជី</translation>
 <translation id="6876155724392614295">កង់</translation>
 <translation id="6878261347041253038">ក្តារចុចដេវ៉ាណាការី (Phonetic)</translation>
 <translation id="6885780034956018177">ខ្យង</translation>
@@ -879,6 +892,7 @@
 <translation id="8743164338060742337">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, គ្រប់គ្រងដោយ​អ្នកគ្រប់គ្រងរបស់អ្នក, ភ្ជាប់</translation>
 <translation id="8750438273876807512">ចុចឯកសារឱ្យជាប់ រួចចុច <ph name="ICON" /> បន្ទាប់មកជ្រើសរើស "ខ្ទាស់ទៅធ្នើរ" ដើម្បីអាចចូលប្រើឯកសាររបស់អ្នកនៅក្នុងធ្នើរបានរហ័ស។</translation>
 <translation id="8787254343425541995">អនុញ្ញាតប្រូកស៊ីសម្រាប់បណ្តាញដែលបានចែករំលែក</translation>
+<translation id="8790981080411996443">មនុស្ស​កំពុង​ស្រោចរុក្ខជាតិ</translation>
 <translation id="8798099450830957504">លំនាំដើម</translation>
 <translation id="8802459921616481935">ផ្លាស់ទី​ទៅធុងសំរាម</translation>
 <translation id="8808686172382650546">ឆ្មា</translation>
@@ -891,6 +905,7 @@
 <translation id="8874184842967597500">មិនបានភ្ជាប់ទេ</translation>
 <translation id="8900820606136623064">ភាសាហុងគ្រី</translation>
 <translation id="8903931173357132290">និស្សិតបញ្ចប់ការសិក្សា</translation>
+<translation id="8912078710089354287">ឆ្កែកំពុង​បក់កន្ទុយ</translation>
 <translation id="8919081441417203123">ភាសាដាណឺម៉ាក</translation>
 <translation id="8965697826696209160">គ្មានចន្លោះផ្ទុកគ្រប់គ្រាន់ទេ។</translation>
 <translation id="8970501467542182729">ឯកសារនេះ​ត្រូវបានរចនាឡើង​សម្រាប់កុំព្យូទ័រដែលប្រើ​កម្មវិធី Macintosh។ ឯកសារនេះ​មិនត្រូវគ្នា​ជាមួយ​ឧបករណ៍​របស់អ្នក ដែល​ដំណើរការប្រព័ន្ធប្រតិបត្តិការ Chrome ទេ។ <ph name="BEGIN_LINK_HELP" />ស្វែងយល់បន្ថែម<ph name="END_LINK_HELP" />អំពីការបើកឯកសារនៅលើ​ប្រព័ន្ធប្រតិបត្តិការ Chrome។</translation>
@@ -917,6 +932,7 @@
 <translation id="9144340019284012223">ភាសា​កាតាឡាន</translation>
 <translation id="914873105831852105">កូដ PIN មិនត្រឹមត្រូវទេ។ អ្នកអាចព្យាយាមបាន 1 ដងទៀត។</translation>
 <translation id="9153934054460603056">រក្សាទុកអត្តសញ្ញាណ និងពាក្យសម្ងាត់</translation>
+<translation id="9171921933192916600">អ្នកចូលចិត្ត​អានសៀវភៅ</translation>
 <translation id="9172592259078059678">ការសរសេរតាម​សូរសព្ទជាភាសា​គូចារ៉ាទី</translation>
 <translation id="9173120999827300720">ភាសា​អង់គ្លេស (សហរដ្ឋអាមេរិក) ដែលប្រើ​ក្ដារចុចអន្តរជាតិ</translation>
 <translation id="9174050671906956834">ធាតុ​នៅ​ក្នុង​ធុង​សំរាម​ត្រូវ​បាន​លុបចោល​រហូត​ក្រោយ​ពេល 30 ថ្ងៃ។</translation>
@@ -929,6 +945,7 @@
 <translation id="943972244133411984">កែសម្រួល​ដោយ</translation>
 <translation id="945522503751344254">ផ្ញើមតិ</translation>
 <translation id="947144732524271678">បានជ្រើសរើសធាតុ <ph name="ENTRY_COUNT" /> ជួរចាប់ពី <ph name="FROM_ENTRY_NAME" /> ដល់ <ph name="TO_ENTRY_NAME" /> ។</translation>
+<translation id="965477715979482472">អង់គ្លេស (អាហ្វ្រិក​ខាងត្បូង)</translation>
 <translation id="981121421437150478">ក្រៅបណ្តាញ</translation>
 <translation id="988685240266037636">ឯកសារដែលដាក់​ឈ្មោះ "<ph name="FILE_NAME" />" មានរួចហើយ។ តើអ្នកចង់​ជំនួសវា​ដែរទេ?</translation>
 <translation id="992401651319295351">អ្នកអាចព្យាយាមបាន <ph name="RETRIES" /> ដងទៀត។ អ្នកនឹងមិនអាចប្រើបណ្ដាញនេះបានទេ រហូតទាល់តែអ្នករៀបចំកូដ PIN ថ្មី។</translation>

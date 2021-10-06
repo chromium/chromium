@@ -79,6 +79,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Med enerett.</translation>
 <translation id="4513946894732546136">Google Feedback</translation>
 <translation id="4563926062592110512">Klienten koblet fra: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> er ikke riktig konfigurert. Velg en annen standardnettleser, og slå på igjen viderekobling av nettadresser.</translation>
 <translation id="4635770493235256822">Eksterne enheter</translation>
 <translation id="4660011489602794167">Vis tastatur</translation>
 <translation id="4703799847237267011">Chromoting-økten er avsluttet.</translation>
@@ -109,6 +110,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="5750083143895808682">Logget på som <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Koble til på nytt</translation>
 <translation id="5810269635982033450">Skjermen fungerer som en styreflate</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> har bedt om tilgang til å se skjermen din og styre tastaturet og musen. Trykk på «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» hvis du ikke forventet å få denne forespørselen. Ellers velger du «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» for å tillate tilkoblingen når du er klar.</translation>
 <translation id="5823658491130719298">Åpne Chrome på datamaskinen du vil ha ekstern tilgang til, og gå til <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Visningsalternativer</translation>
 <translation id="6033507038939587647">Tastaturalternativer</translation>
@@ -130,7 +132,6 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 <translation id="6963936880795878952">Tilkoblinger til den eksterne datamaskinen er midlertidig blokkert fordi noen prøvde å koble seg til med en ugyldig PIN-kode. Prøv på nytt senere.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Er du sikker på at du vil deaktivere eksterne tilkoblinger til <ph name="HOSTNAME" />? Hvis du ombestemmer deg, må du tilbake til datamaskinen for å gjenopprette tilkoblingene.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> har bedt om tilgang til å se og styre datamaskinen din. Trykk på «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» hvis du ikke kjenner denne personen, eller hvis du må gjøre endringer før du deler.  Ellers velger du «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» for å tillate tilkoblingen.</translation>
 <translation id="7019153418965365059">Ukjent vertsfeil: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Fjernhjelp</translation>
 <translation id="7026930240735156896">Følg instruksjonene for å konfigurere datamaskinen din for ekstern tilgang.</translation>
@@ -169,6 +170,7 @@ Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerne
 For å innvilge denne tillatelsen, klikk på «<ph name="BUTTON_NAME" />» under. I innstillingsfeltet for «Tilgjengelighet» som åpnes, merker du av i boksen ved siden av «<ph name="SERVICE_SCRIPT_NAME" />».
 
 Hvis det allerede er merket av for «<ph name="SERVICE_SCRIPT_NAME" />», fjerner du avmerkingen og merker av på nytt.</translation>
+<translation id="8305209735512572429">Fjernstyringsprosess for nettautentisering</translation>
 <translation id="8383794970363966105">Hvis du vil bruke Chromoting, må du legge til en Google-konto på enheten din.</translation>
 <translation id="8386846956409881180">Verten er konfigurert med ugyldig OAuth-legitimasjon.</translation>
 <translation id="8397385476380433240">Gi tillatelse til <ph name="PRODUCT_NAME" /></translation>

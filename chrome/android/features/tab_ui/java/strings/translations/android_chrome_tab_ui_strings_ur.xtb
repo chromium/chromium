@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">قیمتوں میں کمی ہونے پر اطلاع حاصل کریں</translation>
 <translation id="1657719826150349398">ٹیب کو نیچے منتقل کریں</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ٹیب}other{<ph name="TABS_COUNT_MANY" /> ٹیبز}}</translation>
+<translation id="2118649612461486615">اسٹور کی معلومات</translation>
+<translation id="2162620598375156287">اب <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> پر</translation>
 <translation id="2277224997687551299">گروپ کے نام میں ترمیم کریں</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{گروپ سے <ph name="TABS_COUNT_ONE" /> منتخب کردہ ٹیب کو ہٹائیں۔}other{گروپ سے <ph name="TABS_COUNT_MANY" /> منتخب کردہ ٹیبز کو ہٹائیں۔}}</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">گروپ</translation>
 <translation id="2613747923081026172">گروپ بنائیں</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی</translation>
+<translation id="266935134738038806">سائٹ ملاحظہ کریں</translation>
 <translation id="2671423594960767771">گروپ کا اشتراک کریں</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> ٹیب گروپ کو <ph name="NUMBER_OF_TABS" /> ٹیبز کے ساتھ پھیلائیں۔</translation>
 <translation id="2801787514987684416">اسٹور کی معلومات دیکھیں؟</translation>
 <translation id="2928243913527329289">‏Google | اس اسٹور کے بارے میں</translation>
 <translation id="2977480621796371840">گروپ سے ہٹائیں</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> سے قیمت میں <ph name="PRICE_DROP" /> گراوٹ</translation>
 <translation id="3194464645767632461">درجہ بندی</translation>
+<translation id="3267416433995960648">الرٹ کو آف کریں</translation>
 <translation id="3291470810748040983">کھلے ہوئے ٹیب میں قیمت کم ہونے پر آپ کو الرٹ کیا جائے گا</translation>
 <translation id="3328308545011660196">تجویز: <ph name="NUMBER_OF_TABS" /> ٹیبز متعلقہ معلوم ہوتے ہیں۔ ان کی گروپ بندی کریں؟</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">بند کریں</translation>
 <translation id="6054741997831917303">اس آئٹم کی قیمت حال ہی میں کم ہو کر <ph name="PREVIOUS_PRICE" /> سے <ph name="NEW_PRICE" /> ہوئی ہے</translation>
 <translation id="6193448654517602979">ٹیبز منتخب کریں</translation>
+<translation id="6228793724645064692">(اسٹور کی درجہ بندی)</translation>
+<translation id="6333260925957816943">اس اسٹور سے متعلق معلومات</translation>
 <translation id="6510648526783655549">ٹیب اسٹرپ بند کریں</translation>
+<translation id="6549021453810473782">اسٹور کی معلومات دیکھیں</translation>
 <translation id="6562820390860419811">ٹیب کو بائیں منتقل کریں</translation>
 <translation id="6615455863669487791">مجھے دکھائیں</translation>
 <translation id="6840760312327750441">ٹیبز کا گروپ بنانے کے لیے، کسی ٹیب کو ٹچ کریں اور دبائے رکھیں۔ پھر، اسے کسی دوسرے ٹیب پر گھسیٹیں۔</translation>
 <translation id="6856809498882026482">متعدد انتخاب کی وضع کو چھپائیں</translation>
+<translation id="7129458170538955174">اس اسٹور سے متعلق معلومات نصف اونچائی پر کھلی ہے</translation>
 <translation id="7151209024774799310">ٹیبز کو گروپ سے ہٹائیں</translation>
 <translation id="7204204600596740190">متعدد انتخاب کی وضع</translation>
+<translation id="7326879924029668159">واپسی کی پالیسی اور مزید دیکھیں</translation>
 <translation id="7352298686197644113">دیکھیں کہ آپ کے کھلے ٹیبز میں کون سے آئٹم کی قیمت کم ہے</translation>
 <translation id="753732157349120914">ٹیب سوئچر</translation>
 <translation id="7559245342362162951">پوری اسکرین گرڈ میں گروپ کے ٹیبز دکھائیں</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_ONE" /> جائزہ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> کی درجہ بندی، <ph name="REVIEWS_COUNT_MANY" /> جائزے}}</translation>
 <translation id="7885132941432959125">ٹیب کو دائیں منتقل کریں</translation>
 <translation id="7966321538264951561">تجاویز مسترد کریں۔</translation>
+<translation id="8029301326595421733">اس اسٹور سے متعلق معلومات مکمل اونچائی پر کھلی ہے</translation>
 <translation id="814503310257431685">سبھی دیکھیں</translation>
 <translation id="8205266828577616993">ٹیب اوپر منتقل کریں</translation>
 <translation id="8304833501377495048">ٹیب اسٹرپ کو دوبارہ نہ دکھائیں؟</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">کم قیمت</translation>
 <translation id="8749939518995770034">بند ٹیب اسٹرپ</translation>
 <translation id="8820741577754260431">اپنے ٹیبز پر قیمتوں میں کمی دیکھیں</translation>
+<translation id="9090098097337832354">اس اسٹور سے متعلق معلومات بند ہے</translation>
 <translation id="9150694013019234766">اسکرین کے نچلے حصے کے قریب ٹیبز کے اپنے گروپ میں ٹیبز کے درمیان سوئچ کریں</translation>
 <translation id="9169594135889675189">گروپ میں نیا ٹیب شامل کریں</translation>
 <translation id="959682366969460160">منظم رہیں</translation>

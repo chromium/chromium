@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Зохиогчийн эрх 2011 Chromium-н зохиогчид. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="4563926062592110512">Захиалагч салгагдсан: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />-г зөв тохируулаагүй байна. Өөр өгөгдмөл веб хөтөч сонгоод, дараа нь URL дамжуулахыг дахин идэвхжүүлнэ үү.</translation>
 <translation id="4635770493235256822">Алсын төхөөрөмж</translation>
 <translation id="4660011489602794167">Гарыг харуулах</translation>
 <translation id="4703799847237267011">Таны Chromoting-ийн ажиллах талбар дууссан байна.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" />-р нэвтэрсэн байна.</translation>
 <translation id="579702532610384533">Дахин холбогд</translation>
 <translation id="5810269635982033450">Дэлгэц trackpad-н үүргийг гүйцэтгэж байна</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> таны дэлгэцийг харж, гар болон хулганыг тань удирдахын тулд хандах хүсэлт тавьсан. Хэрэв та энэ хүсэлтийг хүлээгээгүй бол ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' дээр дарна уу. Өөрөөр бэлэн үедээ холболтыг зөвшөөрөхийн тулд ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''-г сонгоно уу.</translation>
 <translation id="5823658491130719298">Алсаас хандах хүсэлтэй компьютерт Chrome-г нээж <ph name="INSTALLATION_LINK" />-д зочилно уу</translation>
 <translation id="5841343754884244200">Дэлгэцийн сонголт</translation>
 <translation id="6033507038939587647">Гарын тохируулга</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Хэн нэгэн буруу ПИН-р нэвтрэхийг оролдсон тул алсын компьютерт хийх холболтыг түр хугацаанд блоклосон байна. Дараа дахин оролдоно уу.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Та <ph name="HOSTNAME" />-тай алсын холболт хийхээ зогсоох гэж байгаадаа итгэлтэй байна уу? Хэрэв та бодлоо өөрчилвөл холболтыг дахин идэвхжүүлэхийн тулд тэр компьютерт дахин тохиргоо хийх хэрэгтэй.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> таны компьютерыг харж, хянахын тулд хандах хүсэлт тавьсан. Хэрэв та энэ хүнийг танихгүй эсвэл хуваалцахаасаа өмнө ямар нэг өөрчлөлт хийх шаардлагатай бол ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''-г дарна уу.  Өөрөөр холболтыг зөвшөөрөхийн тулд ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''-г сонгоно уу.</translation>
 <translation id="7019153418965365059">Хүлээн зөвшөөрөгдөөгүй хост алдаа: <ph name="HOST_OFFLINE_REASON" /> .</translation>
 <translation id="701976023053394610">Алсаас туслагч</translation>
 <translation id="7026930240735156896">Компьютероо алсаас хандахад тохируулахын тулд зааварчилгааг дагана уу</translation>
@@ -169,6 +170,7 @@
 Энэ зөвшөөрлийг олгохын тулд доор байгаа '<ph name="BUTTON_NAME" />' дээр товшино уу. Нээгдэх 'Хандалтын' тохиргооны самбар дээр '<ph name="SERVICE_SCRIPT_NAME" />'-н хажууд байрлах нүдийг тэмдэглэнэ үү.
 
 Хэрэв '<ph name="SERVICE_SCRIPT_NAME" />'-г аль хэдийн тэмдэглэсэн байвал сонголтыг болиулаад, дахин тэмдэглэнэ үү.</translation>
+<translation id="8305209735512572429">Веб баталгаажуулалтыг алсаас хийх явц</translation>
 <translation id="8383794970363966105">Chromoting ашиглахын тулд та төхөөрөмжидөө нь Google-ийн дансыг нэмэх хэрэгтэй болно.</translation>
 <translation id="8386846956409881180">Хостыг хүчин төгөлдөр бус OAuth credentials ашиглан тохируулсан байна.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />-д зөвшөөрөл олгох</translation>

@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">가격 인하 알림을 받습니다.</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
+<translation id="2118649612461486615">매장 정보</translation>
+<translation id="2162620598375156287">이제 <ph name="SOURCE_WEBSITE" />에서 <ph name="CURRENT_PRICE" />에 판매됨</translation>
 <translation id="2277224997687551299">그룹 이름 수정</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개를 그룹에서 삭제합니다.}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개를 그룹에서 삭제합니다.}}</translation>
 <translation id="2479148705183875116">설정으로 이동</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">그룹화</translation>
 <translation id="2613747923081026172">그룹 만들기</translation>
 <translation id="2662028055331606429">평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점</translation>
+<translation id="266935134738038806">사이트 방문</translation>
 <translation id="2671423594960767771">그룹 공유</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" />개의 탭이 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 확장합니다.</translation>
 <translation id="2801787514987684416">스토어 정보를 확인하시겠습니까?</translation>
 <translation id="2928243913527329289">Google | 매장 정보</translation>
 <translation id="2977480621796371840">그룹에서 삭제</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 가격 <ph name="PRICE_DROP" /> 인하</translation>
 <translation id="3194464645767632461">평점</translation>
+<translation id="3267416433995960648">알림 사용 중지</translation>
 <translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">닫기</translation>
 <translation id="6054741997831917303">상품 가격이 최근 인하됨, 기존 가격: <ph name="PREVIOUS_PRICE" />, 인하된 가격: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">탭 선택</translation>
+<translation id="6228793724645064692">(매장 평점)</translation>
+<translation id="6333260925957816943">매장에 관한 정보</translation>
 <translation id="6510648526783655549">탭 표시줄 닫기</translation>
+<translation id="6549021453810473782">매장 정보 보기</translation>
 <translation id="6562820390860419811">탭을 왼쪽으로 이동</translation>
 <translation id="6615455863669487791">보기</translation>
 <translation id="6840760312327750441">탭을 그룹화하려면 탭을 길게 터치한 다음 다른 탭으로 드래그하세요.</translation>
 <translation id="6856809498882026482">다중 선택 모드 숨기기</translation>
+<translation id="7129458170538955174">매장에 관한 정보가 절반 높이로 열림</translation>
 <translation id="7151209024774799310">그룹에서 탭 삭제</translation>
 <translation id="7204204600596740190">다중 선택 모드</translation>
+<translation id="7326879924029668159">반품 정책 등 확인하기</translation>
 <translation id="7352298686197644113">열려 있는 탭의 상품 중 가격이 더 낮은 상품을 확인합니다.</translation>
 <translation id="753732157349120914">탭 전환 도구</translation>
 <translation id="7559245342362162951">그룹 탭을 전체화면 그리드로 표시</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ 평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_ONE" />개}other{평점 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />점, 리뷰 <ph name="REVIEWS_COUNT_MANY" />개}}</translation>
 <translation id="7885132941432959125">탭을 오른쪽으로 이동</translation>
 <translation id="7966321538264951561">추천을 닫습니다.</translation>
+<translation id="8029301326595421733">매장에 관한 정보가 전체 높이로 열림</translation>
 <translation id="814503310257431685">전체 보기</translation>
 <translation id="8205266828577616993">탭을 위로 이동</translation>
 <translation id="8304833501377495048">탭 표시줄을 다시 표시하지 말까요?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">더 낮은 가격</translation>
 <translation id="8749939518995770034">탭 표시줄을 닫았습니다.</translation>
 <translation id="8820741577754260431">탭에서 가격 인하를 확인합니다.</translation>
+<translation id="9090098097337832354">매장에 관한 정보가 닫힘</translation>
 <translation id="9150694013019234766">화면 하단의 탭 그룹에서 탭 간 전환</translation>
 <translation id="9169594135889675189">그룹에 새 탭 추가</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>

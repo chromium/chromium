@@ -24,6 +24,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1119348796022671382">O modo de cores temáticas utiliza cores extraídas da sua imagem de fundo para colorir levemente a interface.</translation>
 <translation id="112308213915226829">Ocultar prateleira automaticamente</translation>
 <translation id="1148499908455722006">Abrir a caixa de diálogo de informações de <ph name="USER_NAME" /></translation>
+<translation id="1150989369772528668">Calendário</translation>
 <translation id="1153356358378277386">Dispositivos sincronizados</translation>
 <translation id="1165712434476988950">É necessário reiniciar o dispositivo para aplicar a atualização.</translation>
 <translation id="1175572348579024023">Deslocar</translation>
@@ -63,6 +64,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1341651618736211726">Menu adicional</translation>
 <translation id="1346748346194534595">Direita</translation>
 <translation id="1351937230027495976">Reduzir menu</translation>
+<translation id="1364382257761975320">Para desbloquear o Chromebook, utilize a sua impressão digital</translation>
 <translation id="1383597849754832576">Não é possível transferir os ficheiros de voz. Tente novamente mais tarde.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1391102559483454063">Ativada</translation>
@@ -102,6 +104,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1698760176351776263">Endereço IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Espaço de trabalho: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Definições de rede</translation>
+<translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">As Legendas instantâneas estão ativadas.</translation>
 <translation id="1720011244392820496">Desative o Sync Wi-Fi</translation>
 <translation id="1743570585616704562">Não reconhecida</translation>
@@ -159,6 +162,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2127372758936585790">Carregador de baixo consumo</translation>
 <translation id="2132302418721800944">Gravar ecrã inteiro</translation>
 <translation id="2135456203358955318">Lupa ancorada</translation>
+<translation id="2148716181193084225">Hoje</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tente novamente</translation>
 <translation id="2170530631236737939">Deslize rapidamente para baixo com três dedos para sair da Vista geral.</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
@@ -183,10 +187,12 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2352467521400612932">Definições da caneta stylus</translation>
 <translation id="2354174487190027830">A ativar <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2367186422933365202">Não é possível iniciar sessão no Chromebook</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2390318262976603432">Definições locais</translation>
 <translation id="2391579633712104609">180°</translation>
 <translation id="240006516586367791">Controlos de multimédia</translation>
+<translation id="2402411679569069051">Para desbloquear o Chromebook, utilize a sua impressão digital ou desbloqueie o telemóvel</translation>
 <translation id="2405664212338326887">Sem ligação</translation>
 <translation id="2408955596600435184">Introduza o PIN</translation>
 <translation id="2412593942846481727">Atualização disponível</translation>
@@ -236,6 +242,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2825619548187458965">Prateleira</translation>
 <translation id="2841907151129139818">Mudou para o modo de tablet</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal do lado esquerdo)</translation>
+<translation id="2860184359326882502">Melhor correspondência</translation>
 <translation id="2865888419503095837">Informações da rede</translation>
 <translation id="2872961005593481000">Encerrar</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
@@ -285,8 +292,10 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3207953481422525583">Definições do utilizador</translation>
 <translation id="3217205077783620295">O volume está ativado, premir o botão irá desativar o áudio.</translation>
 <translation id="3226991577105957773">E mais <ph name="COUNT" /></translation>
+<translation id="3227137524299004712">Microfone</translation>
 <translation id="324366796737464147">Supressão de ruído</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o espaço de trabalho <ph name="TARGET_DESK" /></translation>
+<translation id="3252248118006571685">Para desbloquear o Chromebook, ative o Bluetooth do seu telemóvel</translation>
 <translation id="3255483164551725916">O que podes fazer?</translation>
 <translation id="3269597722229482060">Clicar com o botão direito do rato</translation>
 <translation id="3289674678944039601">A carregar através de adaptador…</translation>
@@ -320,6 +329,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3477079411857374384">Control-Shift-Espaço</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definição</translation>
+<translation id="3509391053705095206">Não é possível encontrar o telemóvel. Certifique-se de que o Bluetooth do telemóvel está ativado.</translation>
 <translation id="3510164367642747937">Realçar cursor do rato</translation>
 <translation id="3513798432020909783">Conta gerida por <ph name="MANAGER_EMAIL" />.</translation>
 <translation id="353086728817903341">Ligado a <ph name="NUM_DEVICES" /> dispositivos</translation>
@@ -351,9 +361,11 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3702846122927433391">População da Nigéria</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="370665806235115550">A carregar...</translation>
+<translation id="3708186454126126312">Ligados anteriormente</translation>
 <translation id="371370241367527062">Microfone frontal</translation>
 <translation id="3713734891607377840">Abrir ao concluir</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
+<translation id="3744282433224562605">Para desbloquear o Chromebook, introduza a palavra-passe</translation>
 <translation id="3771549900096082774">Modo de alto contraste</translation>
 <translation id="3773700760453577392">Um administrador não permitiu o início de sessão integrado para <ph name="USER_EMAIL" />. Todos os utilizadores têm de terminar sessão para continuar.</translation>
 <translation id="3779139509281456663">A ligar ao dispositivo <ph name="NAME" /></translation>
@@ -378,6 +390,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3900355044994618856">A sessão termina dentro de <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">A ligar a <ph name="NAME" /></translation>
 <translation id="3923494859158167397">Nenhuma rede móvel configurada</translation>
+<translation id="3932043219784172185">Nenhum dispositivo ligado</translation>
 <translation id="3943857333388298514">Colar</translation>
 <translation id="394485226368336402">Definições de áudio</translation>
 <translation id="3945319193631853098">Toque para concluir a configuração.</translation>
@@ -406,17 +419,19 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4129129681837227511">Para ver notificações no ecrã de bloqueio, desbloqueie o mesmo para alterar a definição</translation>
 <translation id="4146833061457621061">Tocar música</translation>
 <translation id="4157822100366708405">Definições do tema escuro</translation>
-<translation id="4170634509222878053"><ph name="TITLE" /> – <ph name="DETAILS" /></translation>
+<translation id="4173958948577803258">Q</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
 <translation id="4197790712631116042">Desativado</translation>
 <translation id="4201033867194214117">A funcionalidade <ph name="FEATURE_NAME" /> não está disponível.</translation>
+<translation id="4201051445878709314">Mostrar mês anterior</translation>
 <translation id="4209973997261364186">O Wi-Fi está ativado</translation>
 <translation id="4212472694152630271">Mudar para PIN</translation>
 <translation id="4215497585250573029">Definições da VPN</translation>
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, em pausa</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4242533952199664413">Abrir definições</translation>
 <translation id="4250229828105606438">Captura de ecrã</translation>
 <translation id="425364040945105958">Sem cartão SIM</translation>
 <translation id="4261870227682513959">Mostrar definições de notificação. As notificações estão desativadas</translation>
@@ -445,6 +460,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Pretende ativá-la?</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
+<translation id="4406883609789734330">Legendas instantâneas</translation>
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
 <translation id="4421231901400348175">A partilhar o controlo do seu ecrã com <ph name="HELPER_NAME" /> através da Assistência remota.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
@@ -464,6 +480,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4485060137115666462">Ao clicar com o botão direito do rato ou ao manter o botão premido, o Assistente mostra-lhe informações como a definição, a tradução ou a conversão de unidades para a sua seleção.</translation>
 <translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
 <translation id="4513946894732546136">Comentários</translation>
+<translation id="4518404433291145981">Para desbloquear o Chromebook, desbloqueie primeiro o seu telemóvel</translation>
 <translation id="4527045527269911712">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> até estar totalmente carregada</translation>
 <translation id="4538824937723742295">Faça uma captura de ecrã inteiro</translation>
@@ -490,7 +507,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4665114317261903604">Ative/desative o modo Não incomodar. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Desbloquear o dispositivo com o código parental</translation>
 <translation id="4702647871202761252">O ecrã de privacidade está desligado</translation>
-<translation id="4705716602320768426">Envie comentários</translation>
 <translation id="4706121060329443414">Tentar-se-á a transferência mais tarde. Por enquanto, a voz será enviada para a Google para processamento.</translation>
 <translation id="4731797938093519117">Acesso parental</translation>
 <translation id="4734965478015604180">Horizontal</translation>
@@ -547,12 +563,15 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5075554201838155866">Iniciar legendas</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais funcionalidades do Assistente.</translation>
+<translation id="5117590920725113268">Mostrar mês seguinte</translation>
 <translation id="5136175204352732067">Teclado diferente ligado</translation>
+<translation id="5147567197700016471">Desbloqueado</translation>
 <translation id="5155897006997040331">Velocidade de leitura</translation>
 <translation id="5166918508782100047">Definições das Respostas rápidas</translation>
 <translation id="5168181903108465623">Dispositivos de transmissão disponíveis</translation>
 <translation id="5170568018924773124">Mostrar numa pasta</translation>
 <translation id="5176318573511391780">Gravar ecrã parcial</translation>
+<translation id="5199367439331364630">Para iniciar sessão no Chromebook, introduza a palavra-passe</translation>
 <translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{Mais 1 notificação}other{Mais # notificações}}</translation>
 <translation id="5207949376430453814">Realçar cursor do texto</translation>
 <translation id="5208059991603368177">Ativado</translation>
@@ -570,8 +589,10 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5308380583665731573">Ligar</translation>
 <translation id="5313326810920013265">Definições de Bluetooth</translation>
 <translation id="5314219114274263156">Gravação de ecrã captada</translation>
+<translation id="5319712128756744240">Sincronizar novo dispositivo</translation>
 <translation id="5322611492012084517">Não é possível encontrar o telemóvel</translation>
 <translation id="5329548388331921293">A ligar…</translation>
+<translation id="5330201449517439522">Toque ou clique para introduzir</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira do lado esquerdo)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
@@ -581,6 +602,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
 <translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
 <translation id="5431825016875453137">OpenVPN/L2TP</translation>
+<translation id="5433020815079095860">Entrada de áudio</translation>
 <translation id="544691375626129091">Já foram adicionados a esta sessão todos os utilizadores disponíveis.</translation>
 <translation id="54609108002486618">Geridos</translation>
 <translation id="5465662442746197494">Precisa de ajuda?</translation>
@@ -629,6 +651,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5837036133683224804">Parar o <ph name="ROUTE_TITLE" /> no recetor <ph name="RECEIVER_NAME" /></translation>
+<translation id="584525477304726060">Toque sem soltar para maximizar</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5867217927013474703">A recolher informações da rede</translation>
@@ -734,6 +757,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6667908387435388584">Ligue-se à zona Wi-Fi do seu telemóvel, silencie e localize o seu dispositivo, e veja os separadores recentes do Chrome abertos no telemóvel.</translation>
 <translation id="6670153871843998651">Secretária 3</translation>
 <translation id="6671495933530132209">Copiar imagem</translation>
+<translation id="6671661918848783005">Não é possível desbloquear o Chromebook</translation>
 <translation id="6692996468359469499">Obtenha informações relacionadas com a sua seleção</translation>
 <translation id="6696025732084565524">O teclado amovível necessita de uma atualização crítica</translation>
 <translation id="6700713906295497288">Botão de menu IME</translation>
@@ -744,6 +768,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6751052314767925245">Aplicada pelo seu administrador.</translation>
 <translation id="6751826523481687655">O rastreio do desempenho está ativado.</translation>
 <translation id="6752912906630585008">O espaço de trabalho <ph name="REMOVED_DESK" /> foi removido e unido ao espaço de trabalho <ph name="RECEIVE_DESK" /></translation>
+<translation id="6754441615189976839">S</translation>
 <translation id="6757237461819837179">Sem multimédia em reprodução</translation>
 <translation id="6777216307882431711">Ligar os dispositivos USB-C ligados</translation>
 <translation id="6790428901817661496">Reproduzir</translation>
@@ -764,6 +789,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6910714959251846841">Para efetuar esta atualização, é necessário efetuar o Powerwash do dispositivo. Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
 <translation id="6921188888306725546">Os atalhos de teclado foram melhorados</translation>
+<translation id="6931576957638141829">Guardar em</translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6961121602502368900">A funcionalidade Silenciar telemóvel não está disponível no perfil de trabalho.</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima foi alterado. Para utilizar a tecla Página para cima, prima a tecla <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
@@ -781,6 +807,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
 <translation id="7042322267639375032">Reduzir área de estado</translation>
 <translation id="7045595904618419789">Iniciar lupa</translation>
+<translation id="7055381872777910864">Q</translation>
 <translation id="7055910611768509537">A caneta stylus não é utilizada há mais de uma semana</translation>
 <translation id="7066646422045619941">Esta rede foi desativada pelo gestor.</translation>
 <translation id="7067196344162293536">Rotação automática</translation>
@@ -849,6 +876,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7579778809502851308">Captura de ecrã</translation>
 <translation id="7590883480672980941">Definições de introdução</translation>
 <translation id="7593891976182323525">Pesquisar ou Shift</translation>
+<translation id="7595633564847427181">S</translation>
 <translation id="7600875258240007829">Ver todas as notificações</translation>
 <translation id="7607002721634913082">Em pausa</translation>
 <translation id="7618774594543487847">Neutro</translation>
@@ -898,6 +926,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7955885781510802139">Modo de alto contraste</translation>
+<translation id="7968693143708939792">Selecionar pasta…</translation>
 <translation id="7977927628060636163">A pesquisar redes móveis...</translation>
 <translation id="7980780401175799550">Experimente novas formas de navegar no Chrome OS</translation>
 <translation id="7982789257301363584">Rede</translation>
@@ -1006,6 +1035,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8818320199597151042">A remover o perfil. Aguarde alguns minutos.</translation>
 <translation id="8825863694328519386">Deslize rapidamente a partir da esquerda para retroceder.</translation>
 <translation id="8828714802988429505">90°</translation>
+<translation id="8834539327799336565">Atualmente ligados</translation>
 <translation id="8841375032071747811">Botão Anterior</translation>
 <translation id="8843682306134542540">Ativar/desativar bloqueio de rotação. <ph name="STATE_TEXT" /></translation>
 <translation id="8850991929411075241">Pesquisa+Esc</translation>

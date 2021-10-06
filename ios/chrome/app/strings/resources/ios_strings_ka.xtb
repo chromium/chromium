@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">აქტიური იყო <ph name="DAYS" /> დღის წინ</translation>
 <translation id="2074131957428911366"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
+<translation id="2080769225927880590">შედით სისტემაში სათანადო ანგარიშით</translation>
 <translation id="209018056901015185">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="2103075008456228677">history.google.com-ის გახსნა</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ელემენტი გადატანილია</translation>
@@ -219,6 +220,7 @@
 <translation id="3131206671572504478">ყველას დაბლოკვა</translation>
 <translation id="313283613037595347">ახალი ინკოგნიტო ჩანართის შექმნა.</translation>
 <translation id="3153862085237805241">ბარათის შენახვა</translation>
+<translation id="315401415709252194">თქვენი ორგანიზაცია მოითხოვს, რომ სისტემაში შეხვიდეთ.</translation>
 <translation id="3157387275655328056">საკითხავ სიაში დამატება</translation>
 <translation id="3157684681743766797">ყველას მონიშვნა…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -229,6 +231,7 @@
 <translation id="3184767182050912705">განსაბლოკად გამოყენებული იყოს <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
 <translation id="3224641773458703735">პაროლების ექსპორტირებისთვის, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
+<translation id="3230318355092723906">როცა სინქრონიზაცია გამორთულია, თქვენი სანიშნეების, ისტორიის, პაროლების და სხვა პარამეტრების ამ მოწყობილობაზე ნახვა მაინც შეგიძლიათ. თუ რაიმეს შეცვლით, ცვლილებები არ სინქრონიზდება თქვენს ანგარიშთან.</translation>
 <translation id="3240426699337459095">ბმული დაკოპირდა</translation>
 <translation id="3244271242291266297">თთ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> / <ph name="NUM_SUGGESTIONS" />-დან</translation>
@@ -311,7 +314,6 @@
 <translation id="4038354071007134711">ამ მოწყობილობაში არ არსებობს პროგრამა ფაილის გასახსნელად.</translation>
 <translation id="4042870976416480368">ძიება გვერდზე</translation>
 <translation id="4049507953662678203">დარწმუნდით, რომ დაკავშირებული ხართ ქსელთან და ხელახლა ცადეთ.</translation>
-<translation id="4079195788735381731">თქვენმა ორგანიზაციამ სისტემიდან გამოგიყვანათ</translation>
 <translation id="408404951701638773">ახლა უფრო მარტივად შეგიძლიათ წვდომა ძიების ზოლზე</translation>
 <translation id="411254640334432676">ჩამოტვირთვა ვერ მოხერხდა.</translation>
 <translation id="4112644173421521737">ძიება</translation>
@@ -355,6 +357,7 @@
 <translation id="4619564267100705184">ვინაობის დადასტურება</translation>
 <translation id="4619615317237390068">ჩანართები სხვა მოწყობილობებიდან</translation>
 <translation id="4620246317052452550">თქვენ მიერ წაკითხული გვერდები</translation>
+<translation id="4620888520263267479">ბმულის გადახედვების ჩვენება</translation>
 <translation id="4630540211544979320">გვერდების თარგმნა</translation>
 <translation id="4634124774493850572">პაროლის გამოყენება</translation>
 <translation id="4636930964841734540">ინფორმაცია</translation>
@@ -452,6 +455,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
 <translation id="5580834567471114021">გსურთ, დაამატოთ მოგვიანებით საკითხავთა სიას?</translation>
 <translation id="5592679540098330836">სინქრონიზაციის ჩართვა <ph name="NAME" />-ისთვის</translation>
+<translation id="560322036295180549">გამორთულია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="5614553682702429503">გსურთ პაროლის შენახვა?</translation>
 <translation id="5626245204502895507">ფაილის ჩამოტვირთვა ამჯერად ვერ მოხერხდა.</translation>
 <translation id="5631164295104953411">გადახდის მეთოდის დამატება</translation>
@@ -467,6 +471,8 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5737974891429562743">ანგარიშში შესვლის დეტალები მოძველდა. სინქრონიზაციის დასაწყებად, განაახლეთ ისინი.</translation>
 <translation id="5738887413654608789">საშუალებას გაძლევთ, აღმოაჩინოთ თქვენს გარშემო არსებულ ობიექტებთან დაკავშირებული ვებგვერდები.</translation>
 <translation id="5758631781033351321">აქ თქვენს საკითხავ სიას იპოვით</translation>
+<translation id="575902488528307720">სურათის ძიება</translation>
+<translation id="5781453543752460388">ფოტოებში დამატება</translation>
 <translation id="5782227691023083829">მიმდინარეობს თარგმნა...</translation>
 <translation id="5803566855766646066">ნამდვილად გსურთ ამ ახალი ბარათის გაუქმება?</translation>
 <translation id="5812974770859303494">დამატება...</translation>
@@ -504,6 +510,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6042308850641462728">სხვა</translation>
 <translation id="605721222689873409">წწ</translation>
 <translation id="6059830886158432458">აქ შეგიძლიათ მართოთ ამბები და აქტივობა</translation>
+<translation id="6064824697233747382">თქვენი ორგანიზაცია მოითხოვს, რომ სინქრონიზაცია გამორთოთ.</translation>
 <translation id="6066301408025741299">შეეხეთ გასაუქმებლად.</translation>
 <translation id="60829778314739003">დათანხმება და გაგრძელება</translation>
 <translation id="6084848228346514841">აირჩიეთ ჩანართები</translation>
@@ -519,6 +526,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6189413832092199491">წაუკითხავი</translation>
 <translation id="6196207969502475924">ხმოვანი ძიება</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ჩანართის დახურვა}other{{COUNT} ჩანართის დახურვა}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />შეიტყვეთ, რისი სინქრონიზაცია შეგიძლიათ<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">არასოდეს ითარგმნოს</translation>
 <translation id="6223816392543092032">იქონიეთ წვდომა თქვენს სანიშნეებზე, ისტორიაზე, პაროლებსა და სხვა პარამეტრებზე თქვენი ყველა მოწყობილობიდან.</translation>
 <translation id="6232329973559504466">ინკოგნიტო ძიება</translation>
@@ -603,10 +611,12 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6801927553864092214">ვების კონფიდენციალურად დასათვალიერებლად გახსენით ინკოგნიტო ჩანართი</translation>
 <translation id="6807889908376551050">ყველას ჩვენება…</translation>
 <translation id="681368974849482173">ელემენტი შექმნილია</translation>
+<translation id="681450999322335505">თქვენმა ორგანიზაციამ გამორთო სინქრონიზაცია.</translation>
 <translation id="6830804042318138535">მეტის წაკითხვა</translation>
 <translation id="6831043979455480757">თარგმნა</translation>
 <translation id="6842136130964845393">იმაში დასარწმუნებლად, რომ ყოველთვის შეძლებთ თქვენს შენახულ პაროლებზე წვდომას, დაადასტურეთ, რომ ეს თქვენ ხართ</translation>
 <translation id="6851516051005285358">დესკტოპის საიტის მოთხოვნა</translation>
+<translation id="6856384753476268833">მართავს თქვენი ორგანიზაცია.</translation>
 <translation id="6858855187367714033">სკანირებული</translation>
 <translation id="6859944681507688231">QR კოდის ან საკრედიტო ბარათის სკანირებისთვის ჩართეთ კამერა პარამეტრებიდან.</translation>
 <translation id="6869389390665537774">თქვენ შეგიძლიათ ნახოთ გვერდები, რომლებსაც ესტუმრეთ, ან წაშალოთ ისინი ისტორიიდან</translation>
@@ -628,7 +638,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">ბოლო ჩანართები</translation>
 <translation id="7006788746334555276">შინაარსის პარამეტრები</translation>
-<translation id="7015203776128479407">სინქრონიზაციის საწყისი დაყენება ვერ მოხერხდა. სინქრონიზაცია გამორთულია.</translation>
 <translation id="7029809446516969842">პაროლები</translation>
 <translation id="7053983685419859001">დაბლოკვა</translation>
 <translation id="7062545763355031412">მიღება და ანგარიშების გადართვა</translation>
@@ -651,7 +660,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7265758999917665941">არასდროს ამ საიტისთვის</translation>
 <translation id="7272437679830969316">თქვენი ვინაობა ვერ დადასტურდა. პაროლი არ დაკოპირდა.</translation>
 <translation id="7291368939935408496">მიმდინარეობს პაროლების მომზადება...</translation>
-<translation id="7293171162284876153">სიქრონიზაციის დასაწყებად ჩართეთ „თქვენი Chrome მონაცემების სინქრონიზაციის“ პარამეტრი.</translation>
 <translation id="7313347584264171202">აქ იპოვით თქვენს ინკოგნიტო ჩანართებს</translation>
 <translation id="7319242366286515846">გაგრძელებით თქვენ ეთანხმებით <ph name="BEGIN_LINK" />მომსახურების პირობებს<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> პროცენტი ჩამოიტვირთა</translation>
@@ -707,6 +715,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7856733331829174190">ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="7859704718976024901">დათვალიერების ისტორია</translation>
 <translation id="7887198238286927132">თქვენი კონფიდენციალურობის დაცვის მიზნით, Chrome არ შეავსებს ავტომატურად ამ ველს.</translation>
+<translation id="7911190106180361398">თქვენი ორგანიზაცია ყველაფრის სინქრონიზაციის უფლებას არ გაძლევთ.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">პაროლების ექსპორტი...</translation>
 <translation id="794799177247607889">ჟურნალირების შეწყვეტა</translation>
@@ -716,6 +725,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 
 საიტებს შეუძლია ქუქი-ჩანაწერების გამოყენება სხვადასხვა საიტის თქვენ მიერ დათვალიერების აქტივობის სანახავად, მაგალითად, რეკლამის თქვენზე მოსარგებად.</translation>
 <translation id="7971521879845308059">კონტექსტური ფანჯრების დაბლოკვა</translation>
+<translation id="797413074872316787">თქვენი ყველა მოწყობილობის სინქრონიზაციისთვისა და პერსონალიზებისთვის ჩართეთ სინქრონიზაცია.</translation>
 <translation id="7982789257301363584">ქსელი</translation>
 <translation id="7993619969781047893">ზოგიერთი საიტის ფუნქციებმა შეიძლება არასათანადოდ იმუშაოს</translation>
 <translation id="800361585186029508">მითითებულ URL-ებს Google Chrome-ში გახსნის.</translation>
@@ -734,8 +744,8 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8080028325999236607">ყველა ჩანართის დახურვა</translation>
 <translation id="8105368624971345109">გამორთვა</translation>
 <translation id="8114753159095730575">შესაძლებელია ფაილის ჩამოტვირთვა. ვარიანტები ხელმისაწვდომია ეკრანის ქვედა ნაწილთან.</translation>
-<translation id="8131740175452115882">დაადასტურება</translation>
 <translation id="8156478151976189188">პაროლების სინქრონიზაცია არ მუშაობს</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />თქვენი მოწყობილობები<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">გვერდის თარგმნა</translation>
 <translation id="8205564605687841303">გაუქმება</translation>
 <translation id="8206354486702514201">ეს პარამეტრი იძულებითაა დაყენებული თქვენი ადმინისტრატორის მიერ.</translation>
@@ -761,7 +771,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8487667956631253959">ჩართულია</translation>
 <translation id="8487700953926739672">ოფლაინში ხელმისაწვდომი</translation>
 <translation id="8490978609246021741">ცვლილებების შენახვა</translation>
-<translation id="8495097701594799854">გამორთულია თქვენი ორგანიზაციის მიერ.</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="850600235656508448">ინკოგნიტო ფანჯარაში გახსნა</translation>
 <translation id="8517375800490286174">ღია წყაროს ლიცენზიები</translation>
@@ -834,6 +843,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">მოხსენება შეცდომების შესახებ გაიგზავნა.</translation>
 <translation id="952704832371081537">გაუქმება</translation>
+<translation id="981498610235328462">თქვენი ორგანიზაცია სისტემაში მხოლოდ კონკრეტული ანგარიშებით შესვლის უფლებას გაძლებთ. ანგარიშები, რომელთა გამოყენებაც ნებადართული არ არის, დამალულია.</translation>
 <translation id="984509647832111802">სინქრონიზაცია არ მუშაობს.</translation>
 <translation id="988141524645182168">სხვა მოწყობილობები</translation>
 <translation id="989988560359834682">მისამართის რედაქტირება</translation>

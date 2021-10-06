@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">ዋጋዎች ሲቀነሱ ማሳወቂያ ያግኙ</translation>
 <translation id="1657719826150349398">ትርን ወደ ታች ያንቀሳቅሱ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር}one{<ph name="TABS_COUNT_MANY" /> ትሮች}other{<ph name="TABS_COUNT_MANY" /> ትሮች}}</translation>
+<translation id="2118649612461486615">የመደብር መረጃ</translation>
+<translation id="2162620598375156287">አሁን <ph name="CURRENT_PRICE" /> <ph name="SOURCE_WEBSITE" /> ላይ</translation>
 <translation id="2277224997687551299">የቡድን ስም ያርትዑ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ከቡድን <ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ያስወግዱ።}one{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}other{ከቡድን <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ያስወግዱ።}}</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">ቡድን</translation>
 <translation id="2613747923081026172">ቡድን ይፍጠሩ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ</translation>
+<translation id="266935134738038806">ጣቢያ ይጎብኙ</translation>
 <translation id="2671423594960767771">ቡድንን አጋራ</translation>
 <translation id="2759453070259087442">የ<ph name="TITLE_OF_GROUP" /> ትር ስብስብ በ<ph name="NUMBER_OF_TABS" /> ትሮች ያስፉ።</translation>
 <translation id="2801787514987684416">የመደብር መረጃ ይታይ?</translation>
 <translation id="2928243913527329289">Google | ስለዚህ መደብር</translation>
 <translation id="2977480621796371840">ከቡድን አስወግድ</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ላይ የ<ph name="PRICE_DROP" /> ዋጋ ቅናሽ</translation>
 <translation id="3194464645767632461">የተሰጡ ደረጃዎች</translation>
+<translation id="3267416433995960648">ማንቂያ አጥፋ</translation>
 <translation id="3291470810748040983">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ይደርስዎታል</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6193448654517602979">ትሮችን ምረጥ</translation>
+<translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
+<translation id="6333260925957816943">ስለዚህ መደብር መረጃ</translation>
 <translation id="6510648526783655549">የትር ድርድርን ዝጋ</translation>
+<translation id="6549021453810473782">የመደብር መረጃን ይመልከቱ</translation>
 <translation id="6562820390860419811">ትርን ወደ ግራ አንቀሳቅስ</translation>
 <translation id="6615455863669487791">አሳየኝ</translation>
 <translation id="6840760312327750441">ትሮችን ለመቦደን፣ ትርን ነካ አድርገው ይያዙ። በመቀጠል፣ ወደ ሌላ ትር ይጎትቱት።</translation>
 <translation id="6856809498882026482">ባለብዙ ምርጫ ሁነታን ደብቅ</translation>
+<translation id="7129458170538955174">ስለዚህ መደብር መረጃ በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="7151209024774799310">ትሮችን ከቡድን ያስወግዱ</translation>
 <translation id="7204204600596740190">ባለብዙ ምርጫ ሁነታ</translation>
+<translation id="7326879924029668159">የመመለሻ መመሪያን እና ሌሎችንም ይመልከቱ</translation>
 <translation id="7352298686197644113">በክፍት ትሮችዎ ውስጥ የትኛው ንጥል የተሻለ ዋጋ እንዳለው ይመልከቱ</translation>
 <translation id="753732157349120914">የትር መቀያየሪያ</translation>
 <translation id="7559245342362162951">የቡድን ትሮች በሙሉ ማያ ፍርግርግ አሳይ</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣ <ph name="REVIEWS_COUNT_ONE" /> ግምገማ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}}</translation>
 <translation id="7885132941432959125">ቅርን ወደ ቀኝ አንቀሳቅስ</translation>
 <translation id="7966321538264951561">ጥቆማ ሐሳቦችን ያሰናብቱ።</translation>
+<translation id="8029301326595421733">ስለዚህ መደብር መረጃ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="814503310257431685">ሁሉንም አሳይ</translation>
 <translation id="8205266828577616993">ትርን ወደ ላይ አንቀሳቅስ</translation>
 <translation id="8304833501377495048">የትር ድርድር ዳግም አይታይ?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">ዝቅተኛ ዋጋ</translation>
 <translation id="8749939518995770034">የትር ድርድር ተዘግቷል</translation>
 <translation id="8820741577754260431">በትሮችዎ ላይ የዋጋ ቅነሳዎችን ይመልከቱ</translation>
+<translation id="9090098097337832354">ስለዚህ መደብር መረጃ ተዘግቷል</translation>
 <translation id="9150694013019234766">ከማያው ግርጌ አጠገብ በትር ቡድንዎ ውስጥ ባሉ ትሮች መካከይ ይቀያይሩ</translation>
 <translation id="9169594135889675189">አዲስ ትር ወደ ቡድን አክል</translation>
 <translation id="959682366969460160">ይደራጁ</translation>

@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">ಬೆಲೆಗಳು ಕುಸಿತವಾದಾಗ ಸೂಚನೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="1657719826150349398">ಟ್ಯಾಬ್ ಅನ್ನು ಕೆಳಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳು}}</translation>
+<translation id="2118649612461486615">ಸ್ಟೋರ್‌ನ ಮಾಹಿತಿ</translation>
+<translation id="2162620598375156287">ಇದೀಗ <ph name="CURRENT_PRICE" /><ph name="SOURCE_WEBSITE" /> ನಲ್ಲಿ</translation>
 <translation id="2277224997687551299">ಗುಂಪಿನ ಹೆಸರನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ಗುಂಪಿನಿಂದ ಆಯ್ದ <ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ.}one{ಗುಂಪಿನಿಂದ ಆಯ್ದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ.}other{ಗುಂಪಿನಿಂದ ಆಯ್ದ <ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ.}}</translation>
 <translation id="2479148705183875116">ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">ಗುಂಪು</translation>
 <translation id="2613747923081026172">ಗುಂಪನ್ನು ರಚಿಸಿ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ರೇಟಿಂಗ್</translation>
+<translation id="266935134738038806">ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಿ</translation>
 <translation id="2671423594960767771">ಗುಂಪನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತರಿಸಿ.</translation>
 <translation id="2801787514987684416">ಸ್ಟೋರ್ ಮಾಹಿತಿಯನ್ನು ನೋಡುವುದೇ?</translation>
 <translation id="2928243913527329289">Google | ಈ ಸ್ಟೋರ್ ಕುರಿತು</translation>
 <translation id="2977480621796371840">ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ಉತ್ಪನ್ನದ ಮೇಲೆ <ph name="PRICE_DROP" /> ದರ ಇಳಿಕೆ</translation>
 <translation id="3194464645767632461">ರೇಟಿಂಗ್</translation>
+<translation id="3267416433995960648">ಅಲರ್ಟ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3291470810748040983">ತೆರೆದ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಿದ್ದಾಗ ನೀವು ಎಚ್ಚರಿಕೆಯನ್ನು ಪಡೆಯುತ್ತೀರಿ</translation>
 <translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡುವುದೇ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">ಮುಚ್ಚಿರಿ</translation>
 <translation id="6054741997831917303">ಈ ಐಟಂನ ಬೆಲೆಯು ಇತ್ತೀಚೆಗೆ <ph name="PREVIOUS_PRICE" /> ದಿಂದ <ph name="NEW_PRICE" /> ಗೆ ಕುಸಿದಿದೆ</translation>
 <translation id="6193448654517602979">ಟ್ಯಾಬ್‌ ಆಯ್ಕೆ</translation>
+<translation id="6228793724645064692">(ಸ್ಟೋರ್ ರೇಟಿಂಗ್)</translation>
+<translation id="6333260925957816943">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿ</translation>
 <translation id="6510648526783655549">ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌ ಮುಚ್ಚಿ</translation>
+<translation id="6549021453810473782">ಸ್ಟೋರ್ ಮಾಹಿತಿಯನ್ನು ನೋಡಿ</translation>
 <translation id="6562820390860419811">ಟ್ಯಾಬ್ ಅನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="6615455863669487791">ನನಗೆ ತೋರಿಸಿ</translation>
 <translation id="6840760312327750441">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಲು , ಟ್ಯಾಬ್ ಒಂದನ್ನು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಿ. ನಂತರ, ಅದನ್ನು ಮತ್ತೊಂದು ಟ್ಯಾಬ್‌ನ ಮೇಲೆ ಡ್ರ್ಯಾಗ್ ಮಾಡಿ.</translation>
 <translation id="6856809498882026482">ಬಹು ಆಯ್ಕೆ ಮೋಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="7129458170538955174">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7151209024774799310">ಗುಂಪಿನಿಂದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7204204600596740190">ಬಹು ಆಯ್ಕೆ ಮೋಡ್</translation>
+<translation id="7326879924029668159">ಹಿಂತಿರುಗಿಸುವಿಕೆ ನೀತಿ ಹಾಗೂ ಮುಂತಾದವುಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="7352298686197644113">ನೀವು ತೆರೆದಿರುವ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಯಾವ ಐಟಂ ಕಡಿಮೆ ಬೆಲೆಯನ್ನು ಹೊಂದಿದೆ ಎಂಬುದನ್ನು ನೋಡಿ</translation>
 <translation id="753732157349120914">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್</translation>
 <translation id="7559245342362162951">ಗುಂಪಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ ಗ್ರಿಡ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ರೇಟಿಂಗ್, <ph name="REVIEWS_COUNT_ONE" /> ವಿಮರ್ಶೆ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ರೇಟಿಂಗ್, <ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ರೇಟಿಂಗ್, <ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು}}</translation>
 <translation id="7885132941432959125">ಟ್ಯಾಬ್ ಅನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="7966321538264951561">ಸಲಹೆಗಳನ್ನು ವಜಾಗೊಳಿಸಿ.</translation>
+<translation id="8029301326595421733">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="814503310257431685">ಎಲ್ಲವನ್ನೂ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="8205266828577616993">ಟ್ಯಾಬ್ ಅನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8304833501377495048">ಪುನಃ ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌ ಅನ್ನು ತೋರಿಸಬಾರದೇ?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">ಕಡಿಮೆ ಬೆಲೆ</translation>
 <translation id="8749939518995770034">ಮುಚ್ಚಿದ ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌</translation>
 <translation id="8820741577754260431">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆ ಕುಸಿತಗಳನ್ನು ನೋಡಿ</translation>
+<translation id="9090098097337832354">ಈ ಸ್ಟೋರ್‌ನ ಕುರಿತಾದ ಮಾಹಿತಿ ಮುಚ್ಚಲ್ಪಟ್ಟಿದೆ</translation>
 <translation id="9150694013019234766">ಸ್ಕ್ರೀನ್‌ನ ಕೆಳಭಾಗದಲ್ಲಿರುವ ನಿಮ್ಮ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿರುವ ಟ್ಯಾಬ್‌ಗಳ ನಡುವೆ ಬದಲಾಯಿಸಿ</translation>
 <translation id="9169594135889675189">ಗುಂಪಿಗೆ ಹೊಸ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>
 <translation id="959682366969460160">ವ್ಯವಸ್ಥಿತರಾಗಿರಿ</translation>

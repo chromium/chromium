@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Jaso alertak prezioak jaisten direnean</translation>
 <translation id="1657719826150349398">Eraman fitxa behera</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
+<translation id="2118649612461486615">Dendari buruzko informazioa</translation>
+<translation id="2162620598375156287">Orain, <ph name="CURRENT_PRICE" /> balio du <ph name="SOURCE_WEBSITE" /> webgunean</translation>
 <translation id="2277224997687551299">Editatu taldearen izena</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Kendu hautatutako <ph name="TABS_COUNT_ONE" /> fitxa taldetik.}other{Kendu hautatutako <ph name="TABS_COUNT_MANY" /> fitxak taldetik.}}</translation>
 <translation id="2479148705183875116">Joan "Ezarpenak" atalera</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Taldekatu</translation>
 <translation id="2613747923081026172">Sortu talde bat</translation>
 <translation id="2662028055331606429">Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Joan webgunera</translation>
 <translation id="2671423594960767771">Partekatu taldea</translation>
 <translation id="2759453070259087442">Zabaldu <ph name="NUMBER_OF_TABS" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.</translation>
 <translation id="2801787514987684416">Dendari buruzko informazioa ikusi nahi duzu?</translation>
 <translation id="2928243913527329289">Google | Denda honi buruz</translation>
 <translation id="2977480621796371840">Kendu taldetik</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> merkeagoa da <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">balorazioa</translation>
+<translation id="3267416433995960648">Desaktibatu alerta</translation>
 <translation id="3291470810748040983">Alerta bat jasoko duzu irekita daukazun fitxa bateko produkturen baten prezioa jaisten denean</translation>
 <translation id="3328308545011660196">Iradokizuna: <ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6054741997831917303">Produktu honen prezioa jaitsi egin da, eta <ph name="PREVIOUS_PRICE" /> izatetik <ph name="NEW_PRICE" /> izatera pasatu</translation>
 <translation id="6193448654517602979">Hautatu fitxak</translation>
+<translation id="6228793724645064692">(dendaren balorazioa)</translation>
+<translation id="6333260925957816943">Denda honi buruzko informazioa</translation>
 <translation id="6510648526783655549">Itxi fitxen zinta</translation>
+<translation id="6549021453810473782">Ikusi dendari buruzko informazioa</translation>
 <translation id="6562820390860419811">Eraman fitxa ezkerrera</translation>
 <translation id="6615455863669487791">Erakutsi</translation>
 <translation id="6840760312327750441">Fitxak taldekatzeko, eduki fitxa bat sakatuta eta, ondoren, arrasta ezazu beste batera.</translation>
 <translation id="6856809498882026482">Ezkutatu hautespen anizkoitzeko modua</translation>
+<translation id="7129458170538955174">Ireki da denda honi buruzko informazioa altuera erdian</translation>
 <translation id="7151209024774799310">Kendu fitxak taldetik</translation>
 <translation id="7204204600596740190">Hautespen anizkoitzeko modua</translation>
+<translation id="7326879924029668159">Ikusi dendaren itzultze-gidalerroak</translation>
 <translation id="7352298686197644113">Ikusi irekita dauzkazun fitxetako zein produkturen prezioa jaitsi den</translation>
 <translation id="753732157349120914">Fitxa-aldatzailea</translation>
 <translation id="7559245342362162951">Erakutsi taldearen fitxak pantaila osoko saretan</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_ONE" />.}other{Balorazioa: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. Iritzi kopurua: <ph name="REVIEWS_COUNT_MANY" />.}}</translation>
 <translation id="7885132941432959125">Eraman fitxa eskuinera</translation>
 <translation id="7966321538264951561">Baztertu iradokizunak.</translation>
+<translation id="8029301326595421733">Ireki da denda honi buruzko informazioa altuera osoan</translation>
 <translation id="814503310257431685">Ikusi guztiak</translation>
 <translation id="8205266828577616993">Eraman fitxa gora</translation>
 <translation id="8304833501377495048">Fitxen zinta ikusteari utzi nahi diozu?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Merkeagoa</translation>
 <translation id="8749939518995770034">Itxi da fitxen zinta</translation>
 <translation id="8820741577754260431">Ikusi prezio-jaitsierak fitxetan</translation>
+<translation id="9090098097337832354">Itxi da denda honi buruzko informazioa</translation>
 <translation id="9150694013019234766">Fitxa batetik bestera joateko, erabili pantailaren behealdean dagoen fitxa taldea</translation>
 <translation id="9169594135889675189">Gehitu beste fitxa bat taldean</translation>
 <translation id="959682366969460160">Antola zaitez</translation>

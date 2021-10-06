@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4563926062592110512">연결 해제된 클라이언트: <ph name="CLIENT_USERNAME" /></translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />가 정확하게 구성되어 있지 않습니다. 다른 기본 웹브라우저를 선택한 다음 URL 전달을 다시 사용 설정하세요.</translation>
 <translation id="4635770493235256822">원격 기기</translation>
 <translation id="4660011489602794167">키보드 표시</translation>
 <translation id="4703799847237267011">Chromoting 세션이 종료되었습니다.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> 계정으로 로그인했습니다.</translation>
 <translation id="579702532610384533">다시 연결</translation>
 <translation id="5810269635982033450">화면이 트랙패드처럼 작동합니다</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" />님이 화면을 보고 키보드와 마우스를 제어하기 위한 액세스 권한을 요청했습니다. 이런 요청을 받을 일이 없다면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''를 누르세요. 아니면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''를 선택해 준비가 되었을 때 연결을 허용합니다.</translation>
 <translation id="5823658491130719298">원격으로 액세스하려는 컴퓨터에서 Chrome을 열고 <ph name="INSTALLATION_LINK" /> 페이지를 방문합니다.</translation>
 <translation id="5841343754884244200">표시 옵션</translation>
 <translation id="6033507038939587647">키보드 옵션</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">누군가 잘못된 PIN으로 연결을 시도하여 원격 컴퓨터 연결이 일시적으로 차단되었습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" />와(과)의 원격 연결을 사용중지하시겠습니까? 생각이 바뀌면 해당 컴퓨터에서 연결을 다시 사용하도록 설정해야 합니다.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" />님이 내 컴퓨터를 확인하고 제어하기 위한 액세스 권한을 요청했습니다. 모르는 사용자이거나 공유하기 전에 변경할 사항이 있다면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''를 누르세요.  그렇지 않다면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''를 선택해 연결을 허용합니다.</translation>
 <translation id="7019153418965365059">알 수 없는 호스트 오류입니다. <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">원격 지원</translation>
 <translation id="7026930240735156896">안내에 따라 컴퓨터에서 원격으로 액세스할 수 있도록 설정하세요.</translation>
@@ -169,6 +170,7 @@
 권한을 부여하려면 아래의 ‘<ph name="BUTTON_NAME" />’ 버튼을 클릭합니다. ‘접근성’ 환경설정 창이 열리면 ‘<ph name="SERVICE_SCRIPT_NAME" />’ 옆의 체크박스를 선택하세요.
 
 ‘<ph name="SERVICE_SCRIPT_NAME" />’이(가) 이미 선택되어 있다면 선택 해제한 다음 다시 선택합니다.</translation>
+<translation id="8305209735512572429">웹 인증 원격 프로세스</translation>
 <translation id="8383794970363966105">Chromoting을 사용하려면 기기에 Google 계정을 추가해야 합니다.</translation>
 <translation id="8386846956409881180">호스트가 잘못된 OAuth 사용자 인증 정보로 구성되었습니다.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />에 권한 부여</translation>

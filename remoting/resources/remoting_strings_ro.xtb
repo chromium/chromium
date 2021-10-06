@@ -79,6 +79,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client deconectat: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> nu este configurat corect. Alege alt browser web prestabilit și reactivează redirecționarea adreselor URL.</translation>
 <translation id="4635770493235256822">Dispozitive la distanță</translation>
 <translation id="4660011489602794167">Afișează tastatura</translation>
 <translation id="4703799847237267011">Sesiunea Chromoting s-a încheiat.</translation>
@@ -109,6 +110,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="5750083143895808682">Conectat(ă) ca <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconectează-te</translation>
 <translation id="5810269635982033450">Ecranul funcționează ca un trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> a solicitat acces să vadă ecranul și să controleze tastatura și mouse-ul. Apasă pe <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> dacă solicitarea este neașteptată. Sau selectează <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> pentru a permite conectarea când ești gata.</translation>
 <translation id="5823658491130719298">Pe computerul pe care dorești să îl accesezi de la distanță, deschide Chrome și accesează <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opțiuni de afișare</translation>
 <translation id="6033507038939587647">Opțiuni pentru tastatură</translation>
@@ -130,7 +132,6 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="6963936880795878952">Conexiunile cu computerul la distanță sunt blocate temporar, deoarece cineva a încercat să se conecteze la acesta folosind un cod PIN nevalid. Încearcă din nou mai târziu.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Sigur doriți să dezactivați conexiunile la distanță la <ph name="HOSTNAME" />? Dacă vă răzgândiți, va trebui să accesați computerul respectiv pentru a reactiva conexiunile.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> a solicitat acces să vadă și să îți controleze computerul. Apasă pe <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> dacă nu cunoști persoana sau dacă vrei să faci modificări înainte de a permite accesul.  Sau selectează <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> pentru a permite conectarea.</translation>
 <translation id="7019153418965365059">Eroare nerecunoscută a gazdei: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Asistență la distanță</translation>
 <translation id="7026930240735156896">Urmează instrucțiunile ca să configurezi computerul pentru accesul la distanță</translation>
@@ -169,6 +170,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 Ca să acorzi această permisiune, dă clic pe butonul „<ph name="BUTTON_NAME" />” de mai jos. În panoul de preferințe pentru „Accesibilitate” care se deschide, bifează caseta de lângă „<ph name="SERVICE_SCRIPT_NAME" />”.
 
 Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debifeaz-o și bifeaz-o din nou.</translation>
+<translation id="8305209735512572429">Proces de control la distanță al autentificării pe web</translation>
 <translation id="8383794970363966105">Pentru a folosi Chromoting, va trebui să adăugați un Cont Google pe dispozitiv.</translation>
 <translation id="8386846956409881180">Gazda este configurată cu date de conectare OAuth nevalide.</translation>
 <translation id="8397385476380433240">Acordă permisiunea pentru <ph name="PRODUCT_NAME" /></translation>

@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">ডাউনলোড পজ করা আছে</translation>
 <translation id="1415402041810619267">ইউআরএল ছোট করা হয়েছে</translation>
 <translation id="1446450296470737166">MIDI ডিভাইসগুলির পূর্ণ নিয়ন্ত্রণের অনুমতি দিন</translation>
-<translation id="1509960214886564027">একাধিক সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1644574205037202324">ইতিহাস</translation>
 <translation id="1647582022260550163">আপনি কি সত্যিই অনুমতি রিসেট করতে এবং কুকি ও সাইট ডেটা মুছে দিতে চান?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">মঞ্জুরিপ্রাপ্ত, তৃতীয় পক্ষ ব্যাতীত</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="1994173015038366702">সাইট URL</translation>
+<translation id="2004697686368036666">কিছু সাইটের ফিচার কাজ নাও করতে পারে</translation>
 <translation id="2025115093177348061">অগমেন্টেড রিয়েলিটি</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" />-এ ফিরে যেতে ট্যাপ করুন</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">কোনও নির্দিষ্ট সাইটের জন্য কুকিকে অনুমতি দিন।</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="4165986682804962316">সাইটের সেটিংস</translation>
+<translation id="4176463684765177261">অক্ষম হয়েছে</translation>
 <translation id="4200726100658658164">লোকেশন সেটিংস খুলুন</translation>
 <translation id="4226663524361240545">বিজ্ঞপ্তি আসলে ডিভাইস ভাইব্রেট হতে পারে</translation>
 <translation id="4259722352634471385">নেভিগেশন অবরুদ্ধ করা হয়েছে: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">ভিডিও পজ করুন</translation>
 <translation id="5887687176710214216">গতকাল শেষবার দেখা হয়েছে</translation>
 <translation id="5916664084637901428">চালু</translation>
+<translation id="59174027418879706">সক্ষমিত</translation>
 <translation id="5922853908706496913">আপনার স্ক্রিন শেয়ার করা হচ্ছে</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
 <translation id="5975083100439434680">ছোট করুন</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">তৃতীয় পক্ষের কুকিজ অবরুদ্ধ করুন</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> এর বিকল্পগুলি</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" /> আনইনস্টল করবেন?</translation>
+<translation id="6233545266937675277">সাইটের ডেস্কটপ ভিউয়ের জন্য অনুরোধ করুন</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ও <ph name="PERMISSION_2" /> ব্লক করা হয়েছে</translation>
 <translation id="6270391203985052864">সাইট আপনাকে বিজ্ঞপ্তি পাঠানোর আগে অনুমতি চাইতে পারে</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> আরও <ph name="NUM_MORE" />টি সুবিধা ব্লক করা হয়েছে}}</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিন আগে শেষবার দেখেছেন</translation>
 <translation id="6561560012278703671">আওয়াজ ছাড়া বিজ্ঞপ্তি (বিজ্ঞপ্তির ক্ষেত্রে আওয়াজ সহ প্রম্পট ব্লক করা হয়, যাতে কাজের সময় ব্যাঘাত না ঘটে)</translation>
+<translation id="6593061639179217415">ডেস্কটপ সাইট</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> জিবি</translation>
 <translation id="6612358246767739896">সুরক্ষিত কন্টেন্ট</translation>
 <translation id="662080504995468778">থাকুন</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">নির্বাচন বাতিল করুন</translation>
 <translation id="7846621471902887024">আপনি সমস্ত সাইট থেকে সাইন-আউট হয়ে যাবেন।</translation>
 <translation id="7882806643839505685">একটি নির্দিষ্ট সাইটের জন্য সাউন্ড প্লে করার অনুমতি দিন।</translation>
+<translation id="7940722705963108451">আমাকে মনে করিয়ে দিও</translation>
 <translation id="7986741934819883144">একটি পরিচিতি বেছে নিন</translation>
-<translation id="7993619969781047893">কিছু কিছু সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="7999064672810608036">আপনি কি এই ওয়েবসাইটের কুকি সহ সমস্ত ডেটা পরিষ্কার করার এবং এটির সমস্ত অনুমতি রিসেট করার বিষয়ে নিশ্চিত?</translation>
 <translation id="8007176423574883786">এই ডিভাইসের জন্য বন্ধ করা আছে</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">মিউট করা আছে</translation>
 <translation id="813082847718468539">সাইটের তথ্য দর্শন করুন</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
+<translation id="8154912474061769055">একাধিক সাইটের ফিচার কাজ নাও করতে পারে</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ব্যবহারের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8200772114523450471">আবার চালু করা</translation>
 <translation id="8206354486702514201">এই সেটিংটি আপনার প্রশাসক দ্বারা কার্যকরী করা হয়েছে৷</translation>
 <translation id="8211406090763984747">কানেকশনটি নিরাপদ</translation>
 <translation id="8249310407154411074">শীর্ষে সরান</translation>
 <translation id="8261506727792406068">মুছুন</translation>
+<translation id="8267092878336850213">সাইটের মোবাইল ভিউয়ের জন্য অনুরোধ করুন</translation>
 <translation id="8300705686683892304">অ্যাপ ম্যানেজ করে</translation>
 <translation id="8324158725704657629">আর দেখতে চাই না</translation>
 <translation id="8372893542064058268">একটি নির্দিষ্ট সাইটের জন্য পটভূমি সিঙ্কের অনুমতি দিন।</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">ইনপুট সাফ করুন</translation>
 <translation id="868929229000858085">আপনার পরিচিতি সার্চ করুন</translation>
 <translation id="8702612070107455751">যেকোনও অফলাইন ডেটা মুছে ফেলা হবে।</translation>
+<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android সেটিংসে<ph name="END_LINK" /> <ph name="APP_NAME" />-এর জন্য অনুমতি চালু করুন।</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>

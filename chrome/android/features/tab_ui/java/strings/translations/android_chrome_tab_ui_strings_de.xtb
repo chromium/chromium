@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Benachrichtigt werden, wenn günstigere Preise verfügbar sind</translation>
 <translation id="1657719826150349398">Tab nach unten verschieben</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab}other{<ph name="TABS_COUNT_MANY" /> Tabs}}</translation>
+<translation id="2118649612461486615">Händlerinfo</translation>
+<translation id="2162620598375156287">Jetzt <ph name="CURRENT_PRICE" /> auf <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Gruppenname bearbeiten</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ausgewählten Tab aus der Gruppe entfernen}other{<ph name="TABS_COUNT_MANY" /> ausgewählte Tabs aus der Gruppe entfernen}}</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Gruppe</translation>
 <translation id="2613747923081026172">Gruppe erstellen</translation>
 <translation id="2662028055331606429">Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Zur Website</translation>
 <translation id="2671423594960767771">Gruppe teilen</translation>
 <translation id="2759453070259087442">Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="NUMBER_OF_TABS" /> Tabs maximieren.</translation>
 <translation id="2801787514987684416">Geschäftsinformationen anzeigen?</translation>
 <translation id="2928243913527329289">Google | Informationen zu diesem Händler</translation>
 <translation id="2977480621796371840">Aus Gruppe entfernen</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> Preisnachlass auf das Produkt „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="3194464645767632461">Bewertung</translation>
+<translation id="3267416433995960648">Benachrichtigung deaktivieren</translation>
 <translation id="3291470810748040983">Sie erhalten eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6054741997831917303">Der Preis dieses Artikels ist kürzlich von <ph name="PREVIOUS_PRICE" /> auf <ph name="NEW_PRICE" /> gefallen</translation>
 <translation id="6193448654517602979">Tabs auswählen</translation>
+<translation id="6228793724645064692">(Händlerbewertung)</translation>
+<translation id="6333260925957816943">Informationen zu diesem Händler</translation>
 <translation id="6510648526783655549">Tableiste schließen</translation>
+<translation id="6549021453810473782">Händlerinfo anzeigen</translation>
 <translation id="6562820390860419811">Tab nach links bewegen</translation>
 <translation id="6615455863669487791">Zeigen</translation>
 <translation id="6840760312327750441">Wenn Sie Tabs gruppieren möchten, berühren und halten Sie einen Tab. Ziehen Sie ihn dann auf einen anderen Tab.</translation>
 <translation id="6856809498882026482">Modus für die Mehrfachauswahl ausblenden</translation>
+<translation id="7129458170538955174">Informationen zu diesem Händler sind halb geöffnet</translation>
 <translation id="7151209024774799310">Tabs aus der Gruppe verschieben</translation>
 <translation id="7204204600596740190">Mehrfachauswahl</translation>
+<translation id="7326879924029668159">Rückgabebedingungen und mehr</translation>
 <translation id="7352298686197644113">Sehen Sie nach, welcher Artikel auf Ihren geöffneten Tabs zu einem günstigeren Preis erhältlich ist</translation>
 <translation id="753732157349120914">Tab-Wechsler</translation>
 <translation id="7559245342362162951">Tabs der Gruppe in Vollbildraster anzeigen</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> Rezension}other{Bewertung: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> Rezensionen}}</translation>
 <translation id="7885132941432959125">Tab nach rechts verschieben</translation>
 <translation id="7966321538264951561">Vorschläge ablehnen.</translation>
+<translation id="8029301326595421733">Informationen zu diesem Händler sind vollständig geöffnet</translation>
 <translation id="814503310257431685">Alle anzeigen</translation>
 <translation id="8205266828577616993">Tab nach oben verschieben</translation>
 <translation id="8304833501377495048">Tableiste nicht mehr anzeigen?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Günstigerer Preis</translation>
 <translation id="8749939518995770034">Tableiste geschlossen</translation>
 <translation id="8820741577754260431">Preisnachlässe auf Ihren Tabs sehen</translation>
+<translation id="9090098097337832354">Informationen zu diesem Händler sind geschlossen</translation>
 <translation id="9150694013019234766">Am unteren Bildschirmrand können Sie zwischen den Tabs in Ihrer Tabgruppe wechseln</translation>
 <translation id="9169594135889675189">Der Gruppe einen neuen Tab hinzufügen</translation>
 <translation id="959682366969460160">Besser organisiert</translation>

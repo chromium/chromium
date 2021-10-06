@@ -116,6 +116,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2073572773299281212">Activ acum <ph name="DAYS" /> zile</translation>
 <translation id="2074131957428911366">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anulează</translation>
+<translation id="2080769225927880590">Conectează-te cu un cont valid</translation>
 <translation id="209018056901015185">Site desktop</translation>
 <translation id="2103075008456228677">Deschide history.google.com</translation>
 <translation id="2116625576999540962">Elemente mutate: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -219,6 +220,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3131206671572504478">Blochează-le pe toate</translation>
 <translation id="313283613037595347">Creează o nouă filă incognito.</translation>
 <translation id="3153862085237805241">Salvează cardul</translation>
+<translation id="315401415709252194">Organizația îți solicită să te conectezi.</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157684681743766797">Marchează-le pe toate…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -229,6 +231,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3184767182050912705">Deblochează cu <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Marcată</translation>
 <translation id="3224641773458703735">Pentru a exporta parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
+<translation id="3230318355092723906">Când sincronizarea este dezactivată, poți vedea în continuare toate marcajele, istoricul, parolele și alte setări pe acest dispozitiv. Dacă faci modificări, ele nu se vor sincroniza cu contul.</translation>
 <translation id="3240426699337459095">Linkul a fost copiat</translation>
 <translation id="3244271242291266297">LL</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> din <ph name="NUM_SUGGESTIONS" /></translation>
@@ -311,7 +314,6 @@ Urmează pașii de mai jos:</translation>
 <translation id="4038354071007134711">Aplicațiile de pe dispozitiv nu deschid fișierul.</translation>
 <translation id="4042870976416480368">Găsește în pagină</translation>
 <translation id="4049507953662678203">Asigură-te că ai o conexiune la rețea și încearcă din nou.</translation>
-<translation id="4079195788735381731">Organizația te-a deconectat</translation>
 <translation id="408404951701638773">Bara de căutare este acum mai ușor de accesat</translation>
 <translation id="411254640334432676">Nu s-a descărcat.</translation>
 <translation id="4112644173421521737">Caută</translation>
@@ -355,6 +357,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4619615317237390068">File de pe alte dispozitive</translation>
 <translation id="4620246317052452550">Paginile citite</translation>
+<translation id="4620888520263267479">Afișează previzualizări ale linkurilor</translation>
 <translation id="4630540211544979320">Tradu paginile</translation>
 <translation id="4634124774493850572">Folosește parola</translation>
 <translation id="4636930964841734540">Informații</translation>
@@ -452,6 +455,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5556459405103347317">Reîncarcă</translation>
 <translation id="5580834567471114021">Adaugi la Lista de lecturi pentru mai târziu?</translation>
 <translation id="5592679540098330836">Activează sincronizarea pentru <ph name="NAME" /></translation>
+<translation id="560322036295180549">Dezactivată de organizație</translation>
 <translation id="5614553682702429503">Salvezi parola?</translation>
 <translation id="5626245204502895507">Momentan, fișierul nu a putut fi descărcat.</translation>
 <translation id="5631164295104953411">Adaugă o metodă de plată</translation>
@@ -467,6 +471,8 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5737974891429562743">Datele de conectare la cont sunt învechite. Actualizează pentru a începe sincronizarea.</translation>
 <translation id="5738887413654608789">Astfel, poți descoperi pagini web relevante în funcție de lucrurile din jurul tău.</translation>
 <translation id="5758631781033351321">Aici vei vedea lista de lectură</translation>
+<translation id="575902488528307720">Caută imaginea</translation>
+<translation id="5781453543752460388">Adaugă în fotografii</translation>
 <translation id="5782227691023083829">Se traduce...</translation>
 <translation id="5803566855766646066">Sigur dorești să elimini acest card nou?</translation>
 <translation id="5812974770859303494">Adaugă în…</translation>
@@ -504,6 +510,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6042308850641462728">Mai multe</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gestionează subiectele și activitatea aici</translation>
+<translation id="6064824697233747382">Organizația îți solicită să dezactivezi sincronizarea.</translation>
 <translation id="6066301408025741299">Atinge pentru a anula.</translation>
 <translation id="60829778314739003">Accept și continui</translation>
 <translation id="6084848228346514841">Selectează file</translation>
@@ -519,6 +526,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6189413832092199491">Necitite</translation>
 <translation id="6196207969502475924">Căutare vocală</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Închide {COUNT} filă}few{Închide {COUNT} file}other{Închide {COUNT} de file}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Nu traduce niciodată</translation>
 <translation id="6223816392543092032">Accesează marcajele, istoricul, parolele și alte setări pe toate dispozitivele.</translation>
 <translation id="6232329973559504466">Căutare incognito</translation>
@@ -603,10 +611,12 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="6801927553864092214">Pentru a naviga privat, deschide o filă incognito</translation>
 <translation id="6807889908376551050">Afișați toate...</translation>
 <translation id="681368974849482173">Element creat</translation>
+<translation id="681450999322335505">Organizația ta a dezactivat sincronizarea.</translation>
 <translation id="6830804042318138535">Află mai multe</translation>
 <translation id="6831043979455480757">Tradu</translation>
 <translation id="6842136130964845393">Confirmă-ți identitatea ca să te asiguri că ai în permanență acces la parolele salvate</translation>
 <translation id="6851516051005285358">Solicită site desktop</translation>
+<translation id="6856384753476268833">Gestionat de organizația ta.</translation>
 <translation id="6858855187367714033">Scanat</translation>
 <translation id="6859944681507688231">Pentru a scana un cod QR sau un card de credit, activează camera foto din setări.</translation>
 <translation id="6869389390665537774">Vezi paginile pe care le-ai accesat sau șterge-le din istoric</translation>
@@ -628,7 +638,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">File recente</translation>
 <translation id="7006788746334555276">Setări privind conținutul</translation>
-<translation id="7015203776128479407">Configurarea inițială a sincronizării nu a fost finalizată. Sincronizarea este dezactivată.</translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7053983685419859001">Blochează</translation>
 <translation id="7062545763355031412">Acceptă și comută conturile</translation>
@@ -651,7 +660,6 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7265758999917665941">Niciodată pentru acest site</translation>
 <translation id="7272437679830969316">Nu ți se poate confirma identitatea. Parola nu a fost copiată.</translation>
 <translation id="7291368939935408496">Se pregătesc parolele...</translation>
-<translation id="7293171162284876153">Pentru a porni sincronizarea, activează „Sincronizează datele din Chrome”.</translation>
 <translation id="7313347584264171202">Aici vei vedea filele incognito</translation>
 <translation id="7319242366286515846">Dacă alegi să continui, accepți <ph name="BEGIN_LINK" />Termenii și condițiile<ph name="END_LINK" />.</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% descărcat</translation>
@@ -707,6 +715,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 <translation id="7856733331829174190">Nu s-a putut descărca</translation>
 <translation id="7859704718976024901">Istoricul de navigare</translation>
 <translation id="7887198238286927132">Pentru a-ți proteja confidențialitatea, Chrome nu va completa automat acest câmp.</translation>
+<translation id="7911190106180361398">Organizația ta nu îți permite să sincronizezi tot.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportă parolele...</translation>
 <translation id="794799177247607889">Oprește înregistrarea în jurnal</translation>
@@ -716,6 +725,7 @@ Folosește o parolă unică pentru fiecare site.</translation>
 
 Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
 <translation id="7971521879845308059">Blochează pop-upurile</translation>
+<translation id="797413074872316787">Pentru a sincroniza și a personaliza pe toate dispozitivele, activează sincronizarea.</translation>
 <translation id="7982789257301363584">Rețea</translation>
 <translation id="7993619969781047893">Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte</translation>
 <translation id="800361585186029508">Deschide adresele URL introduse în Google Chrome.</translation>
@@ -734,8 +744,8 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8080028325999236607">Închide filele</translation>
 <translation id="8105368624971345109">Dezactivează</translation>
 <translation id="8114753159095730575">Descărcarea fișierelor este disponibilă. Opțiunile sunt disponibile în partea de jos a ecranului.</translation>
-<translation id="8131740175452115882">Confirmați</translation>
 <translation id="8156478151976189188">Sincronizarea parolelor nu funcționează</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dispozitivele tale<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Tradu pagina</translation>
 <translation id="8205564605687841303">Anulează</translation>
 <translation id="8206354486702514201">Această setare este impusă de administratorul dvs.</translation>
@@ -761,7 +771,6 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8487667956631253959">Aprinsă</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
 <translation id="8490978609246021741">Salvează modificările</translation>
-<translation id="8495097701594799854">Dezactivată de organizație.</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="850600235656508448">Deschide în modul incognito</translation>
 <translation id="8517375800490286174">Licențe open source</translation>
@@ -834,6 +843,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raportul de blocare a fost trimis.</translation>
 <translation id="952704832371081537">Anulează</translation>
+<translation id="981498610235328462">Organizația îți permite să te conectezi doar cu anumite conturi. Conturile nepermise sunt ascunse.</translation>
 <translation id="984509647832111802">Sincronizarea nu funcționează.</translation>
 <translation id="988141524645182168">Alte dispozitive</translation>
 <translation id="989988560359834682">Editați adresa</translation>

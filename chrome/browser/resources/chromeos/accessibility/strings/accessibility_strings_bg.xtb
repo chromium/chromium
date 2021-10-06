@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Няма следващо текстово поле, което може да се редактира</translation>
 <translation id="1342835525016946179">статия</translation>
 <translation id="1346059596910821859">Бакшиш</translation>
+<translation id="1354356357730355833">копиране</translation>
 <translation id="135978014023467274">Екранният четец ChromeVox бе актуализиран до версия 63!</translation>
 <translation id="1360699455582016846">Кликване върху елемента под ключ за пренасочване <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Това е последното заглавие. Натиснете клавиша „търсене“ + H, за да се върнете към първото, или „търсене“ + Shift + H, за да преминете към второто заглавие на тази страница.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">опресняване</translation>
 <translation id="2675533876313964202">електриковозелено</translation>
 <translation id="2684412629217766642">Затваряне на урока за ChromeVox</translation>
+<translation id="2692503699962701720">Промяна на височината на гласа при изговаряне на типове елементи и форматиран текст</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Кандидат за преобразуване на текст</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{отваряща скоба}other{# отварящи скоби}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">вертикална ориентация</translation>
 <translation id="3286390186030710347">Плъзгач</translation>
 <translation id="3300348286427369683">Поддръжка за разширени функции при работа с текст: ChromeVox вече поддържа текстови полета с разширени функции, включително команди за преход, следване на курсора при брайлови дисплеи, избиране и др.</translation>
+<translation id="3300733168898541351">отмяна</translation>
 <translation id="3307886118343381874">Към края на таблицата</translation>
 <translation id="3312997241656799641">Следваща посетена връзка</translation>
 <translation id="3313245066383501820">Модифициращият клавиш за ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Показване на списъка с формуляри</translation>
 <translation id="3414400929511680526">избеляло синьо</translation>
 <translation id="3418936350470374046">Няма клетка отдолу</translation>
+<translation id="3419269701801640163">поставяне</translation>
 <translation id="3435494200763325275">Навигиране чрез клавиша Tab (продължение)</translation>
 <translation id="344800400831402066">перуанско оранжево</translation>
 <translation id="3457000393508828486">Частично натиснато</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">изображение</translation>
 <translation id="4021716437419160885">Превъртане надолу</translation>
 <translation id="4035381225449278841">Пролет</translation>
+<translation id="4038098586530338813">възстановяване</translation>
 <translation id="4047216625641135770">Маркиране</translation>
 <translation id="4047910800766704982">Имате възможност да използвате естествен човешки глас, когато устройството ви е онлайн. Текстът ще бъде изпращан до Google за обработка. Можете да изключите това по всяко време от настройките.</translation>
 <translation id="4053520724192563562">лимоненозелено</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">среднонаситено шистовосиньо</translation>
 <translation id="5140016802771803559">тъмнолилаво</translation>
 <translation id="5142101052131610456">Всички уроци</translation>
+<translation id="5152605892605507188">придвижване надясно</translation>
 <translation id="5158275234811857234">Корица</translation>
 <translation id="516076699907426116">За да продължите, посредством функцията за изследване чрез докосване намерете бутона „Следващ урок“, след което докоснете двукратно.</translation>
 <translation id="5170206230005240598">Брайловите надписи са активирани</translation>
 <translation id="5183440668879371625">Предишен ред на брайловото писмо</translation>
 <translation id="5189244881767082992">Ред</translation>
+<translation id="5234747236692380506">въвеждане на „<ph name="TEXT" />“</translation>
 <translation id="5263034204789987535">бледожълто</translation>
 <translation id="5263344797180442561">заглавие от второ ниво</translation>
 <translation id="528468243742722775">Край</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">Заглавие от четвърто ниво</translation>
 <translation id="6150023170003443621">наситено зелено</translation>
 <translation id="6158882249329863701">ред <ph name="TABLECELLROWINDEX" />, колона <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">придвижване наляво</translation>
 <translation id="6164829606128959761">индикатор</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6166362019018438352">Брайловите надписи са деактивирани</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">Изтрито</translation>
 <translation id="6910969481785184048">Включване, изключване и спиране</translation>
 <translation id="6919104639734799681">Показване на списъка с таблици</translation>
+<translation id="692135145298539227">изтриване</translation>
+<translation id="6935674530832500465">преместване надолу</translation>
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6949846980769640811">среднонаситен аквамарин</translation>
 <translation id="6951482098621102657">Няма следващо заглавие от пето ниво</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">Директория</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Да се използва ли естествен глас?</translation>
-<translation id="7484805699335881122">Промяна на височината на гласа при изговаряне на типове елементи и текст, който е цитиран, изтрит, удебелен, в скоби или с главни букви.</translation>
 <translation id="7491962110804786152">раздел</translation>
 <translation id="7492497529767769458">Преминаване към следващата секция, например областта за състоянието и стартовия панел.</translation>
 <translation id="7505149250476994901">Кажете „Главна буква“ преди буквата</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">Няма клетка отгоре</translation>
 <translation id="8138880386467279117">Докосване</translation>
 <translation id="8146613869421949343">Следващата стъпка е да научите повече за клавиша „търсене“. Той се използва в комбинация с други клавиши за активиране на командите на ChromeVox. Клавишът „търсене“ се намира точно над левия клавиш Shift. За да продължите, натиснете клавиша „търсене“.</translation>
+<translation id="8158033275290782295">избиране на всички</translation>
 <translation id="816818801578874684">Това е първото заглавие. Натиснете клавиша „търсене“ + H, за да преминете към следващото.</translation>
 <translation id="8173092779156526980">Прекарайте четири пръста наляво</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{долна черта}other{# долни черти}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">Въведение</translation>
 <translation id="827266600368092403">Начало или край на избиране</translation>
 <translation id="827422111966801947">индиго</translation>
+<translation id="827496561804786391">преместване нагоре</translation>
 <translation id="8276439074553447000">Преминаване към предишния елемент, който може да получи фокус</translation>
 <translation id="8279039817939141096">Натиснете стандартен клавиш или клавиш от брайловия дисплей или изпълнете жест с докосване, за да научите функцията му. Натиснете Control + W, клавиша за интервал + Z, прекрайте два пръста наляво или докоснете Escape, за да излезете.</translation>
 <translation id="8283603667300770666">Следващото поле във формуляра</translation>
 <translation id="8310185481635255431">Няма следваща връзка</translation>
 <translation id="831207808878314375">Определение</translation>
 <translation id="8313653172105209786">директория</translation>
+<translation id="8314546933558091113">премахване на избора от всички</translation>
 <translation id="8316881042119029234">шампанско</translation>
 <translation id="8324974933005349667">Персонализиране на настройките за синтезиран говор</translation>
 <translation id="8326783648485765113">тревистозелено</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">светло морскозелено</translation>
 <translation id="9080299285199342830">Преминаване към края</translation>
 <translation id="9089864840575085222">Цикъл на ехото при въвеждане</translation>
+<translation id="9099429023611373837">изрязване</translation>
 <translation id="9108370397979208512">математически израз</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{знак за процент}other{# знака за процент}}</translation>

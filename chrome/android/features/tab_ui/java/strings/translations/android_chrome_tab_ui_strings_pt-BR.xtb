@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Receber notificações de reduções no preço</translation>
 <translation id="1657719826150349398">Mover guia para baixo</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> guia}one{<ph name="TABS_COUNT_MANY" /> guia}other{<ph name="TABS_COUNT_MANY" /> guias}}</translation>
+<translation id="2118649612461486615">Informações da loja</translation>
+<translation id="2162620598375156287">Agora por <ph name="CURRENT_PRICE" /> nesta loja: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Editar nome do grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Remover <ph name="TABS_COUNT_ONE" /> guia selecionada do grupo.}one{Remover <ph name="TABS_COUNT_MANY" /> guia selecionada do grupo.}other{Remover <ph name="TABS_COUNT_MANY" /> guias selecionadas do grupo.}}</translation>
 <translation id="2479148705183875116">Acessar as configurações</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Grupo</translation>
 <translation id="2613747923081026172">Criar grupo</translation>
 <translation id="2662028055331606429">Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Visitar o site</translation>
 <translation id="2671423594960767771">Compartilhar grupo</translation>
 <translation id="2759453070259087442">Expandir grupo "<ph name="TITLE_OF_GROUP" />" que tem <ph name="NUMBER_OF_TABS" /> guias.</translation>
 <translation id="2801787514987684416">Ver informações da loja?</translation>
 <translation id="2928243913527329289">Google | Sobre a loja</translation>
 <translation id="2977480621796371840">Remover do grupo</translation>
+<translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">nota</translation>
+<translation id="3267416433995960648">Desativar alerta</translation>
 <translation id="3291470810748040983">Você receberá um alerta quando houver um preço menor em uma guia aberta</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6054741997831917303">O preço deste item caiu de <ph name="PREVIOUS_PRICE" /> para <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecione as guias</translation>
+<translation id="6228793724645064692">(nota da loja)</translation>
+<translation id="6333260925957816943">Informações sobre a loja</translation>
 <translation id="6510648526783655549">Fechar barra de guias</translation>
+<translation id="6549021453810473782">Ver informações da loja</translation>
 <translation id="6562820390860419811">Mover guia para a esquerda</translation>
 <translation id="6615455863669487791">Exibir</translation>
 <translation id="6840760312327750441">Para agrupar guias, toque em uma delas e a mantenha pressionada. Depois disso, arraste-a para outra guia.</translation>
 <translation id="6856809498882026482">Ocultar modo de seleção múltipla</translation>
+<translation id="7129458170538955174">As informações sobre a loja estão abertas na metade da altura</translation>
 <translation id="7151209024774799310">Remover guias do grupo</translation>
 <translation id="7204204600596740190">Modo de seleção múltipla</translation>
+<translation id="7326879924029668159">Veja a política de devolução e muito mais</translation>
 <translation id="7352298686197644113">Veja qual item nas guias abertas tem o menor preço</translation>
 <translation id="753732157349120914">Seletor de guias</translation>
 <translation id="7559245342362162951">Mostrar guias do grupo em grade de tela cheia</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_ONE" /> avaliação}one{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliação}other{Nota: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />. <ph name="REVIEWS_COUNT_MANY" /> avaliações}}</translation>
 <translation id="7885132941432959125">Mover guia para a direita</translation>
 <translation id="7966321538264951561">Dispensar as sugestões.</translation>
+<translation id="8029301326595421733">As informações sobre a loja estão abertas no tamanho máximo</translation>
 <translation id="814503310257431685">Visualizar todos</translation>
 <translation id="8205266828577616993">Mover guia para cima</translation>
 <translation id="8304833501377495048">Deixar de mostrar a barra de guias?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Preço menor</translation>
 <translation id="8749939518995770034">Barra de guias fechada</translation>
 <translation id="8820741577754260431">Ver reduções no preço nas suas guias</translation>
+<translation id="9090098097337832354">As informações sobre a loja estão fechadas</translation>
 <translation id="9150694013019234766">Alterne entre as guias do seu grupo de guias perto da parte inferior da tela</translation>
 <translation id="9169594135889675189">Adicionar nova guia ao grupo</translation>
 <translation id="959682366969460160">Organize-se</translation>

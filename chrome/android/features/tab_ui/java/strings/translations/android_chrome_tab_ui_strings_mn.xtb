@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Үнэ буурсан тохиолдолд мэдэгдэл аваарай</translation>
 <translation id="1657719826150349398">Табыг доош зөөх</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
+<translation id="2118649612461486615">Дэлгүүрийн мэдээлэл</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> дээр одоо <ph name="CURRENT_PRICE" /> байна</translation>
 <translation id="2277224997687551299">Бүлгийн нэрийг засах</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлгээс хасах.}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлгээс хасах.}}</translation>
 <translation id="2479148705183875116">Тохиргоо руу очих</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Бүлэг</translation>
 <translation id="2613747923081026172">Бүлэг үүсгэх</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ</translation>
+<translation id="266935134738038806">Сайтад зочлох</translation>
 <translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> табтай <ph name="TITLE_OF_GROUP" /> таб бүлгийг дэлгэнэ үү.</translation>
 <translation id="2801787514987684416">Дэлгүүрийн мэдээллийг үзэх үү?</translation>
 <translation id="2928243913527329289">Google | Энэ дэлгүүрийн тухай</translation>
 <translation id="2977480621796371840">Бүлгээс хасах</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-н үнэ <ph name="PRICE_DROP" />-р буурсан</translation>
 <translation id="3194464645767632461">үнэлгээ</translation>
+<translation id="3267416433995960648">Сэрэмжлүүлгийг унтраах</translation>
 <translation id="3291470810748040983">Та нээлттэй табд илүү хямд үнэ байгаа тохиолдолд сэрэмжлүүлэг авна</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6054741997831917303">Энэ зүйлийн үнэ саяхан <ph name="PREVIOUS_PRICE" />-с <ph name="NEW_PRICE" /> болж буурсан</translation>
 <translation id="6193448654517602979">Таб сонгох</translation>
+<translation id="6228793724645064692">(дэлгүүрийн үнэлгээ)</translation>
+<translation id="6333260925957816943">Энэ дэлгүүрийн талаарх мэдээлэл</translation>
 <translation id="6510648526783655549">Tab мессежийг хаах</translation>
+<translation id="6549021453810473782">Дэлгүүрийн мэдээллийг үзэх</translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
 <translation id="6840760312327750441">Табуудыг бүлэглэхийн тулд таб дээр хүрээд, удаан дарна уу. Тэгээд уг табыг нөгөө рүү нь чирж зөөнө үү.</translation>
 <translation id="6856809498882026482">Олон сонголттой горимыг нуух</translation>
+<translation id="7129458170538955174">Энэ дэлгүүрийн талаарх мэдээллийг тал өндөртэйгээр нээсэн</translation>
 <translation id="7151209024774799310">Бүлгээс табыг хасах</translation>
 <translation id="7204204600596740190">Олон сонголттой горим</translation>
+<translation id="7326879924029668159">Буцаалтын бодлого болон илүү ихийг хараарай</translation>
 <translation id="7352298686197644113">Таны нээлттэй табд аль зүйл илүү хямд үнэтэй байгааг хараарай</translation>
 <translation id="753732157349120914">Таб хооронд шилжүүлэгч</translation>
 <translation id="7559245342362162951">Бүлгийн табуудыг бүтэн дэлгэцийн торонд харуулах</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ, <ph name="REVIEWS_COUNT_ONE" /> шүүмж}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> үнэлгээ, <ph name="REVIEWS_COUNT_MANY" /> шүүмж}}</translation>
 <translation id="7885132941432959125">Табыг баруун тийш зөөх</translation>
 <translation id="7966321538264951561">Зөвлөмжийг үл хэрэгсэх.</translation>
+<translation id="8029301326595421733">Энэ дэлгүүрийн талаарх мэдээллийг бүтэн өндөртэйгээр нээсэн</translation>
 <translation id="814503310257431685">Бүгдийг харах</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
 <translation id="8304833501377495048">Tab мессежийг дахин харуулахгүй байх уу?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>
 <translation id="8749939518995770034">Tab мессежийг хаасан</translation>
 <translation id="8820741577754260431">Табууд дээрх үнэ бууралтыг хараарай</translation>
+<translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
 <translation id="9150694013019234766">Дэлгэцийн доод хэсгийн ойролцоо байгаа табын бүлгээсээ таб хооронд сэлгэнэ үү</translation>
 <translation id="9169594135889675189">Бүлэгт шинэ таб нэмэх</translation>
 <translation id="959682366969460160">Зохион байгуулалттай болох</translation>

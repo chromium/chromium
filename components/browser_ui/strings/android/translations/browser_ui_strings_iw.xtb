@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">ההורדה הושהתה</translation>
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1446450296470737166">‏התרת שליטה מלאה על מכשירי MIDI</translation>
-<translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1647582022260550163">‏בחרת לאפס את ההרשאות ולנקות את קובצי ה-Cookie והנתונים מאתרים. להמשיך?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">מותר, מלבד צד שלישי</translation>
 <translation id="1989112275319619282">עיון</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
+<translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
 <translation id="2025115093177348061">מציאות רבודה</translation>
 <translation id="2030769033451695672">כדי לחזור אל <ph name="URL_OF_THE_CURRENT_TAB" />, יש להקיש כאן</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">‏אישור קובצי Cookie של אתר מסוים.</translation>
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="4165986682804962316">הגדרות לאתרים</translation>
+<translation id="4176463684765177261">מושבת</translation>
 <translation id="4200726100658658164">פתיחת הגדרות המיקום</translation>
 <translation id="4226663524361240545">רטט של המכשיר אפשרי כשמתקבלת הודעה</translation>
 <translation id="4259722352634471385">הניווט חסום: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">השהיית הסרטון</translation>
 <translation id="5887687176710214216">הכניסה האחרונה בוצעה אתמול</translation>
 <translation id="5916664084637901428">פועל</translation>
+<translation id="59174027418879706">מופעל</translation>
 <translation id="5922853908706496913">מתבצע שיתוף מסך</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5975083100439434680">התרחקות</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">‏חסימת קובצי Cookie של צד שלישי</translation>
 <translation id="6216432067784365534">אפשרויות של <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">להסיר את '<ph name="APP_NAME" />'?</translation>
+<translation id="6233545266937675277">בקשה להצגת אתרים בגרסה למחשב</translation>
 <translation id="6262279340360821358">ההרשאות <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /> חסומות</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6295158916970320988">כל האתרים</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד אחת (<ph name="NUM_MORE" />)}two{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}many{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}other{נחסמו ההרשאות <ph name="PERMISSION_1" />,‏ <ph name="PERMISSION_2" /> ועוד <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">הביקור האחרון התבצע לפני <ph name="NUM_DAYS" /> ימים</translation>
 <translation id="6561560012278703671">הצגת חיווי בסרגל הכתובות (מונע הקפצה של חלוניות הודעה מפריעות)</translation>
+<translation id="6593061639179217415">לגרסה במחשב</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="662080504995468778">להמשיך במצב אנונימי</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">ביטול הבחירה</translation>
 <translation id="7846621471902887024">תתבצע יציאה מכל האתרים.</translation>
 <translation id="7882806643839505685">מתן הרשאה להשמעת צלילים באתר ספציפי.</translation>
+<translation id="7940722705963108451">קבלת תזכורת</translation>
 <translation id="7986741934819883144">בחירת איש קשר</translation>
-<translation id="7993619969781047893">ייתכן שהתכונות של חלק מהאתרים לא יפעלו כראוי</translation>
 <translation id="7999064672810608036">‏בטוח שברצונך לנקות את כל הנתונים המקומיים, כולל קובצי Cookie, ולאפס את כל ההרשאות של האתר הזה?</translation>
 <translation id="8007176423574883786">כבוי בשביל המכשיר הזה</translation>
 <translation id="802154636333426148">ההורדה נכשלה</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">מושתקים</translation>
 <translation id="813082847718468539">הצגת נתוני אתר</translation>
 <translation id="8131740175452115882">אישור</translation>
+<translation id="8154912474061769055">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו</translation>
 <translation id="8197286292360124385">פועלת: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">חידוש</translation>
 <translation id="8206354486702514201">הגדרה זו נאכפת על ידי מנהל המערכת שלך.</translation>
 <translation id="8211406090763984747">החיבור מאובטח</translation>
 <translation id="8249310407154411074">העברה לראש הרשימה</translation>
 <translation id="8261506727792406068">מחיקה</translation>
+<translation id="8267092878336850213">בקשה להצגת אתרים בגרסה לנייד</translation>
 <translation id="8300705686683892304">מנוהלים על-ידי אפליקציה</translation>
 <translation id="8324158725704657629">לא לשאול שוב</translation>
 <translation id="8372893542064058268">אישור סנכרון ברקע לאתר ספציפי.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">ניקוי קלט</translation>
 <translation id="868929229000858085">חיפוש באנשי הקשר</translation>
 <translation id="8702612070107455751">המערכת תמחק את כל הנתונים ששמורים אופליין.</translation>
+<translation id="8712637175834984815">הבנתי</translation>
 <translation id="8719283222052720129">‏יש להעניק הרשאה עבור <ph name="APP_NAME" /> ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8730621377337864115">בוצע</translation>

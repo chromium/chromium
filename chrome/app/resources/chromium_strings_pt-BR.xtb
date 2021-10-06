@@ -34,6 +34,7 @@
 <translation id="2343156876103232566">Para enviar um número daqui para seu smartphone Android, faça login no Chromium nos dois dispositivos.</translation>
 <translation id="2347108572062610441">Esta extensão alterou a página que é exibida quando você inicia o Chromium.</translation>
 <translation id="2396765026452590966">A extensão "<ph name="EXTENSION_NAME" />" alterou a página que é exibida quando você inicia o Chromium.</translation>
+<translation id="2401032172288869980">O Chromium precisa da permissão de acesso ao microfone e à câmera para este site</translation>
 <translation id="2483889755041906834">No Chromium</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2535480412977113886">O Chromium OS não pôde sincronizar seus dados porque os detalhes de login da sua conta estão desatualizados.</translation>
@@ -149,6 +150,7 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">A existência do Chromium OS tornou-se possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
+<translation id="5883558403894052917">O Chromium encontrou malware nestes itens:</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login na rede</translation>
 <translation id="5987687638152509985">Atualize o Chromium para começar a sincronizar</translation>
@@ -166,6 +168,7 @@
 <translation id="6183079672144801177">Verifique se sua conta está conectada ao Chromium no <ph name="TARGET_DEVICE_NAME" /> e tente fazer o envio novamente.</translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver funcionando, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado em 1 segundo}one{O Chromium será reiniciado em # segundo}other{O Chromium será reiniciado em # segundos}}</translation>
+<translation id="6241367896540709610">O Chromium precisa de acesso ao armazenamento para fazer o download de arquivos</translation>
 <translation id="6248213926982192922">Tornar o Chromium o navegador padrão</translation>
 <translation id="6266342355635466082">O Chromium não pode verificar se há atualizações. Verifique sua conexão com a Internet.</translation>
 <translation id="6268381023930128611">Sair do Chromium?</translation>
@@ -186,7 +189,9 @@
 <translation id="6570579332384693436">Para corrigir erros de ortografia, o Chromium envia ao Google o texto que você digita nos campos de texto</translation>
 <translation id="6598877126913850652">Acessar as configurações de notificação do Chromium</translation>
 <translation id="6613594504749178791">As alterações entrarão em vigor na próxima vez que você reiniciar o Chromium.</translation>
+<translation id="665732753414869868">O Chromium precisa da permissão de acesso à câmera para criar um mapa 3D do ambiente</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>
+<translation id="6709350901466051922">O Chromium precisa da permissão de acesso ao microfone para este site</translation>
 <translation id="6717134281241384636">Seu perfil não pode ser usado porque é de uma versão mais recente do Chromium. Alguns recursos podem não estar disponíveis. Especifique outro diretório de perfil ou use uma versão mais recente do Chromium.</translation>
 <translation id="6734080038664603509">Atualizar o &amp;Chromium</translation>
 <translation id="6734291798041940871">O Chromium já está instalado para todos os usuários do seu computador.</translation>
@@ -196,6 +201,7 @@
 <translation id="6847869444787758381">O Chromium avisa se suas senhas forem comprometidas</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>
+<translation id="6873893289264747459">O Chromium encontrou malware na extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="6893813176749746474">O Chromium foi atualizado, mas não é utilizado há pelo menos 30 dias.</translation>
 <translation id="691026815377248078">O Chromium precisa acessar o Bluetooth para continuar o 
  pareamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -204,6 +210,7 @@
 <translation id="6990124437352146030">O Chromium precisa de permissão para este site acessar seu microfone</translation>
 <translation id="705851970750939768">Atualizar o Chromium</translation>
 <translation id="7067091210845072982">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições.</translation>
+<translation id="718435575166326686">O Chromium precisa da permissão de acesso à câmera para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">Não foi possível verificar suas senhas. Tente novamente em 24 horas.</translation>
 <translation id="7223968959479464213">Gerenciador de tarefas - Chromium</translation>
@@ -224,10 +231,6 @@
 <translation id="7585853947355360626">Se uma configuração não for exibida nesta página, verifique as <ph name="LINK_BEGIN" />configurações do Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">O Chromium está usando sua câmera e seu microfone.</translation>
 <translation id="7617377681829253106">O Chromium ficou ainda melhor</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Antes de começarmos, confira se você tem um backup atualizado dos seus dados. A instalação do Chromium OS apagará todos os dados no seu disco rígido.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />O Google não é responsável por nenhuma perda de dados e não pode garantir que o Chromium OS funcione em modelos não certificados. Acesse [TBD] para saber mais sobre os modelos certificados.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Saiba mais sobre a instalação do Chromium OS e a exclusão de dados: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Se estiver tudo pronto, clique em "Instalar o Chromium OS", e guiaremos você pela instalação em etapas simples. Você terá mais uma chance de confirmar a decisão antes de qualquer mudança ser feita no seu computador.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">O Chromium não é seu navegador padrão</translation>
 <translation id="7689606757190482937">Sincronize e personalize o Chromium em todos os seus dispositivos</translation>
 <translation id="7729447699958282447">O Chromium não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
@@ -242,6 +245,7 @@
 <translation id="7975919845073681630">Como esta é uma instalação secundária do Chromium, ele não pode se tornar seu navegador padrão.</translation>
 <translation id="8013436988911883588">Assim que o Chromium tiver acesso, os sites poderão solicitar acesso.</translation>
 <translation id="8045118833343856403">As seguintes contas não estão conectadas a nenhum perfil do Chromium. Se você quiser usar uma conta em outro perfil, remova-o primeiro.</translation>
+<translation id="8105840573057009683">O Chromium precisa da permissão de localização para este site</translation>
 <translation id="81770708095080097">Esse arquivo é perigoso, por isso ele foi bloqueado pelo Chromium.</translation>
 <translation id="8248265253516264921">Se uma imagem não tiver uma descrição útil, o Chromium tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições. É possível desativar essa opção nas configurações a qualquer momento.</translation>
 <translation id="8266560134891435528">O Chromium não pode verificar suas senhas porque a conta não está conectada</translation>

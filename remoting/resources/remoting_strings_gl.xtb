@@ -79,6 +79,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="4512952200932940229">Copyright 2021, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> non se configurou correctamente. Escolle un navegador web predeterminado distinto e, despois, activa o reenvío de URL de novo.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4703799847237267011">A túa sesión de Chromoting finalizou.</translation>
@@ -109,6 +110,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="5750083143895808682">Iniciaches sesión como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Volver conectar</translation>
 <translation id="5810269635982033450">A pantalla actúa como un panel táctil</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitou acceso para ver a túa pantalla e controlar o teclado e o rato. Preme <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> se non esperabas recibir esta solicitude. En caso contrario, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> para permitir a conexión unha vez estea todo listo.</translation>
 <translation id="5823658491130719298">No ordenador ao que queres acceder de forma remota, abre Chrome e visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcións de visualización</translation>
 <translation id="6033507038939587647">Opcións do teclado</translation>
@@ -130,7 +132,6 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="6963936880795878952">As conexións co ordenador remoto bloqueáronse temporalmente debido a que alguén estaba tentando conectarse a el cun PIN non válido. Téntao de novo máis tarde.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6985691951107243942">Seguro que queres desactivar as conexións remotas con <ph name="HOSTNAME" />? Se cambias de opinión, necesitarás acceder a ese ordenador para volver activar as conexións.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> solicitou acceso para ver e controlar o teu ordenador. Se non coñeces esta persoa ou se precisas facer algún cambio antes de compartir o acceso con ela, preme <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />.  En caso contrario, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> para permitir que se conecte.</translation>
 <translation id="7019153418965365059">Erro do host non recoñecido: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Asistencia remota</translation>
 <translation id="7026930240735156896">Sigue as instrucións e configura o ordenador para o acceso remoto</translation>
@@ -169,6 +170,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 Para conceder este permiso, fai clic no botón <ph name="BUTTON_NAME" />, situado abaixo. No panel de preferencias Accesibilidade, marca a caixa situada xunto a <ph name="SERVICE_SCRIPT_NAME" />.
 
 Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está seleccionada, desmárcaa e márcaa de novo.</translation>
+<translation id="8305209735512572429">Proceso remoto de Web Authentication</translation>
 <translation id="8383794970363966105">Para usar Chromoting, precisarás engadir unha conta de Google ao teu dispositivo.</translation>
 <translation id="8386846956409881180">O host está configurado con credenciais de OAuth non válidas.</translation>
 <translation id="8397385476380433240">Conceder permiso ao <ph name="PRODUCT_NAME" /></translation>

@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">ລິຂະສິດ 2021 Chromium Authors. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="4513946894732546136">ຄໍາຄິດເຫັນ</translation>
 <translation id="4563926062592110512">ຕັດເຊື່ອມຕໍ່ລູກຂ່າຍແລ້ວ: <ph name="CLIENT_USERNAME" /> .</translation>
+<translation id="4618411825115957973">ບໍ່ໄດ້ຕັ້ງຄ່າ <ph name="URL_FORWARDER_NAME" /> ຢ່າງຖືກຕ້ອງ. ກະລຸນາເລືອກໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນອື່ນແລ້ວຈາກນັ້ນເປີດການນຳໃຊ້ການສົ່ງຕໍ່ URL ອີກເທື່ອໜຶ່ງ.</translation>
 <translation id="4635770493235256822">ອຸປະກອນທາງໄກ</translation>
 <translation id="4660011489602794167">ສະແດງແປ້ນພິມ</translation>
 <translation id="4703799847237267011">ໄລຍະເວລາຂອງ Chromoting ​ສິ້ນ​ສຸດ​ລົງ​.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">ເຂົ້າສູ່ລະບົບເປັນ <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">ເຊື່ອມຕໍ່ໃໝ່</translation>
 <translation id="5810269635982033450">ໜ້າຈໍເຮັດໜ້າທີ່ເປັນແທຣັກແຜດ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ຮ້ອງຂໍການເຂົ້າເຖິງເພື່ອເບິ່ງໜ້າຈໍຂອງທ່ານ ແລະ ຄວບຄຸມແປ້ນພິມ ແລະ ເມົ້າຂອງທ່ານແລ້ວ. ກົດ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ຫາກທ່ານບໍ່ຄາດວ່າຈະມີຄຳຮ້ອງຂໍນີ້. ບໍ່ດັ່ງນັ້ນໃຫ້ເລືອກ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ເພື່ອອະນຸຍາດການເຊື່ອມຕໍ່ເມື່ອພ້ອມ.</translation>
 <translation id="5823658491130719298">ໃນຄອມພິວເຕີທີ່ທ່ານຕ້ອງການເຂົ້າເຖິງຈາກທາງໄກ, ເປີດ Chrome ແລະ ເຂົ້າຫາ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ຕົວເລືອກການສະແດງຜົນ</translation>
 <translation id="6033507038939587647">ຕົວເລືອກແປ້ນພິມ</translation>
@@ -131,7 +133,6 @@ Desktop</translation>
 <translation id="6963936880795878952">ການເຊື່ອມຕໍ່ກັບຄອມພິວເຕີທາງໄກຖືກບລັອກໄວ້ຊົ່ວຄາວ ເພາະວ່າມີບາງຄົນໄດ້ພະຍາຍາມເຊື່ອມຕໍ່ກັບມັນດ້ວຍ PIN ທີ່ບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງໃນພາຍຫຼັງ.</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6985691951107243942">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການປິດເຊື່ອມຕໍ່ທາງໄກກັບ <ph name="HOSTNAME" />? ຖ້າທ່ານປ່ຽນໃຈ, ທ່ານຕ້ອງໄປຫາຄອມພິວເຕີນັ້ນ ເພື່ອເປີດໃຊ້ງານການເຊື່ອມຕໍ່ໃໝ່.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ໄດ້ຮ້ອງຂໍສິດເຂົ້າເຖິງເພື່ອເບິ່ງ ແລະ ຄວບຄຸມຄອມພິວເຕີຂອງທ່ານ. ກົດ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ຫາກທ່ານບໍ່ຮູ້ຈັກບຸກຄົນນີ້ ຫຼື ຫາກທ່ານຕ້ອງການປ່ຽນແປງກ່ອນແບ່ງປັນ.  ບໍ່ດັ່ງນັ້ນໃຫ້ເລືອກ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ເພື່ອອະນຸຍາດການເຊື່ອມຕໍ່.</translation>
 <translation id="7019153418965365059">ຄວາມ​ຜິດ​ພາດ​ແມ່​ຂ່າຍ​ບໍ່​ຖືກ​ຮັບ​ຮູ້: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">ການ​ຊ່ວຍ​ເຫຼືອ​ທາງ​ໄກ</translation>
 <translation id="7026930240735156896">ປະຕິບັດຕາມຄຳແນະນຳເພື່ອຕັ້ງຄ່າຄອມພິວເຕີຂອງທ່ານສຳລັບການເຂົ້າເຖິງຈາກທາງໄກ</translation>
@@ -170,6 +171,7 @@ Desktop</translation>
 ເພື່ອໃຫ້ການອະນຸຍາດ, ກະລຸນາຄລິກ '<ph name="BUTTON_NAME" />' ຂ້າງລຸ່ມ. ໃນແຖບການຕັ້ງຄ່າ 'ການຊ່ວຍເຂົ້າເຖິງ' ທີ່ເປີດຢູ່, ກະລຸນາໝາຍເອົາກ່ອງຢູ່ໜ້າ '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 ຖ້າມີການໝາຍເອົາ '<ph name="SERVICE_SCRIPT_NAME" />' ຢູ່ແລ້ວ, ກະລຸນາຍົກເລີກການໝາຍເອົາ ແລະ ຈາກນັ້ນໝາຍເອົາມັນອີກຄັ້ງ.</translation>
+<translation id="8305209735512572429">ໂປຣເຊສການຣີໂໝດການພິສູດຢືນຢັນເວັບ</translation>
 <translation id="8383794970363966105">ເພື່ອໃຊ້ Chromoting, ທ່ານຈໍາເປັນຕ້ອງເພີ່ມບັນຊີ Google ໃສ່ກັບອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="8386846956409881180">ແມ່​ຂ່າຍ​ຖືກ​ກຳ​ນົດ​ຄ່າ​ດ້ວຍ​ຄຳ​ຢັ້ງ​ຢືນ OAuth ໃຊ້​ບໍ່​ໄດ້.</translation>
 <translation id="8397385476380433240">ໃຫ້ການອະນຸຍາດແກ່ <ph name="PRODUCT_NAME" /></translation>

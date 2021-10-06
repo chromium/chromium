@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">ຮັບການແຈ້ງເຕືອນເມື່ອມີການຫຼຸດລາຄາ</translation>
 <translation id="1657719826150349398">ຍ້າຍແຖບລົງ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
+<translation id="2118649612461486615">ຂໍ້​ມູນ​ຮ້ານ​ຄ້າ</translation>
+<translation id="2162620598375156287">ຕອນນີ້ <ph name="CURRENT_PRICE" /> ຢູ່ <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">ແກ້ໄຂຊື່ກຸ່ມ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ລຶບ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກອອກຈາກກຸ່ມ.}other{ລຶບ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກອອກຈາກກຸ່ມ.}}</translation>
 <translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">ກຸ່ມ</translation>
 <translation id="2613747923081026172">ສ້າງກຸ່ມ</translation>
 <translation id="2662028055331606429">ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">ເຂົ້າເບິ່ງເວັບໄຊ</translation>
 <translation id="2671423594960767771">ແບ່ງປັນກຸ່ມ</translation>
 <translation id="2759453070259087442">ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ດ້ວຍແຖບ <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າບໍ?</translation>
 <translation id="2928243913527329289">Google | ກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
 <translation id="2977480621796371840">ລຶບອອກຈາກກຸ່ມ</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ຫຼຸດລາຄາ <ph name="PRICE_DROP" /></translation>
 <translation id="3194464645767632461">ການຈັດອັນດັບ</translation>
+<translation id="3267416433995960648">ປິດການແຈ້ງເຕືອນ</translation>
 <translation id="3291470810748040983">ທ່ານຈະໄດ້ຮັບແຈ້ງເຕືອນເມື່ອມີລາຄາຕໍ່າກວ່າໃນແຖບທີ່ເປີດຢູ່</translation>
 <translation id="3328308545011660196">ຄຳແນະນຳ: ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບທີ່ກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6054741997831917303">ລາຄາຂອງສິນຄ້ານນີ້ຫຼຸດລົງຈາກ <ph name="PREVIOUS_PRICE" /> ເປັນ <ph name="NEW_PRICE" /> ເມື່ອບໍ່ດົນມານີ້</translation>
 <translation id="6193448654517602979">ເລືອກແຖບ</translation>
+<translation id="6228793724645064692">(ຄະແນນຮ້ານຄ້າ)</translation>
+<translation id="6333260925957816943">ຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
 <translation id="6510648526783655549">ປິດລາຍແຖບ</translation>
+<translation id="6549021453810473782">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ</translation>
 <translation id="6562820390860419811">ຍ້າຍແຖບໄປຊ້າຍ</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
 <translation id="6840760312327750441">ເພື່ອຈັດກຸ່ມແຖບ, ແຕະແຖບໃດໜຶ່ງຄ້າງໄວ້. ຈາກນັ້ນ, ລາກມັນໄປໃສ່ແຖບອື່ນ.</translation>
 <translation id="6856809498882026482">ເຊື່ອງໂໝດເລືອກຫຼາຍລາຍການ</translation>
+<translation id="7129458170538955174">ເປີດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແບບຄວາມສູງເຄິ່ງໜຶ່ງແລ້ວ</translation>
 <translation id="7151209024774799310">ລຶບແຖບອອກຈາກກຸ່ມ</translation>
 <translation id="7204204600596740190">ໂໝດເລືອກຫຼາຍລາຍການ</translation>
+<translation id="7326879924029668159">ເບິ່ງນະໂຍບາຍການສົ່ງຄືນ ແລະ ອື່ນໆ</translation>
 <translation id="7352298686197644113">ເບິ່ງວ່າລາຍການໃດໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານມີລາຄາຕໍ່າກວ່າ</translation>
 <translation id="753732157349120914">ຕົວປ່ຽນແຖບ</translation>
 <translation id="7559245342362162951">ສະແດງແຖບຂອງກຸ່ມໃນຕາໜ່າງແບບເຕັມຈໍ</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ}other{ການຈັດອັນດັບ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ}}</translation>
 <translation id="7885132941432959125">ຍ້າຍແຖບໄປເບື້ອງຂວາ</translation>
 <translation id="7966321538264951561">ປິດການແນະນຳໄວ້.</translation>
+<translation id="8029301326595421733">ເປີດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແບບຄວາມສູງເຕັມແລ້ວ</translation>
 <translation id="814503310257431685">ເບິ່ງທັງໝົດ</translation>
 <translation id="8205266828577616993">ຍ້າຍແຖບຂຶ້ນເທິງ</translation>
 <translation id="8304833501377495048">ຫ້າມສະແດງລາຍແຖບອີກບໍ?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
 <translation id="8749939518995770034">ປິດລາຍແຖບແລ້ວ</translation>
 <translation id="8820741577754260431">ເບິ່ງການຫຼຸດລາຄາສຳລັບແຖບຂອງທ່ານ</translation>
+<translation id="9090098097337832354">ປິດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແລ້ວ</translation>
 <translation id="9150694013019234766">ປ່ຽນໄປມາລະຫວ່າງແຖບຕ່າງໆໃນກຸ່ມແຖບຂອງທ່ານຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ</translation>
 <translation id="9169594135889675189">ເພີ່ມແຖບໃໝ່ໃສ່ກຸ່ມ</translation>
 <translation id="959682366969460160">ຈັດໃຫ້ເປັນລະບຽບ</translation>

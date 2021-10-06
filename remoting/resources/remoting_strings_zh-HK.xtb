@@ -79,6 +79,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="4512952200932940229">版權所有 2021 Chromium 作者。保留所有權利。</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="4563926062592110512">已中斷連線至用戶端：<ph name="CLIENT_USERNAME" />。</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />並未正確設定。請使用其他預設網絡瀏覽器，然後再次啟用網址轉送功能。</translation>
 <translation id="4635770493235256822">遠端裝置</translation>
 <translation id="4660011489602794167">顯示鍵盤</translation>
 <translation id="4703799847237267011">您的 Chromoting 工作階段已結束。</translation>
@@ -109,6 +110,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="5750083143895808682">以 <ph name="EMAIL_ADDRESS" /> 嘅身分登入。</translation>
 <translation id="579702532610384533">重新連線</translation>
 <translation id="5810269635982033450">將螢幕變成觸控板</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 已要求權限來查看您的螢幕畫面，並控制您的鍵盤和滑鼠。如果您並未預期此要求，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]；否則，請在準備就緒時選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
 <translation id="5823658491130719298">在您想遠端存取的電腦上開啟 Chrome，然後前往 <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">顯示選項</translation>
 <translation id="6033507038939587647">鍵盤選項</translation>
@@ -130,7 +132,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="6963936880795878952">由於有人嘗試使用無效的 PIN 連線至遠端電腦，因此系統暫時封鎖您的連線，請稍後再試。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6985691951107243942">您是否確定要停用與 <ph name="HOSTNAME" /> 之間的遠端連線？如果其後改變主意，您必須親自前往該電腦所在位置修改設定，才能重新啟用連線。</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> 要求您授予電腦的瀏覽及控制權限。如果您不認識不認識對方，或需要在授予權限前進行變更，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]，否則請選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
 <translation id="7019153418965365059">不明主機錯誤：<ph name="HOST_OFFLINE_REASON" />。</translation>
 <translation id="701976023053394610">遠端協助</translation>
 <translation id="7026930240735156896">按照指示設定電腦，即可使用遠端存取功能</translation>
@@ -169,6 +170,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 如要授予此權限，請按一下下方的「<ph name="BUTTON_NAME" />」。在開啟的「無障礙功能」偏好設定窗格中，勾選「<ph name="SERVICE_SCRIPT_NAME" />」旁的方框。
 
 如果已勾選「<ph name="SERVICE_SCRIPT_NAME" />」，則需要取消勾選，然後再次勾選。</translation>
+<translation id="8305209735512572429">網絡驗證遠端處理程序</translation>
 <translation id="8383794970363966105">您必須在裝置上新增 Google 帳戶，才能使用 Chromoting。</translation>
 <translation id="8386846956409881180">主機設定的 OAuth 憑證無效。</translation>
 <translation id="8397385476380433240">授予權限給「<ph name="PRODUCT_NAME" />」</translation>

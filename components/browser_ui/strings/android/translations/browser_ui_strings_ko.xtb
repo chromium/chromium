@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">다운로드 일시중지됨</translation>
 <translation id="1415402041810619267">URL 잘림</translation>
 <translation id="1446450296470737166">MIDI 기기의 전체 제어 허용</translation>
-<translation id="1509960214886564027">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1647582022260550163">권한을 재설정하고 쿠키 및 사이트 데이터를 삭제하시겠습니까?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">타사 쿠키만 제외하고 허용</translation>
 <translation id="1989112275319619282">찾아보기</translation>
 <translation id="1994173015038366702">사이트 URL</translation>
+<translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="2025115093177348061">증강 현실</translation>
 <translation id="2030769033451695672">탭하여 <ph name="URL_OF_THE_CURRENT_TAB" />(으)로 돌아가기</translation>
 <translation id="2079545284768500474">실행취소</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">특정 사이트의 쿠키를 허용합니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
+<translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4200726100658658164">위치 설정 열기</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">동영상 일시중지</translation>
 <translation id="5887687176710214216">최근 방문: 어제</translation>
 <translation id="5916664084637901428">사용</translation>
+<translation id="59174027418879706">사용 가능</translation>
 <translation id="5922853908706496913">화면 공유</translation>
 <translation id="5939518447894949180">초기화</translation>
 <translation id="5975083100439434680">축소</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">타사 쿠키 차단</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> 옵션</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' 앱을 제거하시겠습니까?</translation>
+<translation id="6233545266937675277">사이트의 데스크톱 뷰를 요청합니다.</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 차단됨}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 <ph name="NUM_MORE" />개 차단됨}}</translation>
 <translation id="6554732001434021288">최근 방문: <ph name="NUM_DAYS" />일 전</translation>
 <translation id="6561560012278703671">눈에 띄지 않는 메시지 사용(방해가 되지 않도록 알림 메시지 차단)</translation>
+<translation id="6593061639179217415">데스크톱 사이트</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" />GB</translation>
 <translation id="6612358246767739896">보호된 콘텐츠</translation>
 <translation id="662080504995468778">머무르기</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">선택 취소</translation>
 <translation id="7846621471902887024">모든 사이트에서 로그아웃됩니다.</translation>
 <translation id="7882806643839505685">특정 사이트에서 소리를 재생하도록 허용합니다.</translation>
+<translation id="7940722705963108451">알림</translation>
 <translation id="7986741934819883144">연락처 선택</translation>
-<translation id="7993619969781047893">일부 사이트에서는 기능이 작동하지 않을 수 있음</translation>
 <translation id="7999064672810608036">쿠키를 포함하여 이 웹사이트의 모든 로컬 데이터를 삭제하고 모든 권한을 재설정하시겠습니까?</translation>
 <translation id="8007176423574883786">기기에 대해 사용 중지됨</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">음소거됨</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8131740175452115882">확인</translation>
+<translation id="8154912474061769055">다수의 사이트에서 기능이 작동하지 않을 수 있음</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> 허용됨</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>
 <translation id="8211406090763984747">이 사이트는 보안 연결(HTTPS)이 사용되었습니다.</translation>
 <translation id="8249310407154411074">맨 위로 이동</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8267092878336850213">사이트의 휴대기기 뷰를 요청합니다.</translation>
 <translation id="8300705686683892304">앱에서 관리함</translation>
 <translation id="8324158725704657629">다시 묻지 않음</translation>
 <translation id="8372893542064058268">특정 사이트에서 백그라운드 동기화를 허용합니다.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">입력내용 지우기</translation>
 <translation id="868929229000858085">연락처 검색</translation>
 <translation id="8702612070107455751">모든 오프라인 데이터가 삭제됩니다.</translation>
+<translation id="8712637175834984815">확인</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 <ph name="APP_NAME" /> 관련 권한을 설정합니다.</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8730621377337864115">완료</translation>

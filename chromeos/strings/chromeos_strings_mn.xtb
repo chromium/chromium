@@ -7,9 +7,12 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
 <translation id="1075811647922107217">Хуудасны хэмжээ</translation>
+<translation id="110351136513869678">Тохируулахын тулд тохиргоонд зочилно уу</translation>
+<translation id="1119447706177454957">Дотоод алдаа</translation>
 <translation id="1124772482545689468">Хэрэглэгч</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг.</translation>
+<translation id="1181037720776840403">Хасах</translation>
 <translation id="1195447618553298278">Үл танигдах алдаа гаргасан байна</translation>
 <translation id="1204296502688602597">DNS-н хоцролт</translation>
 <translation id="123124571410524056">Портал байж магадгүй</translation>
@@ -17,6 +20,7 @@
 <translation id="1264369926465113395">Зохиогчдод зориулсан Chromebook-н шинэ цахим сэтгүүлийг хараарай</translation>
 <translation id="1270369111467284986">Дамжих портал гэж таамагласан</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
+<translation id="1301069673413256657">GSM</translation>
 <translation id="1314565355471455267">Андройд VPN</translation>
 <translation id="131461803491198646">Үндсэн сүлжээ, роуминг биш</translation>
 <translation id="1327977588028644528">Гэйтвэй</translation>
@@ -27,13 +31,14 @@
 <translation id="1398634363027580500">Маш өндөр HTTPS хоцролт</translation>
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">Надад хос түлхүүр байгаа</translation>
 <translation id="1468664791493211953">Саналууд</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд таны үйл ажиллагааг хянах боломжтой байж болзошгүй.</translation>
 <translation id="1478594628797167447">Скан хийгч</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> энэ хэрэглэгчийг удирддаг бөгөөд алсаас тохиргоог удирдаж, хэрэглэгчийн үйл ажиллагааг хянаж болзошгүй.</translation>
 <translation id="150962533380566081">PUK буруу байна.</translation>
 <translation id="1510238584712386396">Launcher</translation>
-<translation id="1600964289716072707">Хуудас нэмэхийн тулд сканнер дээр өөр хуудас байрлуулж, Скан хийхийг сонгоно уу.</translation>
+<translation id="155865706765934889">Мэдрэгч самбар</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1641857168437328880">Документыг дамжуулах тавиур (Нэг талаар нь)</translation>
@@ -44,19 +49,25 @@
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
 <translation id="1715359911173058521">Сканнертай холбогдоход асуудал гарлаа. Сүлжээ эсвэл USB холболтыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> болон <ph name="SECOND_MANAGER" />-р удирддаг</translation>
+<translation id="1726100011689679555">Нэрийн сервер</translation>
+<translation id="1731082422893354635">Bluetooth мэдрэгч самбар</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Хромэ</translation>
 <translation id="1792647875738159689">Скан хийхийг цуцалж байна</translation>
 <translation id="1851218745569890714">Видео хурал</translation>
+<translation id="1874612839560830905">MTU</translation>
+<translation id="1881378885488531302">IP хаяг авах боломжгүй</translation>
 <translation id="1887850431809612466">Техник хангамжийн шалгалт</translation>
 <translation id="1905710495812624430">Оролдлогын тоо дээд хэмжээнээс хэтэрсэн.</translation>
 <translation id="1908234395526491708">UDP хүсэлтийн алдаа</translation>
 <translation id="1930797645656624981">Chrome OS-н оруулах аргын үйлчилгээ</translation>
 <translation id="1947737735496445907">Хэвлэсэн</translation>
+<translation id="197386857804679933">Дахин холбогдохын тулд Тохиргоо хэсэгт зочилно уу</translation>
 <translation id="1979103255016296513">Нууц үг солих хугацаа хэтэрсэн</translation>
 <translation id="1999615961760456652">Дамжих портал</translation>
 <translation id="2006864819935886708">Холболт</translation>
 <translation id="2008685064673031089">Үндсэн хайлт</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ГБ-аас <ph name="AVAILABLE_MEMORY" /> ГБ боломжтой</translation>
@@ -64,14 +75,19 @@
 <translation id="2157959690810728433">ЖАГСААСАН</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
 <translation id="2209788852729124853">Ачаалал тоологчийг шинэчлэх</translation>
+<translation id="2212733584906323460">Нэр тодорхойлох</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">Идэвхжүүлэх статус</translation>
+<translation id="2307344026739914387">Одоогийн хос түлхүүрийг ашиглах</translation>
+<translation id="2323506179655536734">АЛГАССАН</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
 <translation id="2364498172489649528">Давсан</translation>
+<translation id="2380886658946992094">Хууль ёсны</translation>
 <translation id="2391082728065870591">Санал хүсэлтийн тайлан илгээх</translation>
+<translation id="2407209115954268704">SIM-н түгжээний төлөв</translation>
 <translation id="2418150275289244458">Тохиргоонд нээх</translation>
 <translation id="2446553403094072641">Хөвөгч цэгийн нарийвчлал</translation>
 <translation id="2448312741937722512">Төрөл</translation>
@@ -88,23 +104,26 @@
 <translation id="2783010256799387990">ДАВСАН</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2805756323405976993">Програм</translation>
-<translation id="2862104018715411648">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулж, скан хийхийг сонгоно уу</translation>
+<translation id="2860473693272905224">Сканнер дээр өөр хуудас байрлуулна уу</translation>
 <translation id="2872961005593481000">Унтраах</translation>
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэггүй болсон.</translation>
 <translation id="3008341117444806826">ДАХИН ШИНЭЧЛЭХ</translation>
 <translation id="3009958530611748826">Хадгалах фолдероо сонгоно уу</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мA</translation>
+<translation id="3056720590588772262">Төгсгөлийн цэг</translation>
 <translation id="3069085583900247081">Туршилт амжилтгүй боллоо</translation>
 <translation id="3083667275341675831">Холболтын оношилгоо</translation>
 <translation id="3091839911843451378">Амжилтгүй болсон - Зогссон</translation>
 <translation id="3102119246920354026">Кэш</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Хуудсыг хасах уу?}=1{{PAGE_NUMBER}-р хуудсыг хасах уу?}other{{PAGE_NUMBER}-р хуудсыг хасах уу?}}</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
+<translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
 <translation id="315738237743207937">Дамжих портал илэрсэн</translation>
+<translation id="3170673040743561620">Сканнер дээр документоо байрлуулна уу</translation>
 <translation id="3188257591659621405">Миний файл</translation>
 <translation id="3199982728237701504">Документыг дамжуулах тавиур (Хоёр талаар нь)</translation>
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
-<translation id="3228433892370472777">Өгөгдмөл холболт</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3268178239013324452">Амжилтгүй болсон - Таг нээлттэй</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлыг засах}other{Файлуудыг засах}}</translation>
@@ -121,14 +140,13 @@
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
-<translation id="3540383942695635079">MAC хаяг</translation>
+<translation id="3565064564551103223">Зөвшөөрсөн IP</translation>
 <translation id="357889014807611375">хязгаартай Wi-Fi</translation>
 <translation id="3582041541988388905"><ph name="NETWORK_NAME" /> холболт илэрсэнгүй</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
 <translation id="3708186454126126312">Өмнө нь холбогдсон</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Хуудсыг дахин скан хийх}=1{{PAGE_NUMBER}-р хуудсыг дахин скан хийх}other{{PAGE_NUMBER}-р хуудсыг дахин скан хийх}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
@@ -146,15 +164,21 @@
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="4003384961948020559">Амжилтгүй болсон - Гаралт дүүрсэн</translation>
 <translation id="4034824040120875894">Хэвлэгч</translation>
+<translation id="404928562651467259">АНХААРУУЛГА</translation>
+<translation id="409427325554347132">Туршилтын дэлгэрэнгүйг хадгалах</translation>
+<translation id="4111761024568264522">USB мэдрэгч самбар</translation>
 <translation id="4131410914670010031">Хар ба цагаан</translation>
 <translation id="4145784616224233563">HTTP галт хана</translation>
 <translation id="4155551848414053977">Сканнер асаалттай бөгөөд таны сүлжээ эсвэл шууд холболтоор боломжтой эсэхийг шалгана уу</translation>
 <translation id="4170700058716978431">АМЖИЛТГҮЙ БОЛЛОО</translation>
 <translation id="4176463684765177261">Хаасан</translation>
+<translation id="4213104098953699324">USB гар</translation>
 <translation id="4227825898293920515">Нууц үгний хугацаа <ph name="TIME" />-н дотор дуусна</translation>
 <translation id="4238516577297848345">Хэвлэж байгаа ажил алга</translation>
+<translation id="4239069858505860023">GPRS</translation>
 <translation id="4244962993387259361">Танд Санах ойн туршилтыг ажиллуулахын тулд хамгийн багадаа 500 МБ-ын сул зай шаардлагатай. Сул зай гаргахын тулд Тохиргоо &gt; Хадгалах сангийн менежмент рүү очно уу.</translation>
-<translation id="4289540628985791613">Тойм</translation>
+<translation id="4258281355379922695">HTTP-н хоцролт</translation>
+<translation id="4271957103967917607">Бүтэн дэлгэцээр үзэх</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
 <translation id="4378373042927530923">Ажилдаггүй</translation>
@@ -163,7 +187,6 @@
 <translation id="4425149324548788773">Миний Драйв</translation>
 <translation id="4429881212383817840">Kerberos тасалбарын хугацаа удахгүй дуусна</translation>
 <translation id="4431821876790500265">Тайланг харах</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Хуудас хасах}=1{{PAGE_NUMBER}-р хуудсыг хасах}other{{PAGE_NUMBER}-р хуудсыг хасах}}</translation>
 <translation id="445059817448385655">Хуучин нууц үг</translation>
 <translation id="4453205916657964690">Дэд сүлжээний маск</translation>
 <translation id="4454245904991689773">Дараах руу скан хийх</translation>
@@ -174,12 +197,13 @@
 <translation id="4536864596629708641">IP тохируулга</translation>
 <translation id="4548483925627140043">Дохио илэрсэнгүй</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh батарей</translation>
+<translation id="4561801978359312462">SIM-н түгжээг тайлсан</translation>
 <translation id="4562494484721939086">Үйлчилгээ байхгүй</translation>
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />-с <ph name="PRINTED_PAGE_NUMBER" />. Хэвлэх ажлыг цуцлахын тулд enter дээр дарна уу.</translation>
+<translation id="463791356324567266">Скан хийхийг цуцалж байна...</translation>
 <translation id="4646949265910132906">Аюулгүй Wi-Fi холболт</translation>
-<translation id="4652335678334611408">Харилцан үйлдлийн логийг хадгалах</translation>
 <translation id="4654549501020883054">Өдөр бүр өөрчлөх</translation>
 <translation id="4665014895760275686">Үйлдвэрлэгч</translation>
 <translation id="467510802200863975">Нууц үг таарахгүй байна</translation>
@@ -196,6 +220,7 @@
 <translation id="4813345808229079766">Холболт</translation>
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
 <translation id="4835901797422965222">Идэвхтэй сүлжээ байхгүй байна</translation>
+<translation id="484790837831576105">(Android) DNS нягтрал</translation>
 <translation id="4848429997038228357">АЖИЛЛУУЛЖ БАЙНА</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}other{<ph name="ERROR_MESSAGE" /> {0} оролдлого үлдсэн}}</translation>
 <translation id="4880328057631981605">Нэвтрэх цэгийн нэр</translation>
@@ -204,7 +229,6 @@
 <translation id="4891842000192098784">Стресс</translation>
 <translation id="4917385247580444890">Хүчтэй</translation>
 <translation id="4917889632206600977">Зогссон - Цаас дууссан</translation>
-<translation id="491836528011451486"><ph name="CURRENT_PAGE" />-р хуудсыг скан хийж, солихын тулд документоо сканнер дээр байрлуулж, Дахин скан хийхийг сонгоно уу.</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
 <translation id="4932733599132424254">Огноо</translation>
 <translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
@@ -213,7 +237,9 @@
 <translation id="4999333166442584738">Тайланг нуух</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">SIM-г түгжсэн (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Бүлгийн нэр</translation>
+<translation id="5051044138948155788">Энэ нь цорын ганц хуудас байна. Энэ нь таныг скан хийхийг эхлүүлэх дэлгэц рүү аваачна.</translation>
 <translation id="5088172560898466307">Серверийн хостын нэр</translation>
 <translation id="5089810972385038852">Муж</translation>
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
@@ -222,6 +248,7 @@
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5212543919916444558">Би таны дэлгэцээс туслах боломжтой зүйл олсонгүй.
 Асуух зүйл байвал микрофоныг товшиж үзнэ үү.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>
 <translation id="5252456968953390977">Роуминг</translation>
@@ -237,6 +264,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Одоо шинийг сонгоно уу</translation>
 <translation id="5333530671332546086">Порталын тодорхойгүй төлөв</translation>
+<translation id="5346687412805619883">Дотоод сүлжээ</translation>
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
 <translation id="5401938042319910061">Бүх хэвшлийг ажиллуулах</translation>
 <translation id="5423849171846380976">Идэвхжүүлсэн байна</translation>
@@ -248,21 +276,28 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} оролдлого үлдсэн}other{{0} оролдлого үлдсэн}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Скан хийхийг гүйцээж чадсангүй</translation>
+<translation id="5502931783115429516">Android ажиллахгүй байна</translation>
+<translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">Дахин скан хийх</translation>
 <translation id="5669267381087807207">Идэвхжиж байна</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Гэр бүл</translation>
 <translation id="5701381305118179107">Төв</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-н <ph name="CURRENT_PAGE" /></translation>
+<translation id="5715997777752246116">Нэрийн сервер тохируулаагүй байна</translation>
 <translation id="5760715441271661976">Порталын төлөв</translation>
+<translation id="5784136236926853061">HTTP-н өндөр хоцролт</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5849570051105887917">Нүүр хуудас бэлтгэх код</translation>
+<translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5866840822086176774">Маш хүчтэй</translation>
 <translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5916084858004523819">Хориглосон</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
+<translation id="594552776027197022">Санамсаргүй хос түлхүүр үүсгэх</translation>
 <translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="6037291330010597344">Сканнерын документ дамжуулах тавиур хоосон байна. Документ нэмээд, дахин оролдоно уу.</translation>
 <translation id="6040143037577758943">Хаах</translation>
@@ -272,15 +307,16 @@
 <translation id="6050189528197190982">Хараас цагаан өнгө</translation>
 <translation id="6058625436358447366">Дуусгахын тулд хуучин болон шинэ нууц үгээ оруулна уу</translation>
 <translation id="6061772781719867950">HTTP хүсэлт амжилтгүй</translation>
+<translation id="6075872808778243331">(Android) HTTP хоцролт</translation>
 <translation id="6104112872696127344">Скан хийхийг цуцалсан</translation>
 <translation id="6106186594183574873">Дуусгахын тулд хуучин нууц үгээ оруулна уу</translation>
 <translation id="6108689792487843350">Гэйтвэйд холбогдох боломжгүй байна</translation>
 <translation id="6122191549521593678">Онлайн</translation>
-<translation id="6125438912510167220">Холбоосны хурд</translation>
 <translation id="6137767437444130246">Хэрэглэгчийн сертификат</translation>
 <translation id="6146993107019042706">Дуусгахын тулд шинэ нууц үгээ оруулна уу</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Батарейн хүчин чадлыг ашиглалт бууруулдаг</translation>
 <translation id="6191293864534840972">DNS алдаатай байна</translation>
 <translation id="6223752125779001553">Боломжтой сканнер байхгүй</translation>
@@ -290,10 +326,12 @@
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
+<translation id="6379086450106841622">Мэдрэмтгий дэлгэц</translation>
 <translation id="6388847657025262518">Сканнерын документ дамжуулах тавиур гацсан байна. Дамжуулах тавиурыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="641081527798843608">Субъект тохируулах</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
 <translation id="6456394469623773452">Сайн</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Хуудсыг дахин скан хийх үү?}=1{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}other{{PAGE_NUMBER}-р хуудсыг дахин скан хийх үү?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> удирддаг</translation>
 <translation id="649050271426829538">Зогссон - Цаас гацсан</translation>
@@ -302,6 +340,7 @@
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6564646048574748301">Амжилтгүй болсон - Хэвлэгчид холбогдох боломжгүй</translation>
+<translation id="6566314079205407217">Олон хуудас скан хийх</translation>
 <translation id="6574762126505704998">Дүүргэх</translation>
 <translation id="6575134580692778371">Тохиргоо хийгээгүй</translation>
 <translation id="6596816719288285829">IP хаяг</translation>
@@ -311,19 +350,23 @@
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6657585470893396449">Нууц үг</translation>
 <translation id="6704062477274546131">DNS-н тайлал</translation>
+<translation id="6714650824879092633"><ph name="NETWORK_NAME" />-г идэвхгүй болгосон</translation>
 <translation id="6747215703636344499">Зогссон - Гаралт дүүрсэн</translation>
 <translation id="6756731097889387912">Скан хийхийг цуцалж чадсангүй</translation>
 <translation id="6766275201586212568">DNS-н тайлал амжилтгүй</translation>
 <translation id="6768237774506518020">DNS-н тайллын алдааны өндөр хувь</translation>
+<translation id="680983167891198932">Түлхүүр</translation>
 <translation id="6853312040151791195">Цэнэггүй болох хурд</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> руу буцах</translation>
 <translation id="6910312834584889076">Сканнерын таг нээлттэй байна. Тагийг хаагаад, дахин оролдоно уу.</translation>
 <translation id="6911383237894364323">Медиа серверт холбогдох боломжгүй</translation>
 <translation id="6957231940976260713">Үйлчилгээний нэр</translation>
+<translation id="6961170852793647506">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулна уу</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
 <translation id="6982876849933694860">Шинэ холболт тохируулахын тулд <ph name="BEGIN_LINK" />Тохиргоо<ph name="END_LINK" /> руу очно уу.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7058278511608979688">Дуусгаад, хадгалах</translation>
 <translation id="7059230779847288458">Цэнэглэж байна. Дүүрэх хүртэл <ph name="TIME_VALUE" /> үлдсэн байна</translation>
 <translation id="708426984172631313">ЗОГСООСОН</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -336,14 +379,16 @@
 <translation id="7177485034254901881">Энэ <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг. Администраторууд төхөөрөмжийг алсаас тохируулж магадгүй.</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
 <translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
-<translation id="7257889006063274246">Та <ph name="CURRENT_PAGE" />-р хуудсыг хасахдаа итгэлтэй байна уу?</translation>
 <translation id="7271040990581020067">Сканнерыг одоогоор ашиглаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">Дэлгэцийн зургийн цуглуулга</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7305884605064981971">EDGE</translation>
+<translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">Сүлжээний төхөөрөмжүүд</translation>
 <translation id="7359657277149375382">Файлын төрөл</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">HTTP-н маш өндөр хоцролт</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
 <translation id="7469648432129124067">Портал илэрсэн</translation>
@@ -351,9 +396,11 @@
 <translation id="7490813197707563893">MAC хаяг</translation>
 <translation id="7497215489070763236">Серверийн CA сертификат</translation>
 <translation id="7502658306369382406">IPv6 хаяг</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">Оношилгооны хэвшил</translation>
 <translation id="7561454561030345039">Энэ үйлдлийг таны администратор удирддаг</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">USB мэдрэмтгий дэлгэц</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
 <translation id="763165478673169849">Хамгийн сүүлд шинэчилсэн цаг</translation>
@@ -363,28 +410,36 @@
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Мөчлөгийн тоо</translation>
+<translation id="7747039790905080783">Урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
 <translation id="7805768142964895445">Байр байдал</translation>
 <translation id="7819857487979277519">PSK (WPA эсвэл RSN)</translation>
 <translation id="7835501727204647447">CloudReady-г суулгах</translation>
+<translation id="7846634333498149051">Гар</translation>
+<translation id="7856267634822906833">Bluetooth мэдрэмтгий дэлгэц</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
+<translation id="7882501334836096755">Нийтийн түлхүүр</translation>
+<translation id="7890841768028788197">Дотоод мэдрэмтгий дэлгэц</translation>
 <translation id="7895471513946376273">Дүрс болон дизайны хэрэгсэлтэй танилцаарай</translation>
 <translation id="7936303884198020182">DNS олдсонгүй</translation>
+<translation id="7943235353293548836">Тогтмол keepalive интервал</translation>
+<translation id="7955587717700691983">Bluetooth гар</translation>
 <translation id="7960831585769876809">Температур</translation>
+<translation id="7978412674231730200">Хувийн түлхүүр</translation>
 <translation id="7994702968232966508">EAP арга</translation>
 <translation id="8020238979854764615">Алдаа гарлаа. Өөр зураг сонгож, дахин оролдоно уу.</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
+<translation id="811820734797650957">(Android) Гэйтвэй рүү пин илгээх боломжтой</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Ачаалал тоологчийн хүсэлт тавих</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
-<translation id="8214184102975786227">Олон хуудсыг нэг PDF болгож скан хийх</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="8246209727385807362">Тодорхойгүй оператор компани</translation>
 <translation id="8286154143153872371">Дэлгэцийн зургийг үзэхийн тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
@@ -401,6 +456,8 @@
 <translation id="8395584934117017006">Энэ <ph name="DEVICE_TYPE" />-г байгууллага удирддаг</translation>
 <translation id="8398927464629426868">Төхөөрөмжийн одоогийн цэнэглэгдэж эсвэл цэнэгээ алдаж байгаа хувь</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">Дотоод гар</translation>
+<translation id="843568408673868420">Интернэт холболт</translation>
 <translation id="8461329675984532579">Нүүр хуудас бэлтгэх нэр</translation>
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
@@ -421,6 +478,7 @@
 <translation id="8726019395068607495">Зогссон - Таг нээлттэй</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8747900814994928677">Өөрчлөлтийг баталгаажуулах</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
 <translation id="8798441408945964110">Үйлчилгээ үзүүлэгчийн нэр</translation>
@@ -435,9 +493,13 @@
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-н <ph name="DEVICE_TYPE" /></translation>
 <translation id="8919837981463578619">Амжилтгүй болсон - Тавиур алга байна</translation>
 <translation id="8928727111548978589">Амжилтгүй болсон - Цаас дууссан</translation>
+<translation id="8930521118335213258">Төстэй апп</translation>
 <translation id="8930622219860340959">Утасгүй</translation>
+<translation id="8936793075252196307">Клиентийн IP хаяг</translation>
+<translation id="8945750210906526975">Дотоод мэдрэгч самбар</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
+<translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скан хийх}=1{{NUMBER_OF_PAGES} хуудас скан хийх}other{{NUMBER_OF_PAGES} хуудас скан хийх}}</translation>
 <translation id="9003704114456258138">Давтамж</translation>
 <translation id="9039663905644212491">PEAP /Хамгаалагдсан өргөжих боломжтой таниулах протокол/</translation>
@@ -448,9 +510,11 @@
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>
+<translation id="9126720536733509015">Олон хуудсыг нэг PDF болгож хадгалах</translation>
 <translation id="9137526406337347448">Google-н үйлчилгээнүүд</translation>
 <translation id="9149391708638971077">Санах ойн туршилтыг ажиллуулах</translation>
 <translation id="9173638680043580060">Минут хүрэхгүй хугацаа үлдлээ</translation>
+<translation id="917720651393141712">Шалгалт</translation>
 <translation id="9190063653747922532">L2TP/IPsec + урьдчилан хуваалцсан түлхүүр</translation>
 <translation id="9211490828691860325">Бүх дэлгэц</translation>
 <translation id="939519157834106403">SSID</translation>

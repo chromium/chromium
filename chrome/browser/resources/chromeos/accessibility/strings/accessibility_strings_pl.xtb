@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Nie ma następnego pola tekstowego do edytowania</translation>
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Wskazówka</translation>
+<translation id="1354356357730355833">kopiuj</translation>
 <translation id="135978014023467274">Czytnik ChromeVox został zaktualizowany do wersji 63.</translation>
 <translation id="1360699455582016846">Kliknij element pod klawiszem sterującym <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">To jest ostatni nagłówek. Kliknij klawisz wyszukiwania + H, by wrócić do pierwszego nagłówka na tej stronie, lub klawisz wyszukiwania + Shift + H, by przejść do drugiego.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">odśwież</translation>
 <translation id="2675533876313964202">Szartrezowy</translation>
 <translation id="2684412629217766642">Zamknij samouczek czytnika ChromeVox</translation>
+<translation id="2692503699962701720">Zmieniaj ton w przypadku typów elementów oraz tekstu sformatowanego</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Kandydat do konwersji tekstu</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{nawias okrągły otwierający}few{# nawiasy okrągłe otwierające}many{# nawiasów okrągłych otwierających}other{# open parens}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">orientacja pionowa</translation>
 <translation id="3286390186030710347">Suwak</translation>
 <translation id="3300348286427369683">Obsługa tekstu sformatowanego. ChromeVox obsługuje teraz pola tekstu sformatowanego, w tym między innymi polecenia nawigacyjne, kierowanie kursorem brajlowskim oraz wybór.</translation>
+<translation id="3300733168898541351">cofnij</translation>
 <translation id="3307886118343381874">Przejdź na koniec tabeli.</translation>
 <translation id="3312997241656799641">Następny kliknięty link</translation>
 <translation id="3313245066383501820">Klawisz modyfikujący czytnika ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Pokaż listę formularzy</translation>
 <translation id="3414400929511680526">Niebieski Alice</translation>
 <translation id="3418936350470374046">Nie ma komórki poniżej</translation>
+<translation id="3419269701801640163">wklej</translation>
 <translation id="3435494200763325275">Nawigacja na kartach – ciąg dalszy</translation>
 <translation id="344800400831402066">Brudny pomarańczowy</translation>
 <translation id="3457000393508828486">Częściowo naciśnięte</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">Przewiń w dół</translation>
 <translation id="4035381225449278841">Wiosna</translation>
+<translation id="4038098586530338813">ponów</translation>
 <translation id="4047216625641135770">Zaznaczenie</translation>
 <translation id="4047910800766704982">Gdy urządzenie jest online, możesz używać naturalnego głosu, brzmiącego jak głos człowieka. Tekst jest wysyłany do Google w celu przetworzenia. Tę funkcję możesz w dowolnej chwili wyłączyć w Ustawieniach.</translation>
 <translation id="4053520724192563562">Zielony limonkowy</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">Średni niebieski łupkowy</translation>
 <translation id="5140016802771803559">Fioletowy Rebecca</translation>
 <translation id="5142101052131610456">Wszystkie lekcje</translation>
+<translation id="5152605892605507188">przejdź w prawo</translation>
 <translation id="5158275234811857234">Okładka</translation>
 <translation id="516076699907426116">Aby przejść dalej, użyj funkcji Czytanie dotykiem i znajdź przycisk Następna lekcja. Potem dotknij dwukrotnie ekranu, aby przejść dalej.</translation>
 <translation id="5170206230005240598">Napisy brajlowskie włączone</translation>
 <translation id="5183440668879371625">Pismo Braille'a – poprzedni wiersz</translation>
 <translation id="5189244881767082992">Wiersz</translation>
+<translation id="5234747236692380506">wpisz <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Wąsy kukurydzy</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Zakończ</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">Nagłówek 4</translation>
 <translation id="6150023170003443621">Żółtozielony</translation>
 <translation id="6158882249329863701">wiersz <ph name="TABLECELLROWINDEX" />, kolumna <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">przejdź w lewo</translation>
 <translation id="6164829606128959761">miernik</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6166362019018438352">Napisy brajlowskie wyłączone</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">Usunięto</translation>
 <translation id="6910969481785184048">Włączanie, wyłączanie i wstrzymywanie</translation>
 <translation id="6919104639734799681">Pokaż listę tabel.</translation>
+<translation id="692135145298539227">usuń</translation>
+<translation id="6935674530832500465">przesuń w dół</translation>
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6949846980769640811">Średnia akwamaryna</translation>
 <translation id="6951482098621102657">Nie ma następnego nagłówka poziomu 5</translation>
@@ -912,7 +922,6 @@
 <translation id="7439060726180460871">Katalog</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">Używać naturalnego głosu?</translation>
-<translation id="7484805699335881122">Zmieniaj ton w przypadku typów elementów oraz tekstu cytowanego, usuniętego, pogrubionego, pisanego wielkimi literami lub umieszczonego w nawiasach.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Przejdź do następnej sekcji. Przykłady: pasek stanu i Menu z aplikacjami.</translation>
 <translation id="7505149250476994901">Przed literą powiedz „wielka litera”</translation>
@@ -1010,6 +1019,7 @@
 <translation id="8129445297241948503">Nie ma komórki powyżej</translation>
 <translation id="8138880386467279117">Kliknij</translation>
 <translation id="8146613869421949343">Teraz zajmiemy się klawiszem wyszukiwania Klawisza wyszukiwania używa się w połączeniu z innymi klawiszami do wydawania poleceń w ChromeVox. Klawisz wyszukiwania znajduje się tuż nad lewym klawiszem Shift. Aby przejść dalej, naciśnij klawisz wyszukiwania.</translation>
+<translation id="8158033275290782295">wybierz wszystko</translation>
 <translation id="816818801578874684">To jest pierwszy nagłówek. Aby przejść do następnego, naciśnij klawisz wyszukiwania + H.</translation>
 <translation id="8173092779156526980">Przesuń 4 palcami w lewo</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{podkreślenie}few{# znaki podkreślenia}many{# znaków podkreślenia}other{# underscores}}</translation>
@@ -1028,12 +1038,14 @@
 <translation id="826825447994856889">Wprowadzenie</translation>
 <translation id="827266600368092403">Rozpocznij lub zakończ wybieranie</translation>
 <translation id="827422111966801947">Indygo</translation>
+<translation id="827496561804786391">przesuń w górę</translation>
 <translation id="8276439074553447000">Przejdź do poprzedniego elementu, który można zaznaczyć</translation>
 <translation id="8279039817939141096">Naciśnij klawisz na klawiaturze QWERTY lub na monitorze brajlowskim albo wykonaj gest dotykowy, aby poznać jego funkcję. Aby wyjść, naciśnij Ctrl + W lub spację + Z, przesuń dwoma palcami w lewo albo naciśnij Escape.</translation>
 <translation id="8283603667300770666">Następne pole formularza</translation>
 <translation id="8310185481635255431">Nie ma następnego linku</translation>
 <translation id="831207808878314375">Definicja</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">anuluj wybór wszystkiego</translation>
 <translation id="8316881042119029234">Stare koronki</translation>
 <translation id="8324974933005349667">Dostosuj ustawienia zamiany tekstu na mowę</translation>
 <translation id="8326783648485765113">Zielony trawiasty</translation>
@@ -1125,6 +1137,7 @@
 <translation id="9077305471618729969">Jasny zielony morski</translation>
 <translation id="9080299285199342830">Przeskocz na koniec</translation>
 <translation id="9089864840575085222">Włącz/wyłącz odczytywanie podczas pisania</translation>
+<translation id="9099429023611373837">wytnij</translation>
 <translation id="9108370397979208512">matematyczny</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{procent}few{# znaki procent}many{# znaków procent}other{# percent signs}}</translation>

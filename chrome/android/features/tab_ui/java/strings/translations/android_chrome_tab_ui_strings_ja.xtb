@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">値下げがあった場合に通知されます</translation>
 <translation id="1657719826150349398">タブを下に移動</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
+<translation id="2118649612461486615">ストア情報</translation>
+<translation id="2162620598375156287">現在の価格は <ph name="SOURCE_WEBSITE" /> で <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">グループ名を編集</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブをグループから削除します。}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブをグループから削除します。}}</translation>
 <translation id="2479148705183875116">設定に移動</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">グループ化</translation>
 <translation id="2613747923081026172">グループを作成</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価</translation>
+<translation id="266935134738038806">サイトを見る</translation>
 <translation id="2671423594960767771">グループを共有</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> タブグループの <ph name="NUMBER_OF_TABS" /> 個のタブを展開します。</translation>
 <translation id="2801787514987684416">ストア情報を表示しますか？</translation>
 <translation id="2928243913527329289">Google | このショップについて</translation>
 <translation id="2977480621796371840">グループから削除</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
 <translation id="3194464645767632461">評価</translation>
+<translation id="3267416433995960648">通知をオフにする</translation>
 <translation id="3291470810748040983">開いているタブの商品が値下げされた場合にアラートを受け取ることができます</translation>
 <translation id="3328308545011660196">おすすめ: <ph name="NUMBER_OF_TABS" /> 個のタブは関連しているようです。グループ化しますか？</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6054741997831917303">このアイテムの価格は最近 <ph name="PREVIOUS_PRICE" /> から <ph name="NEW_PRICE" /> に下がりました</translation>
 <translation id="6193448654517602979">タブを選択</translation>
+<translation id="6228793724645064692">（ストアの評価）</translation>
+<translation id="6333260925957816943">このショップに関する情報</translation>
 <translation id="6510648526783655549">タブバーを閉じます</translation>
+<translation id="6549021453810473782">ストア情報を表示</translation>
 <translation id="6562820390860419811">タブを左に移動</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="6840760312327750441">タブをグループ化するには、タブを押しながら別のタブにドラッグします。</translation>
 <translation id="6856809498882026482">複数選択モードを非表示にします</translation>
+<translation id="7129458170538955174">このショップに関する情報が画面の下半分に表示されています</translation>
 <translation id="7151209024774799310">グループからタブを削除</translation>
 <translation id="7204204600596740190">複数選択モード</translation>
+<translation id="7326879924029668159">返品に関するポリシーなどを確認</translation>
 <translation id="7352298686197644113">開いているタブに値下げされた商品があります</translation>
 <translation id="753732157349120914">タブ切り替え機能</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_ONE" /> 件のクチコミ}other{<ph name="CURRENT_RATING" /> / <ph name="RATING_BASELINE" /> の評価、<ph name="REVIEWS_COUNT_MANY" /> 件のクチコミ}}</translation>
 <translation id="7885132941432959125">タブを右に移動</translation>
 <translation id="7966321538264951561">提案を閉じます。</translation>
+<translation id="8029301326595421733">このショップに関する情報が画面全体に表示されています</translation>
 <translation id="814503310257431685">すべて表示</translation>
 <translation id="8205266828577616993">タブを上に移動</translation>
 <translation id="8304833501377495048">次回からタブバーを表示しないよう設定しますか？</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8749939518995770034">タブバーを閉じました</translation>
 <translation id="8820741577754260431">タブで値下げ情報を確認します</translation>
+<translation id="9090098097337832354">このショップに関する情報は非表示になっています</translation>
 <translation id="9150694013019234766">画面下部にあるタブグループのタブを切り替えます</translation>
 <translation id="9169594135889675189">グループに新しいタブを追加</translation>
 <translation id="959682366969460160">タブを整理</translation>

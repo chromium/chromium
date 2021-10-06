@@ -79,6 +79,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="4512952200932940229">Höfundarréttur 2021 höfundar Chromium. Öll réttindi áskilin.</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="4563926062592110512">Biðlari aftengdur: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> er ekki stillt á réttan hátt. Veldu annan sjálfgefinn vafra og kveiktu svo aftur á framsendingu vefslóða.</translation>
 <translation id="4635770493235256822">Fjartengd tæki</translation>
 <translation id="4660011489602794167">Sýna lyklaborð</translation>
 <translation id="4703799847237267011">Chromoting lotunni er lokið</translation>
@@ -109,6 +110,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="5750083143895808682">Skráð(ur) inn sem <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Tengjast aftur</translation>
 <translation id="5810269635982033450">Skjárinn virkar sem snertiflötur</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> bað um aðgang til að sjá skjáinn hjá þér og stjórna lyklaborðinu þínu og músinni. Ýttu á „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ef þú áttir ekki von á þessari beiðni. Annars skaltu velja „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ til að heimila tenginguna þegar þú ert tilbúin(n).</translation>
 <translation id="5823658491130719298">Opnaðu Chrome í tölvunni sem þú vilt fá fjaraðgang að og farðu á <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Birtingarvalkostir</translation>
 <translation id="6033507038939587647">Valkostir lyklaborðs</translation>
@@ -130,7 +132,6 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="6963936880795878952">Tímabundið er lokað fyrir tengingar við fjartengdu tölvuna vegna þess að einhver reyndi að tengjast henni með ógildu PIN-númeri. Reyndu aftur síðar.</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6985691951107243942">Viltu örugglega slökkva á fjartengingum við <ph name="HOSTNAME" />? Ef þú skiptir um skoðun þarftu að fara í þá tölvu til að leyfa tengingu aftur.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> bað um aðgang til að sjá tölvuna þína og stjórna henni. Ýttu á „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ef þú þekkir ekki viðkomandi eða ef þú þarft að gera breytingar áður en þú deilir.  Annars skaltu velja „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ til að heimila tengingu.</translation>
 <translation id="7019153418965365059">Villa vegna óþekkts hýsils: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Fjaraðstoð</translation>
 <translation id="7026930240735156896">Fylgdu leiðbeiningunum til að setja upp fjaraðgang fyrir tölvuna þína</translation>
@@ -169,6 +170,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 Til að veita þessa heimild skaltu smella á <ph name="BUTTON_NAME" /> hér fyrir neðan. Á stillingasvæðinu „Aðgengi“ sem opnast skaltu merkja í reitinn við hliðina á „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 Ef þegar er merkt í „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlægja merkið og merkja svo aftur í reitinn.</translation>
+<translation id="8305209735512572429">Fjarvinnsla Web Authentication</translation>
 <translation id="8383794970363966105">Til að nota Chromoting þarftu að bæta Google reikningi við tækið þitt.</translation>
 <translation id="8386846956409881180">Hýsillinn er stilltur með ógildum OAuth-skilríkjum.</translation>
 <translation id="8397385476380433240">Veita <ph name="PRODUCT_NAME" /> heimild</translation>

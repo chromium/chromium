@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Qiymət endirildikdə bildiriş alın</translation>
 <translation id="1657719826150349398">Tabı aşağıya daşıyın</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2118649612461486615">Mağaza məlumatları</translation>
+<translation id="2162620598375156287">İndi <ph name="SOURCE_WEBSITE" /> saytında <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">Qrup adına düzəliş edin</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qrupdan silin.}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qrupdan silin.}}</translation>
 <translation id="2479148705183875116">Ayarlara keçin</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Qrup</translation>
 <translation id="2613747923081026172">Qrup yaradın</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq</translation>
+<translation id="266935134738038806">Sayta daxil olun</translation>
 <translation id="2671423594960767771">Qrupu paylaşın</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> tab qrupunu <ph name="NUMBER_OF_TABS" /> tab ilə genişləndirin.</translation>
 <translation id="2801787514987684416">Mağaza məlumatlarına baxılsın?</translation>
 <translation id="2928243913527329289">Google | Bu mağaza haqqında</translation>
 <translation id="2977480621796371840">Qrupdan çıxarın</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
 <translation id="3194464645767632461">reytinq</translation>
+<translation id="3267416433995960648">Siqnalı deaktiv edin</translation>
 <translation id="3291470810748040983">Qiymət endirildikdə açıq tabda bildiriş alacaqsınız</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6054741997831917303">Bu element bu yaxınlarda <ph name="PREVIOUS_PRICE" /> qiymətindən <ph name="NEW_PRICE" /> qiymətinə endirilib</translation>
 <translation id="6193448654517602979">Tablar seçin</translation>
+<translation id="6228793724645064692">(mağaza reytinqi)</translation>
+<translation id="6333260925957816943">Bu mağaza haqqında məlumatlar</translation>
 <translation id="6510648526783655549">Tab zolağını bağlayın</translation>
+<translation id="6549021453810473782">Mağaza məlumatlarına baxın</translation>
 <translation id="6562820390860419811">Tabı sola daşıyın</translation>
 <translation id="6615455863669487791">Mənə göstərin</translation>
 <translation id="6840760312327750441">Panelləri qruplaşdırmaq üçün panelə toxunub saxlayın. Daha sonra digər panelin üzərinə çəkin.</translation>
 <translation id="6856809498882026482">Çoxsaylı seçim rejimini gizlədin</translation>
+<translation id="7129458170538955174">Bu mağaza haqqında məlumatlar yarım hündürlükdə açılıb</translation>
 <translation id="7151209024774799310">Tabları qrupdan silin</translation>
 <translation id="7204204600596740190">Çoxsaylı seçim rejimi</translation>
+<translation id="7326879924029668159">Qaytarma siyasətinə və digər məlumatlara baxın</translation>
 <translation id="7352298686197644113">Açıq tablarda hansı əşyanın qiymətinin daha aşağı olduğuna baxın</translation>
 <translation id="753732157349120914">Tab Keçiricisi</translation>
 <translation id="7559245342362162951">Qrup tabını tam ekran cədvəlində göstərin</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq, <ph name="REVIEWS_COUNT_ONE" /> rəy}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq, <ph name="REVIEWS_COUNT_MANY" /> rəy}}</translation>
 <translation id="7885132941432959125">Tabı sağa daşıyın</translation>
 <translation id="7966321538264951561">Təkliflərdən imtina edin.</translation>
+<translation id="8029301326595421733">Bu mağaza haqqında məlumatlar tam hündürlükdə açılıb</translation>
 <translation id="814503310257431685">Hamısına baxın</translation>
 <translation id="8205266828577616993">Tabı yuxarıya daşıyın</translation>
 <translation id="8304833501377495048">Tab zolağı bir daha göstərilməsin?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Aşağı qiymət</translation>
 <translation id="8749939518995770034">Tab zolağı bağlıdır</translation>
 <translation id="8820741577754260431">Tablarda qiymət endirimləri göstərilsin</translation>
+<translation id="9090098097337832354">Bu mağaza haqqında məlumatlar bağlanıb</translation>
 <translation id="9150694013019234766">Ekranın aşağısındakı tab qrupunda tablar arasında keçid edin</translation>
 <translation id="9169594135889675189">Qrupa yeni tab əlavə edin</translation>
 <translation id="959682366969460160">Sistemləşdirin</translation>

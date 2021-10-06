@@ -7,9 +7,12 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">تم العثور على جدار ناري.</translation>
 <translation id="1075811647922107217">حجم الصفحة</translation>
+<translation id="110351136513869678">يُرجى الانتقال إلى الإعدادات لضبط الشبكة.</translation>
+<translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1124772482545689468">المستخدم</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
+<translation id="1181037720776840403">إزالة</translation>
 <translation id="1195447618553298278">خطأ  غير محدّد.</translation>
 <translation id="1204296502688602597">وقت استجابة نظام أسماء النطاقات</translation>
 <translation id="123124571410524056">تم الاشتباه في مدخل.</translation>
@@ -17,6 +20,7 @@
 <translation id="1264369926465113395">‏اطّلِع على المجلة الرقمية الجديدة المخصّصة لمنشئي المحتوى على أجهزة Chromebook.</translation>
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
+<translation id="1301069673413256657">‏بروتوكول GSM</translation>
 <translation id="1314565355471455267">‏الشبكة الظاهرية الخاصة (VPN) في Android</translation>
 <translation id="131461803491198646">الشبكة الرئيسية، بلا تجوال</translation>
 <translation id="1327977588028644528">المدخل</translation>
@@ -27,13 +31,14 @@
 <translation id="1398634363027580500">‏وقت استجابة بروتوكول HTTPS طويل جدًا.</translation>
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">يتوفّر لديّ مفتاحا تشفير</translation>
 <translation id="1468664791493211953">العروض</translation>
 <translation id="1476467821656042872">يدير <ph name="MANAGER" /> هذا الجهاز، وقد يتمكَّن من مراقبة نشاطك.</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
 <translation id="1499900233129743732">يدير <ph name="MANAGER" /> هذا المستخدم، ويمكنه إدارة الإعدادات ومراقبة نشاط المستخدم عن بُعد.</translation>
 <translation id="150962533380566081">‏PUK غير صالح.</translation>
 <translation id="1510238584712386396">مشغِّل التطبيقات</translation>
-<translation id="1600964289716072707">يُرجى وضع صفحة أخرى على الماسح الضوئي واختيار "المسح ضوئيًا" لإضافة الصفحة.</translation>
+<translation id="155865706765934889">لوحة اللمس</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
 <translation id="1639239467298939599">جارٍ التحميل.</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
@@ -44,19 +49,25 @@
 <translation id="1706391837335750954">توفُّر برنامج تعيين نظام أسماء النطاقات</translation>
 <translation id="1715359911173058521">‏حدث مشكلة في الاتصال بالماسح الضوئي. يُرجى التحقّق من الاتصال بالشبكة أو اتصال USB وإعادة المحاولة.</translation>
 <translation id="1717874160321062422">هذا الجهاز مُدار من خلال <ph name="FIRST_MANAGER" /> و<ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">خوادم الأسماء</translation>
+<translation id="1731082422893354635">لوحة لمس تتضمّن بلوتوث</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1792647875738159689">جارٍ إلغاء المسح الضوئي</translation>
 <translation id="1851218745569890714">اختبار اجتماعات الفيديو</translation>
+<translation id="1874612839560830905">‏وحدة النقل العظمى (MTU)</translation>
+<translation id="1881378885488531302">‏تعذّر الحصول على عنوان IP.</translation>
 <translation id="1887850431809612466">مراجعة الأجهزة</translation>
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
 <translation id="1908234395526491708">‏تعذَّر طلب بروتوكول UDP.</translation>
 <translation id="1930797645656624981">‏خدمة أسلوب الإدخال لنظام التشغيل Chrome</translation>
 <translation id="1947737735496445907">تمت الطباعة</translation>
+<translation id="197386857804679933">الانتقال إلى "الإعدادات" لإعادة الاتصال</translation>
 <translation id="1979103255016296513">تأخير تغيير كلمة المرور</translation>
 <translation id="1999615961760456652">مدخل مشروط الوصول إليه</translation>
 <translation id="2006864819935886708">إمكانية التوصيل</translation>
 <translation id="2008685064673031089">البحث الأوّلي</translation>
+<translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، الإصدار <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736">يتبقّى <ph name="AVAILABLE_MEMORY" /> غيغابايت من إجمالي <ph name="TOTAL_MEMORY" /> غيغابايت.</translation>
@@ -64,14 +75,19 @@
 <translation id="2157959690810728433">تم وضع الاختبار في قائمة الانتظار.</translation>
 <translation id="2161394479394250669">إلغاء مهمة الطباعة</translation>
 <translation id="2209788852729124853">إعادة ضبط عدّادات حركة بيانات الشبكة</translation>
+<translation id="2212733584906323460">تحليل الأسماء</translation>
 <translation id="2217935453350629363">السرعة الحالية</translation>
 <translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2230051135190148440">CHAP</translation>
 <translation id="225692081236532131">حالة التفعيل</translation>
+<translation id="2307344026739914387">استخدام مفتاحَي التشفير الحاليين</translation>
+<translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
 <translation id="2364498172489649528">تم الاجتياز.</translation>
+<translation id="2380886658946992094">قانوني</translation>
 <translation id="2391082728065870591">إرسال تقرير بالتعليقات</translation>
+<translation id="2407209115954268704">‏حالة قفل شريحة SIM</translation>
 <translation id="2418150275289244458">الفتح من خلال "الإعدادات"</translation>
 <translation id="2446553403094072641">دقة النقطة العائمة</translation>
 <translation id="2448312741937722512">النوع</translation>
@@ -88,23 +104,26 @@
 <translation id="2783010256799387990">تم الاجتياز</translation>
 <translation id="2789486458103222910">حسنًا</translation>
 <translation id="2805756323405976993">التطبيقات</translation>
-<translation id="2862104018715411648">للبدء، يُرجى وضع المستند على الماسح الضوئي واختيار "المسح ضوئيًا".</translation>
+<translation id="2860473693272905224">يُرجى وضع صفحة أخرى على الماسح الضوئي.</translation>
 <translation id="2872961005593481000">إيقاف التشغيل</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
+<translation id="3056720590588772262">نقطة النهاية</translation>
 <translation id="3069085583900247081">تعذّر إجراء اختبار</translation>
 <translation id="3083667275341675831">بيانات تشخيص الاتصال</translation>
 <translation id="3091839911843451378">تعذَّرت الطباعة - توقّفت الطابعة</translation>
 <translation id="3102119246920354026">ذاكرة التخزين المؤقت</translation>
 <translation id="3122464029669770682">وحدة المعالجة المركزية</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{هل تريد إزالة الصفحة؟}=1{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}two{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}few{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}many{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}other{هل تريد إزالة الصفحة {PAGE_NUMBER}؟}}</translation>
 <translation id="315116470104423982">بيانات الجوال</translation>
+<translation id="3156846309055100599">جارٍ مسح الصفحة <ph name="PAGE_NUMBER" /> ضوئيًا...</translation>
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>
+<translation id="3170673040743561620">يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
 <translation id="3226405216343213872">جارٍ البحث عن أجهزة مسح ضوئي</translation>
-<translation id="3228433892370472777">الاتصال التلقائي بالإنترنت</translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
@@ -121,14 +140,13 @@
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="3532980081107202182">يتبقّى حوالي <ph name="MIN_REMAINING" /> دقيقة.</translation>
-<translation id="3540383942695635079">‏عنوان MAC</translation>
+<translation id="3565064564551103223">‏عناوين IP المسموح بها</translation>
 <translation id="357889014807611375">‏شبكة Wi-Fi تفرض تكلفة استخدام</translation>
 <translation id="3582041541988388905">لم يتم اكتشاف اتصال <ph name="NETWORK_NAME" />.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
-<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{إعادة مسح الصفحة ضوئيًا}=1{إعادة مسح صفحة واحدة ({PAGE_NUMBER}) ضوئيًا}two{إعادة مسح صفحتين ({PAGE_NUMBER}) ضوئيًا}few{إعادة مسح {PAGE_NUMBER} صفحات ضوئيًا}many{إعادة مسح {PAGE_NUMBER} صفحة ضوئيًا}other{إعادة مسح {PAGE_NUMBER} صفحة ضوئيًا}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مراجعة)</translation>
 <translation id="3748026146096797577">غير متصل</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
@@ -146,15 +164,21 @@
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
 <translation id="4034824040120875894">الطابعة</translation>
+<translation id="404928562651467259">تحذير</translation>
+<translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
+<translation id="4111761024568264522">‏لوحة لمس USB</translation>
 <translation id="4131410914670010031">أبيض وأسود</translation>
 <translation id="4145784616224233563">‏الجدار الناري لبروتوكل HTTP</translation>
 <translation id="4155551848414053977">يُرجى التأكُّد من تشغيل الماسح الضوئي وتوفّره من خلال شبكتك أو الاتصال المباشر.</translation>
 <translation id="4170700058716978431">تعذّر إجراء الاختبار.</translation>
 <translation id="4176463684765177261">غير مفعّل</translation>
+<translation id="4213104098953699324">‏لوحة مفاتيح USB</translation>
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
+<translation id="4239069858505860023">‏شبكة GPRS</translation>
 <translation id="4244962993387259361">يجب توفّر مساحة قدرها 500 ميغابايت على الأقل لتشغيل اختبار الذاكرة. لإخلاء بعض المساحة، انتقِل إلى الإعدادات &gt; إدارة مساحة التخزين.</translation>
-<translation id="4289540628985791613">نظرة عامة</translation>
+<translation id="4258281355379922695">‏وقت استجابة بروتوكول HTTP</translation>
+<translation id="4271957103967917607">عرض بملء الشاشة</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
 <translation id="4378373042927530923">لم يتم التشغيل</translation>
@@ -163,7 +187,6 @@
 <translation id="4425149324548788773">ملفاتي</translation>
 <translation id="4429881212383817840">‏ستنتهي صلاحية تذكرة Kerberos قريبًا</translation>
 <translation id="4431821876790500265">عرض التقرير</translation>
-<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{إزالة الصفحة}=1{إزالة صفحة واحدة ({PAGE_NUMBER})}two{إزالة صفحتين ({PAGE_NUMBER})}few{إزالة {PAGE_NUMBER} صفحات}many{إزالة {PAGE_NUMBER} صفحة}other{إزالة {PAGE_NUMBER} صفحة}}</translation>
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
 <translation id="4453205916657964690">قناع الشبكة الفرعية</translation>
 <translation id="4454245904991689773">حفظ الملفات التي تم مسحها ضوئيًا في</translation>
@@ -174,12 +197,13 @@
 <translation id="4536864596629708641">‏إعدادات عنوان IP</translation>
 <translation id="4548483925627140043">لم يتم العثور على إشارة.</translation>
 <translation id="455835558791489930">بطارية بسعة <ph name="CHARGE_VALUE" /> ملّي أمبير في الساعة</translation>
+<translation id="4561801978359312462">‏تم فتح قفل شريحة SIM.</translation>
 <translation id="4562494484721939086">لا تتوفر أي خدمة.</translation>
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
+<translation id="463791356324567266">جارٍ إلغاء المسح الضوئي...</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
-<translation id="4652335678334611408">حفظ سجلّ الجلسة</translation>
 <translation id="4654549501020883054">التغيير يوميًا</translation>
 <translation id="4665014895760275686">جهة التصنيع</translation>
 <translation id="467510802200863975">كلمتا المرور غير متطابقتين.</translation>
@@ -196,6 +220,7 @@
 <translation id="4813345808229079766">اتصال</translation>
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4835901797422965222">ما مِن شبكات نشِطة.</translation>
+<translation id="484790837831576105">‏(نظام التشغيل Android) اختبار التحويل باستخدام نظام أسماء النطاقات (DNS)</translation>
 <translation id="4848429997038228357">قيد التشغيل</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> تتبقّى محاولة واحدة ({0}).}zero{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}two{<ph name="ERROR_MESSAGE" /> تتبقّى محاولتان ({0}).}few{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولات.}many{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}other{<ph name="ERROR_MESSAGE" /> تتبقّى {0} محاولة.}}</translation>
 <translation id="4880328057631981605">اسم نقطة الوصول</translation>
@@ -204,7 +229,6 @@
 <translation id="4891842000192098784">الإجهاد</translation>
 <translation id="4917385247580444890">قوية</translation>
 <translation id="4917889632206600977">توقّفت الطابعة - نفد الورق</translation>
-<translation id="491836528011451486">يُرجى وضع المستند على الماسح الضوئي واختيار "إعادة المسح الضوئي" لمسح صفحة <ph name="CURRENT_PAGE" /> واستبدالها.</translation>
 <translation id="4921665434385737356">تم شحن <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
 <translation id="4932733599132424254">التاريخ</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
@@ -213,7 +237,9 @@
 <translation id="4999333166442584738">إخفاء التقرير</translation>
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5049856988445523908">‏تم قفل شريحة SIM (باستخدام <ph name="LOCK_TYPE" />).</translation>
 <translation id="5050042263972837708">اسم المجموعة</translation>
+<translation id="5051044138948155788">هذه هي الصفحة الوحيدة وستؤدي إزالتها إلى نقلك إلى شاشة بدء المسح الضوئي.</translation>
 <translation id="5088172560898466307">اسم مضيف الخادم</translation>
 <translation id="5089810972385038852">الولاية</translation>
 <translation id="5142961317498132443">المصادقة</translation>
@@ -222,6 +248,7 @@
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
 يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5234764350956374838">تجاهل</translation>
 <translation id="5252456968953390977">تجوال</translation>
@@ -237,6 +264,7 @@
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">اختيار كلمة مرور جديدة الآن</translation>
 <translation id="5333530671332546086">حالة المدخل غير معروفة.</translation>
+<translation id="5346687412805619883">الشبكة المحلية</translation>
 <translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
 <translation id="5401938042319910061">تشغيل جميع سلاسل الإجراءات</translation>
 <translation id="5423849171846380976">نشطة</translation>
@@ -248,21 +276,28 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{تتبقّى محاولة واحدة ({0}).}zero{تتبقّى {0} محاولة.}two{تتبقّى محاولتان ({0}).}few{تتبقّى {0} محاولات.}many{تتبقّى {0} محاولة.}other{تتبقّى {0} محاولة.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">تعذّر إكمال عمليّة المسح الضوئي</translation>
+<translation id="5502931783115429516">‏Android لا يعمل.</translation>
+<translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578519639599103840">إعادة المسح الضوئي</translation>
 <translation id="5669267381087807207">تفعيل</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">العائلة</translation>
 <translation id="5701381305118179107">توسيط</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> من <ph name="TOTAL_PAGES" /></translation>
+<translation id="5715997777752246116">ما مِن خوادم أسماء تم ضبطها</translation>
 <translation id="5760715441271661976">حالة المدخل</translation>
+<translation id="5784136236926853061">‏وقت استجابة بروتوكول HTTP طويل.</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5849570051105887917">رمز مقدم الخدمة الرئيسي</translation>
+<translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5866840822086176774">قوية جدًا</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5916084858004523819">محظورة</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
+<translation id="594552776027197022">إنشاء مفتاحَي تشفير عشوائيين</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">وحدة تغذية المستندات في الماسح الضوئي فارغة. يُرجى إضافة مستندات وإعادة المحاولة.</translation>
 <translation id="6040143037577758943">إغلاق</translation>
@@ -272,15 +307,16 @@
 <translation id="6050189528197190982">تدرج الرمادي</translation>
 <translation id="6058625436358447366">يُرجى إدخال كلمتي المرور القديمة والجديدة لإنهاء الإجراء.</translation>
 <translation id="6061772781719867950">‏حدث خطأ في طلبات HTTPS.</translation>
+<translation id="6075872808778243331">‏(نظام التشغيل Android) اختبار وقت استجابة بروتوكول HTTP</translation>
 <translation id="6104112872696127344">تم إلغاء المسح الضوئي.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
 <translation id="6108689792487843350">يتعذّر الوصول إلى البوابة</translation>
 <translation id="6122191549521593678">متصل</translation>
-<translation id="6125438912510167220">سرعة الرابط</translation>
 <translation id="6137767437444130246">شهادة المستخدم</translation>
 <translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
 <translation id="6223752125779001553">لا يتوفّر ماسح ضوئي.</translation>
@@ -290,10 +326,12 @@
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
 <translation id="6325525973963619867">إخفاق</translation>
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
+<translation id="6379086450106841622">الشاشة التي تعمل باللمس</translation>
 <translation id="6388847657025262518">وحدة تغذية المستندات في الماسح الضوئي مليئة بالأوراق. يُرجى إزالة بعض الأوراق وإعادة المحاولة.</translation>
 <translation id="641081527798843608">مطابقة الموضوع</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">جيدة</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{هل تريد إعادة مسح الصفحة ضوئيًا؟}=1{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}two{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}few{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}many{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}other{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}}</translation>
 <translation id="6472207088655375767">‏كلمة المرور لمرة واحدة (OTP)</translation>
 <translation id="6480327114083866287">تتم الإدارة من خلال <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
@@ -302,6 +340,7 @@
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
 <translation id="65587193855025101">المسطَّح</translation>
 <translation id="6564646048574748301">تعذَّرت الطباعة - لا يمكن الوصول إلى الطابعة</translation>
+<translation id="6566314079205407217">مسح ضوئي لعدة صفحات</translation>
 <translation id="6574762126505704998">تعبئة</translation>
 <translation id="6575134580692778371">غير مهيأ</translation>
 <translation id="6596816719288285829">‏عنوان IP</translation>
@@ -311,19 +350,23 @@
 <translation id="6643016212128521049">محو</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6704062477274546131">دقة نظام أسماء النطاقات</translation>
+<translation id="6714650824879092633">تم إيقاف <ph name="NETWORK_NAME" /></translation>
 <translation id="6747215703636344499">توقّفت الطابعة - دُرج الإخراج ممتلئ</translation>
 <translation id="6756731097889387912">تعذّر إلغاء عملية المسح الضوئي.</translation>
 <translation id="6766275201586212568">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS).</translation>
 <translation id="6768237774506518020">‏إن متوسط تعطُّل التحويل باستخدام نظام أسماء النطاقات (DNS) عالٍ.</translation>
+<translation id="680983167891198932">المفتاح</translation>
 <translation id="6853312040151791195">معدّل تفريغ الشحن</translation>
 <translation id="6905724422583748843">الرجوع إلى <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">غطاء الماسح الضوئي مفتوح. يُرجى إغلاق الغطاء وإعادة المحاولة.</translation>
 <translation id="6911383237894364323">تعذَّر الاتصال بخوادم الوسائط.</translation>
 <translation id="6957231940976260713">اسم الخدمة</translation>
+<translation id="6961170852793647506">للبدء، يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
 <translation id="6982876849933694860">لإعداد اتصال جديد، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
+<translation id="7058278511608979688">إنهاء وحفظ</translation>
 <translation id="7059230779847288458">جارٍ الشحن. تتبقَّى <ph name="TIME_VALUE" /> حتى اكتمال الشحن.</translation>
 <translation id="708426984172631313">متوقّف</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
@@ -336,14 +379,16 @@
 <translation id="7177485034254901881">يدير <ph name="MANAGER" /> جهاز <ph name="DEVICE_TYPE" /> هذا. ويمكن للمشرفين إعداد هذا الجهاز عن بُعد.</translation>
 <translation id="7180611975245234373">إعادة التحميل</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
-<translation id="7257889006063274246">هل تريد فعلاً إزالة صفحة <ph name="CURRENT_PAGE" />؟</translation>
 <translation id="7271040990581020067">يتم حاليًا استخدام الماسح الضوئي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7287310195820267359">مجموعات الخلفيات</translation>
 <translation id="7302860742311162920">ICCID</translation>
+<translation id="7305884605064981971">‏شبكة EDGE</translation>
+<translation id="7319430975418800333">A3</translation>
 <translation id="7343649194310845056">أجهزة الشبكات</translation>
 <translation id="7359657277149375382">نوع الملف</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
@@ -351,9 +396,11 @@
 <translation id="7490813197707563893">‏عنوان MAC</translation>
 <translation id="7497215489070763236">‏شهادة CA للخادم</translation>
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
+<translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7561454561030345039">يتولّى مشرفك إدارة هذا الإجراء.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">‏شاشة USB تعمل باللمس</translation>
 <translation id="7595982850646262331">الوقت المتبقّي: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">مزيد من المعلومات في "مركز المساعدة"</translation>
 <translation id="763165478673169849">وقت آخر عملية إعادة ضبط</translation>
@@ -363,28 +410,36 @@
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">عدد مرات تفريغ البطارية وشحنها</translation>
+<translation id="7747039790905080783">المفتاح المشترَك مسبقًا</translation>
 <translation id="7762130827864645708">تم تغيير كلمة المرور بنجاح. يُرجى استخدام كلمة المرور الجديدة من الآن فصاعدًا.</translation>
 <translation id="7763470514545477072">مطابقة لاحقة النطاق</translation>
 <translation id="7769672763586021400">رقم تعريف النموذج</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7819857487979277519">‏PSK (WPA أو RSN)</translation>
 <translation id="7835501727204647447">‏تثبيت CloudReady</translation>
+<translation id="7846634333498149051">لوحة المفاتيح</translation>
+<translation id="7856267634822906833">شاشة تعمل باللمس وتتضمّن بلوتوث</translation>
 <translation id="7881066108824108340">نظام أسماء النطاقات</translation>
 <translation id="7882358943899516840">نوع مقدم الخدمة</translation>
+<translation id="7882501334836096755">مفتاح عام</translation>
+<translation id="7890841768028788197">شاشة تعمل باللمس مدمَجة</translation>
 <translation id="7895471513946376273">التعرّف على أدوات الرسم والتصميم</translation>
 <translation id="7936303884198020182">لم يتم العثور على خوادم الأسماء.</translation>
+<translation id="7943235353293548836">الفاصل الدائم لرسالة التحقّق من الاتصال</translation>
+<translation id="7955587717700691983">لوحة مفاتيح تتضمّن بلوتوث</translation>
 <translation id="7960831585769876809">درجة الحرارة</translation>
+<translation id="7978412674231730200">مفتاح خاص</translation>
 <translation id="7994702968232966508">‏طريقة EAP</translation>
 <translation id="8020238979854764615">حدث خطأ. يُرجى إعادة المحاولة عن طريق اختيار صور أخرى.</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
+<translation id="811820734797650957">‏(نظام التشغيل Android) اختبار إمكانية فحص اتصال البوابة</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° مئوية</translation>
 <translation id="8132480444149501833">طلب عدّادات حركة بيانات الشبكة</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
-<translation id="8214184102975786227">‏مسح صفحات متعدّدة ضوئيًا وتحويلها إلى ملف PDF واحد</translation>
 <translation id="8230672074305416752">تعذَّر فحص اتصال بوابة الشبكة التلقائية.</translation>
 <translation id="8246209727385807362">مشغل شبكة جوّال غير معروف</translation>
 <translation id="8286154143153872371">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الخلفية.</translation>
@@ -401,6 +456,8 @@
 <translation id="8395584934117017006">تُدير المؤسسة جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="8398927464629426868">معدّل شحن الجهاز أو تفريغ شحنه حاليًا</translation>
 <translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">لوحة مفاتيح مدمَجة</translation>
+<translation id="843568408673868420">اتصال الإنترنت</translation>
 <translation id="8461329675984532579">اسم مقدم الخدمة الرئيسي</translation>
 <translation id="8475690821716466388">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP PSK ضعيف.</translation>
 <translation id="8477551185774834963">وقت استجابة "نظام أسماء النطاقات" أعلى بقليل من الحدّ الأقصى المسموح به.</translation>
@@ -421,6 +478,7 @@
 <translation id="8726019395068607495">توقّفت الطابعة - باب الطابعة مفتوح</translation>
 <translation id="8730621377337864115">تم</translation>
 <translation id="8747900814994928677">تأكيد التغيير</translation>
+<translation id="8764414543112028321">WireGuard</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">التلقائي</translation>
 <translation id="8798441408945964110">اسم مقدم الخدمة</translation>
@@ -435,9 +493,13 @@
 <translation id="8918637186205009138">جهاز <ph name="DEVICE_TYPE" /> الخاص بـ <ph name="GIVEN_NAME" /></translation>
 <translation id="8919837981463578619">تعذَّرت الطباعة - دُرج الورق غير متوفّر</translation>
 <translation id="8928727111548978589">تعذَّرت الطباعة - نفد الورق</translation>
+<translation id="8930521118335213258">الند</translation>
 <translation id="8930622219860340959">شبكة لاسلكية</translation>
+<translation id="8936793075252196307">‏عنوان IP للعميل</translation>
+<translation id="8945750210906526975">لوحة لمس مدمَجة</translation>
 <translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
+<translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9039663905644212491">PEAP</translation>
@@ -448,9 +510,11 @@
 <translation id="910415269708673980">تحديث تذكرة من أجل <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">جارٍ المسح ضوئيًا للصفحة رقم <ph name="PAGE_NUMBER" />.</translation>
 <translation id="9111102763498581341">فتح القفل</translation>
+<translation id="9126720536733509015">‏حفظ صفحات متعدّدة في ملف PDF واحد</translation>
 <translation id="9137526406337347448">‏خدمات Google</translation>
 <translation id="9149391708638971077">تشغيل اختبار الذاكرة</translation>
 <translation id="9173638680043580060">يتبقى أقل من دقيقة.</translation>
+<translation id="917720651393141712">اختبار</translation>
 <translation id="9190063653747922532">‏L2TP/IPSec + المفتاح المشترك مسبقًا</translation>
 <translation id="9211490828691860325">جميع أجهزة سطح المكتب</translation>
 <translation id="939519157834106403">SSID</translation>

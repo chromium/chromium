@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Баалар төмөндөгөндө билдирме алып турасыз</translation>
 <translation id="1657719826150349398">Өтмөктү төмөн жылдыруу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк}other{<ph name="TABS_COUNT_MANY" /> өтмөк}}</translation>
+<translation id="2118649612461486615">Дүкөн жөнүндө маалымат</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> сайтында эми <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">Топтун аталышын өзгөртүү</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Топтогу тандалган <ph name="TABS_COUNT_ONE" /> өтмөк өчүрүлсүн.}other{Топтогу тандалган <ph name="TABS_COUNT_MANY" /> өтмөк өчүрүлсүн.}}</translation>
 <translation id="2479148705183875116">Жөндөөлөргө өтүү</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Топ</translation>
 <translation id="2613747923081026172">Топ түзүү</translation>
 <translation id="2662028055331606429">Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Сайтка баш багуу</translation>
 <translation id="2671423594960767771">Топту бөлүшүү</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> өтмөктөр тобу <ph name="NUMBER_OF_TABS" /> өтмөктө жайылып көрүнсүн.</translation>
 <translation id="2801787514987684416">Дүкөн тууралуу маалыматты көрөсүзбү?</translation>
 <translation id="2928243913527329289">Google | Бул дүкөн тууралуу</translation>
 <translation id="2977480621796371840">Топтон алып салуу</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> <ph name="PRICE_DROP" /> арзандайт</translation>
 <translation id="3194464645767632461">рейтинг</translation>
+<translation id="3267416433995960648">Эскертүүнү өчүрүү</translation>
 <translation id="3291470810748040983">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрөсүз</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Жабуу</translation>
 <translation id="6054741997831917303"><ph name="PREVIOUS_PRICE" /> турган бул нерсенин баасы <ph name="NEW_PRICE" /> болуп калды</translation>
 <translation id="6193448654517602979">Өтмөктөрдү тандоо</translation>
+<translation id="6228793724645064692">(дүкөндүн рейтинги)</translation>
+<translation id="6333260925957816943">Бул дүкөн тууралуу маалымат</translation>
 <translation id="6510648526783655549">Өтмөк тасмасын жабуу</translation>
+<translation id="6549021453810473782">Дүкөн жөнүндө маалыматты көрүү</translation>
 <translation id="6562820390860419811">Өтмөктү солго жылдыруу</translation>
 <translation id="6615455863669487791">Көрсөтчү гана</translation>
 <translation id="6840760312327750441">Өтмөктөрдү топко кошуу үчүн алардын бирин басып кармап туруңуз. Андан кийин аны башка өтмөккө сүйрөңүз.</translation>
 <translation id="6856809498882026482">Бир нече тандоосу бар режимди жашыруу</translation>
+<translation id="7129458170538955174">Бул дүкөн тууралуу маалымат жарым экранда ачылды</translation>
 <translation id="7151209024774799310">Топтогу өтмөктөрдү алып салуу</translation>
 <translation id="7204204600596740190">Бир нече тандоосу бар режим</translation>
+<translation id="7326879924029668159">Кайтаруу саясатын жана башкаларды окуп чыгыңыз</translation>
 <translation id="7352298686197644113">Ачык өтмөктөрүңүздө кайсы нерсе арзандаганын көрүңүз</translation>
 <translation id="753732157349120914">Өтмөк которуштургуч</translation>
 <translation id="7559245342362162951">Топтун өтмөктөрүн толук экрандагы торчодо көрсөтүү</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> сын-пикир}other{Рейтинг: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> сын-пикир}}</translation>
 <translation id="7885132941432959125">Өтмөктү оңго жылдыруу</translation>
 <translation id="7966321538264951561">Сунушту жабуу.</translation>
+<translation id="8029301326595421733">Бул дүкөн тууралуу маалымат толук экранда ачылды</translation>
 <translation id="814503310257431685">Баарын көрүү</translation>
 <translation id="8205266828577616993">Өтмөктү жогору жылдыруу</translation>
 <translation id="8304833501377495048">Өтмөк тасмасы экинчи көрсөтүлбөсүнбү?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Арзаныраак баа</translation>
 <translation id="8749939518995770034">Өтмөк тасмасы жабылды</translation>
 <translation id="8820741577754260431">Төмөндөгөн бааларды өтмөктөрдө көрөсүз</translation>
+<translation id="9090098097337832354">Бул дүкөн тууралуу маалымат жабык</translation>
 <translation id="9150694013019234766">Экраныңыздын ылдый жагында жайгашкан өтмөктөрдүн тобунан өтмөктөрүңүздү которуштуруңуз</translation>
 <translation id="9169594135889675189">Топко жаңы өтмөк кошуу</translation>
 <translation id="959682366969460160">Иреттеп алыңыз</translation>

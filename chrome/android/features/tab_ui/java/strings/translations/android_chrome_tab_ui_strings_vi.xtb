@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Nhận thông báo khi có mặt hàng giảm giá</translation>
 <translation id="1657719826150349398">Chuyển thẻ xuống dưới</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="2118649612461486615">Thông tin cửa hàng</translation>
+<translation id="2162620598375156287">Hiện có giá <ph name="CURRENT_PRICE" /> trên <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Chỉnh sửa tên nhóm</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Xóa <ph name="TABS_COUNT_ONE" /> thẻ đã chọn khỏi nhóm.}other{Xóa <ph name="TABS_COUNT_MANY" /> thẻ đã chọn khỏi nhóm.}}</translation>
 <translation id="2479148705183875116">Chuyển đến phần Cài đặt</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Nhóm</translation>
 <translation id="2613747923081026172">Tạo nhóm</translation>
 <translation id="2662028055331606429">Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Truy cập trang web</translation>
 <translation id="2671423594960767771">Chia sẻ nhóm</translation>
 <translation id="2759453070259087442">Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> có <ph name="NUMBER_OF_TABS" /> thẻ.</translation>
 <translation id="2801787514987684416">Xem thông tin cửa hàng?</translation>
 <translation id="2928243913527329289">Google | Giới thiệu về cửa hàng này</translation>
 <translation id="2977480621796371840">Xóa khỏi nhóm</translation>
+<translation id="3052964831964880138">Giảm giá <ph name="PRICE_DROP" /> đối với <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">điểm xếp hạng</translation>
+<translation id="3267416433995960648">Tắt thông báo</translation>
 <translation id="3291470810748040983">Bạn sẽ nhận được thông báo khi có ưu đãi giảm giá trong một thẻ đang mở</translation>
 <translation id="3328308545011660196">Đề xuất: <ph name="NUMBER_OF_TABS" /> thẻ có vẻ liên quan đến nhau. Bạn có muốn nhóm các thẻ đó lại không?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6054741997831917303">Mức giá của mặt hàng này gần đây đã giảm từ <ph name="PREVIOUS_PRICE" /> xuống còn <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Chọn các thẻ</translation>
+<translation id="6228793724645064692">(điểm xếp hạng cửa hàng)</translation>
+<translation id="6333260925957816943">Thông tin về cửa hàng này</translation>
 <translation id="6510648526783655549">Đóng dải thẻ</translation>
+<translation id="6549021453810473782">Xem thông tin cửa hàng</translation>
 <translation id="6562820390860419811">Chuyển thẻ sang trái</translation>
 <translation id="6615455863669487791">Hiển thị cho tôi</translation>
 <translation id="6840760312327750441">Để nhóm các thẻ, hãy chạm và giữ một thẻ. Sau đó, kéo thẻ đó lên một thẻ khác.</translation>
 <translation id="6856809498882026482">Ẩn chế độ chọn nhiều thẻ</translation>
+<translation id="7129458170538955174">Thông tin về cửa hàng này đã mở ở nửa dưới của màn hình</translation>
 <translation id="7151209024774799310">Xóa thẻ khỏi nhóm</translation>
 <translation id="7204204600596740190">Chế độ chọn nhiều thẻ</translation>
+<translation id="7326879924029668159">Xem chính sách trả lại hàng và các thông tin khác</translation>
 <translation id="7352298686197644113">Xem mặt hàng giảm giá trong các thẻ mà bạn đang mở</translation>
 <translation id="753732157349120914">Trình chuyển đổi thẻ</translation>
 <translation id="7559245342362162951">Hiển thị các thẻ của nhóm trong lưới toàn màn hình</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> bài đánh giá}other{Điểm xếp hạng: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> bài đánh giá}}</translation>
 <translation id="7885132941432959125">Chuyển thẻ sang phải</translation>
 <translation id="7966321538264951561">Đóng nội dung đề xuất.</translation>
+<translation id="8029301326595421733">Thông tin về cửa hàng này đã mở trên toàn màn hình</translation>
 <translation id="814503310257431685">Xem tất cả</translation>
 <translation id="8205266828577616993">Chuyển thẻ lên trên</translation>
 <translation id="8304833501377495048">Không hiện lại dải thẻ?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Giá thấp hơn</translation>
 <translation id="8749939518995770034">Đã đóng dải thẻ</translation>
 <translation id="8820741577754260431">Xem các mặt hàng giảm giá trong thẻ của bạn</translation>
+<translation id="9090098097337832354">Thông tin về cửa hàng này đã đóng</translation>
 <translation id="9150694013019234766">Chuyển đổi giữa các thẻ trong nhóm thẻ ở gần cuối màn hình</translation>
 <translation id="9169594135889675189">Thêm thẻ mới vào nhóm</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>

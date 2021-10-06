@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Noruegués</translation>
 <translation id="1433628812591023318">Para soltar ficheiros en Parallels Desktop, estes deben moverse a Ficheiros de Windows.</translation>
 <translation id="1435838927755162558">Compartir cartafol con Parallels Desktop</translation>
+<translation id="1439919885608649279">Persoa con flores</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1474339897586437869">Non se cargou "<ph name="FILENAME" />". Non hai suficiente espazo libre en Google Drive.</translation>
 <translation id="1482884275703521657">Finés</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Non se puido modificar o ficheiro.</translation>
 <translation id="1673103856845176271">Non se puido acceder ao ficheiro por motivos de seguranza.</translation>
 <translation id="169515659049020177">Maiús</translation>
+<translation id="1715848075824334077">En bicicleta</translation>
 <translation id="1722487484194605434">Comprimindo <ph name="NUMBER_OF_ITEMS" /> elementos…</translation>
 <translation id="1722687688096767818">Engadindo perfil…</translation>
 <translation id="1726100011689679555">Servidores de nomes</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Non hai vistas previas dispoñibles</translation>
 <translation id="1812302367230252929">Amhárico (transliteración)</translation>
 <translation id="1813278315230285598">Servizos</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Precaución:<ph name="END_BOLD" />  Estes ficheiros son temporais e é posible que se eliminen automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Pingüín</translation>
 <translation id="183183971458492120">Cargando información…</translation>
 <translation id="1834290891154666894">A entrada da coincidencia do nome alternativo do asunto non é válida</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Os nomes que comezan cun punto están reservados para o sistema. Selecciona outro nome.</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2084108471225856927">Axustes do dispositivo</translation>
+<translation id="2084809735218147718">Signo de agradecemento</translation>
 <translation id="2085470240340828803">Xa existe un ficheiro denominado "<ph name="FILENAME" />". Que queres facer?</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
 <translation id="2122305276694332719">Ao conectarte automaticamente a unha rede oculta, outros usuarios poden ver o teu dispositivo e parte da configuración de rede. Por iso esta opción non é recomendable.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Instalar con Linux</translation>
 <translation id="2225536596944493418">Seguro que queres eliminar <ph name="NUMBER_OF_ITEMS" /> elementos?</translation>
 <translation id="2230062665678605299">Non se puido crear o cartafol "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Persoa con café</translation>
 <translation id="2251368349685848079">Restaurar desde a papeleira</translation>
 <translation id="2282155092769082568">URL de configuración automática:</translation>
 <translation id="2288278176040912387">Tocadiscos</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Tamaño total dos ficheiros</translation>
 <translation id="2428749644083375155">Copiando <ph name="NUMBER_OF_ITEMS" /> elementos en <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2452444014801043526">Persoa con megáfono</translation>
 <translation id="2464079411014186876">Xeado</translation>
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Rede <ph name="NETWORK_TYPE" />, desactivada</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">Documento PDF</translation>
 <translation id="2888807692577297075">Non coincide ningún elemento con &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Información</translation>
-<translation id="2902312830803030883">Máis accións</translation>
 <translation id="2902734494705624966">Estadounidense ampliado</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estoniano</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">Francés (Canadá)</translation>
 <translation id="3003189754374775221">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="3003633581067744647">Cambiar á vista de miniaturas</translation>
+<translation id="3016566519832145558">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.</translation>
 <translation id="3029114385395636667">Para poder utilizar Documentos, Follas de cálculo e Presentacións sen conexión, activa Documentos de Google sen conexión.</translation>
 <translation id="303198083543495566">Xeografía</translation>
 <translation id="3047197340186497470">Chinés (Dayi)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3113153474486991170">Non se puido abrir <ph name="PATH" /> desde esta localización. Se queres que se abra, cópiao en Os meus ficheiros.</translation>
 <translation id="3113592018909187986">Quédache 1 intento. Non poderás utilizar esta rede ata que configures un PIN novo.</translation>
+<translation id="3124404833828281817">Persoa fantasiando</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">O PIN non é válido. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (almacenado en hardware)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Vai a drive.google.com...</translation>
 <translation id="3553048479571901246">Para poder abrir ficheiros coa aplicación <ph name="APP_NAME" />, debes copialos no cartafol de ficheiros de Windows.</translation>
 <translation id="3556731189587832921">Inglés (EUA) con teclado internacional (PC)</translation>
+<translation id="3567221313191587603">Selecciona un ficheiro e activa <ph name="OFFLINE_CHECKBOX_NAME" /> para poder acceder aos teus ficheiros sen conexión.</translation>
 <translation id="357479282490346887">Lituano</translation>
 <translation id="3592251141500063301">Non se puido facer que <ph name="FILE_NAME" /> estivese dispoñible sen conexión</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Instalando perfil para móbiles, rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Checo con teclado QWERTY</translation>
 <translation id="4656293982926141856">Este ordenador</translation>
+<translation id="4656777537938206294">Activa o acceso sen conexión a estes ficheiros</translation>
+<translation id="4658782175094886150">Persoa na neve</translation>
 <translation id="4669606053856530811">Os membros de "<ph name="SOURCE_NAME" />" perderán o acceso a menos que estes elementos se compartan con eles.</translation>
 <translation id="4690246192099372265">Sueco</translation>
 <translation id="4693155481716051732">Suxi</translation>
@@ -496,6 +504,7 @@
 <translation id="5330145655348521461">Estes ficheiros abríronse nun ordenador diferente. Diríxete a <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) para velo.</translation>
 <translation id="5330512191124428349">Obter información</translation>
 <translation id="5335458522276292100">Facendo unha copia de seguranza de <ph name="FILE_COUNT" /> en <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Persoa con gatos</translation>
 <translation id="5358764674931277">Fotogramas por segundo</translation>
 <translation id="5368191757080475556">Compartir cartafol con Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -551,6 +560,8 @@
 <translation id="5833610766403489739">Este ficheiro desviouse a algún lugar. Comproba a configuración da túa localización de descarga e téntao de novo.</translation>
 <translation id="5838451609423551646">Quitáronse todas as entradas da selección.</translation>
 <translation id="5838825566232597749">Internacional Workman estadounidense</translation>
+<translation id="5845721951356578987">Membro do persoal de enfermaría</translation>
+<translation id="5861477046012235702">Persoa xogadora</translation>
 <translation id="5864471791310927901">Produciuse un erro na busca de DHCP</translation>
 <translation id="5896749729057314184">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, desactivada, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="5911887972742538906">Produciuse un erro durante a instalación da aplicación Linux.</translation>
@@ -579,6 +590,7 @@
 <translation id="6146563240635539929">Vídeos</translation>
 <translation id="6150853954427645995">Para gardar este ficheiro para o uso sen conexión, accede en liña, fai clic co botón dereito no ficheiro e selecciona a opción <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Bolboretas</translation>
+<translation id="6165508094623778733">Máis información</translation>
 <translation id="6170470584681422115">Sándwich</translation>
 <translation id="6187719147498869044">Húngaro</translation>
 <translation id="6189412234224385711">Abrir con <ph name="EXTENSION_NAME" /></translation>
@@ -649,6 +661,7 @@
 <translation id="6861394552169064235">Persa</translation>
 <translation id="6862635236584086457">Efectúase unha copia de seguranza automática de todos os ficheiros gardados neste cartafol</translation>
 <translation id="6864328437977279120">Sánscrito</translation>
+<translation id="6874758081814639712">Persoa practicando taichí</translation>
 <translation id="6876155724392614295">Ciclismo</translation>
 <translation id="6878261347041253038">Teclado devanagari (fonético)</translation>
 <translation id="6885780034956018177">Caracol</translation>
@@ -879,6 +892,7 @@
 <translation id="8743164338060742337">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, conectar</translation>
 <translation id="8750438273876807512">Para poder acceder rapidamente aos ficheiros dun estante, mantén premido un ficheiro, toca <ph name="ICON" /> e selecciona Fixar no estante.</translation>
 <translation id="8787254343425541995">Permitir servidores proxy para redes compartidas</translation>
+<translation id="8790981080411996443">Persoa regando plantas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8802459921616481935">Mover á papeleira</translation>
 <translation id="8808686172382650546">Gato</translation>
@@ -891,6 +905,7 @@
 <translation id="8874184842967597500">Non conectada</translation>
 <translation id="8900820606136623064">Húngaro</translation>
 <translation id="8903931173357132290">Persoa graduada</translation>
+<translation id="8912078710089354287">Can movendo o rabo</translation>
 <translation id="8919081441417203123">Danés</translation>
 <translation id="8965697826696209160">Non hai espazo suficiente.</translation>
 <translation id="8970501467542182729">Este ficheiro está deseñado para un ordenador que utilice o software de Macintosh. Non é compatible co teu dispositivo que executa Chrome OS. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
@@ -917,6 +932,7 @@
 <translation id="9144340019284012223">Catalán</translation>
 <translation id="914873105831852105">O PIN non é válido. Quédache 1 intento.</translation>
 <translation id="9153934054460603056">Gardar identidade e contrasinal</translation>
+<translation id="9171921933192916600">Papalibros</translation>
 <translation id="9172592259078059678">Guxarati (transliteración)</translation>
 <translation id="9173120999827300720">Inglés (EUA) con teclado internacional</translation>
 <translation id="9174050671906956834">Os elementos da papeleira elimínanse para sempre ao cabo de 30 días.</translation>
@@ -929,6 +945,7 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="947144732524271678">Seleccionouse un intervalo de <ph name="ENTRY_COUNT" /> entradas desde <ph name="FROM_ENTRY_NAME" /> ata <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">Inglés (Suráfrica)</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="988685240266037636">Xa existe un ficheiro co nome "<ph name="FILE_NAME" />". Queres substituílo?</translation>
 <translation id="992401651319295351">Quédanche <ph name="RETRIES" /> intentos. Non poderás utilizar esta rede ata que configures un PIN novo.</translation>

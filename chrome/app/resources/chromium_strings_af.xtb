@@ -36,6 +36,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2343156876103232566">Meld op albei toestelle by Chromium aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
 <translation id="2347108572062610441">Hierdie uitbreiding het verander watter bladsy gewys word wanneer jy Chromium begin.</translation>
 <translation id="2396765026452590966">Die uitbreiding "<ph name="EXTENSION_NAME" />" het verander watter bladsy gewys word wanneer jy Chromium begin.</translation>
+<translation id="2401032172288869980">Chromium het kamera- en mikrofoontoestemming vir hierdie werf nodig</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
 <translation id="2535480412977113886">Chromium-bedryfstelsel kon nie jou data sinkroniseer nie, omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
@@ -153,6 +154,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="5820394555380036790">Chromium-bedryfstelsel</translation>
 <translation id="5854740544000584380">Chromium-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> soos die geval ook is met <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Welkom by Chromium</translation>
+<translation id="5883558403894052917">Chromium het bevind dat hierdie items wanware bevat:</translation>
 <translation id="5895138241574237353">Herbegin</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Netwerkaanmelding</translation>
 <translation id="5987687638152509985">Dateer Chromium op om sinkronisering te begin</translation>
@@ -170,6 +172,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6183079672144801177">Maak seker dat jy by Chromium aangemeld is op jou <ph name="TARGET_DEVICE_NAME" /> en probeer dan weer stuur.</translation>
 <translation id="6212496753309875659">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Chromium. As die sagteware nie werk nie, deïnstalleer Chromium en probeer weer.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sal nou herbegin}=1{Chromium sal oor 1 sekonde herbegin}other{Chromium sal oor # sekondes herbegin}}</translation>
+<translation id="6241367896540709610">Chromium het bergingtoegangtoestemming nodig om lêers af te laai</translation>
 <translation id="6248213926982192922">Maak Chromium die verstekblaaier</translation>
 <translation id="6266342355635466082">Chromium kan nie nagaan of daar opdaterings is nie. Probeer om jou internetverbinding na te gaan.</translation>
 <translation id="6268381023930128611">Meld by Chromium af?</translation>
@@ -190,7 +193,9 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="6570579332384693436">Chromium stuur die teks wat jy in teksvelde intik na Google toe om spelfoute reg te maak</translation>
 <translation id="6598877126913850652">Gaan na Chromium se kennisgewinginstellings</translation>
 <translation id="6613594504749178791">Jou veranderinge sal in werking tree wanneer jy Chromium weer herbegin.</translation>
+<translation id="665732753414869868">Chromium het kameratoestemming nodig om 'n 3D-kaart van jou omgewing te skep</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
+<translation id="6709350901466051922">Chromium het mikrofoontoestemming vir hierdie werf nodig</translation>
 <translation id="6717134281241384636">Jou profiel kan nie gebruik word nie want dit is van 'n nuwer weergawe van Chromium af.
 
 Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielgids of gebruik 'n nuwer weergawe van Chromium.</translation>
@@ -202,6 +207,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6847869444787758381">Chromium sal jou laat weet as jou wagwoorde gekompromitteer is</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (na Chromium gekopieer)</translation>
+<translation id="6873893289264747459">Chromium het bevind dat "<ph name="EXTENSION_NAME" />" wanware bevat</translation>
 <translation id="6893813176749746474">Chromium is opgedateer, maar jy het dit vir minstens 30 dae nie gebruik nie.</translation>
 <translation id="691026815377248078">Chromium het Bluetooth-toegang nodig om voort te gaan met 
  saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -210,6 +216,7 @@ Sommige kenmerke sal dalk nie beskikbaar wees nie. Spesifiseer 'n ander profielg
 <translation id="6990124437352146030">Chromium het toestemming nodig om toegang te kry tot jou mikrofoon vir hierdie werf</translation>
 <translation id="705851970750939768">Dateer Chromium op</translation>
 <translation id="7067091210845072982">As 'n prent nie 'n nuttige beskrywing het nie, sal Chromium probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep.</translation>
+<translation id="718435575166326686">Chromium het kameratoestemming vir hierdie werf nodig</translation>
 <translation id="7196312274710523067">Kon nie Chromium begin nie. Probeer weer.</translation>
 <translation id="7197677400338048821">Chromium kan nie jou wagwoorde nagaan nie. Probeer weer ná 24 uur.</translation>
 <translation id="7223968959479464213">Taakbestuurder – Chromium</translation>
@@ -233,10 +240,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
       Chromium-bedryfstelselinstellings<ph name="LINK_END" /> kyk</translation>
 <translation id="761356813943268536">Chromium gebruik tans jou kamera en mikrofoon.</translation>
 <translation id="7617377681829253106">Chromium het pas beter geword</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Maak asseblief seker dat jy 'n bygewerkte rugsteun van jou data het voordat ons begin. As jy Chromium-bedryfstelsel installeer, sal alle data op jou hardeskryf vervang word.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google is nie vir enige dataverlies verantwoordelik nie en bied geen waarborg dat Chromium-bedryfstelsel op ongesertifiseerde modelle sal werk nie. Besoek asseblief [TBD] om meer oor gesertifiseerde modelle te wete te kom.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Kom meer te wete oor die installasie van Chromium-bedryfstelsel en die uitvee van data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />As jy gereed is om voort te gaan, kan jy "Installeer Chromium-bedryfstelsel" klik en ons sal jou met 'n paar maklike stappe deur installasie begelei. Jy sal nog 'n geleentheid hê om te bevestig voordat ons enige veranderinge aan jou rekenaar maak.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium is nie jou verstekblaaier nie</translation>
 <translation id="7689606757190482937">Sinkroniseer en personaliseer Chromium op al jou toestelle</translation>
 <translation id="7729447699958282447">Chromium kon nie jou data sinkroniseer nie, omdat Sinkronisering nie vir jou domein beskikbaar is nie.</translation>
@@ -251,6 +254,7 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="7975919845073681630">Dit is 'n sekondêre installering van Chromium en kan nie jou verstekblaaier gemaak word nie.</translation>
 <translation id="8013436988911883588">Sodra Chromium toegang het, sal webwerwe jou kan vra vir toegang.</translation>
 <translation id="8045118833343856403">Die volgende rekeninge is nie by enige Chromium-profiele aangemeld nie. As jy 'n rekening in 'n ander profiel wil gebruik, moet jy daardie profiel eers verwyder.</translation>
+<translation id="8105840573057009683">Chromium het liggingtoestemming vir hierdie werf nodig</translation>
 <translation id="81770708095080097">Hierdie lêer is gevaarlik en daarom het Chromium dit geblokkeer.</translation>
 <translation id="8248265253516264921">As 'n prent nie 'n nuttige beskrywing het nie, sal Chromium probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep. Jy kan dit enige tyd in instellings afskakel.</translation>
 <translation id="8266560134891435528">Chromium kan nie jou wagwoorde nagaan nie, want jy is nie aangemeld nie</translation>

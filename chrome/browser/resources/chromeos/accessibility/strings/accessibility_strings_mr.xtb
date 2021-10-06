@@ -66,6 +66,7 @@
 <translation id="133801305381959373">पुढील संपादित करता येण्यासारखा मजकूर भाग नाही</translation>
 <translation id="1342835525016946179">लेख</translation>
 <translation id="1346059596910821859">टीप</translation>
+<translation id="1354356357730355833">कॉपी करा</translation>
 <translation id="135978014023467274">तुम्हाला ChromeVox 63 वर अपडेट केले गेले आहे!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> राउटिंग की मधील आयटम क्लिक करा</translation>
 <translation id="1377925789329510816">हे अंतिम शीर्षक आहे. पहिल्या शीर्षकावर वेष्टन घालण्‍यासाठी Search+H दाबा किंवा या पेजवरील दुसर्‍या शीर्षकावर जाण्यासाठी Search+Shift+H दाबा.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">रिफ्रेश करा</translation>
 <translation id="2675533876313964202">मळकट हिरवा</translation>
 <translation id="2684412629217766642">ChromeVox ट्यूटोरियल बंद करा</translation>
+<translation id="2692503699962701720">घटक प्रकार आणि फॉरमॅट केलेला मजकूर बोलताना पिच बदला</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">हे मजकुरात रूपांतर करण्यासाठी पात्र आहे</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{उघडा कंस}other{# उघडे कंस}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">पोट्रेट</translation>
 <translation id="3286390186030710347">स्‍लायडर</translation>
 <translation id="3300348286427369683">रिच टेक्स्ट सपोर्ट. ChromeVox आता जंप कमांड, ब्रेल कर्सर रूटिंग, निवड आणि बर्‍याच गोष्टींसह रिच टेक्स्ट भागांना सपोर्ट करते.</translation>
+<translation id="3300733168898541351">पहिल्यासारखे करा</translation>
 <translation id="3307886118343381874">सारणीच्या शेवटी जा</translation>
 <translation id="3312997241656799641">पुढील भेट दिलेली लिंक</translation>
 <translation id="3313245066383501820">ChromeVox सुधारणा की</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">फॉर्म सूची दर्शवा</translation>
 <translation id="3414400929511680526">फिकट निळा</translation>
 <translation id="3418936350470374046">खाली सेल नाही</translation>
+<translation id="3419269701801640163">पेस्ट करा</translation>
 <translation id="3435494200763325275">टॅब नेव्हिगेशन सुरू आहे</translation>
 <translation id="344800400831402066">लालसर नारिंगी</translation>
 <translation id="3457000393508828486">अंशत: दाबलेले</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">खाली स्क्रोल करा</translation>
 <translation id="4035381225449278841">वसंत ऋतू</translation>
+<translation id="4038098586530338813">पुन्हा करा</translation>
 <translation id="4047216625641135770">चिन्ह</translation>
 <translation id="4047910800766704982">तुमचे डिव्हाइस ऑनलाइन असताना तुम्ही नैसर्गिक, मानवासारखा आवाज वापरू शकता. प्रक्रिया करण्यासाठी मजकूर Google कडे पाठवला जाईल. तुम्ही हे सेटिंग्ज मध्ये कधीही बंद करू शकता.</translation>
 <translation id="4053520724192563562">लिंबू</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">गडद राखाडी निळा</translation>
 <translation id="5140016802771803559">हलका जांभळा</translation>
 <translation id="5142101052131610456">सर्व धडे</translation>
+<translation id="5152605892605507188">उजवीकडे हलवा</translation>
 <translation id="5158275234811857234">कव्हर</translation>
 <translation id="516076699907426116">पुढे सुरू ठेवण्यासाठी, पुढील धडा बटण शोधण्यासाठी स्‍पर्शाने एक्‍सप्‍लोर करा. त्यानंतर पुढे सुरू ठेवण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="5170206230005240598">ब्रेल कॅप्शन सुरू केली</translation>
 <translation id="5183440668879371625">ब्रेल मागील रेखा</translation>
 <translation id="5189244881767082992">रेखा</translation>
+<translation id="5234747236692380506"><ph name="TEXT" /> टाइप करा</translation>
 <translation id="5263034204789987535">चमकणारा पिवळा</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">बंद करा</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">मथळा 4</translation>
 <translation id="6150023170003443621">पिवळसर हिरवा</translation>
 <translation id="6158882249329863701">पंक्ती <ph name="TABLECELLROWINDEX" /> स्तंभ <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">डावीकडे हलवा</translation>
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6166362019018438352">ब्रेल मथळे बंद केले</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">हटवला</translation>
 <translation id="6910969481785184048">सुरू करा, बंद करा आणि थांबा</translation>
 <translation id="6919104639734799681">सारणी सू‍ची दर्शवा</translation>
+<translation id="692135145298539227">हटवा</translation>
+<translation id="6935674530832500465">खाली हलवा</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="6949846980769640811">हलका निळसर</translation>
 <translation id="6951482098621102657">पुढील पातळी पाच शीर्षक नाही</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">डिरेक्टरी</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">नैसर्गिक आवाज वापरायचा का?</translation>
-<translation id="7484805699335881122">घटक प्रकार आणि कोट केलेला, हटवलेला, ठळक केलेला, कंसात लिहिलेला किंवा कॅपिटलाइझ केलेला मजकूर बोलताना पिच बदला.</translation>
 <translation id="7491962110804786152">टॅब</translation>
 <translation id="7492497529767769458">पुढील विभागात जा. उदाहरणांमध्ये स्टेटस ट्रे आणि लाँचरचा समावेश आहे.</translation>
 <translation id="7505149250476994901">अक्षरापूर्वी "कॅप" म्हणा</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">वर सेल नाही</translation>
 <translation id="8138880386467279117">स्पर्श करा</translation>
 <translation id="8146613869421949343">त्यानंतर, तुम्ही सर्च कीबद्दल जाणून घ्याल. सर्च की ChromeVox कमांडच्या इतर कीसह एकत्रितपणे वापरली जाते. सर्च की डाव्या शिफ्ट कीच्या अगदी वरती आहे. पुढे सुरू ठेवण्यासाठी सर्च की दाबा.</translation>
+<translation id="8158033275290782295">सर्व निवडा</translation>
 <translation id="816818801578874684">हे पहिले शीर्षक आहे. पुढील शीर्षकावर जाण्यासाठी Search + H दाबा.</translation>
 <translation id="8173092779156526980">चार बोटांनी डावीकडे स्वाइप करा</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{अंडरस्कोअर}other{# अंडरस्कोअर}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">परिचय</translation>
 <translation id="827266600368092403">निवड सुरू करा किंवा संपवा</translation>
 <translation id="827422111966801947">नीळ</translation>
+<translation id="827496561804786391">वर हलवा</translation>
 <translation id="8276439074553447000">मागील फोकस करण्यायोग्य आयटमवर जा</translation>
 <translation id="8279039817939141096">त्यांच्या फंक्शनविषयी जाणून घेण्यासाठी QWERTY की, रिफ्रेश करण्यायोग्य ब्रेल की किंवा टच जेश्चर दाबा. control सह w, space सह Z दाबा, दोन बोटांनी डावीकडे स्वाइप करा किंवा बाहेर पडण्यासाठी Escape दाबा.</translation>
 <translation id="8283603667300770666">पुढील फॉर्म फील्‍ड</translation>
 <translation id="8310185481635255431">पुढील लिंक नाही</translation>
 <translation id="831207808878314375">परिभाषा</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">सर्वांची निवड रद्द करा</translation>
 <translation id="8316881042119029234">हलका पिवळा</translation>
 <translation id="8324974933005349667">टेक्‍स्‍ट टू स्‍पीच सेटिंग्ज पर्सनलाइझ करा</translation>
 <translation id="8326783648485765113">गावठी हिरवा</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">फिकट निळसर हिरवा</translation>
 <translation id="9080299285199342830">थेट शेवटावर जा</translation>
 <translation id="9089864840575085222">टायपिंग प्रतिध्वनी आवर्तन</translation>
+<translation id="9099429023611373837">कट करा</translation>
 <translation id="9108370397979208512">गणित</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{टक्के}other{# टक्के चिन्हे}}</translation>

@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Aflaai is onderbreek</translation>
 <translation id="1415402041810619267">URL is afgekap</translation>
 <translation id="1446450296470737166">Laat vol MIDI-toestelbeheer toe</translation>
-<translation id="1509960214886564027">Kenmerke op baie werwe kan breek</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1647582022260550163">Is jy seker jy wil toestemmings terugstel en webkoekies en werfdata uitvee?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Toegelaat, buiten van derde party af</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
 <translation id="1994173015038366702">Werf-URL</translation>
+<translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
 <translation id="2025115093177348061">Aangevulde realiteit</translation>
 <translation id="2030769033451695672">Tik om na <ph name="URL_OF_THE_CURRENT_TAB" /> terug te keer</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Laat webkoekies vir 'n spesifieke werf toe.</translation>
 <translation id="4046123991198612571">Volgende snit</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>
+<translation id="4176463684765177261">Gedeaktiveer</translation>
 <translation id="4200726100658658164">Maak ligginginstellings oop</translation>
 <translation id="4226663524361240545">Kennisgewings kan die toestel laat vibreer</translation>
 <translation id="4259722352634471385">Navigasie is geblokkeer: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Onderbreek video</translation>
 <translation id="5887687176710214216">Gister laas besoek</translation>
 <translation id="5916664084637901428">Aan</translation>
+<translation id="59174027418879706">Geaktiveer</translation>
 <translation id="5922853908706496913">Deel tans jou skerm</translation>
 <translation id="5939518447894949180">Stel terug</translation>
 <translation id="5975083100439434680">Zoem uit</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Blokkeer derdeparty-webkoekies</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />-opsies</translation>
 <translation id="6231752747840485235">Deïnstalleer "<ph name="APP_NAME" />"?</translation>
+<translation id="6233545266937675277">Versoek die werkskermaansig van werwe</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> word geblokkeer.</translation>
 <translation id="6270391203985052864">Werwe kan vra om kennisgewings te stuur</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, en nog <ph name="NUM_MORE" /> word geblokkeer}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, en nog <ph name="NUM_MORE" /> word geblokkeer}}</translation>
 <translation id="6554732001434021288">Laas <ph name="NUM_DAYS" /> dae gelede besoek</translation>
 <translation id="6561560012278703671">Gebruik stiller boodskappe (keer dat kennisgewingporboodskappe jou onderbreek)</translation>
+<translation id="6593061639179217415">Werkskermwerf</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="662080504995468778">Bly</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Kanselleer keuse</translation>
 <translation id="7846621471902887024">Jy sal op alle werwe afgemeld word.</translation>
 <translation id="7882806643839505685">Laat klank toe vir 'n spesifieke werf.</translation>
+<translation id="7940722705963108451">Herinner my</translation>
 <translation id="7986741934819883144">Kies 'n kontak</translation>
-<translation id="7993619969781047893">Kenmerke op sommige werwe kan breek</translation>
 <translation id="7999064672810608036">Is jy seker dat jy alle plaaslike data, insluitend webkoekies, wil uitvee en alle toestemmings vir hierdie webwerf wil terugstel?</translation>
 <translation id="8007176423574883786">Afgeskakel vir hierdie toestel</translation>
 <translation id="802154636333426148">Kon nie aflaai nie</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Gedemp</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8131740175452115882">Bevestig</translation>
+<translation id="8154912474061769055">Kenmerke op baie werwe sal dalk nie werk nie</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> word toegelaat</translation>
 <translation id="8200772114523450471">Hervat</translation>
 <translation id="8206354486702514201">Hierdie instelling word deur jou administrateur afgedwing.</translation>
 <translation id="8211406090763984747">Verbinding is veilig</translation>
 <translation id="8249310407154411074">Skuif na bo</translation>
 <translation id="8261506727792406068">Vee uit</translation>
+<translation id="8267092878336850213">Versoek die mobiele aansig van werwe</translation>
 <translation id="8300705686683892304">Bestuur deur program</translation>
 <translation id="8324158725704657629">Moenie weer vra nie</translation>
 <translation id="8372893542064058268">Laat agtergrondsinkronisering vir 'n spesifieke werf toe.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Vee invoer uit</translation>
 <translation id="868929229000858085">Deursoek jou kontakte</translation>
 <translation id="8702612070107455751">Enige vanlyn data sal uitgevee word.</translation>
+<translation id="8712637175834984815">Het dit</translation>
 <translation id="8719283222052720129">Skakel toestemming vir <ph name="APP_NAME" /> in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8730621377337864115">Gedoen</translation>

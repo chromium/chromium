@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">נורווגית</translation>
 <translation id="1433628812591023318">‏כדי לשחרר קובץ ב-Parallels Desktop, צריך להעביר אותו לקובצי Windows.</translation>
 <translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
+<translation id="1439919885608649279">אדם עם פרחים</translation>
 <translation id="1471718551822868769">סלובקית</translation>
 <translation id="1474339897586437869">‏הקובץ "<ph name="FILENAME" />" לא הועלה. אין לך מספיק שטח פנוי ב-Google Drive.</translation>
 <translation id="1482884275703521657">פינית</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">הקובץ לא ניתן לשינוי.</translation>
 <translation id="1673103856845176271">לא היתה אפשרות לגשת לקובץ מסיבות אבטחה.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">רוכב אופניים</translation>
 <translation id="1722487484194605434">מתבצע כיווץ של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="1722687688096767818">בתהליך הוספת פרופיל…</translation>
 <translation id="1726100011689679555">שרתי שמות</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">אין תצוגה מקדימה זמינה</translation>
 <translation id="1812302367230252929">תעתיק אמהרית</translation>
 <translation id="1813278315230285598">שירותים</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />זהירות:<ph name="END_BOLD" /> קבצים אלה הם זמניים והם עלולים להימחק באופן אוטומטי כדי לפנות נפח דיסק. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">פינגווין</translation>
 <translation id="183183971458492120">טעינת מידע…</translation>
 <translation id="1834290891154666894">הרשומה של התאמת שמות הנושאים החלופיים לא תקינה</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">שמות המתחילים בנקודה שמורים עבור המערכת. יש לבחור שם אחר.</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2084108471225856927">הגדרות המכשיר</translation>
+<translation id="2084809735218147718">חתימת תודה רבה</translation>
 <translation id="2085470240340828803">כבר קיים קובץ בשם "<ph name="FILENAME" />". מה ברצונך לעשות?</translation>
 <translation id="2088690981887365033">‏רשת VPN</translation>
 <translation id="2122305276694332719">חיבור אוטומטי לרשת מוסתרת מאפשר לאחרים לראות את המכשיר שלך וחלק מהגדרות הרשת. האפשרות הזו לא מומלצת.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">‏התקנה עם Linux</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> פריטים יימחקו. להמשיך?</translation>
 <translation id="2230062665678605299">לא ניתן ליצור את התיקייה "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">אדם עם קפה</translation>
 <translation id="2251368349685848079">שחזור מהאשפה</translation>
 <translation id="2282155092769082568">כתובת אתר של תצורה אוטומטית:</translation>
 <translation id="2288278176040912387">פטיפון</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">גודל הקובץ הכולל</translation>
 <translation id="2428749644083375155">העתקת <ph name="NUMBER_OF_ITEMS" /> פריטים אל <ph name="FOLDER_NAME" /> מתבצעת</translation>
 <translation id="2448312741937722512">סוג</translation>
+<translation id="2452444014801043526">אדם עם מגפון</translation>
 <translation id="2464079411014186876">גלידה</translation>
 <translation id="2464089476039395325">‏שרת proxy של HTTP</translation>
 <translation id="2467267713099745100">רשת <ph name="NETWORK_TYPE" />, מושבתת</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">‏מסמך PDF</translation>
 <translation id="2888807692577297075">‏אין פריטים התואמים ל-&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">מידע</translation>
-<translation id="2902312830803030883">פעולות נוספות</translation>
 <translation id="2902734494705624966">ארה"ב - מורחבת</translation>
 <translation id="290843123675549676">מראטית</translation>
 <translation id="2923240520113693977">אסטונית</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">צרפתית (קנדה)</translation>
 <translation id="3003189754374775221">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="NETWORK_PROVIDER_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, התחברות</translation>
 <translation id="3003633581067744647">מעבר לתצוגה של תמונות ממוזערות</translation>
+<translation id="3016566519832145558">זהירות: הקבצים האלה זמניים, ויכול להיות שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.</translation>
 <translation id="3029114385395636667">‏יש להפעיל את Google Docs Offline כדי ש-Docs,‏ Sheets ו-Slides יהיו זמינים במצב אופליין.</translation>
 <translation id="303198083543495566">גיאוגרפיה</translation>
 <translation id="3047197340186497470">‏סינית Dayi</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">‏מארח SOCKS</translation>
 <translation id="3113153474486991170">לא ניתן היה לפתוח את "<ph name="PATH" />" מהמיקום הזה. יש להעתיק כדי לפתוח את "הקבצים שלי".</translation>
 <translation id="3113592018909187986">נותר לך עוד ניסיון אחד. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>
+<translation id="3124404833828281817">אדם חולם בהקיץ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">קוד האימות לא חוקי. נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (בגיבוי חומרה)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">‏מעבר אל drive.google.com...</translation>
 <translation id="3553048479571901246">‏כדי שניתן יהיה לפתוח קבצים באמצעות <ph name="APP_NAME" />, צריך להעתיק אותם לתיקיית קובצי Windows.</translation>
 <translation id="3556731189587832921">‏מקלדת Workman בינלאומית באנגלית (ארה"ב) ל-PC</translation>
+<translation id="3567221313191587603">בוחרים בקובץ ומפעילים את ההגדרה <ph name="OFFLINE_CHECKBOX_NAME" /> כדי לקבל גישה אופליין לקבצים שלך.</translation>
 <translation id="357479282490346887">ליטאית</translation>
 <translation id="3592251141500063301">לא ניתן היה להגדיר את הקובץ <ph name="FILE_NAME" /> כזמין אופליין</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">התקנה של פרופיל נייד, רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">‏צ'כית עם מקלדת Qwerty</translation>
 <translation id="4656293982926141856">במחשב הזה</translation>
+<translation id="4656777537938206294">הגדרת גישה אופליין לקבצים</translation>
+<translation id="4658782175094886150">אדם בשלג</translation>
 <translation id="4669606053856530811">אם הפריטים האלה לא ישותפו עם החברים באחסון השיתופי '<ph name="SOURCE_NAME" />', הם יאבדו את הגישה אליהם.</translation>
 <translation id="4690246192099372265">שוודית</translation>
 <translation id="4693155481716051732">סושי</translation>
@@ -498,6 +506,7 @@
 <translation id="5330145655348521461">הקבצים האלה נפתחו בשולחן עבודה אחר. יש לעבור אל <ph name="USER_NAME" />‏ (<ph name="MAIL_ADDRESS" />) כדי להציג אותם.</translation>
 <translation id="5330512191124428349">פרטי קובץ</translation>
 <translation id="5335458522276292100">‏גיבוי <ph name="FILE_COUNT" /> ב-<ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> מתבצע</translation>
+<translation id="535792325654997756">אדם עם חתולים</translation>
 <translation id="5358764674931277">קצב פריימים</translation>
 <translation id="5368191757080475556">‏שיתוף תיקייה עם Linux</translation>
 <translation id="5402367795255837559">ברייל</translation>
@@ -553,6 +562,8 @@
 <translation id="5833610766403489739">הקובץ הזה עבר למקום אחר. יש לבדוק את הגדרות מיקום ההורדה ולנסות שוב.</translation>
 <translation id="5838451609423551646">הסרת את כל הפריטים מהבחירה.</translation>
 <translation id="5838825566232597749">‏US Workman בינלאומית</translation>
+<translation id="5845721951356578987">אחות</translation>
+<translation id="5861477046012235702">גיימר</translation>
 <translation id="5864471791310927901">‏חיפוש DHCP נכשל</translation>
 <translation id="5896749729057314184">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, לא פעילה, חוזק האות <ph name="SIGNAL_STRENGTH" />%, פרטים</translation>
 <translation id="5911887972742538906">‏קרתה שגיאה במהלך ההתקנה של אפליקציית Linux.</translation>
@@ -581,6 +592,7 @@
 <translation id="6146563240635539929">סרטונים</translation>
 <translation id="6150853954427645995">כדי לשמור קובץ זה לשימוש אופליין, יש לחזור למצב אונליין, ללחוץ לחיצה ימנית על הקובץ ולבחור את האפשרות <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">פרפרים</translation>
+<translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6170470584681422115">כריך</translation>
 <translation id="6187719147498869044">הונגרית</translation>
 <translation id="6189412234224385711">פתיחה באמצעות <ph name="EXTENSION_NAME" /></translation>
@@ -651,6 +663,7 @@
 <translation id="6861394552169064235">פרסית</translation>
 <translation id="6862635236584086457">כל הקבצים השמורים בתיקיה זו מגובים באופן אוטומטי באינטרנט</translation>
 <translation id="6864328437977279120">סנסקריט</translation>
+<translation id="6874758081814639712">אדם מתרגל טאי צ'י</translation>
 <translation id="6876155724392614295">אופניים</translation>
 <translation id="6878261347041253038">מקלדת דוונגארי (פונטית)</translation>
 <translation id="6885780034956018177">שבלול</translation>
@@ -881,6 +894,7 @@
 <translation id="8743164338060742337">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ עוצמת האות של ‎<ph name="NETWORK_PROVIDER_NAME" />‎%<ph name="SIGNAL_STRENGTH" />, הרשת מנוהלת על ידי מנהל המערכת שלך, התחברות</translation>
 <translation id="8750438273876807512">כד לגשת במהירות לקבצים שבמדף, יש ללחוץ לחיצה ארוכה על הקובץ, להקיש על <ph name="ICON" /> ולבחור באפשרות "הצמדה למדף"</translation>
 <translation id="8787254343425541995">‏אפשר שרתי proxy עבור רשתות משותפות</translation>
+<translation id="8790981080411996443">אדם משקה עציצים</translation>
 <translation id="8798099450830957504">ברירת מחדל</translation>
 <translation id="8802459921616481935">העברה לאשפה</translation>
 <translation id="8808686172382650546">חתול</translation>
@@ -893,6 +907,7 @@
 <translation id="8874184842967597500">לא מחובר</translation>
 <translation id="8900820606136623064">הונגרית</translation>
 <translation id="8903931173357132290">בוגר/ת אוניברסיטה</translation>
+<translation id="8912078710089354287">כלב מקשקש בזנב</translation>
 <translation id="8919081441417203123">דנית</translation>
 <translation id="8965697826696209160">אין מספיק שטח.</translation>
 <translation id="8970501467542182729">‏קובץ זה מיועד למחשב המשתמש בתוכנה של Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה Chrome OS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-Chrome OS.</translation>
@@ -919,6 +934,7 @@
 <translation id="9144340019284012223">קטלאנית</translation>
 <translation id="914873105831852105">קוד האימות לא חוקי. נותר לך עוד ניסיון אחד.</translation>
 <translation id="9153934054460603056">שמירת זהות וסיסמה</translation>
+<translation id="9171921933192916600">תולעת ספרים</translation>
 <translation id="9172592259078059678">תעתיק גוג'ראטית</translation>
 <translation id="9173120999827300720">מקלדת בינלאומית באנגלית (ארה"ב)</translation>
 <translation id="9174050671906956834">פריטים שבאשפה יימחקו באופן סופי לאחר 30 יום.</translation>
@@ -931,6 +947,7 @@
 <translation id="943972244133411984">שונה על ידי</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="947144732524271678">בחרת טווח של <ph name="ENTRY_COUNT" /> פריטים, מ-<ph name="FROM_ENTRY_NAME" /> עד <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">אנגלית (דרום אפריקה)</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="988685240266037636">כבר קיים קובץ בשם "<ph name="FILE_NAME" />". רוצה להחליף אותו?</translation>
 <translation id="992401651319295351">נותרו לך עוד <ph name="RETRIES" /> ניסיונות. לא תהיה אפשרות להשתמש ברשת הזו עד שיוגדר קוד אימות חדש.</translation>

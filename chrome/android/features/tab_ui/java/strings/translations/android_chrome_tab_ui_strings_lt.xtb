@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Gaukite pranešimus, kai kainos bus sumažintos</translation>
 <translation id="1657719826150349398">Perkelti skirtuką į apačią</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="2118649612461486615">Parduotuvės informacija</translation>
+<translation id="2162620598375156287">Dabar <ph name="CURRENT_PRICE" /> svetainėje <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Redaguoti grupės pavadinimą</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Pašalinti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką iš grupės.}one{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką iš grupės.}few{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus iš grupės.}many{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko iš grupės.}other{Pašalinti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų iš grupės.}}</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Grupė</translation>
 <translation id="2613747923081026172">Sukurti grupę</translation>
 <translation id="2662028055331606429">Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Apsilankyti svetainėje</translation>
 <translation id="2671423594960767771">Bendrinti grupę</translation>
 <translation id="2759453070259087442">Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Peržiūrėti parduotuvės informaciją?</translation>
 <translation id="2928243913527329289">„Google“ | Apie šią parduotuvę</translation>
 <translation id="2977480621796371840">Pašalinti iš grupės</translation>
+<translation id="3052964831964880138">„<ph name="PRODUCT_NAME" />“ <ph name="PRICE_DROP" /> kainos sumažėjimas</translation>
 <translation id="3194464645767632461">įvertinimas</translation>
+<translation id="3267416433995960648">Išjungti įspėjimą</translation>
 <translation id="3291470810748040983">Gausite įspėjimą, kai atidarytame skirtuke bus sumažinta kaina</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6054741997831917303">Šios prekės kaina neseniai sumažėjo nuo <ph name="PREVIOUS_PRICE" /> iki <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Pasirinkti skirtukus</translation>
+<translation id="6228793724645064692">(parduotuvės įvertinimas)</translation>
+<translation id="6333260925957816943">Informacija apie šią parduotuvę</translation>
 <translation id="6510648526783655549">Uždaryti skirtuko juostelę</translation>
+<translation id="6549021453810473782">Peržiūrėti parduotuvės informaciją</translation>
 <translation id="6562820390860419811">Perkelti skirtuką į kairę</translation>
 <translation id="6615455863669487791">Rodyti</translation>
 <translation id="6840760312327750441">Norėdami grupuoti skirtukus, palieskite ir palaikykite skirtuką. Tada nuvilkite jį į kitą skirtuką.</translation>
 <translation id="6856809498882026482">Slėpti kelių elementų pasirinkimo režimą</translation>
+<translation id="7129458170538955174">Informacija apie šią parduotuvę atidaryta iki pusės ekrano aukščio</translation>
 <translation id="7151209024774799310">Pašalinti skirtukus iš grupės</translation>
 <translation id="7204204600596740190">Kelių elementų pasirinkimo režimas</translation>
+<translation id="7326879924029668159">Peržiūrėkite grąžinimo politiką ir kt.</translation>
 <translation id="7352298686197644113">Žr., kurio elemento jūsų atidarytuose skirtukuose kaina žemesnė</translation>
 <translation id="753732157349120914">Skirtukų perjungiklis</translation>
 <translation id="7559245342362162951">Rodyti grupės skirtukus viso ekrano tinklelyje</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> atsiliepimas}one{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimas}few{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimai}many{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimo}other{Įvertinimas: <ph name="CURRENT_RATING" /> iš <ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> atsiliepimų}}</translation>
 <translation id="7885132941432959125">Perkelti skirtuką į dešinę</translation>
 <translation id="7966321538264951561">Atsisakyti pasiūlymo.</translation>
+<translation id="8029301326595421733">Informacija apie šią parduotuvę atidaryta per visą ekrano aukštį</translation>
 <translation id="814503310257431685">Rodyti visus</translation>
 <translation id="8205266828577616993">Perkelti skirtuką į viršų</translation>
 <translation id="8304833501377495048">Neberodyti šios skirtuko juostelės?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Žemesnė kaina</translation>
 <translation id="8749939518995770034">Uždaryta skirtuko juostelė</translation>
 <translation id="8820741577754260431">Žr. sumažintas kainas skirtukuose</translation>
+<translation id="9090098097337832354">Informacija apie šią parduotuvę uždaryta</translation>
 <translation id="9150694013019234766">Skirtukus perjunkite skirtukų grupėje netoli ekrano apačios</translation>
 <translation id="9169594135889675189">Pridėti naują skirtuką prie grupės</translation>
 <translation id="959682366969460160">Sutvarkykite</translation>

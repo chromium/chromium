@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Ricevi notifiche in caso di calo dei prezzi</translation>
 <translation id="1657719826150349398">Sposta scheda in basso</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
+<translation id="2118649612461486615">Informazioni sul negozio</translation>
+<translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Modifica nome gruppo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Rimuovi <ph name="TABS_COUNT_ONE" /> scheda selezionata dal gruppo.}other{Rimuovi <ph name="TABS_COUNT_MANY" /> schede selezionate dal gruppo.}}</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Raggruppa</translation>
 <translation id="2613747923081026172">Crea gruppo</translation>
 <translation id="2662028055331606429">Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Visita il sito</translation>
 <translation id="2671423594960767771">Condividi gruppo</translation>
 <translation id="2759453070259087442">Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="NUMBER_OF_TABS" /> schede.</translation>
 <translation id="2801787514987684416">Vuoi visualizzare le informazioni sul negozio?</translation>
 <translation id="2928243913527329289">Google | Informazioni su questo negozio</translation>
 <translation id="2977480621796371840">Rimuovi dal gruppo</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> in meno su <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">valutazione</translation>
+<translation id="3267416433995960648">Disattiva avviso</translation>
 <translation id="3291470810748040983">Riceverai un avviso quando ci sarà un prezzo più basso in una scheda aperta</translation>
 <translation id="3328308545011660196">Suggerimento: <ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6054741997831917303">Il prezzo di questo articolo è recentemente sceso da <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Seleziona schede</translation>
+<translation id="6228793724645064692">(valutazione del negozio)</translation>
+<translation id="6333260925957816943">Informazioni su questo negozio</translation>
 <translation id="6510648526783655549">Chiudi la tabstrip</translation>
+<translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
 <translation id="6562820390860419811">Sposta scheda a sinistra</translation>
 <translation id="6615455863669487791">Mostrami</translation>
 <translation id="6840760312327750441">Per raggruppare le schede, tocca e tienine premuta una. Poi trascinala su un'altra scheda.</translation>
 <translation id="6856809498882026482">Nascondi modalità di selezione multipla</translation>
+<translation id="7129458170538955174">Informazioni su questo negozio aperte nella parte inferiore dello schermo</translation>
 <translation id="7151209024774799310">Rimuovi schede dal gruppo</translation>
 <translation id="7204204600596740190">Modalità di selezione multipla</translation>
+<translation id="7326879924029668159">Visualizza le norme sui resi e non solo</translation>
 <translation id="7352298686197644113">Scopri quale articolo nelle schede aperte ha un prezzo più basso</translation>
 <translation id="753732157349120914">Selettore di schede</translation>
 <translation id="7559245342362162951">Mostra le schede del gruppo in una griglia a schermo intero</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> recensione}other{Valutazione di <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> recensioni}}</translation>
 <translation id="7885132941432959125">Sposta scheda a destra</translation>
 <translation id="7966321538264951561">Ignora i suggerimenti.</translation>
+<translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
 <translation id="814503310257431685">Visualizza tutti</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
 <translation id="8304833501377495048">Non vuoi più mostrare la tabstrip?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Prezzo più basso</translation>
 <translation id="8749939518995770034">Tabstrip chiusa</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>
+<translation id="9090098097337832354">Informazioni su questo negozio chiuse</translation>
 <translation id="9150694013019234766">Passa da una scheda all'altra del gruppo di schede nella parte inferiore dello schermo</translation>
 <translation id="9169594135889675189">Aggiungi una nuova scheda al gruppo</translation>
 <translation id="959682366969460160">Organizzazione</translation>

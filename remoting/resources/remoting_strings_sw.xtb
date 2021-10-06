@@ -79,6 +79,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="4512952200932940229">Hakimiliki 2021 Waandishi wa Chromium. Haki Zote zimehifadhiwa.</translation>
 <translation id="4513946894732546136">Mwitiko</translation>
 <translation id="4563926062592110512">Kiteja kimeondolewa: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Mipangilio ya <ph name="URL_FORWARDER_NAME" /> haijawekwa kwa usahihi. Tafadhali chagua kivinjari chaguomsingi tofauti kisha uwashe kipengele cha kusambaza URL tena.</translation>
 <translation id="4635770493235256822">Vifaa vya mbali</translation>
 <translation id="4660011489602794167">Onyesha kibodi</translation>
 <translation id="4703799847237267011">Kipindi chako cha Chromoting kimekamilika.</translation>
@@ -109,6 +110,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="5750083143895808682">Umeingia katika akaunti ukitumia <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Unganisha upya</translation>
 <translation id="5810269635982033450">Skrini inafanya kazi kama padi ya kusogeza</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ameomba idhini ya kuona skrini yako na kudhibiti kibodi na kipanya chako. Bonyeza ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ikiwa hukutarajia ombi hili. La sivyo, chagua ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ili uruhusu muunganisho utakapokuwa tayari.</translation>
 <translation id="5823658491130719298">Kwenye kompyuta ambayo ungependa kufikia kutoka mbali, fungua Chrome kisha ufungue <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Onyesha chaguo</translation>
 <translation id="6033507038939587647">Chaguo za kibodi</translation>
@@ -130,7 +132,6 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 <translation id="6963936880795878952">Miunganisho ya kompyuta ya mbali imezuiwa kwa muda kwa sababu mtu fulani alikuwa akijaribu kuifikia kwa kutumia PIN isiyo sahihi. Tafadhali jaribu tena baadaye.</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6985691951107243942">Una uhakika kuwa unataka kufunga miunganisho ya mbali kwa <ph name="HOSTNAME" />? Ukibadilisha nia, utahitajika kutembelea kompyuta hiyo ili uwashe miunganisho upya.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ameomba idhini ya kuona na kudhibiti kompyuta yako. Bonyeza ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ikiwa humjui mtu huyu au ikiwa unahitaji kufanya mabadiliko yoyote kabla ya kushiriki.  Vinginevyo, chagua ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ili uruhusu muunganisho.</translation>
 <translation id="7019153418965365059">Hitilafu ya seva pangishi isiyotambulika: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Usaidizi wa Mbali</translation>
 <translation id="7026930240735156896">Fuata maelekezo ya kuweka mipangilio ya kompyuta yako kwa ajili ya ufikiaji wa mbali</translation>
@@ -169,6 +170,7 @@ Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi 
 Ili utoe ruhusa hii, bofya '<ph name="BUTTON_NAME" />' hapa chini. Kwenye kijisehemu cha mapendeleo ya 'Ufikivu' kinachofunguka, chagua kisanduku kilicho karibu na '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Ikiwa '<ph name="SERVICE_SCRIPT_NAME" />' tayari imechaguliwa, batilisha uteuzi kisha uichague tena.</translation>
+<translation id="8305209735512572429">Mchakato wa Kuthibitisha Wavuti Kutoka Mbali</translation>
 <translation id="8383794970363966105">Ili Kutumia Chrome ya mbali, itabidi uongeze Akaunti ya Google kwenye kifaa chako.</translation>
 <translation id="8386846956409881180">Seva pangishi imesanidiwa pamoja na kitambulisho cha OAuth ambacho si sahihi.</translation>
 <translation id="8397385476380433240">Ipe <ph name="PRODUCT_NAME" /> ruhusa</translation>

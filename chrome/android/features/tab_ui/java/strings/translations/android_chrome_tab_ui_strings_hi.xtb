@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">कीमत में कमी होने पर सूचना पाएं</translation>
 <translation id="1657719826150349398">टैब को नीचे ले जाएं</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
+<translation id="2118649612461486615">स्टोर की जानकारी</translation>
+<translation id="2162620598375156287">अब <ph name="SOURCE_WEBSITE" /> पर कीमत <ph name="CURRENT_PRICE" /> है</translation>
 <translation id="2277224997687551299">ग्रुप के नाम में बदलाव करें</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{चुने गए <ph name="TABS_COUNT_ONE" /> टैब को ग्रुप से हटाएं.}one{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}other{चुने गए <ph name="TABS_COUNT_MANY" /> टैब को ग्रुप से हटाएं.}}</translation>
 <translation id="2479148705183875116">सेटिंग पर जाएं</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">ग्रुप</translation>
 <translation id="2613747923081026172">समूह बनाएं</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
+<translation id="266935134738038806">साइट पर जाएं</translation>
 <translation id="2671423594960767771">ग्रुप शेयर करें</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> टैब ग्रुप में <ph name="NUMBER_OF_TABS" /> टैब जोड़कर इसे बड़ा करें.</translation>
 <translation id="2801787514987684416">क्या आप स्टोर की जानकारी देखना चाहते हैं?</translation>
 <translation id="2928243913527329289">Google | इस स्टोर के बारे में जानकारी</translation>
 <translation id="2977480621796371840">समूह से हटाएं</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> की कीमत <ph name="PRICE_DROP" /> कम हुई है</translation>
 <translation id="3194464645767632461">रेटिंग</translation>
+<translation id="3267416433995960648">चेतावनी बंद करें</translation>
 <translation id="3291470810748040983">खोले गए टैब में मौजूद किसी आइटम की कीमत में कमी होने पर आपको सूचना मिलेगी</translation>
 <translation id="3328308545011660196">सुझाव: ऐसा लगता है कि <ph name="NUMBER_OF_TABS" /> टैब एक-दूसरे से मिलते-जुलते हैं. इनका ग्रुप बनाएं?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6054741997831917303">इस आइटम की कीमत <ph name="PREVIOUS_PRICE" /> से कम होकर <ph name="NEW_PRICE" /> हो गई है</translation>
 <translation id="6193448654517602979">टैब चुनें</translation>
+<translation id="6228793724645064692">(स्टोर की रेटिंग)</translation>
+<translation id="6333260925957816943">इस स्टोर के बारे में जानकारी</translation>
 <translation id="6510648526783655549">टैब बार को बंद करें</translation>
+<translation id="6549021453810473782">स्टोर की जानकारी देखें</translation>
 <translation id="6562820390860419811">टैब को बाईं ओर ले जाएं</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
 <translation id="6840760312327750441">टैब को ग्रुप करने के लिए, टैब को दबाकर रखें. इसके बाद, इसे दूसरे टैब पर खींचें और छोड़ें.</translation>
 <translation id="6856809498882026482">एक साथ कई टैब चुनने का मोड छिपाएं</translation>
+<translation id="7129458170538955174">इस स्टोर के बारे में जानकारी आधी स्क्रीन पर खुली हुई है</translation>
 <translation id="7151209024774799310">ग्रुप से टैब हटाएं</translation>
 <translation id="7204204600596740190">एक साथ कई टैब चुनने का मोड</translation>
+<translation id="7326879924029668159">सामान लौटाने की नीति वगैरह देखें</translation>
 <translation id="7352298686197644113">देखें कि आपके खोले गए टैब में मौजूद किस आइटम की कीमत कम हुई है</translation>
 <translation id="753732157349120914">टैब बदलने की सुविधा</translation>
 <translation id="7559245342362162951">समूह के टैब फ़ुलस्क्रीन ग्रिड में दिखाएं</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग, <ph name="REVIEWS_COUNT_MANY" /> समीक्षाएं}}</translation>
 <translation id="7885132941432959125">टैब को दाईं ओर ले जाएं</translation>
 <translation id="7966321538264951561">सुझावों को खारिज करें.</translation>
+<translation id="8029301326595421733">इस स्टोर के बारे में जानकारी पूरी स्क्रीन पर खुली हुई है</translation>
 <translation id="814503310257431685">सभी देखें</translation>
 <translation id="8205266828577616993">टैब ऊपर भेजें</translation>
 <translation id="8304833501377495048">क्या आप चाहते हैं कि टैब बार दोबारा न दिखाया जाए?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">कम कीमत</translation>
 <translation id="8749939518995770034">बंद किए गए टैब बार</translation>
 <translation id="8820741577754260431">अपने टैब पर कीमत में कमी देखें</translation>
+<translation id="9090098097337832354">इस स्टोर के बारे में जानकारी दिखाने वाली स्क्रीन बंद हो गई है</translation>
 <translation id="9150694013019234766">स्क्रीन के सबसे नीचे दिए गए अपने टैब समूह में एक से दूसरे टैब पर जाएं</translation>
 <translation id="9169594135889675189">समूह में नया टैब जोड़ें</translation>
 <translation id="959682366969460160">व्‍यवस्‍थित हों</translation>

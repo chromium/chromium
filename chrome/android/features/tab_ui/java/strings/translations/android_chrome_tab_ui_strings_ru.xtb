@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Получать уведомления о скидках</translation>
 <translation id="1657719826150349398">Переместить вкладку вниз</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> вкладка}one{<ph name="TABS_COUNT_MANY" /> вкладка}few{<ph name="TABS_COUNT_MANY" /> вкладки}many{<ph name="TABS_COUNT_MANY" /> вкладок}other{<ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
+<translation id="2118649612461486615">Сведения о магазине</translation>
+<translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> на сайте <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Изменить название группы</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Удалить <ph name="TABS_COUNT_ONE" /> выбранную вкладку из группы.}one{Удалить <ph name="TABS_COUNT_MANY" /> выбранную вкладку из группы.}few{Удалить <ph name="TABS_COUNT_MANY" /> выбранные вкладки из группы.}many{Удалить <ph name="TABS_COUNT_MANY" /> выбранных вкладок из группы.}other{Удалить <ph name="TABS_COUNT_MANY" /> выбранной вкладки из группы.}}</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Группа</translation>
 <translation id="2613747923081026172">Создать группу</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Перейти на сайт</translation>
 <translation id="2671423594960767771">Открыть доступ</translation>
 <translation id="2759453070259087442">Добавить несколько вкладок (<ph name="NUMBER_OF_TABS" />) в группу "<ph name="TITLE_OF_GROUP" />".</translation>
 <translation id="2801787514987684416">Посмотреть сведения о магазине?</translation>
 <translation id="2928243913527329289">Google | О магазине</translation>
 <translation id="2977480621796371840">Удалить из группы</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" />: скидка <ph name="PRICE_DROP" /></translation>
 <translation id="3194464645767632461">оценка</translation>
+<translation id="3267416433995960648">Отключить оповещение</translation>
 <translation id="3291470810748040983">Если цена на открытой вкладке снизится, вы получите оповещение.</translation>
 <translation id="3328308545011660196">Подсказка: обнаружены похожие вкладки (<ph name="NUMBER_OF_TABS" />). Сгруппировать их?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6054741997831917303">Цена на этот товар недавно снизилась с <ph name="PREVIOUS_PRICE" /> до <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Выберите вкладки</translation>
+<translation id="6228793724645064692">(оценка магазина)</translation>
+<translation id="6333260925957816943">Информация об этом магазине</translation>
 <translation id="6510648526783655549">Закрыть панель вкладок</translation>
+<translation id="6549021453810473782">Посмотреть сведения о магазине</translation>
 <translation id="6562820390860419811">Переместить вкладку влево</translation>
 <translation id="6615455863669487791">Показать</translation>
 <translation id="6840760312327750441">Чтобы сгруппировать вкладки: нажмите и удерживайте одну вкладку, затем перетащите ее на другую.</translation>
 <translation id="6856809498882026482">Выйти из режима выбора вкладок</translation>
+<translation id="7129458170538955174">Информация об этом магазине развернута на половину экрана</translation>
 <translation id="7151209024774799310">Удалить вкладки из группы</translation>
 <translation id="7204204600596740190">Режим выбора вкладок</translation>
+<translation id="7326879924029668159">Правила возврата и другая информация</translation>
 <translation id="7352298686197644113">Узнайте, какой из товаров на открытых вкладках стал дешевле.</translation>
 <translation id="753732157349120914">Переключатель вкладок</translation>
 <translation id="7559245342362162951">Показать сетку с вкладками группы на весь экран</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзыв}one{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыв}few{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}many{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзывов}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзыва}}</translation>
 <translation id="7885132941432959125">Переместить вкладку вправо</translation>
 <translation id="7966321538264951561">Скрыть подсказки.</translation>
+<translation id="8029301326595421733">Информация об этом магазине открыта на весь экран</translation>
 <translation id="814503310257431685">Показать все</translation>
 <translation id="8205266828577616993">Переместить вкладку вверх</translation>
 <translation id="8304833501377495048">Больше не показывать панель вкладок?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Более низкая цена</translation>
 <translation id="8749939518995770034">Панель вкладок закрыта.</translation>
 <translation id="8820741577754260431">Показывать скидки на вкладках</translation>
+<translation id="9090098097337832354">Информация об этом магазине закрыта</translation>
 <translation id="9150694013019234766">В нижней части экрана можно переключаться между вкладками, объединенными в группы</translation>
 <translation id="9169594135889675189">Добавить новую вкладку в группу</translation>
 <translation id="959682366969460160">Организация работы</translation>

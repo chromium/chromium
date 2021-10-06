@@ -79,6 +79,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="4512952200932940229">Hak cipta 2021 The Chromium Authors. Hak Cipta Terpelihara.</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
 <translation id="4563926062592110512">Klien diputuskan sambungan: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> tidak dikonfigurasikan dengan betul. Sila pilih penyemak imbas web lalai yang lain, kemudian dayakan pemajuan URL sekali lagi.</translation>
 <translation id="4635770493235256822">Peranti jauh</translation>
 <translation id="4660011489602794167">Tunjukkan papan kekunci</translation>
 <translation id="4703799847237267011">Sesi Chromoting anda telah tamat.</translation>
@@ -109,6 +110,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="5750083143895808682">Log masuk sebagai <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Sambung semula</translation>
 <translation id="5810269635982033450">Skrin bertindak seperti pad jejak</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat skrin anda serta mengawal papan kekunci dan tetikus anda. Tekan ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' jika anda tidak menjangkakan permintaan ini. Jika tidak, pilih ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' untuk membenarkan sambungan apabila anda bersedia.</translation>
 <translation id="5823658491130719298">Buka Chrome dan lawati <ph name="INSTALLATION_LINK" /> pada komputer yang ingin diakses dari jauh</translation>
 <translation id="5841343754884244200">Pilihan paparan</translation>
 <translation id="6033507038939587647">Pilihan papan kekunci</translation>
@@ -130,7 +132,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="6963936880795878952">Sambungan kepada komputer jauh disekat buat sementara waktu kerana seseorang sedang cuba untuk menyambung kepadanya dengan PIN yang tidak sah. Sila cuba sebentar lagi.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Adakah anda pasti mahu melumpuhkan sambungan jauh ke <ph name="HOSTNAME" />? Jika anda berubah fikiran, anda perlu pergi ke komputer tersebut untuk mendayakan semula sambungan.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat dan mengawal komputer anda. Tekan ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' jika anda tidak mengenali orang ini atau anda perlu membuat sebarang perubahan sebelum berkongsi.  Jika tidak, pilih ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' untuk membenarkan sambungan.</translation>
 <translation id="7019153418965365059">Ralat hos tak dikenali: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Bantuan Jauh</translation>
 <translation id="7026930240735156896">Ikut arahan untuk menyediakan komputer anda untuk akses jauh</translation>
@@ -169,6 +170,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 Untuk memberikan kebenaran ini, klik '<ph name="BUTTON_NAME" />' di bawah. Dalam anak tetingkap pilihan 'Kebolehaksesan' yang dibuka, tandai kotak di sebelah '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tandai sekali lagi.</translation>
+<translation id="8305209735512572429">Proses Pengawalan Pengesahan Web dari Jauh</translation>
 <translation id="8383794970363966105">Untuk menggunakan Chromoting, anda perlu menambahkan Akaun Google kepada peranti anda.</translation>
 <translation id="8386846956409881180">Hos dikonfigurasikan dengan bukti kelayakan OAuth yang tidak sah.</translation>
 <translation id="8397385476380433240">Berikan kebenaran kepada <ph name="PRODUCT_NAME" /></translation>

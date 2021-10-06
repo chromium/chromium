@@ -66,6 +66,7 @@
 <translation id="133801305381959373">Nu există un câmp de text editabil următor</translation>
 <translation id="1342835525016946179">articol</translation>
 <translation id="1346059596910821859">Sfat</translation>
+<translation id="1354356357730355833">copiază</translation>
 <translation id="135978014023467274">ChromeVox a fost actualizat la versiunea 63!</translation>
 <translation id="1360699455582016846">Dă clic pe elementul de sub tasta de deplasare <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">Acesta este ultimul titlu. Apasă pe tasta de căutare + H pentru a reveni la primul titlu sau pe tasta de căutare + Shift + H pentru a accesa cel de-al doilea titlu de pe pagină.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">actualizează</translation>
 <translation id="2675533876313964202">Galben verzui</translation>
 <translation id="2684412629217766642">Închide tutorialul ChromeVox</translation>
+<translation id="2692503699962701720">Modifică tonalitatea atunci când rostești tipuri de elemente și text formatat</translation>
 <translation id="2697408785920771974">completare automată inline</translation>
 <translation id="2697786971245905543">Sugestie pentru conversia textului</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{paranteză deschisă}few{# paranteze deschise}other{# de paranteze deschise}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">portret</translation>
 <translation id="3286390186030710347">Glisor</translation>
 <translation id="3300348286427369683">Compatibilitate cu textul îmbogățit. ChromeVox acceptă acum câmpuri de text îmbogățit, inclusiv comenzi de accesare, orientarea cursorului pentru textul braille, selectarea și altele.</translation>
+<translation id="3300733168898541351">anulează</translation>
 <translation id="3307886118343381874">Accesați finalul tabelului</translation>
 <translation id="3312997241656799641">Următorul link accesat</translation>
 <translation id="3313245066383501820">Tasta de modificare ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">Afișați lista de formulare</translation>
 <translation id="3414400929511680526">Albastru Alice</translation>
 <translation id="3418936350470374046">Nu există celule mai jos</translation>
+<translation id="3419269701801640163">inserează</translation>
 <translation id="3435494200763325275">Navigarea cu tasta Tab (continuare)</translation>
 <translation id="344800400831402066">Peru</translation>
 <translation id="3457000393508828486">Apăsat parțial</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">imagine</translation>
 <translation id="4021716437419160885">Derulează în jos</translation>
 <translation id="4035381225449278841">Primăvară</translation>
+<translation id="4038098586530338813">refă</translation>
 <translation id="4047216625641135770">Marcaj</translation>
 <translation id="4047910800766704982">Poți folosi o voce naturală, asemănătoare cu cea umană, când dispozitivul este online. Textul va fi trimis către Google spre procesare. Poți dezactiva funcția oricând în Setări.</translation>
 <translation id="4053520724192563562">Verde gălbui</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">Albastru ardezie mediu</translation>
 <translation id="5140016802771803559">Mov Rebecca</translation>
 <translation id="5142101052131610456">Toate lecțiile</translation>
+<translation id="5152605892605507188">deplasează spre dreapta</translation>
 <translation id="5158275234811857234">Copertă</translation>
 <translation id="516076699907426116">Pentru a continua, explorează prin atingere ca să găsești butonul Lecția următoare. Apoi atinge de două ori pentru a continua.</translation>
 <translation id="5170206230005240598">Subtitrările braille sunt activate</translation>
 <translation id="5183440668879371625">Rândul Braille anterior</translation>
 <translation id="5189244881767082992">Rând</translation>
+<translation id="5234747236692380506">introdu <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">Mătase de porumb</translation>
 <translation id="5263344797180442561">titlu 2</translation>
 <translation id="528468243742722775">Oprește</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">Titlu 4</translation>
 <translation id="6150023170003443621">Verde gălbui</translation>
 <translation id="6158882249329863701">rândul <ph name="TABLECELLROWINDEX" />, coloana <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">deplasează spre stânga</translation>
 <translation id="6164829606128959761">instrument de măsurare</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6166362019018438352">Subtitrările braille sunt dezactivate</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">Șters</translation>
 <translation id="6910969481785184048">Activează, dezactivează și oprește</translation>
 <translation id="6919104639734799681">Afișați lista de tabele</translation>
+<translation id="692135145298539227">ștergeți</translation>
+<translation id="6935674530832500465">deplasează în jos</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6949846980769640811">Acvamarin mediu</translation>
 <translation id="6951482098621102657">Nu există un titlu de nivel 5 următor</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">Catalog</translation>
 <translation id="744163271241493234">parolă</translation>
 <translation id="7465123027577412805">Folosești o voce naturală?</translation>
-<translation id="7484805699335881122">Modifică tonalitatea atunci când rostești tipuri de elemente și text citat, șters, cu caractere aldine, între paranteze sau cu majuscule.</translation>
 <translation id="7491962110804786152">filă</translation>
 <translation id="7492497529767769458">Treci la secțiunea următoare. Printre exemple se numără Bara de stare și Lansatorul.</translation>
 <translation id="7505149250476994901">Rostește „majusculă” înaintea literei</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">Nu există celule mai sus</translation>
 <translation id="8138880386467279117">Tactil</translation>
 <translation id="8146613869421949343">În continuare vei învăța despre tasta de căutare. Tasta de căutare se folosește în combinație cu alte taste pentru comenzi ChromeVox. Aceasta se află chiar deasupra tastei Shift din stânga. Pentru a continua, apasă tasta de căutare.</translation>
+<translation id="8158033275290782295">selectează-le pe toate</translation>
 <translation id="816818801578874684">Acesta este primul titlu. Apasă tasta de căutare + H pentru a naviga la următorul titlu.</translation>
 <translation id="8173092779156526980">Glisează cu patru degete la stânga</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{caracter de subliniere}few{# caractere de subliniere}other{# de caractere de subliniere}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">Introducere</translation>
 <translation id="827266600368092403">Începe sau încheie selecția</translation>
 <translation id="827422111966801947">Indigo</translation>
+<translation id="827496561804786391">deplasează în sus</translation>
 <translation id="8276439074553447000">Salt la elementul focalizabil anterior</translation>
 <translation id="8279039817939141096">Apasă o tastă qwerty, o tastă Braille actualizabilă sau un gest de atingere pentru a-i învăța funcția. Apasă tasta Control + W, tasta de spațiu + Z, glisează spre stânga cu două degete sau apasă pe Escape pentru a ieși.</translation>
 <translation id="8283603667300770666">Câmpul următor din formular</translation>
 <translation id="8310185481635255431">Nu există un link următor</translation>
 <translation id="831207808878314375">Definiție</translation>
 <translation id="8313653172105209786">director</translation>
+<translation id="8314546933558091113">deselectează-le pe toate</translation>
 <translation id="8316881042119029234">Dantelă veche</translation>
 <translation id="8324974933005349667">Personalizează setările redării vocale a textului</translation>
 <translation id="8326783648485765113">Verde gazon</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">Verde ca marea deschis</translation>
 <translation id="9080299285199342830">Treci la sfârșit</translation>
 <translation id="9089864840575085222">Repetă ecoul la tastare</translation>
+<translation id="9099429023611373837">decupează</translation>
 <translation id="9108370397979208512">matematică</translation>
 <translation id="9108589040018540527">bară de derulare</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{procent}few{# semne de procent}other{# de semne de procent}}</translation>

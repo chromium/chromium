@@ -66,6 +66,7 @@
 <translation id="133801305381959373">ไม่มีช่องข้อความที่แก้ไขได้ถัดไป</translation>
 <translation id="1342835525016946179">บทความ</translation>
 <translation id="1346059596910821859">เคล็ดลับ</translation>
+<translation id="1354356357730355833">คัดลอก</translation>
 <translation id="135978014023467274">ระบบอัปเดตเป็น ChromeVox 63 ให้แล้ว</translation>
 <translation id="1360699455582016846">คลิกรายการใต้แป้นกำหนดเส้นทาง <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">นี่เป็นส่วนหัวสุดท้าย กด Search+H เพื่อตัดข้อความไปยังส่วนหัวแรกหรือกด Search+Shift+H เพื่อไปที่ส่วนหัวที่ 2 ในหน้านี้</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">รีเฟรช</translation>
 <translation id="2675533876313964202">สีโศก</translation>
 <translation id="2684412629217766642">ปิดบทแนะนำ ChromeVox</translation>
+<translation id="2692503699962701720">เปลี่ยนระดับเสียงสูงต่ำเมื่อพูดประเภทขององค์ประกอบและข้อความที่จัดรูปแบบ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">ตัวเลือกการแปลงข้อความ</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{วงเล็บเปิด}other{# วงเล็บเปิด}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">แนวตั้ง</translation>
 <translation id="3286390186030710347">แถบเลื่อน</translation>
 <translation id="3300348286427369683">รองรับรูปแบบ Rich Text ขณะนี้ ChromeVox สนับสนุนช่องแบบ Rich Text ซึ่งรวมถึงคำสั่งข้าม การกำหนดเส้นทางเคอร์เซอร์เบรลล์ การเลือก และอื่นๆ</translation>
+<translation id="3300733168898541351">เลิกทำ</translation>
 <translation id="3307886118343381874">ไปที่ด้านล่างของตาราง</translation>
 <translation id="3312997241656799641">ลิงก์ที่เคยเข้าชมถัดไป</translation>
 <translation id="3313245066383501820">คีย์ตัวปรับแต่ง ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">แสดงรายการฟอร์ม</translation>
 <translation id="3414400929511680526">สีฟ้าอลิซบลู</translation>
 <translation id="3418936350470374046">ไม่มีเซลล์ด้านล่าง</translation>
+<translation id="3419269701801640163">วาง</translation>
 <translation id="3435494200763325275">การไปยังส่วนต่างๆ โดยใช้แป้น Tab (ต่อ)</translation>
 <translation id="344800400831402066">สีส้มเปรู</translation>
 <translation id="3457000393508828486">กดบางส่วน</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">รูปภาพ</translation>
 <translation id="4021716437419160885">เลื่อนลง</translation>
 <translation id="4035381225449278841">ฤดูใบไม้ผลิ</translation>
+<translation id="4038098586530338813">ทำซ้ำ</translation>
 <translation id="4047216625641135770">เครื่องหมาย</translation>
 <translation id="4047910800766704982">คุณใช้เสียงที่เป็นธรรมชาติซึ่งคล้ายกับเสียงของมนุษย์ได้เมื่ออุปกรณ์ออนไลน์อยู่ ระบบจะส่งข้อความไปยัง Google เพื่อประมวลผล โดยปิดตัวเลือกนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="4053520724192563562">สีเขียวมะนาว</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">สีน้ำเงินอมเทาปานกลาง</translation>
 <translation id="5140016802771803559">สีม่วงรีเบคกา</translation>
 <translation id="5142101052131610456">บทเรียนทั้งหมด</translation>
+<translation id="5152605892605507188">เลื่อนไปทางขวา</translation>
 <translation id="5158275234811857234">หน้าปก</translation>
 <translation id="516076699907426116">หากต้องการไปต่อ ให้แตะเพื่อสำรวจและหาปุ่ม "บทเรียนถัดไป" จากนั้นแตะสองครั้งเพื่อไปต่อ</translation>
 <translation id="5170206230005240598">เปิดใช้คำบรรยายอักษรเบรลล์แล้ว</translation>
 <translation id="5183440668879371625">เบรลล์บรรทัดก่อนหน้า</translation>
 <translation id="5189244881767082992">บรรทัด</translation>
+<translation id="5234747236692380506">พิมพ์ <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">สีเหลืองคอร์นซิลค์</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">ส่วนหัวระดับ 4</translation>
 <translation id="6150023170003443621">สีเขียวอมเหลือง</translation>
 <translation id="6158882249329863701">แถว <ph name="TABLECELLROWINDEX" /> คอลัมน์ <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">เลื่อนไปทางซ้าย</translation>
 <translation id="6164829606128959761">เมตร</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6166362019018438352">ปิดใช้คำบรรยายอักษรเบรลล์แล้ว</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">ลบแล้ว</translation>
 <translation id="6910969481785184048">เปิด ปิด และหยุด</translation>
 <translation id="6919104639734799681">แสดงรายการตาราง</translation>
+<translation id="692135145298539227">นำออก</translation>
+<translation id="6935674530832500465">เลื่อนลง</translation>
 <translation id="6945221475159498467">เลือก</translation>
 <translation id="6949846980769640811">สีเขียวอะความารีนปานกลาง</translation>
 <translation id="6951482098621102657">ไม่มีส่วนหัวระดับ 5 ถัดไป</translation>
@@ -912,7 +922,6 @@
 <translation id="7439060726180460871">ไดเรกทอรี</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">ใช้เสียงที่เป็นธรรมชาติไหม</translation>
-<translation id="7484805699335881122">เปลี่ยนระดับเสียงสูงต่ำเมื่อพูดประเภทขององค์ประกอบและข้อความในเครื่องหมายคำพูด ข้อความที่ถูกลบ เป็นตัวหนา อยู่ในวงเล็บ หรือเป็นตัวพิมพ์ใหญ่</translation>
 <translation id="7491962110804786152">แท็บ</translation>
 <translation id="7492497529767769458">ไปที่ส่วนถัดไป เช่น ถาดสถานะและ Launcher</translation>
 <translation id="7505149250476994901">พูด "ตัวพิมพ์ใหญ่" ต่อจากตัวอักษร</translation>
@@ -1010,6 +1019,7 @@
 <translation id="8129445297241948503">ไม่มีเซลล์ด้านบน</translation>
 <translation id="8138880386467279117">การแตะ</translation>
 <translation id="8146613869421949343">ต่อไป คุณจะได้เรียนรู้เกี่ยวกับแป้น Search แป้น Search จะใช้ร่วมกับแป้นอื่นๆ สำหรับคำสั่งใน ChromeVox แป้น Search อยู่เหนือแป้น Shift ด้านซ้ายพอดี กดแป้น Search เพื่อดำเนินการต่อ</translation>
+<translation id="8158033275290782295">เลือกทั้งหมด</translation>
 <translation id="816818801578874684">นี่คือหัวข้อแรก กดแป้น Search + H เพื่อไปยังหัวข้อต่อไป</translation>
 <translation id="8173092779156526980">เลื่อน 4 นิ้วไปทางซ้าย</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{เครื่องหมายขีดล่าง}other{# เครื่องหมายขีดล่าง}}</translation>
@@ -1028,12 +1038,14 @@
 <translation id="826825447994856889">บทนำ</translation>
 <translation id="827266600368092403">เริ่มต้นหรือสิ้นสุดการเลือก</translation>
 <translation id="827422111966801947">สีคราม</translation>
+<translation id="827496561804786391">เลื่อนขึ้น</translation>
 <translation id="8276439074553447000">ข้ามไปยังรายการที่สามารถโฟกัสก่อนหน้า</translation>
 <translation id="8279039817939141096">กดแป้น QWERTY กดแป้นอักษรเบรลล์แบบรีเฟรชได้ หรือใช้ท่าทางสัมผัสด้วยการแตะเพื่อดูข้อมูลเกี่ยวกับฟังก์ชันของแป้นหรือท่าทางสัมผัสนั้น กดปุ่ม Control พร้อมกับแป้น W, กดปุ่ม Space พร้อมกับแป้น Z, ใช้ 2 นิ้วปัดไปทางซ้าย หรือกดปุ่ม Escape เพื่อออก</translation>
 <translation id="8283603667300770666">ช่องฟอร์มถัดไป</translation>
 <translation id="8310185481635255431">ไม่มีลิงก์ถัดไป</translation>
 <translation id="831207808878314375">คำจำกัดความ</translation>
 <translation id="8313653172105209786">ไดเรกทอรี</translation>
+<translation id="8314546933558091113">ยกเลิกการเลือกทั้งหมด</translation>
 <translation id="8316881042119029234">สีส้มโอลด์เลซ</translation>
 <translation id="8324974933005349667">ปรับเปลี่ยนการตั้งค่าการอ่านออกเสียงข้อความในแบบของคุณ</translation>
 <translation id="8326783648485765113">สีเขียวลอว์นกรีน</translation>
@@ -1125,6 +1137,7 @@
 <translation id="9077305471618729969">สีเขียวน้ำทะเลอ่อน</translation>
 <translation id="9080299285199342830">ข้ามไปที่จุดสิ้นสุด</translation>
 <translation id="9089864840575085222">พูดรอบการพิมพ์</translation>
+<translation id="9099429023611373837">ตัด</translation>
 <translation id="9108370397979208512">คณิตศาสตร์</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{เครื่องหมายเปอร์เซ็นต์}other{# เครื่องหมายเปอร์เซ็นต์}}</translation>

@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">የሚወርደው ላፍታ ቆሟል</translation>
 <translation id="1415402041810619267">ዩአርኤል እንዲያጥር ተደርጓል</translation>
 <translation id="1446450296470737166">ሙሉ የMIDI መሣሪያዎች መቆጣጠርን ያስችላል</translation>
-<translation id="1509960214886564027">በበርካታ ጣቢያዎች ላይ ያሉ ባሕሪያት ሊሰበሩ ይችላሉ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
 <translation id="1647582022260550163">እርግጠኛ ነዎት ፈቃዶችን ዳግም ማስጀመር እና ኩኪዎችን እና የጣቢያ ውሂብን ማጽዳት ይፈልጋሉ?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">የተፈቀደ፣ ከሶስተኛ ወገን በቀር</translation>
 <translation id="1989112275319619282">አስስ</translation>
 <translation id="1994173015038366702">የጣቢያ ዩአርኤል</translation>
+<translation id="2004697686368036666">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ላይሰሩ ይችላሉ</translation>
 <translation id="2025115093177348061">የላቀ እውነታ</translation>
 <translation id="2030769033451695672">ወደ <ph name="URL_OF_THE_CURRENT_TAB" /> ለመመለስ መታ ያድርጉ</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">የተወሰነ ጣቢያ ኩኪዎችን ፍቀድ።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
+<translation id="4176463684765177261">ተሰናክሏል</translation>
 <translation id="4200726100658658164">የአካባቢ ቅንብሮችን ክፈት</translation>
 <translation id="4226663524361240545">ማሳወቂያዎች መሣሪያውን እንዲነዝር ሊያደርጉት ይችላሉ</translation>
 <translation id="4259722352634471385">ዳሰሳ ታግዷል፦ <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">ቪዲዮ ባለበት አቁም</translation>
 <translation id="5887687176710214216">ለመጨረሻ ጊዜ የተጎበኘው ትላንትና</translation>
 <translation id="5916664084637901428">በርቷል</translation>
+<translation id="59174027418879706">ነቅቷል</translation>
 <translation id="5922853908706496913">ማያ ገጽዎን በማጋራት ላይ</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
 <translation id="5975083100439434680">አሳንስ</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
 <translation id="6216432067784365534">የ<ph name="NAME_OF_LIST_ITEM" /> አማራጮች</translation>
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» ይራገፍ?</translation>
+<translation id="6233545266937675277">የጣቢያዎችን የዴስክቶፕ እይታ ይጠይቁ</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> እና <ph name="PERMISSION_2" /> ታግደዋል</translation>
 <translation id="6270391203985052864">ጣቢያዎች ማሳወቂያዎችን ለመላክ መጠየቅ ይችላሉ</translation>
 <translation id="6295158916970320988">ሁሉም ጣቢያዎች</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ታግደዋል}}</translation>
 <translation id="6554732001434021288">ለመጨረሻ ጊዜ የተጎበኘው ከ<ph name="NUM_DAYS" /> ቀናት በፊት ነው</translation>
 <translation id="6561560012278703671">ይበልጥ ጸጥ ያለ መልዕክት አላላክ ይጠቀሙ (ማሳወቂያ ጥያቄዎች እርስዎን እንዳያቋርጡ ያግዳል)</translation>
+<translation id="6593061639179217415">የዴስክቶፕ ጣቢያ</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ጊባ</translation>
 <translation id="6612358246767739896">ጥበቃ የሚደረግለት ይዘት</translation>
 <translation id="662080504995468778">ቆይ</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">ምርጫ ሰርዝ</translation>
 <translation id="7846621471902887024">ከሁሉም ጣቢያዎች ዘግተው እንዲወጡ ይደረጋሉ።</translation>
 <translation id="7882806643839505685">ለተወሰነ ጣቢያ ድምጽ ፍቀድ።</translation>
+<translation id="7940722705963108451">አስታውሰኝ</translation>
 <translation id="7986741934819883144">አንድ እውቂያ ይምረጡ</translation>
-<translation id="7993619969781047893">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ሊሰበሩ ይችላሉ</translation>
 <translation id="7999064672810608036">እርግጠኛ ነዎት ለዚህ ጣቢያ ኩኪዎችንም ጨምሮ ሁሉንም አካባቢያዊ ውሂብ ማጽዳት እና ሁሉም ፍቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
 <translation id="8007176423574883786">ለዚህ መሣሪያ ጠፍቷል</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">ድምፀ ከል ተደርጓል</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
+<translation id="8154912474061769055">በበርካታ ጣቢያዎች ላይ ያሉ ባህሪያት ላይሰሩ ይችላሉ</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> ተፈቅዷል</translation>
 <translation id="8200772114523450471">ከቆመበት ቀጥል</translation>
 <translation id="8206354486702514201">ይህ ቅንብር በአስተዳዳሪዎ ነው በግዳጅ እንዲፈጸም የተደረገው።</translation>
 <translation id="8211406090763984747">ግንኙነት ደኅንነቱ የተጠበቀ ነው</translation>
 <translation id="8249310407154411074">ወደ ላይ ውሰድ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
+<translation id="8267092878336850213">የጣቢያዎችን የሞባይል እይታ ይጠይቁ</translation>
 <translation id="8300705686683892304">በመተግበሪያ የሚተዳደር</translation>
 <translation id="8324158725704657629">ዳግም አትጠይቅ</translation>
 <translation id="8372893542064058268">ለአንድ የተወሰነ ጣቢያ የጀርባ ስምረትን ይፍቀዱ።</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">ግቤቱን አጽዳ</translation>
 <translation id="868929229000858085">እውቂያዎችዎን ይፈልጉ</translation>
 <translation id="8702612070107455751">ማንኛውም የመስመር ውጭ ውሂብ ይጸዳል።</translation>
+<translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8719283222052720129">ለ <ph name="APP_NAME" /> በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ፈቃድን ያብሩ።</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>

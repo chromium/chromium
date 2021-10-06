@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">ຢຸດການດາວໂຫລດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
 <translation id="1415402041810619267">ຕັດ URL ໃຫ້ສັ້ນລົງແລ້ວ</translation>
 <translation id="1446450296470737166">ອະ​ນຸ​ຍາດ​ການ​ຄວບ​ຄຸມ​ອຸ​ປະ​ກອນ MIDI ເຕັມ</translation>
-<translation id="1509960214886564027">ຄຸນສົມບັດໃນຫຼາຍໆເວັບໄຊອາດຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1644574205037202324">ປະຫວັດ</translation>
 <translation id="1647582022260550163">ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການຣີເຊັດການອະນຸຍາດ ແລະ ລຶບລ້າງຄຸກກີ້ ແລະ ຂໍ້ມູນເວັບໄຊ?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">ອະ​ນຸ​ຍາດ​ແລ້ວ, ຍົກ​ເວັ້ນ​ບຸກ​ຄົນ​ທີ​ສາມ</translation>
 <translation id="1989112275319619282">ເປີດ​ເບິ່ງ</translation>
 <translation id="1994173015038366702">URL ​ເວັບ​ໄຊທ໌</translation>
+<translation id="2004697686368036666">ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ</translation>
 <translation id="2025115093177348061">ອາກິວເມັນ ຣີອາລິຕີ</translation>
 <translation id="2030769033451695672">ແຕະເພື່ອກັບຄືນຫາ <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">ອະນຸຍາດຄຸກກີ້ສຳລັບເວັບໄຊສະເພາະ.</translation>
 <translation id="4046123991198612571">ເພງຕໍ່ໄປ</translation>
 <translation id="4165986682804962316">ການຕັ້ງຄ່າເວັບໄຊທ໌</translation>
+<translation id="4176463684765177261">ປິດໃຊ້ງານແລ້ວ</translation>
 <translation id="4200726100658658164">ເປີດການຕັ້ງຄ່າສະຖານທີ່</translation>
 <translation id="4226663524361240545">ການແຈ້ງເຕືອນອາດຈະເຮັດໃຫ້ອຸປະກອນສັ່ນ</translation>
 <translation id="4259722352634471385">ການນໍາທາງຖືກບລັອກໄວ້: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">ຢຸດວິດີໂອໄວ້ຊົ່ວຄາວ</translation>
 <translation id="5887687176710214216">ເຂົ້າເບິ່ງຫຼ້າສຸດມື້ວານນີ້</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
+<translation id="59174027418879706">ເປີດໃຊ້ງານແລ້ວ</translation>
 <translation id="5922853908706496913">ກຳລັງແບ່ງປັນໜ້າຈໍຂອງທ່ານ</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
 <translation id="5975083100439434680">ຊູມອອກ</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="6216432067784365534">ຕົວເລືອກ <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">ຖອນການຕິດຕັ້ງ '<ph name="APP_NAME" />' ບໍ?</translation>
+<translation id="6233545266937675277">ຮ້ອງຂໍມຸມມອງເດັສທັອບຂອງເວັບໄຊ</translation>
 <translation id="6262279340360821358">ບລັອກ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ໄວ້ແລ້ວ</translation>
 <translation id="6270391203985052864">ເວັບໄຊສາມາດຂໍໃຫ້ສົ່ງການແຈ້ງເຕືອນໄດ້</translation>
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}other{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}}</translation>
 <translation id="6554732001434021288">ເຂົ້າເບິ່ງຫຼ້າສຸດ <ph name="NUM_DAYS" /> ມື້ກ່ອນ</translation>
 <translation id="6561560012278703671">ໃຊ້ການສົ່ງຂໍ້ຄວາມທີ່ງຽບກວ່າ (ບລັອກບໍ່ໃຫ້ການແຈ້ງເຕືອນຂັດຈັງຫວະທ່ານ)</translation>
+<translation id="6593061639179217415">ເວັບໄຊສຳລັບເດັສທັອບ</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ເນື້ອ​ໃນ​ທີ່ຖືກ​ປົກ​ປ້ອງ</translation>
 <translation id="662080504995468778">ຢູ່ຕໍ່</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">ຍົກ​ເລີກ​ການ​ເລືອກ</translation>
 <translation id="7846621471902887024">ທ່ານຈະຖືກນຳອອກຈາກລະບົບເວັບໄຊທັງໝົດ.</translation>
 <translation id="7882806643839505685">ອະນຸຍາດສຽງສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
+<translation id="7940722705963108451">ແຈ້ງເຕືອນຂ້ອຍ</translation>
 <translation id="7986741934819883144">ເລືອກລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
-<translation id="7993619969781047893">ຄຸນສົມບັດໃນບາງເວັບໄຊອາດຈະໃຊ້ບໍ່ໄດ້</translation>
 <translation id="7999064672810608036">ທ່ານ​ແນ່​ໃຈ​ບໍ​ວ່າ ທ່ານ​ຕ້ອງ​ການ​ລຶບ​ຂໍ້​ມູນໃນ​ເຄື່ອງ​ທັງ​ໝົດ, ລວມ​ທັງ​ຄຸກ​ກີ້, ແລະ​ຕັ້ງ​ຄ່າ​ການ​ອະ​ນຸ​ຍາດ​ທັງ​ໝົດສຳ​ລັບ​ເວັບ​ໄຊ​ທ໌​ນີ້?</translation>
 <translation id="8007176423574883786">ປິດ​ສຳ​ລັບ​ອຸ​ປະ​ກອນ​ນີ້</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">ປິດສຽງແລ້ວ</translation>
 <translation id="813082847718468539">ເບິ່ງຂໍ້ມູນເວັບໄຊທ໌</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
+<translation id="8154912474061769055">ຄຸນສົມບັດຢູ່ຫຼາຍໆເວັບໄຊອາດບໍ່ເຮັດວຽກ</translation>
 <translation id="8197286292360124385">ອະນຸຍາດ <ph name="PERMISSION_1" /> ແລ້ວ</translation>
 <translation id="8200772114523450471">ເລີ່ມຕົ້ນປິດເປີດໃໝ່</translation>
 <translation id="8206354486702514201">ການຕັ້ງຄ່ານີ້ຖືກບັງຄັບໂດຍຜູ້ຄວບຄຸມຂອງທ່ານ.</translation>
 <translation id="8211406090763984747">ການເຊື່ອມຕໍ່ປອດໄພດີ</translation>
 <translation id="8249310407154411074">ຍ້າຍໄປເທິງສຸດ</translation>
 <translation id="8261506727792406068">ລຶບ</translation>
+<translation id="8267092878336850213">ຮ້ອງຂໍມຸມມອງມືຖືຂອງເວັບໄຊ</translation>
 <translation id="8300705686683892304">ຈັດການໂດຍແອັບ</translation>
 <translation id="8324158725704657629">ຢ່າຖາມອີກ</translation>
 <translation id="8372893542064058268">ອະນຸຍາດການຊິ້ງຂໍ້ມູນໃນພື້ນຫຼັງສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">ລຶບການປ້ອນເຂົ້າ</translation>
 <translation id="868929229000858085">ຊອກຫາລາຍຊື່ຜູ້ຕິດຕໍ່ຂອງທ່ານ</translation>
 <translation id="8702612070107455751">ລະບົບຈະລຶບລ້າງຂໍ້ມູນອອບລາຍຕ່າງໆ.</translation>
+<translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="8719283222052720129">ເປີດການອະນຸຍາດສຳລັບ <ph name="APP_NAME" /> ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>

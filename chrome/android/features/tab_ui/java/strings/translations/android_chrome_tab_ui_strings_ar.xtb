@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">تلقّي إشعارات عند انخفاض الأسعار</translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
+<translation id="2118649612461486615">معلومات المتجر</translation>
+<translation id="2162620598375156287">السعر الحالي هو <ph name="CURRENT_PRICE" /> على <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">تعديل اسم المجموعة</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{إزالة علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />) محدّدة من المجموعة}zero{إزالة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة من المجموعة}two{إزالة علامتَي تبويب (<ph name="TABS_COUNT_MANY" />) محدّدتَين من المجموعة}few{إزالة <ph name="TABS_COUNT_MANY" /> علامات تبويب محدّدة من المجموعة}many{إزالة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة من المجموعة}other{إزالة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة من المجموعة}}</translation>
 <translation id="2479148705183875116">الانتقال إلى الإعدادات</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">جمع</translation>
 <translation id="2613747923081026172">إنشاء مجموعة</translation>
 <translation id="2662028055331606429">التقييم الحالي: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">زيارة الموقع الإلكتروني</translation>
 <translation id="2671423594960767771">مشاركة المجموعة</translation>
 <translation id="2759453070259087442">توسيع مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" بإضافة <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
 <translation id="2801787514987684416">هل تريد عرض معلومات المتجر؟</translation>
 <translation id="2928243913527329289">‏Google | لمحة عن هذا المتجر</translation>
 <translation id="2977480621796371840">الإزالة من مجموعة</translation>
+<translation id="3052964831964880138">انخفاض في سعر <ph name="PRODUCT_NAME" /> بقيمة <ph name="PRICE_DROP" /></translation>
 <translation id="3194464645767632461">التقييم</translation>
+<translation id="3267416433995960648">إيقاف التنبيهات</translation>
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6054741997831917303">انخفض مؤخرًا سعر هذا المنتج من <ph name="PREVIOUS_PRICE" /> إلى <ph name="NEW_PRICE" />.</translation>
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
+<translation id="6228793724645064692">(تقييم المتجر)</translation>
+<translation id="6333260925957816943">المعلومات حول هذا المتجر</translation>
 <translation id="6510648526783655549">إغلاق شريط علامات التبويب</translation>
+<translation id="6549021453810473782">عرض معلومات المتجر</translation>
 <translation id="6562820390860419811">نقل علامة التبويب إلى اليمين</translation>
 <translation id="6615455863669487791">عرض</translation>
 <translation id="6840760312327750441">لتجميع علامات التبويب، المس علامة التبويب مع الاستمرار. ثم اسحبها إلى علامة تبويب أخرى.</translation>
 <translation id="6856809498882026482">إخفاء وضع التحديد المتعدد</translation>
+<translation id="7129458170538955174">يتم عرض المعلومات حول هذا المتجر في نصف الشاشة.</translation>
 <translation id="7151209024774799310">إزالة علامات التبويب من المجموعة</translation>
 <translation id="7204204600596740190">وضع التحديد المتعدد</translation>
+<translation id="7326879924029668159">الاطّلاع على سياسة الإرجاع وغيرها</translation>
 <translation id="7352298686197644113">يمكنك الاطّلاع على المُنتَج الذي انخفض سعره في علامات التبويب المفتوحة.</translation>
 <translation id="753732157349120914">أداة تغيير علامات التبويب</translation>
 <translation id="7559245342362162951">عرض علامات تبويب المجموعة في شبكة ملء الشاشة</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />)، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}zero{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}two{مراجعتان (<ph name="REVIEWS_COUNT_MANY" />)، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}few{<ph name="REVIEWS_COUNT_MANY" /> مراجعات، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}many{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}other{<ph name="REVIEWS_COUNT_MANY" /> مراجعة، والتقييم: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />}}</translation>
 <translation id="7885132941432959125">نقل علامة التبويب إلى اليسار</translation>
 <translation id="7966321538264951561">رفض الاقتراحات</translation>
+<translation id="8029301326595421733">يتم عرض المعلومات حول هذا المتجر بطول الشاشة.</translation>
 <translation id="814503310257431685">عرض الكل</translation>
 <translation id="8205266828577616993">نقل علامة التبويب إلى الأعلى</translation>
 <translation id="8304833501377495048">هل تريد عدم عرض شريط علامات التبويب مرة أخرى؟</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">السعر المنخفض</translation>
 <translation id="8749939518995770034">شريط علامات التبويب مُغلق.</translation>
 <translation id="8820741577754260431">الاطّلاع على الأسعار المنخفضة في علامات التبويب</translation>
+<translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
 <translation id="9150694013019234766">يمكنك التبديل بين علامات التبويب ضمن المجموعة بالقرب من أسفل الشاشة.</translation>
 <translation id="9169594135889675189">إضافة علامة تبويب جديدة للمجموعة</translation>
 <translation id="959682366969460160">بدء التنظيم</translation>

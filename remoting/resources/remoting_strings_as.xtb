@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. সকলো চৰ্ত সংৰক্ষিত।</translation>
 <translation id="4513946894732546136">মতামত</translation>
 <translation id="4563926062592110512">ক্লায়েণ্টৰ লগত সংযোগ বিচ্ছিন্ন হৈছে: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> সঠিকভাৱে কনফিগাৰ হৈ থকা নাই। অনুগ্ৰহ কৰি এটা পৃথক ডিফ'ল্ট ৱেব ব্ৰাউজাৰ বাছনি কৰক আৰু তাৰ পাছত পুনৰ URL ফৰৱাৰ্ডিং সক্ষম কৰক।</translation>
 <translation id="4635770493235256822">ৰিম’ট ডিভাইচ</translation>
 <translation id="4660011489602794167">কীব’র্ড দেখুৱাওক</translation>
 <translation id="4703799847237267011">আপোনাৰ Chromoting ছেশ্বন অন্ত পৰিছে।</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ৰূপে ছাইন ইন কৰা হৈছে।</translation>
 <translation id="579702532610384533">পুনৰ সংযোগ কৰক</translation>
 <translation id="5810269635982033450">স্ক্ৰীণে ট্ৰেকপেড হিচাপে কার্য কৰে</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" />এ আপোনাৰ স্ক্ৰীনখন চাবলৈ আৰু আপোনাৰ কীব’ৰ্ড আৰু মাউছ নিয়ন্ত্ৰণ কৰিবলৈ এক্সেছৰ অনুৰোধ কৰিছে। যদি এই অনুৰোধটো আপোনাৰ বাবে অনাকাংক্ষিত, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''ত টিপক। অন্যথা, সাজু হ’লে সংযোগটোক অনুমতি দিবলৈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বাছনি কৰক।</translation>
 <translation id="5823658491130719298">আপুনি ৰিম'টৰ যোগে এক্সেছ কৰিব খোজা কম্পিউটাৰটোত Chrome খোলক আৰু <ph name="INSTALLATION_LINK" /> চাওক</translation>
 <translation id="5841343754884244200">প্ৰদৰ্শনৰ বিকল্পসমূহ</translation>
 <translation id="6033507038939587647">কীব’র্ড বিকল্পসমূহ</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">ৰিম’ট কম্পিউটাৰৰ সৈতে সংযোগ সাময়িকভাৱে অৱৰোধ কৰা হৈছে কাৰণ কোনোবাই এটা অমান্য পিন ব্যৱহাৰ কৰি ইয়াৰ সৈতে সংযোগ কৰাৰ চেষ্টা কৰি আছিল। অনুগ্ৰহ কৰি কিছু সময়ৰ পাছত আকৌ চেষ্টা কৰক।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6985691951107243942">আপুনি নিশ্চিতভাৱে <ph name="HOSTNAME" />লৈ থকা ৰি’মট সংযোগ অক্ষম কৰিব খোজেনে? যদি আপুনি নিজৰ সিদ্ধান্ত সলনি কৰিলে সংযোগসমূহ পুনৰ সক্ষম কৰিবলৈ কম্পিউটাৰলৈ যাব লাগিব।</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" />এ আপোনাৰ কম্পিউটাৰ চাবলৈ আৰু নিয়ন্ত্ৰণ কৰিবলৈ এক্সেছ বিচাৰি অনুৰোধ কৰিছে। যদি আপুনি এই ব্যক্তিগৰাকীক চিনি নাপায় অথবা শ্বেয়াৰ কৰাৰ পূৰ্বে আপুনি যিকোনো সালসলনি কৰাৰ প্ৰয়োজন হয় তেন্তে ’’<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />’’ টিপক।  অন্যথা সংযোগৰ অনুমতি দিবলৈ ’’<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />’’ বাছনি কৰক।</translation>
 <translation id="7019153418965365059">চিনাক্ত কৰিব নোৱাৰা হ'ষ্টৰ আসোঁৱাহ: <ph name="HOST_OFFLINE_REASON" />।</translation>
 <translation id="701976023053394610">ৰিম'ট সহায়ক</translation>
 <translation id="7026930240735156896">আপোনাৰ কম্পিউটাৰটো ৰিম’ট এক্সেছৰ বাবে ছেট আপ কৰিবলৈ নিৰ্দেশনাখিনি অনুসৰণ কৰক</translation>
@@ -169,6 +170,7 @@
 এই অনুমতি দিবলৈ, তলত থকা '<ph name="BUTTON_NAME" />'ত ক্লিক কৰক। খোল খোৱা 'সাধ্য সুবিধা'ৰ অগ্ৰাধিকাৰসমূহৰ ক্ষেত্ৰখনত, '<ph name="SERVICE_SCRIPT_NAME" />'ৰ কাষত থকা বাকচটোত টিক মাৰ্ক দিয়ক।
 
 যদি '<ph name="SERVICE_SCRIPT_NAME" />' ত ইতিমধ্যে টিক মাৰ্ক দিয়া আছে, তেন্তে সেইটো আঁতৰাওক আৰু পুনৰ টিক মাৰ্ক দিয়ক।</translation>
+<translation id="8305209735512572429">ৱেবৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ ৰিম’টিং প্ৰক্ৰিয়া</translation>
 <translation id="8383794970363966105">Chromoting ব্যৱহাৰ কৰিবলৈ আপুনি নিজৰ ডিভাইচটোত এটা Google একাউণ্ট যোগ কৰিব লাগিব।</translation>
 <translation id="8386846956409881180">হ’ষ্টক অমান্য OAuth ক্ৰেডেনশ্বিয়েল ব্যৱহাৰ কৰি কনফিগাৰ কৰা হৈছে৷</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />ক অনুমতি দিয়ক</translation>

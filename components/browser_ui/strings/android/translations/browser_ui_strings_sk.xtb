@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Sťahovanie bolo pozastavené</translation>
 <translation id="1415402041810619267">Skrátená webová adresa</translation>
 <translation id="1446450296470737166">Povoliť úplné ovlád. zar. MIDI</translation>
-<translation id="1509960214886564027">Funkcie na mnohých weboch môžu zlyhávať</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">História</translation>
 <translation id="1647582022260550163">Naozaj chcete resetovať povolenia a vymazať súbory cookie a dáta webu?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Povolené (okrem tretích strán)</translation>
 <translation id="1989112275319619282">Prehliadať</translation>
 <translation id="1994173015038366702">Webová adresa</translation>
+<translation id="2004697686368036666">Funkcie na niektorých weboch nemusia fungovať</translation>
 <translation id="2025115093177348061">Rozšírená realita</translation>
 <translation id="2030769033451695672">Klepnutím sa vrátite na kartu <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Späť</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Povoliť súbory cookie na konkrétnom webe.</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
 <translation id="4165986682804962316">Nastavenia webu</translation>
+<translation id="4176463684765177261">Deaktivované</translation>
 <translation id="4200726100658658164">Otvoriť nastavenia polohy</translation>
 <translation id="4226663524361240545">Upozornenia môžu pri prijatí na zariadení spustiť vibrovanie</translation>
 <translation id="4259722352634471385">Navigácia je zablokovaná: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Pozastaviť video</translation>
 <translation id="5887687176710214216">Naposledy navštívený včera</translation>
 <translation id="5916664084637901428">Zapnuté</translation>
+<translation id="59174027418879706">Povolené</translation>
 <translation id="5922853908706496913">Zdieľate obrazovku</translation>
 <translation id="5939518447894949180">Resetovať</translation>
 <translation id="5975083100439434680">Oddialiť</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Blokovať súbory cookie tretích strán</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> – možnosti</translation>
 <translation id="6231752747840485235">Chcete odinštalovať aplikáciu <ph name="APP_NAME" />?</translation>
+<translation id="6233545266937675277">Požiadajte o zobrazenie webov pre počítače</translation>
 <translation id="6262279340360821358">Blokované: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Weby môžu žiadať o odosielanie upozornení</translation>
 <translation id="6295158916970320988">Všetky weby</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Sú blokované povolenia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}few{Sú blokované povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalšie}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{Sú blokované povolenia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a <ph name="NUM_MORE" /> ďalších}}</translation>
 <translation id="6554732001434021288">Naposledy navštívené pred <ph name="NUM_DAYS" /> dňami</translation>
 <translation id="6561560012278703671">Používať tichší režim (blokovať rušivé výzvy na odber upozornení)</translation>
+<translation id="6593061639179217415">Web pre počítače</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chránený obsah</translation>
 <translation id="662080504995468778">Zostať</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Zrušiť výber</translation>
 <translation id="7846621471902887024">Systém vás odhlási zo všetkých webov.</translation>
 <translation id="7882806643839505685">Povoliť zvuk na konkrétnom webe.</translation>
+<translation id="7940722705963108451">Pripomenúť mi</translation>
 <translation id="7986741934819883144">Výber kontaktu</translation>
-<translation id="7993619969781047893">Funkcie na niektorých weboch môžu zlyhávať</translation>
 <translation id="7999064672810608036">Naozaj chcete vymazať všetky miestne dáta tohto webu, vrátane súborov cookie, a resetovať všetky jeho povolenia?</translation>
 <translation id="8007176423574883786">Vypnuté v tomto zariadení</translation>
 <translation id="802154636333426148">Stiahnutie zlyhalo</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Vypnuté</translation>
 <translation id="813082847718468539">Zobraziť informácie o stránkach</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
+<translation id="8154912474061769055">Funkcie na mnohých weboch nemusia fungovať</translation>
 <translation id="8197286292360124385">Povolené: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Pokračovať</translation>
 <translation id="8206354486702514201">Toto nastavenie je vynútené správcom.</translation>
 <translation id="8211406090763984747">Spojenie je zabezpečené</translation>
 <translation id="8249310407154411074">Presunúť na začiatok</translation>
 <translation id="8261506727792406068">Odstrániť</translation>
+<translation id="8267092878336850213">Požiadajte o zobrazenie webov pre mobilné zariadenia</translation>
 <translation id="8300705686683892304">Spravované aplikáciou</translation>
 <translation id="8324158725704657629">Nabudúce sa nepýtať</translation>
 <translation id="8372893542064058268">Povoliť synchronizáciu na pozadí na konkrétnom webe.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Vymazať vstup</translation>
 <translation id="868929229000858085">Prehľadať kontakty</translation>
 <translation id="8702612070107455751">Všetky offline dáta budú vymazané.</translation>
+<translation id="8712637175834984815">Dobre</translation>
 <translation id="8719283222052720129">Zapnite v <ph name="BEGIN_LINK" />nastaveniach Androidu<ph name="END_LINK" /> povolenie pre aplikáciu <ph name="APP_NAME" />.</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8730621377337864115">Hotovo</translation>

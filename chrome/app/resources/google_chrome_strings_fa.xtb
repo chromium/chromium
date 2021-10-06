@@ -35,7 +35,6 @@
 <translation id="174539241580958092">‏به دلیل وجود خطا در ورود به سیستم، Google Chrome قادر به همگام‌سازی داده‌های شما نبود.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏مطمئن شوید در <ph name="TARGET_DEVICE_NAME" /> به سیستم Chrome وارد شده باشید و سپس دوباره ارسال کنید.</translation>
-<translation id="1810203443153428607">‏با نصب Chrome OS، همه داده‌های موجود در دستگاه رونویسی خواهد شد.</translation>
 <translation id="1812689907177901597">‏با خاموش کردن این گزینه، می‌توانید بدون ورود به سیستم Chrome به سیستم سایت‌های Google مانند Gmail وارد شوید</translation>
 <translation id="1860536484129686729">‏Chrome برای این سایت به مجوز دسترسی به دوربین نیاز دارد</translation>
 <translation id="1873233029667955273">‏Google Chrome مرورگر پیش‌فرض شما نیست</translation>
@@ -53,6 +52,7 @@
 <translation id="2290014774651636340">‏کلیدهای Google API وجود ندارد. برخی از عملکردهای Google Chrome از کار خواهد افتاد.</translation>
 <translation id="2290095356545025170">‏آیا می‌خواهید Google Chrome را غیر فعال کنید؟</translation>
 <translation id="2309047409763057870">‏این نصب ثانویه Google Chrome است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
+<translation id="2345992953227471816">‏Chrome متوجه شده است که این افزونه‌ها حاوی بدافزار هستند:</translation>
 <translation id="2348335408836342058">‏Chrome برای این سایت به مجوز دسترسی به دوربین و میکروفون نیاز دارد</translation>
 <translation id="234869673307233423">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="235650106824528204">‏سرپرست نمایه کاری می‌تواند داده‌های Chrome را که درطول استفاده از این نمایه ایجاد شده‌اند (مثل ایجاد سابقه نشانک‌ها، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="LEARN_MORE" /></translation>
@@ -82,6 +82,7 @@
 <translation id="2885378588091291677">مدیر فعالیت‌ها</translation>
 <translation id="2888126860611144412">‏درباره Chrome</translation>
 <translation id="2926676257163822632">‏گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. به Chrome اجازه دهید <ph name="BEGIN_LINK" />گذرواژه‌هایی قوی برایتان ایجاد کند و آن‌ها را به‌خاطر بسپارد<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">‏Chrome برای این سایت به اجازه دوربین نیاز دارد</translation>
 <translation id="2929907241665500097">‏Chrome به‌روزرسانی نشد؛ مشکلی پیش آمد. <ph name="BEGIN_LINK" />مشکلات به‌روزرسانی Chrome و به‌روزرسانی‌های ناموفق را برطرف کنید.<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />آخرین یادآوری: درصورت نصب کردن، <ph name="BEGIN_BOLD" /> کل داده‌های دیسک سخت پاک خواهد شد<ph name="END_BOLD" />. لطفاً مطمئن شوید همه داده‌های مهم‌تان را پشتیبان‌گیری کرده باشید.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />وقتی نصب شروع شود، نمی‌توان آن را لغو کرد.<ph name="END_PARAGRAPH2" /></translation>
@@ -110,6 +111,7 @@
 <translation id="3582972582564653026">‏Chrome را در همه دستگاه‌هایتان همگام‌سازی و شخصی‌سازی کنید</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید}=1{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. پنجره ناشناس بازگشایی نمی‌شود.}one{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}other{‏سرپرست سیستم لازم می‌داند برای اعمال به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. # پنجره ناشناس بازگشایی نمی‌شود.}}</translation>
 <translation id="3622797965165704966">‏اکنون استفاده از Chrome با حساب Google شما و در رایانه‌های مشترک آسان‌تر شده است.</translation>
+<translation id="3673813398384385993">‏Chrome متوجه شده است که این «<ph name="EXTENSION_NAME" />» حاوی بدافزار است</translation>
 <translation id="3718181793972440140">‏این کار یک مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="3735758079232443276">‏افزونه «<ph name="EXTENSION_NAME" />»، صفحه‌ای را تغییر داده است که هنگام راه‌اندازی Chrome نشان داده می‌شود.</translation>
 <translation id="3779473566290487688">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید OS X نسخه ۱۰.۱۱ یا بالاتر داشته باشید. این رایانه از OS X نسخه ۱۰.۱۰ استفاده می‌کند.</translation>
@@ -126,6 +128,7 @@
 <translation id="4149882025268051530">‏نصب‌کننده در خارج کردن آرشیو از حالت فشرده ناموفق بود. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
 <translation id="4191857738314598978">{0,plural, =1{‏Chrome را ظرف یک روز راه‌اندازی مجدد کنید}one{‏Chrome را ظرف # روز راه‌اندازی مجدد کنید}other{‏Chrome را ظرف # روز راه‌اندازی مجدد کنید}}</translation>
 <translation id="4205939740494406371">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند. بعد از ۲۴ ساعت دوباره امتحان کنید یا <ph name="BEGIN_LINK" />گذرواژه‌ها را در «حساب Google» خود بررسی کنید<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">‏Chrome برای این سایت به اجازه دوربین و میکروفون نیاز دارد</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4251615635259297716">‏داده‌های Chrome شما به این حساب مرتبط شوند؟</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
@@ -168,13 +171,10 @@
 <translation id="521447420733633466">‏اگر از دستگاهی به‌صورت مشترک استفاده می‌کنید، دوستان و اعضای خانواده می‌توانند جداگانه مرور کنند و Chrome را به‌شیوه خودشان تنظیم کنند</translation>
 <translation id="5251420635869119124">‏مهمان‌‌ها می‌توانند از Chrome استفاده کنند بدون اینکه اثری از خود به جا بگذارند.</translation>
 <translation id="5251679006894510177">‏تقریباً به‌روزرسانی شده است! برای تکمیل به‌روزرسانی، Chrome را راه‌اندازی مجدد کنید. پنجره‌های ناشناس بازگشایی نمی‌شود.</translation>
+<translation id="5334487786912937552">‏Chrome برای بارگیری فایل‌ها به اجازه دسترسی به فضای ذخیره‌سازی نیاز دارد</translation>
 <translation id="5386244825306882791">‏این برنامه همچنین صفحه‌ای را که هنگام راه‌اندازی Chrome یا جستجو از Omnibox نشان داده می‌شود، کنترل می‌کند.</translation>
 <translation id="5394833366792865639">‏هم‌رسانی برگه Chrome</translation>
 <translation id="5430073640787465221">‏فایل اولویت‌های شما خراب یا نامعتبر است. Google Chrome نمی‌تواند تنظیمات شما را بازیابی کند.</translation>
-<translation id="5449497480926255862">‏<ph name="BEGIN_PARAGRAPH1" />قبل‌از شروع کار، لطفاً مطمئن شوید که نسخه پشتیبان به‌روزی از داده‌هایتان داشته باشید. با نصب Chrome OS، همه داده‌های موجود در دیسک سخت رونویسی خواهد شد.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google مسئولیت ازدست رفتن داده‌ها را برعهده نمی‌گیرد و تضمین نمی‌کند که Chrome OS در مدل‌های تأییدنشده کار کند. لطفاً برای دریافت اطلاعات بیشتر درباره مدل‌های تأییدشده، به [TBD] مراجعه کنید.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />درباره نصب Chrome OS و پاک شدن داده‌ها بیشتر بدانید: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />اگر آماده‌اید ادامه دهید، روی «نصب Chrome OS» کلیک کنید تا در تنها چند مرحله ساده درطول فرایند نصب شما را راهنمایی کنیم. قبل‌از اینکه تغییری در رایانه‌تان ایجاد کنیم، فرصت دیگری برای تأیید خواهید داشت.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">‏نصب Chrome OS</translation>
 <translation id="556024056938947818">‏Google Chrome می‌خواهد گذرواژه‌ها را نمایش دهد.</translation>
 <translation id="5566025111015594046">‏Google Chrome (ورودی mDNS)</translation>
@@ -206,10 +206,12 @@
 <translation id="6291549208091401781">‏Google Chrome از قبل برای همه کاربران این رایانه نصب شده است.</translation>
 <translation id="6368958679917195344">‏Chrome OS با یک <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزار منبع آزاد<ph name="END_LINK_CROS_OSS" /> دیگر امکان‌پذیر است.</translation>
 <translation id="6418662306461808273">‏به نمایه Chrome موجود می‌روید؟</translation>
+<translation id="6506909944137591434">‏Chrome برای ایجاد نقشه سه‌بعدی از محیط اطرافتان به اجازه دوربین نیاز دارد</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">‏سیستم Chrome OS</translation>
 <translation id="6676384891291319759">دسترسی به اینترنت</translation>
 <translation id="6679975945624592337">‏اجازه به Google Chrome برای اجرا در پس‌زمینه</translation>
+<translation id="6696915334902295848">‏Chrome برای این سایت به اجازه میکروفون نیاز دارد</translation>
 <translation id="6739177684496155661">‏در نمایه جدیدی از Chrome ادامه می‌دهید؟</translation>
 <translation id="6750954913813541382">‏Chrome برای رفع غلط‌های املایی، نوشتاری را که در مرورگر تایپ می‌کنید به Google ارسال می‌کند</translation>
 <translation id="677276454032249905">‏درهرصورت از Chrome خارج می‌شوید؟</translation>
@@ -249,6 +251,7 @@
 <translation id="7761834446675418963">‏برای باز کردن Chrome و شروع به مرور، روی نامتان کلیک کنید.</translation>
 <translation id="7777080907402804672">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود. هروقت خواستید می‌توانید این گزینه را در تنظیمات خاموش کنید.</translation>
 <translation id="7781002470561365167">‏نسخه جدیدی از Google Chrome موجود است.</translation>
+<translation id="778331955594035129">‏Chrome برای این سایت به اجازه مکان نیاز دارد</translation>
 <translation id="7787950393032327779">‏ظاهراً نمایه توسط فرآیند Google Chrome دیگری (<ph name="PROCESS_ID" />) در رایانه‌ای دیگر (<ph name="HOST_NAME" />) در حال استفاده است. Chrome نمایه را قفل کرده است تا خراب نشود. اگر مطمئنید فرآیندهای دیگری از این نمایه استفاده نمی‌کنند، می‌توانید قفل نمایه را باز کنید و Chrome را مجدداً راه‌اندازی نمایید.</translation>
 <translation id="7801699035218095297">‏Google Chrome می‌خواهد گذرواژه‌ها را کپی کند. برای اینکه اجازه دهید این کار انجام شود، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="7808348361785373670">‏حذف از Chrome...</translation>

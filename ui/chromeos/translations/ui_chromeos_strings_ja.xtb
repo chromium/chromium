@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">ノルウェー語</translation>
 <translation id="1433628812591023318">Parallels Desktop にファイルをドロップするには [Windows ファイル] にファイルを移動する必要があります。</translation>
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
+<translation id="1439919885608649279">花を持っている人</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
 <translation id="1474339897586437869">「<ph name="FILENAME" />」はアップロードされていません。Google ドライブに十分な空き容量がありません。</translation>
 <translation id="1482884275703521657">フィンランド語</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">ファイルを修正することができませんでした。</translation>
 <translation id="1673103856845176271">セキュリティ上の理由で、ファイルにアクセスできませんでした。</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">自転車</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを圧縮しています...</translation>
 <translation id="1722687688096767818">プロファイルの追加中...</translation>
 <translation id="1726100011689679555">ネームサーバー</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">プレビュー機能はご利用いただけません</translation>
 <translation id="1812302367230252929">アムハラ語（文字変換）</translation>
 <translation id="1813278315230285598">サービス</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ペンギン</translation>
 <translation id="183183971458492120">情報を読み込んでいます...</translation>
 <translation id="1834290891154666894">無効なサブジェクト代替名マッチのエントリ</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">ドットで始まる名前はシステム専用です。別の名前を指定してください。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2084108471225856927">デバイス設定</translation>
+<translation id="2084809735218147718">ありがとうとサインする</translation>
 <translation id="2085470240340828803">「<ph name="FILENAME" />」という名前のファイルは既に存在します。どのように処理しますか？</translation>
 <translation id="2088690981887365033">VPN ネットワーク</translation>
 <translation id="2122305276694332719">非公開ネットワークに自動接続すると、お使いのデバイスと一部のネットワーク設定が他のユーザーに公開されます。そのためこの設定はおすすめしません。</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Linux でのインストール</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを削除してもよろしいですか？</translation>
 <translation id="2230062665678605299">フォルダ「<ph name="FOLDER_NAME" />」を作成することができません。<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">コーヒーを持っている人</translation>
 <translation id="2251368349685848079">ゴミ箱から復元</translation>
 <translation id="2282155092769082568">自動設定 URL:</translation>
 <translation id="2288278176040912387">レコード プレーヤー</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">合計ファイルサイズ</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを <ph name="FOLDER_NAME" /> にコピーしています</translation>
 <translation id="2448312741937722512">種類</translation>
+<translation id="2452444014801043526">メガホンを持っている人</translation>
 <translation id="2464079411014186876">アイスクリーム</translation>
 <translation id="2464089476039395325">HTTP プロキシ</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ネットワーク、無効</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF ドキュメント</translation>
 <translation id="2888807692577297075">&lt;b&gt;「<ph name="SEARCH_STRING" />」&lt;/b&gt;に一致するアイテムはありません</translation>
 <translation id="2894654529758326923">情報</translation>
-<translation id="2902312830803030883">その他の操作</translation>
 <translation id="2902734494705624966">US 拡張</translation>
 <translation id="290843123675549676">マラーティー語</translation>
 <translation id="2923240520113693977">エストニア語</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">フランス語（カナダ）</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="3003633581067744647">サムネイル表示に切り替え</translation>
+<translation id="3016566519832145558">注: これらのファイルは一時的なもので、ディスクの空き容量を増やすために自動的に削除されることがあります。</translation>
 <translation id="3029114385395636667">ドキュメント、スプレッドシート、スライドをオフラインで使用できるようにするには、Google オフライン ドキュメントを有効にしてください。</translation>
 <translation id="303198083543495566">位置情報</translation>
 <translation id="3047197340186497470">中国語（大易）</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS ホスト</translation>
 <translation id="3113153474486991170">この場所から「<ph name="PATH" />」を開くことができません。[マイファイル] にコピーして開いてください。</translation>
 <translation id="3113592018909187986">入力できるのはあと 1 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>
+<translation id="3124404833828281817">空想にふけっている人</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">無効な PIN です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />]（ハードウェアにより保護を強化）</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.com にアクセスします...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
 <translation id="3556731189587832921">英語（アメリカ）（インターナショナル PC）キーボード</translation>
+<translation id="3567221313191587603">ファイルにオフラインでアクセスするには、ファイルを選択し、[<ph name="OFFLINE_CHECKBOX_NAME" />] をオンに切り替えます。</translation>
 <translation id="357479282490346887">リトアニア語</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> をオフラインで使用するよう設定できませんでした</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">モバイル プロファイルのインストール中 - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">チェコ語（QWERTY）キーボード</translation>
 <translation id="4656293982926141856">このパソコン</translation>
+<translation id="4656777537938206294">ファイルへのオフライン アクセスの有効化</translation>
+<translation id="4658782175094886150">雪の中の人</translation>
 <translation id="4669606053856530811">「<ph name="SOURCE_NAME" />」のメンバーはこれらのアイテムにアクセスできなくなります（ただし個別に共有されている場合はアクセス可能です）。</translation>
 <translation id="4690246192099372265">スウェーデン語</translation>
 <translation id="4693155481716051732">お寿司</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">これらのファイルは別のデスクトップで開かれます。表示するには <ph name="USER_NAME" />（<ph name="MAIL_ADDRESS" />）に移動してください。</translation>
 <translation id="5330512191124428349">情報を見る</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" />を <ph name="BEGIN_LINK" />Google ドライブ<ph name="END_LINK" />にバックアップしています</translation>
+<translation id="535792325654997756">猫と一緒にいる人</translation>
 <translation id="5358764674931277">フレームレート</translation>
 <translation id="5368191757080475556">Linux とのフォルダ共有</translation>
 <translation id="5402367795255837559">点字</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">このファイルは移動されています。ダウンロード保存先の設定を確認し、もう一度お試しください。</translation>
 <translation id="5838451609423551646">すべての項目を選択範囲から削除しました。</translation>
 <translation id="5838825566232597749">US Workman インターナショナル</translation>
+<translation id="5845721951356578987">看護師</translation>
+<translation id="5861477046012235702">ゲーマー</translation>
 <translation id="5864471791310927901">DHCP を検索できませんでした</translation>
 <translation id="5896749729057314184">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="5911887972742538906">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">動画</translation>
 <translation id="6150853954427645995">このファイルを保存してオフラインで使用できるようにするには、オンラインに戻ってファイルを右クリックし、[<ph name="OFFLINE_CHECKBOX_NAME" />] オプションを選択します。</translation>
 <translation id="6164412158936057769">蝶</translation>
+<translation id="6165508094623778733">詳細</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
 <translation id="6187719147498869044">ハンガリー語</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> で開く</translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">ペルシャ語</translation>
 <translation id="6862635236584086457">このフォルダに保存されているすべてのファイルが自動的にオンラインにバックアップされます。</translation>
 <translation id="6864328437977279120">サンスクリット語</translation>
+<translation id="6874758081814639712">太極拳をしている人</translation>
 <translation id="6876155724392614295">自転車</translation>
 <translation id="6878261347041253038">デバナーガリ語キーボード（表音）</translation>
 <translation id="6885780034956018177">カタツムリ</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="NETWORK_PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、接続</translation>
 <translation id="8750438273876807512">ファイルを長押しして <ph name="ICON" /> をタップし、[シェルフに固定] を選択すると、シェルフからファイルに簡単にアクセスできます。</translation>
 <translation id="8787254343425541995">共有ネットワークのプロキシを許可する</translation>
+<translation id="8790981080411996443">植物に水をやっている人</translation>
 <translation id="8798099450830957504">既定</translation>
 <translation id="8802459921616481935">ゴミ箱に移動</translation>
 <translation id="8808686172382650546">ネコ</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8900820606136623064">ハンガリー語</translation>
 <translation id="8903931173357132290">卒業</translation>
+<translation id="8912078710089354287">尻尾を振る犬</translation>
 <translation id="8919081441417203123">デンマーク語</translation>
 <translation id="8965697826696209160">空き容量が不足しています。</translation>
 <translation id="8970501467542182729">このファイルは Macintosh ソフトウェアを使用するパソコン向けのもので、Chrome OS を実行するデバイスとは互換性がありません。Chrome OS でファイルを開く方法について、詳しくは<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">カタロニア語</translation>
 <translation id="914873105831852105">無効な PIN です。入力できるのはあと 1 回です。</translation>
 <translation id="9153934054460603056">ID とパスワードを保存する</translation>
+<translation id="9171921933192916600">読書家</translation>
 <translation id="9172592259078059678">グジャラト語（文字変換）</translation>
 <translation id="9173120999827300720">英語（アメリカ）（インターナショナル）キーボード</translation>
 <translation id="9174050671906956834">ゴミ箱内のアイテムは 30 日後に完全に削除されます。</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">更新者</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> 項目を選択しました。範囲の先頭は <ph name="FROM_ENTRY_NAME" />、末尾は <ph name="TO_ENTRY_NAME" /> です。</translation>
+<translation id="965477715979482472">英語（南アフリカ）</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="988685240266037636">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。置き換えますか？</translation>
 <translation id="992401651319295351">入力できるのはあと <ph name="RETRIES" /> 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>

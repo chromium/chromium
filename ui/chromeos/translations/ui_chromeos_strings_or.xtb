@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">ନରୱେଜୀୟ</translation>
 <translation id="1433628812591023318">Parallels Desktopରେ ଫାଇଲଗୁଡ଼ିକୁ ଡ୍ରପ୍ କରିବା ପାଇଁ ଫାଇଲକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରକୁ ମୁଭ୍ କରିବା ଆବଶ୍ୟକ।</translation>
 <translation id="1435838927755162558">Parallels Desktop ସହ ଫୋଲ୍ଡର ସେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="1439919885608649279">ଫୁଲଗୁଡ଼ିକ ସହ ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="1471718551822868769">ସ୍ଲୋଭାକ୍</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ଅପ୍‌ଲୋଡ୍‍ କରାଯାଇନଥିଲା। ଆପଣଙ୍କର Google Driveରେ ଯଥେଷ୍ଟ ମୁକ୍ତ ସ୍ଥାନ ନାହିଁ।</translation>
 <translation id="1482884275703521657">ଫିନିଶ୍</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">ଫାଇଲ୍‌ଟି ସଂଶୋଧିତ ହୋଇପାରିଲା ନାହିଁ।</translation>
 <translation id="1673103856845176271">ସୁରକ୍ଷା କାରଣରୁ ଏହି ଫାଇଲ୍‍କୁ ଆକ୍ସେସ୍ କରାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">ବାଇକିଂ</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଜିପ୍ ହେଉଛି...</translation>
 <translation id="1722687688096767818">ପ୍ରୋଫାଇଲ୍ ଯୋଗ କରାଯାଉଛି...</translation>
 <translation id="1726100011689679555">ନାମ ସର୍ଭର୍</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">କୌଣସି ପୂର୍ବାବଲୋକନ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="1812302367230252929">ଆମହାରିକ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="1813278315230285598">ସେବା</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />ସତର୍କତା:<ph name="END_BOLD" />  ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କ‌ରେ ଜାଗା ଖାଲି କରିବା ପାଇଁ ହୁଏତ ସ୍ୱଚାଳିତ ରୂପେ ଡିଲିଟ୍ କରାଯାଇଥାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">ପେଙ୍ଗୁଇନ୍‍</translation>
 <translation id="183183971458492120">ସୂଚନା ଲୋଡ୍ ହେଉଛି..</translation>
 <translation id="1834290891154666894">ସବଜେକ୍ଟ ଅଲଟରନେଟିଭ୍ ନେମ୍ ସହ ମେଳ ହେଉଥିବା ଏଣ୍ଟ୍ରି ଅବୈଧ ଅଟେ</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">ଡଟ୍ ସହିତ ଆରମ୍ଭ ହେଉଥିବା ନାମଗୁଡ଼ିକ ସିଷ୍ଟମ୍ ପାଇଁ ସଂରକ୍ଷିତ ଅଛି। ଦୟାକରି ଅନ୍ୟ ଏକ ନାମ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="2079545284768500474">ପୂର୍ବବତ୍</translation>
 <translation id="2084108471225856927">ଡିଭାଇସ୍ ସେଟିଂସ୍</translation>
+<translation id="2084809735218147718">ଠାରରେ ଧନ୍ୟବାଦ ଜଣାଇବା</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ କ’ଣ କରିବାକୁ ଚାହାନ୍ତି?</translation>
 <translation id="2088690981887365033">VPN ନେଟ୍‌ୱାର୍କ</translation>
 <translation id="2122305276694332719">ଏକ ଗୋପନୀୟ ଥିବା ନେଟ୍‌ୱାର୍କ ସହିତ ସ୍ୱଚାଳିତ ଭାବରେ ସଂଯୋଗ କଲେ ଅନ୍ୟ ଲୋକମାନେ ଆପଣଙ୍କ ଡିଭାଇସ୍ ଆଉ କିଛି ନେଟ୍‌ୱାର୍କ ସେଟିଂସ୍‌କୁ ଦେଖିପାରିବେ ଏବଂ ଏହା ସୁପାରିଶ କରାଯାଏ ନାହିଁ।</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Linux ସହିତ ଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="2225536596944493418">ଆପଣ କ'ଣ ନିଶ୍ଚିତ ରୂପେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ଡିଲିଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
 <translation id="2230062665678605299">ଫୋଲ୍ଡର୍‌ ତିଆରି କରିବାରେ ଅକ୍ଷମ "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">କଫି ପିଉଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="2251368349685848079">ଟ୍ରାସରୁ ରିଷ୍ଟୋର୍ କରନ୍ତୁ</translation>
 <translation id="2282155092769082568">ସ୍ଵତଃକନଫିଗ୍‌ରେସନ୍ URL:</translation>
 <translation id="2288278176040912387">ରେକର୍ଡ ପ୍ଲେୟାର୍</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">ମୋଟ ଫାଇଲ୍‍ର ଆକାର</translation>
 <translation id="2428749644083375155"><ph name="FOLDER_NAME" />ରେ <ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ କପି କରାଯାଉଛି</translation>
 <translation id="2448312741937722512">ପ୍ରକାର</translation>
+<translation id="2452444014801043526">ମେଗାଫୋନ ସହ ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="2464079411014186876">ଆଇସ୍‍କ୍ରିମ୍</translation>
 <translation id="2464089476039395325">HTTP ପ୍ରୋକ୍ସି</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ବନ୍ଦ ଅଛି</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF ଡକୁମେଣ୍ଟ</translation>
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; ସହ କୌଣସି ଆଇଟମ୍ ମେଳ ଖାଉନାହିଁ</translation>
 <translation id="2894654529758326923">ସୂଚନା</translation>
-<translation id="2902312830803030883">ଅଧିକ କାର୍ଯ୍ୟ</translation>
 <translation id="2902734494705624966">US ସମ୍ପ୍ରସାରିତ କୀବୋର୍ଡ</translation>
 <translation id="290843123675549676">ମରାଠୀ</translation>
 <translation id="2923240520113693977">ଏଷ୍ଟୋନିଆନ୍</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">ଫରାସୀ (କାନାଡ଼ା)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3003633581067744647">ଥମ୍ବନେଲ୍ ଭ୍ୟୁକୁ ସ୍ବିଚ୍ କରନ୍ତୁ</translation>
+<translation id="3016566519832145558">ସାବଧାନ: ଏହି ଫାଇଲଗୁଡ଼ିକ ଅସ୍ଥାୟୀ ଅଟେ ଏବଂ ଡିସ୍କରେ ସ୍ପେସ୍ ଖାଲି କରିବା ପାଇଁ ଏଗୁଡ଼ିକ ସ୍ୱଚାଳିତ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଇପାରେ।</translation>
 <translation id="3029114385395636667">Docs, Sheets ଏବଂ Slidesକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରିବା ପାଇଁ Google Docs ଅଫଲାଇନକୁ ସକ୍ଷମ କରନ୍ତୁ।</translation>
 <translation id="303198083543495566">ଭୌଗଳିକ</translation>
 <translation id="3047197340186497470">ଚାଇନିଜ୍ ଡାୟି</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS ହୋଷ୍ଟ୍</translation>
 <translation id="3113153474486991170">ଏହି ଲୋକେସନରୁ "<ph name="PATH" />"କୁ ଖୋଲା ଯାଇପାରିଲା ନାହିଁ। ଖୋଲିବା ପାଇଁ ଦୟାକରି ଏହାକୁ "ମୋ ଫାଇଲଗୁଡ଼ିକ"ରେ କପି କରନ୍ତୁ।</translation>
 <translation id="3113592018909187986">ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି। ଆପଣ ଏକ ନୂଆ PIN ସେଟ୍ ଅପ୍ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଏହି ନେଟୱାର୍କକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
+<translation id="3124404833828281817">ଦିନରେ ସ୍ୱପ୍ନ ଦେଖୁଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">ଅବୈଧ PIN। ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ହାର୍ଡୱେୟାର-ସମର୍ଥିତ)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.comକୁ ଯାଆନ୍ତୁ …</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> ମାଧ୍ୟମରେ ଫାଇଲଗୁଡ଼ିକ ଖୋଲିବାକୁ, ପ୍ରଥମେ ସେଗୁଡ଼ିକୁ Windows ଫାଇଲ୍ ଫୋଲ୍ଡରରେ କପି କରନ୍ତୁ।</translation>
 <translation id="3556731189587832921">ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
+<translation id="3567221313191587603">ଏକ ଫାଇଲ୍ ଚୟନ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଆକ୍ସେସ୍ କରିବା ପାଇଁ <ph name="OFFLINE_CHECKBOX_NAME" />ର ଟୋଗଲ୍ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="357479282490346887">ଲିଥୁଆନିଆନ୍</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />କୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">ମୋବାଇଲ ପ୍ରୋଫାଇଲ୍, <ph name="NETWORK_COUNT" />ର ନେଟୱାର୍କ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> ଇନଷ୍ଟଲ୍ କରାଯାଉଛି</translation>
 <translation id="4646813851450205600">Qwerty କୀବୋର୍ଡ ସହ ଚେକ୍</translation>
 <translation id="4656293982926141856">ଏହି କମ୍ପ୍ୟୁଟର୍</translation>
+<translation id="4656777537938206294">ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାନ୍ତୁ</translation>
+<translation id="4658782175094886150">ବରଫରେ ଥିବା ବ୍ୟକ୍ତି</translation>
 <translation id="4669606053856530811"><ph name="SOURCE_NAME" />ର ସଦସ୍ୟମାନେ ସେପର୍ଯ୍ୟନ୍ତ ଆକ୍ସେସ୍ ହରାଇବେ ଯେପର୍ଯ୍ୟନ୍ତ ଏହି ଆଇଟମ୍‍ଗୁଡ଼ିକୁ ସେମାନଙ୍କ ସହିତ ସେୟାର୍‌ କରାଯାଇ ନାହିଁ।</translation>
 <translation id="4690246192099372265">ସ୍ୱିଡିଶ୍</translation>
 <translation id="4693155481716051732">ସୁଶି</translation>
@@ -491,6 +499,7 @@
 <translation id="5330145655348521461">ଏହି ଫାଇଲ୍‌ଗୁଡ଼ିକ ଏକ ଅଲଗା ଡେସ୍କଟପ୍‌ରେ ଖୋଲାଗଲା। ଏହାକୁ ଦେଖିବା ପାଇଁ <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)କୁ ଯାଆନ୍ତୁ।</translation>
 <translation id="5330512191124428349">ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="5335458522276292100"><ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />ରେ <ph name="FILE_COUNT" />ଟି ବ୍ୟାକ୍‌‌ଅପ୍‌ ହେଉଛି</translation>
+<translation id="535792325654997756">ବିଲେଇମାନଙ୍କ ସହ ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="5358764674931277">ଫ୍ରେମ୍ ହାର</translation>
 <translation id="5368191757080475556">Linux ସହ ଫୋଲ୍ଡର୍ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="5402367795255837559">ବ୍ରେଲ୍ଲୀ</translation>
@@ -546,6 +555,8 @@
 <translation id="5833610766403489739">ଏହି ଫାଇଲ୍‌ଟି କେଉଁଠି ଏପଟ ସେପଟ ହୋଇଯାଇଛି। ଦୟାକରି ଆପଣଙ୍କର ଡାଉନ୍‌ଲୋଡ୍ ଲୋକେସନ୍ ସେଟିଂକୁ ଯାଞ୍ଚ କରି ପୁଣି ଥରେ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5838451609423551646">ସମସ୍ତ ବଛାଯାଇଥିବା ଫାଇଲ୍‌ଗୁଡ଼ିକ କଢ଼ାଯାଇଛି।</translation>
 <translation id="5838825566232597749">US ୱର୍କମ୍ୟାନ୍ ଆନ୍ତର୍ଜାତୀୟ</translation>
+<translation id="5845721951356578987">ନର୍ସ</translation>
+<translation id="5861477046012235702">ଗେମର</translation>
 <translation id="5864471791310927901">DHCP ଲୁକଅପ୍ ବିଫଳ ହେଲା।</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_NAME" />ର <ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="5911887972742538906">ଆପଣଙ୍କର Linux ଆପ୍ଲିକେସନ୍ ଇନ୍‌ଷ୍ଟଲେସନ୍‌ ସମୟରେ ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା।</translation>
@@ -574,6 +585,7 @@
 <translation id="6146563240635539929">ଭିଡିଓଗୁଡ଼ିକ</translation>
 <translation id="6150853954427645995">ଅଫ୍‌ଲାଇନ୍‌ ବ୍ୟବହାର ପାଇଁ ଏହି ଫାଇଲ୍‌ ସେଭ୍‌ କରିବାକୁ, ଅନ୍‌ଲାଇନ୍‌କୁ ଫେରନ୍ତୁ, ଫାଇଲ୍‌ରେ ରାଇଟ୍‍-କ୍ଲିକ୍‌ କରନ୍ତୁ ଏବଂ <ph name="OFFLINE_CHECKBOX_NAME" />ର ବିକଳ୍ପ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="6164412158936057769">ବଟର୍‌ଫ୍ଲାଇସ୍</translation>
+<translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="6170470584681422115">ସାଣ୍ଡୱିଚ୍</translation>
 <translation id="6187719147498869044">ହଙ୍ଗେରୀୟ</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> ମାଧ୍ୟମରେ ଖୋଲନ୍ତୁ</translation>
@@ -644,6 +656,7 @@
 <translation id="6861394552169064235">ପାର୍ସି</translation>
 <translation id="6862635236584086457">ଏହି ଫୋଲ୍ଡର୍‌ରେ ସେଭ୍ ହୋଇଥିବା ସମସ୍ତ ଫାଇଲ୍‌ଗୁଡ଼ିକ ସ୍ୱଚାଳିତରୂପେ ଅନ୍‌ଲାଇନ୍‌ରେ ବ୍ୟାକ୍‌ଅପ୍ ନିଆଯାଏ</translation>
 <translation id="6864328437977279120">ସଂସ୍କୃତ</translation>
+<translation id="6874758081814639712">ଟାଇ ଚି କରୁଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="6876155724392614295">ବାଇକ୍</translation>
 <translation id="6878261347041253038">ଦେବନାଗରୀ କୀବୋର୍ଡ (ଫୋନେଟିକ୍)</translation>
 <translation id="6885780034956018177">ଗେଣ୍ଡା</translation>
@@ -874,6 +887,7 @@
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />ର ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8750438273876807512">ସେଲ୍ଫରେ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଦ୍ରୁତ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ଏକ ଫାଇଲକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ ଏବଂ <ph name="ICON" />ରେ ଟାପ୍ କରି "ସେଲ୍ଫରେ ପିନ୍ କରନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="8787254343425541995">ସେୟାର୍ ହୋଇଥିବା ନେଟ୍‌ୱାର୍କ ପାଇଁ ପ୍ରୋକ୍ସିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
+<translation id="8790981080411996443">ଗଛରେ ପାଣି ଦେଉଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
 <translation id="8802459921616481935">ଟ୍ରାସକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="8808686172382650546">କ୍ୟାଟ୍‌</translation>
@@ -886,6 +900,7 @@
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8900820606136623064">ହଙ୍ଗେରୀଆନ୍</translation>
 <translation id="8903931173357132290">ଗ୍ରାଜୁଏଟ୍</translation>
+<translation id="8912078710089354287">ଲାଞ୍ଜ ହଲାଉଥିବା କୁକୁର</translation>
 <translation id="8919081441417203123">ଡାନିଶ୍</translation>
 <translation id="8965697826696209160">ଯଥେଷ୍ଟ ସ୍ଥାନ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="8970501467542182729">ଏହି ଫାଇଲକୁ Macintosh ସଫ୍ଟୱେର୍ ବ୍ୟବହାର କରୁଥିବା କୌଣସି କମ୍ପ୍ୟୁଟର ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି। Chrome OS ଚାଲୁଥିବା ଆପଣଙ୍କ ଡିଭାଇସରେ ଏହା ସୁସଙ୍ଗତ ନୁହେଁ। Chrome OSରେ ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ବିଷୟରେ <ph name="BEGIN_LINK_HELP" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_HELP" />।</translation>
@@ -912,6 +927,7 @@
 <translation id="9144340019284012223">କାଟାଲାନ୍</translation>
 <translation id="914873105831852105">ଅବୈଧ PIN। ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
 <translation id="9153934054460603056">ପରିଚୟ ଏବଂ ପାସ୍‌ୱାର୍ଡ ସେଭ୍ କରନ୍ତୁ</translation>
+<translation id="9171921933192916600">ବୁକୱାର୍ମ</translation>
 <translation id="9172592259078059678">ଗୁଜୁରାଟୀ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
 <translation id="9173120999827300720">ଆନ୍ତର୍ଜାତୀୟ କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="9174050671906956834">ଟ୍ରାସରେ ଥିବା ଆଇଟମଗୁଡ଼ିକ 30 ଦିନ ପରେ ସ୍ଥାୟୀ ଭାବେ ଡିଲିଟ୍ ହୋଇଯାଏ।</translation>
@@ -924,6 +940,7 @@
 <translation id="943972244133411984">ଏହାଙ୍କ ଦ୍ୱାରା ସଂଶୋଧନ କରାଗଲା</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ରୁ <ph name="TO_ENTRY_NAME" /> ମଧ୍ୟରେ <ph name="ENTRY_COUNT" />ଟି ଫାଇଲ୍‌ର ଏକ ପରିସର ବଛାଯାଇଛି।</translation>
+<translation id="965477715979482472">ଇଂରାଜୀ (ଦକ୍ଷିଣ ଆଫ୍ରିକା)</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ ଏହାକୁ ପ୍ରତିସ୍ଥାପନ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>
 <translation id="992401651319295351">ଆପଣଙ୍କ ପାଖରେ <ph name="RETRIES" />ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି। ଆପଣ ଏକ ନୂଆ PIN ସେଟ୍ ଅପ୍ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଏହି ନେଟୱାର୍କକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>

@@ -116,6 +116,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2073572773299281212">Aktywność <ph name="DAYS" /> dni temu</translation>
 <translation id="2074131957428911366">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
+<translation id="2080769225927880590">Zaloguj się na prawidłowe konto</translation>
 <translation id="209018056901015185">Wersja na komputer</translation>
 <translation id="2103075008456228677">Otwórz history.google.com</translation>
 <translation id="2116625576999540962">Przeniesione elementy: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
@@ -219,6 +220,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3131206671572504478">Blokuj wszystkie</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
 <translation id="3153862085237805241">Zapisz kartę</translation>
+<translation id="315401415709252194">Twoja organizacja wymaga zalogowania się.</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157684681743766797">Oznacz wszystko…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -229,6 +231,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3184767182050912705">Odblokuj za pomocą <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">Dodano do zakładek</translation>
 <translation id="3224641773458703735">Aby wyeksportować hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
+<translation id="3230318355092723906">Przy wyłączonej synchronizacji nadal masz dostęp do swoich zakładek, historii, haseł i innych ustawień na tym urządzeniu. Jeśli wprowadzisz zmiany, nie zostaną one zsynchronizowane na Twoim koncie.</translation>
 <translation id="3240426699337459095">Link skopiowany</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> z <ph name="NUM_SUGGESTIONS" /></translation>
@@ -309,7 +312,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4038354071007134711">Nie masz aplikacji, która może otworzyć ten plik.</translation>
 <translation id="4042870976416480368">Znajdź na stronie</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
-<translation id="4079195788735381731">Organizacja Cię wylogowała</translation>
 <translation id="408404951701638773">Pasek wyszukiwania jest teraz łatwiej dostępny</translation>
 <translation id="411254640334432676">Błąd pobierania.</translation>
 <translation id="4112644173421521737">Szukaj</translation>
@@ -353,6 +355,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4619615317237390068">Karty z innych urządzeń</translation>
 <translation id="4620246317052452550">Przeczytane strony</translation>
+<translation id="4620888520263267479">Pokaż podglądy linków</translation>
 <translation id="4630540211544979320">Tłumacz strony</translation>
 <translation id="4634124774493850572">Użyj hasła</translation>
 <translation id="4636930964841734540">Informacje</translation>
@@ -450,6 +453,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5556459405103347317">Odśwież</translation>
 <translation id="5580834567471114021">Dodać do listy Do przeczytania?</translation>
 <translation id="5592679540098330836">Włącz synchronizację dla: <ph name="NAME" /></translation>
+<translation id="560322036295180549">Wyłączone przez organizację</translation>
 <translation id="5614553682702429503">Zapisać hasło?</translation>
 <translation id="5626245204502895507">Nie udało się pobrać teraz tego pliku.</translation>
 <translation id="5631164295104953411">Dodaj formę płatności</translation>
@@ -465,6 +469,8 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5737974891429562743">Dane logowania na konto są nieaktualne. Zaktualizuj je, by rozpocząć synchronizację.</translation>
 <translation id="5738887413654608789">Pozwoli Ci to odkrywać strony internetowe dotyczące rzeczy z Twojego otoczenia.</translation>
 <translation id="5758631781033351321">Znajdziesz tu swoją listę Do przeczytania</translation>
+<translation id="575902488528307720">Wyszukaj grafikę</translation>
+<translation id="5781453543752460388">Dodaj do zdjęć</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
 <translation id="5803566855766646066">Czy na pewno chcesz zamknąć tę nową kartę?</translation>
 <translation id="5812974770859303494">Dodaj do...</translation>
@@ -502,6 +508,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6042308850641462728">Więcej</translation>
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tutaj możesz zarządzać wyświetlanymi wiadomościami i aktywnością</translation>
+<translation id="6064824697233747382">Twoja organizacja wymaga wyłączenia synchronizacji.</translation>
 <translation id="6066301408025741299">Kliknij, by anulować.</translation>
 <translation id="60829778314739003">Zaakceptuj i kontynuuj</translation>
 <translation id="6084848228346514841">Wybierz karty</translation>
@@ -517,6 +524,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6189413832092199491">Nieprzeczytane</translation>
 <translation id="6196207969502475924">Wyszukiwanie głosowe</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
 <translation id="6219688215832490856">Nigdy nie tłumacz</translation>
 <translation id="6223816392543092032">Korzystaj z zakładek, historii, haseł i innych ustawień na wszystkich swoich urządzeniach.</translation>
 <translation id="6232329973559504466">Wyszukiwanie incognito</translation>
@@ -601,10 +609,12 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6801927553864092214">Aby przeglądać prywatnie, otwórz kartę incognito</translation>
 <translation id="6807889908376551050">Pokaż wszystkie...</translation>
 <translation id="681368974849482173">Utworzono element</translation>
+<translation id="681450999322335505">Twoja organizacja wyłączyła synchronizację.</translation>
 <translation id="6830804042318138535">Więcej informacji</translation>
 <translation id="6831043979455480757">Tłumacz</translation>
 <translation id="6842136130964845393">Aby zapewnić sobie stały dostęp do zapisanych haseł, potwierdź swoją tożsamość</translation>
 <translation id="6851516051005285358">Żądaj wersji na komputer</translation>
+<translation id="6856384753476268833">Zarządzana przez Twoją organizację.</translation>
 <translation id="6858855187367714033">Zeskanowano</translation>
 <translation id="6859944681507688231">Aby zeskanować kod QR lub kartę kredytową, włącz aparat w ustawieniach.</translation>
 <translation id="6869389390665537774">Możesz przejrzeć odwiedzone strony lub usunąć je z historii</translation>
@@ -626,7 +636,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Ostatnie karty</translation>
 <translation id="7006788746334555276">Ustawienia treści</translation>
-<translation id="7015203776128479407">Nie ukończono początkowej konfiguracji synchronizacji. Synchronizacja jest wyłączona.</translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7062545763355031412">Zaakceptuj i przełącz konta</translation>
@@ -649,7 +658,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7265758999917665941">Nigdy dla tej witryny</translation>
 <translation id="7272437679830969316">Nie można zweryfikować Twojej tożsamości. Hasło nie zostało skopiowane.</translation>
 <translation id="7291368939935408496">Przygotowuję hasła…</translation>
-<translation id="7293171162284876153">Aby rozpocząć synchronizację, włącz „Synchronizuj dane Chrome”.</translation>
 <translation id="7313347584264171202">Tu znajdziesz swoje karty incognito</translation>
 <translation id="7319242366286515846">Przechodząc dalej, akceptujesz <ph name="BEGIN_LINK" />Warunki korzystania z usługi<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Pobrano <ph name="PERCENT" /> procent</translation>
@@ -705,6 +713,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7856733331829174190">Nie udało się pobrać pliku</translation>
 <translation id="7859704718976024901">Historia przeglądania</translation>
 <translation id="7887198238286927132">Aby chronić Twoją prywatność, Chrome nie będzie automatycznie wypełniać tego pola.</translation>
+<translation id="7911190106180361398">Twoja organizacja nie pozwala Ci synchronizować wszystkich danych.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportuj hasła…</translation>
 <translation id="794799177247607889">Zatrzymaj rejestrowanie</translation>
@@ -714,6 +723,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 
 Witryny mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam.</translation>
 <translation id="7971521879845308059">Blokuj wyskakujące okienka</translation>
+<translation id="797413074872316787">Aby synchronizować i personalizować wszystkie swoje urządzenia, włącz synchronizację.</translation>
 <translation id="7982789257301363584">Sieć</translation>
 <translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
@@ -732,8 +742,8 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8080028325999236607">Zamknij wszystkie karty</translation>
 <translation id="8105368624971345109">Wyłącz</translation>
 <translation id="8114753159095730575">Pobrany plik jest dostępny. Opcje są dostępne u dołu ekranu.</translation>
-<translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8156478151976189188">Funkcja Password Sync nie działa</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Twoje urządzenia<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Przetłumacz stronę</translation>
 <translation id="8205564605687841303">Anuluj</translation>
 <translation id="8206354486702514201">O tym ustawieniu decyduje administrator.</translation>
@@ -759,7 +769,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8487667956631253959">Włączono</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="8490978609246021741">Zapisz zmiany</translation>
-<translation id="8495097701594799854">Wyłączone przez organizację.</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="850600235656508448">Otwórz w trybie incognito</translation>
 <translation id="8517375800490286174">Licencje typu open source</translation>
@@ -832,6 +841,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Raport o awarii został wysłany.</translation>
 <translation id="952704832371081537">Anuluj</translation>
+<translation id="981498610235328462">Twoja organizacja pozwala logować się tylko na określone konta. Niedozwolone konta zostały ukryte.</translation>
 <translation id="984509647832111802">Synchronizacja nie działa.</translation>
 <translation id="988141524645182168">Inne urządzenia</translation>
 <translation id="989988560359834682">Edytuj adres</translation>

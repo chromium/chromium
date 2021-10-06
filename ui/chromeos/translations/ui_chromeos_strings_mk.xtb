@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">норвешки</translation>
 <translation id="1433628812591023318">За да пуштите датотеки во Parallels Desktop, датотеката мора да се премести во датотеките на Windows.</translation>
 <translation id="1435838927755162558">Споделете папка со Parallels Desktop</translation>
+<translation id="1439919885608649279">Човек со цвеќиња</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ не е поставена. Нема доволно простор на Google Drive.</translation>
 <translation id="1482884275703521657">фински</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Оваа датотека не може да се менува.</translation>
 <translation id="1673103856845176271">Не може да се пристапи до датотеката поради безбедносни причини.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Возење велосипед</translation>
 <translation id="1722487484194605434">Се пакуваат <ph name="NUMBER_OF_ITEMS" /> ставки…</translation>
 <translation id="1722687688096767818">Се додава профил…</translation>
 <translation id="1726100011689679555">DNS-сервери</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Не е достапен преглед</translation>
 <translation id="1812302367230252929">транслитерација на амхарски</translation>
 <translation id="1813278315230285598">Услуги</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Внимание:<ph name="END_BOLD" /> Овие датотеки се привремени и може да се бришат автоматски за да се ослободи простор на дискот. <ph name="BEGIN_LINK" />Дознај повеќе<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="183183971458492120">Се вчитуваат информации…</translation>
 <translation id="1834290891154666894">Неважечки запис за совпаѓање на алтернативното име на субјектот</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Имиња кои почнуваат со точка се резервирани за системот. Изберете друго име.</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2084108471225856927">Поставки за уредот</translation>
+<translation id="2084809735218147718">Човек што пее „Благодарам“</translation>
 <translation id="2085470240340828803">Датотека со име „<ph name="FILENAME" />“ веќе постои. Што сакате да направите?</translation>
 <translation id="2088690981887365033">VPN-мрежа</translation>
 <translation id="2122305276694332719">Автоматското поврзување на скриена мрежа им овозможува на другите да го видат вашиот уред и некои други мрежни поставки и не се препорачува.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Инсталирај со Linux</translation>
 <translation id="2225536596944493418">Дали сигурно сакате да избришете <ph name="NUMBER_OF_ITEMS" /> ставки?</translation>
 <translation id="2230062665678605299">Не може да се создаде папка „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Човек со шолја кафе</translation>
 <translation id="2251368349685848079">Врати од корпа</translation>
 <translation id="2282155092769082568">Линк за автоматско конфигурирање:</translation>
 <translation id="2288278176040912387">Грамофон</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Вкупната големина на датотеки</translation>
 <translation id="2428749644083375155">Се копираат <ph name="NUMBER_OF_ITEMS" /> ставки во <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Тип</translation>
+<translation id="2452444014801043526">Човек со мегафон</translation>
 <translation id="2464079411014186876">Сладолед</translation>
 <translation id="2464089476039395325">HTTP прокси</translation>
 <translation id="2467267713099745100">Мрежа со <ph name="NETWORK_TYPE" />, исклучена</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">ПДФ-документ</translation>
 <translation id="2888807692577297075">Нема ставки што се совпаѓаат со &lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Информации</translation>
-<translation id="2902312830803030883">Повеќе дејства</translation>
 <translation id="2902734494705624966">САД продолжена</translation>
 <translation id="290843123675549676">марати</translation>
 <translation id="2923240520113693977">естонски</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">француски (Канада)</translation>
 <translation id="3003189754374775221">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
 <translation id="3003633581067744647">Префрли се на режим за преглед со сликички</translation>
+<translation id="3016566519832145558">Внимание: датотекиве се привремени и може автоматски да се избришат за да се ослободи простор на дискот.</translation>
 <translation id="3029114385395636667">Овозможете офлајн „Документи на Google“ за да бидат документите табелите и слајдовите достапни офлајн.</translation>
 <translation id="303198083543495566">Географија</translation>
 <translation id="3047197340186497470">кинески даји</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">Хост на SOCKS</translation>
 <translation id="3113153474486991170">Не можеше да се отвори „<ph name="PATH" />“ од локацијава. Копирајте ја во „Мои датотеки“ за да ја отворите.</translation>
 <translation id="3113592018909187986">Имате уште 1 обид. Нема да може да ја користите мрежава додека не поставите нов PIN.</translation>
+<translation id="3124404833828281817">Замислен човек</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (со хардверски бекап)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Одете на drive.google.com...</translation>
 <translation id="3553048479571901246">За да отворате датотеки со <ph name="APP_NAME" />, прво копирајте ги во папката со датотеки на Windows.</translation>
 <translation id="3556731189587832921">англиски (САД) со меѓународна компјутерска тастатура</translation>
+<translation id="3567221313191587603">Изберете датотека и вклучете „<ph name="OFFLINE_CHECKBOX_NAME" />“ за да имате офлајн пристап до датотеките.</translation>
 <translation id="357479282490346887">литвански</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> не можеше да се направи да биде достапна офлајн</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Се инсталира профилот на мобилниот уред, мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">чешки со тастатура Qwerty</translation>
 <translation id="4656293982926141856">Овој компјутер</translation>
+<translation id="4656777537938206294">Направете датотеките да се достапни офлајн</translation>
+<translation id="4658782175094886150">Човек во снег</translation>
 <translation id="4669606053856530811">Членовите на „<ph name="SOURCE_NAME" />“ ќе изгубат пристап освен ако ставкиве се споделени со нив.</translation>
 <translation id="4690246192099372265">шведски</translation>
 <translation id="4693155481716051732">Суши</translation>
@@ -496,6 +504,7 @@
 <translation id="5330145655348521461">Датотеките се отворија на друга работна површина. Поместете ја на <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) за да се прикаже.</translation>
 <translation id="5330512191124428349">Земете информации</translation>
 <translation id="5335458522276292100">Се прави бекап на <ph name="FILE_COUNT" /> на <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Човек со мачки</translation>
 <translation id="5358764674931277">Стапка на слики</translation>
 <translation id="5368191757080475556">Споделување папка со Linux</translation>
 <translation id="5402367795255837559">Браилово писмо</translation>
@@ -551,6 +560,8 @@
 <translation id="5833610766403489739">Датотеката отиде некаде. Проверете ја поставката во локацијата на преземање и обидете се повторно.</translation>
 <translation id="5838451609423551646">Ги отстранивте сите записи од изборот.</translation>
 <translation id="5838825566232597749">САД, меѓународна Workman</translation>
+<translation id="5845721951356578987">Медицинска сестра</translation>
+<translation id="5861477046012235702">Гејмер</translation>
 <translation id="5864471791310927901">Барањето за DHCP не успеа.</translation>
 <translation id="5896749729057314184">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
 <translation id="5911887972742538906">Дојде до грешка при инсталирањето на вашата апликација за Linux.</translation>
@@ -579,6 +590,7 @@
 <translation id="6146563240635539929">Видеа</translation>
 <translation id="6150853954427645995">За да ја зачувате оваа датотека за локална употреба, вклучете се повторно, кликнете со десен клик на датотеката и изберете ја опцијата <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Пеперутки</translation>
+<translation id="6165508094623778733">Дознајте повеќе</translation>
 <translation id="6170470584681422115">Сендвич</translation>
 <translation id="6187719147498869044">унгарски</translation>
 <translation id="6189412234224385711">Отворете со <ph name="EXTENSION_NAME" /></translation>
@@ -649,6 +661,7 @@
 <translation id="6861394552169064235">персиски</translation>
 <translation id="6862635236584086457">Од сите датотеки зачувани во оваа папка автоматски се прави резервна копија онлајн</translation>
 <translation id="6864328437977279120">санскрит</translation>
+<translation id="6874758081814639712">Човек што вежба таи-чи</translation>
 <translation id="6876155724392614295">Велосипед</translation>
 <translation id="6878261347041253038">деванагари тастатура (фонетска)</translation>
 <translation id="6885780034956018177">Полжав</translation>
@@ -879,6 +892,7 @@
 <translation id="8743164338060742337">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, поврзи</translation>
 <translation id="8750438273876807512">Допрете и задржете датотека и допрете <ph name="ICON" />, па изберете „Прикачи на полицата“ за брз пристап до вашите датотеки во полицата.</translation>
 <translation id="8787254343425541995">Дозволи прокси за споделени мрежи</translation>
+<translation id="8790981080411996443">Човек што полева растенија</translation>
 <translation id="8798099450830957504">Стандардно</translation>
 <translation id="8802459921616481935">Премести во „Корпа“</translation>
 <translation id="8808686172382650546">Мачка</translation>
@@ -891,6 +905,7 @@
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8900820606136623064">унгарски</translation>
 <translation id="8903931173357132290">Дипломец</translation>
+<translation id="8912078710089354287">Куче што мавта со опашката</translation>
 <translation id="8919081441417203123">дански</translation>
 <translation id="8965697826696209160">Нема доволно простор.</translation>
 <translation id="8970501467542182729">Датотекава е создадена за компјутер што користи Macintosh. Таа не е компатибилна со вашиот уред којшто извршува Chrome OS. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /> за отворање датотеки во Chrome OS.</translation>
@@ -917,6 +932,7 @@
 <translation id="9144340019284012223">каталонски</translation>
 <translation id="914873105831852105">Погрешен PIN. Имате уште 1 обид.</translation>
 <translation id="9153934054460603056">Зачувај идентитет и лозинка</translation>
+<translation id="9171921933192916600">Љубител на книги</translation>
 <translation id="9172592259078059678">транслитерација на гуџарати</translation>
 <translation id="9173120999827300720">англиски (САД) со меѓународна тастатура</translation>
 <translation id="9174050671906956834">Ставките од корпата се бришат засекогаш по 30 дена.</translation>
@@ -929,6 +945,7 @@
 <translation id="943972244133411984">Изменето од</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="947144732524271678">Избравте опсег од <ph name="ENTRY_COUNT" /> записи од <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">англиски (Јужна Африка)</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="988685240266037636">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Дали сакате да ја замените?</translation>
 <translation id="992401651319295351">Имате уште <ph name="RETRIES" /> обиди. Нема да може да ја користите мрежава додека не поставите нов PIN.</translation>

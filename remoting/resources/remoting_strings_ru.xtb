@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">The Chromium Authors, 2021. Все права защищены.</translation>
 <translation id="4513946894732546136">Отзыв</translation>
 <translation id="4563926062592110512">Отключен клиент: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />: обнаружены неверные настройки. Выберите другой веб-браузер по умолчанию, а затем снова включите переадресацию URL.</translation>
 <translation id="4635770493235256822">Удаленные устройства</translation>
 <translation id="4660011489602794167">Показать клавиатуру</translation>
 <translation id="4703799847237267011">Сеанс Пульта Chrome завершен.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">Выполнен вход через аккаунт <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Подключиться повторно</translation>
 <translation id="5810269635982033450">Пользоваться экраном как сенсорной панелью компьютера</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> запрашивает доступ к вашему экрану, клавиатуре и мыши. Нажмите ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'', если не хотите предоставлять доступ. Чтобы разрешить доступ после установки соединения, нажмите ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''.</translation>
 <translation id="5823658491130719298">На компьютере, к которому вы хотите получить удаленный доступ, откройте страницу <ph name="INSTALLATION_LINK" /> в браузере Chrome.</translation>
 <translation id="5841343754884244200">Настройки внешнего вида</translation>
 <translation id="6033507038939587647">Настройки клавиатуры</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Подключения к удаленному компьютеру временно заблокированы, поскольку кто-то пытался установить соединение, используя неверный PIN-код. Повторите попытку позже.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6985691951107243942">Заблокировать подключения к <ph name="HOSTNAME" />? Восстановить их можно будет только на соответствующем компьютере.</translation>
-<translation id="6998890551706945177">Пользователь <ph name="CLIENT_USERNAME" /> запрашивает разрешение на управление вашим компьютером. Если вы не знаете этого человека или вам нужно предварительно внести какие-то изменения, нажмите "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />".  Чтобы разрешить подключение, нажмите "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />".</translation>
 <translation id="7019153418965365059">Неизвестная ошибка хоста: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Удаленная поддержка</translation>
 <translation id="7026930240735156896">Следуйте инструкциям, чтобы настроить удаленный доступ к компьютеру.</translation>
@@ -169,6 +170,7 @@
 Чтобы предоставить доступ, нажмите кнопку "<ph name="BUTTON_NAME" />" ниже. На открывшейся панели с настройками специальных возможностей установите флажок рядом с параметром "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Если флажок рядом с параметром "<ph name="SERVICE_SCRIPT_NAME" />" уже есть, снимите его и установите снова.</translation>
+<translation id="8305209735512572429">Процесс удаленного управления веб-аутентификацией</translation>
 <translation id="8383794970363966105">Чтобы использовать Пульт Chrome, необходимо добавить на устройство аккаунт Google.</translation>
 <translation id="8386846956409881180">В конфигурации хоста указаны недопустимые учетные данные OAuth</translation>
 <translation id="8397385476380433240">Предоставьте разрешения для сервиса "<ph name="PRODUCT_NAME" />"</translation>

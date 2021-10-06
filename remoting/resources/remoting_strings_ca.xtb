@@ -79,6 +79,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="4512952200932940229">Copyright 2021. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="4563926062592110512">Client desconnectat: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> no està ben configurat. Tria un altre navegador web com a predeterminat i, a continuació, torna a activar el reenviament de l'URL.</translation>
 <translation id="4635770493235256822">Dispositius remots</translation>
 <translation id="4660011489602794167">Mostra el teclat</translation>
 <translation id="4703799847237267011">La vostra sessió de Chromoting ha finalitzat.</translation>
@@ -109,6 +110,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="5750083143895808682">Has iniciat la sessió com a <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Torna a connectar</translation>
 <translation id="5810269635982033450">La pantalla fa de ratolí tàctil</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure la teva pantalla i controlar el teclat i el ratolí. Prem <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> si no esperaves aquesta sol·licitud. En cas contrari, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> per permetre la connexió quan estiguis a punt.</translation>
 <translation id="5823658491130719298">Obre Chrome a l'ordinador al qual vulguis accedir de manera remota i ves a la pàgina <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcions de visualització</translation>
 <translation id="6033507038939587647">Opcions del teclat</translation>
@@ -130,7 +132,6 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="6963936880795878952">Les connexions amb l'ordinador remot s'han bloquejat temporalment perquè algú ha provat de connectar-s'hi amb un PIN no vàlid. Torna-ho a provar més tard.</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6985691951107243942">Confirmeu que voleu desactivar les connexions remotes a <ph name="HOSTNAME" />? Si canvieu de parer, haureu de visitar aquest ordinador per tornar-les a activar.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ha sol·licitat accés per veure i controlar l'ordinador. Prem <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> si no coneixes aquesta persona o si has de fer algun canvi abans de donar-li accés.  Si no, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> per permetre la connexió.</translation>
 <translation id="7019153418965365059">Error d'amfitrió no reconegut: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistència remota</translation>
 <translation id="7026930240735156896">Segueix les instruccions per configurar l'accés remot a l'ordinador</translation>
@@ -169,6 +170,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 Per concedir el permís, fes clic a <ph name="BUTTON_NAME" /> més avall. Al tauler de preferències Accessibilitat que s'obre, marca la casella corresponent a <ph name="SERVICE_SCRIPT_NAME" />.
 
 Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i torna-la a marcar.</translation>
+<translation id="8305209735512572429">Procés remot d'autenticació web</translation>
 <translation id="8383794970363966105">Per utilitzar Chromoting, haureu d'afegir un compte de Google al dispositiu.</translation>
 <translation id="8386846956409881180">L'amfitrió està configurat amb unes credencials d'OAuth no vàlides.</translation>
 <translation id="8397385476380433240">Concedeix permís a <ph name="PRODUCT_NAME" /></translation>

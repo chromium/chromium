@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="4513946894732546136">ਵਿਚਾਰ</translation>
 <translation id="4563926062592110512">ਕਲਾਇੰਟ ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ਦਾ ਸੰਰੂਪਣ ਸਹੀ ਤਰ੍ਹਾਂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਚੁਣੋ ਅਤੇ ਫਿਰ URL ਫਾਰਵਰਡਿੰਗ ਨੂੰ ਦੁਬਾਰਾ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="4635770493235256822">ਰਿਮੋਟ ਡਿਵਾਈਸਾਂ</translation>
 <translation id="4660011489602794167">ਕੀ-ਬੋਰਡ ਦਿਖਾਓ</translation>
 <translation id="4703799847237267011">ਤੁਹਾਡਾ Chromoting ਸੈਸ਼ਨ ਖ਼ਤਮ ਹੋ ਗਿਆ ਹੈ।</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="579702532610384533">ਰੀਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5810269635982033450">ਸਕ੍ਰੀਨ ਕਿਸੇ ਟਰੈਕਪੈਡ ਦੀ ਤਰ੍ਹਾਂ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ਨੇ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਦੇਖਣ ਅਤੇ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਅਤੇ ਮਾਊਸ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਬੇਨਤੀ ਦੀ ਉਮੀਦ ਨਹੀਂ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ਦਬਾਓ। ਨਹੀਂ ਤਾਂ ਤਿਆਰ ਹੋਣ 'ਤੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਆਗਿਆ ਦੇਣ ਲਈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ਚੁਣੋ।</translation>
 <translation id="5823658491130719298">ਤੁਸੀਂ ਜਿਸ ਕੰਪਿਊਟਰ 'ਤੇ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਉਸ 'ਤੇ Chrome ਖੋਲ੍ਹੋ ਅਤੇ <ph name="INSTALLATION_LINK" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="5841343754884244200">ਦਿਖਾਉਣ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="6033507038939587647">ਕੀ-ਬੋਰਡ ਵਿਕਲਪ</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">ਰਿਮੋਟ ਕੰਪਿਊਟਰ 'ਤੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਕੋਈ ਵਿਅਕਤੀ ਅਵੈਧ ਪਿੰਨ ਨਾਲ ਇਸ ਨਾਲ ਕਨੈਕਟ ਹੋਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6985691951107243942">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="HOSTNAME" /> ਲਈ ਰਿਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਜੇਕਰ ਤੁਸੀਂ ਆਪਣਾ ਵਿਚਾਰ ਬਦਲਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਨੂੰ ਕਨੈਕਸ਼ਨਾਂ ਨੂੂੰ ਮੁੜ ਚਾਲੂ ਕਰਨ ਲਈ ਉਸ ਕੰਪਿਊਟਰ 'ਤੇ ਜਾਣਾ ਪਵੇਗਾ।</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ਨੇ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਨੂੰ ਦੇਖਣ ਅਤੇ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਵਿਅਕਤੀ ਨੂੰ ਨਹੀਂ ਜਾਣਦੇ ਹੋ ਜਾਂ ਸਾਂਝਾ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਨੂੰ ਕੋਈ ਵੀ ਤਬਦੀਲੀ ਕਰਨ ਦੀ ਲੋੜ ਹੈ, ਤਾਂ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ਦਬਾਓ।  ਨਹੀਂ ਤਾਂ ਕਨੈਕਸ਼ਨ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ਚੁਣੋ।</translation>
 <translation id="7019153418965365059">ਬਿਨਾਂ ਪਛਾਣੀ ਗਈ ਹੋਸਟ ਗੜਬੜ: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">ਰਿਮੋਟ ਸਹਾਇਤਾ</translation>
 <translation id="7026930240735156896">ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਵਾਸਤੇ ਆਪਣੇ ਕੰਪਿਊਟਰ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ ਹਿਦਾਇਤਾਂ ਦੀ ਪਾਲਣਾ ਕਰੋ</translation>
@@ -169,6 +170,7 @@
 ਇਹ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ, ਹੇਠਾਂ '<ph name="BUTTON_NAME" />' ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਖੁੱਲ੍ਹਣ ਵਾਲੇ 'ਪਹੁੰਚਯੋਗਤਾ' ਤਰਜੀਹਾਂ ਪੇਨ ਵਿੱਚ '<ph name="SERVICE_SCRIPT_NAME" />' ਦੇ ਨਾਲ ਵਾਲੇ ਬਾਕਸ ਵਿੱਚ ਨਿਸ਼ਾਨ ਲਗਾਓ।
 
 ਜੇ '<ph name="SERVICE_SCRIPT_NAME" />' 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਨਿਸ਼ਾਨ ਲੱਗਾ ਹੋਇਆ ਹੈ, ਤਾਂ ਇਸ ਤੋਂ ਨਿਸ਼ਾਨ ਹਟਾਓ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
+<translation id="8305209735512572429">ਵੈੱਬ ਪ੍ਰਮਾਣੀਕਰਨ ਰਿਮੋਟਿੰਗ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="8383794970363966105">Chromoting ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ Google ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="8386846956409881180">ਹੋਸਟ ਨੂੰ ਅਵੈਧ OAuth ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨਾਲ ਸੰਰੂਪਿਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ</translation>

@@ -34,7 +34,6 @@
 <translation id="174539241580958092">Google Chrome ไม่สามารถซิงค์ข้อมูลของคุณเนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chrome ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
-<translation id="1810203443153428607">การติดตั้ง Chrome OS จะเขียนทับข้อมูลทั้งหมดในอุปกรณ์</translation>
 <translation id="1812689907177901597">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1860536484129686729">Chrome ต้องการสิทธิ์เข้าถึงกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="1873233029667955273">Google Chrome ไม่ใช่เบราว์เซอร์เริ่มต้น</translation>
@@ -52,6 +51,7 @@
 <translation id="2290014774651636340">คีย์ API ของ Google หายไป การทำงานบางอย่างของ Google Chrome จะถูกปิดใช้งาน</translation>
 <translation id="2290095356545025170">คุณแน่ใจหรือไม่ว่าต้องการยกเลิกการติดตั้ง Google Chrome</translation>
 <translation id="2309047409763057870">นี่เป็นการติดตั้ง Google Chrome แบบสำรอง และไม่สามารถใช้เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
+<translation id="2345992953227471816">Chrome พบว่าส่วนขยายเหล่านี้มีมัลแวร์</translation>
 <translation id="2348335408836342058">Chrome ต้องการสิทธิ์เข้าถึงไมโครโฟนและกล้องถ่ายรูปของคุณสำหรับเว็บไซต์นี้</translation>
 <translation id="234869673307233423">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="235650106824528204">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chrome ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
@@ -81,6 +81,7 @@
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
 <translation id="2888126860611144412">เกี่ยวกับ Chrome</translation>
 <translation id="2926676257163822632">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ให้ Chrome <ph name="BEGIN_LINK" />สร้างและจดจำรหัสผ่านที่รัดกุมให้คุณ<ph name="END_LINK" /></translation>
+<translation id="2926952073016206995">Chrome ต้องการสิทธิ์เข้าถึงกล้องสำหรับเว็บไซต์นี้</translation>
 <translation id="2929907241665500097">Chrome ไม่ได้อัปเดตเนื่องจากเกิดข้อผิดพลาด <ph name="BEGIN_LINK" />โปรดแก้ปัญหาการอัปเดต Chrome และการอัปเดตที่ไม่สำเร็จ<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />การช่วยเตือนครั้งสุดท้าย: การติดตั้ง<ph name="BEGIN_BOLD" />จะลบฮาร์ดไดรฟ์ทั้งหมด<ph name="END_BOLD" /> โปรดตรวจสอบว่าคุณสำรองข้อมูลที่สำคัญแล้ว<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />เมื่อเริ่มการติดตั้งแล้วจะยกเลิกไม่ได้<ph name="END_PARAGRAPH2" /></translation>
@@ -109,6 +110,7 @@
 <translation id="3582972582564653026">ซิงค์และปรับเปลี่ยน Chrome ในอุปกรณ์ต่างๆ</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต}=1{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดให้อีก}other{ผู้ดูแลระบบต้องการให้คุณเปิด Chrome ขึ้นมาใหม่เพื่อใช้การอัปเดต หน้าต่างที่ไม่ระบุตัวตนจำนวน # หน้าต่างจะไม่เปิดให้อีก}}</translation>
 <translation id="3622797965165704966">ตอนนี้การใช้ Chrome กับบัญชี Google ของคุณและบนคอมพิวเตอร์ที่ใช้ร่วมกันทำได้ง่ายกว่าเดิม</translation>
+<translation id="3673813398384385993">Chrome พบว่า "<ph name="EXTENSION_NAME" />" มีมัลแวร์</translation>
 <translation id="3718181793972440140">การดำเนินการนี้จะลบ 1 รายการออกจากอุปกรณ์นี้ หากต้องการดึงข้อมูลภายหลัง ให้ลงชื่อเข้าใช้ Chrome ด้วย <ph name="USER_EMAIL" /></translation>
 <translation id="3735758079232443276">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เปลี่ยนหน้าที่จะแสดงเมื่อคุณเริ่มต้น Chrome</translation>
 <translation id="3779473566290487688">คุณจะต้องใช้ OS X 10.11 ขึ้นไปเพื่อรับการอัปเดตของ Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ OS X 10.10</translation>
@@ -125,6 +127,7 @@
 <translation id="4149882025268051530">โปรแกรมติดตั้งยกเลิกการบีบอัดการเก็บข้อมูลไม่ได้ โปรดดาวน์โหลด Google Chrome อีกครั้ง</translation>
 <translation id="4191857738314598978">{0,plural, =1{เปิด Chrome ขึ้นมาใหม่ภายใน 1 วัน}other{เปิด Chrome ขึ้นมาใหม่ภายใน # วัน}}</translation>
 <translation id="4205939740494406371">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดรอ 24 ชั่วโมงแล้วลองอีกครั้งหรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
+<translation id="4242034826641750751">Chrome ต้องการสิทธิ์เข้าถึงกล้องและไมโครโฟนสำหรับเว็บไซต์นี้</translation>
 <translation id="424864128008805179">ต้องการออกจากระบบ Chrome ไหม</translation>
 <translation id="4251615635259297716">เชื่อมโยงข้อมูล Chrome กับบัญชีนี้ไหม</translation>
 <translation id="4281844954008187215">ข้อกำหนดในการให้บริการ</translation>
@@ -167,13 +170,10 @@
 <translation id="521447420733633466">เพื่อนและครอบครัวสามารถท่องเว็บแยกกันและตั้งค่า Chrome ตามที่ตนต้องการในกรณีที่ใช้อุปกรณ์ร่วมกัน</translation>
 <translation id="5251420635869119124">ผู้เยี่ยมชมสามารถใช้ Chrome ได้โดยไม่ทิ้งร่องรอยไว้</translation>
 <translation id="5251679006894510177">ใกล้จะอัปเดตเสร็จแล้ว เปิด Chrome อีกครั้งเพื่อให้การอัปเดตเสร็จสมบูรณ์ หน้าต่างที่ไม่ระบุตัวตนจะไม่เปิดให้อีก</translation>
+<translation id="5334487786912937552">Chrome ต้องการสิทธิ์เข้าถึงพื้นที่เก็บข้อมูลเพื่อดาวน์โหลดไฟล์</translation>
 <translation id="5386244825306882791">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chrome หรือทำการค้นหาจากแถบอเนกประสงค์ด้วย</translation>
 <translation id="5394833366792865639">แชร์แท็บ Chrome</translation>
 <translation id="5430073640787465221">ไฟล์ค่ากำหนดของคุณขัดข้องหรือไม่ถูกต้อง Google Chrome ไม่สามารถกู้คืนการตั้งค่าของคุณได้</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ก่อนที่จะเริ่ม โปรดตรวจสอบว่าคุณสำรองข้อมูลล่าสุดแล้ว การติดตั้ง Chrome OS จะเขียนทับข้อมูลทั้งหมดในฮาร์ดไดรฟ์<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ไม่มีส่วนรับผิดชอบต่อการสูญหายของข้อมูล และไม่รับประกันว่า Chrome OS จะใช้งานได้ในรุ่นที่ไม่ผ่านการรับรอง โปรดไปที่ [TBD] เพื่อดูข้อมูลเพิ่มเติมเกี่ยวกับรุ่นที่ได้รับการรับรอง<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตั้ง Chrome OS และการลบข้อมูล: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />หากพร้อมดำเนินการต่อ ให้คลิก "ติดตั้ง Chrome OS" แล้วเราจะแนะนำขั้นตอนการติดตั้งง่ายๆ เพียง 2-3 ขั้นตอนให้คุณ คุณจะยืนยันได้อีกครั้งก่อนที่เราจะทำการเปลี่ยนแปลงกับคอมพิวเตอร์<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">ติดตั้ง Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome กำลังพยายามแสดงรหัสผ่าน</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -204,10 +204,12 @@
 <translation id="6291549208091401781">มีการติดตั้ง Google Chrome สำหรับผู้ใช้ทุกคนบนคอมพิวเตอร์ของคุณแล้ว</translation>
 <translation id="6368958679917195344">Chrome OS เกิดขึ้นได้ด้วยการสนับสนุนจาก<ph name="BEGIN_LINK_CROS_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_CROS_OSS" />เพิ่มเติม</translation>
 <translation id="6418662306461808273">เปลี่ยนไปใช้โปรไฟล์ Chrome ที่มีอยู่ไหม</translation>
+<translation id="6506909944137591434">Chrome ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">ระบบ Chrome OS</translation>
 <translation id="6676384891291319759">เข้าถึงอินเทอร์เน็ต</translation>
 <translation id="6679975945624592337">ให้ Google Chrome ทำงานในพื้นหลัง</translation>
+<translation id="6696915334902295848">Chrome ต้องการสิทธิ์เข้าถึงไมโครโฟนสำหรับเว็บไซต์นี้</translation>
 <translation id="6739177684496155661">ดำเนินการต่อในโปรไฟล์ Chrome ใหม่ไหม</translation>
 <translation id="6750954913813541382">Chrome จะส่งข้อความที่คุณพิมพ์ในเบราว์เซอร์ไปยัง Google เพื่อแก้ไขข้อผิดพลาดของการสะกดคำ</translation>
 <translation id="677276454032249905">ออกจาก Chrome ใช่ไหม</translation>
@@ -247,6 +249,7 @@
 <translation id="7761834446675418963">คลิกชื่อของคุณเพื่อเปิด Chrome และเริ่มท่องเว็บ</translation>
 <translation id="7777080907402804672">หากรูปภาพไม่มีคำอธิบายที่เป็นประโยชน์ Chrome จะพยายามใส่คำอธิบายให้คุณ รูปภาพจะส่งมายัง Google เพื่อสร้างคำอธิบาย คุณปิดการดำเนินการนี้ได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="7781002470561365167">Google Chrome เวอร์ชันใหม่มีให้ได้ลองใช้กันแล้ว</translation>
+<translation id="778331955594035129">Chrome ต้องการสิทธิ์เข้าถึงตำแหน่งสำหรับเว็บไซต์นี้</translation>
 <translation id="7787950393032327779">ดูเหมือนว่าโปรไฟล์กำลังถูกใช้งานโดยกระบวนการอื่นของ Google Chrome (<ph name="PROCESS_ID" />) บนคอมพิวเตอร์อีกเครื่อง (<ph name="HOST_NAME" />)  Chrome ล็อกโปรไฟล์ไว้เพื่อไม่ให้โปรไฟล์เกิดความเสียหาย  หากคุณมั่นใจว่าไม่มีกระบวนการอื่นใดกำลังใช้โปรไฟล์นี้อยู่ คุณสามารถปลดล็อกโปรไฟล์และเปิด Chrome ใหม่</translation>
 <translation id="7801699035218095297">Google Chrome กำลังพยายามคัดลอกรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="7808348361785373670">นำออกจาก Chrome...</translation>

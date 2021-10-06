@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">La baixada s'ha posat en pausa</translation>
 <translation id="1415402041810619267">L'URL s'ha truncat</translation>
 <translation id="1446450296470737166">Permet control total disp. MIDI</translation>
-<translation id="1509960214886564027">Pot ser que les funcions de molts llocs web no funcionin</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1647582022260550163">Confirmes que vols restablir els permisos i esborrar les galetes i les dades del lloc web?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Permeses, excepte les de tercers</translation>
 <translation id="1989112275319619282">Examina</translation>
 <translation id="1994173015038366702">URL del lloc web</translation>
+<translation id="2004697686368036666">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="2025115093177348061">Realitat augmentada</translation>
 <translation id="2030769033451695672">Toca per tornar a <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Desfés</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Permet les galetes d'un lloc web concret.</translation>
 <translation id="4046123991198612571">Pista següent</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
+<translation id="4176463684765177261">Desactivat</translation>
 <translation id="4200726100658658164">Obre la configuració d'ubicació</translation>
 <translation id="4226663524361240545">És possible que les notificacions facin vibrar el dispositiu</translation>
 <translation id="4259722352634471385">S'ha bloquejat la navegació: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Posa en pausa el vídeo</translation>
 <translation id="5887687176710214216">Darrera visita: ahir</translation>
 <translation id="5916664084637901428">Activat</translation>
+<translation id="59174027418879706">Activat</translation>
 <translation id="5922853908706496913">S'està compartint la pantalla</translation>
 <translation id="5939518447894949180">Restableix</translation>
 <translation id="5975083100439434680">Redueix</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Bloqueja les galetes de tercers</translation>
 <translation id="6216432067784365534">Opcions per a <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vols desinstal·lar <ph name="APP_NAME" />?</translation>
+<translation id="6233545266937675277">Sol·licita la visualització per a ordinadors dels llocs web</translation>
 <translation id="6262279340360821358">S'han bloquejat <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}other{S'han bloquejat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="NUM_MORE" /> més}}</translation>
 <translation id="6554732001434021288">Darrera visita: fa <ph name="NUM_DAYS" /> dies</translation>
 <translation id="6561560012278703671">Utilitza missatges més discrets (bloqueja les sol·licituds de notificacions per evitar interrupcions)</translation>
+<translation id="6593061639179217415">Lloc web per a ordinador</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contingut protegit</translation>
 <translation id="662080504995468778">No surtis</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Cancel·la la selecció</translation>
 <translation id="7846621471902887024">Se't tancarà la sessió de tots els llocs web.</translation>
 <translation id="7882806643839505685">Permet el so d'un lloc web concret.</translation>
+<translation id="7940722705963108451">Recorda-m'ho</translation>
 <translation id="7986741934819883144">Selecciona un contacte</translation>
-<translation id="7993619969781047893">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
 <translation id="7999064672810608036">Confirmes que vols esborrar d'aquest lloc web totes les dades locals, incloses les galetes, i restablir-ne tots els permisos?</translation>
 <translation id="8007176423574883786">Aquesta ubicació està desactivada per a aquest dispositiu</translation>
 <translation id="802154636333426148">Error de baixada</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Silenciats</translation>
 <translation id="813082847718468539">Mostra la informació del lloc web</translation>
 <translation id="8131740175452115882">Confirma</translation>
+<translation id="8154912474061769055">Pot ser que les funcions de molts llocs web no funcionin</translation>
 <translation id="8197286292360124385">S'ha permès <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reprèn</translation>
 <translation id="8206354486702514201">L'administrador aplica aquesta opció de configuració.</translation>
 <translation id="8211406090763984747">La connexió és segura</translation>
 <translation id="8249310407154411074">Mou a la part superior</translation>
 <translation id="8261506727792406068">Suprimeix</translation>
+<translation id="8267092878336850213">Sol·licita la visualització per a mòbils dels llocs web</translation>
 <translation id="8300705686683892304">Gestionats per aplicacions</translation>
 <translation id="8324158725704657629">No m'ho tornis a preguntar</translation>
 <translation id="8372893542064058268">Permet la sincronització en segon pla en un lloc concret.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Esborra l'entrada</translation>
 <translation id="868929229000858085">Cerca als contactes</translation>
 <translation id="8702612070107455751">S'esborraran totes les dades sense connexió.</translation>
+<translation id="8712637175834984815">Entesos</translation>
 <translation id="8719283222052720129">Activa el permís per a <ph name="APP_NAME" /> a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8730621377337864115">Fet</translation>

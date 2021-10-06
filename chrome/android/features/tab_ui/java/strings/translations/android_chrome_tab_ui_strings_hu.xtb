@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Értesítést kaphat az árcsökkenésekről</translation>
 <translation id="1657719826150349398">Lap mozgatása lefelé</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> lap}other{<ph name="TABS_COUNT_MANY" /> lap}}</translation>
+<translation id="2118649612461486615">Üzletadatok</translation>
+<translation id="2162620598375156287">Most <ph name="CURRENT_PRICE" /> áron a következő webhelyen: <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Csoportnév szerkesztése</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kiválasztott lap eltávolítása a csoportból.}other{<ph name="TABS_COUNT_MANY" /> kiválasztott lap eltávolítása a csoportból.}}</translation>
 <translation id="2479148705183875116">Beállítások</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Csoport</translation>
 <translation id="2613747923081026172">Csoport létrehozása</translation>
 <translation id="2662028055331606429">Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
+<translation id="266935134738038806">Webhely felkeresése</translation>
 <translation id="2671423594960767771">Csoport megosztása</translation>
 <translation id="2759453070259087442">A következő, <ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport kibontása: <ph name="TITLE_OF_GROUP" />.</translation>
 <translation id="2801787514987684416">Megtekinti az üzlet adatait?</translation>
 <translation id="2928243913527329289">Google | Az üzletről</translation>
 <translation id="2977480621796371840">Eltávolítás a csoportból</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">értékelés</translation>
+<translation id="3267416433995960648">Értesítés kikapcsolása</translation>
 <translation id="3291470810748040983">Értesítést kap, ha alacsonyabb ár áll rendelkezésre az egyik megnyitott lapon.</translation>
 <translation id="3328308545011660196">Javaslat: Úgy tűnik, <ph name="NUMBER_OF_TABS" /> lap kapcsolódik egymáshoz. Csoportosítja őket?</translation>
 <translation id="3652027618765638838"><ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="6054741997831917303">A tétel ára nemrég csökkent. Régi ár: <ph name="PREVIOUS_PRICE" />, új ár: <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Lapok kiválasztása</translation>
+<translation id="6228793724645064692">(az üzlet értékelése)</translation>
+<translation id="6333260925957816943">Információ erről az üzletről</translation>
 <translation id="6510648526783655549">Lapsor bezárása</translation>
+<translation id="6549021453810473782">Üzletadatok megtekintése</translation>
 <translation id="6562820390860419811">Lap mozgatása balra</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
 <translation id="6840760312327750441">Lapok csoportosításához tartsa nyomva az egyik lapot, majd húzza rá a másikra.</translation>
 <translation id="6856809498882026482">Több lapot kiválasztó mód elrejtése</translation>
+<translation id="7129458170538955174">Az üzlettel kapcsolatos információs panel félmagasságban van megnyitva</translation>
 <translation id="7151209024774799310">Lapok eltávolítása</translation>
 <translation id="7204204600596740190">Több lapot kiválasztó mód</translation>
+<translation id="7326879924029668159">Visszaküldési irányelvek és egyebek megjelenítése</translation>
 <translation id="7352298686197644113">Láthatja, hogy a megnyitott lapokon lévő termékek közül melyiknek alacsonyabb az ára</translation>
 <translation id="753732157349120914">Lapváltó</translation>
 <translation id="7559245342362162951">A csoportban lévő lapok teljes képernyős rácsszerkezetben való megjelenítése</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_ONE" /> vélemény}other{Értékelés: <ph name="RATING_BASELINE" />/<ph name="CURRENT_RATING" />, <ph name="REVIEWS_COUNT_MANY" /> vélemény}}</translation>
 <translation id="7885132941432959125">Lap mozgatása jobbra</translation>
 <translation id="7966321538264951561">Javaslatok elvetése.</translation>
+<translation id="8029301326595421733">Az üzlettel kapcsolatos információs panel teljes magasságban meg van nyitva</translation>
 <translation id="814503310257431685">Összes megtekintése</translation>
 <translation id="8205266828577616993">Lap mozgatása felfelé</translation>
 <translation id="8304833501377495048">Ne jelenjen meg újra ez a lapsor?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Alacsonyabb ár</translation>
 <translation id="8749939518995770034">Lapsor bezárva</translation>
 <translation id="8820741577754260431">Láthatja az árcsökkenéseket a megnyitott lapokon</translation>
+<translation id="9090098097337832354">Az üzlettel kapcsolatos információs panel be van zárva</translation>
 <translation id="9150694013019234766">Válthat a képernyő aljánál lévő lapcsoport lapjai között</translation>
 <translation id="9169594135889675189">Új lap hozzáadása a csoporthoz</translation>
 <translation id="959682366969460160">Könnyebb rendszerezés</translation>

@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">フィードバック</translation>
 <translation id="4563926062592110512">次のクライアントが切断しました: <ph name="CLIENT_USERNAME" />。</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> が正しく設定されていません。別の既定のウェブブラウザを選択してから、もう一度 URL 転送を有効にしてください。</translation>
 <translation id="4635770493235256822">リモートのデバイス</translation>
 <translation id="4660011489602794167">キーボードを表示</translation>
 <translation id="4703799847237267011">Chromoting セッションが終了しました。</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> としてログインしています。</translation>
 <translation id="579702532610384533">再接続</translation>
 <translation id="5810269635982033450">画面がトラックパッドとして機能します</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> さんがあなたの画面を表示して、キーボードとマウスを操作する権限をリクエストしています。このリクエストに心当たりがない場合は、[<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />] を押します。それ以外の場合は、準備ができたら [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] を選択して接続を許可します。</translation>
 <translation id="5823658491130719298">リモート アクセスを行うパソコンで Chrome を開き、<ph name="INSTALLATION_LINK" /> にアクセスします</translation>
 <translation id="5841343754884244200">表示オプション</translation>
 <translation id="6033507038939587647">キーボード オプション</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">無効な PIN を使用した接続が試みられたため、リモートのパソコンへの接続が一時的にブロックされています。しばらくしてからもう一度お試しください。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" /> へのリモート接続を無効にしてもよろしいですか？元に戻す場合は、該当のパソコンにアクセスして接続を再び有効にする必要があります。</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> さんがあなたのパソコンを参照および操作する権限をリクエストしています。このユーザーを知らない場合、または共有する前に変更を加える必要がある場合は、[<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />] を押してください。それ以外の場合は、[<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] を選択して接続を許可してください。</translation>
 <translation id="7019153418965365059">不明なホストエラー: <ph name="HOST_OFFLINE_REASON" />。</translation>
 <translation id="701976023053394610">リモート サポート</translation>
 <translation id="7026930240735156896">画面の説明に沿ってパソコンをリモート アクセス用に設定します</translation>
@@ -169,6 +170,7 @@
 この権限を付与するには、下の [<ph name="BUTTON_NAME" />] をクリックして [アクセシビリティ] 設定パネルを開き、[<ph name="SERVICE_SCRIPT_NAME" />] の横にあるチェックボックスをオンにします。
 
 [<ph name="SERVICE_SCRIPT_NAME" />] のチェックボックスがすでにオンになっている場合は、いったんオフにしてからもう一度オンにしてください。</translation>
+<translation id="8305209735512572429">ウェブ認証のリモーティング プロセス</translation>
 <translation id="8383794970363966105">Chromoting を使用するには、お使いのデバイスに Google アカウントを追加する必要があります。</translation>
 <translation id="8386846956409881180">ホストの設定で無効な OAuth 認証情報が指定されています。</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" />に権限を付与する</translation>

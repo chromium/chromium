@@ -36,6 +36,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2343156876103232566">To send a number from here to your Android phone, sign in to Chromium on both devices.</translation>
 <translation id="2347108572062610441">This extension has changed the page that is shown when you start Chromium.</translation>
 <translation id="2396765026452590966">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you start Chromium.</translation>
+<translation id="2401032172288869980">Chromium needs camera and microphone permissions for this site</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Uninstall</translation>
 <translation id="2535480412977113886">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
@@ -153,6 +154,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
+<translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
 <translation id="5987687638152509985">Update Chromium to start sync</translation>
@@ -170,6 +172,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="6212496753309875659">This computer already has a more recent version of Chromium. If the software is not working, please uninstall Chromium and try again.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium will relaunch now}=1{Chromium will relaunch in 1 second}other{Chromium will relaunch in # seconds}}</translation>
+<translation id="6241367896540709610">Chromium needs storage access permission to download files</translation>
 <translation id="6248213926982192922">Make Chromium the default browser</translation>
 <translation id="6266342355635466082">Chromium can't check for updates. Try checking your Internet connection.</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
@@ -190,7 +193,9 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="6570579332384693436">To fix spelling errors, Chromium sends the text that you type in text fields to Google</translation>
 <translation id="6598877126913850652">Go to Chromium notification settings</translation>
 <translation id="6613594504749178791">Your changes will take effect the next time you relaunch Chromium.</translation>
+<translation id="665732753414869868">Chromium needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
+<translation id="6709350901466051922">Chromium needs microphone permission for this site</translation>
 <translation id="6717134281241384636">Your profile can not be used because it is from a newer version of Chromium.
 
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chromium.</translation>
@@ -202,6 +207,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6847869444787758381">Chromium lets you know if your passwords are ever compromised</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copied to Chromium)</translation>
+<translation id="6873893289264747459">Chromium found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
 <translation id="6893813176749746474">Chromium has been updated, but you haven't used it for 30 days or more.</translation>
 <translation id="691026815377248078">Chromium needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Open link in Chromium inco&amp;gnito window</translation>
@@ -209,6 +215,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="6990124437352146030">Chromium needs permission to access your microphone for this site</translation>
 <translation id="705851970750939768">Update Chromium</translation>
 <translation id="7067091210845072982">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google.</translation>
+<translation id="718435575166326686">Chromium needs camera permission for this site</translation>
 <translation id="7196312274710523067">Couldn't launch Chromium. Try again.</translation>
 <translation id="7197677400338048821">Chromium can't check your passwords. Try again after 24 hours.</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
@@ -232,10 +239,6 @@ Google Chrome is unable to recover your settings.</translation>
       Chromium OS settings<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium is using your camera and microphone.</translation>
 <translation id="7617377681829253106">Chromium just got better</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Before we get started, please ensure that you have an up-to-date backup of your data. Installing Chromium OS will overwrite all data on your hard drive.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google is not responsible for any data loss, and makes no guarantee that Chromium OS will work on uncertified models. Please visit [TBD] to learn more about certified models.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Learn more about installing Chromium OS and data erasure: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />If you are ready to proceed, click 'Install Chromium OS' and we'll guide you through the installation in just a couple of easy steps. You'll have another chance to confirm before we make any changes to your computer.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium isn't your default browser</translation>
 <translation id="7689606757190482937">Sync and personalise Chromium across your devices</translation>
 <translation id="7729447699958282447">Chromium could not sync your data because Sync is not available for your domain.</translation>
@@ -250,6 +253,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7975919845073681630">This is a secondary installation of Chromium, and cannot be made your default browser.</translation>
 <translation id="8013436988911883588">Once Chromium has access, websites will be able to ask you for access.</translation>
 <translation id="8045118833343856403">The following accounts are not signed into any Chromium profiles. If you want to use an account in another profile, remove that profile first.</translation>
+<translation id="8105840573057009683">Chromium needs location permission for this site</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
 <translation id="8248265253516264921">If an image doesn’t have a useful description, Chromium will try to provide one for you. To create descriptions, images are sent to Google. You can turn this off in settings at any time.</translation>
 <translation id="8266560134891435528">Chromium can't check your passwords because you're not signed in</translation>

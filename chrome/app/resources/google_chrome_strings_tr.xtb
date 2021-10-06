@@ -34,7 +34,6 @@
 <translation id="174539241580958092">Oturum açmadaki bir hata nedeniyle Google Chrome, verilerinizi senkronize edemedi.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> cihazınızdan Chrome'da oturum açtığınızdan emin olup tekrar göndermeyi deneyin.</translation>
-<translation id="1810203443153428607">Chrome OS yüklenirken cihazınızdaki tüm verilerin üzerine yazılır.</translation>
 <translation id="1812689907177901597">Bu özelliği kapatarak Chrome'da oturum açmadan Gmail gibi Google sitelerinde oturum açabilirsiniz.</translation>
 <translation id="1860536484129686729">Chrome'un bu sitede kameranıza erişmesi için izin gerekiyor</translation>
 <translation id="1873233029667955273">Google Chrome varsayılan tarayıcınız değil</translation>
@@ -52,6 +51,7 @@
 <translation id="2290014774651636340">Google API anahtarları eksik. Google Chrome'un bazı işlevleri devre dışı bırakılacak.</translation>
 <translation id="2290095356545025170">Google Chrome'u kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="2309047409763057870">Bu, Google Chrome'un ikincil bir yüklemesidir ve varsayılan tarayıcınız yapılamaz.</translation>
+<translation id="2345992953227471816">Chrome aşağıdaki uzantılarda kötü amaçlı yazılım tespit etti:</translation>
 <translation id="2348335408836342058">Chrome'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="234869673307233423">Chrome, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="235650106824528204">Bu profil kullanılırken oluşturulan tüm Chrome verileri (yer işaretlerinin oluşturulması, geçmiş, şifreler ve diğer ayarlar gibi) iş profili yöneticisi tarafından kaldırılabilir. <ph name="LEARN_MORE" /></translation>
@@ -81,6 +81,7 @@
 <translation id="2885378588091291677">Görev Yöneticisi</translation>
 <translation id="2888126860611144412">Chrome hakkında</translation>
 <translation id="2926676257163822632">Zayıf şifrelerin tahmin edilmesi kolaydır. Chrome'un <ph name="BEGIN_LINK" />sizin için güçlü şifre oluşturup bu şifreleri hatırlamasına<ph name="END_LINK" /> izin verin.</translation>
+<translation id="2926952073016206995">Bu site için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="2929907241665500097">Chrome güncellenmedi. Bir sorun oluştu. <ph name="BEGIN_LINK" />Chrome güncelleme sorunlarını ve başarısız güncellemeleri düzeltin.<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Son bir hatırlatma: Yükleme işlemi, <ph name="BEGIN_BOLD" />sabit diskinizin tamamını silecek<ph name="END_BOLD" />. Lütfen sizin için önemli olan tüm verileri yedeklediğinizden emin olun.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Yükleme işlemi, başladıktan sonra iptal edilemez.<ph name="END_PARAGRAPH2" /></translation>
@@ -109,6 +110,7 @@
 <translation id="3582972582564653026">Chrome'u cihazlarınız arasında senkronize edin ve kişiselleştirin</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="3622797965165704966">Chrome'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
+<translation id="3673813398384385993">Chrome, "<ph name="EXTENSION_NAME" />" uzantısında kötü amaçlı yazılım tespit etti</translation>
 <translation id="3718181793972440140">Bu işlem, 1 öğeyi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
 <translation id="3735758079232443276">"<ph name="EXTENSION_NAME" />" uzantısı, Chrome'u başlattığınızda gösterilen sayfayı değiştirdi.</translation>
 <translation id="3779473566290487688">Gelecekteki Google Chrome güncellemelerini almak için OS X 10.11 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar OS X 10.10 kullanıyor.</translation>
@@ -125,6 +127,7 @@
 <translation id="4149882025268051530">Yükleyici arşivi açamadı. Lütfen Google Chrome'u yeniden indirin.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome'u bir gün içinde yeniden başlatın}other{Chrome'u # gün içinde yeniden başlatın}}</translation>
 <translation id="4205939740494406371">Chrome, şifrelerinizi kontrol edemiyor. 24 saat sonra tekrar deneyin veya <ph name="BEGIN_LINK" />şifreleri Google Hesabınızda kontrol edin<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Bu site için Chrome'un kamera ve mikrofon izinlerine ihtiyacı var</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="4251615635259297716">Chrome verileriniz bu hesaba bağlansın mı?</translation>
 <translation id="4281844954008187215">Hizmet Şartları</translation>
@@ -169,13 +172,10 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="521447420733633466">Bir cihazı paylaşıyorsanız arkadaşlarınız ve aileniz web'e ayrı olarak göz atabilir ve Chrome'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
 <translation id="5251420635869119124">Misafirler Chrome'u geride hiçbir şey bırakmadan kullanabilirler.</translation>
 <translation id="5251679006894510177">Güncel hale gelmek üzere. Güncellemenin tamamlanması için Chrome'u yeniden başlatın. Gizli pencereler yeniden açılmayacak.</translation>
+<translation id="5334487786912937552">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
 <translation id="5386244825306882791">Ayrıca, Chrome'u başlattığınızda veya Çok Amaçlı Adres Çubuğu'ndan arama yaptığınızda gösterilecek sayfayı da denetler.</translation>
 <translation id="5394833366792865639">Chrome sekmesi paylaşın</translation>
 <translation id="5430073640787465221">Tercih dosyanız bozuk veya geçersiz. Google Chrome, ayarlarınızı kurtaramıyor.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Lütfen başlamadan önce verilerinizin güncel bir yedeğinin bulunduğundan emin olun. Chrome OS yüklenirken sabit diskinizdeki tüm verilerin üzerine yazılır.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google, hiçbir veri kaybından sorumlu değildir ve Chrome OS'in sertifikasız cihazlarda çalışacağını garanti etmez. Sertifikalı modeller hakkında daha fazla bilgi almak için lütfen [TBD] adresini ziyaret edin.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chrome OS'i yükleme ve verilerin silinmesi hakkında daha fazla bilgi edinin: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Hazırsanız devam etmek için "Chrome OS'i yükle"yi tıklayın. Yükleme işlemini birkaç kolay adımla tamamlamanız için size yol göstereceğiz. Bilgisayarınızda herhangi bir değişiklik yapmamızdan önce onay vermek için bir şansınız daha olacak.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS'i yükle</translation>
 <translation id="556024056938947818">Google Chrome şifreleri göstermeyi deniyor.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -207,10 +207,12 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6291549208091401781">Google Chrome zaten bilgisayarınızdaki tüm kullanıcılar için yüklendi.</translation>
 <translation id="6368958679917195344">Chrome OS, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
+<translation id="6506909944137591434">Çevrenizin 3D haritasını oluşturmak için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS sistemi</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>
 <translation id="6679975945624592337">Google Chrome'un Arka Planda Çalışmasına İzin Ver</translation>
+<translation id="6696915334902295848">Bu site için Chrome'un mikrofon iznine ihtiyacı var</translation>
 <translation id="6739177684496155661">Yeni bir Chrome profilinde devam edilsin mi?</translation>
 <translation id="6750954913813541382">Yazım hatalarını düzeltmek için Chrome, tarayıcıda yazdığınız metni Google'a gönderir</translation>
 <translation id="677276454032249905">Yine de Chrome'dan çıkılsın mı?</translation>
@@ -250,6 +252,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7761834446675418963">Chrome'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>
 <translation id="7777080907402804672">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir. Bu özelliği istediğiniz zaman ayarlardan kapatabilirsiniz.</translation>
 <translation id="7781002470561365167">Google Chrome'un yeni bir sürümü çıktı.</translation>
+<translation id="778331955594035129">Bu site için Chrome'un konum iznine ihtiyacı var</translation>
 <translation id="7787950393032327779">Profilin başka bir bilgisayarda (<ph name="HOST_NAME" />) başka bir Google Chrome işlemi (<ph name="PROCESS_ID" />) tarafından kullanıldığı anlaşılıyor. Chrome, profili bozulmaması için kilitledi. Bu profili kullanan başka bir işlem olmadığından eminseniz profilin kilidini açabilir ve Chrome'u tekrar başlatabilirsiniz.</translation>
 <translation id="7801699035218095297">Google Chrome şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="7808348361785373670">Chrome'dan kaldır...</translation>

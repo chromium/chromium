@@ -19,9 +19,11 @@
 <translation id="1038842779957582377">නොදන්නා නමක්</translation>
 <translation id="1041998700806130099">වැඩ පත්‍ර පණිවුඩය</translation>
 <translation id="1048785276086539861">ඔබ අනුසටහන් සංස්කරණය කරන විට, මෙම ලේඛනය තනි පිටු දසුනකට ආපසු යනු ඇත</translation>
+<translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="1050038467049342496">අනෙකුත් යෙදුම් වසන්න</translation>
 <translation id="1055184225775184556">&amp;එක් කිරීම පසුගමනය කිරීම</translation>
 <translation id="1056898198331236512">අවවාදයයි</translation>
+<translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome හි Dino Run ක්‍රීඩා කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="1058479211578257048">කාඩ්පත් සුරකිමින්...</translation>
 <translation id="10614374240317010">කිසිවිටෙක සුරැක නැත</translation>
 <translation id="1062160989074299343">Prc10 (ලියුම් කවරය)</translation>
@@ -29,16 +31,18 @@
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> හි පිටු කිසිදාක පරිවර්තනය කරන්න එපා</translation>
 <translation id="1070901266639972381">රාත්‍රී</translation>
 <translation id="1074497978438210769">සුරක්ෂිත නැත</translation>
-<translation id="1076113272840682464">Chrome තුළ බාගැනීම් කළමනාකරණය කරන්න</translation>
 <translation id="1080116354587839789">පළලට ගැළපෙන</translation>
+<translation id="1081061862829655580">Tray 19</translation>
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">කාඩ්පතෙහි නම එක් කරන්න</translation>
 <translation id="1089439967362294234">මුරපදය වෙනස් කරන්න</translation>
 <translation id="1096545575934602868">මෙම ක්‍ෂේත්‍රයට <ph name="MAX_ITEMS_LIMIT" /> ට වැඩි ඇතුළත් කිරීම් තිබිය යුතු ය. වැඩිදුර ඇතුළත් කිරීම් සියල්ල ඉවත ලනු ලැබේ.</translation>
+<translation id="1100782917270858593">සංචාරය නැවත පටන් ගන්න බොත්තම, ඔබගේ සංචාරය නැවත පටන් ගැනීමට සහ ඔබගේ Chrome ඉතිහාසය තුළ අදාළ ක්‍රියාකාරකම් බැලීමට Enter ඔබන්න</translation>
 <translation id="1101672080107056897">දෝෂ ක්‍රියාව</translation>
 <translation id="1103523840287552314">සැමවිටම <ph name="LANGUAGE" /> පරිවර්තනය කරන්න</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> සඳහා අවසරය තෝරන්න</translation>
 <translation id="1113869188872983271">යළි ඇණවුම් කිරීම &amp;පසුගමනය කරන්න</translation>
+<translation id="1115795617528746272"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, දැනට විවෘතව ඇති සියලු අප්‍රකට කවුළු වැසීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
 <translation id="1123753900084781868">මේ මොහොතේ සජීවී සිරස්තලය ලබා ගත නොහැක</translation>
 <translation id="1125573121925420732">වෙබ් අඩවි ඔවුන්ගේ ආරක්ෂාව යාවත්කාලීන කරන අතරතුර අනතුරු ඇඟවීම් පොදු දෙයක් විය හැක. මෙය ඉක්මනින් වැඩි දියුණු විය යුතුය.</translation>
 <translation id="112840717907525620">ප්‍රතිපත්ති තාවකාලික මතකය හරි</translation>
@@ -60,6 +64,7 @@
 <translation id="1178581264944972037">විරාමය</translation>
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1186201132766001848">මුරපද පරීක්‍ෂා කරන්න</translation>
+<translation id="1195210374336998651">යෙදුම් සැකසීම් වෙත යන්න</translation>
 <translation id="1195558154361252544">ඔබ අවසර දෙන ඒවා හැර සියලුම වෙබ් අඩවි සඳහා දැනුම්දීම් ස්වයංක්‍රීයව අවහිර කෙරෙති</translation>
 <translation id="1197088940767939838">තැඹිලි</translation>
 <translation id="1201402288615127009">ඊළඟ</translation>
@@ -69,6 +74,7 @@
 <translation id="1209221128712833642">පෝරමය තනන්න බොත්තම, ඉක්මනින් Google Forms තුළ නව පෝරමයක් තැනීමට Enter ඔබන්න</translation>
 <translation id="121201262018556460">ඔබ <ph name="DOMAIN" /> වෙත ළඟා වීමට උත්සාහ කළෙහිය, නමුත් සර්වරය ඉදිරිපත් කළේ දුර්වල යතුරක් සහිත සහතිකයකි. ප්‍රහාරකයා පුද්ගලික යතුර කඩා දමා තිබිය හැකි අතර, සර්වරය ඔබ අපේක්ෂා කළ සර්වරයම නොවීමට පුළුවන (ඔබ ප්‍රහාරකයෙකු සමඟ සන්නිවේදනය කරමින් සිටිනවා විය හැකිය).</translation>
 <translation id="1219129156119358924">පද්ධති ආරක්ෂාව</translation>
+<translation id="1222060260947439312">Right Tray</translation>
 <translation id="1227224963052638717">නොදන්නා ප්‍රතිපත්තිය.</translation>
 <translation id="1228893227497259893">වැරදි ස්ථීති හඳුන්වනය</translation>
 <translation id="1232569758102978740">මාතෘකා නොමැති</translation>
@@ -87,12 +93,15 @@
     &lt;li&gt;වෙබ් අඩවියේ හිමිකරු සම්බන්ධ කර ගන්න.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ඔබ ඔබේ සංවිධානය විසින් කළමනාකරණය නොකරන ලද වෙබ් අඩවියක ඔබේ මුරපදය ඇතුළු කර ඇත. ඔබේ ගිණුම ආරක්ෂා කිරීම සඳහා වෙනත් යෙදුම් සහ අඩවි මත ඔබේ මුරපදය නැවත භාවිත නොකරන්න.</translation>
+<translation id="1257553931232494454">විශාලන මට්ටම්</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Chrome සැකසීම් කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="1263231323834454256">කියවීම් ලැයිස්තුව</translation>
+<translation id="1264309058268477500">Alternate</translation>
 <translation id="1269516672602708785">ඉක්මනින් Google Sites තුළ නව අඩවියක් තනන්න</translation>
 <translation id="1270502636509132238">නංවා ගැනීමේ ක්‍රමය</translation>
 <translation id="1281476433249504884">අට්ටිය 1</translation>
 <translation id="1285320974508926690">මෙම අඩවිය කිසිවිට පරිවර්තනය නොකරන්න</translation>
+<translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">"ඔබේ පරිගණකයේ මෘදුකාංග වෙබයට සුරක්ෂිතව සබැඳීමෙන් Chrome නවතයි" (Windows පරිගණක පමණි)</translation>
 <translation id="1294154142200295408">විධාන-පේළි ප්‍රභේදනයන්</translation>
 <translation id="129553762522093515">මෑත දී වැසිණි</translation>
@@ -102,6 +111,7 @@
 <translation id="1312803275555673949">එයට සහාය දෙන සාක්ෂි මොනවාද?</translation>
 <translation id="131405271941274527"><ph name="URL" /> හට ඔබ NFC උපාංගයක ඔබේ දුරකථනය තට්ටු කරන විට තතු යැවීමට සහ ලැබීමට අවශ්‍යයි</translation>
 <translation id="1314509827145471431">දකුණ බැඳීම</translation>
+<translation id="1318023360584041678">ටැබ සමූහයක සුරකින ලදි</translation>
 <translation id="1319245136674974084">මෙම යෙදුම සඳහා නැවත නොඅසන්න</translation>
 <translation id="1320233736580025032">Prc1 (ලියුම් කවරය)</translation>
 <translation id="132301787627749051">පසුරු පුවරු රූපය සොයන්න</translation>
@@ -133,9 +143,11 @@
 <translation id="1380591466760231819">ලිපි නැමීම</translation>
 <translation id="138218114945450791">ලා නිල්</translation>
 <translation id="1382194467192730611">ඔබේ පරිපාලකයා USB උපාංග අනුමත කර ඇත</translation>
+<translation id="1382912999714108023">ඔබගේ වත්මන් තතු නොපෙනේද? එය යාවත්කාලීන කිරීමට කරුණාකර ඔබගේ බැංකුව අමතන්න.</translation>
 <translation id="1384725838384960382">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර සත්‍යාපනය කිරීමේ පත්‍රය</translation>
 <translation id="1386623374109090026">අනුසටහන්</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> දත්ත කිසිවක් නොඑවන ලදී.</translation>
+<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ඔබන්න, ඉන්පසු ඔබගේ පර්යේෂණය නැවත පටන් ගැනීමට සහ ඔබගේ Chrome ඉතිහාසය තුළ අදාළ ක්‍රියාකාරකම් බැලීමට Enter ඔබන්න</translation>
 <translation id="1405567553485452995">ලා කොළ</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1408787208417187241">ඉහළට තුන් වරක් ස්ටේපල් කරන්න</translation>
@@ -146,7 +158,6 @@
 <translation id="1428729058023778569">මෙම අඩවිය HTTPS සඳහා සහය නොදක්වන බැවින් ‍ඔබ මෙම අනතුරු ඇඟවීම දකියි. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1436185428532214179">ඔබගේ උපාංගයෙහි ගොනු සහ ෆෝල්ඩර සංස්කරණය කිරීමට ඉල්ලිය හැකිය</translation>
-<translation id="1439627443299342313">මෙම පිටුව බෙදා ගන්න බොත්තම, සබැඳිය බෙදා ගැනීමට, QR කේතයක් තැනීමට, විකාශය කිරීමට, සහ තවත් දේ සඳහා වන විකල්ප සහිතව, මෙම පිටුව බෙදා ගැනීමට Enter.</translation>
 <translation id="1442386063175183758">දකුණු දොරටු නැමීම</translation>
 <translation id="1442987760062738829">අනින්න</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -161,6 +172,7 @@
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1476595624592550506">ඔබේ මුරපදය වෙනස් කරන්න</translation>
+<translation id="1483493594462132177">යවන්න</translation>
 <translation id="1484290072879560759">නැව්ගත කිරීමේ ලිපිනය තෝරාගන්න</translation>
 <translation id="1492194039220927094">ප්‍රතිපත්ති පුෂ්:</translation>
 <translation id="1495677929897281669">ආපසු පටිත්ත වෙත</translation>
@@ -192,7 +204,6 @@
       &lt;p&gt;කරුණාකර &lt;strong&gt;සැකසීම්&lt;/strong&gt; යෙදුම තුළ &lt;strong&gt;සාමාන්‍ය&lt;/strong&gt; කොටස වෙතින් දිනය සහ වේලාව සීරුමාරු කරන්න.&lt;/p&gt;</translation>
 <translation id="1567040042588613346">මෙම ප්‍රතිපත්තිය අපේක්ෂිත පරිදි ක්‍රියාත්මක වන නමුත් සමාන අගයක් වෙනත් තැනක සකසා ඇති අතර එය මෙම ප්‍රතිපත්තියෙන් ඉක්මවා යයි.</translation>
 <translation id="1569487616857761740">කල් ඉකුත්වීමේ දිනය ඇතුළත් කරන්න</translation>
-<translation id="1578027765348898566">මගේ Google වෙළඳ දැන්වීම් සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">මෙම වෙබ් පිටුව සංසංදර්ශනය කිරීමේදී යමක් වැරදී ඇත.</translation>
@@ -200,7 +211,9 @@
 <translation id="1588438908519853928">සාමාන්‍ය</translation>
 <translation id="1592005682883173041">ස්ථානීය දත්ත ප්‍රවේශය</translation>
 <translation id="1594030484168838125">තෝරන්න</translation>
+<translation id="160851722280695521">Chrome තුළ Dino Run ක්‍රීඩා කරන්න</translation>
 <translation id="161042844686301425">සියන්</translation>
+<translation id="1611101756749861742">Second Roll</translation>
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1623104350909869708">මෙම පිටුව අමතර දෙබස්කවුළු සෑදීම වළක්වන්න</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -218,22 +231,24 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">මෙය කියවීමට පහසු කිරීමට Chrome මෙම පිටුව සරල කළා. Chrome ආරක්‍ෂිත සම්බන්ධතාවක් ඔස්සේ මූලික පිටුව ලබා ගත්තා.</translation>
 <translation id="1656489000284462475">භාර ගන්න</translation>
+<translation id="1658918301167915956">බ්ලූටූත් උපාංග</translation>
 <translation id="1662550410081243962">ගෙවීමේ ක්‍රම සුරක්ෂිත කර පුරවන්න</translation>
 <translation id="1663943134801823270">කාඩ්පත් සහ ලිපින Chrome වෙතිනි. ඔබට ඒවා <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> හි ඇති පිටු දැන් සිට <ph name="TARGET_LANGUAGE" /> වෙත පරිවර්තන කරනු ලැබේ.</translation>
-<translation id="1677733453456569361"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome Dino ක්‍රීඩාව සිදු කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="1682696192498422849">පළමුව කෙටි දාරය</translation>
 <translation id="168693727862418163">මෙම ප්‍රතිපත්ති අගය එහි නිරූපණයට අනුව වලංගු කිරීමට අසමත් වූ බැවින් නොසලකා හරිනු ලැබේ.</translation>
 <translation id="168841957122794586">සේවාදායක සහතිකයේ දුර්වල ගුප්තලේඛන යතුරක් අඩංගුය!</translation>
 <translation id="1697532407822776718">ඔබ මුළුමනින් සුදානම්ය!</translation>
 <translation id="1699570257714336246">තොරතුරු මඟ හැරී ඇත</translation>
 <translation id="1703835215927279855">Letter</translation>
+<translation id="1706625117072057435">විශාලන මට්ටම්</translation>
 <translation id="1706954506755087368">{1,plural, =1{මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය හෙට සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}one{මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය අනාගතයේදී දින #ක් සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}other{මෙම සේවාදායකයට එය <ph name="DOMAIN" />බව සනාථ කළ නොහැකි විය; එහි ආරක්ෂණ සහතිකය අනාගතයේදී දින #ක් සිට විය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.}}</translation>
 <translation id="1710259589646384581">OS</translation>
 <translation id="1711234383449478798"><ph name="POLICY_NAME" /> <ph name="VALUE" /> වෙත සකසා නැති නිසා නොසලකා හරින ලදි.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> හට ස්ථිරව දත්ත ඔබේ ස්ථානීය පරිගණකයේ ගබඩා කිරීමට අවශ්‍යයි.</translation>
 <translation id="1713628304598226412">බඳුන 2</translation>
 <translation id="1715874602234207">F</translation>
+<translation id="1717218214683051432">චලන සංවේදක</translation>
 <translation id="1717494416764505390">තැපැල් පෙට්ටිය 3</translation>
 <translation id="1718029547804390981">ලේඛනය අනුසටහන් කිරීමට විශාල වැඩියි</translation>
 <translation id="1721424275792716183">* ක්ෂේත්‍රය අවශ්‍යයි</translation>
@@ -241,12 +256,12 @@
 <translation id="1727741090716970331">වලංගු කාඩ්පත් අංකයක් එක් කරන්න</translation>
 <translation id="1728677426644403582">ඔබ වෙබ් පිටුවක මූලාශ්‍රය බලමින් සිටී</translation>
 <translation id="173080396488393970">මෙම කාඩ්පත් වර්ගය සහාය නොදක්වයි</translation>
+<translation id="1733064249834771892">ෆොන්ට</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">පද්ධති පරිපාලක ඇමතීමට උත්සාහ කරන්න.</translation>
 <translation id="1736420071277903564">පරිගණකය</translation>
 <translation id="1740951997222943430">වලංගු කල් ඉකුත් වීමේ මාසයක් ඇතුළු කරන්න</translation>
 <translation id="1741613555002899862">සඳහන් කර ඇති අතර DnsOverHttpsMode එක <ph name="SECURE_DNS_MODE_SECURE" /> වූ විට වලංගු තන්තුවක් විය යුතුම ය.</translation>
-<translation id="1743570585616704562">හඳුනා නොගන්නා ලදී</translation>
 <translation id="1745880797583122200">ඔබේ බ්‍රවුසරය කළමනා කෙරේ</translation>
 <translation id="1746113442205726301">රූපයේ Y වැඩ මුරය</translation>
 <translation id="17513872634828108">පටිති විවෘත කරන්න</translation>
@@ -271,16 +286,20 @@
 <translation id="1807246157184219062">එළිය</translation>
 <translation id="1807528111851433570">ආරම්භක පත්‍රය</translation>
 <translation id="1812527064848182527">භූ දර්ශනය</translation>
+<translation id="182139138257690338">ස්වයංක්‍රීය බාගැනීම්</translation>
 <translation id="1821930232296380041">වැරදි ඉල්ලීමක් හෝ ඉල්ලීම් පරාමිති</translation>
 <translation id="1822540298136254167">ඔබ පැමිණෙන වෙබ් අඩවි සහ ඒවායේ ගත කර කාලය</translation>
+<translation id="1824402189105105503">Eighth Roll</translation>
 <translation id="1826516787628120939">පරීක්ෂා කරමින්</translation>
 <translation id="1834321415901700177">මෙම වෙබ් අඩවියෙහි හානිකර ක්‍රමලේඛ අඩංගුය</translation>
 <translation id="1838374766361614909">සෙවීම හිස් කරන්න</translation>
 <translation id="1839551713262164453">ප්‍රතිපත්ති අගයන්ගේ වලංගු කිරීම දෝෂ සමග අසමත් වී ඇත</translation>
 <translation id="1842969606798536927">ගෙවන්න</translation>
 <translation id="1856713167556118146">අප්‍රසිද්ධ ප්‍රකාරය සිදු නොකරන දේ</translation>
+<translation id="1863257867908022953">Tray 12</translation>
 <translation id="1871208020102129563">.pac ස්ක්‍රිප්ට URL එතත් නොව, ස්ථාවර ප්‍රොක්සි සේවාදයක භාවිතා කිරීමට ප්‍රොක්සි සකසා ඇත,</translation>
 <translation id="1871284979644508959">අවශ්‍ය ක්ෂේත්‍රය</translation>
+<translation id="1875025161375567525">Photo Tray</translation>
 <translation id="1875512691959384712">Google පෝරම</translation>
 <translation id="187918866476621466">ආරම්භක පිටු විවෘත කරන්න</translation>
 <translation id="1883255238294161206">ලැයිස්තුව හකුළන්න</translation>
@@ -297,15 +316,18 @@
 <translation id="1919345977826869612">වෙළඳ දැන්වීම්</translation>
 <translation id="1919367280705858090">නිශ්චිත දෝෂ පණිවිඩයක් සමඟ උදවු ලබා ගන්න</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{කිසිවක් නැත}=1{1 අඩවියක්}one{අඩවි #ක්}other{අඩවි #ක්}}</translation>
+<translation id="1923390796829649802">ප්‍රවේශ්‍යතා සැකසීම් කළමනාකරණය කරන්න බොත්තම, Chrome OS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කිරීමට Enter</translation>
 <translation id="1924727005275031552">නව</translation>
 <translation id="1939175642807587452">දැනුම්දීම් යැවීමට ඉල්ලිය හැකිය</translation>
 <translation id="1945968466830820669">ඔබට ඔබේ සංවිධානයේ ගිණුමට ප්‍රවේශය අහිමි වීමට හෝ අනන්‍යතා සොරකමක් අත්විඳීමට සිදු විය හැකිය. දැන් ඔබේ මුරපදය වෙනස් කිරීම සඳහා Chromium නිර්දේශ කරයි.</translation>
 <translation id="1947454675006758438">ඉහළ දකුණ ස්ටේපල් කරන්න</translation>
+<translation id="1956486093533522234">ඔබගේ උපාංගය සොයන්න, සුරක්ෂිත කරන්න, හෝ මකන්න</translation>
 <translation id="1958218078413065209">ඔබගේ ඉහළම ලකුණු <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />ඔබ පිවිසෙන ඇතැම් පිටුවල URL, සීමිත පද්ධති තොරතුරු සහ ඇතැම් පිටුවල අන්තර්ගත<ph name="END_WHITEPAPER_LINK" /> Google වෙත යැවීමෙන් සෑම දෙනාටම වෙබයේ ආරක්ෂාව වැඩි දියුණු කිරීම සඳහා සහාය වන්න. <ph name="BEGIN_PRIVACY_PAGE_LINK" />රහස්‍යතා ප්‍රතිපත්තිය<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> පිටු සලකුණු</translation>
 <translation id="1973335181906896915">ශ්‍රේණිකරණ දෝශය</translation>
 <translation id="1974060860693918893">උසස් කළ</translation>
+<translation id="1975457531113383421">ආදාන තැටිය</translation>
 <translation id="1975584088563498795">තැපැල් පෙට්ටිය 10</translation>
 <translation id="1978555033938440688">නිත්‍ය මෘදුකාංග අනුවාදය</translation>
 <translation id="1988881251331415125">අක්ෂර වින්‍යාසය නිවැරදි නම්, <ph name="BEGIN_LINK" />සබැඳුම් හැකියා දෝෂ නිර්ණ ධාවනය කිරීම උත්සාහ කරන්න<ph name="END_LINK" />.</translation>
@@ -317,7 +339,9 @@
 <translation id="201174227998721785">Chrome සැකසීම් තුළ අඩවි හරහා ගබඩා කර ඇති අවසර සහ දත්ත කළමනාකරණය කරන්න</translation>
 <translation id="2025115093177348061">ආවර්ධිත යථාර්ථය</translation>
 <translation id="2025186561304664664">ප්‍රොක්සිය ස්වයංව වින්‍යාසගත කිරීමට සකසා ඇත.</translation>
+<translation id="2025891858974379949">අනාරක්‍ෂිත අන්තර්ගතය</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />ප්‍රොක්සි සහ සුරැකුම් පවුර පරීක්ෂා කරමින්<ph name="END_LINK" /></translation>
+<translation id="2036983605131262583">Alternate Roll</translation>
 <translation id="2042213636306070719">බඳුන 7</translation>
 <translation id="204357726431741734">ඔබේ Google ගිණුම තුළ සුරැකී ඇති මුරපද භාවිත කිරීමට පුරන්න</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> හි පිටු පරිවර්තන නොකෙරේ</translation>
@@ -349,12 +373,10 @@
 <translation id="2119867082804433120">පහළ දකුණට අනින්න</translation>
 <translation id="2122719317867821810">මෙම ප්‍රතිපත්තිය අපේක්ෂිත පරිදි ක්‍රියාත්මක වන නමුත් ගැටුම්කාරී අගයක් වෙනත් තැනක සකසා ඇති අතර එය මෙම ප්‍රතිපත්තියෙන් අබිබවා යයි.</translation>
 <translation id="2126374524350484896">PDF නිෂ්පාදක:</translation>
-<translation id="2129079103035905234">චලන සංවේදක</translation>
 <translation id="2130448033692577677">ඔබ සඳහන් කර ඇති අච්චු DnsOverHttpsMode ප්‍රතිපත්තිය නොසැකසීම හේතුවෙන් නොයෙදිය හැක.</translation>
 <translation id="213826338245044447">ජංගම පොත්සලකුණු</translation>
 <translation id="214556005048008348">ගෙවීම අවලංගු කරන්න</translation>
 <translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, සබැඳිය බෙදා ගැනීමට, QR කේතයක් තැනීමට, විකාශය කිරීමට, සහ තවත් දේ සඳහා වන විකල්ප සහිතව, මෙම පිටුව බෙදා ගැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
-<translation id="2147827593068025794">පසුබිම සමමුහුර්ත කිරීම</translation>
 <translation id="2148613324460538318">කාඩ්පත එක් කරන්න</translation>
 <translation id="2149968176347646218">සබැඳුම සුරක්ෂිත නොවේ</translation>
 <translation id="2154054054215849342">ඔබගේ වසම සඳහා සමමුහුර්ත කිරීම ලබා ගත නොහැකිය</translation>
@@ -403,14 +425,13 @@
 <translation id="2298855485018661510">කුකී කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබගේ කුකි මනාප කළමනාකරණය කිරීමට Enter ඔබන්න</translation>
 <translation id="2300306941146563769">උඩුගත නොකළා</translation>
 <translation id="2310021320168182093">Chou2 (ලියුම් කවරය)</translation>
-<translation id="2314184656092908234">අප්‍රසිද්ධ කවුළු බොත්තම වසන්න, වත්මන් අප්‍රසිද්ධ පැතිකඩ සඳහා සියලු අප්‍රසිද්ධ කවුළු වැසීමට Enter ඔබන්න</translation>
 <translation id="2316887270356262533">1 MB ට වඩා අඩුවෙන් හිස් කරයි. ඔබේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> හට පරිශීලක නාමයක් සහ මුරපදයක් අවශ්‍යයි.</translation>
 <translation id="2328651992442742497">ඉඩ දේ (පෙරනිමි)</translation>
+<translation id="2329182534073751090">කවුළු තැබීම</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, <ph name="EXPIRATION_DATE_ABBR" /> දින කල් ඉකුත් වේ</translation>
 <translation id="2337852623177822836">සැකසීම ඔබේ පරිපාලක විසින් පාලනය කරයි</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> හට යුගල වීමට අවශ්‍යයි</translation>
-<translation id="2344028582131185878">ස්වයංක්‍රීය බාගැනීම්</translation>
 <translation id="2346319942568447007">ඔබ පිටපත් කළ රූපය</translation>
 <translation id="2354001756790975382">වෙනත් පිටු සලකුණු</translation>
 <translation id="2354430244986887761">Google සුරක්ෂිත බ්‍රවුස් කිරීම මෑත දී <ph name="SITE" /> හි <ph name="BEGIN_LINK" />හානිකර යෙදුම් සොයා ගත්තේය<ph name="END_LINK" />.</translation>
@@ -436,10 +457,9 @@
 <translation id="2413155254802890957">පැරණි</translation>
 <translation id="2413528052993050574">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය අහෝසි කර තිබිය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="2414886740292270097">අඳුරු</translation>
-<translation id="2417466718237453711">වත්මන් අප්‍රසිද්ධ පැතිකඩ සඳහා සියලු අප්‍රසිද්ධ කවුළු වසන්න</translation>
 <translation id="2430968933669123598">Google ගිණුම කළමනාකරණය කරන්න, ඔබගේ තොරතුරු, පෞද්ගලිකත්වය සහ ආරක්ෂාව කළමනාකරණය කිරීමට Enter ඔබන්න</translation>
 <translation id="2438874542388153331">දකුණට සිවු වරක් අනින්න</translation>
-<translation id="245044156129055925">ඔබ මේ දැන් වංචනික වෙබ් අඩවියක ඔබේ මුරපදය ඇතුළත් කළා. දැන් Chromium ඔබේ මුරපදය වෙනස් කිරීම නිර්දේශ කරයි.</translation>
+<translation id="2450021089947420533">සංචාර</translation>
 <translation id="2463739503403862330">සම්පූර්ණ කරන්න</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">බෙදා හැරීමේ ක්‍රමය තෝරාගන්න</translation>
@@ -472,8 +492,10 @@
 <translation id="2540701853218677861">වේලා මුද්‍රා සහ අසාර්ථක උත්සාහයන් ඇතුළුව, උපාංග පිරීම්/පිටවීම් ඉතිහාසය</translation>
 <translation id="2541219929084442027">ඔබ ඔබගේ සියලු අප්‍රකට ටැබ වැසූ පසු අප්‍රකට ටැබවල ඔබ බැලූ පිටු ඔබගේ බ්‍රවුසරයෙහි ඉතිහාසය, කුකී ගබඩාව හෝ සෙවීම් ඉතිහාසය අවට නොරැඳෙනු ඇත. ඔබ බාගත් ඕනෑම ගොනුවක් හෝ ඔබ සාදන පිටුසන් තබා ගනු ඇත.</translation>
 <translation id="2544644783021658368">තනි ලේඛනය</translation>
+<translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
 <translation id="254947805923345898">ප්‍රතිපත්ති අගය වලංගු නොවේ.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> වලංගු නොවන ප්‍රතිචාරයක් එවීය.</translation>
+<translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">දැන් සිට කාඩ්පත් තහවුරු කිරීමට තිර අගුල භාවිත කරන්න</translation>
 <translation id="2553853292994445426">ඔබේ සුරක්‍ෂිත DNS සැකසුම් පරීක්‍ෂා කරන්න. ඔබ සම්බන්ධතා අසමත් වන සුරක්‍ෂිත DNS සේවාදායකයක් වින්‍යාස කර තිබිය හැක.</translation>
 <translation id="2556876185419854533">සංස්කරණය &amp;පසුගමනය කරන්න</translation>
@@ -481,11 +503,11 @@
 <translation id="2586657967955657006">පසුරු පුවරුව</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> වෙතින්. මෙය සහ තවත් කථාන්දර <ph name="OTHER_ARTICLE_COUNT" />ක් කියවන්න.</translation>
 <translation id="2587841377698384444">නාමාවලිය API ID:</translation>
-<translation id="2592018527587890152">ප්‍රවේශ්‍යතා සැකසීම් කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
 <translation id="2594318783181750337">වේගවත් වෙබ් දසුන:</translation>
 <translation id="2595719060046994702">මෙම උපාංගය සහ ගිණුම සමාගමක් හෝ වෙනත් සංවිධානයක් විසින් කළමනා නොකෙරෙති.</translation>
 <translation id="2596415276201385844">ආරක්ෂිත සම්බන්ධතාවක් ස්ථාපනය කිරීමට, ඔබගේ ඔරලෝසුව නිවැරදිව සකස් කරගැනීමට අවශ්‍යය. මෙයට හේතුව වෙබ් අඩවි ඔවුන්ව හඳුනාගැනීමට භාවිතා කරන සහතිකපත්‍ර වලංගු වන්නේ යම්කිසි කාලයක් සඳහා පමණි. ඔබගේ උපාංගයේ ඔරලෝසුව වැරදි විට, Chrome වලට මෙම සහතික සත්‍යාපනය කිරීම කළ නොහැක.</translation>
 <translation id="2597378329261239068">මෙම ලේඛනයේ රහස්වචනය ආරක්ෂා කර තිබේ. කරුණාකර රහස්වචනයක් ඇතුළු කරන්න.</translation>
+<translation id="2597833655590727265">Chrome පෙනුම කළමනාකරණය කරන්න බොත්තම, තේමා සමඟ ඔබගේ බ්‍රව්සරයේ පෙනුම අභිරුචිකරණය කිරීමට Enter ඔබන්න.</translation>
 <translation id="2609632851001447353">විචලතා</translation>
 <translation id="2610561535971892504">පිටපත් කිරීමට ක්ලික් කිරීම</translation>
 <translation id="2618023639789766142">C10 (ලියුම් කවරය)</translation>
@@ -499,6 +521,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකි, හැඹිලිය සහ තවත් දේ හිස් කිරීමට, Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="2650446666397867134">ගොනුවට පිවිසුම ප්‍රතික්ශේප විය</translation>
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
+<translation id="2659491813326907275">Chrome OS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කරන්න</translation>
 <translation id="2660779039299703961">ඉසව්ව</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{කිසිවක් නැත}=1{1 මුරපදයක් (<ph name="DOMAIN_LIST" /> සඳහා)}=2{මුරපද 2 ක් (<ph name="DOMAIN_LIST" /> සඳහා)}one{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා)}other{මුරපද # ක් (<ph name="DOMAIN_LIST" /> සඳහා)}}</translation>
 <translation id="2666092431469916601">ඉහල</translation>
@@ -509,7 +532,6 @@
 <translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677748264148917807">හැර යන්න</translation>
 <translation id="2684561033061424857">11x12</translation>
-<translation id="2686059030904417278">Chrome Dino ක්‍රීඩාව කරන්න බොත්තම, Chrome Dino ක්‍රීඩාව කිරීමට Enter ඔබන්න</translation>
 <translation id="2687555958734450033">හොඳින්ම ගැළපේ</translation>
 <translation id="2688969097326701645">ඔව්, දිගටම කරගෙන යන්න</translation>
 <translation id="2691924980723297736">ආරක්‍ෂක අවවාදය</translation>
@@ -523,9 +545,10 @@
 <translation id="2713444072780614174">සුදු</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබගේ ගෙවීම් සහ ණය කාඩ්පත් තතු කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="2721148159707890343">ඉල්ලීම සාර්ථකයි</translation>
-<translation id="272451190272506600">ගෙවීමට සංවේදකය ස්පර්ශ කරන්න</translation>
+<translation id="2726001110728089263">Side Tray</translation>
 <translation id="2728127805433021124">සේවාදායකයේ සහතිකය දුර්වල අත්සන් ඇල්ගොරිතමයක් භාවිතයෙන් සන් කර ඇත.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />සම්බන්ධතා දෝෂහරණ ධාවනය කරමින්<ph name="END_LINK" /></translation>
+<translation id="2737403869486738563">ඔබගේ Chrome ඉතිහාසයේ අදාළ ක්‍රියාකාරකම් බැලීමට ඔබගේ පර්යේෂණය නැවත පටන් ගන්න</translation>
 <translation id="2738330467931008676">නංවා ගැනීමේ ලිපිනය තෝරාගන්න</translation>
 <translation id="2740531572673183784">හරි</translation>
 <translation id="2742870351467570537">තේරූ අයිතම ඉවත් කරන්න</translation>
@@ -533,12 +556,12 @@
 <translation id="277133753123645258">නැව්ගත කිරීමේ ක්‍රමය</translation>
 <translation id="277499241957683684">අහිමි උපාංග වාර්ථාව</translation>
 <translation id="2775884851269838147">පළමු මුද්‍රණ පිටුව</translation>
-<translation id="2778854133681684171">මෙම ගෙවීම් ක්‍රමය සමඟ ඔබ ඊළඟ වතාවේ මිලදී ගැනීමක් සිදු කරන විට ඒ ඔබ බව ඉක්මනින් සත්‍යාපනය කිරීමට ඔබට ඔබගේ උපාංගය භාවිත කළ හැකිය.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">සබඳතාව යළි සැකසිනි.</translation>
 <translation id="2792012897584536778">මෙම උපාංගයේ පරිපාලකයින් ඔවුන්ට ඔබ පැමිණෙන වෙබ් අඩවිවල අන්තර්ගතය බැලීමට ඉඩ සැලසිය හැකි ආරක්‍ෂක සහතික සකසා ඇත.</translation>
 <translation id="2799020568854403057">අඩවිය ඉදිරියේ හානිකර යෙදුම් අඩංගු වේ</translation>
 <translation id="2799223571221894425">නැවත දියත් කරන්න</translation>
+<translation id="2799846101868535739">ඔබගේ පර්යේෂණය නැවත පටන් ගන්න බොත්තම, ඔබගේ පර්යේෂණය නැවත පටන් ගැනීමට සහ ඔබගේ Chrome ඉතිහාසය තුළ අදාළ ක්‍රියාකාරකම් බැලීමට Enter ඔබන්න</translation>
 <translation id="2803306138276472711">Google සුරක්ෂිත පිරික්සුම විසින් මෑතකදී <ph name="BEGIN_LINK" />අනිෂ්ට මෘදුකාංගයක්<ph name="END_LINK" /> <ph name="SITE" /> මත සොයා ගැනිණි. සාමාන්‍ය යෙන් සුරක්ෂිත වෙබ් අඩවි ඇතැම් විට අනිෂ්ට මෘදුකාංගවලින් ආසාදනය වී තිබිය හැක.</translation>
 <translation id="2807052079800581569">රූපය Y ස්ථානය</translation>
 <translation id="2820957248982571256">ස්කෑන් කරමින්...</translation>
@@ -556,6 +579,7 @@
 <translation id="2880660355386638022">කවුළු තැබීම</translation>
 <translation id="2881276955470682203">කාඩ්පත සුරකින්න ද?</translation>
 <translation id="2882949212241984732">දෙවරක් දොරටු නැමීම</translation>
+<translation id="2893773853358652045">Fourth Roll</translation>
 <translation id="2900528713135656174">සිදුවීමක් සාදන්න</translation>
 <translation id="2903493209154104877">ලිපින</translation>
 <translation id="290376772003165898">පිටුව <ph name="LANGUAGE" /> බසින් නොවේ ද?</translation>
@@ -577,6 +601,7 @@
 <translation id="2948083400971632585">ඔබට සබැඳුමක් සඳහා වින්‍යාස කළ ඕනෑම ප්‍රොක්සියක් සැකසුම් පිටුවෙන් අබල කළ හැක.</translation>
 <translation id="2949183777371959169">යන්ත්‍රය Chrome බ්‍රවුසර ක්ලවුඩ් කළමනාකරණය සමග ලියාපදිංචි කර නැති නිසා නොසලකා හරින ලදි.</translation>
 <translation id="2951588413176968965">මගේ තැපැල් පෙට්ටිය</translation>
+<translation id="2952820037279740115">සියලු අප්‍රකට කවුළු වසන්න</translation>
 <translation id="295526156371527179">අවවාදයයි: මෙය අකාරාදියක් නොවන බැවින් ප්‍රතිපත්තියෙන් සඳහන් කෙරෙන අකාරාදියක් ලෙස මෙම ප්‍රතිපත්තිය ඒකාබද්ධ කරනු නොලැබීය.</translation>
 <translation id="2955913368246107853">සෙවීම් බාර් එක වසන්න</translation>
 <translation id="2972581237482394796">&amp;නැවත කරන්න</translation>
@@ -589,11 +614,11 @@
 <translation id="2991174974383378012">වෙබ අඩවි සමග බෙදා ගැනීම</translation>
 <translation id="2991571918955627853">වෙබ් අඩවිය HSTS භාවිතා කරන නිසා ඔබට මේ දැන් <ph name="SITE" /> වෙත පිවිසිය නොහැක. ජාල දෝෂ සහ ප්‍රහාර සාමාන්‍යයෙන් තාවකාලිකය, එනිසා මෙම පිටුව සමහර විට පසුව වැඩ කරනු ඇත.</translation>
 <translation id="2995517112308048736">ගොනු තරම:</translation>
-<translation id="2997344996471412501">Chrome Dino ක්‍රීඩා කරන්න</translation>
 <translation id="3002501248619246229">ආදාන බඳුන් මාධ්‍ය පරීක්‍ෂා කරන්න</translation>
 <translation id="3005723025932146533">සුරැකි පිටපතක් පෙන්වන්න</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> සඳහා CVC ඇතුළු කරන්න. ඔබ තහවුරු කළ පසු, ඔබේ කාඩ්පත් විස්තර මෙම අඩවිය සමග බෙදා ගනු ඇත.</translation>
 <translation id="3010559122411665027">"<ph name="ENTRY_INDEX" />": <ph name="ERROR" /> ලැයිස්තුගත කරන්න</translation>
+<translation id="3013291976881901233">MIDI උපාංග</translation>
 <translation id="301521992641321250">ස්වයංක්‍රියව අවහිර කර ඇත</translation>
 <translation id="3016780570757425217">ඔබේ පිහිටීම දැන ගන්න</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, යෝජනාව ඉවත් කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
@@ -601,7 +626,7 @@
 <translation id="3024663005179499861">වැරදි ප්‍රතිපත්ති වර්ගය</translation>
 <translation id="3037605927509011580">අනේ, අපොයි!</translation>
 <translation id="3041612393474885105">සහතික තොරතුරු</translation>
-<translation id="304730011294247979">ඔබගේ Chrome ඉතිහාසය බලන්න බොත්තම, Chrome සැකසීම් තුළ ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය බැලීමට සහ කළමනාකරණය කිරීමට Enter</translation>
+<translation id="3044034790304486808">ඔබගේ පර්යේෂණය නැවත පටන් ගන්න</translation>
 <translation id="3060227939791841287">C9 (ලියුම් කවරය)</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ආරක්ෂක පරීක්ෂාව ධාවනය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="3061707000357573562">පැච් සේවාව</translation>
@@ -613,6 +638,7 @@
 <translation id="3096100844101284527">නංවා ගැනීමේ ලිපිනය එක් කරන්න</translation>
 <translation id="3105172416063519923">වත්කම් ID:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />සුරක්‍ෂිත DNS වින්‍යාසය පරීක්‍ෂා කිරීම<ph name="END_LINK" /></translation>
+<translation id="3108943290502734357">Middle Tray</translation>
 <translation id="3109728660330352905">ඔබට මෙම පිටුව බැලීමට අනුමැතිය නැත.</translation>
 <translation id="3113284927548439113">තෙවන වැඩ මුරය</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> හට ඔබ ඔබේ දත්ත උපස්ථ කර මෙම <ph name="DEVICE_TYPE" /> ආපසු දීමට අවශ්‍යයි</translation>
@@ -626,6 +652,7 @@
 <translation id="3154506275960390542">මෙම පිටුවෙහි ආරක්ෂිතව යොමු නොකරන පෝරමයක් ඇතුළත් වේ. ඔබ යවන දත්ත සංක්‍රමණය අතරතුර අන්‍යයන් විසින් බැලීමට හෝ සේවාදායකය ලබන දේ වෙනස් කිරීමට ප්‍රහාරකයෙකු විසින් විකරණය කිරීමට හැකිය.</translation>
 <translation id="315504272643575312">ඔබගේ ගිණුම <ph name="MANAGER" /> විසින් කළමනාකරණය කෙරේ.</translation>
 <translation id="3157931365184549694">ප්‍රතිසාධනය</translation>
+<translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">ඔබ භාවිතා කරන Wi-Fi මගින් ඔබ එහි පුරනය වීමේ පිටුවට පිවිසීමට අවශ්‍ය විය හැක.</translation>
 <translation id="3169472444629675720">අනාවරණය</translation>
 <translation id="3174168572213147020">දූපත</translation>
@@ -634,7 +661,6 @@
       කළ යුතු බව ඔබ විශ්වාස නොකරන්නේ නම්:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන අවස්ථාව දැන ගන්න</translation>
-<translation id="3188393374551744535">ගිණුම් ශේෂය</translation>
 <translation id="3194737229810486521"><ph name="URL" /> හට ඔබේ උපාංගයේ දත්ත ස්ථිරව ගබඩා කිරීමට අවශ්‍යයි</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> මත <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">ඔබ මෙම උපාංගය සක්‍රියව භාවිත කරන අවස්ථාව දැන ගැනීමට ඉල්ලිය හැකිය</translation>
@@ -672,12 +698,15 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ප්‍රතිපත්තිය ගැන තව දැන ගන්න</translation>
 <translation id="3295444047715739395">Chrome සැකසීම් තුළ ඔබගේ මුරපද බලන්න සහ කළමනාකරණය කරන්න</translation>
 <translation id="3303855915957856445">සෙවුම් ප්‍රතිඵල හමු නොවිණි</translation>
+<translation id="3304073249511302126">බ්ලූටූත් ස්කෑන් කිරීම</translation>
 <translation id="3308006649705061278">සංවිධාන එ්කකය (OU)</translation>
+<translation id="3308738399950580893">වෙළඳ දැන්වීම්</translation>
 <translation id="3320021301628644560">බිල්පත් ලිපිනය එක් කරන්න</translation>
 <translation id="3324983252691184275">ක්‍රිම්සන්</translation>
 <translation id="3329013043687509092">සංතෘප්ත වීම</translation>
 <translation id="3333762389743153920">අතථ්‍ය කාඩ්පත සඳහා සුදුසුකම් නොලබයි</translation>
 <translation id="3338095232262050444">සුරක්ෂිතයි</translation>
+<translation id="3344575302477361573">අප්‍රකට කවුළු වසන්න බොත්තම, දැනට විවෘතව ඇති සියලු අප්‍රකට කවුළු වැසීමට Enter ඔබන්න.</translation>
 <translation id="3355823806454867987">ප්‍රොක්සි සැකසුම් වෙනස් කරන්න...</translation>
 <translation id="3360103848165129075">ගෙවීම් හසුරුවන පත්‍රය</translation>
 <translation id="3361596688432910856">Chrome පහත තොරතුරු <ph name="BEGIN_EMPHASIS" />නොසුරකිනු ඇත<ph name="END_EMPHASIS" />:
@@ -693,7 +722,6 @@
 <translation id="3371076217486966826"><ph name="URL" /> හට පහත දේවල් අවශ්‍යයි:
       • ඔබගේ අවට 3D සිතියමක් තැනීම සහ කැමරා පිහිටීම හඹා යාම
       • ඔබගේ කැමරාව භාවිත කිරීම</translation>
-<translation id="3372389303668969359">මෙම ගෙවීම් ක්‍රමය සමඟ මිලදී ගැනීමක් සිදු කිරීමට ඔබ ඊළඟ වතාවේ මෙම උපාංගය භාවිත කරන විට ඒ ඔබ බව ඉක්මනින් සත්‍යාපනය කිරීමට ඔබට Windows Hello භාවිත කළ හැකිය.</translation>
 <translation id="337363190475750230">ප්‍රතිවිධාන කර ඇත</translation>
 <translation id="3377144306166885718">සේවාදායකය TLS හි යල් පැන ගිය අනුවාදයක් භාවිත කළා.</translation>
 <translation id="3377188786107721145">ප්‍රතිපත්ති විග්‍රහ දෝෂය</translation>
@@ -703,15 +731,16 @@
 <translation id="3381668585148405088">ඔබගේ මිලදී ගැනීම සත්‍යාපනය කරන්න</translation>
 <translation id="3387261909427947069">ගෙවීමේ ක්‍රම</translation>
 <translation id="3391030046425686457">බෙදා හැරීමේ ලිපිනය</translation>
+<translation id="3391482648489541560">ගොනු සංස්කරණය</translation>
 <translation id="3395827396354264108">භාර ගැනීමේ ක්‍රමය</translation>
 <translation id="3399952811970034796">බෙදා හැරීමේ ලිපිනය</translation>
 <translation id="3402261774528610252">මෙම වෙබ් අඩවිය පූරණ කිරීමට භාවිත කළ සම්බන්ධතාව TLS 1.0 හෝ TLS 1.1 භාවිත කළා, ඒවා අත හැර තිබෙන අතර අනාගතයේදී අබල කෙරේ. වරක් අබල කළ විට, පරිශීලකයින් මෙම වෙබ් අඩවිය පූරණ කිරීම වළක්වනු ලැබේ. සේවාදායකය TLS 1.2 හෝ පසු අනුවාදය සබල කළ යුතුය.</translation>
+<translation id="3405664148539009465">ෆොන්ට අභිරුචිකරණය කරන්න</translation>
 <translation id="3409896703495473338">ආරක්ෂක සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="3414952576877147120">ප්‍රමාණය:</translation>
 <translation id="3417660076059365994">විශ්ලේෂණය සඳහා ඔබ අලවන හෝ අමුණන ගොනු Google Cloud හෝ තෙවන පාර්ශ්ව වෙත යවයි. උදාහරණයක් වශයෙන්, සංවේදි දත්ත හෝ මැල්වෙයාර් සඳහා ඒවා ස්කෑන් කරනු ලැබිය හැකිය.</translation>
 <translation id="3422248202833853650">මතකය නිදහස් කිරීමට වෙනත් වැඩසටහන්වලින් පිටවීමට උත්සාහ කරන්න.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> වෙත දැනට ළඟා විය නොහැකිය.</translation>
-<translation id="3422654661304792373">තේමා සමඟ ඔබගේ බ්‍රව්සරයේ පෙනුම අභිරුචිකරණය කරන්න</translation>
 <translation id="3423742043356668186">සඳහන් කළ පද්ධතිය</translation>
 <translation id="3427092606871434483">ඉඩ දෙන්න (පෙරනිමි)</translation>
 <translation id="3427342743765426898">සංස්කරණය &amp;යළි කරන්න</translation>
@@ -755,6 +784,7 @@
 <translation id="3566021033012934673">ඔබගේ සබැඳුම පුද්ගලික නොවේ</translation>
 <translation id="3567778190852720481">ව්‍යවසාය ගිණුම සමඟ ලියාපදිංචි විය නොහැක (ව්‍යවසාය ගිණුම සුදුසුකම් නොලබයි).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">මෙම වෙබ් අඩවිය සඳහා අවසර දෙන්න</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> හිදී කාවැද්දූ පිටුවක් කියයි</translation>
 <translation id="3581089476000296252">මෙම පිටුව සූදානම් වූ විට Chrome ඔබට දැනුම් දෙයි. &lt;a&gt;අවලංගු කරන්න&lt;/a&gt;</translation>
 <translation id="3582930987043644930">නම එක් කරන්න</translation>
@@ -762,9 +792,9 @@
 <translation id="3584299510153766161">පහළට දෙවරක් අනින්න</translation>
 <translation id="3586931643579894722">විස්තර සඟවන්න</translation>
 <translation id="3587738293690942763">මැද</translation>
-<translation id="3590643883886679995">ඔබ අප්‍රසිද්ධ ප්‍රකාරයෙන් පිට වූ පසු පුරන දත්ත මෙම උපාංගය තුළ ගබඩා කරනු ඇත.</translation>
 <translation id="3592413004129370115">Italian (ලියුම් කවරය)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දිනක් පමණ ගත වේ.}=1{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දිනක් පමණ ගත වේ.}one{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දින {NUM_DAYS}ක් ගත වේ.}other{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දින {NUM_DAYS}ක් ගත වේ.}}</translation>
+<translation id="3596012367874587041">යෙදුම් සැකසීම්</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">ඔබේ පරිපාලකයා යෙදුම අවහිර කර ඇත</translation>
 <translation id="3608932978122581043">පෝෂණ දිශානතිය</translation>
@@ -779,6 +809,7 @@
 <translation id="3631244953324577188">ජෛවමිතික</translation>
 <translation id="3633738897356909127">Chrome යාවත්කාලීන කරන්න බොත්තම, ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කිරීමට Enter ඔබන්න</translation>
 <translation id="3634530185120165534">බඳුන 5</translation>
+<translation id="3634567936866541746">ඔබ මේ දැන් වංචනික අඩවියකට ඔබගේ මුරපදය ඇතුළු කළේය. ඔබගේ ගිණුම් ආරක්ෂා කිරීමට, Chrome ඔබගේ සුරැකි මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="3637662659967048211">Google ගිණුමට සුරකින්න</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">යෙදුම:</translation>
@@ -788,6 +819,7 @@
 <translation id="3658742229777143148">පුනරීක්ශණය</translation>
 <translation id="3664782872746246217">මූලපද:</translation>
 <translation id="3671540257457995106">ප්‍රතිප්‍රමාණ කිරීමට ඉඩ දෙන්නද?</translation>
+<translation id="3675563144891642599">Third Roll</translation>
 <translation id="3676592649209844519">උපාංග හැඳුනුම:</translation>
 <translation id="3677008721441257057">ඔබ අදහස් කළේ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ද?</translation>
 <translation id="3678029195006412963">ඉල්ලීමට අත්සන් කළ නොහැකි විය</translation>
@@ -798,6 +830,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" />, <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">පූරණය වේ...</translation>
 <translation id="3709599264800900598">ඔබ පිටපත් කළ පාඨය</translation>
+<translation id="370972442370243704">සංචාර ක්‍රියාත්මක කරන්න</translation>
 <translation id="3711895659073496551">අත්හිටුවන්න</translation>
 <translation id="3712624925041724820">බලපත්‍ර අවසන්</translation>
 <translation id="3714780639079136834">ජංගම දත්ත හෝ Wi-Fi ක්‍රියාත්මක කරමින්</translation>
@@ -808,6 +841,7 @@
 <translation id="373042150751172459">B4 (ලියුම් කවරය)</translation>
 <translation id="3736520371357197498">ඔබට ඔබගේ ආරක්ෂාව සඳහා වන අවදානම් වැටහෙන්නේ නම්, ඔබ හානිකර ක්‍රමලේඛ ඉවත් කර තිබීමට පෙර <ph name="BEGIN_LINK" />මෙම අනාරක්ෂාකාරී වෙබ් අඩවිය වෙත පිවිසිය හැක<ph name="END_LINK" /></translation>
 <translation id="3738166223076830879">ඔබේ බ්‍රවුසරය ඔබේ පරිපාලක විසින් කළමනාකරණය කරයි.</translation>
+<translation id="3744111561329211289">පසුබිමෙහි සමමුහුර්තකරණය</translation>
 <translation id="3744899669254331632">Chromium වලට ක්‍රියාවලිය කළ නොහැකි අවුල් අක්තපත්‍ර වෙබ් අඩවියට යැවූ නිසා ඔබට දැන් <ph name="SITE" /> වෙත පැමිණිය නොහැක. ජාල දෝෂ සහ ප්‍රහාර සාමාන්‍යයෙන් තාවකාලිකය, පෙනෙන හැටියට මෙම පිටුව පසුව වැඩ කරයි.</translation>
 <translation id="3745099705178523657">ඔබ තහවුරු කළ පසු, ඔබේ Google ගිණුමෙන් කාඩ්පත් විස්තර මෙම අඩවිය සමඟ බෙදා ගනු ලැබේ.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> හි ප්‍රහාරකයන් මෘදුකාංගයක් ස්ථාපනය හෝ ඔබේ පුද්ගලික තොරතුරු (උදාහරණ ලෙස, මුරපද, දුරකථන අංක, හෝ ණයපත්) හෙළිදරව් කිරීම වැනි අවදානම් සහගත දේවල්වලට ඔබව පෙළඹවිය හැකිය. <ph name="BEGIN_LEARN_MORE_LINK" />තව දැන ගන්න<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -840,15 +874,16 @@
 <translation id="3816482573645936981">අගය (ඉක්මවා ඇත)</translation>
 <translation id="382518646247711829">ඔබ ප්‍රොක්සි සර්වරය භාවිතා කළහොත්...</translation>
 <translation id="3827112369919217609">නියත</translation>
+<translation id="3827475930221174051">"<ph name="SEARCH_TERM" />"ට අදාළ ක්‍රියාකාරකම් මත පදනම්ව</translation>
 <translation id="3828924085048779000">හිස් රහස්පද ඉඩ නොදේ.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> අමතර කාර්ය සඳහා දිගු ස්ථාපන කර ඇත. දිගුවලට ඔබේ දත්තවලින් සමහරකට ප්‍රවේශය තිබේ.</translation>
 <translation id="3832522519263485449">වමට බොහොමයක් අනින්න</translation>
 <translation id="3835233591525155343">ඔබගේ උපාංග භාවිතය</translation>
-<translation id="3841184659773414994">ගොනු හසුරුවන්නන්</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඉක්මනින් නව Google Doc එකක් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3858027520442213535">දිනය සහ වේලාව යාවත්කාලීන කරන්න</translation>
 <translation id="3858860766373142691">නම</translation>
+<translation id="3879224246272917991">CPU/RAM භාවිතය වැනි උපාංග සංඛ්‍යාලේඛන සහ දෘඪාංග පිරිවිතර</translation>
 <translation id="3881478300875776315">පේළි අඩුවෙන් පෙන්වන්න</translation>
 <translation id="3884278016824448484">උපාංගය හඳුනා ගැනීම ප්‍රතිවිරුද්ධයි</translation>
 <translation id="3885155851504623709">කෝරලය</translation>
@@ -885,8 +920,10 @@
 <translation id="3990250421422698716">අනුලම්බයේ සෙමින් දුවන්න</translation>
 <translation id="3996311196211510766">මූලාරම්භ ප්‍රතිපත්තිය එය වෙත සියලුම ඉල්ලීම්වලට යෙදීමට <ph name="ORIGIN" /> වෙබ් අඩවිය
     ඉල්ලා ඇති නමුත්, දැනට මෙම ප්‍රතිපත්තිය යෙදිය නොහැක.</translation>
+<translation id="4010758435855888356">ගබඩා ප්‍රවේශය ඉඩ දෙන්නද?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} පිටුවක් ඇති PDF ලේඛනය}one{පිටු {COUNT} ක් ඇති PDF ලේඛනය}other{පිටු {COUNT} ක් ඇති PDF ලේඛනය}}</translation>
 <translation id="4023431997072828269">ආරක්ෂිත නොවන සම්බන්ධතාවක් භාවිත කරමින් මෙම පෝරමය ඉදිරිපත් කර ඇති නිසා, ඔබේ තොරතුරු අන් අයට පෙනෙනු ඇත.</translation>
+<translation id="4025913568718019429">Google පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කරන්න බොත්තම, ඔබගේ Google ගිණුම් පෞද්ගලිකත්ව සැකසීම් වෙත යාමට Enter ඔබන්න</translation>
 <translation id="4030383055268325496">&amp;එක් කිරීම පසුගමනය කිරීම</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4058922952496707368">යතුර "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
@@ -902,6 +939,7 @@
 <translation id="4084120443451129199">සෙවීම් ප්‍රකාරය, <ph name="KEYWORD_SUFFIX" /> සෙවීමට Enter ඔබන්න</translation>
 <translation id="4087296516249690906">සිදුවීම තනන්න බොත්තම, Google දින දර්ශනයේ නව සිදුවීමක් ඉක්මනින් තැනීමට Enter ඔබන්න</translation>
 <translation id="4088981014127559358">පැත්ත 1 රූප Y වැඩ මුරය</translation>
+<translation id="4089152113577680600">Tray 14</translation>
 <translation id="4098354747657067197">රැවටිලිකාර අඩවියක් ඉදිරියෙනි</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome තුළ අකුරු වර්ග තරම සහ මුහුණත අභිරුචිකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4101413244023615925">පාඨය සහ චිත්‍රකය</translation>
@@ -921,7 +959,6 @@
 <translation id="413544239732274901">තව දැන ගන්න</translation>
 <translation id="4142935452406587478">බඳුන 10</translation>
 <translation id="4148925816941278100">ඇමරිකන් එක්ස්ප්‍රස්</translation>
-<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, තේමා සමඟ ඔබගේ බ්‍රව්සරයේ පෙනුම අභිරුචිකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
 <translation id="4151403195736952345">ගෝලීය පෙරනිමිය භාවිත කරන්න (හඳුනාගන්න)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1 වෙනි පිටුව}one{{COUNT} වෙනි පිටුව}other{{COUNT} වෙනි පිටුව}}</translation>
 <translation id="4154664944169082762">ඇඟිලි සලකුණු</translation>
@@ -936,6 +973,7 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">ඔබේ කාඩ්පත දැනට සුරැකිය නොහැක</translation>
 <translation id="4196861286325780578">&amp;ගෙන යාම යළි කරන්න</translation>
+<translation id="4202554117186904723">Fifth Roll</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />සුරැකුම් පවුර සහ ප්‍රතිවයිරස වින්‍යාස කිරීම් පරීක්ෂා කරමින්<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">විශාල</translation>
 <translation id="4209166701302774460">ඔබ යන සේවාදායකය, <ph name="ORIGIN" />, එය වෙත සියලුම ඉල්ලීම්වලට මූලාරම්භක ප්‍රතිපත්තියක් යෙදීමට ඉල්ලා ඇත. නමුත් එය දැන් ප්‍රතිපත්තියක් බෙදා හැරීමට අසමත් වී ඇත, එය <ph name="SITE" /> සඳහා වන ඔබේ ඉල්ලීම ඉටු කිරීමෙන් බ්‍රවුසරය වළක්වයි. වෙබ් අඩවියක් සඳහා ආරක්‍ෂාව සහ වෙනත් ලක්‍ෂණ
@@ -988,11 +1026,13 @@
 <translation id="4302965934281694568">Chou3 (ලියුම් කවරය)</translation>
 <translation id="4305666528087210886">ඔබගේ ගොනුවට පිවිසීමට නොහැකි විය.</translation>
 <translation id="4306529830550717874">ලිපිනය සුරකින්නද?</translation>
+<translation id="4306812610847412719">පසුරු පුවරුව</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">අවහිර කරන්න (පෙරනිමි)</translation>
 <translation id="4314815835985389558">සමමුහුර්තය කළමනාකරණය</translation>
 <translation id="4318312030194671742">තීන්ත පෙරදසුන් වර්ණයෝජක සේවාව</translation>
 <translation id="4318566738941496689">ඔබේ උපාංගයේ නම සහ ජාල ලිපිනය</translation>
+<translation id="4325600325087822253">Tray 17</translation>
 <translation id="4325863107915753736">ලිපිය සෙවීම අසාර්ථක විය</translation>
 <translation id="4326324639298822553">ඔබේ කල් ඉකුත් වීමේ දිනය පරික්ෂා කර නැවත උත්සාහ කරන්න</translation>
 <translation id="4329871760342656885">ප්‍රතිපත්ති විග්‍රහ කිරීමේ දෝෂය: <ph name="ERROR" /></translation>
@@ -1003,16 +1043,14 @@
 <translation id="4346197816712207223">පිළිගත් ණය කාඩ්පත්</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> වෙත සම්බන්ධතාව ආරක්ෂිත නැත</translation>
-<translation id="4349531505348777662">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
+<translation id="4350629523305688469">Multifunction Tray</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> හට අවට බ්ලූටූත් උපාංග සඳහා ස්කෑන් කිරීමට අවශ්‍යයි. පහත උපාංග සොයාගනු ලැබීය:</translation>
 <translation id="4356973930735388585">මෙම අඩවියෙහි සිටින ප්‍රහාරකයන් ඔබගේ පරිගණකය මත ඔබගේ තොරතුරු (උදාහරණ ලෙස, ඡායාරූප, මුරපද, පණිවිඩ සහ ක්‍රෙඩිට් කාඩ්පත්) සොරකම් කරන හෝ මකන භයානක ක්‍රමලේඛ ස්ථාපනය කිරීමට උත්සාහ දැරිය හැකිය.</translation>
 <translation id="4358059973562876591">ඔබ සඳහන් කර ඇති අච්චු DnsOverHttpsMode ප්‍රතිපත්තියේ දෝෂයක් හේතුවෙන් නොයෙදිය හැක.</translation>
 <translation id="4358461427845829800">ගෙවීම් ක්‍රම කළමනාකරණය කරන්න...</translation>
 <translation id="4359160567981085931">ඔබ මේ දැන් වංචනික වෙබ් අඩවියක් මත ඔබේ මුරපදය ඇතුළත් කළා. Chrome උදවු කළ හැක. ඔබේ මුරපදය වෙනස් කිරීමටත් ඔබේ ගිණුම අවදානමේ තිබිය හැකි බව Google වෙත දැනුම් දිමටත්, ගිණුම ආරක්‍ෂා කරන්න ක්ලික් කරන්න.</translation>
-<translation id="4363178190432472170">මගේ දුරකථනය සොයන්න</translation>
 <translation id="4367563149485757821">Number-12 (ලියුම් කවරය)</translation>
 <translation id="437040971055499437">ආරක්ෂක සිදුවීම සිදු වේ</translation>
-<translation id="437058704415269440">ගිණුම් ශේෂය</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948">අපේක්ෂිත <ph name="VALUE_TYPE" /> අගය.</translation>
 <translation id="4377125064752653719">ඔබ <ph name="DOMAIN" /> වෙත ළඟාවීමට උත්සාහ දරන ලදි, නමුත් එම සර්වරය විසින් ඉදිරිපත් කළ සහතිකය එය නිකුත් කරන්නා විසින් අවලංගු කර ඇත. මෙයින් අදහස් වන්නේ සර්වරය ඉදිරිපත් කළ ආරක්ෂිත සාක්ෂි කිසිසේත් විශ්වාස නොකළ යුතු බවයි. ඔබ සම්බන්ධ වී සිටින්නේ වෙබ් ප්‍රහාරකයෙකු සමඟ වීමට ඉඩ ඇත.</translation>
@@ -1022,7 +1060,7 @@
 <translation id="4406883609789734330">සජීවී සිරස්තලය</translation>
 <translation id="4406896451731180161">සෙවීම් ප්‍රතිඵල</translation>
 <translation id="4408413947728134509">කුකීස් <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
+<translation id="4414515549596849729">කුකී සහ අඩවි දත්ත</translation>
 <translation id="4415426530740016218">නංවා ගැනීමේ ලිපිනය</translation>
 <translation id="4424024547088906515">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය Chrome මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="443121186588148776">අනුක්‍රමික තොට</translation>
@@ -1032,7 +1070,6 @@
 <translation id="4434045419905280838">උත්පතන සහ හරවා යැවීම්</translation>
 <translation id="4435702339979719576">තැපැල් පත)</translation>
 <translation id="443673843213245140">ප්‍රොක්සියක භාවිතය අබල කර ඇති නමුත් ප්‍රකාශිත ප්‍රොක්සි වින්‍යාසකරණයක් නිශ්චය කර ඇත.</translation>
-<translation id="4448463448776780262">Chrome තේමා කළමනාකරණය කරන්න බොත්තම, තේමා සමඟ ඔබගේ බ්‍රව්සරයේ පෙනුම අභිරුචිකරණය කිරීමට Enter.</translation>
 <translation id="4450893287417543264">නැවත නොපෙන්වන්න</translation>
 <translation id="4451135742916150903">HID උපාංග වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="4460315069258617173">ඔබ මෙම අඩවිය සඳහා ටැබ වසන තෙක් ඉඩ දේ</translation>
@@ -1047,6 +1084,7 @@
 <translation id="449126573531210296">සමමුහුර්ත කළ මුරපද ඔබගේ Google ගිණුම සමග සංකේතනය කරන්න</translation>
 <translation id="4492519888999857993">මෙම විශේෂාංග පෙරනිමි ලෙස අබල කර ඇත. ඒවා Chrome හි අනාගත අනුවාදවල නොලැබේ.</translation>
 <translation id="4493480324863638523">අවලංගු URL. සම්මත සැලැස්මක් සහිත URL එකක් විය යුතුමයි, උදා: http://example.com හෝ https://example.com.</translation>
+<translation id="4500587658229086076">අනාරක්ෂිත අන්තර්ගතය</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
 <translation id="4506176782989081258">වලංගුකරණ දෝෂය: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">පද්ධති පරිපාලක අමතමින්</translation>
@@ -1054,12 +1092,16 @@
 <translation id="4508814173490746936">ස්පර්ශ හැඳුනුම භාවිත කළ නොහැකි විය</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google පරිවර්තනය සමගින් මෙම පිටුව පරිවර්තනය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4510487217173779431">Chou4 (ලියුම් කවරය)</translation>
+<translation id="4514308731478712184">සංචාර ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="4515275063822566619">කාඩ්පත් සහ ලිපින Chrome සහ ඔබේ Google ගිණුම (<ph name="ACCOUNT_EMAIL" />) වෙතිනි. ඔබට ඒවා <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ කළමනාකරණය කළ හැකිය.</translation>
 <translation id="4517607026994743406">Comm-10 (ලියුම් කවරය)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> mm (<ph name="ORIENTATION" />)</translation>
+<translation id="4521916730539354575">Left Tray</translation>
 <translation id="4522570452068850558">විස්තර</translation>
 <translation id="4524138615196389145">දැන් සිට WebAuthn භාවිත කිරීමෙන් ඔබේ කාඩ්පත් වඩා වේගයෙන් තහවුරු කරන්න</translation>
 <translation id="4524805452350978254">කාඩ්පත් කළමනාකරණය කරන්න</translation>
+<translation id="4530347922939905757">පෙළ පණිවිඩය</translation>
+<translation id="4541810033354695636">ආවර්ධිත යථාර්තය</translation>
 <translation id="4542971377163063093">බඳුන 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">ඔබගේ දිගු අබල කිරීම උත්සාහ කරන්න.</translation>
@@ -1073,6 +1115,7 @@
 <translation id="4592951414987517459"><ph name="DOMAIN" /> වෙත ඔබේ සබැඳුම සංකේතනය කර ඇත්තේ නවීන cipher suite භාවිතයෙනි.</translation>
 <translation id="4594403342090139922">මැකීම &amp;පසුගමනය කරන්න</translation>
 <translation id="4597348597567598915">ප්‍රමාණය 8</translation>
+<translation id="4598556348158889687">ගබඩාව කළමනාකරණය</translation>
 <translation id="4600854749408232102">C6/C5 (ලියුම් කවරය)</translation>
 <translation id="4606870351894164739">බලපෑමක් ඇති කරන</translation>
 <translation id="4607603470419975064">Chrome ඉඟි බොත්තම බලන්න, Chrome විශේෂාංග ගැන දැන ගැනීමට Enter ඔබන්න</translation>
@@ -1092,7 +1135,6 @@
 <translation id="467662567472608290">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකයේ දෝෂ අඩංගුය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> හට ප්‍රවේශ්‍යතා සිදුවීම්වලට ප්‍රතිචාර දැක්වීමට අවශ්‍යයි</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4680804919228900307">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, සහ ඔබ දැනට මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවි සඳහා ඔබේ සුරැකි මුරපද පරීක්‍ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="468314109939257734">ඔබගේ අතථ්‍ය කාඩ්පත් අංකය බලන්න</translation>
 <translation id="4691835149146451662">Architecture-A (ලියුම් කවරය)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1116,8 +1158,10 @@
 <translation id="4744603770635761495">විධානගතකළහැකි මඟ</translation>
 <translation id="4749011317274908093">ඔබ අප්‍රසිද්ධව ඇත</translation>
 <translation id="4750917950439032686">ඔබගේ තොරතුරු (උදාහරණයක් ලෙස, මුරපද හෝ ණය කාඩ්පත් අංක) මෙම අඩවිය වෙත යවන විට රහසිගත වේ.</translation>
+<translation id="4751476147751820511">චලිත හෝ ආලෝක සංවේදක</translation>
 <translation id="4754461935447132332">ආරක්ෂිත-නොවන අඩවි සඳහා ඉඩ නොදේ</translation>
 <translation id="4756388243121344051">&amp;ඉතිහාසය</translation>
+<translation id="4757993714154412917">ඔබ මේ දැන් වංචනික අඩවියකට ඔබගේ මුරපදය ඇතුළු කළේය. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, ඔබගේ සුරැකි මුරපද පරීක්ෂා කිරීමට Chromium නිර්දේශ කරයි.</translation>
 <translation id="4758311279753947758">සම්බන්ධතා තතු එක් කරන්න</translation>
 <translation id="4761104368405085019">මයික්‍රොෙෆෝනය භාවිතා කරන්න</translation>
 <translation id="4761869838909035636">Chrome ආරක්ෂක පරීක්ෂාව ධාවනය කරන්න</translation>
@@ -1147,6 +1191,7 @@
           <ph name="LIST_ITEM" />සේවායෝජකයන්ට හෝ පාසල්වලට බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම් හඹා යාමට හැකිය<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />අන්තර්ජාල සේවා සපයන්නන් වෙබ් තදබදය නිරීක්ෂණය කළ හැකිය<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">අනතුරු ඇඟවීම් ක්‍රියාත්මක කරන්න</translation>
 <translation id="4838327282952368871">සිහිනමය</translation>
 <translation id="4840250757394056958">ඔබගේ Chrome ඉතිහාසය බලන්න</translation>
 <translation id="484462545196658690">ස්වයං</translation>
@@ -1168,6 +1213,7 @@
 <translation id="4889420713887366944">අප්‍රසිද්ධ කවුළුව විවෘත කිරීමේ බොත්තම, පුද්ගලිකව බ්‍රවුස් කිරීමට නව Chrome අප්‍රසිද්ධ කවුළුව විවෘත කිරීමට Enter ඔබන්න</translation>
 <translation id="4892518386797173871">පසුපස</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
+<translation id="4900217275619098670">Ninth Roll</translation>
 <translation id="4901778704868714008">සුරකින්න...</translation>
 <translation id="4913987521957242411">ඉහළ වමට අනින්න</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> ස්ථාපනය කරන්න (බාගැනීමක් අවශ්‍ය නොවේ)</translation>
@@ -1178,6 +1224,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, සෙවීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4930153903256238152">විශාල ධාරිතාව</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
+<translation id="4946982471994930967">ප්‍රවේශ්‍යතා සැකසීම් කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කිරීමට Enter ඔබන්න.</translation>
 <translation id="4950898438188848926">පටිත්ත මාරු වීමේ බොත්තමෙන්, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /> විවෘත පටිත්තට මාරු වීමට Enter ඔබන්න</translation>
 <translation id="495170559598752135">ක්‍රියාමාර්ග</translation>
 <translation id="4953689047182316270">ප්‍රවේශ්‍යතා සිදුවීම්වලට ප්‍රතිචාර දක්වන්න</translation>
@@ -1185,7 +1232,6 @@
 <translation id="4958444002117714549">විදහන ලැයිස්තුව</translation>
 <translation id="4968522289500246572">මෙම යෙදුම ජංගම සඳහා සැලසුම් කර ඇති අතර ප්‍රතිප්‍රමාණ නොවීමටද හැකිය. මෙම යෙදුම ගැටලු හෝ යළි ආරම්භ වීම අත්විඳිය හැකිය.</translation>
 <translation id="4973922308112707173">ඉහළට දෙවරක් අනින්න</translation>
-<translation id="4974590756084640048">අනතුරු ඇඟවීම් යළි-සබල කරන්න</translation>
 <translation id="4984088539114770594">මයික්‍රෆෝනය භාවිත කරන්නද?</translation>
 <translation id="4984339528288761049">Prc5 (ලියුම් කවරය)</translation>
 <translation id="4989163558385430922">සියල්ල බලන්න</translation>
@@ -1217,6 +1263,7 @@
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(1 ක් භාවිතයේ ඇත)}one{(# ක් භාවිතයේ ඇත)}other{(# ක් භාවිතයේ ඇත)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />ප්‍රොක්සි ලිපිනය පරීක්ෂා කරමින්<ph name="END_LINK" /></translation>
+<translation id="5070838744279127212">Tenth Roll</translation>
 <translation id="507130231501693183">තැපැල් පෙට්ටිය 4</translation>
 <translation id="5087286274860437796">මෙම අවස්ථාවේ සේවාදායකයේ සහතිකය වලංගු නැත.</translation>
 <translation id="5087580092889165836">කාඩ්පත එක් කරන්න</translation>
@@ -1229,9 +1276,12 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">අඩවිය ආරක්ෂිත නැත</translation>
 <translation id="5112422516732747637">A5</translation>
+<translation id="5114288597538800140">Tray 18</translation>
+<translation id="5114987907971894280">අතථ්‍ය යථාර්ථය</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">සීමා කළ කළමනාකරණය කළ ආරාධිත සැසි ප්‍රතික්ෂේප කිරීම</translation>
 <translation id="5115563688576182185">(64-bit)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
 <translation id="5123063207673082822">සති අන්තය</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">ඔබේ කාඩ්පත සත්‍යාපනය</translation>
@@ -1239,7 +1289,6 @@
 <translation id="5135404736266831032">ලිපින කළමනාකරණය කරන්න...</translation>
 <translation id="5138014172396933048">අතථ්‍ය කාඩ්පත මේ අවස්ථාවේදී ලබා ගත නොහැකිය, කරුණාකර ඔබගේ බැංකුව අමතන්න</translation>
 <translation id="5138227688689900538">අඩුවෙන් පෙන්වන්න</translation>
-<translation id="514010763713772514">ඊළඟ වතාවේ වඩාත් වේගයෙන් ගෙවන්න</translation>
 <translation id="5145883236150621069">ප්‍රති්පත්ති ප්‍රතිචාරය තුළ දෝෂ කේතය ඉදිරිපත් කරයි</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> සඳහා දැනුම්දීම් අවහිරයි</translation>
 <translation id="5148809049217731050">මුහුණ ඉහළට</translation>
@@ -1261,8 +1310,10 @@
 <translation id="5201306358585911203">මෙම පිටුවෙහි කාවැද්දූ පිටුවක් කියයි</translation>
 <translation id="5205222826937269299">නම අවශ්‍යයි</translation>
 <translation id="5209518306177824490">SHA-1 ඇඟිලි සලකුණු</translation>
+<translation id="5209670883520018268">Tray 20</translation>
 <translation id="5215116848420601511">Google Pay භාවිතයෙන් ගෙවීම් ක්‍රම සහ ලිපින</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
+<translation id="521659676233207110">Tray 13</translation>
 <translation id="5222812217790122047">ඊ-තැපෑල අවශ්‍යයි</translation>
 <translation id="5230733896359313003">නැව්ගත කිරීමේ ලිපිනය</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1273,12 +1324,13 @@
 <translation id="5252000469029418751">C7 (ලියුම් කවරය)</translation>
 <translation id="5254043433801397071">මුද්‍රණ අන්තර්ගතය ප්‍රශස්ත කරන්න</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">ගෙවීම සම්පූර්ණයි</translation>
-<translation id="5265446478903775694">Google හි මගේ පෞද්ගලිකත්වය කළමනාකරණය කරන්න</translation>
+<translation id="5255690596502591079">කෙසේ වෙතත් ග්‍රහණය කර ගන්න</translation>
 <translation id="5266128565379329178">ඉහළ බඳින්න</translation>
+<translation id="5269124652893918188"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ බ්‍රවුසරයේ පෙනුම අභිරුචිකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
 <translation id="5269225904387178860">පහළට සිවු වරක් අනින්න</translation>
 <translation id="5269999699920406580">පද්ධතිය පුරා යෙදිය හැකි විශේෂාංග නැවත සැකසීම කළ හැක්කේ හිමිකරුට පමණයි: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">අවවාදයයි: මෙය ඒකාබද්ධ කළ හැකි අකාරාදි ප්‍රතිපත්තිවල කොටසක් නොවන බැවින් මෙම ප්‍රතිපත්තිය PolicyDictionaryMultipleSourceMergeList ප්‍රතිපත්තිය තුළ සඳහන් කළ පරිදි ඒකාබද්ධ කළේ නැත.</translation>
+<translation id="5279286380302340275">බාගැනීම් කළමනාකරණය කරන්න</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ලේඛන ගුණාංග</translation>
 <translation id="528468243742722775">අවසන් කරන්න</translation>
@@ -1308,8 +1360,8 @@
 <translation id="5340250774223869109">යෙදුම අවහිර කර ඇත</translation>
 <translation id="534295439873310000">NFC උපාංග</translation>
 <translation id="5344579389779391559">මෙම පිටුව ඔබේ මුදල මාරු කිරීමට උත්සාහ කළ හැක</translation>
+<translation id="5347645913823149105">Chrome තුළ අකුරු වර්ගය අභිරුචිකරණය කරන්න බොත්තම, Chrome තුළ අකුරු වර්ග තරම සහ මුහුණත අභිරුචිකරණය කිරීමට Enter ඔබන්න</translation>
 <translation id="5355557959165512791">ඔබට මේ දැන් <ph name="SITE" /> වෙත එහි සහතිකය අහෝසි කර ඇති බැවින් පිවිසිය නොහැක. ජාල දෝෂ සහ ප්‍රහාර සාමාන්‍යයෙන් තාවකාලිකය, එනිසා මෙම පිටුව සමහර විට පසුව වැඩ කරනු ඇත.</translation>
-<translation id="5362168579481816080">Chrome තුළ අකුරු වර්ග අභිරුචිකරණය කරන්න</translation>
 <translation id="536296301121032821">ප්‍රතිපත්ති සැකසුම් ගබඩා කිරීමට අසමත් විය</translation>
 <translation id="5363309033720083897">ඔබගේ පරිපාලක විසින් ඉඩ දෙන අනුක්‍රමික තොට</translation>
 <translation id="5371425731340848620">කාඩ්පත යාවත්කාලීන කරන්න</translation>
@@ -1388,23 +1440,24 @@
 <translation id="563324245173044180">රැවටිලිකාරී අන්තර්ගතය අවහිරයි.</translation>
 <translation id="5644090287519800334">පැත්ත 1 රූප X වැඩ මුරය</translation>
 <translation id="5645854190134202180">දෙවෙනි වැඩ මුරය</translation>
+<translation id="5649053991847567735">ස්වයංක්‍රීය බාගැනීම්</translation>
 <translation id="5654927323611874862">උඩුගත කළ බිඳ වැටීම් වාර්තා හැඳුනුම:</translation>
 <translation id="5659593005791499971">ඊතැපෑල</translation>
 <translation id="5663614846592581799">9x11 (ලියුම් කවරය)</translation>
 <translation id="5663955426505430495">මෙම උපාංගයේ පරිපාලකයා අමතර කාර්ය සඳහා දිගු ස්ථාපන කර ඇත. දිගුවලට ඔබේ දත්තවලින් සමහරකට ප්‍රවේශය තිබේ.</translation>
 <translation id="5675650730144413517">මෙම පිටුව ක්‍රියා නොකරයි</translation>
 <translation id="568292603005599551">රූපයේ X ස්ථානය</translation>
+<translation id="5684277895745049190">ලැයිස්තුව</translation>
 <translation id="5684874026226664614">අපොයි. මෙම පිටුව පැටවිය නොහැකි විය.</translation>
 <translation id="5685654322157854305">නැව්ගත කිරීමේ ලිපිනය එක් කරන්න</translation>
 <translation id="5689199277474810259">JSON වෙත නිර්යාත කරන්න</translation>
 <translation id="5689516760719285838">ස්ථානය</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates අගය අදාළ නැත, DnsOverHttpsMode ප්‍රතිපත්තිය <ph name="SECURE_DNS_MODE_AUTOMATIC" /> හෝ <ph name="SECURE_DNS_MODE_SECURE" /> ලෙස සකසන්නේ නම් මිස එය භාවිත නොකෙරේ.</translation>
-<translation id="5694206146481922091">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර ලියාපදිංචි කිරීමේ පත්‍රය විවෘත කර ඇත</translation>
 <translation id="5695542892312572833">ඔබගේ මිලදී ගැනීම සත්‍යාපනය කිරීමට සහ සම්පූර්ණ කිරීමට Windows Hello භාවිත කරන්නද?</translation>
 <translation id="5701381305118179107">මධ්‍ය</translation>
 <translation id="570530837424789914">කළමනාකරණය කරන්න...</translation>
+<translation id="5707154300732650394">ඔබගේ සංචාරය නැවත පටන් ගන්න</translation>
 <translation id="57094364128775171">ප්‍රබල මුරපදයක් යෝජනා කරන්න...</translation>
-<translation id="5710435578057952990">මෙම වෙබ් අඩවියේ අනන්‍යතාව තහවුරු කර නැත.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">වත්මන් භාවිතකරු</translation>
 <translation id="5728056243719941842">C5 (ලියුම් කවරය)</translation>
@@ -1412,13 +1465,11 @@
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{ඔබේ Google ගිණුමෙහි කාඩ්පත සුරකින්න}one{ඔබේ Google ගිණුමෙහි කාඩ්පත් සුරකින්න}other{ඔබේ Google ගිණුමෙහි කාඩ්පත් සුරකින්න}}</translation>
 <translation id="5745733273847572235">ඔබගේ ස්ථානය විමසිය හැකිය</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{මෙම කාඩ්පත සඳහා අතත්‍ය අංකයක් භාවිත කරන්න}one{කාඩ්පතක් තෝරන්න}other{කාඩ්පතක් තෝරන්න}}</translation>
-<translation id="5753081404403452307">Chrome තේමා කළමනාකරණය කරන්න</translation>
 <translation id="5759751709240058861">ඔබේ කැමරාව භාවිත සහ එහා මෙහා කරන්න</translation>
 <translation id="5763042198335101085">වලංගු ඊතැපැල් ලිපිනයක් ඇතුළු කරන්න</translation>
 <translation id="5765072501007116331">බෙදා හැරීමේ ක්‍රම සහ අවශ්‍යතා බැලීමට, ලිපිනයක් තෝරන්න</translation>
 <translation id="57689295674415555">අථත්‍ය කාඩ්පත් අංකය පුරවා නැතිද?</translation>
 <translation id="5776313857861697733">ප්‍රමුඛතාව</translation>
-<translation id="5778550464785688721">MIDI උපකරණ සම්පූර්ණ පාලනය</translation>
 <translation id="5781136890105823427">පරීක්‍ෂණය සබල කළා</translation>
 <translation id="578305955206182703">ඇම්බර්</translation>
 <translation id="57838592816432529">නිහඬ කරන්න</translation>
@@ -1434,6 +1485,7 @@
 <translation id="5817918615728894473">යුගල කරන්න</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{ඔබ ගෙවන විට මෙම කාඩ්පතෙන් අය කරනු ලැබේ, නමුත් මෙම වෙබ් අඩවිය සමඟ මෙහි සැබෑ අංකය බෙදා නොගැනේ. අමතර ආරක්‍ෂාව සඳහනා, තාවකාලික CVC එකක් ජනන කෙරේ.}one{ඔබ ගෙවන විට ඔබ තෝරා ගන්නා කාඩ්පතෙන් අය කරනු ලැබේ, නමුත් මෙම වෙබ් අඩවිය සමඟ මෙහි සැබෑ අංකය බෙදා නොගැනේ. අමතර ආරක්‍ෂාව සඳහනා, තාවකාලික CVC එකක් ජනන කෙරේ.}other{ඔබ ගෙවන විට ඔබ තෝරා ගන්නා කාඩ්පතෙන් අය කරනු ලැබේ, නමුත් මෙම වෙබ් අඩවිය සමඟ මෙහි සැබෑ අංකය බෙදා නොගැනේ. අමතර ආරක්‍ෂාව සඳහනා, තාවකාලික CVC එකක් ජනන කෙරේ.}}</translation>
 <translation id="5826507051599432481">පොදු නම (CN)</translation>
+<translation id="5830698870816298009">කැමරා භාවිතය සහ චලනය</translation>
 <translation id="5838278095973806738">ප්‍රහාරකයින් විසින් සොරකම් කළ හැකි නිසා ඔබ මෙම අඩවිය මත සංවේදී තොරතුරු ඇතුළු නොකළ යුතුය (උදාහරණයක් ලෙස, මුරපද හෝ ණය කාඩ්පත්).</translation>
 <translation id="5851548754964597211">ටැබ ලැයිස්තුව</translation>
 <translation id="5855253129151731373">මෙම වෙබ් අඩවියේ ධාරක නම <ph name="LOOKALIKE_DOMAIN" /> ට සමාන බව පෙනේ. ප්‍රහාරකයින් සමහර විට වසම් නාමයට කුඩා, බැලීමට අපහසු වෙනස්කම් කිරීමෙන් වෙබ් අඩවි අනුකාර කරති.
@@ -1446,6 +1498,7 @@
 <translation id="5866898949289125849">ඔබ සංවර්ධක මෙවලම් පිටුවක් දකියි</translation>
 <translation id="5869405914158311789">මෙම අඩවියට ළඟා විය නොහැකිය</translation>
 <translation id="5869522115854928033">සුරැකි රහස්වචන</translation>
+<translation id="5873013647450402046">ඔබගේ බැංකුවට මේ ඔබ බව තහවුරු කර ගැනීමට අවශ්‍යයි.</translation>
 <translation id="5887400589839399685">කාඩ්පත සුරැකිණි</translation>
 <translation id="5895138241574237353">යළි අරඹන්න</translation>
 <translation id="5895187275912066135">නිකුත් කළේ</translation>
@@ -1468,6 +1521,7 @@
 <translation id="5967592137238574583">සම්බන්ධතා තතු සංස්කරණය</translation>
 <translation id="5967867314010545767">ඉතිහාසයෙන් මකන්න</translation>
 <translation id="5968793460449681917">සෑම පිවිසීමකදීම</translation>
+<translation id="5974052231147553524">Sixth Roll</translation>
 <translation id="5975083100439434680">විශාලනය අඩු කරන්න</translation>
 <translation id="5979084224081478209">මුරපද පරීක්‍ෂා කරන්න</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1510,23 +1564,24 @@
 <translation id="6060009363608157444">අවලංගු DnsOverHttps ප්‍රකාරය.</translation>
 <translation id="6064217302520318294">තිර අගුල</translation>
 <translation id="6080696365213338172">ඔබ විසින් අන්තර්ගතයන්ට පිවිසී ඇත්තේ පරිපාලක-නිකුතු සහතිකයක් භාවිත කරමිනි. ඔබ <ph name="DOMAIN" /> වෙත ලබා දෙන තොරතුරු පරිපාලක හටද ලැබෙනු ඇත.</translation>
-<translation id="6091221835738886118"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google හි මගේ පෞද්ගලිකත්වය කළමනාකරණය කරන්න</translation>
+<translation id="6087312102907839798">අදාළ සෙවීම්</translation>
 <translation id="6094273045989040137">අනුසටහන් කරන්න</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">අඩවිය තනන්න</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> හි වෙබ් පිටුව තාවකාලිකව ක්‍රියා නොකරයි, නැතහොත් එය ස්ථිරවම වෙනත් වෙබ් ලිපිනයක් වෙත ගෙන ගොස් ඇත.</translation>
 <translation id="6107012941649240045">වෙත නිකුත් කරන ලදි</translation>
 <translation id="610911394827799129">ඔබේ Google ගිණුමට <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> හිදී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාරයන් තිබිය හැක</translation>
-<translation id="6113594885686374546">සංචාරය නැවත ආරම්භ කිරීමේ බොත්තම, ඔබගේ සංචාරය නැවත ආරම්භ කිරීමට ඇතුළු වී ඔබගේ Chrome ඉතිහාසයේ අදාළ ක්‍රියාකාරකම් බලන්න</translation>
 <translation id="6116338172782435947">පසුරු පුවරුවට පිටපත් කළ පෙළ සහ රූප බලන්න</translation>
 <translation id="6120179357481664955">ඔබේ UPI හැඳුනුම මතකද?</translation>
 <translation id="6124432979022149706">Chrome ව්‍යවසාය සම්බන්ධක</translation>
+<translation id="6127379762771434464">අයිතමය ඉවත් කරන ලදී</translation>
 <translation id="6146055958333702838">කිනම් හෝ කේබල පරීක්ෂා කර කිනම් හෝ රවුටර, මොඩම හෝ ඔබ භාවිත කරමින් සිටිය හැකි
     වෙනත් ජාල උපාංග යළි පණ ගන්වන්න.</translation>
 <translation id="614940544461990577">උත්සාහ කරන්න:</translation>
 <translation id="6150036310511284407">වමට තුන් වරක් අනින්න</translation>
 <translation id="6151417162996330722">සේවාදායක සහතිකයට ඉතා විශාල කාලයක වලංගු කාලයක් ඇත.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
+<translation id="6157754950574419155">ඉතිහාසයෙන් සියල්ල ඉවත් කරන්න</translation>
 <translation id="6157877588268064908">නැව්ගත කිරීමේ ක්‍රම සහ අවශ්‍යතා බැලීමට, ලිපිනයක් තෝරන්න</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6169916984152623906">දැන් ඔබට පෞද්ගලිකව බ්‍රවුස් කළ හැකි අතර, මෙම උපාංගය භාවිතා කරන වෙනත් පුද්ගලයින් ඔබේ ක්‍රියාකාරකම් නොදකිනු ඇත. කෙසේ වෙතත්, බාගැනීම් සහ පිටුසන් සුරැකෙනු ඇත.</translation>
@@ -1535,7 +1590,6 @@
 <translation id="619448280891863779">ඔබගේ තිර මත කවුළු විවෘත කිරීමට සහ තැබීමට අවශ්‍ය වූ විට අසන්න</translation>
 <translation id="6196640612572343990">තෙවන-පාර්ශ්ව කුකී අවහිර කරන්න</translation>
 <translation id="6203231073485539293">ඔබගේ අන්තර්ජාල සබැඳුම පරික්ෂා කරන්න</translation>
-<translation id="6211666000885129820">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර ලියාපදිංචි කිරීමේ පත්‍රය</translation>
 <translation id="6218753634732582820">Chromium වෙතින් ලිපිනය ඉවත් කරන්නද?</translation>
 <translation id="622039917539443112">සමාන්තර නැමීම</translation>
 <translation id="6221345481584921695">Google සුරක්ෂිත පිරික්සුම විසින් මෑතකදී <ph name="BEGIN_LINK" />අනිෂ්ට මෘදුකාංග<ph name="END_LINK" /> <ph name="SITE" /> මත අනාවරණය කර ගැනිණි. සාමාන්‍යයෙන් සුරක්ෂිත වෙබ් අඩවි සමහර විට අනිෂ්ට මෘදුකාංගවලින් ආසාදනය වෙයි. දන්නා අනිෂ්ට මෘදුකාංග බෙදා හරින්නෙකු වන <ph name="SUBRESOURCE_HOST" />, වෙතින් අනිෂ්ට අන්තර්ගතය පැමිණිය හැක.</translation>
@@ -1545,12 +1599,12 @@
 <translation id="624499991300733384">මුද්‍රණ වර්ණයෝජක සේවය</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome තුළ ඔබ බාගෙන ඇති ගොනු කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="6254436959401408446">මෙම පිටුව විවෘත කිරීමට ප්‍රමාණවත් තරම් මතකයක් නැත</translation>
-<translation id="625755898061068298">ඔබ මෙම අඩවිය සඳහා ආරක්ෂක අනතුරු ඇඟවීම් අබල කිරීමට තෝරාගෙන ඇත.</translation>
 <translation id="6259156558325130047">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> පොත්සලකුණු</translation>
 <translation id="6264485186158353794">ආරක්ෂාව වෙත ආපසු</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> ප්‍රතිපත්තියේ අගය පිටපත් කරන්න</translation>
 <translation id="6266934640124581640">ලා හරිත නිල්</translation>
+<translation id="6272088941196661550">ඔබගේ Chrome ඉතිහාසය තුළ අදාළ ක්‍රියාකාරකම් බැලීමට ඔබගේ සංචාරය නැවත පටන් ගන්න</translation>
 <translation id="6272383483618007430">Google යාවත්කාලීන</translation>
 <translation id="6276112860590028508">ඔබේ කියවීම් ලැයිස්තුවෙන් පිටු මෙහි දිස් වනු ඇත</translation>
 <translation id="627746635834430766">මීළඟ වතාවේ දී වේගවත්ව ගෙවීමට, ඔබේ Google ගිණුමට ඔබේ කාඩ්පත සහ බිල්පත් ලිපිනය සුරකින්න.</translation>
@@ -1579,6 +1633,7 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />ප්‍රොක්සි, සුරැකුම් පවුර සහ සුරක්‍ෂිත DNS වින්‍යාස කිරීම පරීක්‍ෂා කිරීම<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">වමට දෙවරක් ස්ටේපල් කරන්න</translation>
 <translation id="6377268785556383139">'<ph name="SEARCH_TEXT" />' සඳහා 1 ප්‍රතිඵලයක්</translation>
+<translation id="6377404662019220017">මෙම පිටුව බෙදා ගන්න බොත්තම, සබැඳිය බෙදා ගැනීමට, QR කේතයක් තැනීමට, විකාශය කිරීමට, සහ තවත් දේ සඳහා වන විකල්ප සහිතව, මෙම පිටුව බෙදා ගැනීමට Enter ඔබන්න.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">ඉදිරියට තිබිය හැකි ගාස්තු.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{වෙනත් යෝජනා 1}one{වෙනත් යෝජනා #}other{වෙනත් යෝජනාවන් #}}</translation>
@@ -1592,13 +1647,11 @@
 <translation id="6401136357288658127">මෙම ප්‍රතිපත්තිය අත්හරින ලදි. ඒ වෙනුවට ඔබ <ph name="NEW_POLICY" /> ප්‍රතිපත්තිය භාවිත කළ යුතු ය.</translation>
 <translation id="6404511346730675251">පිටු සලකුණ සංස්කරණය කරන්න</translation>
 <translation id="6406765186087300643">C0 (ලියුම් කවරය)</translation>
-<translation id="6409754798200046165">ඔබ මේ දැන් වංචනික වෙබ් අඩවියක ඔබේ මුරපදය ඇතුළත් කළා. Chrome දැන් ඔබේ මුරපදය වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> සඳහා කල් ඉකුත් වීමේ දිනය සහ CVC ඇතුළු කරන්න</translation>
 <translation id="6415778972515849510">Chromium ඔබට ඔබේ Google ගිණුම ආරක්‍ෂා කිරීමටත් ඔබේ මුරපදය වෙනස් කිරීමටත් ඔබට උදවු කළ හැක.</translation>
 <translation id="6423385022588644828">දැන් සිට ස්පර්ශ හැඳුනුම භාවිත කිරීමෙන් ඔබේ කාඩ්පත් වඩා වේගයෙන් තහවුරු කරන්න</translation>
 <translation id="6425092077175753609">ද්‍රව්‍ය</translation>
 <translation id="6427730057873428458">දොරටු නැමීම</translation>
-<translation id="6428146287756735566">ඔබගේ Chrome ඉතිහාසයේ අදාළ ක්‍රියාකාරකම් බැලීමට සංචාරය නැවත ආරම්භ කරන්න</translation>
 <translation id="6428450836711225518">ඔබේ දුරකථන අංකය සත්‍යාපන කරන්න</translation>
 <translation id="643051589346665201">Google මුරපදය වෙනස් කරන්න</translation>
 <translation id="6433490469411711332">සම්බන්ධතා තොරතුරු සංස්කරණය</translation>
@@ -1612,6 +1665,7 @@
 <translation id="6456955391422100996">දැන්වීම ඉවත් කළා.</translation>
 <translation id="6457206614190510200">සෑදල මැසීම</translation>
 <translation id="6458606150257356946">කෙසේ වෙතත් අලවන්න</translation>
+<translation id="6464094930452079790">රූප</translation>
 <translation id="6465306955648956876">මුරපද කළමනාකරණය කරන්න...</translation>
 <translation id="6468485451923838994">අකුරු</translation>
 <translation id="647261751007945333">උපාංග ප්‍රතිපත්ති</translation>
@@ -1619,14 +1673,16 @@
 <translation id="6489534406876378309">බිඳ වැටීම් උඩුගත කිරීම අරඹන්න</translation>
 <translation id="6493328574149990106"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබගේ ප්‍රවේශ්‍යතා මෙවලම් පුද්ගලිකකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න.</translation>
 <translation id="6493924760403974580">මෙම යෙදුම මෙම තරමට පමණක් සහාය දක්වයි.</translation>
+<translation id="6494750904506170417">උත්පතන සහ හරවා යැවීම්</translation>
 <translation id="6499038740797743453">මුරපදය යළි සකසන්නද?</translation>
 <translation id="6502991525169604759">ඔබගේ වෙනස් කිරීම් රහිතව</translation>
-<translation id="6505563257409036437">අප්‍රසිද්ධ කවුළු වසන්න</translation>
+<translation id="6506959208958864820">Envelope</translation>
 <translation id="6508722015517270189">Chrome යළි අරඹන්න</translation>
 <translation id="6513005815064132016">ඔබගේ කැමරාවේ ස්ථානය හඹා යාමට ඉල්ලිය හැකිය</translation>
 <translation id="6517596291481585650">අවවාදයයි: මෙය ලැයිස්තුවක් නොවන බැවින් ප්‍රතිපත්තියෙන් සඳහන් කෙරෙන ලැයිස්තුවක් ලෙස මෙම ප්‍රතිපත්තිය ඒකාබද්ධ කරනු නොලැබීය.</translation>
 <translation id="6518133107902771759">තහවුරු කරන්න</translation>
 <translation id="6521745193039995384">ක්‍රියාත්මක නැත</translation>
+<translation id="6529173248185917884">Seventh Roll</translation>
 <translation id="6529602333819889595">මැකීම &amp;යළි කරන්න</translation>
 <translation id="6545864417968258051">බ්ලූටූත් ස්කෑන් කිරීම</translation>
 <translation id="6547208576736763147">වමට ද්වි අනින්න</translation>
@@ -1642,9 +1698,9 @@
 <translation id="6591833882275308647">ඔබේ <ph name="DEVICE_TYPE" /> කළමනා නොකෙරේ</translation>
 <translation id="6592952801936330159">අඩවි සැකසීම් කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ අඩවි හරහා ගබඩා කර ඇති අවසර සහ දත්ත කළමනාකරණය කිරීමට Enter ඔබන්න</translation>
 <translation id="6596325263575161958">සංකේතනය කිරීමේ විකල්ප</translation>
-<translation id="6604181099783169992">චලිත හෝ ආලෝක සංවේදක</translation>
 <translation id="6609880536175561541">Prc7 (ලියුම් කවරය)</translation>
 <translation id="6615297766614333076">අට්ටිය 2</translation>
+<translation id="6623589891453322342">ගොනු හසුරුවන්නන්</translation>
 <translation id="6624427990725312378">සම්බන්ධතා තතු</translation>
 <translation id="6626291197371920147">වලංගු කාඩ්පත් අංකය එක් කරන්න</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> සෙවීම</translation>
@@ -1654,12 +1710,13 @@
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6645291930348198241">කුකී සහ වෙබ් අඩවි දත්ත වෙත ප්‍රවේශ වන්න.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{කිසිවක් නැත}=1{අඩවි 1කින් (ඔබව ඔබේ Google ගිණුමෙන් වරනය නොවනු ඇත)}one{අඩවි #කින් (ඔබව ඔබේ Google ගිණුමෙන් වරනය නොවනු ඇත)}other{අඩවි #කින් (ඔබව ඔබේ Google ගිණුමෙන් වරනය නොවනු ඇත)}}</translation>
-<translation id="6647197322759179819">සංචාරය නැවත ආරම්භ කරන්න</translation>
 <translation id="6648459603387803038">ඔබේ පරිපාලකට දුරස්ථව ඔබේ බ්‍රවුසර සැකසීම වෙනස් කළ හැකිය. මෙම උපාංගය මත ක්‍රියාකාරකම Chrome හට පිටතින් ද කළමනා කරනු ලැබිය හැක.</translation>
 <translation id="6648524591329069940">Serif ෆොන්ට</translation>
 <translation id="6651270836885078973">කළමනාකරණය කරන්නේ:</translation>
 <translation id="6652101503459149953">Windows Hello භාවිත කරන්න</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
+<translation id="6660413144148052430">ස්ථානය</translation>
+<translation id="6662457027866368246">First Roll</translation>
 <translation id="666259744093848177">(x86_64 පරිවර්තිත)</translation>
 <translation id="6665553082534466207">දකුණට තුන් වරක් අනින්න</translation>
 <translation id="6671697161687535275">Chromium වෙතින් පෝරම යෝජනා ඉවත් කරන්නද?</translation>
@@ -1669,6 +1726,7 @@
 <translation id="6688775486821967877">අතථ්‍ය කාඩ්පත මේ අවස්ථාවේදී ලබා ගත නොහැකිය, කරුණාකර පසුව නැවත උත්සාහ කරන්න</translation>
 <translation id="6689249931105087298">කළු ලක්‍ෂ්‍ය සම්පීඩනයට අදාළ</translation>
 <translation id="6689271823431384964">ඔබ පුරනය වී සිටින බැවින් Chrome ඔබට ඔබේ කාඩ්පත් ඔබේ Google ගිණුමට සුරැකීම පිරිනමයි. ඔබට මෙම හැසිරීම සැකසීම් තුළ වෙනස් කළ හැක. කාඩ්පත් හිමිකරුගේ නම ඔබේ ගිණුමෙන් ලැබේ.</translation>
+<translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google ගිණුම තුළ ඔබගේ උපාංගය සෙවීමට, Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="6698381487523150993">නිර්මිත:</translation>
 <translation id="6702919718839027939">ඉදිරිපත් කරන්න</translation>
 <translation id="6710213216561001401">පෙර</translation>
@@ -1678,6 +1736,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> හට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට සහ කැමරා ස්ථානය හඹා යෑමට අවශ්‍යයි</translation>
 <translation id="6718612893943028815">කැමරාව භාවිත කරන්නද?</translation>
 <translation id="6721678857435001674">ඔබේ ආරක්ෂක යතුරේ වර්ගය සහ මාදිලිය බලන්න</translation>
+<translation id="6732087373923685049">කැමරාව</translation>
 <translation id="6738516213925468394">ඔබේ දත්ත <ph name="TIME" /> වූ විට ඔබේ <ph name="BEGIN_LINK" />මුර වැකිකඩ<ph name="END_LINK" /> සංකේතන කරනු ලැබුවේය. සමමුහූර්තය ආරම්භ කිරීමට එය ඇතුළත් කරන්න.</translation>
 <translation id="674375294223700098">නොදන්නා සේවාදායක සහතික දෝෂය.</translation>
 <translation id="6744009308914054259">සම්බන්ධතාවයක් සඳහා රැඳී සිටින විට, ඔබට නොබැඳි ලිපි කියවීමට බාගැනීම් වෙත යාමට හැකිය.</translation>
@@ -1695,20 +1754,23 @@
 <translation id="6794951432696553238">දැන් සිට Windows Hello භාවිත කිරීමෙන් ඔබේ කාඩ්පත් වඩා වේගයෙන් තහවුරු කරන්න</translation>
 <translation id="681021252041861472">අත්‍යාවශ්‍ය ක්ෂේත්‍රයකි</translation>
 <translation id="6810899417690483278">අභිරුචිකරණ ID</translation>
+<translation id="6817217109584391709">ජාවාස්ක්‍රිප්ට්</translation>
+<translation id="6820143000046097424">අනුක්‍රමික තොට</translation>
 <translation id="6825578344716086703">ඔබ <ph name="DOMAIN" /> වෙත ළඟා වීමට උත්සහ කළ නමුත්, සේවාදායක ලබා දුන් සහතිකය සන්කර ඇත්තේ දුර්වල ඇල්ගොරිතමයක් (SHA-1 වැනි) භාවිතයෙනි. එහි තේරුම සේවාදායකය ලබා දුන් ආරක්ෂක තොරතුරු ව්‍යාජ ඒවා විය හැකි අතර ඔබ සබඳවන්නේ ඔබ බලාපොරොත්තු වන සේවාදායකය සමඟ නොවිය හැක (ඔබ සන්නිවේදනය කරන්නේ ප්‍රහාරකයා සමඟ විය හැක).</translation>
 <translation id="6826993739343257035">AR ඉඩ දෙන්නද?</translation>
-<translation id="6828772548639835278">Chrome තුළ අකුරු වර්ගය අභිරුචිකරණය කරන්න බොත්තම, Chrome තුළ අකුරු වර්ග තරම සහ මුහුණත අභිරුචිකරණය කිරීමට Enter</translation>
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6839929833149231406">ප්‍රදේශය</translation>
 <translation id="6846340164947227603">අතත්‍ය කාඩ්පත් අංකයක් භාවිත කරන්න...</translation>
 <translation id="6852204201400771460">යෙදුම නැවත පූරණය කරන්න ද?</translation>
 <translation id="6865412394715372076">මෙම කාඩ්පත දැන් තහවුරු කළ නොහැකිය</translation>
+<translation id="6873456682041376666">Top Tray</translation>
 <translation id="6874604403660855544">&amp;එක් කිරීම යළි කරන්න</translation>
 <translation id="6881240511396774766">ඉක්මනින් අලුත් Google Doc එකක් තනන්න</translation>
 <translation id="6883221904761970440">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර සත්‍යාපනය කිරීමේ පත්‍රය වසා ඇත</translation>
 <translation id="6884662655240309489">ප්‍රමාණය 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">මෙය කියවීමට පහසු කිරීමට Chrome මෙම පිටුව සරල කළා. Chrome අනාරක්‍ෂිත සම්බන්ධතාවක් ඔස්සේ මූලික පිටුව ලබා ගත්තා.</translation>
+<translation id="6890443033788248019">ස්ථානය ඉඩ දෙන්නද?</translation>
 <translation id="6891596781022320156">ප්‍රතිපත්ති මට්ටම උපකාර නොකරයි.</translation>
 <translation id="6895143722905299846">අතථ්‍ය අංකය:</translation>
 <translation id="6895330447102777224">ඔබේ කාඩ්පත තහවුරු කර ඇත</translation>
@@ -1728,6 +1790,7 @@
 <translation id="695140971690006676">සියල්ල යළි සකසන්න</translation>
 <translation id="6954341342296443517">ගොනු වර්ග විවෘත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="6957887021205513506">සේවාදායකයෙහි සහතිකය කූටරචනයක් බව පෙනෙන්නට තිබේ.</translation>
+<translation id="6958564499836457428">ඔබගේ Google ගිණුම තුළ Google පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="6961844873822989059">ඔබගේ උපාංගයේ ස්ථාපනය කර ඇති ෆොන්ට භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="6963520811470373926">ඉක්මවීම</translation>
 <translation id="6964255747740675745">ජාල වින්‍යාසය විග්‍රහ කිරීමට අසමත් විය (අවලංගු JSON).</translation>
@@ -1740,7 +1803,6 @@
 <translation id="6972629891077993081">HID උපාංග</translation>
 <translation id="6973656660372572881">ස්ථිර ප්‍රොක්සි සේවාදායක හා .pac ස්ක්‍රිප්ට ලිපින සඳහන් කර ඇත</translation>
 <translation id="6973932557599545801">සමාවෙන්න, මට උදවු කළ නොහැක, ඔබම ඉදිරියට යන්න.</translation>
-<translation id="6975012522936652259">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">නිහඬ කරන්න (පෙරනිමි)</translation>
 <translation id="6979983982287291980">විශ්ලේෂණය සඳහා ඔබ බාගන්නා ගොනු Google Cloud හෝ තෙවන පාර්ශ්ව වෙත යවයි. උදාහරණයක් වශයෙන්, සංවේදි දත්ත හෝ මැල්වෙයාර් සඳහා ඒවා ස්කෑන් කරනු ලැබිය හැකිය.</translation>
@@ -1752,9 +1814,11 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">විශාලන මට්ටම</translation>
 <translation id="7016992613359344582">මෙම අය කිරීම් එක්-වර හෝ ප්‍රත්‍යාවර්ත විය හැකි අතර, පැහැදිලි නොවිය හැක.</translation>
+<translation id="7024588353896425985">ගොනු හසුරුවන්නන්</translation>
 <translation id="7029809446516969842">මුරපද</translation>
 <translation id="7030436163253143341">සහතිකය වලංගු නැත</translation>
 <translation id="7031646650991750659">ඔබ ස්ථාපන කර ඇති Google Play යෙදුම් මොනවාද</translation>
+<translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Google ගිණුම් පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="7050187094878475250">ඔබ <ph name="DOMAIN" /> වෙත ළඟා කිරීමට උත්සාහ නමුත්, සේවාදායකයා වලංගු කාලය විශ්වාසවන්ත වීමට දිග වැඩි සහතිකයක් ඉදිරිපත් කළා.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{මෙම කාඩ්පත දැනට සුරැකිය නොහැක}one{මෙම කාඩ්පත් දැනට සුරැකිය නොහැක}other{මෙම කාඩ්පත් දැනට සුරැකිය නොහැක}}</translation>
 <translation id="7053983685419859001">අවහිර කරන්න</translation>
@@ -1770,6 +1834,8 @@
 <translation id="7086090958708083563">පරිශීලකයා විසින් ඉල්ලනු ලැබූ උඩුගත කිරීම</translation>
 <translation id="7087282848513945231">ප්‍රාන්තය</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ අඩවි හරහා ගබඩා කර ඇති අවසර සහ දත්ත කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
+<translation id="7096937462164235847">මෙම වෙබ් අඩවියේ අනන්‍යතාව සත්‍යාපනය කර නැත.</translation>
+<translation id="7102554173784142865">Chrome Dino ක්‍රීඩාව කරන්න</translation>
 <translation id="7108338896283013870">සඟවන්න</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> හට ඔබේ කැමරාව භාවිතා කිරීමට අවශ්‍යයි</translation>
 <translation id="7108819624672055576">දිගුවකින් ඉඩ දෙයි</translation>
@@ -1780,12 +1846,15 @@
 <translation id="7135130955892390533">තත්ත්‍වය පෙන්වන්න</translation>
 <translation id="7138472120740807366">බෙදා හැරීමේ ක්‍රමය</translation>
 <translation id="7139724024395191329">එමීර් රාජ්‍ය</translation>
+<translation id="7139892792842608322">Primary Tray</translation>
 <translation id="714064300541049402">පැත්ත 2 රූප X වැඩ මුරය</translation>
 <translation id="7152423860607593928">Number-14 (ලියුම් කවරය)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">ලැවැන්ඩර්</translation>
 <translation id="7156870133441232244">සේවාදායකය TLS 1.2 හෝ පසු අනුවාදයට උත්ශ්‍රේණි කළ යුතුය.</translation>
+<translation id="716939258255825483">Dino Run ක්‍රීඩා කරන්න බොත්තම, Chrome තුළ Dino Run ක්‍රීඩා කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
+<translation id="7173920250514487165">ඔබගේ තිරයෙහි රහස්‍ය අන්තර්ගතය ග්‍රහණය කර ගන්න</translation>
 <translation id="7174545416324379297">ඒකාබද්ධ කළා</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> සහ තව <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">ගෙවීමේ ක්‍රම සුරක්ෂිත කර පුරවන්න</translation>
@@ -1806,18 +1875,17 @@
 <translation id="7220786058474068424">සකසමින්</translation>
 <translation id="7221855153210829124">දැනුම්දීම් පෙන්වන්න</translation>
 <translation id="722454870747268814">නව අප්‍රසිද්ධ පටිත්ත</translation>
-<translation id="7229659723041939809">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, සහ ඔබ දැනට මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවි සඳහා ඔබේ සුරැකි මුරපද පරීක්‍ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7231476387708735839">අඩවි සෙවීම කලමනාකරණය කරන්න</translation>
 <translation id="7233592378249864828">මුද්‍රණ තහවුරු කිරීමේ පත්‍රය</translation>
 <translation id="7238585580608191973">SHA-256 ඇඟිලි සලකුණ</translation>
 <translation id="7240120331469437312">සහතික විෂයේ විකල්ප නම</translation>
-<translation id="7240121456710944377"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, මගේ දුරකථනය සොයන්න</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="724691107663265825">ඉදිරියේ ඇති අඩවියෙහි අනිෂ්ට මෘදුකාංග අඩංගුය</translation>
 <translation id="724975217298816891">ඔබේ කාඩ්පත් තොරතුරු යාවත්කාලීන කිරීමට <ph name="CREDIT_CARD" /> සඳහා කල් ඉකුත් වීමේ දිනය සහ CVC ඇතුළු කරන්න. ඔබ තහවුරු කළ පසු, ඔබේ කාඩ්පත් විස්තර මෙම අඩවිය සමග බෙදා ගනු ඇත.</translation>
 <translation id="7251437084390964440">ජාල වින්‍යාසය ONC සම්මතයට නොගැළපේ. වින්‍යාසයේ කොටස් ආයාත නොවනු ඇත.
 අමතර විස්තර:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7256634549594854023">Rear Tray</translation>
 <translation id="725866823122871198">ඔබගේ පරිගණකයේ දිනය සහ වේලාව (<ph name="DATE_AND_TIME" />) වැරදි නිසා <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> වෙත පුද්ගලික සම්බන්ධතාවය ස්ථාපනය කළ නොහැක.</translation>
 <translation id="7260504762447901703">ප්‍රවේශය අහෝසි කරන්න</translation>
 <translation id="7275334191706090484">පාලිත පොත්සලකුණු</translation>
@@ -1826,12 +1894,13 @@
 <translation id="7298195798382681320">නිර්දේශිතයි</translation>
 <translation id="7300012071106347854">කෝබොල්ට් නිල්</translation>
 <translation id="7304030187361489308">වැඩි</translation>
+<translation id="7304562222803846232">Google ගිණුම් පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="7305756307268530424">වඩා මන්දගාමීව අරඹන්න</translation>
+<translation id="7308436126008021607">පසුබිම සමමුහුර්ත කිරීම</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">සම්බන්ධතා උපකාරය</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" කොටස සඟවන්න</translation>
 <translation id="733354035281974745">උපාංග අභ්‍යන්තර ගිණුම් ප්‍රතික්‍ෂේපය</translation>
-<translation id="7333654844024768166">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" />, සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7334320624316649418">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
 <translation id="7335157162773372339">ඔබගේ කැමරාව භාවිත කිරීමට ඉල්ලිය හැකිය</translation>
 <translation id="7337248890521463931">තවත් පේළි පෙන්වන්න</translation>
@@ -1847,7 +1916,9 @@
 <translation id="7363096869660964304">කෙසේ වුවත්, ඔබ අදෘශ්‍යමාන නොවේ. අප්‍රකට වීම ඔබගේ බ්‍රවුස් කිරීම ඔබගේ සේවායෝජක, ඔබගේ අන්තර්ජාල සේවා සැපයුම්කරු හෝ ඔබ පිවිසි වෙබ් අඩවි වෙතින් නොසඟවයි.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ලිපින එක් කිරීමට සහ කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="7365849542400970216">ඔබගේ උපාංග භාවිතය දන්නේද?</translation>
+<translation id="7366362069757178916">ගෙවීම් හසුරු</translation>
 <translation id="7372973238305370288">සෙවුම් ප්‍රථිපල</translation>
+<translation id="7374461526650987610">නාමාවලි හසුරුවන</translation>
 <translation id="7374733840632556089">මෙම ගැටලුව සිදු වන්නේ ඔබ හෝ වෙනත් කෙනෙක් ඔබේ උපාංගය මත ස්ථාපන කර ඇති සහතිකයක් හේතුවෙනි. එම සහතිකය ජාල නිරීක්‍ෂණ කිරීමටත් අතුරු ඇරීමටත් භාවිත වන බවට දන්නා අතර, Chrome විසින් විශ්වාස නොකෙරේ. පාසල් හෝ සමාගම් ජාලයක් මත වැනි නිරීක්‍ෂණ කිරීම සඳහා යම් නීත්‍යානුකූල සංදර්භ පවතින අතරතුර, ඔබට එය නැවැත්විය නොහැකි නමුත් ඔබ එය සිදු වන බවට දැන සිටීම ගැන Chrome කැමති වෙයි. වෙබයට ප්‍රවේශ වන ඕනෑම බ්‍රවුසරයක් හෝ යෙදුමක් තුළ නිරීක්‍ෂණය සිදු විය හැක.</translation>
 <translation id="7375818412732305729">ගොනුව අමුණා ඇත</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> - <ph name="FULL_DATE" /></translation>
@@ -1874,6 +1945,8 @@
 <translation id="7410471291937727359">ආදරණීය</translation>
 <translation id="7416351320495623771">මුරපද කළමනාකරණය කරන්න...</translation>
 <translation id="7419106976560586862">පැතිකඩ මඟ</translation>
+<translation id="7421067045979951561">ප්‍රොටොකෝල හසුරුවන්නන්</translation>
+<translation id="7426022697669111648">ඔබගේ Chrome ඉතිහාසය බලන්න බොත්තම, Chrome සැකසීම් තුළ ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය බැලීමට සහ කළමනාකරණය කිරීමට Enter ඔබන්න</translation>
 <translation id="7437289804838430631">සම්බන්ධතා තතු එක් කරන්න</translation>
 <translation id="7440140511386898319">නොබැඳිව සිටියදී ගවේශනය කරන්න</translation>
 <translation id="7441627299479586546">වැරදි ප්‍රතිපත්ති මාතෘකාව</translation>
@@ -1886,10 +1959,8 @@
 <translation id="7473891865547856676">එපා ස්තූතියි</translation>
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>
 <translation id="7485870689360869515">දත්ත කිසිවක් හමු නොවිනි</translation>
-<translation id="7487775554425430039">Chrome Dino ක්‍රීඩාව කරන්න</translation>
 <translation id="7495528107193238112">මෙම අන්තර්ගතය අවහිර කර ඇත. ගැටලුව නිවැරදි කිරීමට අඩවි හිමිකරු අමතන්න</translation>
 <translation id="7497998058912824456">ලේඛනය තනන්න බොත්තම, ඉක්මනින් අලුත් Google Doc එකක් තැනීමට Enter ඔබන්න</translation>
-<translation id="7503664977220660814">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chromium <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, සහ ඔබ දැනට මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවි සඳහා ඔබේ සුරැකි මුරපද පරීක්‍ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="7508255263130623398">ආපසු ලබා දුන් ප්‍රතිපත්ති උපාංග id හිස් හෝ වත්මන් උපාංග id හා නොගැළපෙයි</translation>
 <translation id="7508870219247277067">අලිගැට පේර කොළ</translation>
 <translation id="7511955381719512146">ඔබ භාවිතා කරන Wi-Fi මගින් ඔබ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> වෙත පිවිසීමට අවශ්‍ය විය හැක.</translation>
@@ -1938,6 +2009,7 @@
 <translation id="7638605456503525968">අනුක්‍රමික තොට</translation>
 <translation id="7639968568612851608">තද අළු</translation>
 <translation id="7647206758853451655">මුද්‍රණ ගුණත්වය</translation>
+<translation id="7648685412377719625">දැනට විවෘතව ඇති සියලු අප්‍රකට කවුළු වසන්න.</translation>
 <translation id="7648992873808071793">මෙම උපාංගය මත ගොනු ගබඩා කරන්න</translation>
 <translation id="7653957176542370971">ගෙවීම් හසුරුවන පත්‍රය වසා ඇත</translation>
 <translation id="7654909834015434372">ඔබ අනුසටහන් සංස්කරණය කරන විට, මෙම ලේඛනය එහි මුල් කරකැවීමට ආපසු යනු ඇත</translation>
@@ -1969,12 +2041,15 @@
 <translation id="7734285854693414638">ඉක්මනින් Google Forms තුළ නව පෝරමයක් තනන්න</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> හි පිටු සැමවිටම පරිවර්තනය කරන්න</translation>
 <translation id="7740996059027112821">සම්මත</translation>
+<translation id="77424286611022110">මෙම අඩවිය ආක්‍රමණික හෝ නොමඟ යවන සුළු වෙළඳ දැන්වීම් පෙන්වයි. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">අනතුරුදායක අන්තර්ගතය අවහිරයි.</translation>
 <translation id="7751971323486164747">Chrome තුළ අකුරු වර්ග තරම සහ මුහුණත අභිරුචිකරණය කරන්න</translation>
 <translation id="7752995774971033316">කළමනාකරණය නොකළ</translation>
+<translation id="7755624218968747854">Primary Roll</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">සුරැකුම් පවුර හෝ ප්‍රතිවයිරස මෘදුකාංග සබැඳුම අවහිර කර තිබෙනවා විය හැකිය.</translation>
 <translation id="776110834126722255">අත් හැරියා</translation>
+<translation id="7761159795823346334">කැමරාව ඉඩ දෙන්නද?</translation>
 <translation id="7761701407923456692">සර්වරයේ සහතිකය URL ලිපිනය හා නොගැළපෙයි.</translation>
 <translation id="7763386264682878361">ගෙවීම් මැනිෆෙස්ට් විග්‍රහක</translation>
 <translation id="7764225426217299476">ලිපිනය එක් කරන්න</translation>
@@ -2002,7 +2077,7 @@
 <translation id="7862185352068345852">අඩවියෙන් ඉවත් වන්න ද?</translation>
 <translation id="7865448901209910068">හොඳම වේගය</translation>
 <translation id="7871445724586827387">ඔබගේ Google ගිණුම් මුරපදය වෙනස් කරන්න</translation>
-<translation id="7874263914261512992">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chrome <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, සහ ඔබ දැනට මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවි සඳහා ඔබේ සුරැකි මුරපද පරීක්‍ෂා කිරීම නිර්දේශ කරයි.</translation>
+<translation id="7877007680666472091">ආරක්ෂිත අන්තර්ගත ID</translation>
 <translation id="7878562273885520351">ඔබේ මුරපදය අන් සතු වී තිබිය හැකිය</translation>
 <translation id="7880146494886811634">ලිපිනය සුරකින්න</translation>
 <translation id="7882421473871500483">දුඹුරු</translation>
@@ -2015,7 +2090,6 @@
 <translation id="793209273132572360">ලිපිනය යාවත්කාලීන කරන්නද?</translation>
 <translation id="7932579305932748336">කබාය</translation>
 <translation id="79338296614623784">වලංගු දුරකථන අංකයක් ඇතුළු කරන්න</translation>
-<translation id="7934052535022478634">ගෙවීම සම්පූර්ණයි</translation>
 <translation id="7934414805353235750"><ph name="URL" /> හට ආරක්ෂිත අන්තර්ගතය වාදනය කිරීමට අවශ්‍යයි. ඔබේ උපාංගයේ අනන්‍යතාවය Google විසින් සත්‍යාපනය කරනු ඇත.</translation>
 <translation id="7935031712718413217">විභව්‍ය ප්‍රෝඩා කිරීමේ URL එක</translation>
 <translation id="7935318582918952113">DOM පෙරනය</translation>
@@ -2032,6 +2106,7 @@
 <translation id="7961015016161918242">කිසිවිට එපා</translation>
 <translation id="7966803981046576691">වැඩ ගිණුම් වර්ගය</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" අගය වලංගු නොවන ෂඩ් වර්ණයකි.</translation>
+<translation id="7968982339740310781">විස්තර පෙන්වන්න</translation>
 <translation id="7970392640816874403">වෙනත් මූලාශ්‍ර පවසන්නේ කුමක්ද?</translation>
 <translation id="7976214039405368314">ඉල්ලීම් ඉතා වැඩිය</translation>
 <translation id="7977538094055660992">ප්‍රතිදාන උපාංගය</translation>
@@ -2048,6 +2123,7 @@
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{මෙම කාඩ්පත සහ මෙහි බිල්පත් ලිපිනය සුරකිනු ලැබේ. ඔබට <ph name="USER_EMAIL" /> වෙත පුරනය වූ විට එය භාවිත කිරීමට හැකි වෙයි.}one{මෙම කාඩ්පත් සහ මේවායේ බිල්පත් ලිපින සුරකිනු ලැබේ. ඔබට <ph name="USER_EMAIL" /> වෙත පුරනය වූ විට ඒවා භාවිත කිරීමට හැකි වෙයි.}other{මෙම කාඩ්පත් සහ මේවායේ බිල්පත් ලිපින සුරකිනු ලැබේ. ඔබට <ph name="USER_EMAIL" /> වෙත පුරනය වූ විට ඒවා භාවිත කිරීමට හැකි වෙයි.}}</translation>
 <translation id="8025119109950072390">මෙම අඩවියෙහි ප්‍රහාරකයන් මෘදුකාංගයක් ස්ථාපනය හෝ ඔබේ පුද්ගලික තොරතුරු (උදාහරණ ලෙස, මුරපද, දුරකථන අංක, හෝ ණය කාඩ්පත්) හෙළිදරව් කිරීම වැනි අවදානම් සහගත දේවල්වලට ඔබව පෙළඹවිය හැකිය.</translation>
 <translation id="8026334261755873520">පිරික්සුම් දත්ත හිස් කරන්න</translation>
+<translation id="8027077570865220386">Tray 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms හි නව පෝරමයක් ඉක්මනින් තැනීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="8028960012888758725">වැඩට පසු කප්පාදු කරන්න</translation>
 <translation id="8034522405403831421">මෙම පිටුව ඇත්තේ <ph name="SOURCE_LANGUAGE" /> නි. <ph name="TARGET_LANGUAGE" /> වෙත පරිවර්තනය කරන්නද?</translation>
@@ -2070,7 +2146,6 @@
 <translation id="8086971161893892807">කෙටුම්පත</translation>
 <translation id="8088680233425245692">ලිපිය බැලීමට අසමත් විය.</translation>
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
-<translation id="8090329638663751802">මෙම ගෙවීම් ක්‍රමය සමඟ මිලදී ගැනීමක් සිදු කිරීමට ඔබ ඊළඟ වතාවේ මෙම උපාංගය භාවිත කරන විට ඒ ඔබ බව ඉක්මනින් සත්‍යාපනය කිරීමට ඔබට ස්පර්ශ ID භාවිත කළ හැකිය.</translation>
 <translation id="8090403583893450254">ප්‍රමාණය 20</translation>
 <translation id="8091372947890762290">සක්‍රීයකරණය සේවාදායකය මත පොරොත්තු වේ</translation>
 <translation id="8092774999298748321">තද දම්</translation>
@@ -2083,7 +2158,6 @@
 <translation id="8116925261070264013">නිහඬයි</translation>
 <translation id="8118489163946903409">ගෙවීම් ක්‍රමය</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ඔබේ පරිගණකයේ හෝ ජාලයේ නිසියාකාරව ස්ථාපිත කර නැත. මෙම ගැටලුව විසඳීමට ඔබේ තොරතුරු තාක්ෂණ පරිපාලකයාගෙන් විමසන්න.</translation>
-<translation id="8128526133099929547">ඔබ මේ දැන් වංචනික වෙබ් අඩවියක් මත ඔබේ මුරපදය ඇතුළත් කළා. Chrome <ph name="WEBSITE_1" /> සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
 <translation id="8148608574971654810">PDF අනුවාදය:</translation>
 <translation id="8149426793427495338">ඔබේ පරිගණකය නින්දට ගියේය.</translation>
@@ -2094,7 +2168,6 @@
 <translation id="8176440868214972690">සැකසීම් හෝ ප්‍රතිපත්ති වැනි, පහත සඳහන් වෙබ් අඩවි වෙත මෙම උපාංගයේ පරිපාලක යම් තොරතුරු යවා ඇත.</translation>
 <translation id="8184538546369750125">ගෝලීය පෙරනිමිය භාවිතා කරන්න (අවසර)</translation>
 <translation id="8190193880870196235">දිගුවක් මගින් කළමනාකරණය කෙරේ</translation>
-<translation id="8193086767630290324">රහසිගත ලෙස ලකුණු කළ දත්ත සම්බන්ධව ගත් ක්‍රියා</translation>
 <translation id="8194797478851900357">ගෙන යාම &amp;පසුගමනය කරන්න</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" ID සමඟ වැරදි යාවත් ලිපිනයක්.</translation>
 <translation id="8202097416529803614">ඇණවුම් සාරාංශය</translation>
@@ -2103,11 +2176,11 @@
 <translation id="8211406090763984747">සම්බන්ධතාවය ආරක්ෂිත වේ</translation>
 <translation id="8218327578424803826">පැවරූ ස්ථානය:</translation>
 <translation id="8220146938470311105">C7/C6 (ලියුම් කවරය)</translation>
-<translation id="8221250263817408492">ඔබ මේ දැන් වංචනික වෙබ් අඩවියක් මත ඔබේ මුරපදය ඇතුළත් කළා. Chromium <ph name="WEBSITE_1" /> සහ ඔබ මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවිවලට ගොස් එය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="8225771182978767009">මෙම පරිගණකය පිහිටුවීම කළ පුද්ගලයා මෙම අඩවිය අවහිර කිරීමට තෝරා ඇත.</translation>
 <translation id="8228419419708659934">පිටු දෙකේ දසුන</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">වේදිකා උෂ්ණත්වය</translation>
+<translation id="8233773197406738106">ගොනුව සූදානම් කරමින්</translation>
 <translation id="8238581221633243064">පිටුව නව අප්‍රසිද්ධ පටිත්තක විවෘත කරන්න</translation>
 <translation id="8241707690549784388">ඔබ සොයමින් සිටින පිටුව ඔබ ඇතුළු කළ තොරතුරු භාවිතා කරන ලදි. එම පිටුව වෙත ආපසු යාමෙන් ඔබ ගත් කිසියම් ක්‍රියාමාර්ගයක් නැවත සිදු කෙරෙනු ඇත. ඔබට ඉදිරියට යාමට අවශ්‍යද?</translation>
 <translation id="8241712895048303527">මෙම අඩවිය මත අවහිර කරන්න</translation>
@@ -2122,8 +2195,10 @@
 <translation id="8265992338205884890">පෙනෙන දත්ත</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> ලෙස පිරීම</translation>
 <translation id="8269242089528251720">වෙන් වූ ලේඛන/එකතු කළ පිටපත්</translation>
+<translation id="8270242299912238708">PDF ලේඛන</translation>
 <translation id="8275952078857499577">මෙම අඩවිය පරිවර්තනය කිරීමට පිරිනමන්න එපා</translation>
 <translation id="8277900682056760511">ගෙවීම් හසුරුවන පත්‍රය විවෘතයි</translation>
+<translation id="8280630997017109758">Tray 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">ඔබේ අනුපම උපාංග අනන්‍යකාරකය දැන ගන්න</translation>
 <translation id="8284769179630993263">Chrome සැකසීම් තුළ ඔබගේ සුරක්ෂිත බ්‍රවුස් කිරීම සහ තවත් දේ කළමනාකරණය කරන්න</translation>
@@ -2131,6 +2206,7 @@
 <translation id="8288807391153049143">සහතිකය පෙන්වන්න</translation>
 <translation id="8289355894181816810">ඔබට මෙහි තේරුම පිළිබඳ අවිශ්වාස නම් ඔබේ ජාල පරිපාලක සබඳ කරගන්න.</translation>
 <translation id="8293206222192510085">පිටුසන එක් කරන්න</translation>
+<translation id="829335040383910391">ශබ්දය</translation>
 <translation id="8294431847097064396">මූලාශ්‍රය</translation>
 <translation id="8298115750975731693">ඔබ භාවිතා කරන Wi-Fi (<ph name="WIFI_NAME" />) මගින් ඔබ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> වෙත පිවිසීමට අවශ්‍ය විය හැක.</translation>
 <translation id="8299269255470343364">ජපන්</translation>
@@ -2140,6 +2216,7 @@
 <translation id="8307888238279532626">ස්ථාපනය කළ යෙදුම් සහ ඒවා කොතරම් නිතර භාවිත කරන්නේද යන්න</translation>
 <translation id="831207732689920588">මෙම පිටුව සැක සහිතයි (Chrome ලකුණු කර ඇත).</translation>
 <translation id="831997045666694187">සවස</translation>
+<translation id="8321476692217554900">දැනුම්දීම්</translation>
 <translation id="8328484624016508118">සියලු අප්‍රසිද්ධ ටැබ වැසීමෙන් පසු, Chrome පහත ඒවා හිස් කරයි:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />මෙම උපාංගයෙන් ඔබගේ බ්‍රවුස් කිරීමේ ක්‍රියාකාරකම<ph name="END_LIST_ITEM" />
@@ -2163,7 +2240,9 @@
 <translation id="8380941800586852976">අන්තරායකර</translation>
 <translation id="8381674639488873545">මෙම අය කිරීම් එක්-වර හෝ ප්‍රත්‍යාවර්ත විය හැකි අතර, පැහැදිලි නොවිය හැක. <ph name="BEGIN_LINK" />කෙසේ වෙතත් පෙන්වන්න<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> වෙතින් <ph name="VM_NAME" /> වෙත බෙදා ගැනීම පරිපාලක ප්‍රතිපත්තිය මගින් අබල කර ඇත</translation>
+<translation id="8398790343843005537">ඔබගේ දුරකථනය සොයන්න</translation>
 <translation id="8405579342203358118">Chrome සැකසීම් තුළ ඔබ සමමුමුහුර්ත කරන්නේ කුමන තොරතුරුද යන්න කළමනාකරණය කරන්න</translation>
+<translation id="8409413588194360210">ගෙවීම් හසුරු</translation>
 <translation id="8412145213513410671">පිපුරුම් (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">ඔබ එකම රහස් පදය දෙවරක් ඇතුළු කළ යුතුය.</translation>
 <translation id="8416694386774425977">ජාල වින්‍යාසය වලංගු නොවන අතර, ආයාත කළ නොහැක.
@@ -2180,24 +2259,23 @@
 <translation id="8457125768502047971">අනියත</translation>
 <translation id="8461694314515752532">ඔබගේම සමමුහූර්ත මුර-වැකිකඩ සමඟ සමමුහූර්ත කළ දත්ත සංකේතන කරන්න</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{ණය කාඩ්පත් 1}one{ණය කාඩ්පත් #}other{ණය කාඩ්පත් #}}</translation>
-<translation id="8471007934814342455"><ph name="MANAGE_GOOGLE_AD_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, මගේ Google වෙළඳ දැන්වීම් සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474910779563686872">සංවර්ධක විස්තර පෙන්වන්න</translation>
 <translation id="8479754468255770962">පහළ වමර ස්ටේපල් කරන්න</translation>
 <translation id="8483780878231876732">ඔබගේ Google ගිණුමෙන් කාඩ්පත් භාවිත කිරීමට, Chrome වෙත පුරන්න</translation>
-<translation id="8485393050551136813">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chromium <ph name="WEBSITE_1" /> සහ ඔබ දැනට මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවි සඳහා ඔබේ සුරැකි මුරපද පරීක්‍ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="8488350697529856933">අදාළ වනුයේ</translation>
 <translation id="8490137692873530638">අට්ටිය 10</translation>
+<translation id="8493948351860045254">ඉඩ හිස් කරන්න</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ප්‍රතිචාර දැක්වීමට දිගු කාලයක් ගත්තේය.</translation>
 <translation id="8503559462189395349">Chrome මුරපද</translation>
 <translation id="8503813439785031346">පරිශීලක නාමය</translation>
 <translation id="8507227106804027148">විධාන පේළිය</translation>
-<translation id="8507258803558481268"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, වත්මන් අප්‍රසිද්ධ පැතිකඩ සඳහා සියලු අප්‍රසිද්ධ කවුළු වැසීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="8508648098325802031">සෙවීමේ නිරූපකය</translation>
 <translation id="8511402995811232419">කුකි කළමනාකරණය කරන්න</translation>
 <translation id="8522552481199248698">Chrome ඔබට ඔබේ Google ගිණුම ආරක්‍ෂා කිරීමටත් ඔබේ මුරපදය වෙනස් කිරීමටත් ඔබට උදවු කළ හැක.</translation>
 <translation id="8530813470445476232">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකි, හැඹිලි සහ තවත් දේ Chrome සැකසීම් තුළ හිස් කරන්න</translation>
 <translation id="8533619373899488139">ඔබේ පද්ධති පරිපාලක විසින් පනවන ලද අවහිර කළ URL සහ වෙනත් ප්‍රතිපත්ති බැලීමට &lt;strong&gt;chrome://policy&lt;/strong&gt; වෙත පිවිසෙන්න.</translation>
+<translation id="8539500321752640291">අවසර 2කට ඉඩ දෙන්නද?</translation>
 <translation id="8541158209346794904">බ්ලූටූත් උපාංගය</translation>
 <translation id="8542014550340843547">පහළට තුන් වරක් ස්ටේපල් කරන්න</translation>
 <translation id="8543181531796978784">ඔබට <ph name="BEGIN_ERROR_LINK" />අනාවරණය කර ගැනීමේ ගැටලුවක් වාර්තා කිරීමට<ph name="END_ERROR_LINK" /> හෝ, ඔබට ඔබගේ ආරක්ෂාව සඳහා වන අවදානම වැටහෙන්නේ නම්, <ph name="BEGIN_LINK" />මෙම අනාරක්ෂිත වෙබ් අඩවිය වෙත පිවිසීමට<ph name="END_LINK" /> හැකිය.</translation>
@@ -2214,11 +2292,13 @@
 <translation id="8600271352425265729">මෙම වතාවේ පමණී</translation>
 <translation id="860043288473659153">කාඩ්පත් හිමිකරුගේ නම</translation>
 <translation id="8606726445206553943">ඔබේ MIDI උපකරණ භාවිත කරන්න</translation>
+<translation id="8617269623452051934">ඔබගේ උපාංග භාවිතය</translation>
 <translation id="861775596732816396">ප්‍රමාණය 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">ගැළපෙන මුරපද නැත. සුරැකි මුරපද සියල්ල පෙන්වන්න.</translation>
 <translation id="8625384913736129811">මෙම උපාංගයට මෙම කාඩ්පත සුරකින්න</translation>
 <translation id="8627040765059109009">තිර ග්‍රහණය නැවත පටන් ගන්නා ලදි</translation>
+<translation id="865032292777205197">චලන සංවේදක</translation>
 <translation id="8663226718884576429">ඇණවුමේ සාරාංශය, <ph name="TOTAL_LABEL" />, තව විස්තර</translation>
 <translation id="8666678546361132282">ඉංග්‍රීසි</translation>
 <translation id="867224526087042813">අත්සන</translation>
@@ -2256,16 +2336,17 @@
 <translation id="8761567432415473239">Google ආරක්ෂිත පිරික්සීම මෑතදී <ph name="SITE" /> මත <ph name="BEGIN_LINK" />දූෂිත ක්‍රමලේඛ සොයා ගත්තේය<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB උපාංගය</translation>
 <translation id="8766943070169463815">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර සත්‍යාපනය කිරීමේ පත්‍රය විවෘත කර ඇත</translation>
-<translation id="8774457497170244317">ඔබ මේ දැන් වංචනික අඩවියක ඔබේ මුරපදය ඇතුළු කළා. Chrome <ph name="WEBSITE_1" /> සහ ඔබ දැනට මෙම මුරපදය භාවිත කරන වෙනත් වෙබ් අඩවි සඳහා ඔබේ සුරැකි මුරපද පරීක්‍ෂා කිරීම නිර්දේශ කරයි.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">මැකීම &amp;යළි කරන්න</translation>
 <translation id="8792621596287649091">ඔබට ඔබේ <ph name="ORG_NAME" /> ගිණුමට ප්‍රවේශය අහිමි වීමට හෝ අනන්‍යතා සොරකමක් අත්විඳීමට සිදු විය හැකිය. දැන් ඔබේ මුරපදය වෙනස් කිරීම සඳහා Chromium නිර්දේශ කරයි.</translation>
+<translation id="8792626944327216835">මයික්‍රෝෆෝනය</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> ඔබේ බ්‍රව්සරයේ Chrome Enterprise Connectors ක්‍රියාත්මක කර ඇත. මෙම සම්බන්ධකවලට ඔබේ දත්ත සමහරක් වෙත ප්‍රවේශය තිබේ.</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
 <translation id="8805819170075074995">ලැයිස්තු ඇතුළත් කිරීම "<ph name="LANGUAGE_ID" />": එය SpellcheckLanguage ප්‍රතිපත්තිය තුළ ද ඇතුළු කොට තිබෙන බැවින් ඇතුළත් කිරීම නොසලකා හරිනු ලැබේ.</translation>
 <translation id="8807160976559152894">සෑම පිටුවකටම පසුව කප්පාදු කරන්න</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, ඔබගේ Chrome සැකසීම් වෙතින් Chrome යාවත්කාලීන කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="8820817407110198400">පිටුසන්</translation>
+<translation id="882338992931677877">Manual Slot</translation>
 <translation id="883848425547221593">වෙනත් පිටු සලකුණු</translation>
 <translation id="884264119367021077">නැව්ගත ලිපිනය</translation>
 <translation id="884923133447025588">අවලංගු කිරීමේ යාන්ත්‍රණයක් නැත.</translation>
@@ -2277,6 +2358,7 @@
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">මෑතකදී වසන ලද</translation>
 <translation id="8870494189203302833">එකම පිළිවෙළ මුහුණු පහළට</translation>
+<translation id="8871553383647848643">ඔබගේ බ්‍රව්සරයේ පෙනුම අභිරුචිකරණය කරන්න</translation>
 <translation id="8874824191258364635">වලංගු කාඩ්පත් අංකයක් ඇතුළු කරන්න</translation>
 <translation id="8891727572606052622">අවලංගු ප්‍රොක්සි ප්‍රකාරය.</translation>
 <translation id="8894794286471754040">දිග දාරය පළමුවට</translation>
@@ -2321,8 +2403,11 @@
 <translation id="9025348182339809926">(අවලංගුයි)</translation>
 <translation id="9030265603405983977">මොනොක්‍රෝම්</translation>
 <translation id="9035022520814077154">ආරක්ෂක දෝෂය</translation>
+<translation id="9036306139374661733">මයික්‍රෆෝනය ඉඩ දෙන්නද?</translation>
 <translation id="9038649477754266430">වඩා ඉක්මනින් පිටු පූරණය කිරීමට පුරෝකථන සේවාවක් භාවිත කරන්න</translation>
 <translation id="9039213469156557790">තවද, මෙම පිටුවේ ආරක්ෂිත නොවන වෙනත් සම්පත් ඇත. එම සම්පත් හුවමාරුව අතරතුර ‍අනෙක් අයටත් බැලිය හැකි අතර, පිටුවේ හැසිරීම වෙනස් වන අයුරින් වෙනස් කිරීමට වෙබ් ප්‍රහාරකයෙකුට හැකිය.</translation>
+<translation id="9040464167025094690">මගේ උපාංගය සොයන්න බොත්තම, Google ගිණුම තුළ ඔබගේ උපාංගය සොයා සොයන්න වෙත පිවිසීමට Enter ඔබන්න</translation>
+<translation id="9042617223719777575">Large Capacity</translation>
 <translation id="9044359186343685026">ස්පර්ශ හැඳුනුම භාවිත කරන්න</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619">ඔබ <ph name="DOMAIN" /> වෙත පිවිසීමට උත්සාහ කර තිබේ, නමුත් සර්වරය ඉදිරිපත් කළේ වැරදි සහතිකයකි.</translation>
@@ -2332,6 +2417,7 @@
 <translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9065745800631924235"><ph name="TEXT" /> ඉතිහාසයෙන් සෙවීම</translation>
 <translation id="9069693763241529744">දිගුවකින් අවහිර කෙරේ</translation>
+<translation id="9073799351042754113">ඔබ මෙම අඩවිය සඳහා ආරක්ෂක අනතුරු ඇඟවීම් ක්‍රියාවිරහිත කිරීමට තෝරා ඇත.</translation>
 <translation id="9078964945751709336">තවත් තොරතුරු අවශ්‍යයි</translation>
 <translation id="9080712759204168376">ඇණවුම් සාරාංශය</translation>
 <translation id="9089260154716455634">අක්‍රිය වේලා ප්‍රතිපත්තිය:</translation>
@@ -2375,7 +2461,6 @@
 <translation id="9199905725844810519">මුද්‍රණය කිරීම අවහිර කර ඇත</translation>
 <translation id="9205078245616868884">ඔබේ දත්ත ඔබේ සමමුහුර්ත මුරවදන සමඟ සංකේතනය කර ඇත. සමමුහුර්ත කිරීම ආරම්භ කිරීමට ඇතුළු කරන්න.</translation>
 <translation id="9207861905230894330">භාණ්ඩය එකතු කළ නොහැකි විය.</translation>
-<translation id="9211470216863457665">ආරක්ෂිත ගෙවීම් අක්තපත්‍ර ලියාපදිංචි කිරීමේ පත්‍රය වසා ඇත</translation>
 <translation id="9213433120051936369">පෙනුම අභිරුචිකරණය කරන්න</translation>
 <translation id="9215416866750762878">යෙදුමක් මෙම අඩවියට සුරක්ෂිතව සබැඳීමෙන් Chrome නවතයි</translation>
 <translation id="9219103736887031265">රූප</translation>
@@ -2401,6 +2486,7 @@
 <translation id="987264212798334818">සාමාන්‍ය</translation>
 <translation id="988159990683914416">සංවර්ධක නිකුතුව</translation>
 <translation id="989988560359834682">ලිපිනය සංස්කරණය කරන්න</translation>
+<translation id="991413375315957741">චලන හෝ ආලෝක සංවේදක</translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">රෝස</translation>
 <translation id="992432478773561401">"<ph name="SOFTWARE_NAME" />" ඔබේ පරිගණකයේ හෝ ජාලයේ නිසියාකාරව ස්ථාපිත කර නැත:

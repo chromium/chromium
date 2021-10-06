@@ -79,6 +79,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="4512952200932940229">Kopiereg 2021 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
 <translation id="4563926062592110512">Kliënt het ontkoppel: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> is nie reg opgestel nie. Kies asseblief 'n ander webblaaier en aktiveer dan weer URL-aanstuur.</translation>
 <translation id="4635770493235256822">Afstandtoestelle</translation>
 <translation id="4660011489602794167">Wys sleutelbord</translation>
 <translation id="4703799847237267011">Jou Chromoting-sessie het geëindig.</translation>
@@ -109,6 +110,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="5750083143895808682">Aangemeld as <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Herkoppel</translation>
 <translation id="5810269635982033450">Skerm werk soos 'n stuurpaneel</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> het toegang versoek om jou skerm te sien en jou sleutelbord en muis te beheer. Druk ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' as jy nie hierdie versoek verwag nie. Anders kan jy ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' kies om die verbinding toe te laat wanneer jy gereed is.</translation>
 <translation id="5823658491130719298">Maak Chrome oop op die rekenaar waartoe jy afstandtoegang wil kry en besoek <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Vertoonopsies</translation>
 <translation id="6033507038939587647">Sleutelbordopsies</translation>
@@ -130,7 +132,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="6963936880795878952">Verbindings met die afgeleë rekenaar word tydelik geblokkeer omdat iemand met 'n ongeldige PIN daaraan probeer koppel het. Probeer asseblief later weer.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Is jy seker jy wil afstandverbindings met <ph name="HOSTNAME" /> deaktiveer? As jy van plan verander, sal jy daardie rekenaar moet besoek om verbindings te heraktiveer.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> het toegang versoek om jou rekenaar te sien en te beheer. Druk ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' as jy nie hierdie persoon ken nie of as jy enige veranderinge moet maak voordat jy deel.  Anders moet jy ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' kies om verbinding toe te laat.</translation>
 <translation id="7019153418965365059">Onherkenbare gasheerfout: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Afstandbystand</translation>
 <translation id="7026930240735156896">Volg die instruksies om jou rekenaar vir afstandtoegang op te stel</translation>
@@ -169,6 +170,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 Klik "<ph name="BUTTON_NAME" />" hieronder om hierdie toestemming te verleen. Merk die blokkie langs "<ph name="SERVICE_SCRIPT_NAME" />" in die "Toeganklikheid"-voorkeurepaneel wat sal oopmaak.
 
 As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en dit dan weer merk.</translation>
+<translation id="8305209735512572429">Afstandproses vir webstawing</translation>
 <translation id="8383794970363966105">Om Chromoting te gebruik, moet jy 'n Google-rekening by jou toestel voeg.</translation>
 <translation id="8386846956409881180">Gasheer is met ongeldige OAuth-eiebewyse opgestel.</translation>
 <translation id="8397385476380433240">Gee toestemming aan <ph name="PRODUCT_NAME" /></translation>

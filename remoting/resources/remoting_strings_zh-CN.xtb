@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">版权所有 2021 The Chromium Authors。保留所有权利。</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4563926062592110512">与下列客户端的连接已中断：<ph name="CLIENT_USERNAME" />。</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />未正确配置。请选择其他默认网络浏览器，然后重新启用网址转发功能。</translation>
 <translation id="4635770493235256822">远程设备</translation>
 <translation id="4660011489602794167">显示键盘</translation>
 <translation id="4703799847237267011">您的 Chrome 远程访问会话已结束。</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">以 <ph name="EMAIL_ADDRESS" /> 的身份登录。</translation>
 <translation id="579702532610384533">重新连接</translation>
 <translation id="5810269635982033450">屏幕充当触控板</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 已请求获权查看您的屏幕并控制您的键盘和鼠标。如果您不愿批准这项请求，请按“<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”。否则，请在准备就绪后选择“<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”以允许建立这项关联。</translation>
 <translation id="5823658491130719298">在您要远程访问的计算机上，打开 Chrome 并访问 <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">显示选项</translation>
 <translation id="6033507038939587647">键盘选项</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">与远程计算机的连接已被暂时阻止，因为有人试图使用无效的 PIN 码连接到该计算机。请稍后重试。</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6985691951107243942">您确定要停用与“<ph name="HOSTNAME" />”的远程连接吗？如果您日后想要重新启用连接，需要访问该计算机。</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> 已请求获权查看和控制您的计算机。如果您不认识此人或需要在共享之前做出任何更改，请按“<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”。否则，请选择“<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”以允许连接。</translation>
 <translation id="7019153418965365059">无法识别的主机错误：<ph name="HOST_OFFLINE_REASON" />。</translation>
 <translation id="701976023053394610">远程协助</translation>
 <translation id="7026930240735156896">按照说明设置计算机以供远程访问</translation>
@@ -169,6 +170,7 @@
 要授予此权限，请先点击下面的“<ph name="BUTTON_NAME" />”，然后在随即打开的“无障碍”偏好设置窗格中勾选“<ph name="SERVICE_SCRIPT_NAME" />”旁边的复选框。
 
 如果“<ph name="SERVICE_SCRIPT_NAME" />”已处于选中状态，请先取消选中，然后再次勾选。</translation>
+<translation id="8305209735512572429">网络身份验证远程处理</translation>
 <translation id="8383794970363966105">要使用Chrome远程访问，您需要先为自己的设备添加一个Google帐号。</translation>
 <translation id="8386846956409881180">为主机指定的 OAuth 凭据无效。</translation>
 <translation id="8397385476380433240">向 <ph name="PRODUCT_NAME" />授予权限</translation>

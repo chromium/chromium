@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">在商品降价时收到通知</translation>
 <translation id="1657719826150349398">下移标签页</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标签页}other{<ph name="TABS_COUNT_MANY" /> 个标签页}}</translation>
+<translation id="2118649612461486615">商店信息</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 上的现价为 <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">修改组名称</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{将所选的 <ph name="TABS_COUNT_ONE" /> 个标签页从组内移出。}other{将所选的 <ph name="TABS_COUNT_MANY" /> 个标签页从组内移出。}}</translation>
 <translation id="2479148705183875116">转到“设置”</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">群组</translation>
 <translation id="2613747923081026172">创建群组</translation>
 <translation id="2662028055331606429">当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">访问网站</translation>
 <translation id="2671423594960767771">分享组</translation>
 <translation id="2759453070259087442">展开包含 <ph name="NUMBER_OF_TABS" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页组。</translation>
 <translation id="2801787514987684416">查看商店信息？</translation>
 <translation id="2928243913527329289">Google | 关于此商店</translation>
 <translation id="2977480621796371840">从组中移除</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" />降价 <ph name="PRICE_DROP" /></translation>
 <translation id="3194464645767632461">评分</translation>
+<translation id="3267416433995960648">关闭提醒</translation>
 <translation id="3291470810748040983">当某个已打开的标签页中有商品降价时，您会收到提醒</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6054741997831917303">这件商品的价格最近从 <ph name="PREVIOUS_PRICE" />降至 <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">选择标签页</translation>
+<translation id="6228793724645064692">（商店评分）</translation>
+<translation id="6333260925957816943">此商店的相关信息</translation>
 <translation id="6510648526783655549">关闭标签栏</translation>
+<translation id="6549021453810473782">查看商店信息</translation>
 <translation id="6562820390860419811">左移标签页</translation>
 <translation id="6615455863669487791">演示一下</translation>
 <translation id="6840760312327750441">要将标签页分组，请轻触并按住某个标签页，然后拖动到另一个标签页上。</translation>
 <translation id="6856809498882026482">隐藏多选模式</translation>
+<translation id="7129458170538955174">此商店的相关信息已半屏打开</translation>
 <translation id="7151209024774799310">移出组内的标签页</translation>
 <translation id="7204204600596740190">多选模式</translation>
+<translation id="7326879924029668159">查看退货政策及其他信息</translation>
 <translation id="7352298686197644113">查看您打开的标签页中哪件商品降价了</translation>
 <translation id="753732157349120914">标签页切换器</translation>
 <translation id="7559245342362162951">以全屏网格状视图显示组中的标签页</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />，共有 <ph name="REVIEWS_COUNT_ONE" /> 条评价}other{当前评分是 <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />，共有 <ph name="REVIEWS_COUNT_MANY" /> 条评价}}</translation>
 <translation id="7885132941432959125">右移标签页</translation>
 <translation id="7966321538264951561">忽略此建议。</translation>
+<translation id="8029301326595421733">此商店的相关信息已全屏打开</translation>
 <translation id="814503310257431685">查看全部</translation>
 <translation id="8205266828577616993">上移标签页</translation>
 <translation id="8304833501377495048">不再显示标签栏？</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8749939518995770034">已关闭标签栏</translation>
 <translation id="8820741577754260431">查看您打开的标签页上的降价商品</translation>
+<translation id="9090098097337832354">此商店的相关信息已关闭</translation>
 <translation id="9150694013019234766">在屏幕底部附近的标签页组中切换标签页</translation>
 <translation id="9169594135889675189">向组中添加新标签页</translation>
 <translation id="959682366969460160">让各项内容井井有条</translation>

@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Таталтыг түр зогсоосон</translation>
 <translation id="1415402041810619267">URL-г танасан</translation>
 <translation id="1446450296470737166">MIDI төхөөрөмжийг бүрэн хянахыг зөвшөөрөх</translation>
-<translation id="1509960214886564027">Олон сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="1647582022260550163">Та зөвшөөрлийг шинэчлэх, күүки болон сайтын өгөгдлийг арилгахдаа итгэлтэй байна уу?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Гуравдагч этгээдээс бусад этгээдийг зөвшөөрсөн байна</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="1994173015038366702">Сайтын URL</translation>
+<translation id="2004697686368036666">Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="2025115093177348061">Өргөтгөсөн бодит орчин</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> руу буцах бол товшино уу</translation>
 <translation id="2079545284768500474">Буцаах</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Күүкиг тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
+<translation id="4176463684765177261">Хаасан</translation>
 <translation id="4200726100658658164">Байршлын тохиргоог нээх</translation>
 <translation id="4226663524361240545">Мэдэгдэл ирэхэд төхөөрөмж чичрэнэ</translation>
 <translation id="4259722352634471385">Навигацыг хориглосон байна: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Видеог түр зогсоох</translation>
 <translation id="5887687176710214216">Хамгийн сүүлд өчигдөр зочилсон</translation>
 <translation id="5916664084637901428">Асаах</translation>
+<translation id="59174027418879706">Идэвхжсэн</translation>
 <translation id="5922853908706496913">Таны дэлгэцийг хуваалцаж байна</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
 <translation id="5975083100439434680">Багасгаж харах</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Гуравдагч талын күүкиг блоклох</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Сонголт</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" />-г устгах уу?</translation>
+<translation id="6233545266937675277">Сайтуудын компьютер дээрх харагдах байдлын хүсэлт тавих</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> болон <ph name="PERMISSION_2" />-г блоклосон</translation>
 <translation id="6270391203985052864">Сайтууд нь танд мэдэгдэл илгээх зөвшөөрөл асуух боломжтой</translation>
 <translation id="6295158916970320988">Бүх сайт</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> болон бусад <ph name="NUM_MORE" />-г блоклосон}}</translation>
 <translation id="6554732001434021288">Хамгийн сүүлд <ph name="NUM_DAYS" /> хоногийн өмнө зочилсон</translation>
 <translation id="6561560012278703671">Илүү чимээгүй мессежийг ашиглах (мэдэгдлийн сануулгад танд саад болохыг хориглодог)</translation>
+<translation id="6593061639179217415">Дэлгэцийн сайт</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
 <translation id="662080504995468778">Үлдэх</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Сонголтыг цуцлах</translation>
 <translation id="7846621471902887024">Та бүх сайтаас гарах болно.</translation>
 <translation id="7882806643839505685">Тодорхой сайтад дуу тоглуулахыг зөвшөөрнө үү.</translation>
+<translation id="7940722705963108451">Надад сануул</translation>
 <translation id="7986741934819883144">Харилцагч сонгох</translation>
-<translation id="7993619969781047893">Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="7999064672810608036">Та cookies гэх мэт энэ вэбсайтны бүх мэдээллийг устгах мөн бүх зөвшөөрлийг дахин тохируулахдаа итгэлтэй байна уу?</translation>
 <translation id="8007176423574883786">Энэ төхөөрөмж дээр унтраастай байна</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Дууг хаасан</translation>
 <translation id="813082847718468539">Сайтын мэдээллийг үзэх</translation>
 <translation id="8131740175452115882">Батлах</translation>
+<translation id="8154912474061769055">Олон сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />-г зөвшөөрсөн</translation>
 <translation id="8200772114523450471">Сэргээх</translation>
 <translation id="8206354486702514201">Энэ тохиргоог таны админаас идэвхжүүлсэн байна.</translation>
 <translation id="8211406090763984747">Холболт аюулгүй байна</translation>
 <translation id="8249310407154411074">Дээд хэсэг рүү зөөх</translation>
 <translation id="8261506727792406068">Устгах</translation>
+<translation id="8267092878336850213">Сайтуудын мобайл дээрх харагдах байдлын хүсэлт тавих</translation>
 <translation id="8300705686683892304">Аппаар удирддаг</translation>
 <translation id="8324158725704657629">Дахиж бүү асуу</translation>
 <translation id="8372893542064058268">Тодорхой сайтад дэвсгэрт синк хийхийг зөвшөөрнө.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Оролтыг цэвэрлэх</translation>
 <translation id="868929229000858085">Харилцагчдаа хайх</translation>
 <translation id="8702612070107455751">Аливаа офлайн өгөгдлийг устгах болно.</translation>
+<translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8719283222052720129"><ph name="APP_NAME" />-н зөвшөөрлийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаагаарай.</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8730621377337864115">хийсэн</translation>

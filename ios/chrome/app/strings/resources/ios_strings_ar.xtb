@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">نشط قبل <ph name="DAYS" /> من الأيام</translation>
 <translation id="2074131957428911366">يمكنك دائمًا اختيار ما تريد مزامنته في <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
+<translation id="2080769225927880590">التسجيل باستخدام حساب صالح</translation>
 <translation id="209018056901015185">طلب موقع سطح المكتب</translation>
 <translation id="2103075008456228677">‏فتح history.google.com</translation>
 <translation id="2116625576999540962">تم نقل <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> من العناصر</translation>
@@ -219,6 +220,7 @@
 <translation id="3131206671572504478">حظر الكل</translation>
 <translation id="313283613037595347">إنشاء علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
 <translation id="3153862085237805241">حفظ البطاقة</translation>
+<translation id="315401415709252194">تفرض عليك مؤسستك تسجيل الدخول.</translation>
 <translation id="3157387275655328056">إضافة إلى قائمة القراءة</translation>
 <translation id="3157684681743766797">وضع علامة على الكل...</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
@@ -229,6 +231,7 @@
 <translation id="3184767182050912705">الفتح باستخدام <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">تمت إضافتها إلى الإشارات المرجعية.</translation>
 <translation id="3224641773458703735">لتصدير كلمات المرور، يلزمك أولاً تعيين رمز مرور على جهازك.</translation>
+<translation id="3230318355092723906">عندما تكون ميزة المزامنة غير مفعّلة، سيظل بإمكانك الاطّلاع على جميع الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى المتوفّرة على هذا الجهاز. وفي حال إجراء أي تغييرات، لن تتم مزامنتها مع حسابك.</translation>
 <translation id="3240426699337459095">تم نسخ الرابط</translation>
 <translation id="3244271242291266297">الشهر</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />، و<ph name="ADDITIONAL_INFO" />، و<ph name="INDEX" /> من <ph name="NUM_SUGGESTIONS" /></translation>
@@ -311,7 +314,6 @@
 <translation id="4038354071007134711">لا يمكن فتح هذا الملف بأي تطبيق موجود على هذا الجهاز.</translation>
 <translation id="4042870976416480368">البحث في الصفحة</translation>
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
-<translation id="4079195788735381731">أزالت مؤسستك إذنك بتسجيل الدخول.</translation>
 <translation id="408404951701638773">أصبح الوصول إلى شريط البحث أسهل الآن</translation>
 <translation id="411254640334432676">فشلت عملية التنزيل</translation>
 <translation id="4112644173421521737">بحث</translation>
@@ -355,6 +357,7 @@
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4619615317237390068">علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="4620246317052452550">الصفحات التي قرأتها</translation>
+<translation id="4620888520263267479">عرض معاينات الروابط</translation>
 <translation id="4630540211544979320">ترجمة الصفحات</translation>
 <translation id="4634124774493850572">استخدام كلمة المرور</translation>
 <translation id="4636930964841734540">معلومات</translation>
@@ -452,6 +455,7 @@
 <translation id="5556459405103347317">إعادة التحميل</translation>
 <translation id="5580834567471114021">هل تريد إضافة الصفحة إلى "قائمة القراءة" للاطّلاع عليها في وقت لاحق؟</translation>
 <translation id="5592679540098330836">تفعيل المزامنة للمستخدم <ph name="NAME" /></translation>
+<translation id="560322036295180549">أوقفت مؤسستك هذا الخيار.</translation>
 <translation id="5614553682702429503">هل تريد حفظ كلمة المرور؟</translation>
 <translation id="5626245204502895507">تعذر تنزيل الملف في الوقت الحالي.</translation>
 <translation id="5631164295104953411">إضافة طريقة الدفع</translation>
@@ -467,6 +471,8 @@
 <translation id="5737974891429562743">تفاصيل تسجيل الدخول إلى الحساب قديمة. يمكنك التحديث لبدء المزامنة.</translation>
 <translation id="5738887413654608789">يتيح لك هذا اكتشاف صفحات الويب ذات الصلة حسب الأشياء المحيطة بك.</translation>
 <translation id="5758631781033351321">ستظهر لك "قائمة القراءة" هنا</translation>
+<translation id="575902488528307720">البحث عن الصور</translation>
+<translation id="5781453543752460388">‏إضافة إلى "صور Google"</translation>
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
 <translation id="5803566855766646066">هل تريد فعلاً تجاهل هذه البطاقة الجديدة؟</translation>
 <translation id="5812974770859303494">إضافة إلى...</translation>
@@ -504,6 +510,7 @@
 <translation id="6042308850641462728">عرض المزيد</translation>
 <translation id="605721222689873409">العام</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
+<translation id="6064824697233747382">تفرض عليك مؤسستك إيقاف المزامنة.</translation>
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
 <translation id="60829778314739003">قبول ومتابعة</translation>
 <translation id="6084848228346514841">اختيار علامات التبويب</translation>
@@ -519,6 +526,7 @@
 <translation id="6189413832092199491">غير مقروءة</translation>
 <translation id="6196207969502475924">البحث الصوتي</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />تعرَّف على أنواع البيانات التي يمكنك مزامنتها<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">عدم الترجمة مطلقًا</translation>
 <translation id="6223816392543092032">يمكنك الحصول على الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="6232329973559504466">البحث في وضع التصفُّح المتخفي</translation>
@@ -603,10 +611,12 @@
 <translation id="6801927553864092214">للتصفُّح بخصوصية تامّة، افتَح علامة تبويب للتصفُّح المتخفي</translation>
 <translation id="6807889908376551050">إظهار الكل...</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
+<translation id="681450999322335505">أوقفت مؤسستك ميزة المزامنة</translation>
 <translation id="6830804042318138535">قراءة المزيد</translation>
 <translation id="6831043979455480757">ترجمة</translation>
 <translation id="6842136130964845393">لضمان إمكانية الوصول دائمًا إلى كلمات المرور المحفوظة، عليك إثبات هويتك.</translation>
 <translation id="6851516051005285358">طلب موقع سطح المكتب</translation>
+<translation id="6856384753476268833">تتم إدارة المتصفِّح من خلال مؤسستك.</translation>
 <translation id="6858855187367714033">تم مسحه ضوئيًا.</translation>
 <translation id="6859944681507688231">لمسح رمز الاستجابة السريعة أو بطاقة ائتمان ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات.</translation>
 <translation id="6869389390665537774">يمكنك الاطّلاع على الصفحات التي زرتها أو يمكنك محوها من السجلّ.</translation>
@@ -628,7 +638,6 @@
 <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">علامات التبويب الأخيرة</translation>
 <translation id="7006788746334555276">إعدادات المحتوى</translation>
-<translation id="7015203776128479407">لم ينتهِ إعداد المزامنة الأولية. تم إيقاف المزامنة.</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7053983685419859001">حظر</translation>
 <translation id="7062545763355031412">قبول الحسابات وتبديلها</translation>
@@ -651,7 +660,6 @@
 <translation id="7265758999917665941">عدم حفظ كلمة المرور لهذا الموقع الإلكتروني</translation>
 <translation id="7272437679830969316">تعذَّر التحقق من هويتك. لم يتم نسخ كلمة المرور.</translation>
 <translation id="7291368939935408496">جارٍ تحضير كلمات المرور…</translation>
-<translation id="7293171162284876153">‏لبدء المزامنة، يُرجى تفعيل "مزامنة بيانات Chrome".</translation>
 <translation id="7313347584264171202">ستظهر لك علامات تبويب في وضع التصفّح المتخفي هنا</translation>
 <translation id="7319242366286515846">تشير المتابعة إلى موافقتك على <ph name="BEGIN_LINK" />بنود الخدمة<ph name="END_LINK" />.</translation>
 <translation id="7336264872878993241">تم تنزيل <ph name="PERCENT" /> بالمائة</translation>
@@ -707,6 +715,7 @@
 <translation id="7856733331829174190">تعذّر التنزيل.</translation>
 <translation id="7859704718976024901">سجلّ التصفّح</translation>
 <translation id="7887198238286927132">‏لحماية خصوصيتك، لن يجري Chrome الملء التلقائي لهذا الحقل.</translation>
+<translation id="7911190106180361398">لا تسمح لك مؤسستك بمزامنة كل البيانات.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">جارٍ تصدير كلمات المرور...</translation>
 <translation id="794799177247607889">إيقاف التسجيل</translation>
@@ -716,6 +725,7 @@
 
 يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح الخاص بك على المواقع الإلكترونية المختلفة، وذلك لتقديم إعلانات مخصَّصة لك مثلاً.</translation>
 <translation id="7971521879845308059">حظر النوافذ المنبثقة</translation>
+<translation id="797413074872316787">للمزامنة والتخصيص على جميع الأجهزة، عليك تفعيل المزامنة.</translation>
 <translation id="7982789257301363584">الشبكة</translation>
 <translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
@@ -734,8 +744,8 @@
 <translation id="8080028325999236607">إغلاق جميع علامات التبويب</translation>
 <translation id="8105368624971345109">إيقاف</translation>
 <translation id="8114753159095730575">أصبح بالإمكان تنزيل الملف. يمكنك مراجعة الخيارات في أسفل الشاشة.</translation>
-<translation id="8131740175452115882">التأكيد</translation>
 <translation id="8156478151976189188">ميزة "مزامنة كلمات المرور" لا تعمل حاليًا</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ترجمة الصفحة</translation>
 <translation id="8205564605687841303">إلغاء</translation>
 <translation id="8206354486702514201">تم فرض هذا الإعداد بواسطة المشرف.</translation>
@@ -761,7 +771,6 @@
 <translation id="8487667956631253959">مفعّل</translation>
 <translation id="8487700953926739672">التوفر بلا إنترنت</translation>
 <translation id="8490978609246021741">حفظ التغييرات</translation>
-<translation id="8495097701594799854">تم الإيقاف من قِبل مؤسستك.</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="850600235656508448">فتح في وضع التصفح المتخفي</translation>
 <translation id="8517375800490286174">تراخيص البرامج المفتوحة المصدر</translation>
@@ -834,6 +843,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">تم إرسال تقرير الأعطال.</translation>
 <translation id="952704832371081537">إلغاء</translation>
+<translation id="981498610235328462">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها.</translation>
 <translation id="984509647832111802">المزامنة لا تعمل.</translation>
 <translation id="988141524645182168">أجهزة أخرى</translation>
 <translation id="989988560359834682">تعديل العنوان</translation>

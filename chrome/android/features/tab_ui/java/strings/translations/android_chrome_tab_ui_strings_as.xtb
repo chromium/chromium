@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">মূল্য কমিলে জাননী পাওক</translation>
 <translation id="1657719826150349398">টেবটো তললৈ নিয়ক</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
+<translation id="2118649612461486615">ষ্ট’ৰৰ তথ্য</translation>
+<translation id="2162620598375156287">এতিয়া <ph name="SOURCE_WEBSITE" />ত <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">গোটৰ নাম সম্পাদনা কৰক</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{গোটৰ পৰা <ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব আঁতৰাওক।}one{গোটৰ পৰা <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব আঁতৰাওক।}other{গোটৰ পৰা <ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব আঁতৰাওক।}}</translation>
 <translation id="2479148705183875116">ছেটিংসমূহলৈ যাওক</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">গোট</translation>
 <translation id="2613747923081026172">গোট সৃষ্টি কৰক</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন</translation>
+<translation id="266935134738038806">ছাইটটোলৈ যাওক</translation>
 <translation id="2671423594960767771">গোট শ্বেয়াৰ কৰক</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> টেবৰ গোটটো <ph name="NUMBER_OF_TABS" /> টা টেবৰ সৈতে বিস্তাৰ কৰক।</translation>
 <translation id="2801787514987684416">ষ্ট’ৰৰ তথ্য চাব নেকি?</translation>
 <translation id="2928243913527329289">Google | এই ষ্ট'ৰখনৰ বিষয়ে</translation>
 <translation id="2977480621796371840">গোটৰ পৰা আঁতৰাওক</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ৰ দাম <ph name="PRICE_DROP" /> কমিছে</translation>
 <translation id="3194464645767632461">মূল্যাংকন</translation>
+<translation id="3267416433995960648">সতৰ্কবাৰ্তা পঠিওৱাৰ সুবিধাটো অফ কৰক</translation>
 <translation id="3291470810748040983">খোলা থকা কোনো টেবত কম মূল্যৰ তথ্য উপলব্ধ হ’লে আপুনি এটা সতৰ্কবাৰ্তা লাভ কৰিব</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">বন্ধ কৰক</translation>
 <translation id="6054741997831917303">শেহতীয়াকৈ এইটো বস্তুৰ মূল্য <ph name="PREVIOUS_PRICE" />ৰ পৰা <ph name="NEW_PRICE" />লৈ হ্ৰাস পাইছে</translation>
 <translation id="6193448654517602979">টেবসমূহ বাছনি কৰক</translation>
+<translation id="6228793724645064692">(ষ্ট’ৰৰ মূল্যাংকন)</translation>
+<translation id="6333260925957816943">এই দোকানৰ বিষয়ে তথ্য</translation>
 <translation id="6510648526783655549">টেবৰ ষ্ট্রিপ বন্ধ কৰক</translation>
+<translation id="6549021453810473782">ষ্ট’ৰৰ তথ্য চাওক</translation>
 <translation id="6562820390860419811">টেবটো বাওঁফাললৈ নিয়ক</translation>
 <translation id="6615455863669487791">মোক দেখুৱাওক</translation>
 <translation id="6840760312327750441">টেববোৰ একগোট কৰিবলৈ, এটা টেবত স্পৰ্শ কৰি ধৰি ৰাখক। তাৰপাছত, এইটো অন্য এটা টেবলৈ টানি আনি এৰক।</translation>
 <translation id="6856809498882026482">একাধিক বাছনি কৰিব পৰা ম’ডটো লুকুৱাওক</translation>
+<translation id="7129458170538955174">এই দোকানৰ বিষয়ে তথ্য আধা স্ক্ৰীনত দেখুওৱা হৈছে</translation>
 <translation id="7151209024774799310">গোটটোৰ পৰা টেবসমূহ আঁতৰাওক</translation>
 <translation id="7204204600596740190">একাধিক বাছনি কৰা ম’ড</translation>
+<translation id="7326879924029668159">উভতাই দিয়াৰ নীতি আৰু অন্য বহুতো চাওক</translation>
 <translation id="7352298686197644113">আপোনাৰ খোলা থকা টেবসমূহত কোনটো বস্তুৰ মূল্য কম সেয়া চাওক</translation>
 <translation id="753732157349120914">টেব সলনি কৰোঁতা</translation>
 <translation id="7559245342362162951">গোটৰ টেব সম্পূৰ্ণ স্ক্রীণৰ গ্রিডত দেখুৱাওক</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_ONE" /> টা পৰ্যালোচনা}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> মূল্যাংকন, <ph name="REVIEWS_COUNT_MANY" /> টা পৰ্যালোচনা}}</translation>
 <translation id="7885132941432959125">টেবটো সোঁফাললৈ নিয়ক</translation>
 <translation id="7966321538264951561">পৰামৰ্শসমূহ বাতিল কৰক।</translation>
+<translation id="8029301326595421733">এই দোকানৰ বিষয়ে তথ্য পূৰ্ণ স্ক্ৰীনত দেখুওৱা হৈছে</translation>
 <translation id="814503310257431685">সকলো চাওক</translation>
 <translation id="8205266828577616993">টেবটো ওপৰলৈ নিয়ক</translation>
 <translation id="8304833501377495048">টেবৰ ষ্ট্ৰিপটো পুনৰ নেদেখুৱায় নেকি?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">কম মূল্য</translation>
 <translation id="8749939518995770034">বন্ধ কৰা টেবৰ ষ্ট্ৰিপ</translation>
 <translation id="8820741577754260431">আপোনাৰ টেবসমূহত মূল্য কমাৰ বিষয়ে তথ্য চাওক</translation>
+<translation id="9090098097337832354">এই দোকানৰ বিষয়ে তথ্য দেখুওৱা বন্ধ হৈছে</translation>
 <translation id="9150694013019234766">স্ক্রীণৰ একেবাৰে তলৰ কাষত থকা টেবৰ গোটৰ টেবসমূহ সলনা সলনিকৈ ব্যৱহাৰ কৰক</translation>
 <translation id="9169594135889675189">গোটত নতুন টেব যোগ কৰক</translation>
 <translation id="959682366969460160">সংগঠিত হৈ থাকক</translation>

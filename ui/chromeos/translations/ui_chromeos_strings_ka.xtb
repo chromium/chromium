@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">ნორვეგიული</translation>
 <translation id="1433628812591023318">Parallels Desktop-ში ფაილის ჩავლებით გადასატანად ის უნდა გადაიტანოთ Windows ფაილებში.</translation>
 <translation id="1435838927755162558">საქაღალდის გაზიარება Parallels Desktop-თან</translation>
+<translation id="1439919885608649279">პიროვნება ყვავილებით</translation>
 <translation id="1471718551822868769">სლოვაკური</translation>
 <translation id="1474339897586437869">„<ph name="FILENAME" />“ ვერ აიტვირთა. თქვენს Google Drive-ზე არ არის საკმარისი თავისუფალი მეხსიერება.</translation>
 <translation id="1482884275703521657">ფინური</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">ფაილის შეცვლა შეუძლებელია.</translation>
 <translation id="1673103856845176271">ფაილზე წვდომა ვერ ხერხდება უსაფრთხოების გამო.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">ველოსიპედით სეირნობა</translation>
 <translation id="1722487484194605434">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის დაარქივება…</translation>
 <translation id="1722687688096767818">მიმდინარეობს პროფილის დამატება...</translation>
 <translation id="1726100011689679555">სახელთა სერვერები</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">გადახედვა მიუწვდომელია</translation>
 <translation id="1812302367230252929">ამჰარული ტრანსლიტერაცია</translation>
 <translation id="1813278315230285598">სერვისები</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />გაფრთხილება:<ph name="END_BOLD" /> ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასანთავისუფლებლად. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">პინგვინი</translation>
 <translation id="183183971458492120">მიმდინარეობს ინფორმაციის ჩატვირთვა…</translation>
 <translation id="1834290891154666894">სუბიექტის ალტერნატიული სახელის დამთხვევის მნიშვნელობა არასწორია</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">წერტილებით დაწყებული სახელები უკვე დამახსოვრებულია სისტემაში. გთხოვთ აირჩიოთ სხვა სახელი.</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2084108471225856927">მოწყობილობის პარამეტრები</translation>
+<translation id="2084809735218147718">მადლობის წარწერა</translation>
 <translation id="2085470240340828803">ფაილი სახელად „<ph name="FILENAME" />“ უკვე არსებობს. რისი გაკეთება გსურთ?</translation>
 <translation id="2088690981887365033">VPN ქსელი</translation>
 <translation id="2122305276694332719">დამალულ ქსელთან ავტომატურად დაკავშირება საშუალებას მისცემს სხვებს, იხილონ თქვენი მოწყობილობა და ქსელის ზოგიერთი პარამეტრი, ამიტომ ეს არ არის რეკომენდებული.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">დააინსტალირეთ Linux-ის მეშვეობით</translation>
 <translation id="2225536596944493418">ნამდვილად გსურთ, წაშალოთ <ph name="NUMBER_OF_ITEMS" /> ერთეული?</translation>
 <translation id="2230062665678605299">ვერ შეიქმნა საქაღალდე „<ph name="FOLDER_NAME" />“. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">პიროვნება ყავით</translation>
 <translation id="2251368349685848079">წაშლილებიდან აღდგენა</translation>
 <translation id="2282155092769082568">ავტოკონფიგურაციის URL:</translation>
 <translation id="2288278176040912387">ფლეიერი</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">ფაილის სრული ზომა</translation>
 <translation id="2428749644083375155">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის კოპირება „<ph name="FOLDER_NAME" />“-ში</translation>
 <translation id="2448312741937722512">ტიპი</translation>
+<translation id="2452444014801043526">პიროვნება მეგაფონით</translation>
 <translation id="2464079411014186876">ნაყინი</translation>
 <translation id="2464089476039395325">HTTP პროქსი-სერვერი</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ქსელი, გამორთული</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF დოკუმენტი</translation>
 <translation id="2888807692577297075">&lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt;-ის შესაბამისი ელემენტები ვერ მოიძებნა</translation>
 <translation id="2894654529758326923">ინფორმაცია</translation>
-<translation id="2902312830803030883">სხვა ქმედებები</translation>
 <translation id="2902734494705624966">აშშ გაფართოებით</translation>
 <translation id="290843123675549676">მარათული</translation>
 <translation id="2923240520113693977">ესტონური</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">ფრანგული (კანადა)</translation>
 <translation id="3003189754374775221">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
 <translation id="3003633581067744647">ესკიზების ხედზე გადართვა</translation>
+<translation id="3016566519832145558">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.</translation>
 <translation id="3029114385395636667">ჩართეთ ხაზგარეშე Google Docs, რათა Docs, Sheets და Slides ხელმისაწვდომი იყოს ხაზგარეშე რეჟიმში.</translation>
 <translation id="303198083543495566">გეოგრაფია</translation>
 <translation id="3047197340186497470">ჩინური Dayi</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS ჰოსტი</translation>
 <translation id="3113153474486991170">„<ph name="PATH" />“ ამ მდებარეობიდან ვერ გაიხსნა. გასახსნელად დააკოპირეთ საქაღალდეში „ჩემი ფაილები“.</translation>
 <translation id="3113592018909187986">1 მცდელობა დაგრჩათ. ამ ქსელს ვერ გამოიყენებთ, სანამ ახალ PIN-კოდს არ დააყენებთ.</translation>
+<translation id="3124404833828281817">პიროვნება, რომელიც ოცნებობს</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN-კოდი არასწორია. <ph name="RETRIES" /> მცდელობა დაგრჩათ.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (აპარატურულად მხარდაჭერილი)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.com-ზე გადასვლა…</translation>
 <translation id="3553048479571901246">ფაილების <ph name="APP_NAME" />-ით გასახსნელად, პირველ რიგში, დააკოპირეთ ისინი Windows-ის ფაილების საქაღალდეში.</translation>
 <translation id="3556731189587832921">ინგლისური (აშშ) საერთაშორისო PC კლავიატურით</translation>
+<translation id="3567221313191587603">ფაილებზე ხაზგარეშე რეჟიმში წვდომისთვის აირჩიეთ ფაილი, შემდეგ კი გადაიყვანეთ „<ph name="OFFLINE_CHECKBOX_NAME" />“ ჩართულ მდგომარეობაზე.</translation>
 <translation id="357479282490346887">ლიტვური</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ხაზგარეშე რეჟიმში ხელმისაწვდომად ვერ გარდაიქმნა</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">მიმდინარეობს მობილური პროფილის ინსტალაცია, ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">ჩეხური Qwerty კლავიატურით</translation>
 <translation id="4656293982926141856">ეს კომპიუტერი</translation>
+<translation id="4656777537938206294">აქციეთ ფაილები ხაზგარეშე რეჟიმში ხელმისაწვდომად</translation>
+<translation id="4658782175094886150">პიროვნება თოვლში</translation>
 <translation id="4669606053856530811">„<ph name="SOURCE_NAME" />“-ის წევრები დაკარგავენ წვდომას, თუ ეს ერთეულები არ იქნება გაზიარებული მათთან.</translation>
 <translation id="4690246192099372265">შვედურო</translation>
 <translation id="4693155481716051732">სუში</translation>
@@ -496,6 +504,7 @@
 <translation id="5330145655348521461">ეს ფაილი გახსნილია სხვადასხვა სამუშაო მაგიდაზე. მის სანახავად გადადით <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)-ზე.</translation>
 <translation id="5330512191124428349">ინფორმაციის მიღება</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> კოპირდება <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ის სარეზერვო საცავში</translation>
+<translation id="535792325654997756">პიროვნება კატებით</translation>
 <translation id="5358764674931277">კადრების სიხშირე</translation>
 <translation id="5368191757080475556">საქაღალდის გაზიარება Linux-თან</translation>
 <translation id="5402367795255837559">ბრაილის შრიფტი</translation>
@@ -551,6 +560,8 @@
 <translation id="5833610766403489739">ეს ფაილი გაქრა. შეამოწმეთ ჩამოტვირთვების მდებარეობის პარამეტრი და ხელახლა სცადეთ.</translation>
 <translation id="5838451609423551646">არჩეულიდან ამოიშალა ყველა ჩანაწერი.</translation>
 <translation id="5838825566232597749">US Workman, საერთაშორისო</translation>
+<translation id="5845721951356578987">ექთანი</translation>
+<translation id="5861477046012235702">მოთამაშე</translation>
 <translation id="5864471791310927901">DHCP ძებნა ვერ განხორციელდა</translation>
 <translation id="5896749729057314184">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, არააქტიური, სიგნალის სიძლიერეა <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="5911887972742538906">თქვენი Linux აპლიკაციის ინსტალაციისას მოხდა შეცდომა.</translation>
@@ -579,6 +590,7 @@
 <translation id="6146563240635539929">ვიდეოები</translation>
 <translation id="6150853954427645995">ქსელგარეშე გამოყენებისათვის ამ ფაილის შენახვისათვის, დაბრუნდით ქსელში, ფაილზე დააჭირეთ მარჯვენა ღილაკს და აირჩიეთ <ph name="OFFLINE_CHECKBOX_NAME" /> ვარიანტი.</translation>
 <translation id="6164412158936057769">პეპლები</translation>
+<translation id="6165508094623778733">შეიტყვეთ მეტი</translation>
 <translation id="6170470584681422115">სენდვიჩი</translation>
 <translation id="6187719147498869044">უნგრული</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" />-ით გახსნა</translation>
@@ -649,6 +661,7 @@
 <translation id="6861394552169064235">სპარსული</translation>
 <translation id="6862635236584086457">ამ ფოლდერში შენახული ყველა ფაილი დამარქაფებულია ონლაინში ავტომატურად</translation>
 <translation id="6864328437977279120">სანსკრიტი</translation>
+<translation id="6874758081814639712">პიროვნება, რომელიც დაკავებულია ტაიჩითი</translation>
 <translation id="6876155724392614295">ველოსიპედი</translation>
 <translation id="6878261347041253038">დევანაგარის კლავიატურა (ფონეტიკური)</translation>
 <translation id="6885780034956018177">ლოკოკინა</translation>
@@ -879,6 +892,7 @@
 <translation id="8743164338060742337">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დაკავშირება</translation>
 <translation id="8750438273876807512">თაროდან თქვენს ფაილებზე სწრაფი წვდომა რომ იქონიოთ, ხანგრძლივად შეეხეთ ფაილს, შემდეგ კი შეხებით აირჩიეთ <ph name="ICON" /> და „თაროზე ჩამაგრება“.</translation>
 <translation id="8787254343425541995">პროქსების გამოყენება გაზიარებული ქსელებისთვის</translation>
+<translation id="8790981080411996443">პიროვნება, რომელიც რწყავს ყვავილებს</translation>
 <translation id="8798099450830957504">ნაგულისხმევი</translation>
 <translation id="8802459921616481935">წაშლილებში გადატანა</translation>
 <translation id="8808686172382650546">კატა</translation>
@@ -891,6 +905,7 @@
 <translation id="8874184842967597500">არ არის დაკავშირებული</translation>
 <translation id="8900820606136623064">უნგრული</translation>
 <translation id="8903931173357132290">კურსდამთავრებული</translation>
+<translation id="8912078710089354287">ძაღლი, რომელიც კუდს აქიცინებს</translation>
 <translation id="8919081441417203123">დანიური</translation>
 <translation id="8965697826696209160">საკმარისი ადგილი არ არის.</translation>
 <translation id="8970501467542182729">ეს ფაილი განკუთვნილია კომპიუტერისთვის, რომელიც იყენებს Macintosh პროგრამულ უზრუნველყოფას. ის შეუთავსებელია თქვენს მოწყობილობასთან, რომელზეც გაშვებულია Chrome OS. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /> Chrome OS-ზე ფაილების გახსნის შესახებ.</translation>
@@ -917,6 +932,7 @@
 <translation id="9144340019284012223">კატალანური</translation>
 <translation id="914873105831852105">PIN-კოდი არასწორია. 1 მცდელობა დაგრჩათ.</translation>
 <translation id="9153934054460603056">იდენტურობისა და პაროლის შენახვა</translation>
+<translation id="9171921933192916600">წიგნის ჭია</translation>
 <translation id="9172592259078059678">გუჯარათული ტრანსლიტერაცია</translation>
 <translation id="9173120999827300720">ინგლისური (აშშ) საერთაშორისო კლავიატურით</translation>
 <translation id="9174050671906956834">წაშლილებში არსებული ერთეულები სამუდამოდ წაიშლება 30 დღეში.</translation>
@@ -929,6 +945,7 @@
 <translation id="943972244133411984">შემცვლელი</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
 <translation id="947144732524271678">არჩეულია <ph name="ENTRY_COUNT" /> ჩანაწერის დიაპაზონი „<ph name="FROM_ENTRY_NAME" />“-დან „<ph name="TO_ENTRY_NAME" />“-მდე.</translation>
+<translation id="965477715979482472">ინგლისური (სამხრეთ აფრიკის რესპუბლიკა)</translation>
 <translation id="981121421437150478">ოფლაინი</translation>
 <translation id="988685240266037636">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გსურთ მისი ჩანაცვლება?</translation>
 <translation id="992401651319295351"><ph name="RETRIES" /> მცდელობა დაგრჩათ. ამ ქსელს ვერ გამოიყენებთ, სანამ ახალ PIN-კოდს არ დააყენებთ.</translation>

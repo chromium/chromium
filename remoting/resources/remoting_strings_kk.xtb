@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Барлық құқығы қорғалған.</translation>
 <translation id="4513946894732546136">Пікір жіберу</translation>
 <translation id="4563926062592110512">Клиент ажыратылды: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> мекенжайы дұрыс конфигурацияланбады. Басқа әдепкі браузерді таңдап, URL-ді қайта бағыттаңыз.</translation>
 <translation id="4635770493235256822">Қашықтағы құрылғылар</translation>
 <translation id="4660011489602794167">Пернетақтаны көрсету</translation>
 <translation id="4703799847237267011">Chromoting сеансыңыз аяқталды.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> аккаунтымен кірдіңіз.</translation>
 <translation id="579702532610384533">Қайта қосылу</translation>
 <translation id="5810269635982033450">Экран сенсорлық тақта сияқты жұмыс істейді</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көру, пернетақта мен тінтуірді басқару рұқсатын сұрады. Бұл сұрауды күтпесеңіз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' түймесін басыңыз. Не болмаса дайын болған кезде байланысқа рұқсат беру үшін, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' түймесін басыңыз.</translation>
 <translation id="5823658491130719298">Қашықтан кіргіңіз келетін компьютерде Chrome браузерін ашып, <ph name="INSTALLATION_LINK" /> бетіне өтіңіз</translation>
 <translation id="5841343754884244200">Көрсету опциялары</translation>
 <translation id="6033507038939587647">Пернетақта опциялары</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Қашықтағы компьютерге жарамсыз PIN кодымен кіру әрекеті жасалғандықтан, оған қосылу уақытша мүмкін емес. Әрекетіңізді кейінірек қайталаңыз.</translation>
 <translation id="6965382102122355670">Жарайды</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" /> хостының қашықтағы байланыстарын өшіру қажет пе? Пікіріңізді өзгертсеңіз, байланыстарды қайта қосу үшін айтылған компьютерге кіруіңіз керек.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> компьютеріңізді көруге және басқаруға рұқсат сұрады. Бұл кісіні танымайтын болсаңыз немесе бөліспес бұрын өзгеріс енгізу керек болса, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' түймесін басыңыз.  Не болмаса ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' түймесін басып, қосылуға рұқсат етіңіз.</translation>
 <translation id="7019153418965365059">Анықталмаған хост қатесі: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Қашықтан көмектесу</translation>
 <translation id="7026930240735156896">Компьютерге қашықтан кіруді реттеу үшін нұсқауларды орындаңыз</translation>
@@ -169,6 +170,7 @@
 Рұқсат беру үшін төмендегі "<ph name="BUTTON_NAME" />" түймесін басыңыз. "Арнайы мүмкіндіктер" параметрлері панелін ашыңыз және "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығын белгілеңіз.
 
 "<ph name="SERVICE_SCRIPT_NAME" />" ұяшығы белгіленіп тұрса, белгісін алып, қайта белгілеңіз.</translation>
+<translation id="8305209735512572429">Желі аутентификациясын қашықтан басқару процесі</translation>
 <translation id="8383794970363966105">Chromoting пайдалану үшін құрылғыңызға Google аккаунтын қосуыңыз қажет.</translation>
 <translation id="8386846956409881180">Хост жарамсыз OAuth есептік деректерімен реттелген.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> қызметіне рұқсат беру</translation>

@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">ડાઉનલોડ થોભાવ્યું</translation>
 <translation id="1415402041810619267">URL ટૂંકી કરી છે</translation>
 <translation id="1446450296470737166">MIDI ઉપકરણોના પૂર્ણ નિયંત્રણની મંજૂરી આપો</translation>
-<translation id="1509960214886564027">ઘણી સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="1620510694547887537">કૅમેરો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1647582022260550163">શું તમે ખરેખર પરવાનગીઓ રીસેટ કરવા અને કુકી તેમજ સાઇટનો ડેટા સાફ કરવા માગો છો?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">મંજૂર, તૃતીય-પક્ષ સિવાય</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
 <translation id="1994173015038366702">સાઈટ URL</translation>
+<translation id="2004697686368036666">અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં</translation>
 <translation id="2025115093177348061">ઑગ્મેન્ટેડ રિયાલિટી</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> પર પરત ફરવા માટે, ટૅપ કરો</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">કોઈ ચોક્કસ સાઇટ માટે કુકીને મંજૂરી આપો.</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
+<translation id="4176463684765177261">અક્ષમ કરેલું</translation>
 <translation id="4200726100658658164">સ્થાન સેટિંગ ખોલો</translation>
 <translation id="4226663524361240545">સૂચનાઓ ઉપકરણને વાઇબ્રેટ કરી શકે છે</translation>
 <translation id="4259722352634471385">નેવિગેશન અવરોધિત છે: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">વીડિયો થોભાવો</translation>
 <translation id="5887687176710214216">છેલ્લે કાલે મુલાકાત લીધી</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
+<translation id="59174027418879706">સક્ષમ કરેલું</translation>
 <translation id="5922853908706496913">તમારી સ્ક્રીન શેર કરીએ છીએ</translation>
 <translation id="5939518447894949180">રીસેટ કરો</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />ના વિકલ્પો</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' અનઇન્સ્ટૉલ કરીએ?</translation>
+<translation id="6233545266937675277">સાઇટના ડેસ્કટૉપ વ્યૂ માટે વિનંતી કરો</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ને બ્લૉક કર્યા</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
 <translation id="6295158916970320988">બધી સાઇટ્સ</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> અને વધુ <ph name="NUM_MORE" /> બ્લૉક કરી}}</translation>
 <translation id="6554732001434021288">છેલ્લે <ph name="NUM_DAYS" /> દિવસ પહેલાં મુલાકાત લીધી</translation>
 <translation id="6561560012278703671">ગુપચુપ મેસેજિંગનો ઉપયોગ કરો (તમને ખલેલ પહોંચાડે તેવા નોટિફિકેશન સંકેતોને બ્લૉક કરે છે)</translation>
+<translation id="6593061639179217415">ડેસ્કટૉપ સાઇટ</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">સુરક્ષિત કન્ટેન્ટ</translation>
 <translation id="662080504995468778">પૃષ્ઠ પર રહો</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">પસંદગી રદ કરો</translation>
 <translation id="7846621471902887024">તમે બધી સાઇટમાં સાઇન આઉટ કરવામાં આવશે.</translation>
 <translation id="7882806643839505685">કોઈ એક ચોક્કસ સાઇટ માટે અવાજ ચલાવવાની મંજૂરી આપો.</translation>
+<translation id="7940722705963108451">મને યાદ કરાવો</translation>
 <translation id="7986741934819883144">સંપર્ક પસંદ કરો</translation>
-<translation id="7993619969781047893">અમુક સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="7999064672810608036">શું તમે ખરેખર કૂકીઝ સહિત આ વેબસાઇટ માટેનો બધો ડેટા સાફ કરી અને આ વેબસાઇટ માટેની બધી પરવાનગીઓ ફરીથી સેટ કરવા માગો છો?</translation>
 <translation id="8007176423574883786">આ ઉપકરણ માટે બંધ કર્યું</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">મ્યૂટ કરેલ</translation>
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
+<translation id="8154912474061769055">અમુક સુવિધાઓ ઘણી સાઇટ પર કામ કરી શકશે નહીં</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" />ની મંજૂરી આપી</translation>
 <translation id="8200772114523450471">રિઝ્યુમે</translation>
 <translation id="8206354486702514201">આ સેટિંગ તમારા વહીવટકર્તા દ્વારા લાગુ કરેલી છે.</translation>
 <translation id="8211406090763984747">કનેક્શન સુરક્ષિત છે</translation>
 <translation id="8249310407154411074">ટોચે ખસેડો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
+<translation id="8267092878336850213">સાઇટના મોબાઇલ વ્યૂ માટે વિનંતી કરો</translation>
 <translation id="8300705686683892304">ઍપ દ્વારા મેનેજ થતી</translation>
 <translation id="8324158725704657629">ફરીથી પૂછશો નહીં</translation>
 <translation id="8372893542064058268">ચોક્કસ સાઇટ માટે પૃષ્ઠભૂમિ સમન્વયનની મંજૂરી આપો.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">ઇનપુટ સાફ કરો</translation>
 <translation id="868929229000858085">તમારા સંપર્કો શોધો</translation>
 <translation id="8702612070107455751">બધો ઑફલાઇન ડેટા સાફ કરવામાં આવશે.</translation>
+<translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં <ph name="APP_NAME" /> માટે પરવાનગી ચાલુ કરો.</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>

@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Saņemiet paziņojumus par cenu kritumu.</translation>
 <translation id="1657719826150349398">Pārvietot cilni uz leju</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> cilne}zero{<ph name="TABS_COUNT_MANY" /> cilnes}one{<ph name="TABS_COUNT_MANY" /> cilne}other{<ph name="TABS_COUNT_MANY" /> cilnes}}</translation>
+<translation id="2118649612461486615">Veikala informācija</translation>
+<translation id="2162620598375156287">Tagad cena vietnē <ph name="SOURCE_WEBSITE" /> ir <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">Rediģēt grupas nosaukumu</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Noņemt <ph name="TABS_COUNT_ONE" /> atlasīto cilni no grupas.}zero{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}one{Noņemt <ph name="TABS_COUNT_MANY" /> atlasīto cilni no grupas.}other{Noņemt <ph name="TABS_COUNT_MANY" /> atlasītās cilnes no grupas.}}</translation>
 <translation id="2479148705183875116">Atvērt iestatījumus</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Grupa</translation>
 <translation id="2613747923081026172">Izveidot grupu</translation>
 <translation id="2662028055331606429">Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Apmeklēt vietni</translation>
 <translation id="2671423594960767771">Kopīgot grupu</translation>
 <translation id="2759453070259087442">Izvērst ciļņu grupu <ph name="TITLE_OF_GROUP" />. Ciļņu skaits šajā grupā ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2801787514987684416">Vai skatīt veikala informāciju?</translation>
 <translation id="2928243913527329289">Google | Par šo veikalu</translation>
 <translation id="2977480621796371840">Noņemt no grupas</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> cenas kritums produktam “<ph name="PRODUCT_NAME" />”</translation>
 <translation id="3194464645767632461">vērtējums</translation>
+<translation id="3267416433995960648">Izslēgt brīdinājumu</translation>
 <translation id="3291470810748040983">Jūs saņemsiet brīdinājumu, kad kādā atvērtajā cilnē būs pieejama zemāka cena.</translation>
 <translation id="3328308545011660196">Ieteikums: šķiet, ka <ph name="NUMBER_OF_TABS" /> cilnes ir saistītas. Vai grupēt tās?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6054741997831917303">Šai precei nesen tika pazemināta cena no <ph name="PREVIOUS_PRICE" /> uz <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Atlasiet cilnes</translation>
+<translation id="6228793724645064692">(veikala vērtējums)</translation>
+<translation id="6333260925957816943">Informācija par šo veikalu</translation>
 <translation id="6510648526783655549">Aizvērt ciļņu joslu</translation>
+<translation id="6549021453810473782">Skatīt veikala informāciju</translation>
 <translation id="6562820390860419811">Pārvietot cilni pa kreisi</translation>
 <translation id="6615455863669487791">Rādīt man</translation>
 <translation id="6840760312327750441">Lai sagrupētu cilnes, pieskarieties cilnei un turiet to. Pēc tam velciet to uz citas cilnes.</translation>
 <translation id="6856809498882026482">Paslēpt vairākatlases režīmu</translation>
+<translation id="7129458170538955174">Informācija par šo veikalu ir atvērta pusekrāna augstumā</translation>
 <translation id="7151209024774799310">Noņemt cilnes no grupas</translation>
 <translation id="7204204600596740190">Vairākatlases režīms</translation>
+<translation id="7326879924029668159">Skatiet atgriešanas politiku un citu informāciju.</translation>
 <translation id="7352298686197644113">Skatiet, kurai precei jūsu atvērtajās cilnēs ir zemāka cena.</translation>
 <translation id="753732157349120914">Ciļņu pārslēdzējs</translation>
 <translation id="7559245342362162951">Rādīt grupas cilnes pilnekrāna režģī</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_ONE" /> atsauksme}zero{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmju}one{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksme}other{Vērtējums: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />; <ph name="REVIEWS_COUNT_MANY" /> atsauksmes}}</translation>
 <translation id="7885132941432959125">Pārvietot cilni pa labi</translation>
 <translation id="7966321538264951561">Nerādīt ieteikumus.</translation>
+<translation id="8029301326595421733">Informācija par šo veikalu ir atvērta pilna ekrāna augstumā</translation>
 <translation id="814503310257431685">Skatīt visu</translation>
 <translation id="8205266828577616993">Pārvietot cilni uz augšu</translation>
 <translation id="8304833501377495048">Vai nerādīt ciļņu joslu atkārtoti?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Zemāka cena</translation>
 <translation id="8749939518995770034">Ciļņu josla aizvērta</translation>
 <translation id="8820741577754260431">Skatiet cenu kritumu savās cilnēs.</translation>
+<translation id="9090098097337832354">Informācija par šo veikalu ir aizvērta</translation>
 <translation id="9150694013019234766">Pārslēdziet cilnes savā ciļņu grupā ekrāna apakšdaļā.</translation>
 <translation id="9169594135889675189">Pievienot grupai jaunu cilni</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>

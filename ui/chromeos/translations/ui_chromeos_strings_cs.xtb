@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">norština</translation>
 <translation id="1433628812591023318">Pokud chcete soubor přetáhnout do nástroje Parallels Desktop, musíte ho přesunout mezi soubory systému Windows.</translation>
 <translation id="1435838927755162558">Sdílení složky s nástrojem Parallels Desktop</translation>
+<translation id="1439919885608649279">Člověk s květinami</translation>
 <translation id="1471718551822868769">slovenština</translation>
 <translation id="1474339897586437869">Soubor <ph name="FILENAME" /> nelze nahrát. Na Disku Google je nedostatek místa.</translation>
 <translation id="1482884275703521657">finština</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Soubor se nepodařilo upravit.</translation>
 <translation id="1673103856845176271">Soubor je z bezpečnostních důvodů nedostupný.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Cyklista</translation>
 <translation id="1722487484194605434">Komprimace <ph name="NUMBER_OF_ITEMS" /> položek...</translation>
 <translation id="1722687688096767818">Přidávání profilu…</translation>
 <translation id="1726100011689679555">Jmenné servery</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Náhled není k dispozici</translation>
 <translation id="1812302367230252929">amharština (přepis)</translation>
 <translation id="1813278315230285598">Služby</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Upozornění:<ph name="END_BOLD" /> Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Tučňák</translation>
 <translation id="183183971458492120">Načítání informací...</translation>
 <translation id="1834290891154666894">Neplatný záznam shody alternativních názvů subjektu</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Názvy začínající tečkou jsou vyhrazeny pro systém. Zvolte prosím jiný název.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2084108471225856927">Nastavení zařízení</translation>
+<translation id="2084809735218147718">Znakování poděkování</translation>
 <translation id="2085470240340828803">Soubor s názvem <ph name="FILENAME" /> již existuje. Co chcete udělat?</translation>
 <translation id="2088690981887365033">Síť VPN</translation>
 <translation id="2122305276694332719">Automatické připojování ke skryté síti umožňuje ostatním uživatelům zobrazit vaše zařízení a některá vaše nastavení sítě a nedoporučujeme jej.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Instalovat aplikaci pro Linux</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
 <translation id="2230062665678605299">Složku „<ph name="FOLDER_NAME" />“ se nepodařilo vytvořit. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Člověk s kávou</translation>
 <translation id="2251368349685848079">Obnovit z koše</translation>
 <translation id="2282155092769082568">Adresa URL automatické konfigurace:</translation>
 <translation id="2288278176040912387">Gramofon</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Celková velikost souborů</translation>
 <translation id="2428749644083375155">Kopírování <ph name="NUMBER_OF_ITEMS" /> položek do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Typ</translation>
+<translation id="2452444014801043526">Člověk s megafonem</translation>
 <translation id="2464079411014186876">Zmrzlina</translation>
 <translation id="2464089476039395325">Proxy server protokolu HTTP</translation>
 <translation id="2467267713099745100">Síť: <ph name="NETWORK_TYPE" />, vypnuto</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">Dokumenty PDF</translation>
 <translation id="2888807692577297075">Vyhledávacímu dotazu &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; neodpovídají žádné soubory.</translation>
 <translation id="2894654529758326923">Informace</translation>
-<translation id="2902312830803030883">Další akce</translation>
 <translation id="2902734494705624966">Americká klávesnice (rozšířená)</translation>
 <translation id="290843123675549676">maráthština</translation>
 <translation id="2923240520113693977">estonština</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">francouzština (Kanada)</translation>
 <translation id="3003189754374775221">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, připojit</translation>
 <translation id="3003633581067744647">Přepnout na zobrazení miniatur</translation>
+<translation id="3016566519832145558">Pozor: Tyto soubory jsou dočasné a mohou být automaticky smazány kvůli uvolnění místa na disku.</translation>
 <translation id="3029114385395636667">Pokud si chcete zpřístupnit dokumenty, tabulky a prezentace offline, aktivujte si Dokumenty Google offline.</translation>
 <translation id="303198083543495566">Geografická poloha</translation>
 <translation id="3047197340186497470">čínština (Dayi)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">Hostitel protokolu SOCKS</translation>
 <translation id="3113153474486991170">Cestu <ph name="PATH" /> z tohoto místa nelze otevřít. Zkopírujte obsah do složky Moje soubory.</translation>
 <translation id="3113592018909187986">Zbývá vám jeden pokus. Tuto síť budete moci používat až poté, co nastavíte nový PIN.</translation>
+<translation id="3124404833828281817">Zasněný člověk</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Neplatný kód PIN. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (hardwarový)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Přejít na stránky drive.google.com...</translation>
 <translation id="3553048479571901246">Pokud soubory chcete otevřít pomocí aplikace <ph name="APP_NAME" />, nejdříve je zkopírujte do složky souborů Windows.</translation>
 <translation id="3556731189587832921">angličtina (USA) s mezinárodní (PC) klávesnicí</translation>
+<translation id="3567221313191587603">Pokud k souborům chcete mít přístup v režimu offline, vyberte soubor a přepněte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="357479282490346887">litevština</translation>
 <translation id="3592251141500063301">Soubor <ph name="FILE_NAME" /> se nepodařilo zpřístupnit offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Instalace mobilního profilu, síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">čeština s klávesnicí Qwerty</translation>
 <translation id="4656293982926141856">Tento počítač</translation>
+<translation id="4656777537938206294">Dostupnost souborů v režimu offline</translation>
+<translation id="4658782175094886150">Člověk ve sněhu</translation>
 <translation id="4669606053856530811">Pokud s nimi tyto položky nejsou sdíleny, ztratí k nim členové týmu <ph name="SOURCE_NAME" /> přístup.</translation>
 <translation id="4690246192099372265">švédština</translation>
 <translation id="4693155481716051732">Suši</translation>
@@ -496,6 +504,7 @@
 <translation id="5330145655348521461">Tyto soubory jsou otevřeny na jiné ploše. Chcete-li je zobrazit, přejděte do profilu <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />).</translation>
 <translation id="5330512191124428349">Zobrazit informace</translation>
 <translation id="5335458522276292100">Probíhá zálohování na <ph name="BEGIN_LINK" />Disk Google<ph name="END_LINK" />: <ph name="FILE_COUNT" /></translation>
+<translation id="535792325654997756">Člověk s kočkami</translation>
 <translation id="5358764674931277">Snímková frekvence</translation>
 <translation id="5368191757080475556">Sdílet složku se systémem Linux</translation>
 <translation id="5402367795255837559">Braillovo písmo</translation>
@@ -551,6 +560,8 @@
 <translation id="5833610766403489739">Soubor ve spravovaných umístěních nebyl nalezen. Zkontrolujte prosím nastavení umístění stažených souborů a zkuste to znovu.</translation>
 <translation id="5838451609423551646">Z výběru byly odstraněny všechny položky.</translation>
 <translation id="5838825566232597749">Americká mezinárodní klávesnice s rozložením Workman</translation>
+<translation id="5845721951356578987">Zdravotní sestra</translation>
+<translation id="5861477046012235702">Hráč</translation>
 <translation id="5864471791310927901">Vyhledávání serveru DHCP selhalo.</translation>
 <translation id="5896749729057314184">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivováno, síla signálu <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="5911887972742538906">Při instalaci aplikace pro Linux došlo k chybě.</translation>
@@ -579,6 +590,7 @@
 <translation id="6146563240635539929">Videa</translation>
 <translation id="6150853954427645995">Chcete-li tento soubor uložit pro použití offline, přejděte zpět online, klikněte na soubor pravým tlačítkem a vyberte možnost <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Motýli</translation>
+<translation id="6165508094623778733">Další informace</translation>
 <translation id="6170470584681422115">Sendvič</translation>
 <translation id="6187719147498869044">maďarština</translation>
 <translation id="6189412234224385711">Otevřít pomocí rozšíření <ph name="EXTENSION_NAME" /></translation>
@@ -649,6 +661,7 @@
 <translation id="6861394552169064235">perština</translation>
 <translation id="6862635236584086457">Všechny soubory uložené v této složce se automaticky zálohují online</translation>
 <translation id="6864328437977279120">sanskrt</translation>
+<translation id="6874758081814639712">Člověk cvičící taiči</translation>
 <translation id="6876155724392614295">Kolo</translation>
 <translation id="6878261347041253038">Klávesnice dévanágarí (fonetická)</translation>
 <translation id="6885780034956018177">Hlemýžď</translation>
@@ -879,6 +892,7 @@
 <translation id="8743164338060742337">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, spravováno administrátorem, připojit</translation>
 <translation id="8750438273876807512">Pokud k souboru chcete mít rychle přístup z poličky, podržte ho, klepněte na <ph name="ICON" /> a vyberte Připnout k poličce.</translation>
 <translation id="8787254343425541995">Povolit proxy servery u sdílených sítí</translation>
+<translation id="8790981080411996443">Člověk zalévající rostliny</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8802459921616481935">Přesunout do koše</translation>
 <translation id="8808686172382650546">Kočka</translation>
@@ -891,6 +905,7 @@
 <translation id="8874184842967597500">Nepřipojeno</translation>
 <translation id="8900820606136623064">maďarština</translation>
 <translation id="8903931173357132290">Absolvent</translation>
+<translation id="8912078710089354287">Pes vrtící ocasem</translation>
 <translation id="8919081441417203123">dánština</translation>
 <translation id="8965697826696209160">Nedostatek místa.</translation>
 <translation id="8970501467542182729">Tento soubor je určen pro počítač se softwarem Macintosh. S vaším zařízením se systémem Chrome OS není kompatibilní. <ph name="BEGIN_LINK_HELP" />Další informace<ph name="END_LINK_HELP" /> o otvírání souborů v systému Chrome OS.</translation>
@@ -917,6 +932,7 @@
 <translation id="9144340019284012223">katalánština</translation>
 <translation id="914873105831852105">Neplatný kód PIN. Zbývá vám jeden pokus.</translation>
 <translation id="9153934054460603056">Uložit identitu a heslo</translation>
+<translation id="9171921933192916600">Knihomol</translation>
 <translation id="9172592259078059678">gudžarátština (přepis)</translation>
 <translation id="9173120999827300720">angličtina (USA) s mezinárodní klávesnicí</translation>
 <translation id="9174050671906956834">Položky jsou z koše po 30 dnech navždy smazány.</translation>
@@ -929,6 +945,7 @@
 <translation id="943972244133411984">Upravil(a)</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
 <translation id="947144732524271678">Vybrali jste položky <ph name="FROM_ENTRY_NAME" /> až <ph name="TO_ENTRY_NAME" /> (celkem <ph name="ENTRY_COUNT" />).</translation>
+<translation id="965477715979482472">angličtina (Jižní Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Chcete jej nahradit?</translation>
 <translation id="992401651319295351">Počet zbývajících pokusů: <ph name="RETRIES" />. Tuto síť budete moci používat až poté, co nastavíte nový PIN.</translation>

@@ -79,6 +79,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="4513946894732546136">Comentario</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" /></translation>
+<translation id="4618411825115957973">No se configuró correctamente <ph name="URL_FORWARDER_NAME" />. Elige otro navegador web como predeterminado y, luego, vuelve a habilitar la URL.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4703799847237267011">Se cerró tu sesión en Chromoting.</translation>
@@ -109,6 +110,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="5750083143895808682">Accediste como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Volver a conectar</translation>
 <translation id="5810269635982033450">La pantalla funciona como panel táctil</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitó acceso para ver tu pantalla y controlar el teclado y el mouse. Presiona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' si no estás esperando esta solicitud. De lo contrario, selecciona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para permitir la conexión cuando esté todo listo.</translation>
 <translation id="5823658491130719298">En la computadora que quieras acceder de forma remota, abre Chrome y visita <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opciones de la pantalla</translation>
 <translation id="6033507038939587647">Opciones del teclado</translation>
@@ -130,7 +132,6 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 <translation id="6963936880795878952">Las conexiones con la computadora remota se bloquearon temporalmente porque alguien intentó conectarse a ella con un PIN no válido. Vuelve a intentarlo más tarde.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6985691951107243942">¿Realmente deseas inhabilitar las conexiones remotas con <ph name="HOSTNAME" />? Si te arrepientes, tendrás que ir a esa computadora para volver a habilitar las conexiones.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> solicitó acceso para ver y controlar tu computadora. Presiona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' si no conoces a esta persona o si necesitas realizar un cambio antes de compartir el acceso.  De lo contrario, selecciona ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para compartir la conexión.</translation>
 <translation id="7019153418965365059">Error de host no reconocido: <ph name="HOST_OFFLINE_REASON" /></translation>
 <translation id="701976023053394610">Asistencia remota</translation>
 <translation id="7026930240735156896">Sigue las instrucciones para configurar la computadora a fin de acceder de forma remota.</translation>
@@ -169,6 +170,7 @@ Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala 
 Para otorgarlo, haz clic en "<ph name="BUTTON_NAME" />" que aparece a continuación. En el panel de preferencias de "Accesibilidad" que se abre, marca la casilla junto a "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Si ya está marcada la casilla "<ph name="SERVICE_SCRIPT_NAME" />", desmárcala y vuelve a marcarla.</translation>
+<translation id="8305209735512572429">Proceso para que la autenticación web sea remota</translation>
 <translation id="8383794970363966105">Para utilizar Chromoting, debes agregar una cuenta de Google en el dispositivo.</translation>
 <translation id="8386846956409881180">El host está configurado con credenciales OAuth que no son válidas.</translation>
 <translation id="8397385476380433240">Otorga permiso a <ph name="PRODUCT_NAME" /></translation>

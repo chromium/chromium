@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">挪威文</translation>
 <translation id="1433628812591023318">如要將檔案拖曳至 Parallels Desktop，必須先將檔案移動至 Windows 檔案中。</translation>
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
+<translation id="1439919885608649279">拿著花的人</translation>
 <translation id="1471718551822868769">斯洛伐克文</translation>
 <translation id="1474339897586437869">尚未上載 <ph name="FILENAME" />。「Google 雲端硬碟」沒有足夠空間。</translation>
 <translation id="1482884275703521657">芬蘭文</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">無法修改檔案。</translation>
 <translation id="1673103856845176271">基於安全理由，您無法存取檔案。</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">踏單車</translation>
 <translation id="1722487484194605434">正在壓縮 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
 <translation id="1722687688096767818">正在新增設定檔…</translation>
 <translation id="1726100011689679555">名稱伺服器</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">無法預覽</translation>
 <translation id="1812302367230252929">阿姆哈拉文 (音譯)</translation>
 <translation id="1813278315230285598">服務</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />警告：<ph name="END_BOLD" />這些是暫存檔案，系統可能會自動將其刪除，以釋放磁碟空間。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="183183971458492120">正在載入資料…</translation>
 <translation id="1834290891154666894">無效的主體替代名稱相符項目</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">以點號開頭的名稱只供系統使用，請選擇其他名稱。</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2084108471225856927">裝置設定</translation>
+<translation id="2084809735218147718">寫感謝詞的人</translation>
 <translation id="2085470240340828803">名稱為「<ph name="FILENAME" />」的檔案已經存在，您想要怎麼做？</translation>
 <translation id="2088690981887365033">VPN 網絡</translation>
 <translation id="2122305276694332719">自動連線至隱藏網絡會讓其他人可查看您的裝置和部分網絡設定，建議您不要啟用此設定。</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">透過 Linux 安裝</translation>
 <translation id="2225536596944493418">您確定要刪除<ph name="NUMBER_OF_ITEMS" /> 個項目嗎？</translation>
 <translation id="2230062665678605299">無法建立資料夾「<ph name="FOLDER_NAME" />」。<ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">喝咖啡的人</translation>
 <translation id="2251368349685848079">從垃圾桶還原</translation>
 <translation id="2282155092769082568">自動設定網址：</translation>
 <translation id="2288278176040912387">唱機</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">總檔案大小</translation>
 <translation id="2428749644083375155">正在將 <ph name="NUMBER_OF_ITEMS" /> 個項目複製到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="2448312741937722512">類型</translation>
+<translation id="2452444014801043526">拿擴音器的人</translation>
 <translation id="2464079411014186876">雪糕</translation>
 <translation id="2464089476039395325">HTTP Proxy</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" />網絡，離線</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF 文件</translation>
 <translation id="2888807692577297075">找不到符合&lt;b&gt;「<ph name="SEARCH_STRING" />」&lt;/b&gt;的項目</translation>
 <translation id="2894654529758326923">資料</translation>
-<translation id="2902312830803030883">更多操作</translation>
 <translation id="2902734494705624966">美式改良鍵盤</translation>
 <translation id="290843123675549676">馬拉地文</translation>
 <translation id="2923240520113693977">愛沙尼亞文</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">法文 (加拿大)</translation>
 <translation id="3003189754374775221">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，連接</translation>
 <translation id="3003633581067744647">切換至縮圖檢視</translation>
+<translation id="3016566519832145558">注意：系統可能會自動刪除這些暫存檔案，以釋放磁碟空間。</translation>
 <translation id="3029114385395636667">啟用「Google 文件」離線版，即可離線使用文件、試算表和簡報。</translation>
 <translation id="303198083543495566">地理</translation>
 <translation id="3047197340186497470">中文 (大易)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS 主機</translation>
 <translation id="3113153474486991170">無法由此位置開啟「<ph name="PATH" />」。請將檔案複製至「我的檔案」以便開啟。</translation>
 <translation id="3113592018909187986">您還可嘗試 1 次。除非您設定新 PIN，否則將無法使用此網絡。</translation>
+<translation id="3124404833828281817">發白日夢的人</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN 無效。您還可嘗試 <ph name="RETRIES" /> 次。</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (硬件憑證支援)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">前往 drive.google.com…</translation>
 <translation id="3553048479571901246">如要透過「<ph name="APP_NAME" />」開啟檔案，請先將檔案複製至 Windows 資料夾。</translation>
 <translation id="3556731189587832921">英文 (美國)，國際 (PC) 鍵盤</translation>
+<translation id="3567221313191587603">如要離線存取檔案，請選取該檔案，然後將<ph name="OFFLINE_CHECKBOX_NAME" />切換為開啟。</translation>
 <translation id="357479282490346887">立陶宛文</translation>
 <translation id="3592251141500063301">無法將 <ph name="FILE_NAME" /> 設定為可離線使用</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">安裝緊流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">捷克文，QWERTY 鍵盤</translation>
 <translation id="4656293982926141856">這部電腦</translation>
+<translation id="4656777537938206294">將檔案設定為可離線使用</translation>
+<translation id="4658782175094886150">雪中的人</translation>
 <translation id="4669606053856530811">除非有人與「<ph name="SOURCE_NAME" />」的成員共用這些項目，否則他們將失去存取權。</translation>
 <translation id="4690246192099372265">瑞典文</translation>
 <translation id="4693155481716051732">壽司</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">這些檔案已在其他電腦上開啟。前往 <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) 檢視。</translation>
 <translation id="5330512191124428349">取得資訊</translation>
 <translation id="5335458522276292100">正在將 <ph name="FILE_COUNT" /> 備份至「<ph name="BEGIN_LINK" />Google 雲端硬碟<ph name="END_LINK" />」</translation>
+<translation id="535792325654997756">人與貓</translation>
 <translation id="5358764674931277">影格速率</translation>
 <translation id="5368191757080475556">與 Linux 分享資料夾</translation>
 <translation id="5402367795255837559">點字</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">這個檔案不見了！請檢查您的下載位置設定，然後再試一次。</translation>
 <translation id="5838451609423551646">喺選擇範圍入面移除所有項目。</translation>
 <translation id="5838825566232597749">美式 Workman 國際</translation>
+<translation id="5845721951356578987">護士</translation>
+<translation id="5861477046012235702">遊戲玩家</translation>
 <translation id="5864471791310927901">DHCP 查閱失敗</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個網絡，<ph name="NETWORK_NAME" />，未啟用，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="5911887972742538906">安裝 Linux 應用程式時發生錯誤。</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">影片</translation>
 <translation id="6150853954427645995">如要儲存這個檔案以供離線使用，請連上網絡，在該檔案上按一下滑鼠右鍵，然後選取 <ph name="OFFLINE_CHECKBOX_NAME" /> 選項。</translation>
 <translation id="6164412158936057769">蝴蝶</translation>
+<translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6170470584681422115">三文治</translation>
 <translation id="6187719147498869044">匈牙利文</translation>
 <translation id="6189412234224385711">使用「<ph name="EXTENSION_NAME" />」開啟</translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">波斯文</translation>
 <translation id="6862635236584086457">所有儲存在這個資料夾的檔案都會自動在網上備份</translation>
 <translation id="6864328437977279120">梵文</translation>
+<translation id="6874758081814639712">打太極的人</translation>
 <translation id="6876155724392614295">單車</translation>
 <translation id="6878261347041253038">梵文鍵盤 (拼音)</translation>
 <translation id="6885780034956018177">蝸牛</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="NETWORK_PROVIDER_NAME" /> 嘅訊號強度係 <ph name="SIGNAL_STRENGTH" />%，由管理員管理，連接</translation>
 <translation id="8750438273876807512">輕觸並按住檔案，然後輕按 <ph name="ICON" /> 圖示並選取 [固定至捷徑列]，即可在捷徑列中快速存取檔案。</translation>
 <translation id="8787254343425541995">允許共用網絡使用 Proxy</translation>
+<translation id="8790981080411996443">為植物澆水的人</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8802459921616481935">移至垃圾桶</translation>
 <translation id="8808686172382650546">Cat</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8900820606136623064">匈牙利文</translation>
 <translation id="8903931173357132290">畢業生</translation>
+<translation id="8912078710089354287">搖尾巴的狗</translation>
 <translation id="8919081441417203123">丹麥文</translation>
 <translation id="8965697826696209160">空間不足。</translation>
 <translation id="8970501467542182729">這個檔案是專為使用 Macintosh 軟件的電腦而設，與運行 Chrome 作業系統的裝置並不相容。<ph name="BEGIN_LINK_HELP" />進一步瞭解<ph name="END_LINK_HELP" />如何在 Chrome 作業系統中開啟檔案。</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">達隆尼亞文</translation>
 <translation id="914873105831852105">PIN 無效。您還可嘗試 1 次。</translation>
 <translation id="9153934054460603056">儲存身分與密碼</translation>
+<translation id="9171921933192916600">書蟲</translation>
 <translation id="9172592259078059678">古吉拉特文 (音譯)</translation>
 <translation id="9173120999827300720">英文 (美國)，國際鍵盤</translation>
 <translation id="9174050671906956834">垃圾桶中的項目會在 30 天後永久刪除。</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="947144732524271678">揀咗 <ph name="FROM_ENTRY_NAME" /> 至 <ph name="TO_ENTRY_NAME" /> 範圍入面嘅 <ph name="ENTRY_COUNT" /> 個項目。</translation>
+<translation id="965477715979482472">英文 (南非)</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="988685240266037636">名稱為「<ph name="FILE_NAME" />」的檔案已經存在。您要取代此檔案嗎？</translation>
 <translation id="992401651319295351">您還可嘗試 <ph name="RETRIES" /> 次。除非您設定新 PIN，否則將無法使用此網絡。</translation>

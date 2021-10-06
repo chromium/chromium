@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">意見回饋</translation>
 <translation id="4563926062592110512">已中斷連線至用戶端：<ph name="CLIENT_USERNAME" />。</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />設定有誤。請選擇其他預設網路瀏覽器，然後重新啟用網址轉送功能。</translation>
 <translation id="4635770493235256822">遠端裝置</translation>
 <translation id="4660011489602794167">顯示鍵盤</translation>
 <translation id="4703799847237267011">你的 Chromoting 工作階段已結束。</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">目前登入的帳戶是 <ph name="EMAIL_ADDRESS" />。</translation>
 <translation id="579702532610384533">重新連線</translation>
 <translation id="5810269635982033450">把螢幕當作觸控板使用</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 要求你授予螢幕的檢視權限和鍵盤與滑鼠的控制權限。如果這不是預期收到的要求，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]；否則，請在準備就緒時選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
 <translation id="5823658491130719298">在你要從遠端存取的電腦上，開啟 Chrome 並造訪 <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">顯示選項</translation>
 <translation id="6033507038939587647">鍵盤選項</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">有人嘗試使用無效的 PIN 連線至遠端電腦，因此您的連線暫時遭到封鎖。請稍後再試。</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6985691951107243942">你是否確定要停用與 <ph name="HOSTNAME" /> 之間的遠端連線？如果之後改變心意的話，你必須親身前往該電腦所在位置並修改設定後，才能重新啟用連線。</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> 要求你授予電腦的瀏覽及控制權限。如果你不認識對方，或是需要在授予權限前進行變更，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]，否則請選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>
 <translation id="7019153418965365059">不明主機錯誤：<ph name="HOST_OFFLINE_REASON" />。</translation>
 <translation id="701976023053394610">遠端協助</translation>
 <translation id="7026930240735156896">請按照操作說明設定電腦，以便執行遠端存取作業</translation>
@@ -169,6 +170,7 @@
 如要授予這項權限，請點擊下方的 [<ph name="BUTTON_NAME" />]，然後在隨即開啟的「無障礙功能」偏好設定窗格中，勾選「<ph name="SERVICE_SCRIPT_NAME" />」旁邊的方塊。
 
 如果「<ph name="SERVICE_SCRIPT_NAME" />」已勾選，請先取消勾選，然後再次勾選。</translation>
+<translation id="8305209735512572429">網路驗證遠端處理程序</translation>
 <translation id="8383794970363966105">你必須在裝置上新增 Google 帳戶，才能使用 Chromoting。</translation>
 <translation id="8386846956409881180">用於設定主機的 OAuth 憑證無效。</translation>
 <translation id="8397385476380433240">授予權限給 <ph name="PRODUCT_NAME" /></translation>

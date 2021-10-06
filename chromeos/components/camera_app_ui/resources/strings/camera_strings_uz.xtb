@@ -8,8 +8,9 @@
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> kabeli uzildi.</translation>
 <translation id="1473110567575736769">3 soniyalik taymer</translation>
-<translation id="1478594628797167447">Skaner</translation>
 <translation id="1545749641540134597">QR kodni skanerlash</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Hech narsa yozib olinmadi</translation>
@@ -24,14 +25,15 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> faol</translation>
 <translation id="2144806332417375165">Maxsus video parametrlari</translation>
 <translation id="2175927920773552910">QR kod</translation>
-<translation id="2268107369530950373">Skanerlash rejimini oʻzgartirish</translation>
 <translation id="229579744168541441">Diskka eksport qilish</translation>
 <translation id="2320741269052147773">Chapga suring</translation>
 <translation id="2501278716633472235">Ortga qaytish</translation>
 <translation id="2501853267655415902">Yozib olish toʻxtatildi</translation>
 <translation id="2501953888035679275">Kamerangiz bilan suratlar va videolar oling.</translation>
+<translation id="2517472476991765520">Qidiruv</translation>
 <translation id="2549985041256363841">Yozuvni boshlash</translation>
 <translation id="2599796128805996109">Orqa kamera</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" /> kabeli ulandi.</translation>
 <translation id="2968794441791257519">Kamerada olingan suratlar va videolar Yuklanmalar jildiga saqlanadi. Ularni Files ilovasi orqali topishingiz mumkin.
 
@@ -45,8 +47,10 @@ Xotiraga kirishga ruxsati bor ilovalar surat va videolaringiz bilan ishlay oladi
 <translation id="3259149966178251584">Kameraning tasviri aniqligi</translation>
 <translation id="3260401663013584785">Hujjat aniqlanmadi</translation>
 <translation id="3448774564454087943">Video juda qisqaligi uchun saqlanmadi</translation>
+<translation id="346539236881580388">Qaytadan</translation>
 <translation id="3517926952904427380">Portret rejimida suratga olinmadi</translation>
 <translation id="3569311554794739032"><ph name="FILE" /> olib tashlansinmi?</translation>
+<translation id="3573890771273113519">Skanerlash rejimiga oʻtish</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3838931309141338733">Shtrix-kodni skanerlash</translation>
 <translation id="3892148308691398805">Matnni nusxalash</translation>
@@ -68,8 +72,10 @@ Xotiraga kirishga ruxsati bor ilovalar surat va videolaringiz bilan ishlay oladi
 <translation id="5152121255775685072">Galereyani ochish</translation>
 <translation id="520537883758714667">Endi hujjatlarni skanerlash mumkin</translation>
 <translation id="5268823927180092501">Barcha kameralarda hujjat rejimini yoqish</translation>
+<translation id="5317780077021120954">Saqlash</translation>
 <translation id="5444515100983837161">Hujjat chetlarini hoshiyaga moslab joylang. Hujjat uning rangi foni bilan farqli boʻlganda yaxshi skanerlanadi.</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5746169159649715125">PDF sifatida saqlash</translation>
 <translation id="5753488212459587150">Ekspert rejimini yoqish</translation>
 <translation id="5759254179196327752">Hujjatni skanerlash</translation>
 <translation id="5775960006311140197">Ekspert rejimi</translation>
@@ -84,6 +90,7 @@ Xotiraga kirishga ruxsati bor ilovalar surat va videolaringiz bilan ishlay oladi
 
 Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni biriktirish orqali muammo haqida xabar qiling. (Masalan, rasm juda xira yoki obyekt fokuslanmagan)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega piksel</translation>
+<translation id="6527303717912515753">Ulashish</translation>
 <translation id="667999046851023355">Hujjat</translation>
 <translation id="6681668084120808868">Suratga olish</translation>
 <translation id="6778482348691154169">Suratga olinmadi</translation>
@@ -95,17 +102,20 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="7243947652761655814">Video tiniqligi</translation>
 <translation id="7337660886763914220">Fayllar tizimiga oid xatoliklar.</translation>
 <translation id="7450541714075000668">Matn nusxalandi</translation>
+<translation id="7488619942230388918">GIF video yozib olish</translation>
 <translation id="7557677699350329807">Keyingi kameraga almashtirish</translation>
 <translation id="7607002721634913082">Vaqtincha to‘xtatildi</translation>
 <translation id="7608223098072244877">4 ga 4</translation>
 <translation id="7649070708921625228">Yordam</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7670511624014457267">60 kadr/s</translation>
+<translation id="7726641833034062494">Normal video yozib olish</translation>
 <translation id="7983668134180549431">Matn aniqlandi.</translation>
 <translation id="8067883171444229417">Videoni ijro qilish</translation>
 <translation id="8120146556401698679">Panorama qiyalash zum</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8145038249676204903">Suratga olish rejimi</translation>
+<translation id="8167081290930651932">Rasm sifatida saqlash</translation>
 <translation id="8239780215768881278">Video lavha olish</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
 <translation id="8425673304802773841">Pastga qiyalang</translation>
@@ -119,5 +129,6 @@ Xabaringiz rasm yoki video sifati haqida boʻlsa, namunaviy rasm yoki videoni bi
 <translation id="8903921497873541725">Kattalashtirish</translation>
 <translation id="9045010116236796332">Hujjat chetlarini hoshiyaga moslab joylang</translation>
 <translation id="9045155556724273246">10 soniya</translation>
+<translation id="906331135292332864">Rasm qayta ishlanmoqda...</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
 </translationbundle>

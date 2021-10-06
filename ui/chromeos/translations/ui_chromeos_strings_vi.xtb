@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Tiếng Na Uy</translation>
 <translation id="1433628812591023318">Để thả tệp vào Parallels Desktop, bạn phải chuyển tệp đó vào thư mục tệp Windows.</translation>
 <translation id="1435838927755162558">Chia sẻ thư mục với ứng dụng Parallels Desktop</translation>
+<translation id="1439919885608649279">Người với hoa</translation>
 <translation id="1471718551822868769">Tiếng Slovak</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" không được tải lên. Không có đủ dung lượng trống trong Google Drive của bạn.</translation>
 <translation id="1482884275703521657">Tiếng Phần Lan</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Không thể sửa đổi tệp.</translation>
 <translation id="1673103856845176271">Không thể truy cập tệp vì các lý do bảo mật.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Đi xe đạp</translation>
 <translation id="1722487484194605434">Đang nén <ph name="NUMBER_OF_ITEMS" /> mục...</translation>
 <translation id="1722687688096767818">Đang thêm hồ sơ...</translation>
 <translation id="1726100011689679555">Máy chủ định danh</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Không có bản xem trước</translation>
 <translation id="1812302367230252929">Tiếng Amhara (chuyển tự)</translation>
 <translation id="1813278315230285598">Dịch vụ</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Chú ý:<ph name="END_BOLD" /> Các tệp này là tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Chim cánh cụt</translation>
 <translation id="183183971458492120">Đang tải thông tin...</translation>
 <translation id="1834290891154666894">Mục nhập so khớp tên thay thế của tiêu đề không hợp lệ</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Các tên bắt đầu với dấu chấm được dành riêng cho hệ thống. Vui lòng chọn tên khác.</translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2084108471225856927">Cài đặt thiết bị</translation>
+<translation id="2084809735218147718">Ra hiệu cảm ơn</translation>
 <translation id="2085470240340828803">Tệp có tên "<ph name="FILENAME" />" đã tồn tại. Bạn muốn làm gì?</translation>
 <translation id="2088690981887365033">Mạng riêng ảo (VPN)</translation>
 <translation id="2122305276694332719">Việc tự động kết nối vào một mạng ẩn sẽ cho phép những người khác nhìn thấy thiết bị và một số tùy chọn cài đặt mạng của bạn. Bạn không nên bật tùy chọn này.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Cài đặt Linux</translation>
 <translation id="2225536596944493418">Bạn có chắc chắn muốn xóa <ph name="NUMBER_OF_ITEMS" /> mục không?</translation>
 <translation id="2230062665678605299">Không thể tạo thư mục "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Người uống cà phê</translation>
 <translation id="2251368349685848079">Khôi phục từ thùng rác</translation>
 <translation id="2282155092769082568">URL tự động định cấu hình:</translation>
 <translation id="2288278176040912387">Máy quay đĩa hát</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Tổng kích thước tệp</translation>
 <translation id="2428749644083375155">Đang sao chép <ph name="NUMBER_OF_ITEMS" /> mục vào <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Loại</translation>
+<translation id="2452444014801043526">Người cầm loa</translation>
 <translation id="2464079411014186876">Kem</translation>
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Mạng <ph name="NETWORK_TYPE" /> đang tắt</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">Tài liệu PDF</translation>
 <translation id="2888807692577297075">Không có mục nào khớp với <ph name="SEARCH_STRING" /></translation>
 <translation id="2894654529758326923">Thông tin</translation>
-<translation id="2902312830803030883">Thao tác khác</translation>
 <translation id="2902734494705624966">Mở rộng của Hoa Kỳ</translation>
 <translation id="290843123675549676">Tiếng Maratha</translation>
 <translation id="2923240520113693977">Tiếng Estonia</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">Tiếng Pháp (Canada)</translation>
 <translation id="3003189754374775221">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
 <translation id="3003633581067744647">Chuyển sang chế độ xem hình thu nhỏ</translation>
+<translation id="3016566519832145558">Chú ý: Các tệp này chỉ được lưu trữ tạm thời và có thể tự động bị xóa để giải phóng dung lượng ổ đĩa.</translation>
 <translation id="3029114385395636667">Bật Google Tài liệu ngoại tuyến để sử dụng Tài liệu, Trang tính và Trang trình bày ở chế độ ngoại tuyến.</translation>
 <translation id="303198083543495566">Địa lý</translation>
 <translation id="3047197340186497470">Tiếng Trung (Dayi)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">Máy chủ SOCKS</translation>
 <translation id="3113153474486991170">Không thể mở "<ph name="PATH" />" từ vị trí này. Vui lòng sao chép vào "Tệp của tôi" để mở.</translation>
 <translation id="3113592018909187986">Bạn còn 1 lần nhập. Bạn sẽ không thể dùng mạng này cho đến khi thiết lập một mã PIN mới.</translation>
+<translation id="3124404833828281817">Người mơ mộng</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">Mã PIN không hợp lệ. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (dựa trên phần cứng)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Truy cập drive.google.com...</translation>
 <translation id="3553048479571901246">Để mở tệp bằng <ph name="APP_NAME" />, trước tiên, hãy sao chép các tệp đó vào thư mục tệp Windows.</translation>
 <translation id="3556731189587832921">Tiếng Anh (Mỹ) bằng bàn phím quốc tế cho máy tính để bàn</translation>
+<translation id="3567221313191587603">Chọn một tệp và bật <ph name="OFFLINE_CHECKBOX_NAME" /> để dùng tệp khi không có mạng.</translation>
 <translation id="357479282490346887">Tiếng Lithuania</translation>
 <translation id="3592251141500063301">Không tải được <ph name="FILE_NAME" /> xuống để xem khi không có mạng</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Đang cài đặt hồ sơ mạng di động, Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Tiếng Séc bằng bàn phím Qwerty</translation>
 <translation id="4656293982926141856">Máy tính này</translation>
+<translation id="4656777537938206294">Dùng tệp khi không có mạng</translation>
+<translation id="4658782175094886150">Người trong tuyết</translation>
 <translation id="4669606053856530811">Thành viên của '<ph name="SOURCE_NAME" />' sẽ mất quyền truy cập trừ khi bạn chia sẻ các mục này với họ.</translation>
 <translation id="4690246192099372265">Tiếng Thuỵ Điển</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">Những tệp này được mở trên máy tính khác. Chuyển tới <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) để xem tệp đó.</translation>
 <translation id="5330512191124428349">Nhận thông tin</translation>
 <translation id="5335458522276292100">Đang sao lưu <ph name="FILE_COUNT" /> vào <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Người với mèo</translation>
 <translation id="5358764674931277">Tốc độ khung hình</translation>
 <translation id="5368191757080475556">Chia sẻ thư mục với Linux</translation>
 <translation id="5402367795255837559">Chữ nổi</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">Tệp này đã thất lạc ở đâu đó. Vui lòng kiểm tra cài đặt vị trí tải xuống của bạn và thử lại.</translation>
 <translation id="5838451609423551646">Đã xóa tất cả các mục khỏi lựa chọn.</translation>
 <translation id="5838825566232597749">Bàn phím quốc tế Workman Hoa Kỳ</translation>
+<translation id="5845721951356578987">Y tá</translation>
+<translation id="5861477046012235702">Người chơi trò chơi điện tử</translation>
 <translation id="5864471791310927901">Không thể tra cứu DHCP</translation>
 <translation id="5896749729057314184">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Chưa kích hoạt, Cường độ tín hiệu: <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="5911887972742538906">Đã xảy ra lỗi trong quá trình cài đặt ứng dụng Linux.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">Video</translation>
 <translation id="6150853954427645995">Để lưu tệp này để sử dụng ngoại tuyến, hãy trực tuyến trở lại, nhấp chuột phải vào tệp và chọn tùy chọn <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Bướm</translation>
+<translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Tiếng Hungary</translation>
 <translation id="6189412234224385711">Mở bằng <ph name="EXTENSION_NAME" /></translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">Tiếng Ba Tư</translation>
 <translation id="6862635236584086457">Tất cả tệp được lưu trong thư mục này đều tự động được sao lưu trực tuyến</translation>
 <translation id="6864328437977279120">Tiếng Phạn</translation>
+<translation id="6874758081814639712">Người tập thái cực quyền</translation>
 <translation id="6876155724392614295">Xe đạp</translation>
 <translation id="6878261347041253038">Bàn phím Devanagari (Ngữ âm)</translation>
 <translation id="6885780034956018177">Ốc sên</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Kết nối</translation>
 <translation id="8750438273876807512">Chạm và giữ một tệp rồi nhấn vào biểu tượng <ph name="ICON" />, sau đó chọn "Ghim vào kệ" để truy cập nhanh vào các tệp trong kệ.</translation>
 <translation id="8787254343425541995">Cho phép các proxy đối với mạng chia sẻ</translation>
+<translation id="8790981080411996443">Người tưới cây</translation>
 <translation id="8798099450830957504">Mặc định</translation>
 <translation id="8802459921616481935">Chuyển vào Thùng rác</translation>
 <translation id="8808686172382650546">Mèo</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8900820606136623064">Tiếng Hungary</translation>
 <translation id="8903931173357132290">Người tốt nghiệp</translation>
+<translation id="8912078710089354287">Chó vẫy đuôi</translation>
 <translation id="8919081441417203123">Tiếng Đan Mạch</translation>
 <translation id="8965697826696209160">Không có đủ dung lượng.</translation>
 <translation id="8970501467542182729">Tệp này dành cho máy tính chạy hệ điều hành Macintosh. Tệp này không tương thích với thiết bị chạy Chrome OS của bạn. <ph name="BEGIN_LINK_HELP" />Tìm hiểu thêm<ph name="END_LINK_HELP" /> về cách mở tệp trên Chrome OS.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">Tiếng Catalan</translation>
 <translation id="914873105831852105">Mã PIN không hợp lệ. Bạn còn 1 lần nhập.</translation>
 <translation id="9153934054460603056">Lưu nhận dạng và mật khẩu</translation>
+<translation id="9171921933192916600">Mọt sách</translation>
 <translation id="9172592259078059678">Tiếng Gujarati (chuyển tự)</translation>
 <translation id="9173120999827300720">Tiếng Anh (Mỹ) bằng bàn phím quốc tế</translation>
 <translation id="9174050671906956834">Các mục trong thùng rác sẽ bị xóa vĩnh viễn sau 30 ngày.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">Người sửa đổi:</translation>
 <translation id="945522503751344254">Gửi phản hồi</translation>
 <translation id="947144732524271678">Đã chọn một loạt <ph name="ENTRY_COUNT" /> mục từ <ph name="FROM_ENTRY_NAME" /> đến <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="965477715979482472">Tiếng Anh (Nam Phi)</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="988685240266037636">Một tệp có tên <ph name="FILE_NAME" /> đã tồn tại. Bạn có muốn thay thế tệp đó không?</translation>
 <translation id="992401651319295351">Bạn còn <ph name="RETRIES" /> lần nhập. Bạn sẽ không thể dùng mạng này cho đến khi thiết lập một mã PIN mới.</translation>

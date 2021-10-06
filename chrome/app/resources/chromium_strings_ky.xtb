@@ -36,6 +36,7 @@
 <translation id="2343156876103232566">Номерди бул жерден Android телефонуңузга жөнөтүү үчүн эки түзмөгүңүздөн тең Chromium'га кириңиз.</translation>
 <translation id="2347108572062610441">Бул кеңейтүү Chromium иштеп баштаганда көрсөтүлө турган бетти өзгөрттү.</translation>
 <translation id="2396765026452590966">"<ph name="EXTENSION_NAME" />" кеңейтүүсү Chromium иштеп баштаганда көрсөтүлө турган бетти өзгөрттү.</translation>
+<translation id="2401032172288869980">Chromium'га бул сайтта камера менен микрофонду колдонууга уруксат бериңиз</translation>
 <translation id="2483889755041906834">Chromium'да</translation>
 <translation id="2485422356828889247">Орнотуудан чыгаруу</translation>
 <translation id="2535480412977113886">Аккаунтуңуздун кирүү чоо-жайлары эскирип калгандыктан, Chromium OS дайын-даректериңизди шайкештештире алган жок.</translation>
@@ -153,6 +154,7 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS тутуму, <ph name="BEGIN_LINK_LINUX_OSS" />Linux'ту өнүктүрүү чөйрөсү <ph name="END_LINK_LINUX_OSS" /> сыяктуу, кошумча <ph name="BEGIN_LINK_CROS_OSS" />баштапкы коду ачык программалык камсыздоонун<ph name="END_LINK_CROS_OSS" /> жардамы менен иштейт.</translation>
 <translation id="5862307444128926510">Chromium'га кош келиңиз</translation>
+<translation id="5883558403894052917">Chromium төмөнкүлөрдө кесепеттүү программанын болгонун аныктады:</translation>
 <translation id="5895138241574237353">Өчүрүп күйгүзүү</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Тармакка кирүү</translation>
 <translation id="5987687638152509985">Шайкештирип баштоо үчүн Chromium'ду жаңыртыңыз</translation>
@@ -170,6 +172,7 @@
 <translation id="6183079672144801177">Chromium'га <ph name="TARGET_DEVICE_NAME" /> түзмөгүңүздөн кирип турганыңызды текшерип, кайра аракет кылыңыз.</translation>
 <translation id="6212496753309875659">Бул компьютерде Chromium'дун жаңыраак версиясы мурунтан эле орнотулган. Эгер программа иштебей жатса, Chromium'ду орнотуудан чыгарып, дагы бир жолу аракет кылып көрүңүз.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium азыр кайра иштетилет}=1{Chromium 1 секунддан кийин кайра иштетилет}other{Chromium # секунддан кийин кайра иштетилет}}</translation>
+<translation id="6241367896540709610">Файлдарды жүктөп алуу үчүн Chromium'га сактагычты колдонууга уруксат бериңиз</translation>
 <translation id="6248213926982192922">Chromium'ду демейки серепчи кылуу</translation>
 <translation id="6266342355635466082">Chromium жаңыртууларды текшере алган жок. Интернет байланышын текшерип көрүңүз.</translation>
 <translation id="6268381023930128611">Chromium'дан чыгасызбы?</translation>
@@ -190,7 +193,9 @@
 <translation id="6570579332384693436">Орфографиялык каталарды оңдоо максатында, Chromium сиз талааларда терген текстти Google'га жөнөтөт</translation>
 <translation id="6598877126913850652">Chromium'дун эскертмелеринин жөндөөлөрүнө өтүү</translation>
 <translation id="6613594504749178791">Өзгөртүүлөрүңүз Chromium кийинки жолу кайра ишке киргизилгенде күчүнө кирет.</translation>
+<translation id="665732753414869868">Chromium'га айланаңыздын 3D картасын түзүү үчүн камераны колдонууга уруксат бериңиз</translation>
 <translation id="6676384891291319759">Интернетке кирүү</translation>
+<translation id="6709350901466051922">Chromium'га бул сайтта микрофонду колдонууга уруксат бериңиз</translation>
 <translation id="6717134281241384636">Профилиңиз Chromium'дун жаңыраак версиясынан болгондуктан, аны колдонуу мүмкүн болбой жатат.
 
 Айрым мүмкүнчүлүктөр иштебей калышы ыктымал. Башка профиль каталогун көрсөтүңүз же Chromium'дун жаңыраак версиясын колдонуңуз.</translation>
@@ -202,6 +207,7 @@
 <translation id="6847869444787758381">Chromium сырсөздөрүңүздү башка бирөөлөр билип алса сизге кабарлайт</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium'га көчүрүлдү)</translation>
+<translation id="6873893289264747459">Chromium "<ph name="EXTENSION_NAME" />" кеңейтүүсүндө кесепеттүү программанын болгонун аныктады</translation>
 <translation id="6893813176749746474">Chromium жаңырды, бирок аны 30 күндөн бери колдоно элексиз.</translation>
 <translation id="691026815377248078">Жупташтырууну улантуу үчүн Chromium Bluetooth'ду 
  пайдаланууга уруксат алышы керек. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -210,6 +216,7 @@
 <translation id="6990124437352146030">Бул сайтта иштөө үчүн Chromium микрофонуңузду колдонушу керек</translation>
 <translation id="705851970750939768">Chromium'ду жаңыртуу</translation>
 <translation id="7067091210845072982">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт.</translation>
+<translation id="718435575166326686">Chromium'га бул сайтта камераны колдонууга уруксат бериңиз</translation>
 <translation id="7196312274710523067">Chromium иштетилбей койду. Кайталап көрүңүз.</translation>
 <translation id="7197677400338048821">Chromium сырсөздөрүңүздү текшере албай жатат. 24 сааттан кийин кайра аракет кылыңыз.</translation>
 <translation id="7223968959479464213">Тапшырмаларды башкаргыч – Chromium</translation>
@@ -233,10 +240,6 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
       Chromium OS жөндөөлөрүнөн<ph name="LINK_END" /> карап көрүңүз</translation>
 <translation id="761356813943268536">Chromium сиздин камера менен микрофонуңузду пайдаланууда.</translation>
 <translation id="7617377681829253106">Chromium жаңы эле жакшыртылды</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Баштоодон мурун дайын-даректериңиздин камдык көчүрмөлөрү сакталганын текшериңиз. Chromium OS'ту орнотсоңуз, катуу дисктеги бардык дайын-даректер кайрадан жазылат.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google дайын-даректердин жоголушуна жоопкерчилик тартпайт жана Chromium OS тутумунун тастыкталбаган түзмөктөрдө иштээрине кепилдик бербейт. Кайсы үлгүлөр тастыкталганын билүү үчүн [TBD] сайтына өтүңүз.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS тутумун орнотуу жана дайын-даректерди өчүрүү тууралуу кеңири маалымат: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Улантууга даяр болсоңуз, “Chromium OS'ту орнотууну” басып, экрандагы нускамаларды аткарыңыз. Компьютериңизге өзгөртүүлөрдү киргизүүдөн мурун орнотууну ырастоо мүмкүнчүлүгүңүз болот.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium сиздин демейки серепчиңиз эмес</translation>
 <translation id="7689606757190482937">Chromium'ду бардык түзмөктөрүңүздө шайкештирип, жекелештиресиз</translation>
 <translation id="7729447699958282447">Сиздин домениңизде шайкештештирүү мүмкүнчүлүгү жок болгондуктан, Chromium дайын-даректериңизди шайкештештире алган жок.</translation>
@@ -251,6 +254,7 @@ Chromium жөндөөлөрүңүздү калыбына келтире алба
 <translation id="7975919845073681630">Бул Chromium'дун кошумча орнотулушу болгондуктан, аны демейки серепчиңиз катары тандай албайсыз.</translation>
 <translation id="8013436988911883588">Chromium'га уруксат берилгенден кийин вебсайттар уруксат сурай алышат.</translation>
 <translation id="8045118833343856403">Төмөнкү аккаунттар Chromium профилдерине кирген жок. Эгер аккаунтту башка профилде колдонгуңуз келсе, адегенде ал профилди өчүрүңүз.</translation>
+<translation id="8105840573057009683">Chromium'га бул сайтта жайгашкан жерди колдонууга уруксат бериңиз</translation>
 <translation id="81770708095080097">Бул файл кооптуу, ошондуктан Chromium аны бөгөттөп койду.</translation>
 <translation id="8248265253516264921">Эгер сүрөттөрдүн түшүндүрмөсү жок болсо, Chromium аны түшүндүрүп берүүгө аракет кылат. Түшүндүрмөлөрдү даярдоо үчүн, сүрөттөр Google'га жөнөтүлөт. Аны жөндөөлөрдөн каалаган убакта өчүрүп койсоңуз болот.</translation>
 <translation id="8266560134891435528">Chromium сырсөздөрүңүздү текшере албайт, анткени аккаунтуңузга кирген жоксуз</translation>

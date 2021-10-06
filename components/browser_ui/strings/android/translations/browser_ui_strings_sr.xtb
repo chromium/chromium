@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Преузимање је паузирано</translation>
 <translation id="1415402041810619267">URL је скраћен</translation>
 <translation id="1446450296470737166">Пуна контрола над MIDI уређајима</translation>
-<translation id="1509960214886564027">Функције на многим сајтовима могу да престану са радом</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1644574205037202324">Историја</translation>
 <translation id="1647582022260550163">Желите стварно да ресетујете дозволе и обришете колачиће и податке о сајтовима?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Дозвољени, осим треће стране</translation>
 <translation id="1989112275319619282">Прегледај</translation>
 <translation id="1994173015038366702">URL сајта</translation>
+<translation id="2004697686368036666">Функције на неким сајтовима могу да не раде</translation>
 <translation id="2025115093177348061">Проширена реалност</translation>
 <translation id="2030769033451695672">Додирните да бисте се вратили на <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Опозови</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Омогућава колачиће за одређени сајт.</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>
+<translation id="4176463684765177261">Онемогућено</translation>
 <translation id="4200726100658658164">Отворите подешавања локације</translation>
 <translation id="4226663524361240545">Уређај ће вибрирати када примате обавештења</translation>
 <translation id="4259722352634471385">Навигација је блокирана: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Паузирај видео</translation>
 <translation id="5887687176710214216">Последња посета: јуче</translation>
 <translation id="5916664084637901428">Укључено</translation>
+<translation id="59174027418879706">Омогућено</translation>
 <translation id="5922853908706496913">Дели се екран</translation>
 <translation id="5939518447894949180">Ресетуј</translation>
 <translation id="5975083100439434680">Умањивање</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6216432067784365534">Опције ставке <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Желите да деинсталатирате „<ph name="APP_NAME" />“?</translation>
+<translation id="6233545266937675277">Захтевај приказ сајтова за рачунар</translation>
 <translation id="6262279340360821358">Дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> су блокиране</translation>
 <translation id="6270391203985052864">Сајтови могу да траже да шаљу обавештења</translation>
 <translation id="6295158916970320988">Сви сајтови</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>
+<translation id="6593061639179217415">Верзија сајта за рачунар</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>
 <translation id="662080504995468778">Не затварај</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Откажи избор</translation>
 <translation id="7846621471902887024">Одјавићете се са свих сајтова.</translation>
 <translation id="7882806643839505685">Дозволи звук за одређени сајт.</translation>
+<translation id="7940722705963108451">Подсети ме</translation>
 <translation id="7986741934819883144">Изаберите контакт</translation>
-<translation id="7993619969781047893">Функције на неким сајтовима могу да престану са радом</translation>
 <translation id="7999064672810608036">Желите ли стварно да обришете све локалне податке, укључујући колачиће, и ресетујете све дозволе за овај веб-сајт?</translation>
 <translation id="8007176423574883786">Искључено је за овај уређај</translation>
 <translation id="802154636333426148">Преузимање није успело</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Звук је искључен</translation>
 <translation id="813082847718468539">Погледајте информације о сајту</translation>
 <translation id="8131740175452115882">Потврди</translation>
+<translation id="8154912474061769055">Функције на многим сајтовима могу да не раде</translation>
 <translation id="8197286292360124385">Одобрена је дозвола <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Настави</translation>
 <translation id="8206354486702514201">Ово подешавање примењује администратор.</translation>
 <translation id="8211406090763984747">Веза је безбедна</translation>
 <translation id="8249310407154411074">Премести на врх</translation>
 <translation id="8261506727792406068">Избриши</translation>
+<translation id="8267092878336850213">Захтевај приказ сајтова за мобилне уређаје</translation>
 <translation id="8300705686683892304">Управља апликација</translation>
 <translation id="8324158725704657629">Не питај поново</translation>
 <translation id="8372893542064058268">Дозволите Синхронизацију у позадини за одређени сајт.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Обриши унос</translation>
 <translation id="868929229000858085">Претражите контакте</translation>
 <translation id="8702612070107455751">Бришу се сви офлајн подаци.</translation>
+<translation id="8712637175834984815">Важи</translation>
 <translation id="8719283222052720129">Укључите дозволу за апликацију <ph name="APP_NAME" /> у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8730621377337864115">Готово</translation>

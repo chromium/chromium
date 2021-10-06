@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">कपिराइट २०२१ The Chromium Authors। सर्वाधिकार सुरक्षित।</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
 <translation id="4563926062592110512">ग्राहक विच्छेदन: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> सही तरिकाले कन्फिगर गरिएको छैन। कृपया कुनै अर्को डिफल्ट वेब ब्राउजर छनौट गर्नुहोस् र URL फर्वार्डिङ अन गर्नुहोस्।</translation>
 <translation id="4635770493235256822">रिमोट यन्त्रहरू</translation>
 <translation id="4660011489602794167">किबोर्ड देखाउनुहोस्</translation>
 <translation id="4703799847237267011">तपाईंको Chromoting सत्र समाप्त भएको छ।</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> का रूपमा साइन इन गरियो।</translation>
 <translation id="579702532610384533">पुन: कनेक्ट गर्नुहोस्</translation>
 <translation id="5810269635982033450">स्क्रिनले ट्र्याकप्याडको काम गर्छ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ले तपाईंको कम्प्युटरको स्क्रिन हेर्ने र तपाईंको किबोर्ड र माउस नियन्त्रण गर्ने अनुमति मागेका छन्। उहाँले तपाईंलाई अग्रिम रूपमा जानकारी नगराइकन यो अनुमति मागेका हुन् भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' थिच्नुहोस्। अथवा तपाईं उहाँलाई तपाईंको कम्प्युटरमा कनेक्ट गर्ने अनुमति दिन तयार हुनुहुन्छ भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' चयन गर्नुहोस्।</translation>
 <translation id="5823658491130719298">तपाईंले दूरवर्ती रूपमा पहुँच राख्न चाहनुभएको कम्प्युटरमा Chrome खोलेर <ph name="INSTALLATION_LINK" /> मा जानुहोस्‌</translation>
 <translation id="5841343754884244200">विकल्पहरू देखाउनुहोस्</translation>
 <translation id="6033507038939587647">किबोर्डका विकल्पहरू</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">कसैले अमान्य PIN मार्फत जडान गर्ने प्रयास गरिरहेको हुनाले दूरवर्ती कम्प्युटरमा गरिने जडानहरूलाई सदाका लागि रोक लगाइएको छ। कृपया पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6985691951107243942">के तपाईं रिमोट जडान <ph name="HOSTNAME" /> मा अक्षम गर्न चाहनुहुन्छ? यदि तपाईंले आफ्नो विचार परिवर्तन गर्नुभयो भने, जडानहरू पुन: सक्षम गर्न, तपाईंले त्यो कम्प्युटर पुन: भिजिट गर्नुपर्छ।</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ले तपाईंको कम्प्युटरमा भएका कुराहरू हेर्ने र तपाईंको कम्प्युटर नियन्त्रण गर्ने अनुमति मागेका छन्। तपाईं उहाँलाई चिन्नुहुन्न वा उहाँलाई कनेक्ट गर्ने अनुमति दिनुअघि कुनै कुरा परिवर्तन गर्न चाहनुहुन्छ भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' थिच्नुहोस्।  अथवा उहाँलाई कनेक्ट गर्ने अनुमति दिन ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' चयन गर्नुहोस्।</translation>
 <translation id="7019153418965365059">अपरिचित होस्ट त्रुटि: <ph name="HOST_OFFLINE_REASON" />।</translation>
 <translation id="701976023053394610">दूर सहायता</translation>
 <translation id="7026930240735156896">दूरवर्ती पहुँचका लागि आफ्नो कम्प्युटर सेटअप गर्न उक्त निर्देशनहरूको पालना गर्नुहोस्</translation>
@@ -169,6 +170,7 @@
 यो अनुमति दिन, तलको '<ph name="BUTTON_NAME" />' नामक बटनमा क्लिक गर्नुहोस्। त्यसपछि खुल्ने 'पहुँच' सम्बन्धी प्राथमिकताहरूको पेनमा '<ph name="SERVICE_SCRIPT_NAME" />' को छेउमा रहेको बाकसमा चिन्ह लगाउनुहोस्।'
 
 '<ph name="SERVICE_SCRIPT_NAME" />' मा पहिले नै चिन्ह लगाइएको छ भने उक्त चिन्ह हटाउनुहोस् र फेरि चिन्ह लगाउनुहोस्।</translation>
+<translation id="8305209735512572429">Web Authentication Remoting नामक प्रक्रिया</translation>
 <translation id="8383794970363966105">Chromoting प्रयोग गर्न, तपाईँले आफ्नो यन्त्रमा Google खाता थप्न आवश्यक छ।</translation>
 <translation id="8386846956409881180">होस्टलाई अमान्य OAuth प्रमाणहरूमार्फत कन्फिगर गरिएको छ।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> लाई अनुमति दिनुहोस्</translation>

@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">© The Chromium Authors 2021. Усі права захищено.</translation>
 <translation id="4513946894732546136">Відгуки</translation>
 <translation id="4563926062592110512">Від’єднано клієнт <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> налаштовано неправильно. Виберіть інший веб-переглядач за умовчанням, а тоді знову ввімкніть переадресацію URL-адрес.</translation>
 <translation id="4635770493235256822">Віддалені пристрої</translation>
 <translation id="4660011489602794167">Показати клавіатуру</translation>
 <translation id="4703799847237267011">Сеанс програми Віддалений доступ ОС Chrome закінчено.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">Ви ввійшли як <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">З'єднати повторно</translation>
 <translation id="5810269635982033450">Екран працює як сенсорна панель</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> просить дозвіл на доступ до вашого екрана та можливість керувати вашою клавіатурою й мишею. Якщо ви не очікували на цей запит, натисніть ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'',. Щоб дозволити з’єднання, натисніть "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />".</translation>
 <translation id="5823658491130719298">Відкрийте Chrome на комп’ютері, до якого ви хочете мати віддалений доступ, і перейдіть на сторінку <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Параметри показу</translation>
 <translation id="6033507038939587647">Параметри клавіатури</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">З’єднання з віддаленим комп’ютером тимчасово заблоковано, оскільки хтось намагався під’єднатися до нього, використовуючи недійсний PIN-код. Повторіть спробу пізніше.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Дійсно вимкнути віддалені з’єднання з хостом <ph name="HOSTNAME" />? Якщо ви передумаєте, потрібно буде знову ввімкнути з’єднання на відповідному комп’ютері.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> просить дозвіл переглядати дані вашого комп’ютера та керувати ними. Натисніть "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />", якщо не знаєте цього користувача або хочете внести зміни, перш ніж надати доступ.  Щоб дозволити з’єднання, натисніть "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />".</translation>
 <translation id="7019153418965365059">Невідома помилка хосту: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Віддалена допомога</translation>
 <translation id="7026930240735156896">Виконайте вказівки, щоб налаштувати комп’ютер для віддаленого доступу</translation>
@@ -169,6 +170,7 @@
 Для цього натисніть кнопку "<ph name="BUTTON_NAME" />" унизу. Відкриється панель параметрів спеціальних можливостей. На ній поставте прапорець біля опції "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Якщо опцію "<ph name="SERVICE_SCRIPT_NAME" />" уже вибрано, зніміть прапорець і поставте його знову.</translation>
+<translation id="8305209735512572429">Віддалена веб-автентифікація</translation>
 <translation id="8383794970363966105">Щоб користуватися Віддаленим доступом ОС Chrome, потрібно додати на пристрої обліковий запис Google.</translation>
 <translation id="8386846956409881180">Для хосту вказано недійсні облікові дані OAuth.</translation>
 <translation id="8397385476380433240">Надати дозволи сервісу <ph name="PRODUCT_NAME" /></translation>

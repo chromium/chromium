@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">नार्वेजियन</translation>
 <translation id="1433628812591023318">फ़ाइलों को Parallels Desktop में डालने के लिए, Windows की फ़ाइलों में ट्रांसफ़र किया जाना ज़रूरी है.</translation>
 <translation id="1435838927755162558">Parallels Desktop के साथ फ़ोल्डर शेयर करें</translation>
+<translation id="1439919885608649279">हाथ में फूल पकड़े खड़ा व्यक्ति</translation>
 <translation id="1471718551822868769">स्लोवाक</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" को अपलोड नहीं किया गया. आपकी Google डिस्क में काफ़ी जगह नहीं है.</translation>
 <translation id="1482884275703521657">फ़िनिश</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">फ़ाइल को संशोधित नहीं किया जा सका.</translation>
 <translation id="1673103856845176271">सुरक्षा कारणों से फ़ाइल तक नहीं पहुंचा जा सका.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">व्यक्ति साइकल चला रहा है</translation>
 <translation id="1722487484194605434"><ph name="NUMBER_OF_ITEMS" /> आइटम ज़िप किए जा रहे हैं...</translation>
 <translation id="1722687688096767818">प्रोफ़ाइल जोड़ी जा रही है...</translation>
 <translation id="1726100011689679555">नाम सर्वर</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">कोई झलक उपलब्ध नहीं है</translation>
 <translation id="1812302367230252929">ऐम्हेरिक ट्रांसलिट्रेशन</translation>
 <translation id="1813278315230285598">सेवाएं</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />चेतावनी:<ph name="END_BOLD" />  ये फ़ाइलें अस्‍थायी हैं और डि‍स्‍क का स्थान खाली करने के लि‍ए अपने आप हटाई जा सकती हैं.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">पेंगुइन</translation>
 <translation id="183183971458492120">जानकारी लोड हो रही है...</translation>
 <translation id="1834290891154666894">विषय के दूसरे नाम से मिलती-जुलती एंट्री अमान्य है</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">डॉट से प्रारंभ हो रहे नाम सिस्‍टम के लिए आरक्षित हैं. कृपया कोई अन्‍य नाम चुनें.</translation>
 <translation id="2079545284768500474">पहले जैसा करें</translation>
 <translation id="2084108471225856927">डिवाइस की सेटिंग</translation>
+<translation id="2084809735218147718">जेस्चर से धन्यवाद बोलता हुआ व्यक्ति</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" नाम की फ़ाइल पहले से मौजूद है. आप क्‍या करना चाहते हैं?</translation>
 <translation id="2088690981887365033">वीपीएन नेटवर्क</translation>
 <translation id="2122305276694332719">दिखाई न देने वाले नेटवर्क से अपने आप जुड़ने से दूसरे लोग आपके डिवाइस और कुछ नेटवर्क सेटिंग को देख सकते हैं. ऐसा करने का सुझाव नहीं दिया जाता.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Linux ऐप्लिकेशन की मदद से इंस्टॉल करें</translation>
 <translation id="2225536596944493418">क्या आप वाकई <ph name="NUMBER_OF_ITEMS" /> आइटम मिटाना चाहते हैं?</translation>
 <translation id="2230062665678605299">"<ph name="FOLDER_NAME" />" फ़ोल्डर बनाने में असमर्थ. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">कॉफ़ी का मग पकड़ा हुआ व्यक्ति</translation>
 <translation id="2251368349685848079">ट्रैश से वापस लाएं</translation>
 <translation id="2282155092769082568">URL का अपने आप कॉन्‍फ़िगरेशन:</translation>
 <translation id="2288278176040912387">रिकॉर्ड प्‍लेयर</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">फ़ाइल का कुल आकार</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> आइटम <ph name="FOLDER_NAME" /> में कॉपी किए जा रहे हैं</translation>
 <translation id="2448312741937722512">प्रकार</translation>
+<translation id="2452444014801043526">मेगाफ़ोन के साथ व्यक्ति</translation>
 <translation id="2464079411014186876">आइस्क्रीम</translation>
 <translation id="2464089476039395325">HTTP प्रॉक्‍सी</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> नेटवर्क, बंद है</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF दस्‍तावेज़</translation>
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; से किसी आइटम का मिलान नहीं होता</translation>
 <translation id="2894654529758326923">जानकारी</translation>
-<translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2902734494705624966">यूएस विस्तारित</translation>
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">एस्टोनियाई</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">फ़्रेंच (कनाडा)</translation>
 <translation id="3003189754374775221"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="3003633581067744647">थंबनेल व्यू में स्विच करें</translation>
+<translation id="3016566519832145558">चेतावनी: ये फ़ाइलें अस्थायी हैं और डिस्क की जगह खाली करने के लिए, ऑटोमैटिकली मिटाई जा सकती हैं.</translation>
 <translation id="3029114385395636667">Docs, Sheets, और Slides का ऑफ़लाइन इस्तेमाल करने के लिए, 'Google Docs ऑफ़लाइन' को चालू करें.</translation>
 <translation id="303198083543495566">भूगोल</translation>
 <translation id="3047197340186497470">चाइनीज़ डाई</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS होस्ट</translation>
 <translation id="3113153474486991170">इस लोकेशन से "<ph name="PATH" />" नहीं खोला जा सका. खोलने के लिए, कृपया "मेरी फ़ाइलें" पर कॉपी करें.</translation>
 <translation id="3113592018909187986">आप एक बार और कोशिश कर सकते हैं. नया पिन सेट अप करने तक, आप यह नेटवर्क इस्तेमाल नहीं कर पाएंगे.</translation>
+<translation id="3124404833828281817">कुछ सोचता हुआ व्यक्ति</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">आपने गलत पिन डाला है. आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (हार्डवेयर समर्थित)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">drive.google.com पर जाएं...</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> में फ़ाइलें खोलने के लिए, पहले उन्हें Windows के फ़ाइल फ़ोल्डर में कॉपी करें.</translation>
 <translation id="3556731189587832921">इंटरनैशनल पीसी कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
+<translation id="3567221313191587603">फ़ाइल चुनें और उसे बिना इंटरनेट के ऐक्सेस करने के लिए, <ph name="OFFLINE_CHECKBOX_NAME" /> के टॉगल को चालू करें.</translation>
 <translation id="357479282490346887">लिथुआनियाई</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> को ऑफ़लाइन मोड में इस्तेमाल करने के लिए डाउनलोड नहीं किया जा सका</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">मोबाइल प्रोफ़ाइल को इंस्टॉल किया जा रहा है. यह <ph name="NETWORK_PROVIDER_NAME" /> के <ph name="NETWORK_COUNT" /> <ph name="NETWORK_NAME" /> नेटवर्क में से नेटवर्क <ph name="NETWORK_INDEX" /> है</translation>
 <translation id="4646813851450205600">क्वर्टी कीबोर्ड के साथ चेक</translation>
 <translation id="4656293982926141856">यह कंप्यूटर</translation>
+<translation id="4656777537938206294">फ़ाइलों को ऑफ़लाइन उपलब्ध कराएं</translation>
+<translation id="4658782175094886150">गिरती हुई बर्फ़ में खड़ा व्यक्ति</translation>
 <translation id="4669606053856530811">'<ph name="SOURCE_NAME" />' के सदस्यों को तब तक एक्सेस नहीं मिलेगा जब तक कि ये आइटम उनके साथ शेयर नहीं किए जाते.</translation>
 <translation id="4690246192099372265">स्वीडिश</translation>
 <translation id="4693155481716051732">सुशी</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">ये फ़ाइलें किसी अलग डेस्कटॉप पर खुली हैं. उसे देखने के लिए <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />)  पर जाएं.</translation>
 <translation id="5330512191124428349">जानकारी पाएं</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> का <ph name="BEGIN_LINK" />Google डिस्क<ph name="END_LINK" /> में बैक अप लिया जा रहा है</translation>
+<translation id="535792325654997756">बिल्लियों के साथ व्यक्ति</translation>
 <translation id="5358764674931277">फ़्रेम दर</translation>
 <translation id="5368191757080475556">Linux के साथ फ़ोल्डर शेयर करें</translation>
 <translation id="5402367795255837559">ब्रेल</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">यह फ़ाइल कहीं इधर-उधर हो गई है. कृपया अपनी डाउनलोड स्थान सेटिंग जाँचें और फिर से कोशिश करें.</translation>
 <translation id="5838451609423551646">सभी एंट्री से चुने हुए का निशान हटाया गया.</translation>
 <translation id="5838825566232597749">यूएस वर्कमैन अंतर्राष्‍ट्रीय</translation>
+<translation id="5845721951356578987">नर्स</translation>
+<translation id="5861477046012235702">गेमर</translation>
 <translation id="5864471791310927901">DHCP लुकअप विफल</translation>
 <translation id="5896749729057314184"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> का नेटवर्क <ph name="NETWORK_INDEX" />, चालू नहीं किया गया, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
 <translation id="5911887972742538906">आपका Linux ऐप्लिकेशन इंस्टॉल करते समय कोई गड़बड़ी हुई.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">वीडियो</translation>
 <translation id="6150853954427645995">इस फ़ाइल को ऑफ़लाइन देखने को सेव करने के लिए, फिर से ऑनलाइन होकर, फ़ाइल पर राइट-क्‍लिक करें और <ph name="OFFLINE_CHECKBOX_NAME" /> विकल्‍प को चुनें.</translation>
 <translation id="6164412158936057769">तितलियां</translation>
+<translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6170470584681422115">सैंडविच</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6189412234224385711"><ph name="EXTENSION_NAME" /> से खोलें</translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">फ़ारसी</translation>
 <translation id="6862635236584086457">इस फ़ोल्डर में सहेजी गई सभी फ़ाइलों का अपने आप ऑनलाइन बैकअप लिया जाता है</translation>
 <translation id="6864328437977279120">संस्कृत</translation>
+<translation id="6874758081814639712">ताई ची करता हुआ व्यक्ति</translation>
 <translation id="6876155724392614295">बाइक</translation>
 <translation id="6878261347041253038">देवनागरी कीबोर्ड (फ़ोनेटिक)</translation>
 <translation id="6885780034956018177">घोंघा</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, कनेक्ट करें</translation>
 <translation id="8750438273876807512">शेल्फ़ में अपनी फ़ाइलों को तुरंत ऐक्सेस करने के लिए, किसी फ़ाइल को दबाकर रखें और <ph name="ICON" /> पर टैप करें. इसके बाद, "शेल्फ़ पर पिन करें" को चुनें.</translation>
 <translation id="8787254343425541995">शेयर किए गए नेटवर्क के लिए प्रॉक्‍सी की अनुमति दें</translation>
+<translation id="8790981080411996443">पौधे में पानी डालता हुआ व्यक्ति</translation>
 <translation id="8798099450830957504">सामान्य</translation>
 <translation id="8802459921616481935">ट्रैश में ले जाएं</translation>
 <translation id="8808686172382650546">बिल्ली</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">कनेक्ट नहीं है</translation>
 <translation id="8900820606136623064">हंगेरियन</translation>
 <translation id="8903931173357132290">ग्रैजुएट</translation>
+<translation id="8912078710089354287">पूंछ हिलाता हुआ कुत्ता</translation>
 <translation id="8919081441417203123">डैनिश</translation>
 <translation id="8965697826696209160">काफ़ी स्थान नहीं है.</translation>
 <translation id="8970501467542182729">यह फ़ाइल, Macintosh सॉफ़्टवेयर का इस्तेमाल करने वाले कंप्यूटर के लिए बनाई गई है. यह Chrome OS वाले आपके डिवाइस के साथ काम नहीं करती. Chrome OS पर फ़ाइलें खोलने के बारे में <ph name="BEGIN_LINK_HELP" />ज़्यादा जानें<ph name="END_LINK_HELP" />.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">कैटलन</translation>
 <translation id="914873105831852105">आपने गलत पिन डाला है. आप 1 बार और कोशिश कर सकते हैं.</translation>
 <translation id="9153934054460603056">पहचान और पासवर्ड सेव करें</translation>
+<translation id="9171921933192916600">किताबी कीड़ा</translation>
 <translation id="9172592259078059678">गुजराती ट्रांसलिट्रेशन</translation>
 <translation id="9173120999827300720">इंटरनैशनल कीबोर्ड के साथ अंग्रेज़ी (यूएस)</translation>
 <translation id="9174050671906956834">ट्रैश में मौजूद आइटम, 30 दिनों के बाद हमेशा के लिए मिटा दिए जाते हैं.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">बदलाव करने वाले</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> से <ph name="TO_ENTRY_NAME" /> तक की <ph name="ENTRY_COUNT" /> एंट्री को चुना गया.</translation>
+<translation id="965477715979482472">अंग्रेज़ी (दक्षिण अफ़्रीका)</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" की एक फ़ाइल पहले से मौजूद है. क्या आप उसे बदलना चाहते हैं?</translation>
 <translation id="992401651319295351">आप <ph name="RETRIES" /> बार और कोशिश कर सकते हैं. नया पिन सेट अप करने तक, आप यह नेटवर्क इस्तेमाल नहीं कर पाएंगे.</translation>

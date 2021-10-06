@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">Norwegia</translation>
 <translation id="1433628812591023318">Untuk melepaskan file di Parallels Desktop, file harus dipindahkan ke file Windows.</translation>
 <translation id="1435838927755162558">Bagikan folder ke Parallels Desktop</translation>
+<translation id="1439919885608649279">Orang dengan bunga</translation>
 <translation id="1471718551822868769">Slovakia</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" tidak diupload. Ruang di Google Drive Anda tidak cukup.</translation>
 <translation id="1482884275703521657">Finlandia</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">File tidak dapat diubah.</translation>
 <translation id="1673103856845176271">File tidak dapat diakses karena alasan keamanan.</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Bersepeda</translation>
 <translation id="1722487484194605434">Membuat file zip <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="1722687688096767818">Menambahkan Profil ...</translation>
 <translation id="1726100011689679555">Nama server</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Tidak ada pratinjau yang tersedia</translation>
 <translation id="1812302367230252929">Transliterasi Amhar</translation>
 <translation id="1813278315230285598">Layanan</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Perhatian:<ph name="END_BOLD" /> File ini bersifat sementara dan dapat dihapus secara otomatis untuk menambah ruang disk. <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="183183971458492120">Memuat informasi...</translation>
 <translation id="1834290891154666894">Entri kecocokan nama alternatif subjek tidak valid</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Nama yang dimulai dengan titik hanya untuk sistem. Harap pilih nama yang lain.</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2084108471225856927">Setelan perangkat</translation>
+<translation id="2084809735218147718">Menandatangani terima kasih</translation>
 <translation id="2085470240340828803">File bernama "<ph name="FILENAME" />" sudah ada. Apa yang ingin Anda lakukan?</translation>
 <translation id="2088690981887365033">Jaringan VPN</translation>
 <translation id="2122305276694332719">Menghubungkan ke jaringan tersembunyi secara otomatis akan memungkinkan orang lain melihat perangkat Anda dan beberapa setelan jaringan, sehingga tindakan ini tidak direkomendasikan.</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Instal dengan Linux</translation>
 <translation id="2225536596944493418">Yakin ingin menghapus <ph name="NUMBER_OF_ITEMS" /> item?</translation>
 <translation id="2230062665678605299">Tidak dapat membuat folder "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Orang dengan kopi</translation>
 <translation id="2251368349685848079">Pulihkan dari sampah</translation>
 <translation id="2282155092769082568">URL konfigurasi otomatis:</translation>
 <translation id="2288278176040912387">Pemutar piringan hitam</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Ukuran file total</translation>
 <translation id="2428749644083375155">Menyalin <ph name="NUMBER_OF_ITEMS" /> item ke <ph name="FOLDER_NAME" /></translation>
 <translation id="2448312741937722512">Jenis</translation>
+<translation id="2452444014801043526">Orang dengan megafon</translation>
 <translation id="2464079411014186876">Es krim</translation>
 <translation id="2464089476039395325">Proxy HTTP</translation>
 <translation id="2467267713099745100">Jaringan <ph name="NETWORK_TYPE" />, nonaktif</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">Dokumen PDF</translation>
 <translation id="2888807692577297075">Tidak ada item yang cocok &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informasi</translation>
-<translation id="2902312830803030883">Tindakan lainnya</translation>
 <translation id="2902734494705624966">Extended AS</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonia</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">Prancis (Kanada)</translation>
 <translation id="3003189754374775221">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
 <translation id="3003633581067744647">Beralih ke tampilan thumbnail</translation>
+<translation id="3016566519832145558">Perhatian: File ini bersifat sementara dan dapat dihapus secara otomatis untuk mengosongkan ruang disk.</translation>
 <translation id="3029114385395636667">Aktifkan Google Dokumen Offline agar Dokumen, Spreadsheet, dan Slide tersedia secara offline.</translation>
 <translation id="303198083543495566">Geografi</translation>
 <translation id="3047197340186497470">Dayi China</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">Host SOCKS</translation>
 <translation id="3113153474486991170">Tidak dapat membuka "<ph name="PATH" />" dari lokasi ini. Salin ke "File saya" untuk membuka.</translation>
 <translation id="3113592018909187986">Tersisa 1 upaya lagi. Anda tidak akan dapat menggunakan jaringan ini hingga Anda menyiapkan PIN baru.</translation>
+<translation id="3124404833828281817">Orang melamun</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN tidak valid. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (dilindungi hardware)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Buka drive.google.com...</translation>
 <translation id="3553048479571901246">Untuk membuka file dengan <ph name="APP_NAME" />, salin ke folder file Windows terlebih dulu.</translation>
 <translation id="3556731189587832921">Inggris (AS) dengan keyboard International PC</translation>
+<translation id="3567221313191587603">Pilih file, dan aktifkan <ph name="OFFLINE_CHECKBOX_NAME" /> untuk mendapatkan akses offline ke file Anda.</translation>
 <translation id="357479282490346887">Lithuania</translation>
 <translation id="3592251141500063301">Tidak dapat membuat <ph name="FILE_NAME" /> tersedia offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Menginstal profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">Ceko dengan keyboard Qwerty</translation>
 <translation id="4656293982926141856">Komputer ini</translation>
+<translation id="4656777537938206294">Buat file tersedia offline</translation>
+<translation id="4658782175094886150">Orang di salju</translation>
 <translation id="4669606053856530811">Anggota '<ph name="SOURCE_NAME" />' akan kehilangan akses kecuali jika item berikut dibagikan dengan mereka.</translation>
 <translation id="4690246192099372265">Swensk</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -497,6 +505,7 @@
 <translation id="5330145655348521461">File ini dibuka pada desktop yang berbeda. Pindahkan ke <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) untuk melihatnya.</translation>
 <translation id="5330512191124428349">Dapatkan info</translation>
 <translation id="5335458522276292100">Mencadangkan <ph name="FILE_COUNT" /> ke <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="535792325654997756">Orang dengan kucing</translation>
 <translation id="5358764674931277">Kecepatan frame</translation>
 <translation id="5368191757080475556">Bagikan folder dengan Linux</translation>
 <translation id="5402367795255837559">Braille</translation>
@@ -552,6 +561,8 @@
 <translation id="5833610766403489739">File ini tidak terdeteksi berada di mana. Periksa setelan lokasi download dan coba lagi.</translation>
 <translation id="5838451609423551646">Semua entri dihapus dari pilihan.</translation>
 <translation id="5838825566232597749">Internasional Workman AS</translation>
+<translation id="5845721951356578987">Perawat</translation>
+<translation id="5861477046012235702">Gamer</translation>
 <translation id="5864471791310927901">Pencarian DHCP gagal</translation>
 <translation id="5896749729057314184">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Tidak Diaktifkan, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="5911887972742538906">Terjadi error saat menginstal aplikasi Linux.</translation>
@@ -580,6 +591,7 @@
 <translation id="6146563240635539929">Video</translation>
 <translation id="6150853954427645995">Untuk menyimpan file ini agar dapat digunakan saat offline, sambungkan ke internet, klik kanan file, dan pilih opsi <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
 <translation id="6164412158936057769">Kupu-kupu</translation>
+<translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6170470584681422115">Sandwich</translation>
 <translation id="6187719147498869044">Hungaria</translation>
 <translation id="6189412234224385711">Buka dengan <ph name="EXTENSION_NAME" /></translation>
@@ -650,6 +662,7 @@
 <translation id="6861394552169064235">Farsi</translation>
 <translation id="6862635236584086457">Semua file yang disimpan dalam folder ini otomatis dicadangkan secara online</translation>
 <translation id="6864328437977279120">Sanskerta</translation>
+<translation id="6874758081814639712">Orang melakukan tai chi</translation>
 <translation id="6876155724392614295">Sepeda</translation>
 <translation id="6878261347041253038">Keyboard Devanagari (Fonetik)</translation>
 <translation id="6885780034956018177">Siput</translation>
@@ -880,6 +893,7 @@
 <translation id="8743164338060742337">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Sambungkan</translation>
 <translation id="8750438273876807512">Sentuh lama file dan ketuk <ph name="ICON" />, lalu pilih "Sematkan ke Rak" untuk akses cepat ke file Anda di rak.</translation>
 <translation id="8787254343425541995">Memungkinkan proxy untuk jaringan bersama</translation>
+<translation id="8790981080411996443">Orang menyiram tanaman</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8802459921616481935">Pindahkan ke Sampah</translation>
 <translation id="8808686172382650546">Kucing</translation>
@@ -892,6 +906,7 @@
 <translation id="8874184842967597500">Tak terhubung</translation>
 <translation id="8900820606136623064">Magyar</translation>
 <translation id="8903931173357132290">Wisudawan</translation>
+<translation id="8912078710089354287">Anjing mengibaskan ekor</translation>
 <translation id="8919081441417203123">Denmark</translation>
 <translation id="8965697826696209160">Ruang tidak cukup.</translation>
 <translation id="8970501467542182729">File ini dirancang untuk komputer yang menggunakan software Macintosh. Ini tidak kompatibel dengan perangkat Anda yang menjalankan Chrome OS. <ph name="BEGIN_LINK_HELP" />Pelajari Lebih Lanjut<ph name="END_LINK_HELP" /> cara membuka file di Chrome OS.</translation>
@@ -918,6 +933,7 @@
 <translation id="9144340019284012223">Katala</translation>
 <translation id="914873105831852105">PIN tidak valid. Tersisa 1 upaya lagi.</translation>
 <translation id="9153934054460603056">Simpan identitas dan sandi</translation>
+<translation id="9171921933192916600">Kutu buku</translation>
 <translation id="9172592259078059678">Transliterasi Gujarati</translation>
 <translation id="9173120999827300720">Inggris (AS) dengan keyboard International</translation>
 <translation id="9174050671906956834">Item dalam sampah akan dihapus selamanya setelah 30 hari.</translation>
@@ -930,6 +946,7 @@
 <translation id="943972244133411984">Diubah oleh</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="947144732524271678">Rentang <ph name="ENTRY_COUNT" /> entri dari <ph name="FROM_ENTRY_NAME" /> ke <ph name="TO_ENTRY_NAME" /> dipilih.</translation>
+<translation id="965477715979482472">Inggris (Afrika Selatan)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">File bernama "<ph name="FILE_NAME" />" sudah ada. Ingin menggantinya?</translation>
 <translation id="992401651319295351">Tersisa <ph name="RETRIES" /> upaya lagi. Anda tidak akan dapat menggunakan jaringan ini hingga Anda menyiapkan PIN baru.</translation>

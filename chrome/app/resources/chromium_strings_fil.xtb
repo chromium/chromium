@@ -36,6 +36,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2343156876103232566">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chromium sa parehong device.</translation>
 <translation id="2347108572062610441">Binago ng extension na ito ang ipinapakitang page kapag sinimulan mo ang Chronium.</translation>
 <translation id="2396765026452590966">Binago ng extension na "<ph name="EXTENSION_NAME" />" ang ipinapakitang page kapag sinimulan mo ang Chromium.</translation>
+<translation id="2401032172288869980">Kailangan ng Chromium ng pahintulot sa camera at mikropono para sa site na ito</translation>
 <translation id="2483889755041906834">Sa Chromium</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
 <translation id="2535480412977113886">Hindi ma-sync ng Chromium OS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
@@ -153,6 +154,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang Chromium OS, pati na rin ang <ph name="BEGIN_LINK_LINUX_OSS" />environment sa pag-develop ng Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Maligayang Pagdating sa Chromium</translation>
+<translation id="5883558403894052917">Napag-alaman ng Chromium na naglalaman ng malware ang mga item na ito:</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network</translation>
 <translation id="5987687638152509985">I-update ang Chromium upang simulan ang pag-sync</translation>
@@ -170,6 +172,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6183079672144801177">Tiyaking naka-sign in ka sa Chromium sa iyong <ph name="TARGET_DEVICE_NAME" /> at pagkatapos ay subukang ipadala ulit.</translation>
 <translation id="6212496753309875659">May mas bagong bersyon ng Chromium na ang computer na ito. Kung hindi gumagana ang software, mangyaring i-uninstall ang Chromium at subukang muli.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Muli nang ilulunsad ang Chromium ngayon}=1{Muli nang ilulunsad ang Chromium sa loob ng 1 segundo}one{Muli nang ilulunsad ang Chromium sa loob ng # segundo}other{Muli nang ilulunsad ang Chromium sa loob ng # na segundo}}</translation>
+<translation id="6241367896540709610">Kailangan ng Chromium ng pahintulot sa access sa storage para makapag-download ng mga file</translation>
 <translation id="6248213926982192922">Gawing default na browser ang Chromium</translation>
 <translation id="6266342355635466082">Hindi matingnan ng Chromium kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
@@ -190,7 +193,9 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="6570579332384693436">Para maayos ang mga error sa pagbabaybay, ipinapadala ng Chromium sa Google ang text na na-type mo sa mga text field</translation>
 <translation id="6598877126913850652">Pumunta sa mga setting ng notification ng Chromium</translation>
 <translation id="6613594504749178791">Magkakabisa ang iyong mga pagbabago sa susunod na ilunsad mong muli ang Chromium.</translation>
+<translation id="665732753414869868">Kailangan ng Chromium ng pahintulot sa camera para makagawa ng 3D na mapa ng iyong kapaligiran</translation>
 <translation id="6676384891291319759">I-access ang Internet</translation>
+<translation id="6709350901466051922">Kailangan ng Chromium ng pahintulot sa mikropono para sa site na ito</translation>
 <translation id="6717134281241384636">Hindi maaaring gamitin ang iyong profile dahil mula ito sa isang mas bagong bersyon ng Chromium.
 
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chromium.</translation>
@@ -202,6 +207,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6847869444787758381">Ipinapaalam sa iyo ng Chromium kung nakompromiso ang mga password mo</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kinopya sa Chromium)</translation>
+<translation id="6873893289264747459">Napag-alaman ng Chromium na naglalaman ng malware ang "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6893813176749746474">Na-update na ang Chromium, ngunit hindi mo pa ito nagagamit sa loob ng hindi bababa sa 30 araw.</translation>
 <translation id="691026815377248078">Nangangailangan ang Chromium ng access sa Bluetooth para magpatuloy sa 
  pagpapares. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -210,6 +216,7 @@ Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktory
 <translation id="6990124437352146030">Kailangan ng Chromium ng pahintulot na i-access ang iyong mikropono para sa site na ito</translation>
 <translation id="705851970750939768">I-update ang Chromium</translation>
 <translation id="7067091210845072982">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google.</translation>
+<translation id="718435575166326686">Kailangan ng Chromium ng pahintulot sa camera para sa site na ito</translation>
 <translation id="7196312274710523067">Hindi mailunsad ang Chromium. Subukang muli.</translation>
 <translation id="7197677400338048821">Hindi masuri ng Chromium ang iyong mga password. Subukan ulit pagkalipas ng 24 na oras.</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
@@ -233,10 +240,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
       mga setting ng Chromium OS<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Ginagamit ng Chromium ang iyong camera at mikropono.</translation>
 <translation id="7617377681829253106">Mas mahusay na ang Chromium</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Bago tayo magsimula, pakitiyak na mayroon kang up-to-date na backup ng iyong data. Kapag na-install ang Chromium OS, mao-overwrite ang lahat ng data sa iyong hard drive.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Hindi mananagot ang Google para sa anumang pagkawala ng data, at hindi nito ginagarantiyang gagana ang Chromium OS sa mga modelong hindi certified. Pakibisita ang [TBD] para matuto pa tungkol sa mga certified na modelo.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Matuto pa tungkol sa pag-i-install ng Chromium OS at pagbura ng data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Kung handa ka nang magpatuloy, i-click ang “I-install ang Chromium OS” at gagabayan ka namin sa proseso ng pag-install sa ilang madadaling hakbang lang. Magkakaroon ka ng isa pang pagkakataong magkumpirma bago kami gumawa ng anumang pagbabago sa iyong computer.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Hindi Chromium ang iyong default na browser</translation>
 <translation id="7689606757190482937">I-sync at i-personalize ang Chromium sa lahat ng iyong device</translation>
 <translation id="7729447699958282447">Hindi mai-sync ng Chromium ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
@@ -251,6 +254,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7975919845073681630">Pangalawang pag-install ito ng Chromium at hindi ito maaaring gawing iyong default na browser.</translation>
 <translation id="8013436988911883588">Kapag mayroon nang access ang Chromium, makakahingi na ang mga website ng access sa iyo.</translation>
 <translation id="8045118833343856403">Hindi naka-sign in sa anumang profile sa Chromium ang mga sumusunod na account. Kung gusto mong gumamit ng account sa ibang profile, alisin muna ang profile na iyon.</translation>
+<translation id="8105840573057009683">Kailangan ng Chromium ng pahintulot sa lokasyon para sa site na ito</translation>
 <translation id="81770708095080097">Mapanganib ang file na ito, kaya na-block ito ng Chromium.</translation>
 <translation id="8248265253516264921">Kung hindi sapat ang deskripsyon ng isang larawan, susubukan ng Chromium na ayusin ito para sa iyo. Para gumawa ng mga deskripsyon, ipinapadala ang mga larawan sa Google. Puwede mo itong i-off sa mga setting anumang oras.</translation>
 <translation id="8266560134891435528">Hindi masusuri ng Chromium ang iyong mga password dahil hindi ka naka-sign in</translation>

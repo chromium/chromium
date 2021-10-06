@@ -9,7 +9,7 @@
 <translation id="1591070050619849194">Slå av alle bildeanimasjoner.</translation>
 <translation id="1703735871906654364">Markørsurfing</translation>
 <translation id="1791496371305830581">Tillat alle animerte bilder.</translation>
-<translation id="1996252509865389616">Slå på utvidelsen</translation>
+<translation id="1996252509865389616">Aktivér utvidelsen</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2179565792157161713">Åpne lang beskrivelse i ny fane</translation>
 <translation id="2223143012868735942">Et egendefinerbart fargefilter brukes på nettsteder for å forbedre fargeoppfattelsen.</translation>
@@ -21,13 +21,13 @@
 <translation id="2965611304828530558">&lt;p&gt;Når du kommer til en link eller kontroll, får den automatisk fokus. Trykk på &lt;span class='key'&gt;Enter&lt;/span&gt;-tasten for å klikke på en link eller knapp. &lt;/p&gt; &lt;p&gt;Når en fokusert kontroll (som en tekstboks eller listeboks) registrerer trykk på piltastene, kan du trykke på &lt;span class='key'&gt;Esc&lt;/span&gt; etterfulgt av venstre eller høyre pil for å fortsette med markørsurfing.&lt;/p&gt; &lt;p&gt; Du kan også trykke på &lt;span class='key'&gt;Tab&lt;/span&gt; for å flytte til den neste kontrollen som få fokus.&lt;/p&gt;</translation>
 <translation id="3252573918265662711">Konfigurer</translation>
 <translation id="3410969471888629217">Fjern tilpasninger av nettsted</translation>
-<translation id="3435896845095436175">Slå på</translation>
+<translation id="3435896845095436175">Aktivér</translation>
 <translation id="3622586652998721735">Angi som standardvalg</translation>
 <translation id="3812541808639806898">Visningsprogram for alt-bildetekst</translation>
 <translation id="381767806621926835">Høyreklikk på noe med et «longdesc»- eller «aria-describedat»-attributt for å få tilgang til den lange beskrivelsen.</translation>
 <translation id="4023902424053835668">Bla gjennom teksten på nettsidene ved hjelp av piltastene.</translation>
 <translation id="4388820049312272371">Fremhev markørposisjonen med et raskt blink.</translation>
-<translation id="4394049700291259645">Slå av</translation>
+<translation id="4394049700291259645">Deaktiver</translation>
 <translation id="4769065380738716500">Bilder er erstattet av alt-tekst.</translation>
 <translation id="4896660567607030658">Ingen tilbakemelding, bare vis markøren.</translation>
 <translation id="4937901943818762779">Tillat animerte bilder, men bare én gang.</translation>

@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Nedlastingen er satt på pause</translation>
 <translation id="1415402041810619267">Nettadressen er avkortet</translation>
 <translation id="1446450296470737166">Full kontroll over MIDI-enheter</translation>
-<translation id="1509960214886564027">Det kan hende at funksjoner på mange nettsteder slutter å fungere</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1647582022260550163">Er du sikker på at du vil tilbakestille tillatelser og slette informasjonskapsler og nettstedsdata?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Tillatt – unntatt fra tredjeparter.</translation>
 <translation id="1989112275319619282">Bla gjennom</translation>
 <translation id="1994173015038366702">Nettadressen til nettstedet</translation>
+<translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
 <translation id="2025115093177348061">Utvidet virkelighet</translation>
 <translation id="2030769033451695672">Trykk for å gå tilbake til <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Angre</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Tillat informasjonskapsler for et spesifikt nettsted.</translation>
 <translation id="4046123991198612571">Neste spor</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
+<translation id="4176463684765177261">Deaktivert</translation>
 <translation id="4200726100658658164">Åpne posisjonsinnstillingene</translation>
 <translation id="4226663524361240545">Varsler kan gjøre at enheten vibrerer</translation>
 <translation id="4259722352634471385">Nettadressen er blokkert: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Sett videoen på pause</translation>
 <translation id="5887687176710214216">Sist besøkt i går</translation>
 <translation id="5916664084637901428">På</translation>
+<translation id="59174027418879706">Aktivert</translation>
 <translation id="5922853908706496913">Deler skjermen din</translation>
 <translation id="5939518447894949180">Tilbakestill</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Blokkér informasjonskapsler fra tredjeparter</translation>
 <translation id="6216432067784365534">Alternativer for <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Vil du avinstallere «<ph name="APP_NAME" />»?</translation>
+<translation id="6233545266937675277">Be om datamaskinvisning av nettsteder</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> er blokkert</translation>
 <translation id="6270391203985052864">Nettsteder kan be om å få sende deg varsler</translation>
 <translation id="6295158916970320988">Alle nettsteder</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er blokkert}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> til er blokkert}}</translation>
 <translation id="6554732001434021288">Sist besøkt for <ph name="NUM_DAYS" /> dager siden</translation>
 <translation id="6561560012278703671">Bruk stillere meldinger (blokkerer varselmeldinger fra å forstyrre deg)</translation>
+<translation id="6593061639179217415">Side for datamaskiner</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet innhold</translation>
 <translation id="662080504995468778">Bli her</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Opphev valget</translation>
 <translation id="7846621471902887024">Du blir logget av alle nettsteder.</translation>
 <translation id="7882806643839505685">Tillat lyd for et bestemt nettsted.</translation>
+<translation id="7940722705963108451">Minn meg på det senere</translation>
 <translation id="7986741934819883144">Velg en kontakt</translation>
-<translation id="7993619969781047893">Det kan hende at funksjoner på enkelte nettsteder slutter å fungere</translation>
 <translation id="7999064672810608036">Er du sikker på at du vil slette alle lokale data, deriblant informasjonskapsler, og tilbakestille alle tillatelser for dette nettstedet?</translation>
 <translation id="8007176423574883786">Slått av for denne enheten</translation>
 <translation id="802154636333426148">Nedlastingen mislyktes</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Kuttet lyd</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
 <translation id="8131740175452115882">Bekreft</translation>
+<translation id="8154912474061769055">Det kan hende at funksjoner på mange nettsteder ikke fungerer</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> er tillatt</translation>
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="8206354486702514201">Denne innstillingen håndheves av administratoren din.</translation>
 <translation id="8211406090763984747">Tilkoblingen er sikker</translation>
 <translation id="8249310407154411074">Flytt til toppen</translation>
 <translation id="8261506727792406068">Slett</translation>
+<translation id="8267092878336850213">Be om mobilvisning av nettsteder</translation>
 <translation id="8300705686683892304">Administreres av app</translation>
 <translation id="8324158725704657629">Ikke spør igjen</translation>
 <translation id="8372893542064058268">Tillat bakgrunnssynkronisering for et bestemt nettsted.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Slett teksten</translation>
 <translation id="868929229000858085">Søk i kontaktene dine</translation>
 <translation id="8702612070107455751">Eventuelle frakoblede data blir slettet.</translation>
+<translation id="8712637175834984815">Skjønner</translation>
 <translation id="8719283222052720129">Slå på tillatelsen for <ph name="APP_NAME" /> i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Prøv igjen</translation>
 <translation id="8730621377337864115">Ferdig</translation>

@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Получаване на известия при понижения на цени</translation>
 <translation id="1657719826150349398">Преместване на раздела надолу</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="2118649612461486615">Информация за магазина</translation>
+<translation id="2162620598375156287">Сега цената е <ph name="CURRENT_PRICE" /> в(ъв) <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Редактиране на името на групата</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Премахване на <ph name="TABS_COUNT_ONE" /> избран раздел от групата.}other{Премахване на <ph name="TABS_COUNT_MANY" /> избрани раздела от групата.}}</translation>
 <translation id="2479148705183875116">Към настройките</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Група</translation>
 <translation id="2613747923081026172">Създаване на група</translation>
 <translation id="2662028055331606429">Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Към сайта</translation>
 <translation id="2671423594960767771">Споделяне на групата</translation>
 <translation id="2759453070259087442">Разгъване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ със <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="2801787514987684416">Искате ли да прегледате информацията за магазина?</translation>
 <translation id="2928243913527329289">Google | Всичко за този магазин</translation>
 <translation id="2977480621796371840">Премахване от групата</translation>
+<translation id="3052964831964880138">Понижение на цената на <ph name="PRODUCT_NAME" /> в размер на <ph name="PRICE_DROP" /></translation>
 <translation id="3194464645767632461">оценка</translation>
+<translation id="3267416433995960648">Изключване на сигнала</translation>
 <translation id="3291470810748040983">Ще получите сигнал, когато цената в отворен раздел е по-ниска</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6054741997831917303">Цената на този артикул наскоро бе намалена от <ph name="PREVIOUS_PRICE" /> на <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Избиране на раздели</translation>
+<translation id="6228793724645064692">(оценка на магазина)</translation>
+<translation id="6333260925957816943">Информация за този магазин</translation>
 <translation id="6510648526783655549">Затваряне на лентата с раздели</translation>
+<translation id="6549021453810473782">Преглед на информацията за магазина</translation>
 <translation id="6562820390860419811">Преместване на раздела наляво</translation>
 <translation id="6615455863669487791">Покажете ми</translation>
 <translation id="6840760312327750441">За да групирате раздели, докоснете и задръжте някой от тях. След това го преместете с плъзгане върху друг.</translation>
 <translation id="6856809498882026482">Изход от режима за избор на няколко раздела</translation>
+<translation id="7129458170538955174">Информацията за този магазин е отворена на половината височина</translation>
 <translation id="7151209024774799310">Премахване на раздели</translation>
 <translation id="7204204600596740190">Режим за избор на няколко раздела</translation>
+<translation id="7326879924029668159">Вижте правилата за връщане и др.</translation>
 <translation id="7352298686197644113">Вижте кой артикул в отворените раздели е с по-ниска цена</translation>
 <translation id="753732157349120914">Превключвател на раздели</translation>
 <translation id="7559245342362162951">Показване на разделите от групата в решетка на цял екран</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> отзив}other{Оценка: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> отзива}}</translation>
 <translation id="7885132941432959125">Преместване на раздела надясно</translation>
 <translation id="7966321538264951561">Отхвърляне на предложенията.</translation>
+<translation id="8029301326595421733">Информацията за този магазин е отворена на пълната височина</translation>
 <translation id="814503310257431685">Преглед на всички</translation>
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
 <translation id="8304833501377495048">Лентата с раздели да се скрие ли за постоянно?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">По-ниска цена</translation>
 <translation id="8749939518995770034">Затворихте лентата с раздели</translation>
 <translation id="8820741577754260431">Преглед на пониженията на цените от разделите ви</translation>
+<translation id="9090098097337832354">Информацията за този магазин е затворена</translation>
 <translation id="9150694013019234766">Превключвайте между разделите в групата в долната част на екрана</translation>
 <translation id="9169594135889675189">Добавяне на нов раздел към групата</translation>
 <translation id="959682366969460160">Организиране</translation>

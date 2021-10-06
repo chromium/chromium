@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1657719826150349398">ਟੈਬ ਨੂੰ ਹੇਠਾਂ ਲਿਜਾਓ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
+<translation id="2118649612461486615">ਸਟੋਰ ਜਾਣਕਾਰੀ</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> 'ਤੇ ਹੁਣ <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">ਗਰੁੱਪ ਦੇ ਨਾਮ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_ONE" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}one{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀ ਹੋਈ ਟੈਬ ਨੂੰ ਹਟਾਓ।}other{ਗਰੁੱਪ ਵਿੱਚੋਂ <ph name="TABS_COUNT_MANY" /> ਚੁਣੀਆਂ ਹੋਈਆਂ ਟੈਬਾਂ ਨੂੰ ਹਟਾਓ।}}</translation>
 <translation id="2479148705183875116">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">ਸਮੂਹ</translation>
 <translation id="2613747923081026172">ਗਰੁੱਪ ਬਣਾਓ</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ</translation>
+<translation id="266935134738038806">ਸਾਈਟ 'ਤੇ ਜਾਓ</translation>
 <translation id="2671423594960767771">ਗਰੁੱਪ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> ਟੈਬ ਗਰੁੱਪ ਦਾ <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਨਾਲ ਵਿਸਤਾਰ ਕਰੋ।</translation>
 <translation id="2801787514987684416">ਕੀ ਸਟੋਰ ਦੀ ਜਾਣਕਾਰੀ ਦੇਖਣੀ ਹੈ?</translation>
 <translation id="2928243913527329289">Google | ਇਸ ਸਟੋਰ ਬਾਰੇ</translation>
 <translation id="2977480621796371840">ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ਨੂੰ <ph name="PRICE_DROP" /> ਕੀਮਤ ਘਟੀ</translation>
 <translation id="3194464645767632461">ਰੇਟਿੰਗ</translation>
+<translation id="3267416433995960648">ਸੁਚੇਤਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="3291470810748040983">ਖੁੱਲ੍ਹੀ ਟੈਬ ਵਿੱਚ ਕੀਮਤ ਘੱਟ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਸੁਚੇਤਨਾ ਪ੍ਰਾਪਤ ਹੋਵੇਗੀ</translation>
 <translation id="3328308545011660196">ਸੁਝਾਅ: <ph name="NUMBER_OF_TABS" /> ਟੈਬਾਂ ਸੰਬੰਧਿਤ ਲੱਗਦੀਆਂ ਹਨ। ਕੀ ਉਹਨਾਂ ਨੂੰ ਗਰੁੱਪਬੱਧ ਕਰਨਾ ਹੈ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6054741997831917303">ਇਸ ਆਈਟਮ ਦੀ ਕੀਮਤ ਹਾਲ ਹੀ ਵਿੱਚ <ph name="PREVIOUS_PRICE" /> ਤੋਂ ਘੱਟ ਕੇ <ph name="NEW_PRICE" /> ਹੋ ਗਈ ਹੈ</translation>
 <translation id="6193448654517602979">ਟੈਬਾਂ ਚੁਣੋ</translation>
+<translation id="6228793724645064692">(ਸਟੋਰ ਰੇਟਿੰਗ)</translation>
+<translation id="6333260925957816943">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="6510648526783655549">ਟੈਬ ਪੱਟੀ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="6549021453810473782">ਸਟੋਰ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
 <translation id="6562820390860419811">ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="6615455863669487791">ਮੈਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="6840760312327750441">ਟੈਬਾਂ ਦਾ ਗਰੁੱਪ ਬਣਾਉਣ ਲਈ, ਕਿਸੇ ਟੈਬ ਨੂੰ ਸਪਰਸ਼ ਕਰਕੇ ਰੱਖੋ। ਫਿਰ, ਇਸਨੂੰ ਕਿਸੇ ਹੋਰ ਟੈਬ 'ਤੇ ਘਸੀਟੋ।</translation>
 <translation id="6856809498882026482">ਬਹੁ-ਚੋਣ ਮੋਡ ਨੂੰ ਲੁਕਾਓ</translation>
+<translation id="7129458170538955174">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਵਾਲੀ ਸਕ੍ਰੀਨ ਅੱਧੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="7151209024774799310">ਟੈਬਾਂ ਨੂੰ ਗਰੁੱਪ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
 <translation id="7204204600596740190">ਬਹੁ-ਚੋਣ ਮੋਡ</translation>
+<translation id="7326879924029668159">ਵਾਪਸੀ ਸੰਬੰਧੀ ਨੀਤੀ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਦੇਖੋ</translation>
 <translation id="7352298686197644113">ਦੇਖੋ ਕਿ ਤੁਹਾਡੇ ਖੁੱਲ੍ਹੇ ਟੈਬਾਂ ਵਿੱਚ ਕਿਹੜੀ ਆਈਟਮ ਦੀ ਕੀਮਤ ਘੱਟ ਹੈ</translation>
 <translation id="753732157349120914">ਟੈਬ ਸਵਿੱਚਰ</translation>
 <translation id="7559245342362162951">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਗ੍ਰਿਡ ਵਿੱਚ ਗਰੁੱਪ ਦੀਆਂ ਟੈਬਾਂ ਦਿਖਾਓ</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ, <ph name="REVIEWS_COUNT_ONE" /> ਸਮੀਖਿਆ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ, <ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ਰੇਟਿੰਗ, <ph name="REVIEWS_COUNT_MANY" /> ਸਮੀਖਿਆਵਾਂ}}</translation>
 <translation id="7885132941432959125">ਟੈਬ ਨੂੰ ਸੱਜੇ ਲਿਜਾਓ</translation>
 <translation id="7966321538264951561">ਸੁਝਾਵਾਂ ਨੂੰ ਖਾਰਜ ਕਰੋ।</translation>
+<translation id="8029301326595421733">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਵਾਲੀ ਸਕ੍ਰੀਨ ਪੂਰੀ ਉਚਾਈ ਤੱਕ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="814503310257431685">ਸਭ ਦੇਖੋ</translation>
 <translation id="8205266828577616993">ਟੈਬ ਨੂੰ ਉੱਪਰ ਲਿਜਾਓ</translation>
 <translation id="8304833501377495048">ਕੀ ਟੈਬ ਪੱਟੀ ਨੂੰ ਦੁਬਾਰਾ ਨਹੀਂ ਦਿਖਾਉਣਾ ਹੈ?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">ਘੱਟ ਕੀਮਤ</translation>
 <translation id="8749939518995770034">ਬੰਦ ਕੀਤੀ ਟੈਬ ਪੱਟੀ</translation>
 <translation id="8820741577754260431">ਆਪਣੀਆਂ ਟੈਬਾਂ 'ਤੇ ਘਟੀ ਕੀਮਤ ਦੇਖੋ</translation>
+<translation id="9090098097337832354">ਇਸ ਸਟੋਰ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਵਾਲੀ ਸਕ੍ਰੀਨ ਬੰਦ ਹੋ ਗਈ ਹੈ</translation>
 <translation id="9150694013019234766">ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਲੇ ਪਾਸੇ ਆਪਣੇ ਟੈਬ ਗਰੁੱਪ ਵਿੱਚ ਟੈਬਾਂ ਦੀ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="9169594135889675189">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="959682366969460160">ਸੰਗਠਿਤ ਰਹੋ</translation>

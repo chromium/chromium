@@ -35,7 +35,6 @@
 <translation id="174539241580958092">Google Chrome konnte Ihre Daten aufgrund eines Fehlers bei der Anmeldung nicht synchronisieren.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Sie müssen auf Ihrem Gerät (<ph name="TARGET_DEVICE_NAME" />) in Chrome angemeldet sein. Versuchen Sie es dann noch einmal.</translation>
-<translation id="1810203443153428607">Wenn Sie Chrome OS installieren, werden alle Daten auf Ihrem Gerät überschrieben.</translation>
 <translation id="1812689907177901597">Wenn Sie diese Einstellung deaktivieren, können Sie sich auf Websites von Google wie beispielsweise Gmail anmelden, ohne auch in Chrome angemeldet zu werden</translation>
 <translation id="1860536484129686729">Chrome benötigt für diese Website die Berechtigung, auf Ihre Kamera zuzugreifen</translation>
 <translation id="1873233029667955273">Google Chrome ist nicht als Ihr Standardbrowser festgelegt</translation>
@@ -53,6 +52,7 @@
 <translation id="2290014774651636340">Google API-Schlüssel fehlen. Einige Funktionen von Google Chrome sind deaktiviert.</translation>
 <translation id="2290095356545025170">Möchten Sie Google Chrome wirklich deinstallieren?</translation>
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
+<translation id="2345992953227471816">Chrome hat festgestellt, dass diese Erweiterungen Malware enthalten:</translation>
 <translation id="2348335408836342058">Chrome benötigt für diese Website die Berechtigung, auf Ihre Kamera und Ihr Mikrofon zuzugreifen</translation>
 <translation id="234869673307233423">Chrome kann Ihre Passwörter nicht prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="235650106824528204">Alle Chrome-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
@@ -82,6 +82,7 @@
 <translation id="2885378588091291677">Task-Manager</translation>
 <translation id="2888126860611144412">Über Google Chrome</translation>
 <translation id="2926676257163822632">Schwache Passwörter sind einfach zu erraten. Erlauben Sie Chrome, ein <ph name="BEGIN_LINK" />sicheres Passwort für Ihre Onlinekonten zu erstellen und zu speichern<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">Chrome benötigt die Kameraberechtigung für diese Website</translation>
 <translation id="2929907241665500097">Chrome konnte aufgrund eines Fehlers nicht aktualisiert werden. Wie Sie Updateprobleme und Fehler bei der Aktualisierung von Chrome beheben, <ph name="BEGIN_LINK" />erfahren Sie hier<ph name="END_LINK" />.</translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Eine letzte Erinnerung: Durch die Installation <ph name="BEGIN_BOLD" />wird Ihre gesamte Festplatte gelöscht<ph name="END_BOLD" />. Kontrollieren Sie daher noch einmal, ob Sie alle wichtigen Daten gesichert haben.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Sobald die Installation gestartet wurde, kann sie nicht mehr abgebrochen werden.<ph name="END_PARAGRAPH2" /></translation>
@@ -110,6 +111,7 @@
 <translation id="3582972582564653026">Chrome auf allen Ihren Geräten synchronisieren und personalisieren</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen}=1{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen. Ihr Inkognitofenster wird nicht wieder geöffnet.}other{Laut Ihrem Administrator müssen Sie Chrome neu starten, um ein Update durchzuführen. Ihre # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3622797965165704966">Sie können Chrome jetzt noch einfacher mit Ihrem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
+<translation id="3673813398384385993">Chrome hat festgestellt, dass „<ph name="EXTENSION_NAME" />“ Malware enthält</translation>
 <translation id="3718181793972440140">Dadurch wird 1 Element von diesem Gerät gelöscht. Wenn Sie Ihre Daten später abrufen möchten, melden Sie sich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="3735758079232443276">Die beim Start von Chrome angezeigte Seite wurde durch die Erweiterung <ph name="EXTENSION_NAME" /> geändert.</translation>
 <translation id="3779473566290487688">Sie benötigen OS X 10.11 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Dieser Computer verfügt über OS X 10.10.</translation>
@@ -126,6 +128,7 @@
 <translation id="4149882025268051530">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Laden Sie Google Chrome erneut herunter.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome innerhalb eines Tages neu starten}other{Chrome innerhalb von # Tagen neu starten}}</translation>
 <translation id="4205939740494406371">Chrome kann Ihre Passwörter nicht prüfen. Versuchen Sie es in 24 Stunden noch einmal oder <ph name="BEGIN_LINK" />prüfen Sie die Passwörter in Ihrem Google-Konto<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Chrome benötigt die Kamera- und Mikrofonberechtigungen für diese Website</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4251615635259297716">Ihre Chrome-Daten mit diesem Konto verknüpfen?</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
@@ -168,13 +171,10 @@
 <translation id="521447420733633466">Auf gemeinsam genutzten Geräten können die verschiedenen Nutzer separat surfen und Chrome jeweils nach ihren Wünschen einrichten</translation>
 <translation id="5251420635869119124">Gastnutzer können Chrome verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="5251679006894510177">Fast geschafft! Starten Sie Chrome zum Abschluss der Aktualisierung neu. Inkognitofenster werden nicht wieder geöffnet.</translation>
+<translation id="5334487786912937552">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können</translation>
 <translation id="5386244825306882791">Die Erweiterung legt auch fest, welche Seite beim Start von Chrome oder bei der Suche über die Omnibox angezeigt wird.</translation>
 <translation id="5394833366792865639">Chrome-Tab freigeben</translation>
 <translation id="5430073640787465221">Ihre Einstellungsdatei ist beschädigt oder ungültig. Google Chrome kann Ihre Einstellungen nicht wiederherstellen.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Bevor wir beginnen, sollten Sie kontrollieren, ob Ihre Datensicherung auf dem neuesten Stand ist. Wenn Sie Chrome OS installieren, werden alle Daten auf Ihrer Festplatte überschrieben.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ist nicht für Datenverluste verantwortlich und übernimmt keine Garantie dafür, dass Chrome OS auf nicht zertifizierten Modellen funktioniert. Auf der Seite [TBD] erhalten Sie weitere Informationen über zertifizierte Modelle.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Weitere Informationen über das Installieren von Chrome OS und die Datenlöschung: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Wenn Sie fortfahren möchten, klicken Sie auf „Chrome OS installieren” und wir führen Sie in nur wenigen einfachen Schritten durch die Installation. Sie haben noch eine weitere Möglichkeit zur Bestätigung, bevor wir Änderungen an Ihrem Computer vornehmen.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OS installieren</translation>
 <translation id="556024056938947818">Google Chrome versucht, Passwörter anzuzeigen.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -205,10 +205,12 @@
 <translation id="6291549208091401781">Google Chrome ist bereits für alle Nutzer auf Ihrem Computer installiert.</translation>
 <translation id="6368958679917195344">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
+<translation id="6506909944137591434">Chrome benötigt die Kameraberechtigung, um eine 3D-Karte Ihrer Umgebung zu erstellen</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
 <translation id="6568793831116033768">Chrome OS-System</translation>
 <translation id="6676384891291319759">Internetzugriff</translation>
 <translation id="6679975945624592337">Google Chrome im Hintergrund ausführen</translation>
+<translation id="6696915334902295848">Chrome benötigt die Mikrofonberechtigung für diese Website</translation>
 <translation id="6739177684496155661">Mit einem neuen Chrome-Profil fortfahren?</translation>
 <translation id="6750954913813541382">Zur Behebung von Tippfehlern sendet Chrome im Browser eingegebenen Text an Google</translation>
 <translation id="677276454032249905">Chrome trotzdem beenden?</translation>
@@ -248,6 +250,7 @@
 <translation id="7761834446675418963">Klicken Sie auf Ihren Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7777080907402804672">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für Sie zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet. Sie können dies jederzeit in den Einstellungen deaktivieren.</translation>
 <translation id="7781002470561365167">Eine neue Version von Google Chrome ist verfügbar.</translation>
+<translation id="778331955594035129">Chrome benötigt die Berechtigung zur Standortermittlung für diese Website</translation>
 <translation id="7787950393032327779">Das Profil wird offenbar gerade von einem Google Chrome-Prozess (<ph name="PROCESS_ID" />) auf einem anderen Computer (<ph name="HOST_NAME" />) verwendet. Das Profil wurde von Chrome gesperrt, damit es nicht beschädigt wird. Wenn Sie sicher sind, dass das Profil nicht von anderen Prozessen verwendet wird, können Sie das Profil entsperren und Chrome neu starten.</translation>
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Geben Sie Ihr Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7808348361785373670">Aus Chrome entfernen...</translation>

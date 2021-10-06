@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">ප්‍රකාශන හිමිකම 2021 Chromium කර්තෘවරුන්. සියලු හිමිකම් ඇවිරිණි.</translation>
 <translation id="4513946894732546136">ප්‍රතිපෝෂණ</translation>
 <translation id="4563926062592110512">සේවාලාභියා විසන්ධි විය: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> නිවැරදිව සකසා නොමැත. කරුණාකර වෙනත් පෙරනිමි වෙබ් බ්‍රව්සරයක් තෝරා අනතුරුව URL ප්‍රතියොමු කිරීම සබල කරන්න.</translation>
 <translation id="4635770493235256822">දුරස්ථ උපාංග</translation>
 <translation id="4660011489602794167">යතුරු පුවරුව පෙන්වන්න</translation>
 <translation id="4703799847237267011">ඔබේ Chromoting සැසියේ කල්ඉකුත්ව තිබේ.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ලෙස පුරනය වී ඇත.</translation>
 <translation id="579702532610384533">නැවත සම්බන්ධ කරන්න</translation>
 <translation id="5810269635982033450">තිරය ​​ට්‍රැක්පැඩයක් මෙන් ක්‍රියා කරයි</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ඔබගේ තිරය දැකීමට සහ ඔබගේ යතුරුපුවරුව සහ මූසිකය පාලනය කිරීමට ප්‍රවේශය ඉල්ලා ඇත. ඔබ මෙම ඉල්ලීම බලාපොරොත්තු නොවන්නේ නම් ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ඔබන්න. එසේ නැතිනම් සූදානම් විට සම්බන්ධතාව ඉඩ දීමට ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' තෝරන්න.</translation>
 <translation id="5823658491130719298">ඔබට දුරස්ථව ප්‍රවේශ වීමට අවශ්‍ය පරිගණකයෙහි, Chrome විවෘත කර <ph name="INSTALLATION_LINK" /> කරා පිවිසෙන්න</translation>
 <translation id="5841343754884244200">සංදර්ශක විකල්ප</translation>
 <translation id="6033507038939587647">යතුරු පුවරු විකල්ප</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">යම් කෙනෙකු වලංගු නොවන PIN එකක් සමගින් එයට සම්බන්ධ වීමට උත්සාහ කරමින් සිටි නිසා දුරස්ථ පරිගණකය වෙත සම්බන්ධතා තාවකාලිකව අවහිර කර තිබේ. කරුණාකර පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6985691951107243942"><ph name="HOSTNAME" /> වෙත ඇති දුරස්ථ සබඳතා අක්‍රීය කිරීමට අවශ්‍ය බව විශ්වාසද? ඔබේ අදහස වෙනස් කරන්නේ නම්, සබඳතා යළි ඇරඹීමට ඔබට එම පරිගණකය වෙත යාමට සිදුවේ.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ඔබගේ පරිගණකය බැලීමට සහ පාලනය කිරීමට ප්‍රවේශය ඉල්ලා ඇත. ඔබ මෙම පුද්ගලයා නොදන්නේ නම් හෝ බෙදා ගැනීමට පෙර ඔබට යම් වෙනසක් කිරීමට අවශ්‍ය නම්. ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ඔබන්න.  එසේ නැතිනම් සම්බන්ධතාව ඉඩ දීමට ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' තෝරන්න</translation>
 <translation id="7019153418965365059">නොහඳුනාගත් සත්කාරක දෝෂය: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">දුරස්ත සහාය</translation>
 <translation id="7026930240735156896">දුරස්ථ ප්‍රවේශය සඳහා ඔබගේ පරිගණකය සැකසීමට, උපදෙස් අනුගමනය කරන්න</translation>
@@ -169,6 +170,7 @@
 මෙම අවසරය දීමට, 'ප්‍රවේශ්‍යතා' මනාප කවුළුව විවෘත කරන පහත '<ph name="BUTTON_NAME" />' ක්ලික් කරන්න, පසුව '<ph name="SERVICE_SCRIPT_NAME" />' ළඟ ඇති කොටුව ලකුණු කරන්න.
 
 '<ph name="SERVICE_SCRIPT_NAME" />' දැනටමත් ලකුණු කර තිබේ නම්, එය ලකුණු නොකර නැවත ලකුණු කරන්න.</translation>
+<translation id="8305209735512572429">අන්තර්ජාල සත්‍යාපන දුරස්ථකරණ ක්‍රියාවලිය</translation>
 <translation id="8383794970363966105">Chromoting භාවිතා කිරීම, ඔබ ඔබේ උපාංගයට Google Account එක් කළ යුතුය.</translation>
 <translation id="8386846956409881180">සත්කාරක අවලංගු OAuth අක්තපත්‍ර සමග වින්‍යාස කරනු ලබයි.</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> වෙත අවසර දෙන්න</translation>

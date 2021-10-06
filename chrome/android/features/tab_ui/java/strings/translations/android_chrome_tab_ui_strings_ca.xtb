@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Rep notificacions quan baixin els preus</translation>
 <translation id="1657719826150349398">Mou la pestanya cap avall</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
+<translation id="2118649612461486615">Informació de la botiga</translation>
+<translation id="2162620598375156287">Ara costa <ph name="CURRENT_PRICE" /> a <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Edita el nom del grup</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Suprimeix <ph name="TABS_COUNT_ONE" /> pestanya seleccionada del grup.}other{Suprimeix <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades del grup.}}</translation>
 <translation id="2479148705183875116">Ves a Configuració</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Grup</translation>
 <translation id="2613747923081026172">Crea un grup</translation>
 <translation id="2662028055331606429">Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Visita el lloc web</translation>
 <translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2759453070259087442">Desplega el grup de pestanyes <ph name="TITLE_OF_GROUP" /> amb <ph name="NUMBER_OF_TABS" /> pestanyes.</translation>
 <translation id="2801787514987684416">Vols consultar la informació de la botiga?</translation>
 <translation id="2928243913527329289">Google | Sobre aquesta botiga</translation>
 <translation id="2977480621796371840">Suprimeix del grup</translation>
+<translation id="3052964831964880138">Baixada de preu de <ph name="PRICE_DROP" /> per a <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">puntuació</translation>
+<translation id="3267416433995960648">Desactiva l'alerta</translation>
 <translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6054741997831917303">El preu d'aquest article fa poc ha baixat de <ph name="PREVIOUS_PRICE" /> a <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Selecciona pestanyes</translation>
+<translation id="6228793724645064692">(puntuació de la botiga)</translation>
+<translation id="6333260925957816943">Informació sobre aquesta botiga</translation>
 <translation id="6510648526783655549">Tanca la barra de pestanyes</translation>
+<translation id="6549021453810473782">Consulta la informació de la botiga</translation>
 <translation id="6562820390860419811">Mou la pestanya cap a l'esquerra</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
 <translation id="6840760312327750441">Per agrupar les pestanyes, mantén-ne una premuda. A continuació, arrossega-la fins a una altra.</translation>
 <translation id="6856809498882026482">Amaga el mode de multiselecció</translation>
+<translation id="7129458170538955174">S'ha obert a mitja alçada la informació sobre aquesta botiga</translation>
 <translation id="7151209024774799310">Suprimeix les pestanyes</translation>
 <translation id="7204204600596740190">Mode de multiselecció</translation>
+<translation id="7326879924029668159">Consulta la política de devolució i més detalls</translation>
 <translation id="7352298686197644113">Descobreix quin element de les pestanyes que hi ha obertes té un preu més baix</translation>
 <translation id="753732157349120914">Selector de pestanyes</translation>
 <translation id="7559245342362162951">Mostra les pestanyes del grup en una quadrícula en pantalla completa</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> ressenya}other{Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> ressenyes}}</translation>
 <translation id="7885132941432959125">Mou la pestanya cap a la dreta</translation>
 <translation id="7966321538264951561">Ignora els suggeriments.</translation>
+<translation id="8029301326595421733">S'ha obert a alçada completa la informació sobre aquesta botiga</translation>
 <translation id="814503310257431685">Mostra-ho tot</translation>
 <translation id="8205266828577616993">Mou la pestanya cap amunt</translation>
 <translation id="8304833501377495048">No vols que es torni a mostrar la barra de pestanyes?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8749939518995770034">Barra de pestanyes tancada</translation>
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
+<translation id="9090098097337832354">S'ha tancat la informació sobre aquesta botiga</translation>
 <translation id="9150694013019234766">Canvia de pestanya al grup de pestanyes de la part inferior de la pantalla</translation>
 <translation id="9169594135889675189">Afegeix una pestanya nova al grup</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>

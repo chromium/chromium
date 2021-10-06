@@ -79,6 +79,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="4512952200932940229">I-Copyright 2021 Ababhali be-Chromium. Wonke amalungelo agciniwe.</translation>
 <translation id="4513946894732546136">Impendulo</translation>
 <translation id="4563926062592110512">Iklayenti linqanyuliwe: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">I-<ph name="URL_FORWARDER_NAME" /> ayilungiselelwanga kahle. Sicela ukhethe isiphequluli sewebhu esizenzakalelayo esihlukile bese uphinda unika amandla ukudluliselwa kwe-URL.</translation>
 <translation id="4635770493235256822">Amadivayisi yokulawula ukude</translation>
 <translation id="4660011489602794167">Bonisa ikhibhodi</translation>
 <translation id="4703799847237267011">Iseshini yakho ye-Chromoting iphelile.</translation>
@@ -109,6 +110,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="5750083143895808682">Ingene ngemvume njengo-<ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Phinda uxhumeke</translation>
 <translation id="5810269635982033450">Isikrini sisebenza nge-trackpad</translation>
+<translation id="5823554426827907568">U-<ph name="CLIENT_USERNAME" /> ucele ukufinyelela ukuze abone isikrini sakho futhi alawule ikhobhodi negundane lakho. Cindezela u-''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' uma ungalindele lesi sicelo. Kungenjalo khetha u-''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ukuvumela uxhumano uma usukulungele.</translation>
 <translation id="5823658491130719298">Kukhompuyutha ofuna ukufinyelela kuyo ukuze, vula i-Chrome uphinde uvakashele i-<ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Izinketho zokubonisa</translation>
 <translation id="6033507038939587647">Izinketho zekhibhodi</translation>
@@ -130,7 +132,6 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 <translation id="6963936880795878952">Ukuxhumeka kukhompuyutha ekude manje kuvinjwe okwesikhashana ngoba umuntu othole ubekade ezama ukuxhumeka kuyo  ngephinikhodi engavumelekile. Sicela uzame futhi emuva kwesikhathi.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Ingabe uqinisekile ukuthi ufuna ukukhubaza ukuxhumeka kwesilawuli kude ku-<ph name="HOSTNAME" />? Uma uguqula umcabango wakho, kuzomele uvakashele leyo khompyutha ukuze uphinde unike amandla ukuxhumeka.</translation>
-<translation id="6998890551706945177">U-<ph name="CLIENT_USERNAME" /> ucele ukufinyelela ukuze abone futhi alawule ikhompyutha yakho. Cindezela i-''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' uma ungazi lo muntu noma uma udinga ukwenza izinguquko ngaphambi kokwabelana.  Noma khetha i-''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ukuze uvumele uxhumo.</translation>
 <translation id="7019153418965365059">Iphutha likasokhaba elingabonwa: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Usizo lwesilawuli kude</translation>
 <translation id="7026930240735156896">Landela imiyalo yokusetha ikhompyutha yakho ngokufinyelela kwerimothi</translation>
@@ -169,6 +170,7 @@ Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, yekisa ukuyithikha 
 Ukuze unikeze le mvume, chofoza i-'<ph name="BUTTON_NAME" />' ngezansi. Ku-pane yokuncanyelwayo kokuthi 'Ukufinyeleleka' okuvulekayo, thikha ibhokisi eliseduze ne-'<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Uma i-'<ph name="SERVICE_SCRIPT_NAME" />' isivele ithikhiwe, susa ukuyithikha bese uyayihlola futhi.</translation>
+<translation id="8305209735512572429">Inqubo Yerimothi Yokufakazela Ubuqiniso Iwebhu</translation>
 <translation id="8383794970363966105">Ukuze usebenzise i-Chromoting, kuzomele ungeze i-Akhawunti ye-Chrome kudivayisi yakho.</translation>
 <translation id="8386846956409881180">Usokhaya ulungiswe ngokuqinisekisa kwe-OAuth okungalungile.</translation>
 <translation id="8397385476380433240">Nikeza imvume ku-<ph name="PRODUCT_NAME" /></translation>

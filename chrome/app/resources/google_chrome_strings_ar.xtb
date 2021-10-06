@@ -37,7 +37,6 @@
 <translation id="174539241580958092">‏تعذر على Google Chrome مزامنة البيانات نظرًا لوجود خطأ في تسجيل الدخول.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">‏يُرجى التأكُّد من تسجيل الدخول إلى متصفِّح Chrome على جهازك <ph name="TARGET_DEVICE_NAME" /> ثم محاولة الإرسال مرة أخرى.</translation>
-<translation id="1810203443153428607">‏سيؤدي تثبيت نظام التشغيل Chrome إلى استبدال جميع البيانات على جهازك.</translation>
 <translation id="1812689907177901597">‏من خلال إيقاف هذا الإعداد، يمكنك تسجيل الدخول إلى "مواقع Google" مثل Gmail بدون الحاجة إلى تسجيل الدخول إلى Chrome</translation>
 <translation id="1860536484129686729">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="1873233029667955273">‏Google Chrome ليس متصفحك التلقائي.</translation>
@@ -55,6 +54,7 @@
 <translation id="2290014774651636340">‏مفاتيح واجهة برمجة تطبيقات Google مفقودة. وسيترتب على ذلك توقف بعض وظائف Google Chrome عن العمل.</translation>
 <translation id="2290095356545025170">‏هل تريد فعلًا إزالة Google Chrome؟</translation>
 <translation id="2309047409763057870">‏هذا تثبيت ثانوي من Google Chrome، ولا يمكن جعله متصفحك التلقائي.</translation>
+<translation id="2345992953227471816">‏رصد Chrome أنّ هذه الإضافات تحتوي على برامج ضارة:</translation>
 <translation id="2348335408836342058">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا والميكروفون من أجل الموقع الإلكتروني هذا.</translation>
 <translation id="234869673307233423">‏يتعذّر على Chrome التحقّق من كلمات المرور. يُرجى إعادة المحاولة.</translation>
 <translation id="235650106824528204">‏يمكن لمشرف الملف الشخصي للعمل إزالة أي بيانات مرتبطة بمتصفِّح Chrome والتي يتم إنشاؤها أثناء استخدام هذا الملف الشخصي (مثل إنشاء الإشارات المرجعية والسجلّ وكلمات المرور والإعدادات الأخرى).<ph name="LEARN_MORE" /></translation>
@@ -84,6 +84,7 @@
 <translation id="2885378588091291677">إدارة المهام</translation>
 <translation id="2888126860611144412">‏لمحة عن Chrome</translation>
 <translation id="2926676257163822632">‏من السهل تخمين كلمات المرور الضعيفة. يمكنك السماح لمتصفِّح Chrome <ph name="BEGIN_LINK" />بإنشاء كلمات مرور قوية وتذكُّرها نيابة عنك<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="2929907241665500097">‏تعذّر تحديث Chrome بسبب حدوث خطأ. <ph name="BEGIN_LINK" />حلّ مشاكل تحديث Chrome وتعذُّر التحديثات<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />تذكير أخير: ستؤدي عملية التثبيت إلى <ph name="BEGIN_BOLD" />محو بيانات محرك الأقراص الثابتة بالكامل<ph name="END_BOLD" />. يُرجى التأكّد من احتفاظك بنسخة احتياطية من أي بيانات مُهمّة.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />عند بدء عملية التثبيت، لا يمكن إلغاؤها.<ph name="END_PARAGRAPH2" /></translation>
@@ -112,6 +113,7 @@
 <translation id="3582972582564653026">‏يمكنك مزامنة Chrome وتخصيصه على جميع أجهزتك.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث.}=1{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذة التصفح المتخفي.}two{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نافذتَي التصفح المتخفي.}few{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}many{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}other{‏يطلب المشرف إعادة تشغيل Chrome لتطبيق تحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي البالغ عددها #.}}</translation>
 <translation id="3622797965165704966">‏الآن أصبح استخدام Chrome مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
+<translation id="3673813398384385993">‏رصد Chrome أنّ الإضافة "<ph name="EXTENSION_NAME" />" تحتوي على برامج ضارة.</translation>
 <translation id="3718181793972440140">‏سيعمل هذا على حذف عنصر واحد من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">‏غيّرت الإضافة "<ph name="EXTENSION_NAME" />" الصفحة التي تظهر عند بدء Chrome.</translation>
 <translation id="3779473566290487688">‏للحصول على تحديثات Google Chrome في المستقبل، يجب أن تستخدم جهازًا يعمل بنظام التشغيل OS X 10.11 أو إصدار أحدث. يعمل جهاز الكمبيوتر هذا بنظام التشغيل OS X 10.10.</translation>
@@ -128,6 +130,7 @@
 <translation id="4149882025268051530">‏فشلت أداة المثبِّت في فك ضغط الأرشيف. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
 <translation id="4191857738314598978">{0,plural, =1{‏يجب إعادة تشغيل Chrome في غضون يوم واحد}zero{‏يجب إعادة تشغيل Chrome في غضون # يوم}two{‏يجب إعادة تشغيل Chrome في غضون يومين}few{‏يجب إعادة تشغيل Chrome في غضون # أيام}many{‏يجب إعادة تشغيل Chrome في غضون # يومًا}other{‏يجب إعادة تشغيل Chrome في غضون # يوم}}</translation>
 <translation id="4205939740494406371">‏يتعذّر على Chrome التحقُّق من كلمات المرور. يُرجى إعادة المحاولة بعد 24 ساعة أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4251615635259297716">‏هل ترغب في ربط بياناتك في Chrome بهذا الحساب؟</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
@@ -172,13 +175,10 @@
 <translation id="521447420733633466">‏في حال مشاركة جهاز مع الأصدقاء والعائلة، يمكنهم الحصول على تجربة تصفّح منفصلة وإعداد Chrome على النحو المفضّل لديهم.</translation>
 <translation id="5251420635869119124">‏يمكن للضيف استخدام Chrome بدون أن يترك أي أثر وراءه.</translation>
 <translation id="5251679006894510177">‏أوشك التحديث على الانتهاء. أعِد تشغيل Chrome لإتمام التحديث. لن تتم إعادة فتح نوافذ التصفّح المتخفي.</translation>
+<translation id="5334487786912937552">‏يحتاج Chrome إلى إذن للوصول إلى مساحة التخزين من أجل تنزيل الملفات.</translation>
 <translation id="5386244825306882791">‏كما أنها تتحكم في الصفحة التي تظهر عند تشغيل Chrome أو إجراء بحث من المربع متعدد الاستخدامات.</translation>
 <translation id="5394833366792865639">‏مشاركة علامة تبويب Chrome</translation>
 <translation id="5430073640787465221">‏ملف الإعدادات المفضّلة تالف أو غير صالح. يتعذر على Google Chrome استرداد إعداداتك.</translation>
-<translation id="5449497480926255862">‏<ph name="BEGIN_PARAGRAPH1" />قبل أن نبدأ عملية التثبيت، يُرجى التأكّد من احتفاظك بنسخة احتياطية حديثة من بياناتك. سيؤدي تثبيت نظام التشغيل Chrome إلى استبدال جميع البيانات على محرك الأقراص الثابتة.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />لا تتحمل Google أي مسؤولية عن أي فقدان للبيانات، ولا تضمن أن يعمل نظام التشغيل Chrome على طُرز أجهزة غير معتمدة. يُرجى زيارة [TBD] لمزيد من المعلومات حول طُرز الأجهزة المُعتمَدة.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />تعرّف على مزيد من المعلومات حول تثبيت نظام التشغيل Chrome ومحو البيانات: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />إذا كنت جاهزًا للاستمرار في عملية التثبيت، انقر على "تثبيت نظام التشغيل Chrome" وسوف نرشدك ببضع خطوات سهلة إلى كيفية التثبيت. وسوف تكون لديك فرصة أخرى للتأكيد قبل أن نُجري أي تغييرات على جهاز الكمبيوتر.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">‏تثبيت نظام التشغيل Chrome</translation>
 <translation id="556024056938947818">‏يحاول Google Chrome إظهار كلمات المرور.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -210,10 +210,12 @@
 <translation id="6291549208091401781">‏تم تثبيت Google Chrome من قبل لجميع المستخدمين على الكمبيوتر.</translation>
 <translation id="6368958679917195344">‏أصبح نظام التشغيل Chrome متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج مفتوح المصدر<ph name="END_LINK_CROS_OSS" /> إضافي.</translation>
 <translation id="6418662306461808273">‏هل تريد الانتقال إلى ملف شخصي حالي على Chrome؟</translation>
+<translation id="6506909944137591434">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا من أجل إنشاء خريطة ثلاثية الأبعاد للمكان حولك.</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - إصدار قناة مطوري البرامج من Google Chrome</translation>
 <translation id="6568793831116033768">‏نظام التشغيل Chrome</translation>
 <translation id="6676384891291319759">الدخول إلى الإنترنت</translation>
 <translation id="6679975945624592337">‏السماح بتشغيل Google Chrome في الخلفية</translation>
+<translation id="6696915334902295848">‏يحتاج Chrome إلى إذن للوصول إلى الميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="6739177684496155661">‏هل تريد المتابعة باستخدام ملف شخصي جديد على Chrome؟</translation>
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="677276454032249905">‏هل تريد الخروج من Chrome على أي حال؟</translation>
@@ -253,6 +255,7 @@
 <translation id="7761834446675418963">‏انقر على اسمك لفتح Chrome وبدء التصفح.</translation>
 <translation id="7777080907402804672">‏في حال لم تتضمن صورة  ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
 <translation id="7781002470561365167">‏يتوفر إصدار جديد من متصفح Google Chrome.</translation>
+<translation id="778331955594035129">‏يحتاج Chrome إلى إذن تحديد الموقع الجغرافي من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="7787950393032327779">‏يبدو أن الملف الشخصي قيد الاستخدام بواسطة عملية أخرى في Google Chrome (<ph name="PROCESS_ID" />) على جهاز كمبيوتر آخر (<ph name="HOST_NAME" />). وقد تمّ قفل الملف الشخصي من جانب Chrome لضمان عدم تعرضه للتلف. فإذا كنت واثقًا من عدم وجود عمليات أخرى قيد التشغيل على جهاز الكمبيوتر، فيُمكنك فتح قفل الملف الشخصي وإعادة تشغيل Chrome مجددًا.</translation>
 <translation id="7801699035218095297">‏يحاول Google Chrome نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>

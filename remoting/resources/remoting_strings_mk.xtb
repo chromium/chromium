@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="4513946894732546136">Повратни информации</translation>
 <translation id="4563926062592110512">Клиентот не е поврзан: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Конфигурацијата за <ph name="URL_FORWARDER_NAME" /> не е извршена правилно. Изберете друг стандарден прелистувач и повторно овозможете го проследувањето URL-адреса.</translation>
 <translation id="4635770493235256822">Далечински уреди</translation>
 <translation id="4660011489602794167">Прикажи тастатура</translation>
 <translation id="4703799847237267011">Вашата сесија на Chromoting заврши.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">Најавени сте како <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Поврзи се повторно</translation>
 <translation id="5810269635982033450">Екранот дејствува како подлога на допир</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> побара пристап да го гледа вашиот екран и да ги контролира тастатурата и глувчето. Притиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ако не го очекувате ова барање. Во спротивно, изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ за да го дозволите поврзувањето кога ќе бидете спремни.</translation>
 <translation id="5823658491130719298">На компјутерот до којшто сакате да пристапите од далечина, отворете го Chrome и одете на <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Опции за приказ</translation>
 <translation id="6033507038939587647">Опции за тастатура</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Врските со далечинскиот компјутер се привремено блокирани бидејќи некој се обидуваше да се поврзе со него со неважечки PIN. Обидете се повторно подоцна.</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6985691951107243942">Дали сте сигурни дека сакате да ги оневозможите далечинските врски со <ph name="HOSTNAME" />? Доколку се премислите, ќе треба да го посетите тој компјутер за повторно да ги овозможите врските.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> побара пристап да го гледа и контролира вашиот компјутер. Притиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ако не го знаете лицево или ако треба да извршите промени пред да споделите.  Во спротивно, изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ за да го дозволите поврзувањето.</translation>
 <translation id="7019153418965365059">Непрепознаена грешка на домаќинот: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Далечинска помош</translation>
 <translation id="7026930240735156896">Следете ги упатствата за да го поставите компјутерот за пристап оддалеку</translation>
@@ -169,6 +170,7 @@
 За да ја доделите дозволава, кликнете на „<ph name="BUTTON_NAME" />“ подолу. Во окното со поставките за „Пристапност“ што ќе се отвори, изберете го полето веднаш до „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 Ако „<ph name="SERVICE_SCRIPT_NAME" />“ е веќе избрано, поништете го изборот и повторно изберете го.</translation>
+<translation id="8305209735512572429">Далечински процес за интернет-проверка</translation>
 <translation id="8383794970363966105">За да користите Chromoting, ќе треба да додадете сметка на Google на уредот.</translation>
 <translation id="8386846956409881180">Домаќинот е конфигуриран со неважечки акредитиви OAuth.</translation>
 <translation id="8397385476380433240">Одобрете дозвола за <ph name="PRODUCT_NAME" /></translation>

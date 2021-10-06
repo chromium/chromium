@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Recevez des notifications si les prix baissent</translation>
 <translation id="1657719826150349398">Déplacer l'onglet vers le bas</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
+<translation id="2118649612461486615">Renseignements sur le magasin</translation>
+<translation id="2162620598375156287">Maintenant <ph name="CURRENT_PRICE" /> sur <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Retirer <ph name="TABS_COUNT_ONE" /> onglet sélectionné du groupe.}one{Retirer <ph name="TABS_COUNT_MANY" /> onglet sélectionné du groupe.}other{Retirer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés du groupe.}}</translation>
 <translation id="2479148705183875116">Accéder aux paramètres</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Groupe</translation>
 <translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2662028055331606429">Note : <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Visiter le site</translation>
 <translation id="2671423594960767771">Partager le groupe</translation>
 <translation id="2759453070259087442">Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" />, qui contient <ph name="NUMBER_OF_TABS" /> onglets.</translation>
 <translation id="2801787514987684416">Afficher les renseignements sur le magasin?</translation>
 <translation id="2928243913527329289">Google | À propos de cette boutique</translation>
 <translation id="2977480621796371840">Supprimer du groupe</translation>
+<translation id="3052964831964880138">Rabais de <ph name="PRICE_DROP" /> sur le <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">note</translation>
+<translation id="3267416433995960648">Désactiver les alertes</translation>
 <translation id="3291470810748040983">Vous recevrez une alerte si un meilleur prix est détecté dans un onglet ouvert</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Fermer</translation>
 <translation id="6054741997831917303">Le prix de cet article est récemment passé de <ph name="PREVIOUS_PRICE" /> à <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Sélectionnez des onglets</translation>
+<translation id="6228793724645064692">(note du magasin)</translation>
+<translation id="6333260925957816943">Renseignements à propos de ce magasin</translation>
 <translation id="6510648526783655549">Fermer la bande d'onglets</translation>
+<translation id="6549021453810473782">Affichez les renseignements sur le magasin</translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>
 <translation id="6615455863669487791">Démonstration</translation>
 <translation id="6840760312327750441">Pour regrouper des onglets, maintenez le doigt sur un onglet, puis faites-le glisser vers un autre.</translation>
 <translation id="6856809498882026482">Quitter le mode de sélection multiple</translation>
+<translation id="7129458170538955174">Les renseignements à propos de ce magasin sont ouverts à mi-hauteur</translation>
 <translation id="7151209024774799310">Supprimer les onglets du groupe</translation>
 <translation id="7204204600596740190">Mode de sélection multiple</translation>
+<translation id="7326879924029668159">Consultez la politique de retour et plus</translation>
 <translation id="7352298686197644113">Voir quel article dans vos onglets ouverts est offert à meilleur prix</translation>
 <translation id="753732157349120914">Gestionnaire d'onglets</translation>
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille plein écran</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> avis}one{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}other{Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> avis}}</translation>
 <translation id="7885132941432959125">Déplacer l'onglet vers la droite</translation>
 <translation id="7966321538264951561">Ignorer les suggestions.</translation>
+<translation id="8029301326595421733">Les renseignements à propos de ce magasin sont ouverts à pleine hauteur</translation>
 <translation id="814503310257431685">Tout afficher</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
 <translation id="8304833501377495048">Ne plus afficher la bande d'onglets?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8749939518995770034">Bande d'onglets fermée</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>
+<translation id="9090098097337832354">Les renseignements à propos de ce magasin sont fermés</translation>
 <translation id="9150694013019234766">Basculez entre les onglets dans votre groupe d'onglets, près du bas de l'écran</translation>
 <translation id="9169594135889675189">Ajouter un onglet au groupe</translation>
 <translation id="959682366969460160">Place à l'organisation</translation>

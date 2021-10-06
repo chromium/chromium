@@ -52,6 +52,7 @@
 <translation id="1404323374378969387">նորվեգերեն</translation>
 <translation id="1433628812591023318">Ֆայլերը Parallels Desktop քաշելու և թողնելու համար նախ տեղափոխեք դրանք «Windows-ի ֆայլեր» պանակ։</translation>
 <translation id="1435838927755162558">Կիսվեք պանակով Parallels Desktop-ի հետ</translation>
+<translation id="1439919885608649279">Ծաղիկներով մարդ</translation>
 <translation id="1471718551822868769">սլովակերեն</translation>
 <translation id="1474339897586437869">«<ph name="FILENAME" />» ֆայլը չվերբեռնվեց: Ձեր Google Drive-ում բավարար չափով ազատ տարածություն չկա:</translation>
 <translation id="1482884275703521657">ֆիններեն</translation>
@@ -78,6 +79,7 @@
 <translation id="1665611772925418501">Չհաջողվեց փոփոխել ֆայլը:</translation>
 <translation id="1673103856845176271">Անվտանգության նկատառումներից ելնելով՝ ֆայլի օգտագործումն արգելված է:</translation>
 <translation id="169515659049020177">Shift</translation>
+<translation id="1715848075824334077">Հեծանվավարում</translation>
 <translation id="1722487484194605434">Արխիվացվում է <ph name="NUMBER_OF_ITEMS" /> տարր…</translation>
 <translation id="1722687688096767818">Պրոֆիլն ավելացվում է…</translation>
 <translation id="1726100011689679555">Անունների սերվերներ</translation>
@@ -95,7 +97,6 @@
 <translation id="1810764548349082891">Նախադիտումը հասանելի չէ</translation>
 <translation id="1812302367230252929">ամհարերեն (տառադարձություն)</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="1815861158988915678"><ph name="BEGIN_BOLD" />Ուշադրություն.<ph name="END_BOLD" /> Այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել սկավառակի վրա տարածք ազատելու համար: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="1829129547161959350">Պինգվին</translation>
 <translation id="183183971458492120">Տեղեկությունները բեռնվում են...</translation>
 <translation id="1834290891154666894">Սուբյեկտի այլընտրանքային անվան հետ համընկնման սխալ գրառում</translation>
@@ -124,6 +125,7 @@
 <translation id="2070909990982335904">Կետերով սկսվող անունները պահված են համակարգի համար: Ընտրեք այլ անուն:</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2084108471225856927">Սարքի կարգավորումներ</translation>
+<translation id="2084809735218147718">Շնորհակալություն գրող մարդ</translation>
 <translation id="2085470240340828803">«<ph name="FILENAME" />» անունով ֆայլ արդեն առկա է: Ի՞նչ եք ցանկանում անել:</translation>
 <translation id="2088690981887365033">VPN ցանց</translation>
 <translation id="2122305276694332719">Թաքցված ցանցին ավտոմատ միացումը մյուս օգտատերերին թույլ է տալիս տեսնել ձեր սարքը և ցանցային որոշ կարգավորումներ: Այդ իսկ պատճառով Խորհուրդ չի տրվում միացնել այս գործառույթը:</translation>
@@ -139,6 +141,7 @@
 <translation id="2208919847696382164">Տեղադրել Լինուքսի միջոցով</translation>
 <translation id="2225536596944493418">Իսկապե՞ս ուզում եք ջնջել <ph name="NUMBER_OF_ITEMS" /> տարրերը։</translation>
 <translation id="2230062665678605299">Հնարավոր չէ ստեղծել «<ph name="FOLDER_NAME" />» պանակը: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2239068707900391003">Սուրճով մարդ</translation>
 <translation id="2251368349685848079">Վերականգնել աղբարկղից</translation>
 <translation id="2282155092769082568">Ինքնակազմաձևման URL-ը՝</translation>
 <translation id="2288278176040912387">Գրամոֆոն</translation>
@@ -162,6 +165,7 @@
 <translation id="2425665904502185219">Ֆայլի ընդհանուր չափը</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> տարր պատճենվում է «<ph name="FOLDER_NAME" />» պանակում</translation>
 <translation id="2448312741937722512">Տեսակ</translation>
+<translation id="2452444014801043526">Մեգաֆոնով մարդ</translation>
 <translation id="2464079411014186876">Պաղպաղակ</translation>
 <translation id="2464089476039395325">HTTP միջնորդ սերվեր</translation>
 <translation id="2467267713099745100"><ph name="NETWORK_TYPE" /> ցանց, անջատված է</translation>
@@ -209,7 +213,6 @@
 <translation id="2887525882758501333">PDF փաստաթուղթ</translation>
 <translation id="2888807692577297075">&lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt;-ին համընկնող արդյունքներ չկան</translation>
 <translation id="2894654529758326923">Տեղեկություններ</translation>
-<translation id="2902312830803030883">Այլ գործողություններ</translation>
 <translation id="2902734494705624966">ԱՄՆ ընդլայնված</translation>
 <translation id="290843123675549676">մարաթի</translation>
 <translation id="2923240520113693977">Էստոնական</translation>
@@ -225,6 +228,7 @@
 <translation id="299638574917407533">ֆրանսերեն (Կանադա)</translation>
 <translation id="3003189754374775221">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, միացում</translation>
 <translation id="3003633581067744647">Միացնել մանրապատկերի դիտակերպը</translation>
+<translation id="3016566519832145558">Ուշադրություն. այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել՝ սկավառակի վրա տարածք ազատելու համար։</translation>
 <translation id="3029114385395636667">Միացրեք Google Docs Offline ընդլայնումը՝ անցանց ռեժիմում Փաստաթղթերը, Աղյուսակներն ու Սլայդները օգտագործելու համար։</translation>
 <translation id="303198083543495566">Աշխարհագրություն</translation>
 <translation id="3047197340186497470">չինարեն (դայի)</translation>
@@ -235,6 +239,7 @@
 <translation id="3085752524577180175">SOCKS խնամորդ</translation>
 <translation id="3113153474486991170">Չհաջողվեց բացել «<ph name="PATH" />» ֆայլն այս պանակից։ Ֆայլը բացելու համար այն պատճենեք «Իմ ֆայլերը» պանակում։</translation>
 <translation id="3113592018909187986">Մնաց 1 փորձ։ Դուք չեք կարողանա օգտագործել այս ցանցը, մինչև չսահմանեք նոր PIN կոդ։</translation>
+<translation id="3124404833828281817">Երազկոտ մարդ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3138624403379688522">PIN կոդն անվավեր է։ Մնաց <ph name="RETRIES" /> փորձ։</translation>
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (ապարատային աջակցում)</translation>
@@ -287,6 +292,7 @@
 <translation id="3549797760399244642">Անցնել drive.google.com…</translation>
 <translation id="3553048479571901246"><ph name="APP_NAME" /> հավելվածի միջոցով ֆայլերը բացելու համար նախ պատճենեք դրանք Windows-ի ֆայլերի պանակ։</translation>
 <translation id="3556731189587832921">անգլերեն (ԱՄՆ)՝ միջազգային համակարգչային ստեղնաշարով</translation>
+<translation id="3567221313191587603">Ընտրեք ֆայլը և միացրեք «<ph name="OFFLINE_CHECKBOX_NAME" />» կարգավորումը՝ ձեր ֆայլն առանց ինտերնետի օգտագործելու համար։</translation>
 <translation id="357479282490346887">Լիտվական</translation>
 <translation id="3592251141500063301">Չհաջողվեց ներբեռնել «<ph name="FILE_NAME" />» ֆայլը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
@@ -397,6 +403,8 @@
 <translation id="4642769377300286600">Տեղադրվում է բջջային պրոֆիլը (ցանց <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />)</translation>
 <translation id="4646813851450205600">չեխերեն (QWERTY ստեղնաշար)</translation>
 <translation id="4656293982926141856">Այս համակարգիչը</translation>
+<translation id="4656777537938206294">Ֆայլերը հասանելի դարձրեք առանց ինտերնետի օգտագործելու համար</translation>
+<translation id="4658782175094886150">Մարդը ձյան մեջ</translation>
 <translation id="4669606053856530811">«<ph name="SOURCE_NAME" />»-ի անդամներն այլևս չեն կարողանա օգտագործել այս տարրերը, եթե դրանց համար չտրվի ընդհանուր հասանելիություն։</translation>
 <translation id="4690246192099372265">Շվեդական</translation>
 <translation id="4693155481716051732">Սուշի</translation>
@@ -496,6 +504,7 @@
 <translation id="5330145655348521461">Այս ֆայլերը բացված են այլ աշխատասեղանի վրա: Դիտելու համար տեղափոխվեք <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />):</translation>
 <translation id="5330512191124428349">Ստանալ տեղեկություններ</translation>
 <translation id="5335458522276292100"><ph name="FILE_COUNT" /> ֆայլ պահուստավորվում է <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" />-ում</translation>
+<translation id="535792325654997756">Կատուներով մարդ</translation>
 <translation id="5358764674931277">Կադրերի արագությունը</translation>
 <translation id="5368191757080475556">Կիսվեք պանակով Լինուքսի հետ</translation>
 <translation id="5402367795255837559">Բրայլի գրատիպ</translation>
@@ -551,6 +560,8 @@
 <translation id="5833610766403489739">Ֆայլի ներբեռնման տեղը հայտնի չէ: Ստուգեք ներբեռնման տեղը և կրկին փորձեք:</translation>
 <translation id="5838451609423551646">Բոլոր գրառումներն ընտրվածքից հեռացվեցին:</translation>
 <translation id="5838825566232597749">US Workman, միջազգային</translation>
+<translation id="5845721951356578987">Բուժքույր</translation>
+<translation id="5861477046012235702">Խաղացող</translation>
 <translation id="5864471791310927901">DHCP-ի որոնումը չհաջողվեց</translation>
 <translation id="5896749729057314184">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ակտիվացված չէ, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս, մանրամասներ</translation>
 <translation id="5911887972742538906">Լինուքսի հավելվածը տեղադրելիս սխալ առաջացավ:</translation>
@@ -579,6 +590,7 @@
 <translation id="6146563240635539929">Տեսանյութեր</translation>
 <translation id="6150853954427645995">Այս ֆայլը անցանց ռեժիմում օգտագործելու համար, նորից կապակցվեք համացանցին, ֆայլի վրա աջ սեղմումով ընտրեք <ph name="OFFLINE_CHECKBOX_NAME" /> ընտրանքը:</translation>
 <translation id="6164412158936057769">Թիթեռներ</translation>
+<translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6170470584681422115">Սենդվիչ</translation>
 <translation id="6187719147498869044">հունգարերեն</translation>
 <translation id="6189412234224385711">Բացել <ph name="EXTENSION_NAME" /> ընդլայնման միջոցով</translation>
@@ -649,6 +661,7 @@
 <translation id="6861394552169064235">պարսկերեն</translation>
 <translation id="6862635236584086457">Այս պանակում պահված բոլոր ֆայլերն ավտոմատ պահուստավորվում են համացանցում:</translation>
 <translation id="6864328437977279120">սանսկրիտ</translation>
+<translation id="6874758081814639712">Թայ չիով զվաղվող մարդ</translation>
 <translation id="6876155724392614295">Հեծանիվ</translation>
 <translation id="6878261347041253038">Դևանագարի ստեղնաշար (հնչյունաբանական)</translation>
 <translation id="6885780034956018177">Խխունջ</translation>
@@ -879,6 +892,7 @@
 <translation id="8743164338060742337">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />-ի ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, միացում</translation>
 <translation id="8750438273876807512">Սեղմեք որևէ ֆայլի վրա և պահեք, ապա սեղմեք <ph name="ICON" /> և ընտրեք «Ամրացնել դարակին»։</translation>
 <translation id="8787254343425541995">Օգտագործել պրոքսի-սերվերներ՝ համօգտագործվող ցանցերի համար</translation>
+<translation id="8790981080411996443">Բույսեր ջրող մարդ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8802459921616481935">Ուղարկել աղբարկղ</translation>
 <translation id="8808686172382650546">Կատու</translation>
@@ -891,6 +905,7 @@
 <translation id="8874184842967597500">Կապ չկա</translation>
 <translation id="8900820606136623064">Հունգարական</translation>
 <translation id="8903931173357132290">Շրջանավարտ</translation>
+<translation id="8912078710089354287">Պոչը թափահարող շուն</translation>
 <translation id="8919081441417203123">Դանիական</translation>
 <translation id="8965697826696209160">Բավարար տարածք չկա:</translation>
 <translation id="8970501467542182729">Այս ֆայլը նախատեսված է Macintosh ծրագրակազմով համակարգչի համար։ Այն համատեղելի չէ Chrome OS-ով աշխատող ձեր սարքի հետ: <ph name="BEGIN_LINK_HELP" />Իմացեք ավելին<ph name="END_LINK_HELP" />, թե ինչպես ֆայլերը բացել Chrome OS-ում։</translation>
@@ -917,6 +932,7 @@
 <translation id="9144340019284012223">կատալաներեն</translation>
 <translation id="914873105831852105">PIN կոդն անվավեր է։ Մնաց 1 փորձ։</translation>
 <translation id="9153934054460603056">Պահել նույնականացման տվյալներն ու գաղտնաբառը</translation>
+<translation id="9171921933192916600">Գրքասեր</translation>
 <translation id="9172592259078059678">գուջարատերեն (տառադարձություն)</translation>
 <translation id="9173120999827300720">անգլերեն (ԱՄՆ)՝ միջազգային ստեղնաշարով</translation>
 <translation id="9174050671906956834">Աղբարկղի տարրերը 30 օր հետո ընդմիշտ ջնջվում են։</translation>
@@ -929,6 +945,7 @@
 <translation id="943972244133411984">Ով է փոփոխել</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="947144732524271678">Դուք ընտրեցիք <ph name="ENTRY_COUNT" /> գրառում՝ «<ph name="FROM_ENTRY_NAME" />»-ից «<ph name="TO_ENTRY_NAME" />»:</translation>
+<translation id="965477715979482472">Անգլերեն (Հարավային Աֆրիկա)</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» անունով ֆայլ արդեն գոյություն ունի: Ուզո՞ւմ եք փոխարինել այն:</translation>
 <translation id="992401651319295351">Մնաց <ph name="RETRIES" /> փորձ։ Դուք չեք կարողանա օգտագործել այս ցանցը, մինչև չսահմանեք նոր PIN կոդ։</translation>

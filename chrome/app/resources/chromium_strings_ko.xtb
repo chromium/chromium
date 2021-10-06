@@ -36,6 +36,7 @@
 <translation id="2343156876103232566">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chromium에 로그인하세요.</translation>
 <translation id="2347108572062610441">Chromium을 시작하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="2396765026452590966">Chromium을 시작하면 표시되는 페이지가 '<ph name="EXTENSION_NAME" />' 확장 프로그램으로 인해 변경되었습니다.</translation>
+<translation id="2401032172288869980">Chromium에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="2483889755041906834">Chromium에서</translation>
 <translation id="2485422356828889247">제거</translation>
 <translation id="2535480412977113886">계정의 로그인 세부정보가 오래되어 Chromium OS에서 데이터를 동기화하지 못했습니다.</translation>
@@ -153,6 +154,7 @@
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, Chromium OS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
+<translation id="5883558403894052917">Chromium에서 다음 항목에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
 <translation id="5987687638152509985">동기화를 시작하려면 Chromium을 업데이트하세요.</translation>
@@ -170,6 +172,7 @@
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" />에서 Chromium에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="6212496753309875659">컴퓨터에 이미 최신 버전의 Chromium이 있습니다. 소프트웨어가 작동하지 않으면 Chromium의 설치를 제거한 뒤 다시 시도하세요.</translation>
 <translation id="6219195342503754812">{0,plural, =0{곧 Chromium이 다시 시작됩니다}=1{1초 후 Chromium이 다시 시작됩니다}other{#초 후 Chromium이 다시 시작됩니다}}</translation>
+<translation id="6241367896540709610">파일을 다운로드하려면 Chromium에 저장소 액세스 권한이 필요합니다.</translation>
 <translation id="6248213926982192922">Chromium을 기본 브라우저로 설정</translation>
 <translation id="6266342355635466082">Chromium에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
@@ -190,7 +193,9 @@
 <translation id="6570579332384693436">맞춤법 오류를 수정하기 위해 Chromium에서 사용자가 입력하는 텍스트를 Google로 전송합니다.</translation>
 <translation id="6598877126913850652">Chromium 알림 설정으로 이동</translation>
 <translation id="6613594504749178791">변경사항은 다음에 Chromium을 다시 시작할 때 적용됩니다.</translation>
+<translation id="665732753414869868">Chromium에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
+<translation id="6709350901466051922">Chromium에서 사이트에 대한 마이크 권한이 필요합니다.</translation>
 <translation id="6717134281241384636">Chromium의 최신 버전을 사용하기 때문에 프로필을 사용할 수 없습니다.
 
 일부 기능을 사용할 수 없습니다. 다른 프로필 디렉터리를 지정하거나 Chromium의 새로운 버전을 사용하시기 바랍니다.</translation>
@@ -202,6 +207,7 @@
 <translation id="6847869444787758381">비밀번호가 유출되면 Chromium에서 알려줍니다.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay(Chromium에 복사됨)</translation>
+<translation id="6873893289264747459">Chromium에서 "<ph name="EXTENSION_NAME" />"에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="6893813176749746474">Chromium이 업데이트되었지만, 최소 30일 동안 사용하지 않았습니다.</translation>
 <translation id="691026815377248078">페어링을 계속하려면 Chromium에서 블루투스 액세스 권한이
 필요합니다. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -210,6 +216,7 @@
 <translation id="6990124437352146030">이 사이트에서 마이크에 액세스하려면 Chromium에 권한이 필요합니다</translation>
 <translation id="705851970750939768">Chromium 업데이트</translation>
 <translation id="7067091210845072982">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
+<translation id="718435575166326686">Chromium에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
 <translation id="7196312274710523067">Chromium을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="7197677400338048821">Chromium에서 비밀번호를 확인할 수 없습니다. 24시간 후 다시 시도해 보세요.</translation>
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
@@ -233,10 +240,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
       Chromium OS 설정<ph name="LINK_END" />을 확인해 보세요.</translation>
 <translation id="761356813943268536">Chromium이 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="7617377681829253106">더욱 업그레이드된 Chromium</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />시작하기 전에 최신 상태의 데이터를 백업했는지 확인하세요. Chromium OS를 설치하면 하드 드라이브에 있는 모든 데이터를 덮어쓰게 됩니다.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google은 데이터 손실에 대한 책임을 지지 않으며, Chromium OS가 인증되지 않은 모델에서 작동할 것이라고 보장하지 않습니다. 인증된 모델에 관해 자세히 알아보려면 [TBD] 페이지로 이동하세요.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chromium OS 설치 및 데이터 삭제에 관해 자세히 알아보세요. [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />진행할 준비가 되었다면 'Chromium OS 설치'를 클릭하세요. 몇 가지 간단한 단계로 구성된 설치 과정을 안내해 드리겠습니다. 컴퓨터가 변경되기 전에 한 번 더 확인할 기회가 제공됩니다.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="7689606757190482937">모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="7729447699958282447">도메인에서 동기화를 사용할 수 없어 Chromium에서 데이터를 동기화하지 못했습니다.</translation>
@@ -251,6 +254,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7975919845073681630">Chromium의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
 <translation id="8013436988911883588">Chromium에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
 <translation id="8045118833343856403">다음 계정은 어느 Chromium 프로필에도 로그인하지 않았습니다. 다른 프로필에서 계정을 사용하려면 먼저 프로필을 삭제하세요</translation>
+<translation id="8105840573057009683">Chromium에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>
 <translation id="81770708095080097">이 파일은 위험하므로 Chromium에서 차단했습니다.</translation>
 <translation id="8248265253516264921">이미지에 유용한 설명이 없으면 Chromium에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="8266560134891435528">로그인되어 있지 않으므로 Chromium에서 비밀번호를 확인할 수 없습니다.</translation>

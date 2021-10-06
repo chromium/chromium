@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Η λήψη διακόπηκε προσωρινά.</translation>
 <translation id="1415402041810619267">Περικομμένο URL</translation>
 <translation id="1446450296470737166">Να επιτρέπεται πλήρης έλεγχος σε MIDI</translation>
-<translation id="1509960214886564027">Μπορεί να παρουσιαστούν προβλήματα στις λειτουργίες πολλών ιστοτόπων.</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1644574205037202324">Ιστορικό</translation>
 <translation id="1647582022260550163">Είστε βέβαιοι ότι θέλετε να επαναφέρετε τις άδειες και να διαγράψετε τα cookie και τα δεδομένα ιστοτόπου;</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Να επιτρέπονται, εκτός από τα cookie τρίτου μέρους</translation>
 <translation id="1989112275319619282">Περιήγηση</translation>
 <translation id="1994173015038366702">URL ιστότοπου</translation>
+<translation id="2004697686368036666">Ορισμένες λειτουργίες κάποιων ιστοτόπων μπορεί να μην είναι διαθέσιμες.</translation>
 <translation id="2025115093177348061">Επαυξημένη πραγματικότητα</translation>
 <translation id="2030769033451695672">Πατήστε για επιστροφή σε <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Επιτρέπει τα cookie για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
+<translation id="4176463684765177261">Απενεργοποιημένο</translation>
 <translation id="4200726100658658164">Άνοιγμα ρυθμίσεων τοποθεσίας</translation>
 <translation id="4226663524361240545">Κατά τη λήψη ειδοποιήσεων ενδέχεται να δονείται η συσκευή</translation>
 <translation id="4259722352634471385">Αποκλείστηκε η μετάβαση στη διεύθυνση: <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Παύση βίντεο</translation>
 <translation id="5887687176710214216">Τελευταία επίσκεψη χθες</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
+<translation id="59174027418879706">Ενεργοποιημένο</translation>
 <translation id="5922853908706496913">Κοινή χρήση της οθόνης σας</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="5975083100439434680">Σμίκρυνση</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Αποκλεισμός cookie τρίτων</translation>
 <translation id="6216432067784365534">Επιλογές <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Απεγκατάσταση <ph name="APP_NAME" />;</translation>
+<translation id="6233545266937675277">Υποβολή αιτήματος για την προβολή ιστοτόπων για υπολογιστή</translation>
 <translation id="6262279340360821358">Οι άδειες <ph name="PERMISSION_1" /> και <ph name="PERMISSION_2" /> αποκλείστηκαν.</translation>
 <translation id="6270391203985052864">Οι ιστότοποι μπορούν να ζητούν να στέλνουν ειδοποιήσεις.</translation>
 <translation id="6295158916970320988">Όλοι οι ιστότοποι</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.}other{Οι άδειες <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> και <ph name="NUM_MORE" /> ακόμη αποκλείστηκαν.}}</translation>
 <translation id="6554732001434021288">Τελευταία επίσκεψη πριν από <ph name="NUM_DAYS" /> ημέρες</translation>
 <translation id="6561560012278703671">Χρήση πιο διακριτικών μηνυμάτων (αποκλεισμός διακοπών από τα μηνύματα ειδοποιήσεων)</translation>
+<translation id="6593061639179217415">Για υπολογιστή</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Προστατ. περιεχ.</translation>
 <translation id="662080504995468778">Παραμονή</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>
 <translation id="7846621471902887024">Θα αποσυνδεθείτε από όλους τους ιστοτόπους.</translation>
 <translation id="7882806643839505685">Να επιτρέπεται ο ήχος για έναν συγκεκριμένο ιστότοπο.</translation>
+<translation id="7940722705963108451">Υπενθύμιση</translation>
 <translation id="7986741934819883144">Επιλογή επαφής</translation>
-<translation id="7993619969781047893">Μπορεί να παρουσιαστούν προβλήματα στις λειτουργίες ορισμένων ιστοτόπων.</translation>
 <translation id="7999064672810608036">Είστε βέβαιοι ότι θέλετε να διαγράψετε όλα τα δεδομένα γι' αυτόν τον ιστότοπο, όπως τα cookie, και να επαναφέρετε όλα τα δικαιώματά του;</translation>
 <translation id="8007176423574883786">Έχει απενεργοποιηθεί για αυτήν τη συσκευή</translation>
 <translation id="802154636333426148">Η λήψη απέτυχε</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Σε σίγαση</translation>
 <translation id="813082847718468539">Προβολή πληροφοριών τοποθεσίας</translation>
 <translation id="8131740175452115882">Επιβεβαίωση</translation>
+<translation id="8154912474061769055">Ορισμένες λειτουργίες πολλών ιστοτόπων μπορεί να μην είναι διαθέσιμες.</translation>
 <translation id="8197286292360124385">H άδεια <ph name="PERMISSION_1" /> επιτράπηκε.</translation>
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="8206354486702514201">Η ρύθμιση αυτή επιβάλλεται από τον διαχειριστή σας.</translation>
 <translation id="8211406090763984747">Η σύνδεση είναι ασφαλής</translation>
 <translation id="8249310407154411074">Μετακίνηση επάνω</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
+<translation id="8267092878336850213">Υποβολή αιτήματος για την προβολή ιστοτόπων για κινητό</translation>
 <translation id="8300705686683892304">Διαχείριση από εφαρμογή</translation>
 <translation id="8324158725704657629">Να μην ερωτηθώ ξανά</translation>
 <translation id="8372893542064058268">Να επιτρέπεται ο Συγχρονισμός παρασκηνίου για έναν συγκεκριμένο ιστότοπο.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Διαγραφή καταχώρισης</translation>
 <translation id="868929229000858085">Αναζήτηση στις επαφές σας</translation>
 <translation id="8702612070107455751">Όλα τα δεδομένα εκτός σύνδεσης θα διαγραφούν.</translation>
+<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8719283222052720129">Ενεργοποιήστε την άδεια για την εφαρμογή <ph name="APP_NAME" /> στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>

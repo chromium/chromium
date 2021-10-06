@@ -36,6 +36,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2343156876103232566">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chromium op beide apparaten.</translation>
 <translation id="2347108572062610441">Deze extensie heeft gewijzigd welke pagina wordt getoond wanneer je Chromium start.</translation>
 <translation id="2396765026452590966">De extensie <ph name="EXTENSION_NAME" /> heeft gewijzigd welke pagina je ziet als je Chromium start.</translation>
+<translation id="2401032172288869980">Chromium heeft camera- en microfoonrechten nodig voor deze site</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
 <translation id="2535480412977113886">Chromium OS kan je gegevens niet synchroniseren omdat de inloggegevens voor je account zijn verouderd.</translation>
@@ -153,6 +154,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS wordt mogelijk gemaakt door aanvullende <ph name="BEGIN_LINK_CROS_OSS" />opensource-software<ph name="END_LINK_CROS_OSS" />, net als de <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelomgeving<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Welkom bij Chromium</translation>
+<translation id="5883558403894052917">Chromium heeft vastgesteld dat deze items malware bevatten:</translation>
 <translation id="5895138241574237353">Opnieuw starten</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Inloggen bij netwerk</translation>
 <translation id="5987687638152509985">Chromium updaten om de synchronisatie te starten</translation>
@@ -170,6 +172,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="6183079672144801177">Zorg dat je bent ingelogd bij Chromium op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
 <translation id="6212496753309875659">Deze computer beschikt al over een recentere versie van Chromium. Als de software niet werkt, moet je Chromium verwijderen en het opnieuw proberen.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium wordt nu opnieuw gestart}=1{Chromium wordt over één seconde opnieuw gestart}other{Chromium wordt over # seconden opnieuw gestart}}</translation>
+<translation id="6241367896540709610">Chromium heeft toegang tot de opslag nodig om bestanden te downloaden</translation>
 <translation id="6248213926982192922">Chromium als standaardbrowser instellen</translation>
 <translation id="6266342355635466082">Chromium kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
@@ -190,7 +193,9 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="6570579332384693436">Chromium verzendt de tekst die je in tekstvelden typt naar Google om spelfouten te corrigeren</translation>
 <translation id="6598877126913850652">Ga naar instellingen voor Chromium-meldingen</translation>
 <translation id="6613594504749178791">Je wijzigingen worden toegepast wanneer je Chromium opnieuw start.</translation>
+<translation id="665732753414869868">Chromium heeft camerarechten nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="6676384891291319759">Verbinding maken met internet</translation>
+<translation id="6709350901466051922">Chromium heeft microfoonrechten nodig voor deze site</translation>
 <translation id="6717134281241384636">Je profiel kan niet worden gebruikt, omdat dit is gemaakt in een recentere versie van Chromium.
 
 Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirectory op of gebruik een recentere versie van Chromium.</translation>
@@ -202,6 +207,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6847869444787758381">Chromium laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (gekopieerd naar Chromium)</translation>
+<translation id="6873893289264747459">Chromium heeft vastgesteld dat <ph name="EXTENSION_NAME" /> malware bevat</translation>
 <translation id="6893813176749746474">Chromium is bijgewerkt, maar je hebt het programma minstens 30 dagen niet gebruikt.</translation>
 <translation id="691026815377248078">Chromium heeft bluetooth-toegang nodig om door te gaan met koppelen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Link openen in een Chromium-inco&amp;gnitovenster</translation>
@@ -209,6 +215,7 @@ Sommige functies zijn mogelijk niet beschikbaar. Geef een andere profieldirector
 <translation id="6990124437352146030">Chromium heeft toegangsrechten voor je microfoon nodig voor deze site</translation>
 <translation id="705851970750939768">Chromium updaten</translation>
 <translation id="7067091210845072982">Als een afbeelding geen nuttige beschrijving bevat, probeert Chromium je er een te geven. Afbeeldingen worden naar Google verzonden om beschrijvingen te maken.</translation>
+<translation id="718435575166326686">Chromium heeft camerarechten nodig voor deze site</translation>
 <translation id="7196312274710523067">Kan Chromium niet starten. Probeer het opnieuw.</translation>
 <translation id="7197677400338048821">Chromium kan je wachtwoorden niet checken. Probeer het over 24 uur opnieuw.</translation>
 <translation id="7223968959479464213">Taakbeheer - Chromium</translation>
@@ -231,10 +238,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7585853947355360626">Kijk je in de <ph name="LINK_BEGIN" />Chromium OS-instellingen<ph name="LINK_END" />als je een instelling niet ziet op deze pagina.</translation>
 <translation id="761356813943268536">Chromium gebruikt je camera en microfoon.</translation>
 <translation id="7617377681829253106">Chromium is nu nog beter</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Zorg dat je een actuele back-up van je gegevens hebt voordat we beginnen. Als je Chromium OS installeert, worden namelijk alle gegevens op de harde schijf overschreven.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google is niet verantwoordelijk voor verlies van gegevens en biedt geen garantie dat Chromium OS werkt op niet-gecertificeerde modellen. Ga naar [TBD] voor meer informatie over gecertificeerde modellen.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Meer informatie over de installatie van Chromium OS en het wissen van gegevens: [TBD URL]<ph name="END_PARAGRAPH3" />
-<ph name="BEGIN_PARAGRAPH4" />Als je wilt doorgaan, klik je op Chromium OS installeren. We leiden je in een paar makkelijke stappen door de installatie. Je krijgt nog een kans om te bevestigen voordat we wijzigingen aanbrengen op je computer.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium is niet je standaardbrowser</translation>
 <translation id="7689606757190482937">Chromium synchroniseren en personaliseren op al je apparaten</translation>
 <translation id="7729447699958282447">Chromium kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
@@ -249,6 +252,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7975919845073681630">Dit is een tweede installatie van Chromium en kan niet als standaardbrowser worden ingesteld.</translation>
 <translation id="8013436988911883588">Zodra Chromium toegang heeft, kunnen websites je om toegang vragen.</translation>
 <translation id="8045118833343856403">De volgende accounts zijn niet ingelogd bij Chromium-profielen. Als je een account wilt gebruiken in een ander profiel, verwijder je eerst dat profiel.</translation>
+<translation id="8105840573057009683">Chromium heeft locatierechten nodig voor deze site</translation>
 <translation id="81770708095080097">Dit bestand is gevaarlijk en is daarom door Chromium geblokkeerd.</translation>
 <translation id="8248265253516264921">Als een afbeelding geen nuttige beschrijving bevat, probeert Chromium je er een te geven. Afbeeldingen worden naar Google gestuurd om beschrijvingen te maken. Je kunt dit op elk gewenst moment uitzetten in Instellingen.</translation>
 <translation id="8266560134891435528">Chromium kan je wachtwoorden niet checken omdat je niet bent ingelogd.</translation>

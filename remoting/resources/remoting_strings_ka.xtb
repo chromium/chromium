@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">© 2021, The Chromium Authors. ყველა უფლება დაცულია.</translation>
 <translation id="4513946894732546136">უკუკავშირი</translation>
 <translation id="4563926062592110512">კლიენტი გაითიშა: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> არასწორად არის კონფიგურირებული. აირჩიეთ განსხვავებული ვებ-ბრაუზერი, შემდეგ კი ხელახლა ჩართეთ URL-ების გადამისამართება.</translation>
 <translation id="4635770493235256822">დისტანციური მოწყობილობები</translation>
 <translation id="4660011489602794167">კლავიატურის ჩვენება</translation>
 <translation id="4703799847237267011">თქვენი Chromoting სესია დასრულდა.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">შესული ხართ, როგორც <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">ხელახლა დაკავშირება</translation>
 <translation id="5810269635982033450">ეკრანი მუშაობს ტრეკპედის სახით</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ითხოვს ნებართვას, რომ ნახოს თქვენი ეკრანი, ასევე, თქვენი კლავიატურა და მაუსი გააკონტროლოს. თუ ეს მოთხოვნა მოულოდნელია, დააჭირეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“-ს. სხვა შემთხვევაში არჩიეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ და დაუშვით დაკავშირება, როცა მზად იქნებით.</translation>
 <translation id="5823658491130719298">იმ კომპიუტერიდან, რომელზეც გსურთ, გქონდეთ დისტანციური წვდომა, გახსენით Chrome და მოინახულეთ <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">ჩვენების ვარიანტები</translation>
 <translation id="6033507038939587647">კლავიატურის ვარიანტები</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">დისტანციურ კომპიუტერთან კავშირები დროებით დაბლოკილია, რადგან ვიღაც ცდილობდა დაკავშირებას არასწორი PIN-კოდით. გთხოვთ, ცადოთ მოგვიანებით.</translation>
 <translation id="6965382102122355670">კარგი</translation>
 <translation id="6985691951107243942">ნამდვილად გსურთ გამორთოთ დისტანციური კავშირები <ph name="HOSTNAME" />-თან? თუ გადაიფიქრებთ, უნდა შეხვიდეთ კომპიუტერის სისტემაში და ხელახლა ჩართოთ კავშირი.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> ითხოვს წვდომას თქვენი კომპიუტერის სანახავად და სამართავად. თუ ამ პიროვნებას არ იცნობთ, ან გაზიარებამდე გარკვეული ცვლილებების შეტანა გსურთ, აირჩიეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“.  სხვა შემთხვევაში არჩიეთ „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ და დაუშვით დაკავშირება.</translation>
 <translation id="7019153418965365059">მასპინძლის ამოუცნობი შეცდომა: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">დისტანციური დახმარება</translation>
 <translation id="7026930240735156896">მიჰყევით ინსტრუქციას და დააყენეთ თქვენი კომპიუტერი დისტანციური წვდომისთვის</translation>
@@ -169,6 +170,7 @@
 აღნიშნული ნებართვის მისანიჭებლად დააწკაპუნეთ ქვემოთ მოცემულ ღილაკზე „<ph name="BUTTON_NAME" />“. „მარტივი წვდომის“ პარამეტრების გახსნილ პანელზე მონიშნეთ „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 თუ „<ph name="SERVICE_SCRIPT_NAME" />“ უკვე მონიშნულია, მოხსენით და ხელახლა მონიშნეთ.</translation>
+<translation id="8305209735512572429">ვებ-ავტორიზაციის გადისტანციურების პროცესი</translation>
 <translation id="8383794970363966105">Chromoting-ის გამოსაყენებლად თქვენ უნდა დაამატოთ Google Account თქვენს აპარატში.</translation>
 <translation id="8386846956409881180">მასპინძელი დაკონფიგურირებულია არასწორი OAuth მონაცემებით.</translation>
 <translation id="8397385476380433240">მიანიჭეთ ნებართვა <ph name="PRODUCT_NAME" />-ს</translation>

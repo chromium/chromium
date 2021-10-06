@@ -66,6 +66,7 @@
 <translation id="133801305381959373">គ្មានកន្លែងបញ្ចូលអត្ថបទដែលអាចកែបានបន្ទាប់ទេ</translation>
 <translation id="1342835525016946179">អត្ថបទ</translation>
 <translation id="1346059596910821859">គន្លឹះ</translation>
+<translation id="1354356357730355833">ចម្លង</translation>
 <translation id="135978014023467274">អ្នកបានដំឡើងជំនាន់ទៅ ChromeVox 63 ហើយ!</translation>
 <translation id="1360699455582016846">ចុចធាតុ​ខាងក្រោម​គ្រាប់ចុច​នាំផ្លូវ <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">នេះគឺជាចំណងជើងចុងក្រោយ។ ចុច Search+H ដើម្បីតម្រឹមចំណងជើងដំបូង ឬចុច Search+Shift+H ដើម្បីចូលទៅកាន់ចំណងជើងទីពីរនៅលើទំព័រនេះ។</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">ធ្វើឲ្យថ្មីឡើងវិញ</translation>
 <translation id="2675533876313964202">បៃតងខ្ចី</translation>
 <translation id="2684412629217766642">បិទការបង្រៀនរបៀបប្រើ ChromeVox</translation>
+<translation id="2692503699962701720">ប្ដូរ​កម្រិតសំឡេង នៅពេលអាន​ប្រភេទធាតុ និង​អត្ថបទដែល​មានរចនាប័ទ្ម​ជាក់លាក់</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">បេក្ខភាពនៃការបំប្លែងអក្សរ</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{សញ្ញាវង់ក្រចកបើក}other{# សញ្ញាវង់ក្រចកបើក}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">បញ្ឈរ​</translation>
 <translation id="3286390186030710347">របារំកិល</translation>
 <translation id="3300348286427369683">អាចប្រើអត្ថបទសម្បូរបែបបាន។ ឥឡូវនេះ ChromeVox ស្គាល់កន្លែងបញ្ចូលអក្សរសម្បូរបែប រួមទាំងពាក្យបញ្ជាផ្លោះ ការនាំផ្លូវសញ្ញាព្រួញអក្សរស្ទាប ការជ្រើសរើស និងច្រើនទៀត។</translation>
+<translation id="3300733168898541351">ត្រឡប់វិញ</translation>
 <translation id="3307886118343381874">ទៅកាន់ផ្នែកខាងចុងនៃតារាង</translation>
 <translation id="3312997241656799641">តំណដែលបានទៅកាន់បន្ទាប់</translation>
 <translation id="3313245066383501820">គ្រាប់ចុចបន្សំ ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">បង្ហាញបញ្ជីបែបបទ</translation>
 <translation id="3414400929511680526">ផ្ទៃមេឃ​ស្រាល</translation>
 <translation id="3418936350470374046">គ្មានក្រឡាខាងក្រោមទេ</translation>
+<translation id="3419269701801640163">ដាក់ចូល</translation>
 <translation id="3435494200763325275">​ការរុករកផ្ទាំងដោយ​ប្រើ Tab (បានបន្ត)</translation>
 <translation id="344800400831402066">ត្នោតខ្ចី</translation>
 <translation id="3457000393508828486">បានចុចផ្នែកមួយចំនួន</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">img</translation>
 <translation id="4021716437419160885">រំកិលចុះក្រោម</translation>
 <translation id="4035381225449278841">រដូវ​ផ្ការីក</translation>
+<translation id="4038098586530338813">ធ្វើវិញ</translation>
 <translation id="4047216625641135770">សញ្ញា</translation>
 <translation id="4047910800766704982">អ្នកអាច​ប្រើសំឡេង​ធម្មជាតិដូចមនុស្ស នៅពេល​ឧបករណ៍​របស់អ្នក​មានអ៊ីនធឺណិត។ អត្ថបទនឹងត្រូវបានបញ្ជូនទៅ Google សម្រាប់ដំណើរការ។ អ្នក​អាច​បិទ​វា​បាន​គ្រប់​ពេល​នៅ​ក្នុង​ការកំណត់។</translation>
 <translation id="4053520724192563562">បៃតងខ្ចី</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">ស្វាយខ្ចី</translation>
 <translation id="5140016802771803559">ស្វាយ</translation>
 <translation id="5142101052131610456">មេរៀន​ទាំងអស់</translation>
+<translation id="5152605892605507188">ផ្លាស់ទី​ទៅស្តាំ</translation>
 <translation id="5158275234811857234">គម្រប</translation>
 <translation id="516076699907426116">ដើម្បីបន្ត សូមរកមើល​ដោយប៉ះ ដើម្បីស្វែងរក​ប៊ូតុង​មេរៀនបន្ទាប់។ បន្ទាប់មក​ចុចពីរដង ដើម្បីបន្ត។</translation>
 <translation id="5170206230005240598">បានបើកអក្សររត់ជាអក្សរស្ទាប</translation>
 <translation id="5183440668879371625">បន្ទាត់ប្រែលពីមុន</translation>
 <translation id="5189244881767082992">បន្ទាត់</translation>
+<translation id="5234747236692380506">វាយបញ្ចូល <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">សំបក​ពងមាន់</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">បញ្ចប់</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">ផ្នែកក្បាល 4</translation>
 <translation id="6150023170003443621">បៃតងខ្ចី</translation>
 <translation id="6158882249329863701">ជួរដេកទី <ph name="TABLECELLROWINDEX" /> ជួរឈរទី <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">ផ្លាស់ទី​ទៅឆ្វេង</translation>
 <translation id="6164829606128959761">ម៉ែត្រ</translation>
 <translation id="6165508094623778733">ស្វែងយល់​បន្ថែម</translation>
 <translation id="6166362019018438352">បានបិទអក្សររត់ជាអក្សរស្ទាប</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">បានលុប</translation>
 <translation id="6910969481785184048">បើក បិទ និងឈប់</translation>
 <translation id="6919104639734799681">បង្ហាញបញ្ជីតារាង</translation>
+<translation id="692135145298539227">លុប</translation>
+<translation id="6935674530832500465">ផ្លាស់ទី​ចុះក្រោម</translation>
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6949846980769640811">បៃតងស្រាល</translation>
 <translation id="6951482098621102657">គ្មានផ្នែកក្បាលកម្រិតទី 5 បន្ទាប់ទេ</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">ថតឯកសារ</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">ប្រើ​សំឡេងធម្មជាតិឬ?</translation>
-<translation id="7484805699335881122">ប្ដូរកម្រិតសំឡេង នៅពេលអានប្រភេទធាតុ និងអត្ថបទដែលសរសេរជាអក្សរធំ ក្នុងវង់ក្រចក ដិត លុប ឬនៅក្នុងអព្ភន្តរសញ្ញា។</translation>
 <translation id="7491962110804786152">ផ្ទាំង</translation>
 <translation id="7492497529767769458">ទៅ​កាន់​ផ្នែក​បន្ទាប់។ ឧទាហរណ៍រួមបញ្ចូលកម្មវិធី​ចាប់ផ្ដើម និងរបារស្ថានភាព។</translation>
 <translation id="7505149250476994901">និយាយថា "អក្សរធំ" បន្ទាប់ពី​អក្សរ</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">គ្មានក្រឡាខាងលើទេ</translation>
 <translation id="8138880386467279117">ប៉ះ</translation>
 <translation id="8146613869421949343">បន្ទាប់មកទៀត អ្នក​នឹងស្វែងយល់​អំពី​គ្រាប់ចុច​ស្វែងរក​។ គ្រាប់ចុច​ស្វែងរក​ត្រូវបានប្រើ​រួមគ្នា​ជាមួយ​គ្រាប់ចុច​ផ្សេងទៀត​សម្រាប់​ការបញ្ជា​នៅលើ ChromeVox។ គ្រាប់ចុច​ស្វែងរក​ស្ថិតនៅ​ចំពីលើ​គ្រាប់ចុច​ប្ដូរ (Shift) ខាងឆ្វេង។ ដើម្បី​បន្ត សូមចុច​គ្រាប់ចុច​ស្វែងរក​។</translation>
+<translation id="8158033275290782295">ជ្រើសរើស​ទាំងអស់</translation>
 <translation id="816818801578874684">នេះជា​ចំណងជើង​ទីមួយ​។ ចុចស្វែងរក + H ដើម្បី​ទៅកាន់​ចំណងជើង​បន្ទាប់​។</translation>
 <translation id="8173092779156526980">អូសម្រាមដៃ​បួនទៅឆ្វេង</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{សញ្ញាគូសបន្ទាត់ពីក្រោម}other{# សញ្ញាគូសបន្ទាត់ពីក្រោម}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">សេចក្ដី​ផ្ដើម</translation>
 <translation id="827266600368092403">ចាប់ផ្តើម ឬបញ្ចប់ការជ្រើសរើស</translation>
 <translation id="827422111966801947">ទឹកប៊ិក</translation>
+<translation id="827496561804786391">ផ្លាស់ទី​ឡើងលើ</translation>
 <translation id="8276439074553447000">លោតទៅរបស់ដែលអាចផ្តោតបានពីមុន</translation>
 <translation id="8279039817939141096">ចុច​គ្រាប់ចុច qwerty, គ្រាប់ចុច​អក្សរស្ទាបដែលអាច​ផ្ទុកឡើងវិញបាន ឬ​ចលនាចុច ដើម្បី​ស្វែងយល់អំពី​មុខងាររបស់វា។ ចុច control ជាមួយ w, space ជាមួយ Z, អូសទៅឆ្វេង​ដោយប្រើ​ម្រាមដៃពីរ ឬ escape ដើម្បី​ចាកចេញ។</translation>
 <translation id="8283603667300770666">ប្រអប់បែបបទបន្ទាប់។</translation>
 <translation id="8310185481635255431">គ្មានតំណបន្ទាប់ទេ</translation>
 <translation id="831207808878314375">និយមន័យ</translation>
 <translation id="8313653172105209786">dir</translation>
+<translation id="8314546933558091113">ដកការជ្រើសរើស​ទាំងអស់</translation>
 <translation id="8316881042119029234">លឿងស្រាល</translation>
 <translation id="8324974933005349667">កំណត់ការកំណត់ការបំប្លែងអត្ថបទទៅជាការនិយាយឱ្យ​ស្រប​នឹងអ្នក</translation>
 <translation id="8326783648485765113">បៃតងខ្ចី</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">ទឹកសមុទ្រខ្ចី</translation>
 <translation id="9080299285199342830">រំលងទៅផ្នែកបញ្ចប់</translation>
 <translation id="9089864840575085222">វដ្តនៃការបន្លឺសម្លេងការវាយបញ្ចូល</translation>
+<translation id="9099429023611373837">កាត់</translation>
 <translation id="9108370397979208512">គណិតវិទ្យា</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{ភាគរយ}other{# សញ្ញាភាគរយ}}</translation>

@@ -66,6 +66,7 @@
 <translation id="133801305381959373">没有下一个可编辑的文本字段</translation>
 <translation id="1342835525016946179">文章标记</translation>
 <translation id="1346059596910821859">提示</translation>
+<translation id="1354356357730355833">复制</translation>
 <translation id="135978014023467274">您已更新至 ChromeVox 63！</translation>
 <translation id="1360699455582016846">点击路由键 <ph name="ROUTING_KEY_NUMBER" /> 下面的项</translation>
 <translation id="1377925789329510816">这是最后一个标题。按 Search+H 组合键可跳回至第一个标题，按 Search+Shift+H 组合键则可转到此页面上的第二个标题。</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">刷新</translation>
 <translation id="2675533876313964202">查特酒绿色</translation>
 <translation id="2684412629217766642">关闭 ChromeVox 教程</translation>
+<translation id="2692503699962701720">读出元素类型和经过格式化的文字时改变音高</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">文本转换候选</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{1个左圆括号}other{#个左圆括号}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">纵向</translation>
 <translation id="3286390186030710347">滑块</translation>
 <translation id="3300348286427369683">支持富文本。ChromeVox 现在支持富文本字段，包括跳转命令、盲文光标路由、选择等等。</translation>
+<translation id="3300733168898541351">撤消</translation>
 <translation id="3307886118343381874">转到表格末尾</translation>
 <translation id="3312997241656799641">下一个访问过的链接</translation>
 <translation id="3313245066383501820">ChromeVox 辅助键</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">显示表单列表</translation>
 <translation id="3414400929511680526">爱丽丝蓝色</translation>
 <translation id="3418936350470374046">下方没有单元格</translation>
+<translation id="3419269701801640163">粘贴</translation>
 <translation id="3435494200763325275">Tab 键导航（续）</translation>
 <translation id="344800400831402066">秘鲁色</translation>
 <translation id="3457000393508828486">部分已按下</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">图片</translation>
 <translation id="4021716437419160885">向下滚动</translation>
 <translation id="4035381225449278841">春季</translation>
+<translation id="4038098586530338813">重做</translation>
 <translation id="4047216625641135770">标记</translation>
 <translation id="4047910800766704982">当您的设备联网后，您可以使用自然的人声语音。系统会将所选文字发送给 Google 以供处理。您可在“设置”中随时关闭此功能。</translation>
 <translation id="4053520724192563562">柠檬绿</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">中岩蓝色</translation>
 <translation id="5140016802771803559">瑞贝卡紫</translation>
 <translation id="5142101052131610456">所有课程</translation>
+<translation id="5152605892605507188">右移</translation>
 <translation id="5158275234811857234">封面</translation>
 <translation id="516076699907426116">若要继续，请使用“触摸浏览”功能找到“下一课”按钮。然后，点按两次以继续。</translation>
 <translation id="5170206230005240598">已启用盲文字幕</translation>
 <translation id="5183440668879371625">上一行盲文</translation>
 <translation id="5189244881767082992">行</translation>
+<translation id="5234747236692380506">输入“<ph name="TEXT" />”</translation>
 <translation id="5263034204789987535">玉米丝色</translation>
 <translation id="5263344797180442561">2级标题标记</translation>
 <translation id="528468243742722775">结束</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">4 级标题标记</translation>
 <translation id="6150023170003443621">黄绿色</translation>
 <translation id="6158882249329863701">第 <ph name="TABLECELLROWINDEX" /> 行，第 <ph name="TABLECELLCOLUMNINDEX" /> 列</translation>
+<translation id="6159796324830296161">左移</translation>
 <translation id="6164829606128959761">计量条</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166362019018438352">已停用盲文字幕</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">已删除</translation>
 <translation id="6910969481785184048">开启、关闭和停止</translation>
 <translation id="6919104639734799681">显示表格列表</translation>
+<translation id="692135145298539227">删除</translation>
+<translation id="6935674530832500465">下移</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6949846980769640811">中碧蓝色</translation>
 <translation id="6951482098621102657">没有下一个 5 级标题</translation>
@@ -913,7 +923,6 @@
 <translation id="7439060726180460871">目录</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">使用自然语音？</translation>
-<translation id="7484805699335881122">读出元素类型和带引号/带删除线/加粗/带括号/大写的文字时改变音调。</translation>
 <translation id="7491962110804786152">标签</translation>
 <translation id="7492497529767769458">移到下一部分。例如，状态栏和启动器。</translation>
 <translation id="7505149250476994901">先说“大写”，后读字母</translation>
@@ -1011,6 +1020,7 @@
 <translation id="8129445297241948503">上方没有单元格</translation>
 <translation id="8138880386467279117">触摸</translation>
 <translation id="8146613869421949343">接下来，您将学习搜索键的相关知识。搜索键旨在与其他键结合使用以执行 ChromeVox 命令。它是左侧 Shift 键上方第一个键。请按搜索键以继续。</translation>
+<translation id="8158033275290782295">全选</translation>
 <translation id="816818801578874684">这是第一个标题。按搜索键 + H 键即可转到下一个标题。</translation>
 <translation id="8173092779156526980">四根手指向左滑动</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{1个下划线}other{#个下划线}}</translation>
@@ -1029,12 +1039,14 @@
 <translation id="826825447994856889">简介</translation>
 <translation id="827266600368092403">开始或结束选择</translation>
 <translation id="827422111966801947">靛青色</translation>
+<translation id="827496561804786391">上移</translation>
 <translation id="8276439074553447000">跳转到上一个可设置为焦点的项</translation>
 <translation id="8279039817939141096">如需了解该模式的功能，请按 QWERTY 键盘上的某个键或按某个可刷新式盲文键，或者使用触摸手势。若要退出，请按 Ctrl + W 或按空格键 + Z 或按 Esc 键，或者用 2 根手指向左滑动。</translation>
 <translation id="8283603667300770666">下一个表单字段</translation>
 <translation id="8310185481635255431">没有下一个链接</translation>
 <translation id="831207808878314375">定义</translation>
 <translation id="8313653172105209786">目录</translation>
+<translation id="8314546933558091113">取消全选</translation>
 <translation id="8316881042119029234">旧蕾丝色</translation>
 <translation id="8324974933005349667">个性化文字转语音设置</translation>
 <translation id="8326783648485765113">草绿色</translation>
@@ -1126,6 +1138,7 @@
 <translation id="9077305471618729969">亮海绿</translation>
 <translation id="9080299285199342830">跳到末尾</translation>
 <translation id="9089864840575085222">循环输入回显</translation>
+<translation id="9099429023611373837">剪切</translation>
 <translation id="9108370397979208512">数学</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{1个百分号}other{#个百分号}}</translation>

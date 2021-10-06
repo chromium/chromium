@@ -79,6 +79,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="4512952200932940229">Autorių teisės „The Chromium Authors“, 2021 m. Visos teisės saugomos.</translation>
 <translation id="4513946894732546136">Atsiliepimai</translation>
 <translation id="4563926062592110512">Atjungtas klientas: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> netinkamai sukonfigūruota. Pasirinkite kitą numatytąją žiniatinklio naršyklę, tada vėl įgalinkite URL peradresavimą.</translation>
 <translation id="4635770493235256822">Nuotoliniai įrenginiai</translation>
 <translation id="4660011489602794167">Rodyti klaviatūrą</translation>
 <translation id="4703799847237267011">„Chrome“ nuotolinio ryšio sesija baigėsi.</translation>
@@ -109,6 +110,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="5750083143895808682">Prisijungta kaip <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Pakartotinai prijungti</translation>
 <translation id="5810269635982033450">Ekranas veikia kaip jutiklinis kilimėlis</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> pateikė užklausą leisti pasiekti jūsų ekraną ir valdyti klaviatūrą bei pelę. Paspauskite „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“, jei ši užklausa netikėta. Arba pasirinkite „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, kad leistumėte prisijungti pasirengus.</translation>
 <translation id="5823658491130719298">Kompiuteryje, kurį norite pasiekti nuotoliniu būdu, atidarykite „Chrome“ ir apsilankykite adresu <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Pateikties parinktys</translation>
 <translation id="6033507038939587647">Klaviatūros parinktys</translation>
@@ -130,7 +132,6 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 <translation id="6963936880795878952">Ryšiai su nuotoliniu kompiuteriu laikinai blokuojami, nes kažkas bandė prisijungti prie jo naudodamas netinkamą PIN kodą. Vėliau bandykite dar kartą.</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6985691951107243942">Ar tikrai norite neleisti nuotolinio ryšio su „<ph name="HOSTNAME" />“? Jei apsigalvosite, turėsite iš naujo įgalinti ryšį tame kompiuteryje.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> pateikė užklausą leisti peržiūrėti ir valdyti jūsų kompiuterį. Jei nepažįstate šio asmens arba jei reikia atlikti pakeitimų prieš bendrinant, paspauskite „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“.  Kitu atveju pasirinkite „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, kad leistumėte prisijungti.</translation>
 <translation id="7019153418965365059">Neatpažinta prieglobos klaida: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Nuotolinė pagalba</translation>
 <translation id="7026930240735156896">Vadovaudamiesi instrukcijomis nustatykite nuotolinę kompiuterio prieigą</translation>
@@ -169,6 +170,7 @@ Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėki
 Jei norite suteikti šį leidimą, toliau spustelėję „<ph name="BUTTON_NAME" />“ atidarykite pasiekiamumo nuostatų sritį ir pažymėkite laukelį šalia parinkties „<ph name="SERVICE_SCRIPT_NAME" />“.
 
 Jei parinktis „<ph name="SERVICE_SCRIPT_NAME" />“ jau pažymėta, atžymėkite ją ir pažymėkite iš naujo.</translation>
+<translation id="8305209735512572429">Žiniatinklio autentifikavimo nuotolinio valdymo procesas</translation>
 <translation id="8383794970363966105">Jei norite naudoti „Chrome“ nuotolinį ryšį, įrenginyje turite pridėti „Google“ paskyrą.</translation>
 <translation id="8386846956409881180">Priegloba sukonfigūruota naudojant netinkamus „OAuth“ prisijungimo duomenis.</translation>
 <translation id="8397385476380433240">Suteikite leidimą produktui „<ph name="PRODUCT_NAME" />“</translation>

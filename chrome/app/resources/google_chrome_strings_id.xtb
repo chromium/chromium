@@ -35,7 +35,6 @@
 <translation id="174539241580958092">Google Chrome tidak dapat menyinkronkan data Anda karena kesalahan saat masuk.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Pastikan Anda login ke Chrome di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
-<translation id="1810203443153428607">Menginstal Chrome OS akan menimpa semua data di perangkat.</translation>
 <translation id="1812689907177901597">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chrome</translation>
 <translation id="1860536484129686729">Chrome memerlukan izin akses ke kamera untuk situs ini</translation>
 <translation id="1873233029667955273">Google Chrome bukan browser default</translation>
@@ -53,6 +52,7 @@
 <translation id="2290014774651636340">Kunci API Google tidak ada. Beberapa fungsi Google Chrome tidak akan berfungsi.</translation>
 <translation id="2290095356545025170">Apakah Anda yakin ingin mencopot penginstalan Google Chrome?</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan Google Chrome sekunder, dan tidak dapat digunakan sebagai browser default.</translation>
+<translation id="2345992953227471816">Chrome menemukan bahwa ekstensi berikut berisi malware:</translation>
 <translation id="2348335408836342058">Chrome memerlukan izin akses ke kamera dan mikrofon untuk situs ini</translation>
 <translation id="234869673307233423">Chrome tidak dapat memeriksa sandi Anda. Coba lagi nanti.</translation>
 <translation id="235650106824528204">Data Chrome yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lain) dapat dihapus oleh administrator profil kerja. <ph name="LEARN_MORE" /></translation>
@@ -82,6 +82,7 @@
 <translation id="2885378588091291677">Pengelola Tugas</translation>
 <translation id="2888126860611144412">Tentang Chrome</translation>
 <translation id="2926676257163822632">Sandi yang lemah mudah ditebak. Izinkan Chrome <ph name="BEGIN_LINK" />membuat dan mengingat sandi yang kuat untuk Anda<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">Chrome memerlukan izin kamera untuk situs ini</translation>
 <translation id="2929907241665500097">Chrome tidak dapat diupdate, terjadi error. <ph name="BEGIN_LINK" />Perbaiki masalah update Chrome dan update yang gagal.<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Pengingat terakhir: penginstalan <ph name="BEGIN_BOLD" />akan menghapus seluruh data di hard drive<ph name="END_BOLD" />. Pastikan Anda telah mencadangkan semua data penting.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Penginstalan tidak dapat dibatalkan setelah dimulai.<ph name="END_PARAGRAPH2" /></translation>
@@ -110,6 +111,7 @@
 <translation id="3582972582564653026">Menyinkronkan dan mempersonalisasi Chrome di perangkat Anda</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="3622797965165704966">Kini, menggunakan Chrome dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
+<translation id="3673813398384385993">Chrome menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
 <translation id="3718181793972440140">Tindakan ini akan menghapus 1 item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Ekstensi "<ph name="EXTENSION_NAME" />" telah mengubah apa yang ditampilkan oleh halaman saat Anda memulai Chrome.</translation>
 <translation id="3779473566290487688">Untuk mendapatkan update Google Chrome selanjutnya, Anda perlu OS X 10.11 atau yang lebih baru. Komputer ini menggunakan OS X 10.10.</translation>
@@ -126,6 +128,7 @@
 <translation id="4149882025268051530">Instalatur gagal mendekompresi arsip. Download kembali Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Luncurkan ulang Chrome dalam satu hari}other{Luncurkan ulang Chrome dalam # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Chrome memerlukan izin mikrofon dan kamera untuk situs ini</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
 <translation id="4251615635259297716">Tautkan data Chrome Anda ke akun ini?</translation>
 <translation id="4281844954008187215">Persyaratan Layanan</translation>
@@ -168,13 +171,10 @@
 <translation id="521447420733633466">Jika Anda berbagi perangkat, teman dan keluarga dapat menjelajah secara terpisah dan menyiapkan Chrome sesuai keinginannya</translation>
 <translation id="5251420635869119124">Tamu dapat menggunakan Chrome tanpa meninggalkan apa pun.</translation>
 <translation id="5251679006894510177">Update hampir selesai. Luncurkan kembali Chrome untuk menyelesaikan update. Jendela Samaran tidak akan dibuka kembali.</translation>
+<translation id="5334487786912937552">Chrome memerlukan izin akses penyimpanan untuk mendownload file</translation>
 <translation id="5386244825306882791">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome atau menelusuri dari Omnibox.</translation>
 <translation id="5394833366792865639">Bagikan tab Chrome</translation>
 <translation id="5430073640787465221">File preferensi Anda rusak atau tidak valid. Google Chrome tidak dapat memulihkan setelan Anda.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Sebelum memulai, pastikan Anda telah memiliki cadangan terbaru data Anda. Menginstal Chrome OS akan menimpa semua data di hard drive.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google tidak bertanggung jawab atas hilangnya data, dan tidak menjamin bahwa Chrome OS akan berfungsi di model yang tidak tersertifikasi. Buka [TBD] untuk mempelajari model tersertifikasi lebih lanjut.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Pelajari lebih lanjut cara menginstal Chrome OS dan penghapusan data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Jika Anda siap melanjutkan, klik “Instal Chrome OS” dan kami akan memandu Anda menjalankan proses penginstalan dalam beberapa langkah mudah. Anda masih memiliki kesempatan untuk mengonfirmasi sebelum kami membuat perubahan pada komputer Anda.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Instal Chrome OS</translation>
 <translation id="556024056938947818">Google Chrome mencoba menampilkan sandi.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -206,10 +206,12 @@
 <translation id="6291549208091401781">Google Chrome sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="6368958679917195344">Chrome OS terwujud karena <ph name="BEGIN_LINK_CROS_OSS" />software sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6418662306461808273">Beralih ke profil Chrome yang sudah ada?</translation>
+<translation id="6506909944137591434">Chrome memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Jalankan Google Chrome di Background</translation>
+<translation id="6696915334902295848">Chrome memerlukan izin mikrofon untuk situs ini</translation>
 <translation id="6739177684496155661">Lanjutkan di profil Chrome baru?</translation>
 <translation id="6750954913813541382">Untuk memperbaiki kesalahan ejaan, Chrome mengirim teks yang Anda ketikkan di browser ke Google</translation>
 <translation id="677276454032249905">Tetap tutup Chrome?</translation>
@@ -249,6 +251,7 @@
 <translation id="7761834446675418963">Klik nama Anda untuk membuka Chrome dan mulai menjelajah.</translation>
 <translation id="7777080907402804672">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google. Anda dapat menonaktifkannya kapan saja di setelan.</translation>
 <translation id="7781002470561365167">Tersedia Google Chrome versi baru.</translation>
+<translation id="778331955594035129">Chrome memerlukan izin akses lokasi untuk situs ini</translation>
 <translation id="7787950393032327779">Profil tersebut mungkin digunakan untuk proses Google Chrome lainnya (<ph name="PROCESS_ID" />) di komputer lain (<ph name="HOST_NAME" />). Chrome telah mengunci profil tersebut agar tidak rusak. Jika yakin tidak ada proses lain yang menggunakan profil ini, Anda dapat membuka profil dan meluncurkan Chrome kembali.</translation>
 <translation id="7801699035218095297">Google Chrome mencoba menyalin sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="7808348361785373670">Hapus dari Chrome...</translation>

@@ -19,9 +19,11 @@
 <translation id="1038842779957582377">белгісіз ат</translation>
 <translation id="1041998700806130099">Тапсырма парағының хабарламасы</translation>
 <translation id="1048785276086539861">Аннотацияларды өзгерткен кезде, бұл құжат бір беттік көрініске ауысады.</translation>
+<translation id="1049743911850919806">Инкогнито</translation>
 <translation id="1050038467049342496">Басқа қолданбаларды жабу</translation>
 <translation id="1055184225775184556">&amp;Қосуды болдырмау</translation>
 <translation id="1056898198331236512">Ескерту</translation>
+<translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-да Dino Run ойынын ойнау үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="1058479211578257048">Карталар сақталуда...</translation>
 <translation id="10614374240317010">Ешқашан сақталмайды</translation>
 <translation id="1062160989074299343">Prc10 (Envelope)</translation>
@@ -29,16 +31,18 @@
 <translation id="1068672505746868501"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер ешқашан аударылмасын</translation>
 <translation id="1070901266639972381">Түн</translation>
 <translation id="1074497978438210769">Қауіпсіз емес</translation>
-<translation id="1076113272840682464">Chrome браузерінде жүктеп алынғандарды басқару</translation>
 <translation id="1080116354587839789">Еніне сәйкестендіру</translation>
+<translation id="1081061862829655580">19-науа</translation>
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">Картаға ат енгізу</translation>
 <translation id="1089439967362294234">Құпия сөзді өзгерту</translation>
 <translation id="1096545575934602868">Бұл өрісте <ph name="MAX_ITEMS_LIMIT" /> жазбадан аспауы керек. Кейінгі жазбалардың бәрі өшіріледі.</translation>
+<translation id="1100782917270858593">"Шарлауды жалғастыру" түймесі. Шарлауды жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Enter пернесін басыңыз.</translation>
 <translation id="1101672080107056897">Қате әрекет</translation>
 <translation id="1103523840287552314">Әрқашан <ph name="LANGUAGE" /> тіліне аудару</translation>
 <translation id="1110994991967754504"><ph name="PERMISSION_NAME" /> үшін рұқсатты таңдаңыз</translation>
 <translation id="1113869188872983271">&amp;Қайта ретке келтіру әрекетін болдырмау</translation>
+<translation id="1115795617528746272"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Қазір ашық тұрған инкогнито терезелерінің барлығын жабу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="1123753900084781868">Live Caption қазір қолжетімді емес.</translation>
 <translation id="1125573121925420732">Веб-сайттар қауіпсіздік шарттарын өзгертіп жатқанда, ескертулер жиі шығуы мүмкін. Бұл көпке созылмайды.</translation>
 <translation id="112840717907525620">Саясат кэші жарамды</translation>
@@ -60,6 +64,7 @@
 <translation id="1178581264944972037">Кідірту</translation>
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="1186201132766001848">Құпия сөздерді тексеру</translation>
+<translation id="1195210374336998651">Қолданба параметрлеріне өту</translation>
 <translation id="1195558154361252544">Сіз рұқсат еткеннен басқа сайттар үшін хабарландырулар автоматты түрде бөгелді.</translation>
 <translation id="1197088940767939838">Қызғылт сары</translation>
 <translation id="1201402288615127009">Келесі</translation>
@@ -69,6 +74,7 @@
 <translation id="1209221128712833642">"Үлгі жасау" түймесі, Google Forms-да жылдам жаңа үлгі жасау үшін Enter пернесін басыңыз.</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер кілті әлсіз сертификатты ұсынды. Қаскүнем жеке кілтті бұзып, басқа серверге кіріп жатқан болуыңыз мүмкін (қаскүнеммен байланысып жатқан болуыңыз мүмкін).</translation>
 <translation id="1219129156119358924">Жүйе қауіпсіздігі</translation>
+<translation id="1222060260947439312">Оң жақ науа</translation>
 <translation id="1227224963052638717">Белгісіз саясат.</translation>
 <translation id="1228893227497259893">Қате нысан идентификаторы</translation>
 <translation id="1232569758102978740">Атаусыз</translation>
@@ -87,12 +93,15 @@
     &lt;li&gt;Веб-сайт иесіне хабарласыңыз.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Құпия сөзіңізді ұйымыңыз басқармайтын сайтта енгіздіңіз. Аккаунтты қорғау үшін құпия сөзді басқа қолданбалар мен сайттарда қолданбаңыз.</translation>
+<translation id="1257553931232494454">масштабтау деңгейлері</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлерін басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="1263231323834454256">Оқу тізімі</translation>
+<translation id="1264309058268477500">Басқа</translation>
 <translation id="1269516672602708785">Google Sites-та жылдам жаңа сайт жасау</translation>
 <translation id="1270502636509132238">Таңдау әдісі</translation>
 <translation id="1281476433249504884">1-жинастырушы</translation>
 <translation id="1285320974508926690">Бұл сайтты ешқашан аудармау</translation>
+<translation id="1292571435393770077">16-науа</translation>
 <translation id="1292701964462482250">"Компьютердегі бағдарламалық құрал Chrome жүйесінің интернетке қауіпсіз қосылуына жол бермей тұр" (тек Windows компьютерлерінде)</translation>
 <translation id="1294154142200295408">Пәрмендер жолының нұсқалары</translation>
 <translation id="129553762522093515">Жақында жабылған</translation>
@@ -102,6 +111,7 @@
 <translation id="1312803275555673949">Оған қандай дәлел бар?</translation>
 <translation id="131405271941274527">NFC құрылғыңыздағы телефоныңызды түрткенде, <ph name="URL" /> ақпарат алмасуға рұқсат сұрайды.</translation>
 <translation id="1314509827145471431">Оң жақты байлау</translation>
+<translation id="1318023360584041678">Қойынды тобында сақталған</translation>
 <translation id="1319245136674974084">Бұдан былай бұл қолданба үшін сұралмасын</translation>
 <translation id="1320233736580025032">Prc1 (Envelope)</translation>
 <translation id="132301787627749051">Буфер кескінін іздеу</translation>
@@ -133,9 +143,11 @@
 <translation id="1380591466760231819">Хатқалта тәрізді бүктеу</translation>
 <translation id="138218114945450791">Ашық көк</translation>
 <translation id="1382194467192730611">Әкімші рұқсат еткен USB құрылғысы</translation>
+<translation id="1382912999714108023">Ақпарат дұрыс емес пе? Түзету үшін банкіңізге хабарласыңыз.</translation>
 <translation id="1384725838384960382">Қауіпсіз төлем деректерін аутентификациялау парағы</translation>
 <translation id="1386623374109090026">Аннотациялар</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ешқандай дерек жібермеді.</translation>
+<translation id="1403196654932095242"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />. Іздеуді жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="1405567553485452995">Ашық жасыл</translation>
 <translation id="1407135791313364759">Барлығын ашу</translation>
 <translation id="1408787208417187241">Жоғарғы жағын үш рет қапсыру</translation>
@@ -146,7 +158,6 @@
 <translation id="1428729058023778569">Бұл сайт HTTPS қолдамайды, сондықтан осы хабарландыруды көріп тұрсыз. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1436185428532214179">Құрылғыңыздағы файлдар мен қалталарды өзгертуге рұқсат сұрай алады.</translation>
-<translation id="1439627443299342313">Осы бетті бөлісу түймесі, сілтемені бөлісу, QR кодын жасау, трансляциялау және т.б. опциялар арқылы осы бетті бөлісу үшін Enter пернесін басыңыз.</translation>
 <translation id="1442386063175183758">Оң жағын қақпа тәрізді бүктеу</translation>
 <translation id="1442987760062738829">Тесу</translation>
 <translation id="1447067628680007684">(x86_64)</translation>
@@ -161,6 +172,7 @@
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1476595624592550506">Құпия сөзді өзгерту</translation>
+<translation id="1483493594462132177">Жіберу</translation>
 <translation id="1484290072879560759">Жөнелту мекенжайын таңдау</translation>
 <translation id="1492194039220927094">Жаңа саясаттар туралы хабарландыру:</translation>
 <translation id="1495677929897281669">Қойындыға оралу</translation>
@@ -192,7 +204,6 @@
       &lt;p&gt;&lt;strong&gt;Параметрлер&lt;/strong&gt; қолданбасының &lt;strong&gt;Жалпы&lt;/strong&gt; бөліміндегі күн мен уақытты реттеңіз.&lt;/p&gt;</translation>
 <translation id="1567040042588613346">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша ауыстырылатын тап осындай мән орнатылған.</translation>
 <translation id="1569487616857761740">Жарамдылық мерзімін енгізіңіз.</translation>
-<translation id="1578027765348898566">Google жарнама параметрлерін басқару</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583294866416602487">Plex</translation>
 <translation id="1583429793053364125">Бұл веб-бетті көрсету кезінде қате кетті.</translation>
@@ -200,7 +211,9 @@
 <translation id="1588438908519853928">Қалыпты</translation>
 <translation id="1592005682883173041">Жергілікті деректерге кіру</translation>
 <translation id="1594030484168838125">Таңдау</translation>
+<translation id="160851722280695521">Chrome-да Dino Run ойынын ойнау</translation>
 <translation id="161042844686301425">Көгілдір</translation>
+<translation id="1611101756749861742">Екінші орам</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623104350909869708">Бұл беттің қосымша диалогтік терезелерді жасауына жол бермеу</translation>
 <translation id="16338877384480380">Architecture-B</translation>
@@ -218,22 +231,24 @@
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1656024727720460136">Chrome бұл режимде беттің оқылуын жеңілдетті. Chrome бастапқы бетті қауіпсіз байланыс арқылы алды.</translation>
 <translation id="1656489000284462475">Алып кету</translation>
+<translation id="1658918301167915956">Bluetooth құрылғылары</translation>
 <translation id="1662550410081243962">Төлеу әдістерін сақтау және толтыру</translation>
 <translation id="1663943134801823270">Карталар мен мекенжайлар Chrome браузерінен алынған. Оларды <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> бөлімінде басқара аласыз.</translation>
 <translation id="1671391448414634642"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер <ph name="TARGET_LANGUAGE" /> тіліне аударылатын болады.</translation>
-<translation id="1677733453456569361"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome Dino ойынын ойнау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="1682696192498422849">Алдымен қысқа беті</translation>
 <translation id="168693727862418163">Бұл саясат мәні осы схемаға қатысты тексерілмеді және ол еленбейді.</translation>
 <translation id="168841957122794586">Сервер сертификаты сенімсіз криптографиялық кілтті қамтиды.</translation>
 <translation id="1697532407822776718">Барлығын орнаттыңыз!</translation>
 <translation id="1699570257714336246">Ақпарат жоқ</translation>
 <translation id="1703835215927279855">Letter</translation>
+<translation id="1706625117072057435">Масштабтау деңгейлері</translation>
 <translation id="1706954506755087368">{1,plural, =1{Бұл сервер өзінің <ph name="DOMAIN" /> екендігін дәлелдей алмады; оның қауіпсіздік сертификаты ертеңнен басталатын сияқты. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіруінен болуы мүмкін.}other{Бұл сервер өзінің <ph name="DOMAIN" /> екендігін дәлелдей алмады; оның қауіпсіздік сертификаты # күн өткеннен кейін басталатын сияқты. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіруінен болуы мүмкін.}}</translation>
 <translation id="1710259589646384581">ОЖ</translation>
 <translation id="1711234383449478798">Еленбеді, себебі <ph name="POLICY_NAME" /> саясатына <ph name="VALUE" /> мәні орнатылмаған.</translation>
 <translation id="1712552549805331520"><ph name="URL" /> деректерді жергілікті компьютеріңізде біржола сақтағысы келеді</translation>
 <translation id="1713628304598226412">2-науа</translation>
 <translation id="1715874602234207">F</translation>
+<translation id="1717218214683051432">Қозғалыс датчиктері</translation>
 <translation id="1717494416764505390">3-ші пошта жәшігі</translation>
 <translation id="1718029547804390981">Аннотация қосуға құжат өлшемі өте үлкен.</translation>
 <translation id="1721424275792716183">* Өріс толтырылуы қажет</translation>
@@ -241,12 +256,12 @@
 <translation id="1727741090716970331">Дұрыс карта нөмірін енгізу</translation>
 <translation id="1728677426644403582">Веббет дереккөзін көрудесіз</translation>
 <translation id="173080396488393970">Картаның бұл түріне қолдау көрсетілмейді</translation>
+<translation id="1733064249834771892">қаріптер</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Жүйе әкімшісіне хабарласып көріңіз.</translation>
 <translation id="1736420071277903564">Компьютер</translation>
 <translation id="1740951997222943430">Дұрыс жарамдылық мерзімі аяқталатын айды енгізіңіз</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_SECURE" /> мәніне орнатылғанда, сәйкес мән және жарамды жол көрсетілуі керек.</translation>
-<translation id="1743570585616704562">Анықталмады</translation>
 <translation id="1745880797583122200">Браузеріңіз басқарылады.</translation>
 <translation id="1746113442205726301">Кескіннің Y осі бойынша ығысуы</translation>
 <translation id="17513872634828108">Ашық қойындылар</translation>
@@ -271,16 +286,20 @@
 <translation id="1807246157184219062">Ашық</translation>
 <translation id="1807528111851433570">Бастапқы парақ</translation>
 <translation id="1812527064848182527">альбомдық</translation>
+<translation id="182139138257690338">автоматты жүктеулер</translation>
 <translation id="1821930232296380041">Жарамсыз сұрау немесе сұрау параметрлері</translation>
 <translation id="1822540298136254167">Кірген веб-сайттар және онда өткізген уақыт</translation>
+<translation id="1824402189105105503">Сегізінші орам</translation>
 <translation id="1826516787628120939">Тексеру</translation>
 <translation id="1834321415901700177">Бұл сайтта зиянды бағдарламалар бар</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1839551713262164453">Қателерге байланысты саясат мәндері тексерілмеді</translation>
 <translation id="1842969606798536927">Төлем</translation>
 <translation id="1856713167556118146">Инкогнито режимінде орындалмайды</translation>
+<translation id="1863257867908022953">12-науа</translation>
 <translation id="1871208020102129563">Прокси .pac сценарий URL мекенжайын емес, бекітілген прокси серверлерін пайдалануға орнатылған.</translation>
 <translation id="1871284979644508959">Міндетті өріс</translation>
+<translation id="1875025161375567525">Фото науасы</translation>
 <translation id="1875512691959384712">Google Forms</translation>
 <translation id="187918866476621466">Іске қосу беттерін ашу</translation>
 <translation id="1883255238294161206">Тізімді жию</translation>
@@ -297,15 +316,18 @@
 <translation id="1919345977826869612">Жарнамалар</translation>
 <translation id="1919367280705858090">Арнайы қате туралы хабар арқылы көмек алу</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
+<translation id="1923390796829649802">"Арнайы мүмкіндіктер параметрін басқару" түймесі. Chrome OS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Enter пернесін басыңыз.</translation>
 <translation id="1924727005275031552">Жаңа</translation>
 <translation id="1939175642807587452">Хабарландыру жіберу туралы сұрай алады</translation>
 <translation id="1945968466830820669">Ұйымның аккаунтына кіре алмай қалуыңыз мүмкін немесе жеке деректеріңіз ұрлануы ықтимал. Chromium құпия сөзіңізді қазір өзгертуге кеңес береді.</translation>
 <translation id="1947454675006758438">Жоғарғы оң жағын қапсыру</translation>
+<translation id="1956486093533522234">Құрылғыңызды табу, қорғау немесе тазарту</translation>
 <translation id="1958218078413065209">Ең жоғары ұпайыңыз: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Google-ға <ph name="BEGIN_WHITEPAPER_LINK" />кірген беттердің URL мекенжайларын, шектеулі жүйе ақпаратын және кейбір бет мазмұнын<ph name="END_WHITEPAPER_LINK" /> жіберу арқылы барлық пайдаланушы үшін интернет қауіпсіздігін жақсартуға көмектесіңіз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Құпиялылық саясаты<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="1973335181906896915">Сериалау қатесі</translation>
 <translation id="1974060860693918893">Қосымша</translation>
+<translation id="1975457531113383421">Кіріс науасы</translation>
 <translation id="1975584088563498795">10-шы пошта жәшігі</translation>
 <translation id="1978555033938440688">Микробағдарлама нұсқасы</translation>
 <translation id="1988881251331415125">Дұрыс жазылған болса, <ph name="BEGIN_LINK" />Connectivity Diagnostics құралын іске қосып көріңіз<ph name="END_LINK" />.</translation>
@@ -317,7 +339,9 @@
 <translation id="201174227998721785">Chrome параметрлері арқылы сайттарға қатысты сақталған рұқсаттар мен деректерді басқару</translation>
 <translation id="2025115093177348061">Толықтырылған шындық</translation>
 <translation id="2025186561304664664">Прокси автоматты конфигурациялануға орнатылды.</translation>
+<translation id="2025891858974379949">Қорғалмаған мазмұн</translation>
 <translation id="2032962459168915086"><ph name="BEGIN_LINK" />Прокси және брандмауэр конфигурациясын тексеріп көріңіз<ph name="END_LINK" /></translation>
+<translation id="2036983605131262583">Басқа орам</translation>
 <translation id="2042213636306070719">7-науа</translation>
 <translation id="204357726431741734">Google аккаунтыңызда сақталған құпия сөздерді пайдалану үшін кіру</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> тіліндегі беттер аударылмайды.</translation>
@@ -349,12 +373,10 @@
 <translation id="2119867082804433120">Төменгі оң жақты тесу</translation>
 <translation id="2122719317867821810">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша қабылданбайтын қарама-қайшы мән орнатылған.</translation>
 <translation id="2126374524350484896">PDF жасаушы:</translation>
-<translation id="2129079103035905234">Қозғалыс датчиктері</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode саясаты орнатылмағандықтан, сіз көрсеткен үлгілер қолданылмауы мүмкін.</translation>
 <translation id="213826338245044447">Ұялы телефондағы бетбелгілер</translation>
 <translation id="214556005048008348">Төлемнен бас тарту</translation>
 <translation id="214581181351097783"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, осы бетті бөлісу үшін Tab, содан кейін Enter пернесін басыңыз, сілтемені бөлісу опциялары арқылы QR кодын, трансляция және т.б. жасаңыз.</translation>
-<translation id="2147827593068025794">Фондық синхрондау</translation>
 <translation id="2148613324460538318">Картаны енгізу</translation>
 <translation id="2149968176347646218">Байланыс қауіпсіз емес</translation>
 <translation id="2154054054215849342">Синхрондау функциясы доменіңіз үшін қолжетімді емес</translation>
@@ -403,14 +425,13 @@
 <translation id="2298855485018661510">"Cookie файлдарын басқару" түймесі. Chrome параметрлеріне кіріп, cookie файлдарын басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="2300306941146563769">Жүктеп салынбады</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
-<translation id="2314184656092908234">"Инкогнито терезелерін жабу" түймесі, осы инкогнито профиліндегі барлық инкогнито терезесін жабу үшін Enter пернесін басыңыз.</translation>
 <translation id="2316887270356262533">1 MБ аз орын босатады. Кейбір сайттар келесі кіргенде баяуырақ жүктелуі мүмкін.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> пайдаланушы аты мен құпия сөзді қажет етеді.</translation>
 <translation id="2328651992442742497">Рұқсат етілген (әдепкі)</translation>
+<translation id="2329182534073751090">терезені орналастыру</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, жарамдылық мерзімі: <ph name="EXPIRATION_DATE_ABBR" /></translation>
 <translation id="2337852623177822836">Әкімші басқаратын параметр</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сайты жұптасқысы келеді</translation>
-<translation id="2344028582131185878">Автоматты жүктеулер</translation>
 <translation id="2346319942568447007">Көшірілген сурет</translation>
 <translation id="2354001756790975382">Басқа бетбелгілер</translation>
 <translation id="2354430244986887761">Жақында Google Safe Browsing <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" /> зиянды қолданбаларды тапты<ph name="END_LINK" />.</translation>
@@ -436,10 +457,9 @@
 <translation id="2413155254802890957">Ескі</translation>
 <translation id="2413528052993050574">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты қайтарып алынған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
-<translation id="2417466718237453711">Осы инкогнито профиліндегі барлық инкогнито терезесін жабу</translation>
 <translation id="2430968933669123598">Google аккаунтын басқару, Google аккаунтыңыздағы ақпаратты, құпиялылықты және қауіпсіздікті басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="2438874542388153331">Оң жағын төрт рет тесу</translation>
-<translation id="245044156129055925">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
+<translation id="2450021089947420533">Journeys</translation>
 <translation id="2463739503403862330">Толтыру</translation>
 <translation id="2465402087343596252">Architecture-E</translation>
 <translation id="2465655957518002998">Жеткізу әдісін таңдау</translation>
@@ -472,8 +492,10 @@
 <translation id="2540701853218677861">Құрылғыға кіру/шығу тарихы, соның ішінде уақыт белгілері мен сәтсіз әрекеттер</translation>
 <translation id="2541219929084442027">Барлық инкогнито қойындысын жапқан соң, инкогнито қойындылары арқылы көрген беттер браузерді қолдану тарихында, cookie файлдарында немесе іздеу тарихында сақталмайды. Жүктеп алған файлдарыңыз немесе жасаған бетбелгілеріңіз сақталады.</translation>
 <translation id="2544644783021658368">Жалғыз құжат</translation>
+<translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
 <translation id="254947805923345898">Саясат мәні жарамсыз.</translation>
 <translation id="255002559098805027"><ph name="HOST_NAME" /> қате жауап жіберді.</translation>
+<translation id="2552246211866555379">Hagaki</translation>
 <translation id="2552295903035773204">Картаңызды растау үшін экран құлпын пайдалану</translation>
 <translation id="2553853292994445426">Қауіпсіз DNS параметрлерін тексеріңіз. Сіз байланыс орната алмайтын қауіпсіз DNS серверін конфигурациялаған сияқтысыз.</translation>
 <translation id="2556876185419854533">&amp;Өзгертуді болдырмау</translation>
@@ -481,11 +503,11 @@
 <translation id="2586657967955657006">Буфер</translation>
 <translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> ұсынады. Осы және басқа <ph name="OTHER_ARTICLE_COUNT" /> мақаланы оқыңыз.</translation>
 <translation id="2587841377698384444">Каталогтің API идентификаторы:</translation>
-<translation id="2592018527587890152">Арнайы мүмкіндіктер параметрлерін басқару түймесі, Chrome параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Enter пернесін басыңыз.</translation>
 <translation id="2594318783181750337">Жылдам веб-көрініс:</translation>
 <translation id="2595719060046994702">Құрылғы мен аккаунтты компания не басқа ұйым басқармайды.</translation>
 <translation id="2596415276201385844">Қауіпсіз байланыс орнату үшін сағатыңыз дұрыс орнатылуы қажет. Себебі веб-сайттар өзін анықтау үшін пайдаланатын сертификаттар көрсетілген уақыт мерзімінде ғана жарамды. Құрылғыңыздың сағаты дұрыс емес болғандықтан, Chrome бұл сертификаттарды растай алмайды.</translation>
 <translation id="2597378329261239068">Бұл құжат құпия сөзбен қорғалған. Құпия сөзді енгізіңіз.</translation>
+<translation id="2597833655590727265">"Chrome көрінісін басқару" түймесі. Браузер көрінісін тақырыптармен реттеу үшін Enter пернесін басыңыз.</translation>
 <translation id="2609632851001447353">Нұсқалар</translation>
 <translation id="2610561535971892504">Басып көшіру</translation>
 <translation id="2618023639789766142">C10 (Envelope)</translation>
@@ -499,6 +521,7 @@
 <translation id="2649259151839507861"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. өшіру үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="2650446666397867134">Файлға кіруге тыйым салынған</translation>
 <translation id="2653659639078652383">Жіберу</translation>
+<translation id="2659491813326907275">Chrome OS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру</translation>
 <translation id="2660779039299703961">Оқиға</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Жоқ}=1{1 құпия сөз (<ph name="DOMAIN_LIST" />)}=2{2 құпия сөз (<ph name="DOMAIN_LIST" />)}other{# құпия сөз (<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Жоғары</translation>
@@ -509,7 +532,6 @@
 <translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677748264148917807">Шығу</translation>
 <translation id="2684561033061424857">11x12</translation>
-<translation id="2686059030904417278">"Chrome Dino ойынын ойнау" түймесі, Chrome Dino ойынын ойнау үшін Enter пернесін басыңыз.</translation>
 <translation id="2687555958734450033">Ең оңтайлы</translation>
 <translation id="2688969097326701645">Иә, жалғастырамын</translation>
 <translation id="2691924980723297736">Қауіпсіздік туралы ескерту</translation>
@@ -523,9 +545,10 @@
 <translation id="2713444072780614174">Ақ</translation>
 <translation id="2715612312510870559"><ph name="UPDATE_CREDIT_CARD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде төлемдеріңіз және несиелік картаңыз туралы ақпаратты басқару үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="2721148159707890343">Сұрау сәтті жіберілді</translation>
-<translation id="272451190272506600">Төлеу үшін датчикті түртіңіз.</translation>
+<translation id="2726001110728089263">Бүйірлік науа</translation>
 <translation id="2728127805433021124">Сервер сертификаты әлсіз қолтаңба алгоритмін пайдалану арқылы қол қойылған.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Connectivity Diagnostics құралын қосу<ph name="END_LINK" /></translation>
+<translation id="2737403869486738563">Chrome тарихынан сәйкес сұрауларды көру үшін іздеуді жалғастыру</translation>
 <translation id="2738330467931008676">Алып кету мекенжайын таңдау</translation>
 <translation id="2740531572673183784">Жарайды</translation>
 <translation id="2742870351467570537">Таңдалған элементтерді жою</translation>
@@ -533,12 +556,12 @@
 <translation id="277133753123645258">Жөнелту әдісі</translation>
 <translation id="277499241957683684">Құрылғы жазбасы жоқ</translation>
 <translation id="2775884851269838147">Бірінші басып шығарылатын бет</translation>
-<translation id="2778854133681684171">Келесіде осы төлеу әдісінің көмегімен зат сатып алып жатқанда, жеке басыңызды жылдам растау үшін құрылғыңызды пайдалана аласыз.</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2784949926578158345">Байланыс қалпына келтірілді.</translation>
 <translation id="2792012897584536778">Бұл құрылғының әкімшілері қауіпсіздік сертификаттарын орнатты, енді олар сіз кірген веб-сайттардың мазмұнын көруі мүмкін.</translation>
 <translation id="2799020568854403057">Сайтта зиянды қолданбалар бар</translation>
 <translation id="2799223571221894425">Қайта іске қосу</translation>
+<translation id="2799846101868535739">"Іздеуді жалғастыру" түймесі. Іздеуді жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Enter пернесін басыңыз.</translation>
 <translation id="2803306138276472711"><ph name="SITE" /> сайтында Google Safe Browsing жақында <ph name="BEGIN_LINK" />зиянды бағдарламаны анықтады<ph name="END_LINK" />. Қорғалған веб-сайттар да кейде зиянды бағдарламамен зақымдалады.</translation>
 <translation id="2807052079800581569">Кескіннің Y бойынша орналасуы</translation>
 <translation id="2820957248982571256">Іздеуде...</translation>
@@ -556,6 +579,7 @@
 <translation id="2880660355386638022">Терезені орналастыру</translation>
 <translation id="2881276955470682203">Карта сақталсын ба?</translation>
 <translation id="2882949212241984732">Қақпа тәрізді қос бүктеу</translation>
+<translation id="2893773853358652045">Төртінші орам</translation>
 <translation id="2900528713135656174">Оқиға жасау</translation>
 <translation id="2903493209154104877">Мекенжайлар</translation>
 <translation id="290376772003165898">Бет <ph name="LANGUAGE" /> тілінде емес пе?</translation>
@@ -577,6 +601,7 @@
 <translation id="2948083400971632585">Сіз параметрлер бетінен қосылым үшін реттелген кез келген проксилерді өшіре аласыз.</translation>
 <translation id="2949183777371959169">Chrome браузерінің бұлтты басқару құралында тіркелмегендіктен, құрылғы еленбеді.</translation>
 <translation id="2951588413176968965">Пошта жәшігім</translation>
+<translation id="2952820037279740115">Барлық инкогнито терезесін жабу</translation>
 <translation id="295526156371527179">Ескерту: бұл саясат сөздік болмағандықтан, саясатта көрсетілгендей сөздік ретінде біріктірілмеген.</translation>
 <translation id="2955913368246107853">Іздеу жолағын жабу</translation>
 <translation id="2972581237482394796">&amp;Қайта орындау</translation>
@@ -589,11 +614,11 @@
 <translation id="2991174974383378012">Веб-сайттармен бөлісу</translation>
 <translation id="2991571918955627853">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб сайт HSTS пайдаланады. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="2995517112308048736">Файл өлшемі:</translation>
-<translation id="2997344996471412501">Chrome Dino ойынын ойнау</translation>
 <translation id="3002501248619246229">Кіріс науасының деректерін тексеру</translation>
 <translation id="3005723025932146533">Сақталған көшірмені көрсету</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> картасының CVC кодын енгізіңіз. Карта мәліметтері расталғаннан кейін сайтқа беріледі.</translation>
 <translation id="3010559122411665027">"<ph name="ENTRY_INDEX" />" тізім жазбасы: <ph name="ERROR" /></translation>
+<translation id="3013291976881901233">MIDI құрылғылары</translation>
 <translation id="301521992641321250">Автоматты түрде бөгелген</translation>
 <translation id="3016780570757425217">Орналасқан жеріңізді білу</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, ұсынысты өшіру үшін Tab пернесін, содан кейін Enter пернесін басыңыз.</translation>
@@ -601,7 +626,7 @@
 <translation id="3024663005179499861">Қате саясат түрі</translation>
 <translation id="3037605927509011580">Қап!</translation>
 <translation id="3041612393474885105">Сертификат ақпараты</translation>
-<translation id="304730011294247979">Chrome тарихын көру түймесі, Chrome параметрлерінен браузерді қолдану тарихын көру және басқару үшін Enter пернесін басыңыз.</translation>
+<translation id="3044034790304486808">Іздеуді жалғастыру</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлерінен қауіпсіздік шарасын іске қосу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="3061707000357573562">Қызметті түзету</translation>
@@ -613,6 +638,7 @@
 <translation id="3096100844101284527">Алып кету мекенжайын енгізу</translation>
 <translation id="3105172416063519923">Актив идентификаторы:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />DNS конфигурациясын тексеріп көріңіз.<ph name="END_LINK" /></translation>
+<translation id="3108943290502734357">Ортаңғы науа</translation>
 <translation id="3109728660330352905">Бұл бетті көруге рұқсатыңыз жоқ.</translation>
 <translation id="3113284927548439113">Үшінші кідіріс</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> домені деректердің сақтық көшірмесін жасап, осы <ph name="DEVICE_TYPE" /> құрылғысын қайтаруыңызды қажет етеді.</translation>
@@ -626,6 +652,7 @@
 <translation id="3154506275960390542">Бұл бетте қауіпсіз жіберілмейтін пішін бар. Деректерді тасымалдау кезінде оларды басқалар көре алады, ал шабуылдаушылар сервердің қабылдайтын мәліметтерін өзгертіп жіберуі мүмкін.</translation>
 <translation id="315504272643575312">Аккаунтыңызды <ph name="MANAGER" /> басқарады.</translation>
 <translation id="3157931365184549694">Қалпына келтіру</translation>
+<translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Арал</translation>
@@ -633,7 +660,6 @@
      тексеріңіз немесе желі әкімшісіне хабарласыңыз. Прокси сервері қажет емес деп ойласаңыз:
      <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Сіз құрылғыны қашан белсенді пайдаланатыныңыз туралы білу</translation>
-<translation id="3188393374551744535">Аккаунт балансы</translation>
 <translation id="3194737229810486521"><ph name="URL" /> деректерді құрылғыңызда біржола сақтағысы келеді</translation>
 <translation id="3195213714973468956"><ph name="SERVER_NAME" /> серверіндегі <ph name="PRINTER_NAME" /></translation>
 <translation id="3197136577151645743">Осы құрылғыны қашан белсенді пайдаланатыныңыз туралы білу үшін сұрай алады</translation>
@@ -671,12 +697,15 @@
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты туралы қосымша ақпарат</translation>
 <translation id="3295444047715739395">Chrome параметрлерінде құпия сөздерді көріңіз және басқарыңыз.</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
+<translation id="3304073249511302126">Bluetooth құрылғыларын іздеу</translation>
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
+<translation id="3308738399950580893">жарнамалар</translation>
 <translation id="3320021301628644560">Төлем мекенжайын қосу</translation>
 <translation id="3324983252691184275">Қызыл күрең</translation>
 <translation id="3329013043687509092">Қанықтық</translation>
 <translation id="3333762389743153920">Виртуалды карта үшін жарамсыз</translation>
 <translation id="3338095232262050444">Қауіпсіз</translation>
+<translation id="3344575302477361573">"Инкогнито терезелерін жабу" түймесі. Қазір ашық тұрған инкогнито терезелерінің барлығын жабу үшін Enter пернесін басыңыз.</translation>
 <translation id="3355823806454867987">Прокси параметрлерін өзгерту…</translation>
 <translation id="3360103848165129075">Төлем өңдегіш парағы</translation>
 <translation id="3361596688432910856">Chrome-да <ph name="BEGIN_EMPHASIS" />сақталмайтын<ph name="END_EMPHASIS" /> ақпараттар:
@@ -692,7 +721,6 @@
 <translation id="3371076217486966826"><ph name="URL" /> үшін келесі рұқсаттар қажет:
       • айналаңыздың 3D картасын жасау және камера қалпын қадағалау;
       • камераны пайдалану.</translation>
-<translation id="3372389303668969359">Келесі жолы бұл төлеу әдісімен зат сатып алу мақсатында осы құрылғыны пайдалану кезінде жеке басыңызды жылдам растау үшін "Windows Hello" функциясын қолдана аласыз.</translation>
 <translation id="337363190475750230">Өшірілді</translation>
 <translation id="3377144306166885718">Сервер ескірген TLS нұсқасын пайдаланған.</translation>
 <translation id="3377188786107721145">Саясат талдау қатесі</translation>
@@ -702,15 +730,16 @@
 <translation id="3381668585148405088">Сатып алғаныңызды растаңыз</translation>
 <translation id="3387261909427947069">Төлеу әдістері</translation>
 <translation id="3391030046425686457">Жеткізу мекенжайы</translation>
+<translation id="3391482648489541560">файлды өңдеу</translation>
 <translation id="3395827396354264108">Таңдау әдісі</translation>
 <translation id="3399952811970034796">Жеткізу мекенжайы</translation>
 <translation id="3402261774528610252">Бұл сайтты жүктеуге қолданылған байланыс үшін ескірген және алдағы уақытта өшірілетін TLS 1.0 немесе TLS 1.1 протоколы пайдаланылған. Ол өшірілгеннен кейін, пайдаланушылар бұл сайтқа кіре алмайды. Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы қосылуы тиіс.</translation>
+<translation id="3405664148539009465">Қаріптерді реттеу</translation>
 <translation id="3409896703495473338">Қауіпсіздік параметрлерін басқару</translation>
 <translation id="3414952576877147120">Көлемі:</translation>
 <translation id="3417660076059365994">Сіз жүктеп салған немесе тіркеген файлдар Google Cloud қызметіне немесе басқа қызметтерге жіберіледі және талданады. Мысалы, онда құпия деректердің немесе зиянды бағдарламалардың бар-жоғы тексеріледі.</translation>
 <translation id="3422248202833853650">Жадты босату үшін басқа бағдарламалардан шығып көріңіз</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> сайтына қазір кіру мүмкін емес.</translation>
-<translation id="3422654661304792373">Браузердің сыртқы көрінісін тақырыптармен реттеу</translation>
 <translation id="3423742043356668186">Көрсетілген жүйе</translation>
 <translation id="3427092606871434483">Рұқсат ету (әдепкі)</translation>
 <translation id="3427342743765426898">&amp;Өзгертуді қайталау</translation>
@@ -754,6 +783,7 @@
 <translation id="3566021033012934673">Жеке қосылған жоқсыз</translation>
 <translation id="3567778190852720481">Корпоративтік аккаунтмен тіркелу мүмкін емес (корпоративтік аккаунт сәйкес келмейді).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3575121482199441727">Осы сайт үшін рұқсат ету</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> сайтына ендірілген беттегі сұрау</translation>
 <translation id="3581089476000296252">Бұл бет дайын болған кезде, Chrome сізге хабарлайды. &lt;a&gt;Бас тарту&lt;/a&gt;</translation>
 <translation id="3582930987043644930">Ат қосу</translation>
@@ -761,9 +791,9 @@
 <translation id="3584299510153766161">Төменгі жағынан екі рет тесу</translation>
 <translation id="3586931643579894722">Мәліметтерді жасыру</translation>
 <translation id="3587738293690942763">Ортасы</translation>
-<translation id="3590643883886679995">Сіз инкогнито режимінен шыққаннан кейін де, аккаунтқа кіру деректері осы құрылғыда сақталады.</translation>
 <translation id="3592413004129370115">Italian (Envelope)</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен бір күн алады.}=1{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен бір күн алады.}other{Топ параметрлерін кез келген уақытта бастапқы күйге қайтара аласыз. Жаңа топқа қосылу шамамен {NUM_DAYS} күн алады.}}</translation>
+<translation id="3596012367874587041">Қолданба параметрлері</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3603507503523709">Қолданбаны әкімші бөгеген</translation>
 <translation id="3608932978122581043">Беру бағыты</translation>
@@ -778,6 +808,7 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3633738897356909127">"Chrome-ды жаңарту" түймесі, Chrome параметрлерінен Chrome-ды жаңарту үшін Enter пернесін басыңыз.</translation>
 <translation id="3634530185120165534">5-науа</translation>
+<translation id="3634567936866541746">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chrome сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
 <translation id="3637662659967048211">Google аккаунтына сақтау</translation>
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">Қолданба:</translation>
@@ -787,6 +818,7 @@
 <translation id="3658742229777143148">Қарап шығу</translation>
 <translation id="3664782872746246217">Кілтсөздер:</translation>
 <translation id="3671540257457995106">Өлшемін өзгертуге рұқсат берілсін бе?</translation>
+<translation id="3675563144891642599">Үшінші орам</translation>
 <translation id="3676592649209844519">Құрылғы идентификаторы:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; деп жазғыңыз келіп пе еді?</translation>
 <translation id="3678029195006412963">Сұрауға қол қойылмады</translation>
@@ -797,6 +829,7 @@
 <translation id="3705189812819839667"><ph name="RESULT_OWNER" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="370665806235115550">Жүктелуде…</translation>
 <translation id="3709599264800900598">Көшірілген мәтін</translation>
+<translation id="370972442370243704">Journeys функциясын қосу</translation>
 <translation id="3711895659073496551">Уақытша тоқтату</translation>
 <translation id="3712624925041724820">Лицензиялар аяқталды</translation>
 <translation id="3714780639079136834">Мобильдік деректерді немесе Wi-Fi желісін қосу</translation>
@@ -807,6 +840,7 @@
 <translation id="373042150751172459">B4 (Envelope)</translation>
 <translation id="3736520371357197498">Қауіпсіздігіңіздің қатерлерін түсінсеңіз, қауіпті бағдарламалар жойылмай жатып, <ph name="BEGIN_LINK" />осы қауіпті сайтқа кіруіңізге<ph name="END_LINK" /> болады.</translation>
 <translation id="3738166223076830879">Браузеріңізді әкімші басқарады.</translation>
+<translation id="3744111561329211289">Фондық синхрондау</translation>
 <translation id="3744899669254331632">Қазір <ph name="SITE" /> сайтына кіру мүмкін емес, себебі веб-сайт Chromium өңдей алмайтын шифрланған есептік деректерді жіберді. Желі қателері мен шабуылдары әдетте уақытша болғандықтан, бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
 <translation id="3745099705178523657">Растағаннан кейін, Google аккаунтындағы карта мәліметтері осы сайтқа беріледі.</translation>
 <translation id="3748148204939282805"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар бағдарламалық құрал орнату немесе жеке ақпарат (мысалы, құпия сөздер, телефон нөмірлері немесе несиелік карталар) көрсету секілді зиянды нәрсе жасатуы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -839,15 +873,16 @@
 <translation id="3816482573645936981">Мән (ауыстырылған)</translation>
 <translation id="382518646247711829">Прокси серверді пайдалансаңыз…</translation>
 <translation id="3827112369919217609">Абсолютті</translation>
+<translation id="3827475930221174051">"<ph name="SEARCH_TERM" />" сұрауымен байланысты</translation>
 <translation id="3828924085048779000">Құпия фраза бос болмауы керек.</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> қосымша функцияларға кеңейтімдер орнатты. Кеңейтімдер кейбір деректерді пайдалана алады.</translation>
 <translation id="3832522519263485449">Сол жағын бірнеше рет тесу</translation>
 <translation id="3835233591525155343">Құрылғыны пайдалануыңыз</translation>
-<translation id="3841184659773414994">Файл өңдегіштер</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, жаңа Google құжатын жылдам жасау үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3858027520442213535">Күні мен уақытын жаңарту</translation>
 <translation id="3858860766373142691">Аты</translation>
+<translation id="3879224246272917991">Орталық процессордың/жедел жад құрылғысының пайдаланылуы сияқты құрылғы статистикасы және жабдық сипаттамасы</translation>
 <translation id="3881478300875776315">Жолдарды азырақ көрсету</translation>
 <translation id="3884278016824448484">Мұндай құрылғы идентификаторы бұрыннан бар</translation>
 <translation id="3885155851504623709">Округ</translation>
@@ -884,8 +919,10 @@
 <translation id="3990250421422698716">Бірқалыпты ығысу</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> сайты өзінің барлық сұрауына түпнұсқа саясатын
     қолдануын талап етті, бірақ бұл саясатты дәл қазір қолдану мүмкін емес.</translation>
+<translation id="4010758435855888356">Жадты пайдалануға рұқсат берілсін бе?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} беттік PDF құжаты}other{{COUNT} беттік PDF құжаты}}</translation>
 <translation id="4023431997072828269">Бұл үлгі қорғалмаған байланыс арқылы жіберілгендіктен, ақпаратыңыз басқаларға көрінетін болады.</translation>
+<translation id="4025913568718019429">"Google құпиялылық параметрлерін басқару" түймесі. Google аккаунтының құпиялылық параметрлеріне кіру үшін Enter пернесін басыңыз.</translation>
 <translation id="4030383055268325496">&amp;Қосу әрекетін кері қайтару</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4058922952496707368">"<ph name="SUBKEY" />" кілті: <ph name="ERROR" /></translation>
@@ -901,6 +938,7 @@
 <translation id="4084120443451129199">Іздеу режимі: <ph name="KEYWORD_SUFFIX" /> сөзін іздеу үшін Enter пернесін басыңыз</translation>
 <translation id="4087296516249690906">"Іс-шара жасау" түймесі, Google Calendar-да жылдам жаңа іс-шара жасау үшін Enter пернесін басыңыз.</translation>
 <translation id="4088981014127559358">Кескіннің Y осі бойынша 1-жағында ығысуы</translation>
+<translation id="4089152113577680600">14-науа</translation>
 <translation id="4098354747657067197">Жалған сайт</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4101413244023615925">Мәтін және графика</translation>
@@ -920,7 +958,6 @@
 <translation id="413544239732274901">Толығырақ</translation>
 <translation id="4142935452406587478">10-науа</translation>
 <translation id="4148925816941278100">American Express</translation>
-<translation id="4149889845221342198"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, браузердің сыртқы көрінісін тақырыптармен реттеу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="4151403195736952345">Ғаламдық әдепкі мәнді пайдалану (анықтау)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{1-бет}other{{COUNT}-бет}}</translation>
 <translation id="4154664944169082762">Саусақ іздері</translation>
@@ -935,6 +972,7 @@
 <translation id="4179515394835346607"><ph name="ROW_NAME" /> <ph name="ROW_CONTENT" /></translation>
 <translation id="4194250254487269611">Картаңызды дәл қазір сақтау мүмкін емес.</translation>
 <translation id="4196861286325780578">Тасымалдауды &amp;қайта орындау</translation>
+<translation id="4202554117186904723">Бесінші орам</translation>
 <translation id="4203896806696719780"><ph name="BEGIN_LINK" />Брандмауэр және антивирус конфигурацияларын тексеру<ph name="END_LINK" /></translation>
 <translation id="4209092469652827314">Үлкен</translation>
 <translation id="4209166701302774460">Сіз кіргелі жатқан сервер (<ph name="ORIGIN" />) өзіне
@@ -990,11 +1028,13 @@
 <translation id="4302965934281694568">Chou3 (Envelope)</translation>
 <translation id="4305666528087210886">Файлға кіру мүмкін болмады</translation>
 <translation id="4306529830550717874">Мекенжайды сақтау керек пе?</translation>
+<translation id="4306812610847412719">буфер</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Бөгеу (әдепкі)</translation>
 <translation id="4314815835985389558">Синхрондауды басқару</translation>
 <translation id="4318312030194671742">Paint Preview шығармашылық қызметі</translation>
 <translation id="4318566738941496689">Құрылғыңыздың атауы және желі мекенжайыңыз</translation>
+<translation id="4325600325087822253">17-науа</translation>
 <translation id="4325863107915753736">Мақала табылмады</translation>
 <translation id="4326324639298822553">Жарамдылық мерзімін тексеріп, әрекетті қайталаңыз</translation>
 <translation id="4329871760342656885">Саясатты талдау қатесі: <ph name="ERROR" /></translation>
@@ -1005,16 +1045,14 @@
 <translation id="4346197816712207223">Қабылданатын несиелік карталар</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
 <translation id="4348834659292907206"><ph name="SITE" /> сайтымен байланыс қауіпсіз емес</translation>
-<translation id="4349531505348777662">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
+<translation id="4350629523305688469">Көпфункциялы науа</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> маңайдағы Bluetooth құрылғыларын іздеуде. Мына құрылғылар табылды:</translation>
 <translation id="4356973930735388585">Бұл сайттағы шабуылшылар ақпаратыңызды (мысалы, фотосуреттер, құпия сөздер, хабарлар және несие карталары) ұрлайтын не жоятын қауіпті бағдарламаларды компьютеріңізге орнатуға тырысуы мүмкін.</translation>
 <translation id="4358059973562876591">Сіз көрсеткен үлгілер DnsOverHttpsMode саясатындағы қатеге байланысты қолданылмауы мүмкін.</translation>
 <translation id="4358461427845829800">Төлем әдістерін басқару...</translation>
 <translation id="4359160567981085931">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome көмектесе алады. Құпия сөзді өзгертіп, Google-ға аккаунтқа төніп тұрған қауіп туралы хабарлау үшін "Аккаунтты қорғау" түймесін басыңыз.</translation>
-<translation id="4363178190432472170">Телефонымды іздеу</translation>
 <translation id="4367563149485757821">Number-12 (Envelope)</translation>
 <translation id="437040971055499437">Қауіпсіздік іс-шарасы анықталды</translation>
-<translation id="437058704415269440">Аккаунт балансы</translation>
 <translation id="4372516964750095882">Fanfold-Us</translation>
 <translation id="4372948949327679948"><ph name="VALUE_TYPE" /> мәні қажет.</translation>
 <translation id="4377125064752653719"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер ұсынған сертификатты оны шығарған орган қайтарып алды. Бұл сервер ұсынған қауіпсіздік деректеріне сенуге болмайтынын білдіреді. Қаскүнеммен байланысып жатқан болуыңыз мүмкін.</translation>
@@ -1024,7 +1062,7 @@
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4406896451731180161">іздеу нәтижелері</translation>
 <translation id="4408413947728134509">Cookie файлдары: <ph name="NUM_COOKIES" /></translation>
-<translation id="4414290883293381923">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
+<translation id="4414515549596849729">cookie файлдары және сайт деректері</translation>
 <translation id="4415426530740016218">Алып кету мекенжайы</translation>
 <translation id="4424024547088906515">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатына Chrome сенім білдірмеген. Бұған қате конфигурация немесе қаскүнемнің байланысты үзуі себеп болуы мүмкін.</translation>
 <translation id="443121186588148776">Сериялық порт</translation>
@@ -1034,7 +1072,6 @@
 <translation id="4434045419905280838">Қалқымалы терезе және бағыттау</translation>
 <translation id="4435702339979719576">Postcard)</translation>
 <translation id="443673843213245140">Проксиді пайдалану өшірілген, бірақ айқын прокси конфигурациясы көрсетілген.</translation>
-<translation id="4448463448776780262">Chrome тақырыптарын басқару түймесі, браузердің сыртқы көрінісін тақырыптармен реттеу үшін Enter пернесін басыңыз.</translation>
 <translation id="4450893287417543264">Қайта көрсетілмесін</translation>
 <translation id="4451135742916150903">HID құрылғыларына қосылуға рұқсат сұрайды</translation>
 <translation id="4460315069258617173">Осы сайтқа қатысты қойындыларды жапқанға дейін, рұқсат берілген.</translation>
@@ -1049,6 +1086,7 @@
 <translation id="449126573531210296">Синхрондалған құпия сөздерді Google аккаунтыңызбен шифрлау</translation>
 <translation id="4492519888999857993">Бұл функциялар әдепкісінше өшірілді. Олар Chrome-ның болашақ нұсқаларында жұмыс істемейді.</translation>
 <translation id="4493480324863638523">URL мекенжайы жарамсыз. URL мекенжайы стандартты схемаға сай болуы керек (мысалы, http://example.com немесе https://example.com).</translation>
+<translation id="4500587658229086076">қорғалмаған мазмұн</translation>
 <translation id="4503882053543859973">Architecture-D</translation>
 <translation id="4506176782989081258">Тексеру қатесі: <ph name="VALIDATION_ERROR" /></translation>
 <translation id="4506599922270137252">Жүйе әкімшісіне хабарласу</translation>
@@ -1056,12 +1094,16 @@
 <translation id="4508814173490746936">Сенсорлық идентификаторды пайдалану мүмкін болмады</translation>
 <translation id="4509074745930862522"><ph name="TRANSLATE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Бұл бетті Google Translate арқылы аудару үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="4510487217173779431">Chou4 (Envelope)</translation>
+<translation id="4514308731478712184">Journeys функциясын өшіру</translation>
 <translation id="4515275063822566619">Chrome браузеріндегі және Google аккаунтындағы (<ph name="ACCOUNT_EMAIL" />) карталар мен мекенжайлар. Оларды <ph name="BEGIN_LINK" />Параметрлер<ph name="END_LINK" /> ішінде басқаруыңызға болады.</translation>
 <translation id="4517607026994743406">Comm-10 (Envelope)</translation>
 <translation id="4521157617044179198"><ph name="WIDTH" /> × <ph name="HEIGHT" /> мм (<ph name="ORIENTATION" />)</translation>
+<translation id="4521916730539354575">Сол жақ науа</translation>
 <translation id="4522570452068850558">Мәліметтер</translation>
 <translation id="4524138615196389145">Қазірден бастап карталарыңызды WebAuthn арқылы жылдам растаңыз</translation>
 <translation id="4524805452350978254">Карталарды басқару</translation>
+<translation id="4530347922939905757">Мәтіндік хабар</translation>
+<translation id="4541810033354695636">толықтырылған шындық</translation>
 <translation id="4542971377163063093">6-науа</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Кеңейтімдерді ажыратып көріңіз.</translation>
@@ -1075,6 +1117,7 @@
 <translation id="4592951414987517459">Сіздің <ph name="DOMAIN" /> доменіне қосылуыңыз заманауи шифр жиынтығы арқылы шифрланған.</translation>
 <translation id="4594403342090139922">&amp;Жоюды болдырмау</translation>
 <translation id="4597348597567598915">Өлшемі: 8</translation>
+<translation id="4598556348158889687">Жадты басқару</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
 <translation id="4606870351894164739">Әсерлі</translation>
 <translation id="4607603470419975064">"Chrome кеңестерін көру" түймесі, Chrome функциялары туралы білу үшін Enter түймесін басыңыз.</translation>
@@ -1094,7 +1137,6 @@
 <translation id="467662567472608290">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификатында қателер бар. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="4677585247300749148"><ph name="URL" /> арнайы мүмкіндіктер оқиғаларына жауап бергісі келеді</translation>
 <translation id="467809019005607715">Google Slides</translation>
-<translation id="4680804919228900307">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="468314109939257734">Виртуалды карта нөмірін көру</translation>
 <translation id="4691835149146451662">Architecture-A (Envelope)</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
@@ -1118,8 +1160,10 @@
 <translation id="4744603770635761495">Орындалатын жол</translation>
 <translation id="4749011317274908093">Инкогнито режиміне өттіңіз</translation>
 <translation id="4750917950439032686">Бұл сайтқа жіберілетін жеке ақпаратыңыз (мысалы, құпия сөздер не несиелік карта нөмірлері) құпия сақталады.</translation>
+<translation id="4751476147751820511">Қозғалыс не жарық датчиктері</translation>
 <translation id="4754461935447132332">Қауіпсіз емес сайттар үшін рұқсат етілмеген.</translation>
 <translation id="4756388243121344051">&amp;Тарих</translation>
+<translation id="4757993714154412917">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chromium сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
 <translation id="4758311279753947758">Контакт ақпаратын қосу</translation>
 <translation id="4761104368405085019">Микрофоныңызды пайдалану</translation>
 <translation id="4761869838909035636">Chrome қауіпсіздік шарасын іске қосу</translation>
@@ -1149,6 +1193,7 @@
           <ph name="LIST_ITEM" />Жұмыс берушілер немесе мектептер браузерді қолдану мәліметін қарай алады.<ph name="END_LIST_ITEM" />
           <ph name="LIST_ITEM" />Интернет провайдерлері трафикті бақылай алады.<ph name="END_LIST_ITEM" />
         <ph name="END_LIST" /></translation>
+<translation id="483241715238664915">Хабарландыруларды қосу</translation>
 <translation id="4838327282952368871">Арманшыл</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
 <translation id="484462545196658690">Авто</translation>
@@ -1170,6 +1215,7 @@
 <translation id="4889420713887366944">"Инкогнито терезесін ашу" түймесі. Жаңа инкогнито терезесін ашу үшін Enter пернесін басыңыз.</translation>
 <translation id="4892518386797173871">Артқы</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
+<translation id="4900217275619098670">Тоғызыншы орам</translation>
 <translation id="4901778704868714008">Сақтау...</translation>
 <translation id="4913987521957242411">Жоғарғы сол жақты тесу</translation>
 <translation id="4918221908152712722"><ph name="APP_NAME" /> қолданбасын орнатыңыз (жүктеп алудың қажеті жоқ).</translation>
@@ -1180,6 +1226,7 @@
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Іздеу үшін алдымен Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="4930153903256238152">Үлкен сыйымдылық</translation>
 <translation id="4943872375798546930">Нәтижесіз</translation>
+<translation id="4946982471994930967">"Арнайы мүмкіндіктер параметрін басқару" түймесі. Chrome параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Enter пернесін басыңыз.</translation>
 <translation id="4950898438188848926">Қойынды ауыстыру түймесі: ашық қойындыға ауысу үшін Enter пернесін басыңыз, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4953689047182316270">Арнайы мүмкіндіктер оқиғаларына жауап беру</translation>
@@ -1187,7 +1234,6 @@
 <translation id="4958444002117714549">Тізімді жаю</translation>
 <translation id="4968522289500246572">Бұл қолданба мобильдік құрылғыға арналған. Өлшемін өзгерту кезінде қолданба дұрыс жұмыс істемеуі немесе өшіп қосылуы мүмкін.</translation>
 <translation id="4973922308112707173">Жоғарғы жағын екі рет тесу</translation>
-<translation id="4974590756084640048">Ескертулерді қайта қосу</translation>
 <translation id="4984088539114770594">Микрофон пайдаланылсын ба?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Барлығын көру</translation>
@@ -1219,6 +1265,7 @@
 <translation id="5068524481479508725">A10</translation>
 <translation id="5068778127327928576">{NUM_COOKIES,plural, =1{(қолданыста: 1)}other{(қолданыста: #)}}</translation>
 <translation id="5070335125961472645"><ph name="BEGIN_LINK" />Прокси мекенжайын тексеру<ph name="END_LINK" /></translation>
+<translation id="5070838744279127212">Оныншы орам</translation>
 <translation id="507130231501693183">4-ші пошта жәшігі</translation>
 <translation id="5087286274860437796">Сервердің сертификаты әзірше жарамайды.</translation>
 <translation id="5087580092889165836">Несие картасын қосу</translation>
@@ -1231,9 +1278,12 @@
 <translation id="5097501891273180634">A2</translation>
 <translation id="5108881358339761672">Сайт қауіпсіз емес</translation>
 <translation id="5112422516732747637">A5</translation>
+<translation id="5114288597538800140">18-науа</translation>
+<translation id="5114987907971894280">виртуалды шындық</translation>
 <translation id="5115216390227830982">European-Edp</translation>
 <translation id="5115232566827194440">Шектелген басқарылатын қонақ сеансын қайта анықтау</translation>
 <translation id="5115563688576182185">(64 биттік)</translation>
+<translation id="5116898824332672776"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome OS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="5123063207673082822">Демалыс күндері</translation>
 <translation id="5125394840236832993">B-Plus</translation>
 <translation id="5126510351761255129">Картаңызды растаңыз</translation>
@@ -1241,7 +1291,6 @@
 <translation id="5135404736266831032">Мекенжайларды басқару...</translation>
 <translation id="5138014172396933048">Қазір виртуалды карта қолжетімсіз. Банкіңізге хабарласыңыз.</translation>
 <translation id="5138227688689900538">Жию</translation>
-<translation id="514010763713772514">Келесі жолы жылдамырақ төлеңіз</translation>
 <translation id="5145883236150621069">Қате коды саясат жауабында көрсетіледі</translation>
 <translation id="5146995429444047494"><ph name="ORIGIN" /> сайты үшін хабарландырулар бөгелді</translation>
 <translation id="5148809049217731050">Жоғары қарату</translation>
@@ -1263,8 +1312,10 @@
 <translation id="5201306358585911203">Бұл веббетке ендірілген беттегі сұрау</translation>
 <translation id="5205222826937269299">Аты қажет</translation>
 <translation id="5209518306177824490">SHA-1 саусақ ізі</translation>
+<translation id="5209670883520018268">20-науа</translation>
 <translation id="5215116848420601511">Google Pay қызметін пайдаланатын төлеу әдістері және мекенжайлар</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
+<translation id="521659676233207110">13-науа</translation>
 <translation id="5222812217790122047">Электрондық пошта мекенжайы көрсетілуі қажет</translation>
 <translation id="5230733896359313003">Жеткізу мекенжайы</translation>
 <translation id="5230815978613972521">B8</translation>
@@ -1275,12 +1326,13 @@
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">Баспа мазмұнын оңтайландыру</translation>
 <translation id="5254958791078852567">E1</translation>
-<translation id="5261548214279761072">Төлем жасалды.</translation>
-<translation id="5265446478903775694">Google-дағы құпиялылықты басқару</translation>
+<translation id="5255690596502591079">Бәрібір түсіру</translation>
 <translation id="5266128565379329178">Жоғарғы жағын байлау</translation>
+<translation id="5269124652893918188"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Браузер көрінісін реттеу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="5269225904387178860">Төменгі жағын төрт рет тесу</translation>
 <translation id="5269999699920406580">Жүйеге толығымен қолданылатын функцияларды тек иесі орната алады: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5273658854610202413">Ескерту: бұл саясат PolicyDictionaryMultipleSourceMergeList саясатында көрсетілгендей біріктірілмеген, себебі ол біріктіруге болатын сөздік саясаттарының бөлігі емес.</translation>
+<translation id="5279286380302340275">Жүктеп алынғандарды басқару</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Құжаттың сипаттары</translation>
 <translation id="528468243742722775">Соңы</translation>
@@ -1310,8 +1362,8 @@
 <translation id="5340250774223869109">Қолданба бөгелген</translation>
 <translation id="534295439873310000">NFC функциясы бар құрылғылар</translation>
 <translation id="5344579389779391559">Бетті ашсаңыз, ақы алынуы мүмкін</translation>
+<translation id="5347645913823149105">"Chrome-дағы қаріптерді реттеу" түймесі. Chrome-дағы қаріп өлшемдері мен түрлерін реттеу үшін Enter пернесін басыңыз.</translation>
 <translation id="5355557959165512791">Қазір <ph name="SITE" /> сайтына кіре алмайсыз, себебі мұның сертификаты қайтарып алынды. Желі қателері мен шабуылдары әдетте уақытша болады, сондықтан бұл бет кейінірек жұмыс істеуі мүмкін.</translation>
-<translation id="5362168579481816080">Chrome браузеріндегі қаріптерді реттеу</translation>
 <translation id="536296301121032821">Саясат параметрлерін сақтау сәтсіз аяқталды</translation>
 <translation id="5363309033720083897">Әкімші рұқсат еткен тізбекті порт</translation>
 <translation id="5371425731340848620">Картаны жаңарту</translation>
@@ -1390,23 +1442,24 @@
 <translation id="563324245173044180">Жалған мазмұн бөгелді.</translation>
 <translation id="5644090287519800334">Кескіннің Х осі бойынша 1-жағында ығысуы</translation>
 <translation id="5645854190134202180">Екінші кідіріс</translation>
+<translation id="5649053991847567735">Автоматты жүктеулер</translation>
 <translation id="5654927323611874862">Жүктеп салынған жаңылыс туралы есеп идентификаторы:</translation>
 <translation id="5659593005791499971">Электрондық пошта</translation>
 <translation id="5663614846592581799">9x11 (Envelope)</translation>
 <translation id="5663955426505430495">Құрылғының әкімшісі қосымша функциялар үшін кеңейтімдер орнатты. Кеңейтімдер кейбір деректерді пайдалана алады.</translation>
 <translation id="5675650730144413517">Бұл бет жұмыс істемейді</translation>
 <translation id="568292603005599551">Кескіннің Х осі бойынша орны</translation>
+<translation id="5684277895745049190">Тізім</translation>
 <translation id="5684874026226664614">Бұл бетті аудару мүмкін емес.</translation>
 <translation id="5685654322157854305">Жөнелту мекенжайын енгізу</translation>
 <translation id="5689199277474810259">JSON форматында экспорттау</translation>
 <translation id="5689516760719285838">Локация</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates мәні сәйкес емес және DnsOverHttpsMode саясаты <ph name="SECURE_DNS_MODE_AUTOMATIC" /> немесе <ph name="SECURE_DNS_MODE_SECURE" /> мәніне орнатылмайынша, ол пайдаланылмайды.</translation>
-<translation id="5694206146481922091">Қауіпсіз төлем деректерін тіркеу парағы ашылды.</translation>
 <translation id="5695542892312572833">Сатып алуды растау және аяқтау үшін Windows Hello пайдаланылсын ба?</translation>
 <translation id="5701381305118179107">Ортаға</translation>
 <translation id="570530837424789914">Басқару…</translation>
+<translation id="5707154300732650394">Шарлауды жалғастыру</translation>
 <translation id="57094364128775171">Күрделі құпия сөз жасау…</translation>
-<translation id="5710435578057952990">Бұл веб-сайттың идентификациясы расталған.</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="5720705177508910913">Ағымдағы пайдаланушы</translation>
 <translation id="5728056243719941842">C5 (Envelope)</translation>
@@ -1414,13 +1467,11 @@
 <translation id="5737183892635480227">{NUM_CARDS,plural, =1{Картаны Google аккаунтында сақтау}other{Карталарды Google аккаунтында сақтау}}</translation>
 <translation id="5745733273847572235">Орналасқан жеріңізді сұрай алады</translation>
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Осы карта үшін виртуалды нөмірді пайдаланыңыз}other{Картаны таңдаңыз}}</translation>
-<translation id="5753081404403452307">Chrome тақырыптарын басқару</translation>
 <translation id="5759751709240058861">Камераны пайдалану және жылжыту</translation>
 <translation id="5763042198335101085">Дұрыс электрондық пошта мекенжайын енгізіңіз</translation>
 <translation id="5765072501007116331">Жеткізу әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
 <translation id="57689295674415555">Виртуалды карта нөмірі толтырылмаған ба?</translation>
 <translation id="5776313857861697733">Басымдық</translation>
-<translation id="5778550464785688721">MIDI құрылғыларын толық бақылау</translation>
 <translation id="5781136890105823427">Эксперимент қосылды.</translation>
 <translation id="578305955206182703">Қою сары</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
@@ -1436,6 +1487,7 @@
 <translation id="5817918615728894473">Жұптау</translation>
 <translation id="5824687817967109979">{NUM_CARDS,plural, =1{Төлем осы картадан алынады, бірақ оның нөмірі сайтқа белгісіз болады. Қосымша қауіпсіздік үшін уақытша CVC коды жасалады.}other{Төлем сіз таңдаған картадан алынады, бірақ оның нөмірі сайтқа белгісіз болады. Қосымша қауіпсіздік үшін уақытша CVC коды жасалады.}}</translation>
 <translation id="5826507051599432481">Ортақ атау (CN)</translation>
+<translation id="5830698870816298009">Камераны пайдалану және жылжыту</translation>
 <translation id="5838278095973806738">Шабуылдаушылар ұрлауы мүмкін болғандықтан, бұл сайтқа ешқандай маңызды ақпаратты (мысалы, құпия сөздер не несиелік карталар) енгізбеңіз.</translation>
 <translation id="5851548754964597211">Қойындылар тізімі</translation>
 <translation id="5855253129151731373">Бұл сайттың хост атауы <ph name="LOOKALIKE_DOMAIN" /> атауына ұқсас. Кейде шабуылдаушылар белгілі бір сайттарды көшіріп, олардың домен атауын аздап өзгертіп қояды.
@@ -1448,6 +1500,7 @@
 <translation id="5866898949289125849">Әзірлеуші құралдары беті ашылды.</translation>
 <translation id="5869405914158311789">Бұл сайтқа кіру мүмкін емес</translation>
 <translation id="5869522115854928033">Сақталған құпия сөздер</translation>
+<translation id="5873013647450402046">Банк жеке басыңызды растауды сұрайды.</translation>
 <translation id="5887400589839399685">Карта сақталды</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="5895187275912066135">Шығарылған күні</translation>
@@ -1470,6 +1523,7 @@
 <translation id="5967592137238574583">Байланыс ақпаратын өңдеу</translation>
 <translation id="5967867314010545767">Тарихтан алып тастау</translation>
 <translation id="5968793460449681917">Кірген сайын</translation>
+<translation id="5974052231147553524">Алтыншы орам</translation>
 <translation id="5975083100439434680">Кішірейту</translation>
 <translation id="5979084224081478209">Құпия сөздерді тексеру</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
@@ -1512,23 +1566,24 @@
 <translation id="6060009363608157444">DnsOverHttps режимі жарамсыз.</translation>
 <translation id="6064217302520318294">Экран құлпы</translation>
 <translation id="6080696365213338172">Мазмұнды әкімші берген сертификат көмегімен көрдіңіз. Сіз <ph name="DOMAIN" /> доменіне беретін деректерді әкімші ұстап алуы мүмкін.</translation>
-<translation id="6091221835738886118"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google-дағы құпиялылықты басқару</translation>
+<translation id="6087312102907839798">Ұқсас іздеу сұраулары</translation>
 <translation id="6094273045989040137">Аннотация қосу</translation>
 <translation id="6104072995492677441">JIS B6</translation>
 <translation id="6105460996796456817">Сайт жасау</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> мекенжайындағы веб-бет уақытша өшірілген немесе біржола жаңа мекенжайға көшірілген болуы мүмкін.</translation>
 <translation id="6107012941649240045">Кімге берілді</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> бетінде Google аккаунтымен шолу тарихының басқа да үлгілері болуы мүмкін.</translation>
-<translation id="6113594885686374546">Іздеуді жалғастыру түймесі. Іздеуді жалғастырып, Chrome тарихынан сәйкес сұрауларды көру үшін Enter пернесін басыңыз.</translation>
 <translation id="6116338172782435947">Буферге көшірілетін мәтіндер мен кескіндерді көру</translation>
 <translation id="6120179357481664955">UPI идентификаторы сақталсын ба?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
+<translation id="6127379762771434464">Элемент жойылған</translation>
 <translation id="6146055958333702838">Барлық кабельдерді тексеріп, пайдаланып отырған кез
     келген роутерлерді, модемдерді немесе басқа желі құрылғыларын қайта жүктеңіз.</translation>
 <translation id="614940544461990577">Орындап көріңіз:</translation>
 <translation id="6150036310511284407">Сол жағын үш рет тесу</translation>
 <translation id="6151417162996330722">Сервер сертификатының жарамдылық мерзімі тым ұзақ.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм (<ph name="ORIENTATION" />)</translation>
+<translation id="6157754950574419155">Барлығын тарихтан өшіру</translation>
 <translation id="6157877588268064908">Жөнелту әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6169916984152623906">Қазір инкогнито режимінде қарап шығуыңызға болады, ал осы құрылғыны пайдаланатын басқа адамдар әрекетіңізді көрмейді. Бірақ жүктеп алынған материалдар мен бетбелгілер сақталады.</translation>
@@ -1537,7 +1592,6 @@
 <translation id="619448280891863779">Терезелерді ашуды және экрандарға орналастыруды сұрай алады</translation>
 <translation id="6196640612572343990">Үшінші тарап cookie файлдарын бөгеу</translation>
 <translation id="6203231073485539293">Интернет байланысын тексеріңіз</translation>
-<translation id="6211666000885129820">Қауіпсіз төлем деректерін тіркеу парағы</translation>
 <translation id="6218753634732582820">Мекенжайды Chromium жүйесінен алып тастау керек пе?</translation>
 <translation id="622039917539443112">Параллель бүктеу</translation>
 <translation id="6221345481584921695"><ph name="SITE" /> сайтында Google Safe Browsing жақында <ph name="BEGIN_LINK" />зиянды бағдарламаны анықтады<ph name="END_LINK" />. Қорғалған веб-сайттар да кейде зиянды бағдарламамен зақымдалады. Зиянды мазмұн белгілі зиянды бағдарлама үлестірушісі болып табылатын <ph name="SUBRESOURCE_HOST" /> хостынан келеді.</translation>
@@ -1547,12 +1601,12 @@
 <translation id="624499991300733384">Print Compositor қызметі</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі жүктеп алған файлдарыңызды басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="6254436959401408446">Бұл бетті ашу үшін жад жеткіліксіз</translation>
-<translation id="625755898061068298">Бұл сайт үшін қауіпсіздік ескертулерін өшіру таңдалды.</translation>
 <translation id="6259156558325130047">&amp;Қайта ретке келтіру әрекетін қайталау</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="6264485186158353794">Қауіпсіз аймаққа қайту</translation>
 <translation id="6265794661083428563"><ph name="POLICY_NAME" /> саясатының мәнін көшіру</translation>
 <translation id="6266934640124581640">Ашық көкшіл жасыл</translation>
+<translation id="6272088941196661550">Chrome тарихынан сәйкес сұрауларды көру үшін шарлауды жалғастыру</translation>
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Оқу тізіміндегі беттер осы жерге шығады</translation>
 <translation id="627746635834430766">Келесіде жылдамырақ төлеу үшін картаны және төлем мекенжайын Google аккаунтына сақтаңыз.</translation>
@@ -1581,6 +1635,7 @@
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Прокси-серверді, брандмауэрді және қауіпсіз DNS конфигурациясын тексеру<ph name="END_LINK" /></translation>
 <translation id="6366710531182496394">Сол жағын екі рет қапсыру</translation>
 <translation id="6377268785556383139">"<ph name="SEARCH_TEXT" />" сұрауы бойынша 1 нәтиже шықты</translation>
+<translation id="6377404662019220017">"Осы бетті бөлісу" түймесі. Сілтемені бөлісу, QR кодын жасау, трансляциялау опциялары мен т.б. опциялар арқылы осы бетті бөлісу үшін Enter пернесін басыңыз.</translation>
 <translation id="6380497234672085559">A0</translation>
 <translation id="6383221683286411806">Сізден ақы алынуы мүмкін.</translation>
 <translation id="6386120369904791316">{COUNT,plural, =1{1 басқа ұсыныс}other{# басқа ұсыныс}}</translation>
@@ -1594,13 +1649,11 @@
 <translation id="6401136357288658127">Бұл саясат ескірді. Орнына <ph name="NEW_POLICY" /> саясатын пайдаланғаныңыз жөн.</translation>
 <translation id="6404511346730675251">Бетбелгіні өзгерту</translation>
 <translation id="6406765186087300643">C0 (Envelope)</translation>
-<translation id="6409754798200046165">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> картасының жарамдылық мерзімін және CVC кодын енгізіңіз</translation>
 <translation id="6415778972515849510">Chromium браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
 <translation id="6423385022588644828">Қазірден бастап Touch ID арқылы карталараңызды жылдам растаңыз</translation>
 <translation id="6425092077175753609">Материал</translation>
 <translation id="6427730057873428458">Қақпа тәрізді бүктеу</translation>
-<translation id="6428146287756735566">Chrome тарихынан сәйкес сұрауларды көру үшін іздеуді жалғастыру</translation>
 <translation id="6428450836711225518">Телефон нөміріңізді растаңыз</translation>
 <translation id="643051589346665201">Google құпия сөзін өзгерту</translation>
 <translation id="6433490469411711332">Байланыс ақпаратын өңдеу</translation>
@@ -1614,6 +1667,7 @@
 <translation id="6456955391422100996">Жарнама өшірілді.</translation>
 <translation id="6457206614190510200">Толқын тәрізді тігу</translation>
 <translation id="6458606150257356946">Бәрібір қою</translation>
+<translation id="6464094930452079790">суреттер</translation>
 <translation id="6465306955648956876">Құпия сөздерді басқару...</translation>
 <translation id="6468485451923838994">Қаріптер</translation>
 <translation id="647261751007945333">Құрылғы саясаттары</translation>
@@ -1621,14 +1675,16 @@
 <translation id="6489534406876378309">Жаңылыстарды жүктеп салуды бастау</translation>
 <translation id="6493328574149990106"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="6493924760403974580">Бұл қолданба тек осы өлшемді қолдайды.</translation>
+<translation id="6494750904506170417">қалқымалы терезелер және бағыттаулар</translation>
 <translation id="6499038740797743453">Құпия сөз қайта орнатылсын ба?</translation>
 <translation id="6502991525169604759">Өзгертулеріңізсіз</translation>
-<translation id="6505563257409036437">Инкогнито терезелерін жабу</translation>
+<translation id="6506959208958864820">Конверт</translation>
 <translation id="6508722015517270189">Chrome браузерін қайта іске қосу</translation>
 <translation id="6513005815064132016">Камераңыздың орнын қадағалауға рұқсат сұрай алады</translation>
 <translation id="6517596291481585650">Ескерту: бұл саясат тізім болмағандықтан, саясат бойынша көрсетілгендей тізім ретінде біріктірілмеген.</translation>
 <translation id="6518133107902771759">Растау</translation>
 <translation id="6521745193039995384">Қосылмаған</translation>
+<translation id="6529173248185917884">Жетінші орам</translation>
 <translation id="6529602333819889595">Жоюды &amp;қайталау</translation>
 <translation id="6545864417968258051">Bluetooth құрылғыларын іздеу</translation>
 <translation id="6547208576736763147">Сол жағын екі рет тесу</translation>
@@ -1644,9 +1700,9 @@
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> құрылғыңыз басқарылмайды.</translation>
 <translation id="6592952801936330159">"Сайт параметрлерін басқару" түймесі. Chrome параметрлеріне кіріп, сайттарға қатысты сақталған рұқсаттар мен деректерді басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="6596325263575161958">Шифрлау опциялары</translation>
-<translation id="6604181099783169992">Қозғалыс не жарық датчиктері</translation>
 <translation id="6609880536175561541">Prc7 (Envelope)</translation>
 <translation id="6615297766614333076">2-жинастырушы</translation>
+<translation id="6623589891453322342">файл өңдегіштер</translation>
 <translation id="6624427990725312378">Байланыс ақпараты</translation>
 <translation id="6626291197371920147">Дұрыс карта нөмірін енгізу</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
@@ -1656,12 +1712,13 @@
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6645291930348198241">Cookie файлдарын және сайт деректерін пайдалану.</translation>
 <translation id="6646269444027925224">{COUNT,plural, =0{Жоқ}=1{1 сайттан (Google аккаунтыңыздан шықпайсыз)}other{# сайттан (Google аккаунтыңыздан шықпайсыз)}}</translation>
-<translation id="6647197322759179819">Іздеуді жалғастыру</translation>
 <translation id="6648459603387803038">Браузер параметрін әкімші қашықтан өзгерте алады. Сонымен қатар құрылғыдағы әрекеттерді Chrome браузерінен тыс басқаруға болады.</translation>
 <translation id="6648524591329069940">Serif қарпі</translation>
 <translation id="6651270836885078973">Басқарушы:</translation>
 <translation id="6652101503459149953">Windows Hello қолдану</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
+<translation id="6660413144148052430">орын</translation>
+<translation id="6662457027866368246">Бірінші орам</translation>
 <translation id="666259744093848177">(x86_64 үшін аударылған)</translation>
 <translation id="6665553082534466207">Оң жағын үш рет тесу</translation>
 <translation id="6671697161687535275">Chromium жүйесінен нысан ұсынысын алып тастау керек пе?</translation>
@@ -1671,6 +1728,7 @@
 <translation id="6688775486821967877">Қазір виртуалды карта қолжетімсіз. Кейінірек қайталап көріңіз.</translation>
 <translation id="6689249931105087298">Қара нүктені сығуға қатысты</translation>
 <translation id="6689271823431384964">Сіз аккаунтқа кіргендіктен, Chrome браузері карталарыңызды Google аккаунтына сақтауды ұсынып отыр. Мұны "Параметрлер" бөлімінен өзгертуіңізге болады. Карта иесінің аты-жөнін аккаунтыңыздан алынады.</translation>
+<translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтында құрылғыңызды табу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="6698381487523150993">Жасалған кезі:</translation>
 <translation id="6702919718839027939">Презентация</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
@@ -1680,6 +1738,7 @@
 <translation id="6716672519412350405"><ph name="URL" /> айналаңыздың 3D картасын жасағысы және камера орнын бақылағысы келеді.</translation>
 <translation id="6718612893943028815">Камера пайдаланылсын ба?</translation>
 <translation id="6721678857435001674">Security Key құрылғысының маркасы мен үлгісін көру</translation>
+<translation id="6732087373923685049">камера</translation>
 <translation id="6738516213925468394">Деректеріңіз <ph name="TIME" /> күні <ph name="BEGIN_LINK" />синхрондаудың құпия фразасымен<ph name="END_LINK" /> шифрланған. Синхрондау үшін оны енгізіңіз.</translation>
 <translation id="674375294223700098">Белгісіз сервер сертификатының қатесі.</translation>
 <translation id="6744009308914054259">Байланыстың орнауын күткен кезде, офлайн режимдегі мақалаларды оқу үшін "Жүктеп алынғандар" бөліміне кіруіңізге болады.</translation>
@@ -1697,20 +1756,23 @@
 <translation id="6794951432696553238">Қазірден бастап Windows Hello арқылы карталарыңызды жылдам растаңыз</translation>
 <translation id="681021252041861472">Міндетті өріс</translation>
 <translation id="6810899417690483278">Реттеу идентификаторы</translation>
+<translation id="6817217109584391709">JavaScript</translation>
+<translation id="6820143000046097424">сериялық порттар</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімсіз қолтаңба алгоритмімен (such as SHA-1) қол қойылған сертификатты ұсынды. Сервер ұсынған қауіпсіздік тіркелу деректері жалған болуы және ол сіз күткен сервер болмауы (шабуылшымен байланысқан болуыңыз) мүмкін.</translation>
 <translation id="6826993739343257035">AR режиміне рұқсат етілсін бе?</translation>
-<translation id="6828772548639835278">Chrome-дағы қаріптерді реттеу түймесі, Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу үшін Enter пернесін басыңыз.</translation>
 <translation id="6831043979455480757">Аудару</translation>
 <translation id="6839929833149231406">Аудан</translation>
 <translation id="6846340164947227603">Виртуалды карта нөмірін пайдалану...</translation>
 <translation id="6852204201400771460">Қолданба қайта жүктелсін бе?</translation>
 <translation id="6865412394715372076">Бұл картаны дәл қазір растау мүмкін емес</translation>
+<translation id="6873456682041376666">Үстіңгі науа</translation>
 <translation id="6874604403660855544">&amp;Қайта қосу</translation>
 <translation id="6881240511396774766">Жаңа Google құжатын жылдам жасаңыз.</translation>
 <translation id="6883221904761970440">Қауіпсіз төлем деректерін аутентификациялау парағы жабылды.</translation>
 <translation id="6884662655240309489">Өлшемі: 1</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="6888584790432772780">Chrome бұл режимде беттің оқылуын жеңілдетті. Chrome браузерінде бастапқы бет қорғалмаған байланыс арқылы алынды.</translation>
+<translation id="6890443033788248019">Локацияны пайдалануға рұқсат берілсін бе?</translation>
 <translation id="6891596781022320156">Саясат деңгейіне қолдау көрсетілмеген.</translation>
 <translation id="6895143722905299846">Виртуалды нөмір:</translation>
 <translation id="6895330447102777224">Картаңыз расталды</translation>
@@ -1730,6 +1792,7 @@
 <translation id="695140971690006676">Барлығын бастапқы күйге қайтару</translation>
 <translation id="6954341342296443517">Белгілі бір файл түрлерін ашу туралы сұрай алады</translation>
 <translation id="6957887021205513506">Сервер сертификаты жасанды сияқты.</translation>
+<translation id="6958564499836457428">Google аккаунтынан Google құпиялылық параметрлерін басқару</translation>
 <translation id="6961844873822989059">Құрылғыңызда орнатылған қаріптерді пайдалануға рұқсат сұрай алады</translation>
 <translation id="6963520811470373926">Ауыстырылуда</translation>
 <translation id="6964255747740675745">Желі конфигурациясы талданбады (JSON жарамсыз).</translation>
@@ -1742,7 +1805,6 @@
 <translation id="6972629891077993081">HID құрылғылары</translation>
 <translation id="6973656660372572881">Бекітілген прокси серверлері мен .pac сценарий URL мекенжайы көрсетілген.</translation>
 <translation id="6973932557599545801">Өкінішке орай, енді көмектесе алмаймын, әрі қарай өзіңіз жалғастырыңыз.</translation>
-<translation id="6975012522936652259">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Дыбысын өшіру (әдепкі)</translation>
 <translation id="6979983982287291980">Сіз жүктеп алатын файлдар Google Cloud қызметіне немесе басқа қызметтерге жіберіліп, талданады. Мысалы, онда құпия деректердің немесе зиянды бағдарламалардың бар-жоғы тексеріледі.</translation>
@@ -1754,9 +1816,11 @@
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Масштабтау деңгейі</translation>
 <translation id="7016992613359344582">Бұл ақылар сізге білдіртпей бір рет не қайта-қайта алынуы мүмкін.</translation>
+<translation id="7024588353896425985">Файл өңдегіштер</translation>
 <translation id="7029809446516969842">Құпия сөздер</translation>
 <translation id="7030436163253143341">Сертификат жарамсыз</translation>
 <translation id="7031646650991750659">Google Play-дің қай қолданбаларын орнатқаныңызды.</translation>
+<translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтының құпиялылық параметрлерін басқару үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сенімді болуы үшін жарамдылық мерзімі тым ұзақ болған сертификатты ұсынды.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Бұл карта қазір сақталмайды}other{Бұл карталар қазір сақталмайды}}</translation>
 <translation id="7053983685419859001">Бөгеу</translation>
@@ -1772,6 +1836,8 @@
 <translation id="7086090958708083563">Пайдаланушы жүктеп салуды сұрады.</translation>
 <translation id="7087282848513945231">Округ</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, сайттарға қатысты сақталған рұқсаттар мен деректерді басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
+<translation id="7096937462164235847">Бұл веб-сайттың идентификациясы расталмаған.</translation>
+<translation id="7102554173784142865">Chrome Dino ойынын ойнау</translation>
 <translation id="7108338896283013870">Жасыру</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> хосты камераңызды пайдаланғысы келеді</translation>
 <translation id="7108819624672055576">Кеңейтім бойынша рұқсат етілген</translation>
@@ -1782,12 +1848,15 @@
 <translation id="7135130955892390533">Күйін көрсету</translation>
 <translation id="7138472120740807366">Жеткізу әдісі</translation>
 <translation id="7139724024395191329">Әмірлік</translation>
+<translation id="7139892792842608322">Негізгі науа</translation>
 <translation id="714064300541049402">Кескіннің Х осі бойынша 2-жағында ығысуы</translation>
 <translation id="7152423860607593928">Number-14 (Envelope)</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
 <translation id="7153618581592392745">Ақшыл көк</translation>
 <translation id="7156870133441232244">Серверде TLS 1.2 протоколы немесе одан кейінгі нұсқасы орнатылуы тиіс.</translation>
+<translation id="716939258255825483">Dino Run ойынын ойнау түймесі. Chrome-да Dino Run ойынын ойнау үшін Enter пернесін басыңыз.</translation>
 <translation id="717330890047184534">GAIA идентификаторы:</translation>
+<translation id="7173920250514487165">Экрандағы құпия мәліметті түсіру</translation>
 <translation id="7174545416324379297">Біріктірілген</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> және тағы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Төлеу әдістерін сақтау және толтыру</translation>
@@ -1808,18 +1877,17 @@
 <translation id="7220786058474068424">Өңделуде</translation>
 <translation id="7221855153210829124">Хабарландыруларды көрсету</translation>
 <translation id="722454870747268814">Жаңа инкогнито қойындысы</translation>
-<translation id="7229659723041939809">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="7231476387708735839">Сайтта іздеу жүйесін басқару</translation>
 <translation id="7233592378249864828">Растау парағын басып шығару</translation>
 <translation id="7238585580608191973">SHA-256 саусақ ізі</translation>
 <translation id="7240120331469437312">Certificate Subject Alternative Name</translation>
-<translation id="7240121456710944377"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Телефонымды іздеу</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="724691107663265825">Алдағы сайтта зиянды бағдарлама бар</translation>
 <translation id="724975217298816891">Карта мәліметтерін жаңарту үшін <ph name="CREDIT_CARD" /> картасының жарамдылық мерзімі мен CVC кодын енгізіңіз. Карта мәліметтері расталғаннан кейін сайтқа беріледі.</translation>
 <translation id="7251437084390964440">Желі конфигурациясы ONC стандартына сәйкес келмейді. Конфигурацияның кей бөліктері импортталмаған болуы мүмкін.
 Қосымша мәліметтер:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="7256634549594854023">Артқы науа</translation>
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменімен оңаша байланыс орнату мүмкін емес, себебі компьютеріңіздің күні мен уақыты (<ph name="DATE_AND_TIME" />) дұрыс емес.</translation>
 <translation id="7260504762447901703">Рұқсат күшін жою</translation>
 <translation id="7275334191706090484">Басқарылатын бетбелгілер</translation>
@@ -1828,12 +1896,13 @@
 <translation id="7298195798382681320">Ұсынылған</translation>
 <translation id="7300012071106347854">Көкпеңбек</translation>
 <translation id="7304030187361489308">Жоғары</translation>
+<translation id="7304562222803846232">Google аккаунтының құпиялылық параметрлерін басқару</translation>
 <translation id="7305756307268530424">Баяуырақ жылдамдықпен бастау</translation>
+<translation id="7308436126008021607">фондық синхрондау</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлімін жасыру</translation>
 <translation id="733354035281974745">Құрылғының жергілікті аккаунтын қайта анықтау</translation>
-<translation id="7333654844024768166">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз енгізілген <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, <ph name="WEBSITE_3" /> және басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="7334320624316649418">&amp;Қайта ретке келтіруді қайталау</translation>
 <translation id="7335157162773372339">Камераңызды қолдануға рұқсат сұрай алады</translation>
 <translation id="7337248890521463931">Жолдарды көбірек көрсету</translation>
@@ -1849,7 +1918,9 @@
 <translation id="7363096869660964304">Алайда бәрібір бақылауда боласыз. Инкогнито режиміне өткенмен, браузерді қолдану тарихын жұмыс берушіңізден, интернет провайдеріңізден немесе сіз кірген веб-сайттардан жасыру мүмкін емес.</translation>
 <translation id="7365596969960773405"><ph name="MANAGE_ADDRESSES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлеріне кіріп, мекенжайларды қосу және басқару үшін Tab, сосын Enter пернелерін басыңыз.</translation>
 <translation id="7365849542400970216">Құрылғыны пайдалануыңыз туралы ақпарат қажет пе?</translation>
+<translation id="7366362069757178916">Төлем өңдегіштері</translation>
 <translation id="7372973238305370288">іздеу нәтижесі</translation>
+<translation id="7374461526650987610">Протокол өңдегіштері</translation>
 <translation id="7374733840632556089">Құрылғыңызға сіз немесе әлдекім орнатқан сертификатқа байланысты осы қате шығып тұрған болуы мүмкін. Бұл сертификат сенімді болып саналмайды, әдетте ол желідегі деректерді қадағалауға және ұстап қалуға пайдаланылады. Мұндай әрекеттерге құрылғы оқу орнында немесе жұмыста болған кезде рұқсат етіледі. Қалай болғанда да Chrome мұндай сертификаттың болатынын ескертеді. Әрекетті қадағалау интернетке кіретін кез келген браузерде немесе қолданбада жүреді.</translation>
 <translation id="7375818412732305729">Файл тіркелді</translation>
 <translation id="7377249249140280793"><ph name="RELATIVE_DATE" /> – <ph name="FULL_DATE" /></translation>
@@ -1876,6 +1947,8 @@
 <translation id="7410471291937727359">Сүйкімді</translation>
 <translation id="7416351320495623771">Құпия сөздерді басқару...</translation>
 <translation id="7419106976560586862">Профиль жолы</translation>
+<translation id="7421067045979951561">протокол өңдегіштері</translation>
+<translation id="7426022697669111648">"Chrome тарихын көру" түймесі. Chrome параметрлерінен браузерді қолдану тарихын көру және басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="7437289804838430631">Байланыс ақпаратын енгізу</translation>
 <translation id="7440140511386898319">Офлайн режимде ашыңыз</translation>
 <translation id="7441627299479586546">Қате саясат нысаны</translation>
@@ -1888,10 +1961,8 @@
 <translation id="7473891865547856676">Жоқ, рақмет</translation>
 <translation id="7481312909269577407">Басқаға жіберу</translation>
 <translation id="7485870689360869515">Деректер табылмады.</translation>
-<translation id="7487775554425430039">Chrome Dino ойынын ойнау</translation>
 <translation id="7495528107193238112">Бұл мазмұн бөгелген. Мәселені шешу үшін сайт иесімен байланыс орнатыңыз.</translation>
 <translation id="7497998058912824456">"Құжат жасау" түймесі, жаңа Google құжатын жылдам жасау үшін Enter пернесін басыңыз.</translation>
-<translation id="7503664977220660814">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="7508255263130623398">Қайтарылған құрылғының сервердегі идентификаторы бос немесе оның ағымдағы идентификаторына сәйкес келмейді</translation>
 <translation id="7508870219247277067">Қою жасыл</translation>
 <translation id="7511955381719512146">Пайдаланып жатқан Wi-Fi сізден <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
@@ -1940,6 +2011,7 @@
 <translation id="7638605456503525968">Сериялық порттар</translation>
 <translation id="7639968568612851608">Қою сұр</translation>
 <translation id="7647206758853451655">Басып шығару сапасы</translation>
+<translation id="7648685412377719625">Қазір ашық тұрған инкогнито терезелерінің барлығын жабу.</translation>
 <translation id="7648992873808071793">Файлдарды осы құрылғыда сақтау</translation>
 <translation id="7653957176542370971">Төлем өңдегіш беті жабық.</translation>
 <translation id="7654909834015434372">Аннотацияларды өзгерткенде, бұл құжат бастапқыдағыдай бұрылып тұрады.</translation>
@@ -1971,12 +2043,15 @@
 <translation id="7734285854693414638">Google Forms-да жылдам жаңа үлгі жасау</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> тіліндегі беттер әрқашан аударылсын</translation>
 <translation id="7740996059027112821">Стандартты</translation>
+<translation id="77424286611022110">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі. <ph name="LEARN_MORE_LINK_TEXT" /></translation>
 <translation id="774634243536837715">Қауіпті мазмұн бөгелді.</translation>
 <translation id="7751971323486164747">Chrome браузеріндегі қаріп өлшемдері мен түрлерін реттеу</translation>
 <translation id="7752995774971033316">Басқарылмайды</translation>
+<translation id="7755624218968747854">Негізгі орам</translation>
 <translation id="7757555340166475417">Dai-Pa-Kai</translation>
 <translation id="7758069387465995638">Брандмауэр немесе вирусқа қарсы бағдарламалық құрал байланысты бөгеп қойған болуы мүмкін.</translation>
 <translation id="776110834126722255">Ескірген</translation>
+<translation id="7761159795823346334">Камераны пайдалануға рұқсат берілсін бе?</translation>
 <translation id="7761701407923456692">Сервер сертификаты URL мекенжайына сәйкес келмейді.</translation>
 <translation id="7763386264682878361">Төлем манифестін талдау құралы</translation>
 <translation id="7764225426217299476">Мекенжай қосу</translation>
@@ -2004,7 +2079,7 @@
 <translation id="7862185352068345852">Сайттан шыққыңыз келе ме?</translation>
 <translation id="7865448901209910068">Ең жақсы жылдамдық</translation>
 <translation id="7871445724586827387">Google аккаунтыңыздың құпия сөзін ауыстыру</translation>
-<translation id="7874263914261512992">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
+<translation id="7877007680666472091">Қорғалған content ID-лер</translation>
 <translation id="7878562273885520351">Құпия сөзіңіз ұрланған болуы мүмкін</translation>
 <translation id="7880146494886811634">Мекенжайды сақтау</translation>
 <translation id="7882421473871500483">Қоңыр</translation>
@@ -2017,7 +2092,6 @@
 <translation id="793209273132572360">Мекенжайды жаңарту керек пе?</translation>
 <translation id="7932579305932748336">Қаптау</translation>
 <translation id="79338296614623784">Дұрыс телефон нөмірін енгізіңіз</translation>
-<translation id="7934052535022478634">Төлем жасалды.</translation>
 <translation id="7934414805353235750"><ph name="URL" /> қорғалған мазмұнды ойнатуға рұқсат сұрады. Google құрылғыңыздың идентификаторын тексереді.</translation>
 <translation id="7935031712718413217">Спуфинг URL мекенжайы болуы мүмкін.</translation>
 <translation id="7935318582918952113">DOM Distiller</translation>
@@ -2034,6 +2108,7 @@
 <translation id="7961015016161918242">Ешқашан</translation>
 <translation id="7966803981046576691">Тапсырмадағы аккаунттың түрі</translation>
 <translation id="79682505114836835">"<ph name="VALUE" />" мәні – жарамсыз он алтылық түс.</translation>
+<translation id="7968982339740310781">Мәліметтерді көру</translation>
 <translation id="7970392640816874403">Басқа дереккөздер не дейді?</translation>
 <translation id="7976214039405368314">Сұраулар саны өте көп.</translation>
 <translation id="7977538094055660992">Шығару құрылғысы</translation>
@@ -2050,6 +2125,7 @@
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{Осы карта мен оның төлем мекенжайы сақталады. Оны <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}other{Осы карталар мен олардың төлем мекенжайлары сақталады. Оларды <ph name="USER_EMAIL" /> аккаунтына кірген кезде пайдалана аласыз.}}</translation>
 <translation id="8025119109950072390">Бұл сайттағы шабуылдаушылар бағдарламалық құрал орнату немесе жеке ақпаратты (мысалы, құпия сөздер, телефон нөмірлері немесе несиелік карталар) жария ету сияқты қауіпті әрекеттерді айлакерлікпен істетуі мүмкін.</translation>
 <translation id="8026334261755873520">Шолу деректерін өшіру</translation>
+<translation id="8027077570865220386">15-науа</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms-да жылдам жаңа үлгі жасау үшін Tab, cодан кейін Enter пернесін басыңыз.</translation>
 <translation id="8028960012888758725">Тапсырмадан кейін кесу</translation>
 <translation id="8034522405403831421">Бұл бет <ph name="SOURCE_LANGUAGE" /> тілінде. Оны <ph name="TARGET_LANGUAGE" /> тіліне аудару керек пе?</translation>
@@ -2072,7 +2148,6 @@
 <translation id="8086971161893892807">Нобай</translation>
 <translation id="8088680233425245692">Мақаланы көру мүмкін емес.</translation>
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
-<translation id="8090329638663751802">Келесі жолы бұл төлеу әдісімен зат сатып алу мақсатында осы құрылғыны пайдалану кезінде жеке басыңызды жылдам растау үшін "Touch ID" функциясын қолдана аласыз.</translation>
 <translation id="8090403583893450254">Өлшемі: 20</translation>
 <translation id="8091372947890762290">Серверде белсендіру әрекеті әлі орындалған жоқ</translation>
 <translation id="8092774999298748321">Қою күлгін</translation>
@@ -2085,7 +2160,6 @@
 <translation id="8116925261070264013">Дыбысы өшірулі</translation>
 <translation id="8118489163946903409">Төлем әдісі</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" компьютеріңізде не желіңізде дұрыс орнатылмаған. АТ әкімшіңізден мәселені шешуін сұраңыз.</translation>
-<translation id="8128526133099929547">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chrome осы құпия сөз енгізілген <ph name="WEBSITE_1" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8148608574971654810">PDF нұсқасы:</translation>
 <translation id="8149426793427495338">Компьютеріңіз ұйқы күйіне өтті.</translation>
@@ -2096,7 +2170,6 @@
 <translation id="8176440868214972690">Бұл құрылғының әкімшісі келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
 <translation id="8184538546369750125">Ғаламдық әдепкі параметрді пайдалану (рұқсат беру)</translation>
 <translation id="8190193880870196235">Кеңейтім арқылы басқарылады.</translation>
-<translation id="8193086767630290324">Құпия деп белгіленген деректер арқылы жасалған әрекеттер</translation>
 <translation id="8194797478851900357">&amp;Жылжуды болдырмау</translation>
 <translation id="8201077131113104583">"<ph name="EXTENSION_ID" />" идентификаторы бар кеңейтім үшін жарамсыз жаңарту URL мекенжайы.</translation>
 <translation id="8202097416529803614">Тапсырыстың жиынтық мәліметтері</translation>
@@ -2105,11 +2178,11 @@
 <translation id="8211406090763984747">Қауіпсіз байланыс</translation>
 <translation id="8218327578424803826">Тағайындалған орын:</translation>
 <translation id="8220146938470311105">C7/C6 (Envelope)</translation>
-<translation id="8221250263817408492">Жаңа ғана құпия сөзіңізді алаяқтық сайтқа енгіздіңіз. Chromium осы құпия сөз енгізілген <ph name="WEBSITE_1" /> және тағы басқа сайттарға кіріп, оны дереу өзгертуге кеңес береді.</translation>
 <translation id="8225771182978767009">Бұл компьютерді орнатқан адам осы сайтты бөгеуді ұйғарды.</translation>
 <translation id="8228419419708659934">Екі бетті көру</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Платформа температурасы</translation>
+<translation id="8233773197406738106">Файл дайындалуда</translation>
 <translation id="8238581221633243064">Бетті жаңа инкогнито қойындысында ашу</translation>
 <translation id="8241707690549784388">Ізделіп жатқан бет сіз енгізген ақпаратты пайдаланды. Аталмыш бетке қайту сіз орындаған әрекетті қайталауға себеп болуы мүмкін. Жалғастыру керек пе?</translation>
 <translation id="8241712895048303527">Осы сайтта бөгеу</translation>
@@ -2124,8 +2197,10 @@
 <translation id="8265992338205884890">Көрінетін деректер</translation>
 <translation id="8267698848189296333"><ph name="USERNAME" /> ретінде кіру</translation>
 <translation id="8269242089528251720">Бөлек құжаттар/реттелген көшірмелер</translation>
+<translation id="8270242299912238708">PDF форматындағы құжаттар</translation>
 <translation id="8275952078857499577">Бұл сайтты аударуды ұсынбау</translation>
 <translation id="8277900682056760511">Төлем өңдегіш парағы ашық.</translation>
+<translation id="8280630997017109758">11-науа</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8282947398454257691">Бірегей құрылғы идентификаторыңызды білу</translation>
 <translation id="8284769179630993263">Chrome параметрлері арқылы Safe Browsing қорғанысын және т.б. басқару</translation>
@@ -2133,6 +2208,7 @@
 <translation id="8288807391153049143">Сертификатты көрсету</translation>
 <translation id="8289355894181816810">Бұның нені білдіретінін білмесеңіз, желі әкімшісіне хабарласыңыз.</translation>
 <translation id="8293206222192510085">Бетбелгі қосу</translation>
+<translation id="829335040383910391">дыбыс</translation>
 <translation id="8294431847097064396">Дереккөз</translation>
 <translation id="8298115750975731693">Сіз пайдаланып жатқан Wi-Fi желісі (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> сілтемесіне кіруді сұрауы мүмкін.</translation>
 <translation id="8299269255470343364">жапон</translation>
@@ -2142,6 +2218,7 @@
 <translation id="8307888238279532626">Орнатылған қолданбалар және олардың пайдаланылу жиілігі</translation>
 <translation id="831207732689920588">Бұл бет күдікті (Chrome белгілеген).</translation>
 <translation id="831997045666694187">Кеш</translation>
+<translation id="8321476692217554900">хабарландырулар</translation>
 <translation id="8328484624016508118">Барлық инкогнито қойындыcы жабылғанда, Chrome келесілерді жояды:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />осы құрылғыдағы браузерді қолдану мәліметі;<ph name="END_LIST_ITEM" />
@@ -2165,7 +2242,9 @@
 <translation id="8380941800586852976">Қауіпті</translation>
 <translation id="8381674639488873545">Бұл ақылар сізге білдіртпей бір рет не бірнеше қайтара алынуы мүмкін. <ph name="BEGIN_LINK" />Бәрібір көрсету<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> сайтынан <ph name="VM_NAME" /> жүйесімен бөлісуге әкімші саясатымен тыйым салынған.</translation>
+<translation id="8398790343843005537">Телефоныңызды табу</translation>
 <translation id="8405579342203358118">Синхрондалатын ақпаратты Chrome параметрлері арқылы басқару</translation>
+<translation id="8409413588194360210">төлем өңдегіштері</translation>
 <translation id="8412145213513410671">Бұзылу (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Бірдей құпия фразаны екі рет енгізу керек.</translation>
 <translation id="8416694386774425977">Желі конфигурациясы жарамсыз және импорттау мүмкін емес.
@@ -2182,24 +2261,23 @@
 <translation id="8457125768502047971">Белгісіз</translation>
 <translation id="8461694314515752532">Синхрондалған деректерді өзіңіздің синхрондау құпия фразаңызбен шифрлау</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 несие картасы}other{# несие картасы}}</translation>
-<translation id="8471007934814342455"><ph name="MANAGE_GOOGLE_AD_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google жарнама параметрлерін басқару</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>
 <translation id="8474910779563686872">Әзірлеуші туралы мәліметтерді көрсету</translation>
 <translation id="8479754468255770962">Төменгі сол жағын қапсыру</translation>
 <translation id="8483780878231876732">Google аккаунтында белгіленген карталарды пайдалану үшін Chrome жүйесіне кіріңіз.</translation>
-<translation id="8485393050551136813">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chromium осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="8488350697529856933">Келесіге қолданылады</translation>
 <translation id="8490137692873530638">10-жинастырушы</translation>
+<translation id="8493948351860045254">Жадтағы орынды босату</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> жауабы тым ұзақ уақыт алды.</translation>
 <translation id="8503559462189395349">Chrome құпия сөздері</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8507227106804027148">Пәрмен жолы</translation>
-<translation id="8507258803558481268"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, осы инкогнито профиліндегі барлық инкогнито терезесін жабу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="8508648098325802031">Іздеу белгішесі</translation>
 <translation id="8511402995811232419">Cookie файлдарын басқару</translation>
 <translation id="8522552481199248698">Chrome браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
 <translation id="8530813470445476232">Chrome параметрлерінен браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. деректерді өшіріңіз.</translation>
 <translation id="8533619373899488139">Тыйым салынған URL мекенжайларын және жүйе әкімшісі енгізген басқа саясаттар тізімін қарау үшін &lt;strong&gt;chrome://policy&lt;/strong&gt; бетіне кіріңіз.</translation>
+<translation id="8539500321752640291">2 рұқсат берілсін бе?</translation>
 <translation id="8541158209346794904">Bluetooth құрылғысы</translation>
 <translation id="8542014550340843547">Төменгі жағын үш рет қапсыру</translation>
 <translation id="8543181531796978784">Сіз <ph name="BEGIN_ERROR_LINK" />анықтау мәселесі туралы хабарлай<ph name="END_ERROR_LINK" /> аласыз, қауіпсіздігіңізге төнетін қатерді түсінетін болсаңыз, <ph name="BEGIN_LINK" />қауіпті сайтқа кіріңіз<ph name="END_LINK" />.</translation>
@@ -2216,11 +2294,13 @@
 <translation id="8600271352425265729">Тек осы жолы</translation>
 <translation id="860043288473659153">Карта иесінің аты-жөні</translation>
 <translation id="8606726445206553943">MIDI құрылғыларыңызды пайдалану</translation>
+<translation id="8617269623452051934">құрылғыны пайдалануыңыз</translation>
 <translation id="861775596732816396">Өлшемі: 4</translation>
 <translation id="8622948367223941507">Legal-Extra</translation>
 <translation id="8623885649813806493">Сәйкес құпия сөздер жоқ. Барлық сақталған құпия сөздерді көрсету.</translation>
 <translation id="8625384913736129811">Картаны осы құрылғыға сақтау</translation>
 <translation id="8627040765059109009">Экранды түсіру қайта қосылды</translation>
+<translation id="865032292777205197">қозғалыс датчиктері</translation>
 <translation id="8663226718884576429">Тапсырыс қорытындысы, <ph name="TOTAL_LABEL" />, толығырақ деректер</translation>
 <translation id="8666678546361132282">ағылшын</translation>
 <translation id="867224526087042813">Қолтаңба</translation>
@@ -2258,16 +2338,17 @@
 <translation id="8761567432415473239">Жақында Google Safe Browsing <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" />зиянды бағдарламаларды тапты<ph name="END_LINK" />.</translation>
 <translation id="8763927697961133303">USB құрылғысы</translation>
 <translation id="8766943070169463815">Қауіпсіз төлем деректерін аутентификациялау парағы ашылды.</translation>
-<translation id="8774457497170244317">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Chrome осы құпия сөз пайдаланылатын <ph name="WEBSITE_1" /> және басқа сайттар үшін сақталған құпия сөздерді тексеруді ұсынады.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8790007591277257123">&amp;Жоюды қайталау</translation>
 <translation id="8792621596287649091"><ph name="ORG_NAME" /> аккаунтыңызға кіру мүмкіндігін жоғалтып алуыңыз немесе жеке мәліметтеріңізді беріп қоюыңыз мүмкін. Chromium құпия сөзіңізді дереу өзгертуге кеңес береді.</translation>
+<translation id="8792626944327216835">микрофон</translation>
 <translation id="8793655568873652685"><ph name="ENROLLMENT_DOMAIN" /> сіздің браузеріңізде Chrome Enterprise Connectors функциясын қосып қойды. Бұл коннекторлар кейбір деректеріңізді пайдалануы мүмкін.</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8805819170075074995">"<ph name="LANGUAGE_ID" />" тізім жазбасы: жазба еленбейді, себебі ол SpellcheckLanguage саясатына енгізілген.</translation>
 <translation id="8807160976559152894">Әр беттен кейін кесу</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінде Chrome-ды жаңарту үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
 <translation id="8820817407110198400">Бетбелгілер</translation>
+<translation id="882338992931677877">Қолмен беру науасы</translation>
 <translation id="883848425547221593">Басқа бетбелгілер</translation>
 <translation id="884264119367021077">Жөнелту мекенжайы</translation>
 <translation id="884923133447025588">Қайтарып алу механизмі табылмады.</translation>
@@ -2279,6 +2360,7 @@
 <translation id="886872106311861689">B3</translation>
 <translation id="8870413625673593573">Жақында жабылған</translation>
 <translation id="8870494189203302833">Бірдей ретпен артқы жағында</translation>
+<translation id="8871553383647848643">Браузер көрінісін реттеу</translation>
 <translation id="8874824191258364635">Дұрыс карта нөмірін енгізіңіз</translation>
 <translation id="8891727572606052622">Жарамсыз прокси режимі.</translation>
 <translation id="8894794286471754040">Алдымен ұзын шеті</translation>
@@ -2323,8 +2405,11 @@
 <translation id="9025348182339809926">(жарамсыз)</translation>
 <translation id="9030265603405983977">Бір түсті</translation>
 <translation id="9035022520814077154">Қауіпсіздік қатесі</translation>
+<translation id="9036306139374661733">Микрофонды пайдалануға рұқсат берілсін бе?</translation>
 <translation id="9038649477754266430">Беттерді жылдамырақ жүктеу үшін болжам қызметін пайдаланыңыз</translation>
 <translation id="9039213469156557790">Сонымен қатар бұл бет басқа да қауіпті ресурстарды қамтиды. Бұл ресурстарды өту кезінде басқалар көре алады және беттің іс-әрекетіне өзгеріс енгізу мақсатында оны шабуылшы өзгерте алады.</translation>
+<translation id="9040464167025094690">"Find My Device" түймесі. Google аккаунтында құрылғыны табу бөліміне кіру үшін Enter пернесін басыңыз.</translation>
+<translation id="9042617223719777575">Үлкен сыйымдылық</translation>
 <translation id="9044359186343685026">Touch ID пайдалану</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
 <translation id="9049981332609050619"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер жарамсыз сертификат ұсынды.</translation>
@@ -2334,6 +2419,7 @@
 <translation id="9065203028668620118">Өзгерту</translation>
 <translation id="9065745800631924235">Тарихтан <ph name="TEXT" /> сұрауын іздеу</translation>
 <translation id="9069693763241529744">Кеңейтім арқылы тыйым салынған</translation>
+<translation id="9073799351042754113">Бұл сайт үшін қауіпсіздік хабарландыруларын өшіріп қойғансыз.</translation>
 <translation id="9078964945751709336">Қосымша ақпарат қажет</translation>
 <translation id="9080712759204168376">Тапсырыстың жиынтық мәліметтері</translation>
 <translation id="9089260154716455634">Жұмыс істемейтін уақыт туралы саясат:</translation>
@@ -2377,7 +2463,6 @@
 <translation id="9199905725844810519">Басып шығаруға тыйым салынған</translation>
 <translation id="9205078245616868884">Деректер синхрондаудың құпия фразасымен шифрланған. Синхрондауды бастау үшін оны енгізіңіз.</translation>
 <translation id="9207861905230894330">Мақала қосу мүмкін болмады.</translation>
-<translation id="9211470216863457665">Қауіпсіз төлем деректерін тіркеу парағы жабылды.</translation>
 <translation id="9213433120051936369">Көріністі реттеу</translation>
 <translation id="9215416866750762878">Қолданба Chrome браузерінің осы сайтқа қауіпсіз қосылуын тоқтатады</translation>
 <translation id="9219103736887031265">Кескіндер</translation>
@@ -2403,6 +2488,7 @@
 <translation id="987264212798334818">Жалпы</translation>
 <translation id="988159990683914416">Әзірлеуші жасақтамасы</translation>
 <translation id="989988560359834682">Мекенжайды өзгерту</translation>
+<translation id="991413375315957741">қозғалыс не жарық датчиктері</translation>
 <translation id="992115559265932548"><ph name="MICROSOFT_ACTIVE_DIRECTORY" /></translation>
 <translation id="992256792861109788">Қызғылт</translation>
 <translation id="992432478773561401">"<ph name="SOFTWARE_NAME" />" компьютерде не желіде дұрыс орнатылмаған:

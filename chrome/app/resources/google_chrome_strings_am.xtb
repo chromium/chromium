@@ -38,7 +38,6 @@
 <translation id="174539241580958092">በመለያ ሲገባ በነበረ ስህተት ምክንያት Google Chrome ውሂብዎን ማመሳሰል አልቻለም።</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">በእርስዎ <ph name="TARGET_DEVICE_NAME" /> ላይ በመለያ ወደ Chrome መግባትዎን ያረጋግጡ እና እንደገና ለመላክ ይሞክሩ።</translation>
-<translation id="1810203443153428607">Chrome OSን መጫን በእርስዎ መሣሪያ ላይ ያለ ሁሉንም ውሂብ ይደመስሳል።</translation>
 <translation id="1812689907177901597">ይህንን በማጥፋት፣ እንደ Gmail ወደ መሰሉ የGoogle ጣቢያዎች ወደ Chrome በመለያ ሳይገቡ መግባት ይችላሉ</translation>
 <translation id="1860536484129686729">Chrome ለዚህ ጣቢያ የእርስዎን ካሜራ ለመድረስ ፈቃድ ያስፈልገዋል</translation>
 <translation id="1873233029667955273">Google Chrome ነባሪ አሳሽዎ አይደለም</translation>
@@ -56,6 +55,7 @@
 <translation id="2290014774651636340">የGoogle ኤ ፒ አይ ቁልፎች ይጎድላሉ። አንዳንድ የGoogle Chrome ተግባራት ይሰናከላሉ።</translation>
 <translation id="2290095356545025170">እርግጠኛ ነዎት Google Chromeን ማራገፍ ይፈልጋሉ?</translation>
 <translation id="2309047409763057870">ይሄ ሁለተኛ የGoogle Chrome ጭነት ነው፣ እና ነባሪ አሳሽዎ ማድረግ አይቻልም።</translation>
+<translation id="2345992953227471816">Chrome እነዚህ ቅጥያዎች ተንኮል አዘል ዌርን እንደያዙ አግኝቷል</translation>
 <translation id="2348335408836342058">Chrome ለዚህ ጣቢያ የእርስዎን ካሜራ እና ማይክሮፎን ለመድረስ ፈቃድ ያስፈልገዋል</translation>
 <translation id="234869673307233423">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="235650106824528204">ይህን መገለጫ በሚጠቀሙበት ጊዜ የመነጨ ማንኛውም የChrome ውሂብ (እንደ የዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች መፈጠር ያለ) በስራ መገለጫ አስተዳዳሪው ሊወገድ ይችላል። <ph name="LEARN_MORE" /></translation>
@@ -85,6 +85,7 @@
 <translation id="2885378588091291677">ተግባር መሪ</translation>
 <translation id="2888126860611144412">ስለChrome</translation>
 <translation id="2926676257163822632">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። Chrome <ph name="BEGIN_LINK" /> ለእርስዎ ጠንካራ የይለፍ ቃላትን እንዲፈጥር እና እንዲያስታውስ<ph name="END_LINK" /> ይፍቀዱ።</translation>
+<translation id="2926952073016206995">Chrome ለዚህ ጣቢያ የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="2929907241665500097">Chrome አልተዘመነም፣ የሆነ ስክህተት ተከስቷል። <ph name="BEGIN_LINK" />የChrome ዝማኔ ችግሮችን እና ያልተሳኩ ዝማኔዎችን ያስተካክሉ።<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />አንድ የመጨረሻ ማስታወሻ፦ መጫን <ph name="BEGIN_BOLD" />ሙሉውን የእርስዎ ደረቅ አንጻፊ ይደመስሳል<ph name="END_BOLD" />። እባክዎ የሚጨነቁለት የማንኛውም ውሂብ በምትኬ መቀመጡን ያረጋግጡ።<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />አንዴ መጫን ከተጀመረ በኋላ ሊሰረዝ አይችልም።<ph name="END_PARAGRAPH2" /></translation>
@@ -113,6 +114,7 @@
 <translation id="3582972582564653026">Chromeን በመላ መሣሪያዎችዎ ላይ ያስምሩ እና ግላዊነት ያላብሱ</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromeን ዳግም እንዲያስጀምሩት ይፈልግብዎታል}=1{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromeን ዳግም እንዲያስጀምሩት ይፈልግብዎታል። የእርስዎ ማንነት የማያሳውቅ መስኮት ዳግም አይከፈትም}one{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromeን ዳግም እንዲያስጀምሩት ይፈልግብዎታል። የእርስዎ # ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}other{አንድ ዝማኔ ለመተግበር አስተዳዳሪዎ Chromeን ዳግም እንዲያስጀምሩት ይፈልግብዎታል። የእርስዎ # ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም}}</translation>
 <translation id="3622797965165704966">አሁን Chromeን ከGoogle መለያዎ ጋር እና በተጋሩ ኮምፒውተሮች ላይ መጠቀም ይበልጥ ቀላል ነው።</translation>
+<translation id="3673813398384385993">Chrome «<ph name="EXTENSION_NAME" />» ተንኮል-አዘል ዌር እንደያዘ አግኝቷል</translation>
 <translation id="3718181793972440140">ይሄ 1 ንጥል ከዚህ መሣሪያዎ ይሰርዘዋል። ውሂብዎን በኋላ ላይ ሰርስረው ለማውጣት እንደ <ph name="USER_EMAIL" /> ሆነው ወደ Chrome ይግቡ።</translation>
 <translation id="3735758079232443276">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ Chromeን ሲጀምሩት የሚታየውን ገጽ ቀይሮታል።</translation>
 <translation id="3779473566290487688">የወደፊት የGoogle Chrome ዝመኔዎችን ለማግኘት፣ OS X 10.11 ወይም ከዚያ በኋላ ያለው ያስፈልግዎታል። ይህ ኮምፒተር OS X 10.10 እየተጠቀመ ነው።</translation>
@@ -129,6 +131,7 @@
 <translation id="4149882025268051530">ጫኝው መዝገብ ለመበተን አልቻለም። እባክዎ Google Chromeን እንደገና ያውርዱ።</translation>
 <translation id="4191857738314598978">{0,plural, =1{በአንድ ቀን ውስጥ Chromeን ዳግም አስጀምር}one{በ# ቀኖች ውስጥ Chromeን ዳግም አስጀምር}other{በ# ቀኖች ውስጥ Chromeን ዳግም አስጀምር}}</translation>
 <translation id="4205939740494406371">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። ከ24 ሰዓቶች በኋላ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይፈትሹ<ph name="END_LINK" />።</translation>
+<translation id="4242034826641750751">Chrome ለዚህ ጣቢያ የካሜራ እና የማይክሮፎን ፈቃዶች ያስፈልጉታል</translation>
 <translation id="424864128008805179">ከChrome ተዘግቶ ይወጣ?</translation>
 <translation id="4251615635259297716">የChrome ውሂብዎ ከዚህ መለያ ጋር ይገናኝ?</translation>
 <translation id="4281844954008187215">የአግልግሎት ውል</translation>
@@ -173,15 +176,12 @@
 <translation id="521447420733633466">መሣሪያ የሚያጋሩ ከሆኑ ጓደኛዎች እና ቤተሰብ ተለይተው ሊያስሱ እና Chromeን በሚፈልጉበት መንገድ ማዋቀር ይችላሉ</translation>
 <translation id="5251420635869119124">እንግዳዎች ምንም ነገር ሳይተዉ Chromeን መጠቀም ይችላሉ።</translation>
 <translation id="5251679006894510177">ሊዘመን ጥቂት ቀርቶታል! ዝማኔውን ለማጠናቀቅ Chromeን እንደገና ያስጀምሩ። ማንነት የማያሳውቁ መስኮቶች ዳግም አይከፈቱም</translation>
+<translation id="5334487786912937552">Chrome ፋይሎችን ለማውረድ የማከማቻ መዳረሻ ፈቃድ ያስፈልገዋል</translation>
 <translation id="5386244825306882791">እንዲሁም Chromeን ሲጀምሩት ወይም ከኦምኒቦክሱ ሆነው ሲፈልጉ የሚታየውን ገጽ ይቆጣጠራል።</translation>
 <translation id="5394833366792865639">አንድ የChrome ትር ያጋሩ</translation>
 <translation id="5430073640787465221">የምርጫዎችዎ ፋይል ተበላሽቷል ወይም ልክ አይደለም ነው።
 
 Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />ከመጀመራችን በፊት እባክዎ የእርስዎን የተዘመነ ምትኬ እንዳለዎት ያረጋግጡ። Chrome OSን መጫን በእርስዎ ደረቅ አንጻፊ ላይ ያለውን ሁሉም ውሂብ ይደመስሳል።<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google ለማናቸውም የውሂብ መጥፋት ጉዳይ ኃላፊነቱን አይወስድም፣ እንዲሁም Chrome OS ባልተረጋገጡ ሞዴሎች ላይ ስለመሥራቱ ምንም ዋስትና አይሰጥም። ስለተረጋገጡ ሞዴሎች የበለጠ ለመረዳት እባክዎ [TBD]ን ይጎብኙ።<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Chrome OSን ስለመጫን እና ስለውሂብ መደምሰስ የበለጠ ይወቁ፦ [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />ለመቀጠል ዝግጁ ከሆኑ «Chrome OSን ጫን»ን ጠቅ ያድርጉ እና በአንድ ሁለት ቀላል እርምጃዎች በመጫን ሂደቱ ላይ እንመራዎታለን። በእርስዎ ኮምፒውተር ላይ ማናቸውንም ለውጦች ከማድረጋችን በፊት ለማረጋገጥ ሌላ ዕድል አልዎት።<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Chrome OSን ይጫኑ</translation>
 <translation id="556024056938947818">Google Chrome የይለፍ ቃላትን ለማሳየት እየሞከረ ነው።</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -213,10 +213,12 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6291549208091401781">Google Chrome ቀደም ብሎ በእርስዎ ኮምፒውተር ላይ ላሉ ተጠቃሚዎች ተጭኗል።</translation>
 <translation id="6368958679917195344">Chrome ስርዓተ ክወና በተጨማሪ <ph name="BEGIN_LINK_CROS_OSS" />ክፍት ምንጭ ሶፍትዌር<ph name="END_LINK_CROS_OSS" /> እውን ሊሆን ችሏል።</translation>
 <translation id="6418662306461808273">ወደ ነባር የChrome መገለጫ ይቀየር?</translation>
+<translation id="6506909944137591434">Chrome የዙሪያዎን የ3ል ካርታ ለመፍጠር የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome ግንባታ</translation>
 <translation id="6568793831116033768">የChrome OS ሥርዓት</translation>
 <translation id="6676384891291319759">በይነመረብን ተዳረስ</translation>
 <translation id="6679975945624592337">Google Chrome ጀርባ ውስጥ ይሂድ</translation>
+<translation id="6696915334902295848">Chrome ለዚህ ጣቢያ የማይክሮፎን ፈቃድ ያስፈልገዋል</translation>
 <translation id="6739177684496155661">በአዲሱ የChrome መገለጫ ውስጥ ይቀጥል?</translation>
 <translation id="6750954913813541382">የሥርዓተ ሆሄ ህጸሶችን ለማስተካከል እርስዎን የሚተይቡትን ጽሑፍ Chrome ወደ Google በአሳሽ ውስጥ ይልካል</translation>
 <translation id="677276454032249905">የሆነው ሆኖ ከChrome ይወጣ?</translation>
@@ -256,6 +258,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7761834446675418963">Chromeን ለመክፈት እና ማሰስ ለመጀመር ስምዎን ጠቅ ያድርጉት።</translation>
 <translation id="7777080907402804672">አንድ ምስል ጠቃሚ መግለጫ ከሌለው Chrome ለእርስዎ አንድ ለማቅረብ ይሞክራል። ዝርዝር መግለጫዎችን ለመፍጠር፣ ምስሎች ወደ Google ይላካሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ ሊያጠፉት ይችላሉ።</translation>
 <translation id="7781002470561365167">የGoogle Chrome አዲስ ስሪት አለ።</translation>
+<translation id="778331955594035129">Chrome ለዚህ ጣቢያ የአካባቢ ፈቃድ ያስፈልገዋል</translation>
 <translation id="7787950393032327779">መገለጫው በሌላ ኮምፒውተር (<ph name="HOST_NAME" />) ላይ በሌላ የGoogle Chrome ሂደት (<ph name="PROCESS_ID" />) የተያዘ ይመስላል። Chrome መገለጫው እንዳይበላሽ ቆልፎታል።  ሌሎች ሂደቶች ይህን መገለጫ እየተጠቀሙበት እንዳልሆኑ እርግጠኛ ከሆኑ መገለጫውን አስከፍተው Chromeን ዳግም ማስጀመር ይችላሉ።</translation>
 <translation id="7801699035218095297">Google Chrome የይለፍ ቃላትን ለመቅዳት እየሞከረ ነው። ይህንን ለመፍቀድ የእርስዎን Windows የይለፍ ቃል ይተይቡ።</translation>
 <translation id="7808348361785373670">ከChrome አስወግድ...</translation>

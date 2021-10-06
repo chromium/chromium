@@ -35,7 +35,6 @@
 <translation id="174539241580958092">Google Chrome tidak dapat menyegerakkan data anda disebabkan ralat melog masuk.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Pastikan anda telah log masuk ke Chrome pada <ph name="TARGET_DEVICE_NAME" /> anda, kemudian cuba hantar lagi.</translation>
-<translation id="1810203443153428607">Pemasangan OS Chrome akan menulis ganti semua data pada peranti anda.</translation>
 <translation id="1812689907177901597">Dengan mematikan pilihan ini, anda boleh mengelog masuk ke tapak Google seperti Gmail tanpa perlu mengelog masuk ke Chrome</translation>
 <translation id="1860536484129686729">Chrome memerlukan kebenaran untuk mengakses kamera anda bagi tapak ini</translation>
 <translation id="1873233029667955273">Google Chrome bukan penyemak imbas lalai anda</translation>
@@ -53,6 +52,7 @@
 <translation id="2290014774651636340">Kunci API Google tiada. Sesetengah fungsi Google Chrome akan dilumpuhkan.</translation>
 <translation id="2290095356545025170">Adakah anda pasti anda mahu menyahpasang Google Chrome?</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan kedua Google Chrome dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
+<translation id="2345992953227471816">Chrome mendapati bahawa item ini mengandungi perisian hasad:</translation>
 <translation id="2348335408836342058">Chrome memerlukan kebenaran untuk mengakses kamera dan mikrofon anda bagi tapak ini</translation>
 <translation id="234869673307233423">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi nanti.</translation>
 <translation id="235650106824528204">Sebarang data Chrome yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
@@ -82,6 +82,7 @@
 <translation id="2885378588091291677">Pengurus Tugas</translation>
 <translation id="2888126860611144412">Perihal Chrome</translation>
 <translation id="2926676257163822632">Kata laluan lemah mudah diteka. Biar Chrome <ph name="BEGIN_LINK" />membuat dan mengingat kata laluan kukuh untuk anda<ph name="END_LINK" />.</translation>
+<translation id="2926952073016206995">Chrome memerlukan kebenaran kamera untuk laman ini</translation>
 <translation id="2929907241665500097">Chrome tidak dikemas kini, kesilapan telah berlaku. <ph name="BEGIN_LINK" />Selesaikan masalah kemas kini dan kegagalan kemas kini Chrome.<ph name="END_LINK" /></translation>
 <translation id="2944515913673001130"><ph name="BEGIN_PARAGRAPH1" />Satu peringatan terakhir: pemasangan <ph name="BEGIN_BOLD" />akan memadamkan seluruh pemacu keras anda<ph name="END_BOLD" />. Sila pastikan anda telah menyandarkan sebarang data yang penting bagi anda.<ph name="END_PARAGRAPH1" />
           <ph name="BEGIN_PARAGRAPH2" />Sebaik sahaja dimulakan, pemasangan tidak boleh dibatalkan.<ph name="END_PARAGRAPH2" /></translation>
@@ -110,6 +111,7 @@
 <translation id="3582972582564653026">Segerakkan dan peribadikan Chrome pada semua peranti anda</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini}=1{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda menghendaki anda melancarkan semula Chrome untuk menggunakan kemas kini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="3622797965165704966">Kini lebih mudah menggunakan Chrome dengan Akaun Google anda dan pada komputer yang dikongsi.</translation>
+<translation id="3673813398384385993">Chrome mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
 <translation id="3718181793972440140">Tindakan ini akan memadamkan 1 item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Sambungan "<ph name="EXTENSION_NAME" />" telah menukar halaman yang ditunjukkan apabila anda memulakan Chrome.</translation>
 <translation id="3779473566290487688">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan OS X 10.11 atau yang lebih baharu. Komputer ini menggunakan OS X 10.10.</translation>
@@ -126,6 +128,7 @@
 <translation id="4149882025268051530">Pemasang gagal untuk nyahmampat arkib. Sila muat turun Google Chrome semula.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Lancarkan semula Chrome dalam masa sehari}other{Lancarkan semula Chrome dalam masa # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda<ph name="END_LINK" />.</translation>
+<translation id="4242034826641750751">Chrome memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
 <translation id="424864128008805179">Log keluar daripada Chrome?</translation>
 <translation id="4251615635259297716">Paut data Chrome anda ke akaun ini?</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
@@ -168,13 +171,10 @@
 <translation id="521447420733633466">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chrome sebagaimana yang mereka ingini</translation>
 <translation id="5251420635869119124">Tetamu boleh menggunakan Chrome tanpa meninggalkan apa-apa.</translation>
 <translation id="5251679006894510177">Kemas kini hampir selesai! Lancarkan semula Chrome untuk menyelesaikan kemas kini. Tetingkap inkognito tidak dapat dibuka semula.</translation>
+<translation id="5334487786912937552">Chrome memerlukan kebenaran akses storan untuk memuat turun fail</translation>
 <translation id="5386244825306882791">Sambungan turut mengawal halaman yang ditunjukkan apabila anda memulakan Chrome atau membuat carian dari Kotak Omni.</translation>
 <translation id="5394833366792865639">Kongsi tab Chrome</translation>
 <translation id="5430073640787465221">Fail pilihan anda rosak atau tidak sah. Google Chrome tidak dapat mengembalikan tetapan anda.</translation>
-<translation id="5449497480926255862"><ph name="BEGIN_PARAGRAPH1" />Sebelum kita bermula, sila pastikan anda mempunyai sandaran data anda yang terkini. Pemasangan OS Chrome akan menulis ganti semua data pada pemacu keras anda.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google tidak bertanggungjawab atas sebarang kehilangan data dan tidak menjamin bahawa OS Chrome akan berfungsi pada model yang tidak diperakui. Sila lawati [TBD] untuk mengetahui lebih lanjut tentang model yang diperakui.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Ketahui lebih lanjut tentang pemasangan OS Chrome dan pemadaman data: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Jika anda sudah bersedia untuk meneruskan, klik “Pasang OS Chrome” dan kami akan membimbing anda melalui proses pemasangan dalam beberapa langkah mudah sahaja. Anda akan diberikan satu peluang lagi untuk mengesahkan pemasangan sebelum kami membuat perubahan pada komputer anda.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="5486618155264784386">Pasang OS Chrome</translation>
 <translation id="556024056938947818">Google Chrome sedang cuba memaparkan kata laluan.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
@@ -206,10 +206,12 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="6291549208091401781">Google Chrome telah dipasang untuk semua pengguna pada komputer anda.</translation>
 <translation id="6368958679917195344">OS Chrome menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6418662306461808273">Tukar kepada profil Chrome yang sedia ada?</translation>
+<translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6568793831116033768">Sistem OS Chrome</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Biarkan Google Chrome Dijalankan Di Latar Belakang</translation>
+<translation id="6696915334902295848">Chrome memerlukan kebenaran mikrofon untuk laman ini</translation>
 <translation id="6739177684496155661">Teruskan dalam profil Chrome baharu?</translation>
 <translation id="6750954913813541382">Untuk membetulkan kesalahan ejaan, Chrome akan menghantar teks yang anda taip dalam penyemak imbas kepada Google</translation>
 <translation id="677276454032249905">Keluar daripada Chrome juga?</translation>
@@ -249,6 +251,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
 <translation id="7777080907402804672">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="7781002470561365167">Terdapat versi Google Chrome baharu yang tersedia.</translation>
+<translation id="778331955594035129">Chrome memerlukan kebenaran lokasi untuk laman ini</translation>
 <translation id="7787950393032327779">Nampaknya profil digunakan oleh proses Google Chrome lain (<ph name="PROCESS_ID" />) pada komputer lain (<ph name="HOST_NAME" />). Chrome telah mengunci profil supaya profil tidak rosak. Jika anda pasti tiada proses lain yang menggunakan profil ini, anda boleh membuka profil dan melancarkan semula Chrome.</translation>
 <translation id="7801699035218095297">Google Chrome cuba menyalin kata laluan. Taip kata laluan Windows anda untuk membenarkan penyalinan.</translation>
 <translation id="7808348361785373670">Alih keluar daripada Chrome...</translation>

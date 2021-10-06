@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">‏کاپی رائٹ 2021 The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="4513946894732546136">تاثرات</translation>
 <translation id="4563926062592110512">کلائنٹ منقطع ہوگیا: <ph name="CLIENT_USERNAME" />۔</translation>
+<translation id="4618411825115957973">‏<ph name="URL_FORWARDER_NAME" /> کو صحیح طریقے سے کنفیگر نہیں کیا گیا۔ براہ کرم ایک مختلف ڈیفالٹ ویب براؤزر منتخب کریں اور پھر URL کو دوبارہ فارورڈ کرنے کی سہولت فعال کریں۔</translation>
 <translation id="4635770493235256822">ریموٹ آلات</translation>
 <translation id="4660011489602794167">کی بورڈ دکھائیں</translation>
 <translation id="4703799847237267011">‏آپ کا Chromoting کا سیشن ختم ہو گیا ہے۔</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> کے بطور سائن ان کردہ۔</translation>
 <translation id="579702532610384533">دوبارہ منسلک ہوں</translation>
 <translation id="5810269635982033450">اسکرین ایک ٹریک پیڈ کی طرح کام کرتی ہے</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> نے آپ کی اسکرین کو دیکھنے اور آپ کے کی بورڈ اور ماؤس کو کنٹرول کے لیے رسائی کی درخواست کی ہے۔ اگر آپ اس درخواست کی توقع نہیں کر رہے ہیں تو "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" کو دبائیں۔ بصورت دیگر تیار ہونے پر کنکشن کی اجازت کے لیے "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" کو منتخب کریں۔</translation>
 <translation id="5823658491130719298">‏جس کمپیوٹر پر آپ کسی اور جگہ سے رسائی حاصل کرنا چاہتے ہیں اس پر Chrome کھول کر <ph name="INSTALLATION_LINK" /> ملاحظہ کریں</translation>
 <translation id="5841343754884244200">ڈسپلے کے اختیارات</translation>
 <translation id="6033507038939587647">کی بورڈ کے اختیارات</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">‏ریموٹ کمپیوٹر کے کنکشنز عارضی طور پر مسدود کر دیے گئے ہیں کیونکہ کوئی شخص غلط PIN سے اس سے منسلک ہونے کی کوشش کر رہا تھا۔ براہ کرم بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6985691951107243942">کیا آپ واقعی <ph name="HOSTNAME" /> سے ریموٹ کنکشنز غیر فعال کرنا چاہتے ہیں؟ اگر آپ کا ارادہ بدل جاتا ہے تو کنکشنز دوبارہ فعال کرنے کیلئے آپ کو وہ کمپیوٹر ملاحظہ کرنا ہوگا۔</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> نے آپ کے کمپیوٹر کو کنٹرول کرنے اور دیکھنے کے لیے رسائی کی درخواست کی ہے۔ اگر آپ اس فرد کو نہیں جانتے ہیں یا اشتراک کرنے سے پہلے اگر آپ کو کوئی تبدیلی کرنے کی ضرورت ہے تو "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" دبائیں۔  بصورت دیگر کنکشن کی اجازت کے لیے "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" منتخب کریں۔</translation>
 <translation id="7019153418965365059">غیر شناخت کردہ میزبان خرابی: <ph name="HOST_OFFLINE_REASON" />۔</translation>
 <translation id="701976023053394610">ریموٹ مدد</translation>
 <translation id="7026930240735156896">ریموٹ رسائی کی خاطر اپنے کمپیوٹر کو ترتیب دینے کے لیے ہدایات کی پیروی کریں</translation>
@@ -169,6 +170,7 @@
 یہ اجازت دینے کے لیے، نیچے '<ph name="BUTTON_NAME" />' پر کلک کریں۔ کھلنے والے 'ایکسیسبیلٹی' کی ترجیحات کے پین میں، '<ph name="SERVICE_SCRIPT_NAME" />' کے بغل میں موجود باکس کو نشان زد کریں۔
 
 اگر '<ph name="SERVICE_SCRIPT_NAME" />' پہلے ہی سے نشان زد ہے تو اسے غیر نشان زد کریں اور پھر اسے دوبارہ نشان زد کریں۔</translation>
+<translation id="8305209735512572429">ویب کی تصدیق کی ریموٹنگ کی کارروائی</translation>
 <translation id="8383794970363966105">‏Chromoting کا استعمال کرنے کیلئے، آپ کو اپنے آلے پر ایک Google اکاؤنٹ شامل کرنے کی ضرورت ہو گی۔</translation>
 <translation id="8386846956409881180">‏میزبان کو غلط OAuth اسنادات کے ساتھ کنفیگر کیا گیا ہے۔</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> کو اجازت کی منظوری دیں</translation>

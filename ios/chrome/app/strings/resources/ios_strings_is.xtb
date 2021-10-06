@@ -116,6 +116,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="2073572773299281212">Virkt fyrir <ph name="DAYS" /> dögum</translation>
 <translation id="2074131957428911366">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
+<translation id="2080769225927880590">Skráðu þig inn með gildum reikningi</translation>
 <translation id="209018056901015185">Biðja um tölvuvefsvæði</translation>
 <translation id="2103075008456228677">Opna history.google.com</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> atriði færð</translation>
@@ -219,6 +220,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3131206671572504478">Útiloka öll</translation>
 <translation id="313283613037595347">Búa til nýjan huliðsflipa.</translation>
 <translation id="3153862085237805241">Vista kort</translation>
+<translation id="315401415709252194">Fyrirtækið þitt krefst þess að þú skráir þig inn.</translation>
 <translation id="3157387275655328056">Bæta við leslista</translation>
 <translation id="3157684681743766797">Merkja allt…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -229,6 +231,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3184767182050912705">Taka úr lás með „<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />“</translation>
 <translation id="3207960819495026254">Í bókamerkjum</translation>
 <translation id="3224641773458703735">Til að flytja út aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
+<translation id="3230318355092723906">Þegar slökkt er á samstillingu geturðu samt séð öll bókamerki, feril, aðgangsorð og aðrar stillingar í þessu tæki. Breytingar verða ekki samstilltar við reikninginn þinn.</translation>
 <translation id="3240426699337459095">Tengill afritaður</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> af <ph name="NUM_SUGGESTIONS" /></translation>
@@ -311,7 +314,6 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4038354071007134711">Ekkert forrit í þessu tæki getur opnað skrána.</translation>
 <translation id="4042870976416480368">Finna á síðu</translation>
 <translation id="4049507953662678203">Gakktu úr skugga um að þú sért tengd(ur) netinu og reyndu svo aftur.</translation>
-<translation id="4079195788735381731">Fyrirtækið þitt skráði þig út</translation>
 <translation id="408404951701638773">Nú er auðveldara að nálgast leitarstikuna</translation>
 <translation id="411254640334432676">Niðurhal mistókst.</translation>
 <translation id="4112644173421521737">Leita</translation>
@@ -355,6 +357,7 @@ Fylgdu leiðbeiningunum hér að neðan:</translation>
 <translation id="4619564267100705184">Staðfestu hver þú ert</translation>
 <translation id="4619615317237390068">Flipar frá öðrum tækjum</translation>
 <translation id="4620246317052452550">Síður sem þú hefur lesið</translation>
+<translation id="4620888520263267479">Sýna forskoðun tengla</translation>
 <translation id="4630540211544979320">Þýða síður</translation>
 <translation id="4634124774493850572">Nota aðgangsorð</translation>
 <translation id="4636930964841734540">Upplýsingar</translation>
@@ -452,6 +455,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="5580834567471114021">Bæta við leslista til síðari nota?</translation>
 <translation id="5592679540098330836">Kveikja á samstillingu fyrir <ph name="NAME" /></translation>
+<translation id="560322036295180549">Fyrirtækið þitt slökkti á þessu</translation>
 <translation id="5614553682702429503">Vista aðgangsorð?</translation>
 <translation id="5626245204502895507">Ekki var hægt að sækja skrána.</translation>
 <translation id="5631164295104953411">Bæta við greiðslumáta</translation>
@@ -467,6 +471,8 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="5737974891429562743">Innskráningarupplýsingar reikningsins eru úreltar. Uppfærðu þær til að hefja samstillingu.</translation>
 <translation id="5738887413654608789">Þetta gerir þér kleift að finna viðeigandi vefsíður út frá nánasta umhverfi þínu.</translation>
 <translation id="5758631781033351321">Þú finnur leslistann þinn hér</translation>
+<translation id="575902488528307720">Leita að mynd</translation>
+<translation id="5781453543752460388">Bæta við Myndir</translation>
 <translation id="5782227691023083829">Þýðir...</translation>
 <translation id="5803566855766646066">Ertu viss um að þú viljir fleygja þessu nýja korti?</translation>
 <translation id="5812974770859303494">Bæta við...</translation>
@@ -504,6 +510,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6042308850641462728">Meira</translation>
 <translation id="605721222689873409">ÁÁ</translation>
 <translation id="6059830886158432458">Stjórnaðu sögunum þínum og virkni hér</translation>
+<translation id="6064824697233747382">Fyrirtækið þitt krefst þess að þú slökkvir á samstillingu.</translation>
 <translation id="6066301408025741299">Ýttu til að hætta við.</translation>
 <translation id="60829778314739003">Samþykkja og halda áfram</translation>
 <translation id="6084848228346514841">Velja flipa</translation>
@@ -519,6 +526,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6189413832092199491">Ólesið</translation>
 <translation id="6196207969502475924">Raddleit</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Loka {COUNT} flipa}one{Loka {COUNT} flipa}other{Loka {COUNT} flipum}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Sjáðu hvað þú mátt samstilla<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Þýða aldrei</translation>
 <translation id="6223816392543092032">Fáðu bókamerkin, ferilinn, aðgangsorðin og aðrar stillingar í öll tækin þín.</translation>
 <translation id="6232329973559504466">Leit í huliðsstillingu</translation>
@@ -603,10 +611,12 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="6801927553864092214">Opnaðu huliðsflipa til að vafra í leyni</translation>
 <translation id="6807889908376551050">Sýna alla...</translation>
 <translation id="681368974849482173">Atriði búið til</translation>
+<translation id="681450999322335505">Fyrirtækið þitt slökkti á samstillingu.</translation>
 <translation id="6830804042318138535">Lesa meira</translation>
 <translation id="6831043979455480757">Þýða</translation>
 <translation id="6842136130964845393">Staðfestu að þetta sért þú til að tryggja aðgang þinn að vistuðum aðgangsorðum</translation>
 <translation id="6851516051005285358">Biðja um tölvuvefsvæði</translation>
+<translation id="6856384753476268833">Stjórnað af fyrirtækinu þínu.</translation>
 <translation id="6858855187367714033">Skannað</translation>
 <translation id="6859944681507688231">Kveiktu á myndavélinni í stillingum til að skanna QR-kóða eða kreditkort.</translation>
 <translation id="6869389390665537774">Þú getur séð síðurnar sem þú hefur opnað eða hreinsað þær úr ferlinum</translation>
@@ -628,7 +638,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
 <translation id="7006788746334555276">Efnisstillingar</translation>
-<translation id="7015203776128479407">Fyrstu uppsetningu samstillingar var ekki lokið. Slökkt er á samstillingu.</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7053983685419859001">Setja á bannlista</translation>
 <translation id="7062545763355031412">Samþykkja og skipta um reikning</translation>
@@ -651,7 +660,6 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7265758999917665941">Aldrei fyrir þetta vefsvæði</translation>
 <translation id="7272437679830969316">Ekki tókst að staðfesta hver þú ert. Aðgangsorð var ekki afritað.</translation>
 <translation id="7291368939935408496">Undirbýr aðgangsorð...</translation>
-<translation id="7293171162284876153">Til að hefja samstillingu skaltu kveikja á „Samstilla gögnin þín í Chrome“.</translation>
 <translation id="7313347584264171202">Þú finnur huliðsflipana þína hér</translation>
 <translation id="7319242366286515846">Með því að halda áfram samþykkir þú <ph name="BEGIN_LINK" />þjónustuskilmálana<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> prósent sótt</translation>
@@ -707,6 +715,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 <translation id="7856733331829174190">Tókst ekki að sækja</translation>
 <translation id="7859704718976024901">Vafraferill</translation>
 <translation id="7887198238286927132">Til að tryggja öryggi þitt fyllir Chrome ekki sjálfkrafa út í þennan reit.</translation>
+<translation id="7911190106180361398">Fyrirtækið leyfir þér ekki að samstilla allt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Flytja út aðgangsorð...</translation>
 <translation id="794799177247607889">Hætta skráningu</translation>
@@ -716,6 +725,7 @@ Reyndu að nota einkvæmt aðgangsorð á hverju vefsvæði.</translation>
 
 Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi vefsvæðum, til dæmis til að sérsníða auglýsingar.</translation>
 <translation id="7971521879845308059">Útiloka sprettiglugga</translation>
+<translation id="797413074872316787">Kveiktu á samstillingu til að hafa allt samstillt og sérsniðið í tækjunum þínum.</translation>
 <translation id="7982789257301363584">Net</translation>
 <translation id="7993619969781047893">Ekki er víst að allir eiginleikar á öllum vefsvæðum virki</translation>
 <translation id="800361585186029508">Opnar innslegnar vefslóðir í Google Chrome.</translation>
@@ -734,8 +744,8 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8080028325999236607">Loka öllum flipum</translation>
 <translation id="8105368624971345109">Slökkva</translation>
 <translation id="8114753159095730575">Hægt er að sækja skrá. Valkostir eru í boði neðarlega á skjánum.</translation>
-<translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8156478151976189188">Samstilling aðgangsorða virkar ekki</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tækin þín<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Þýða síðu</translation>
 <translation id="8205564605687841303">Hætta við</translation>
 <translation id="8206354486702514201">Stjórnandi valdi þessa stillingu.</translation>
@@ -761,7 +771,6 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8487667956631253959">Kveikt</translation>
 <translation id="8487700953926739672">Í boði án nettengingar</translation>
 <translation id="8490978609246021741">Vista breytingar</translation>
-<translation id="8495097701594799854">Fyrirtækið þitt slökkti á þessu.</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="850600235656508448">Opna í huliðsstillingu</translation>
 <translation id="8517375800490286174">Leyfi opins kóða</translation>
@@ -834,6 +843,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Hrunskýrsla send.</translation>
 <translation id="952704832371081537">Hætta við</translation>
+<translation id="981498610235328462">Fyrirtækið þitt leyfir þér eingöngu að skrá þig inn með tilteknum reikningum. Bannaðir reikningar eru faldir.</translation>
 <translation id="984509647832111802">Samstilling virkar ekki.</translation>
 <translation id="988141524645182168">Önnur tæki</translation>
 <translation id="989988560359834682">Breyta heimilisfangi</translation>

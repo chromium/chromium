@@ -79,6 +79,7 @@
 <translation id="4512952200932940229">Аўтарскія правы: стваральнікі Chromium, 2021. Усе правы абаронены.</translation>
 <translation id="4513946894732546136">Водгук</translation>
 <translation id="4563926062592110512">Кліент адключаны: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> мае няправільную канфігурацыю. Выберыце іншы стандартны вэб-браўзер і яшчэ раз уключыце пераадрасацыю URL-адрасоў.</translation>
 <translation id="4635770493235256822">Аддаленыя прылады</translation>
 <translation id="4660011489602794167">Паказаць клавіятуру</translation>
 <translation id="4703799847237267011">Сеанс Chromoting завершаны.</translation>
@@ -109,6 +110,7 @@
 <translation id="5750083143895808682">Вы ўвайшлі як <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Падключыцца зноў</translation>
 <translation id="5810269635982033450">Экран дзейнічае як сэнсарная панэль</translation>
+<translation id="5823554426827907568">Карыстальнік <ph name="CLIENT_USERNAME" /> запытвае доступ да вашага экрана, а таксама магчымасць кіраваць вашай клавіятурай і мышшу. Калі вы не чакалі гэтага запыту, націсніце ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''. Каб дазволіць гэта падключэнне, націсніце "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />", калі будзеце гатовыя.</translation>
 <translation id="5823658491130719298">На камп'ютары, да якога трэба атрымаць аддалены доступ, адкрыйце Chrome, а ў ім – старонку <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Параметры адлюстравання</translation>
 <translation id="6033507038939587647">Параметры клавіятуры</translation>
@@ -130,7 +132,6 @@
 <translation id="6963936880795878952">Падключэнні да аддаленага камп'ютара часова заблакіраваны, бо нехта спрабаваў падключыцца да яго з выкарыстаннем няправільнага PIN-кода. Паўтарыце спробу пазней.</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6985691951107243942">Сапраўды выключыць аддаленыя падключэнні да хоста <ph name="HOSTNAME" />? Калі раздумаецеся, трэба будзе наведаць той жа камп'ютар, каб зноў падключыцца.</translation>
-<translation id="6998890551706945177">Карыстальнік <ph name="CLIENT_USERNAME" /> запытвае доступ на прагляд дзеянняў на вашым камп'ютары і кіраванне ім. Калі вы не знаеце гэтага карыстальніка або калі вам трэба ўнесці нейкія змены, націсніце "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />".  Калі вы вырашыце дазволіць падключэнне, націсніце "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />".</translation>
 <translation id="7019153418965365059">Невядомая памылка хоста: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Аддаленая дапамога</translation>
 <translation id="7026930240735156896">Для наладжвання аддаленага доступу выканайце гэтыя інструкцыі.</translation>
@@ -169,6 +170,7 @@
 Каб даць гэты дазвол, націсніце ніжэй кнопку "<ph name="BUTTON_NAME" />" і адкрыйце панэль параметраў спецыяльных магчымасцей, затым пастаўце птушку ў полі побач з параметрам "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Калі птушка побач з параметрам "<ph name="SERVICE_SCRIPT_NAME" />" была ўжо пастаўлена, зніміце яе і пастаўце зноў.</translation>
+<translation id="8305209735512572429">Працэс аддаленага ўзаемадзеяння для вэб-аўтэнтыфікацыі</translation>
 <translation id="8383794970363966105">Каб выкарыстоўваць Chromoting, трэба дадаць на прыладу Уліковы запіс Google.</translation>
 <translation id="8386846956409881180">Хост сканфігураваны з памылковымі ўліковымі данымі OAuth.</translation>
 <translation id="8397385476380433240">Атрыманне дазволу сэрвісам "<ph name="PRODUCT_NAME" />"</translation>

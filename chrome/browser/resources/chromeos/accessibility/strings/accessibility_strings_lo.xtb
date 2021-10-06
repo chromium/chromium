@@ -66,6 +66,7 @@
 <translation id="133801305381959373">ບໍ່ມີຊ່ອງຂໍ້ຄວາມທີ່ສາມາດແກ້ໄຂໄດ້ຖັດໄປ</translation>
 <translation id="1342835525016946179">ບົດ​ຄວາມ</translation>
 <translation id="1346059596910821859">ເຄັດລັບ</translation>
+<translation id="1354356357730355833">ສຳເນົາ</translation>
 <translation id="135978014023467274">ທ່ານໄດ້ອັບເດດເປັນ ChromeVox 63 ແລ້ວ!</translation>
 <translation id="1360699455582016846">ຄລິກລາຍການຢູ່ກ້ອງປຸ່ມກຳນົດເສັ້ນທາງ <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1377925789329510816">ນີ້ແມ່ນຫົວຂໍ້ສຸດທ້າຍ. ກົດ Search+H ເພື່ອກັບຄືນໄປຫົວຂໍ້ທຳອິດ ຫຼື Search+Shift+H ເພື່ອໄປຫາຫົວຂໍ້ທີສອງໃນໜ້ານີ້.</translation>
@@ -242,6 +243,7 @@
 <translation id="267442004702508783">ຣີເຟຣັຊ</translation>
 <translation id="2675533876313964202">ສີໂສກ</translation>
 <translation id="2684412629217766642">ປິດການສອນການນຳໃຊ້ ChromeVox</translation>
+<translation id="2692503699962701720">ປ່ຽນລະດັບສຽງເວົ້າໃນເວລາເວົ້າປະເພດອົງປະກອບ ແລະ ຂໍ້ຄວາມທີ່ມີການຈັດຮູບແບບ</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">ຕົວເລືອກການປ່ຽນແປງຂໍ້ຄວາມ</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{ ວົງເລັບເປີດ}other{ # ວົງເລັບເປີດ}}</translation>
@@ -352,6 +354,7 @@
 <translation id="3286372614333682499">ແນວຕັ້ງ</translation>
 <translation id="3286390186030710347">ຕົວເລື່ອນ</translation>
 <translation id="3300348286427369683">ການຮອງຮັບ Rich text. ດຽວນີ້ ChromeVox ຮອງຮັບຊ່ອງຕື່ມຂໍ້ມູນ rich text ລວມທັງຄຳສັ່ງກະໂດດຂ້າມ, ການກຳນົດເສັ້ນທາງເຄີເຊີອັກສອນນູນ, ການເລືອກ ແລະ ອື່ນໆອີກ.</translation>
+<translation id="3300733168898541351">ຍົກເລີກ</translation>
 <translation id="3307886118343381874">ໄປ​ທີ່​ທ້າຍ​​ຕາ​ຕະ​ລາງ</translation>
 <translation id="3312997241656799641">ລິ້ງທີ່ເຂົ້າເບິ່ງແລ້ວຕໍ່ໄປ</translation>
 <translation id="3313245066383501820">ປຸ່ມຕົວດັດແປງ ChromeVox</translation>
@@ -372,6 +375,7 @@
 <translation id="3406283310380167331">ສະແດງລາຍຊື່ແບບຟອມ</translation>
 <translation id="3414400929511680526">ສີຟ້າອາລິສບລູ</translation>
 <translation id="3418936350470374046">ບໍ່ມີເຊວຂ້າງລຸ່ມ</translation>
+<translation id="3419269701801640163">ວາງ</translation>
 <translation id="3435494200763325275">ການນຳທາງໄປສ່ວນຕ່າງໆໂດຍໃຊ້ປຸ່ມ Tab (ຕໍ່)</translation>
 <translation id="344800400831402066">ເປຣູ</translation>
 <translation id="3457000393508828486">ກົດ​ເປັນບາງ​ສ່ວນແລ້ວ</translation>
@@ -452,6 +456,7 @@
 <translation id="4006140876663370126">ຮູບ</translation>
 <translation id="4021716437419160885">ເລື່ອນລົງ</translation>
 <translation id="4035381225449278841">ລະດູບານໃໝ່</translation>
+<translation id="4038098586530338813">ເຮັດຊ້ຳ</translation>
 <translation id="4047216625641135770">ເຄື່ອງໝາຍ</translation>
 <translation id="4047910800766704982">ທ່ານສາມາດໃຊ້ສຽງຄົນທີ່ເປັນແບບທຳມະຊາດເມື່ອອຸປະກອນຂອງທ່ານອອນລາຍໄດ້. ຂໍ້ຄວາມຈະຖືກສົ່ງໄປຫາ Google ສຳລັບການປະມວນຜົນ. ທ່ານສາມາດປິດຄຸນສົມບັດນີ້ໄດ້ຕະຫຼອດເວລາໃນການຕັ້ງຄ່າ.</translation>
 <translation id="4053520724192563562">ສີຂຽວໝາກນາວ</translation>
@@ -602,11 +607,13 @@
 <translation id="5138912041966667164">ສີຟ້າສະເລດປານກາງ</translation>
 <translation id="5140016802771803559">ສີມ່ວງຣີເບກາ</translation>
 <translation id="5142101052131610456">ບົດຮຽນທັງໝົດ</translation>
+<translation id="5152605892605507188">ຍ້າຍໄປຂວາ</translation>
 <translation id="5158275234811857234">ໜ້າປົກ</translation>
 <translation id="516076699907426116">ເພື່ອສືບຕໍ່, ໃຫ້ສຳຫຼວດໂດຍການສຳຜັດເພື່ອຊອກຫາປຸ່ມບົດຮຽນຕໍ່ໄປ. ຈາກນັ້ນແຕະສອງເທື່ອເພື່ອສືບຕໍ່.</translation>
 <translation id="5170206230005240598">ເປີດການນຳໃຊ້ຄຳອະທິບາຍອັກສອນນູນແລ້ວ</translation>
 <translation id="5183440668879371625">ແຖວຕົວໜັງສືນູນຜ່ານມາ</translation>
 <translation id="5189244881767082992">ເສັ້ນ</translation>
+<translation id="5234747236692380506">ພິມ <ph name="TEXT" /></translation>
 <translation id="5263034204789987535">ສີເຫຼືອງຄອນຊິລ</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ສິ້ນສຸດ</translation>
@@ -744,6 +751,7 @@
 <translation id="6142308968191113180">ຫົວ​ຂໍ້ 4</translation>
 <translation id="6150023170003443621">ສີຂຽວອົມເຫຼືອງ</translation>
 <translation id="6158882249329863701">ແຖວ <ph name="TABLECELLROWINDEX" /> ຖັນ <ph name="TABLECELLCOLUMNINDEX" /></translation>
+<translation id="6159796324830296161">ຍ້າຍໄປຊ້າຍ</translation>
 <translation id="6164829606128959761">ແມັດ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6166362019018438352">ປິດການນຳໃຊ້ຄຳອະທິບາຍອັກສອນນູນແລ້ວ</translation>
@@ -833,6 +841,8 @@
 <translation id="6910211073230771657">ລຶບແລ້ວ</translation>
 <translation id="6910969481785184048">ເປີດ, ປິດ ແລະ ຢຸດ</translation>
 <translation id="6919104639734799681">ສະ​ແດງລາາຍຊື່​ຕາ​ຕະ​ລາງ</translation>
+<translation id="692135145298539227">ລຶບ</translation>
+<translation id="6935674530832500465">ຍ້າຍລົງ</translation>
 <translation id="6945221475159498467">ເລືອກ</translation>
 <translation id="6949846980769640811">ສີຂຽວອະຄົວມາຣີນປານກາງ</translation>
 <translation id="6951482098621102657">ບໍ່ມີຫົວຂໍ້ລະດັບ 5 ຖັດໄປ</translation>
@@ -912,7 +922,6 @@
 <translation id="7439060726180460871">ໄດເຣັກຕໍຣີ</translation>
 <translation id="744163271241493234">pwded</translation>
 <translation id="7465123027577412805">ໃຊ້ສຽງແບບທຳມະຊາດບໍ?</translation>
-<translation id="7484805699335881122">ປ່ຽນລະດັບສຽງເມື່ອເວົ້າປະເພດອົງປະກອບ ແລະ ຂໍ້ຄວາມທີ່ອ້າງອີງ, ຖືກລຶບ, ເປັນໂຕໜາ, ຢູ່ໃນວົງເລັບ ຫຼື ເປັນອັກສອນຕົວໃຫຍ່.</translation>
 <translation id="7491962110804786152">ແຖບ</translation>
 <translation id="7492497529767769458">ຍ້າຍໄປພາກສ່ວນຕໍ່ໄປ. ຕົວຢ່າງ: ຖາດສະຖານະ ແລະ ຕົວເປີດໃຊ້.</translation>
 <translation id="7505149250476994901">ເວົ້າ "ຕົວພິມໃຫຍ່" ກ່ອນຕົວອັກສອນ</translation>
@@ -1010,6 +1019,7 @@
 <translation id="8129445297241948503">ບໍ່ມີເຊວຂ້າງເທິງ</translation>
 <translation id="8138880386467279117">ແຕະ</translation>
 <translation id="8146613869421949343">ຕໍ່ໄປ, ທ່ານຈະຮຽນຮູ້ກ່ຽວກັບປຸ່ມຊອກຫາ. ປຸ່ມຊອກຫາຖືກໃຊ້ຮ່ວມກັບປຸ່ມອື່ນສຳລັບຄຳສັ່ງ ChromeVox. ປຸ່ມຊອກຫາຢູ່ເທິງປຸ່ມ Shift ເບື້ອງຊ້າຍ. ເພື່ອສືບຕໍ່, ກະລຸນາກົດປຸ່ມຊອກຫາ.</translation>
+<translation id="8158033275290782295">ເລືອກທັງໝົດ</translation>
 <translation id="816818801578874684">ນີ້ແມ່ນຫົວຂໍ້ທຳອິດ. ກົດປຸ່ມຊອກຫາ + H ເພື່ອໄປຍັງຫົວຂໍ້ຕໍ່ໄປ.</translation>
 <translation id="8173092779156526980">ປັດໄປຊ້າຍດ້ວຍສີ່ນິ້ວມື</translation>
 <translation id="817440585505441544">{COUNT,plural, =1{ ເສັ້ນຂີດຢູ່ກ້ອງ}other{ # ເສັ້ນຂີດຢູ່ກ້ອງ}}</translation>
@@ -1028,12 +1038,14 @@
 <translation id="826825447994856889">ການນໍາສະເໜີ</translation>
 <translation id="827266600368092403">ເລີ່ມຕົ້ນ ຫຼື ສິ້ນສຸດການເລືອກ</translation>
 <translation id="827422111966801947">ສີຄາມ</translation>
+<translation id="827496561804786391">ຍ້າຍຂຶ້ນ</translation>
 <translation id="8276439074553447000">ໂດດໄປຫາລາຍການທີ່ສາມາດໂຟກັສໄດ້ຜ່ານມາ</translation>
 <translation id="8279039817939141096">ກົດປຸ່ມ qwerty, ປຸ່ມອັກສອນນູນແບບໂຫຼດຂໍ້ມູນຄືນໃໝ່ໄດ້ ຫຼື ແຕະທ່າທາງເພື່ອຮຽນຮູ້ຟັງຊັນຂອງມັນ. ກົດ control ກັບ w, ຍະຫວ່າງກັບ Z, ປັດຊ້າຍດ້ວຍສອງນິ້ວ ຫຼື ກົດ escape ເພື່ອອອກ.</translation>
 <translation id="8283603667300770666">ບ່ອນໃສ່ຟອມ​ຕໍ່ໄປ​</translation>
 <translation id="8310185481635255431">ບໍ່ມີລິ້ງຖັດໄປ</translation>
 <translation id="831207808878314375">ຄໍາ​ນິ​ຍາມ</translation>
 <translation id="8313653172105209786">ໄດເຣັກຕໍຣີ</translation>
+<translation id="8314546933558091113">ບໍ່ເລືອກທັງໝົດ</translation>
 <translation id="8316881042119029234">ສີສົ້ມໂອນເລດ</translation>
 <translation id="8324974933005349667">ປັບແຕ່ງການຕັ້ງຄ່າການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="8326783648485765113">ສີຂຽວໃບຫຍ້າ</translation>
@@ -1125,6 +1137,7 @@
 <translation id="9077305471618729969">ສີຂຽວທະເລອ່ອນ</translation>
 <translation id="9080299285199342830">ຂ້າມໄປສຸດທ້າຍ</translation>
 <translation id="9089864840575085222">ສຽງເອໂກການພິມເປັນວົງຈອນ</translation>
+<translation id="9099429023611373837">ຕັດ</translation>
 <translation id="9108370397979208512">ຄະນິດສາດ</translation>
 <translation id="9108589040018540527">scbr</translation>
 <translation id="911476240645808512">{COUNT,plural, =1{ ສ່ວນ​ຮ້ອຍ}other{# ເຄື່ອງໝາຍສ່ວນ​ຮ້ອຍ}}</translation>

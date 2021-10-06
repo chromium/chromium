@@ -36,6 +36,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2343156876103232566">Ak chcete odtiaľto odoslať číslo do svojho telefónu s Androidom, prihláste sa v oboch zariadeniach do prehliadača Chromium.</translation>
 <translation id="2347108572062610441">Toto rozšírenie zmenilo stránku, ktorá sa zobrazí pri spustení prehliadača Chromium.</translation>
 <translation id="2396765026452590966">Rozšírenie „<ph name="EXTENSION_NAME" />“ zmenilo stránku, ktorá sa zobrazí pri spustení prehliadača Chromium.</translation>
+<translation id="2401032172288869980">Chromium vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
 <translation id="2483889755041906834">V prehliadači Chromium</translation>
 <translation id="2485422356828889247">Odinštalovať</translation>
 <translation id="2535480412977113886">Systému OS Chromium sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
@@ -153,6 +154,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5820394555380036790">Chromium OS</translation>
 <translation id="5854740544000584380">Chromium OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru open source<ph name="END_LINK_CROS_OSS" />, ako je <ph name="BEGIN_LINK_LINUX_OSS" />vývojové prostredie systému Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
+<translation id="5883558403894052917">Prehliadač Chromium zistil, že tieto položky obsahujú malvér:</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prihlásenie do siete</translation>
 <translation id="5987687638152509985">Ak chcete spustiť synchronizáciu, aktualizujte Chromium</translation>
@@ -170,6 +172,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6183079672144801177">Skontrolujte, či ste sa v zariadení <ph name="TARGET_DEVICE_NAME" /> prihlásili do prehliadača Chromium, a potom to skúste odoslať znova.</translation>
 <translation id="6212496753309875659">Tento počítač už obsahuje novšiu verziu prehliadača Chromium. Ak softvér nefunguje, odinštalujte prehliadač Chromium a skúste to znova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sa teraz reštartuje}=1{Chromium sa reštartuje o 1 sekundu}few{Chromium sa reštartuje o # sekundy}many{Chromium sa reštartuje o # sekundy}other{Chromium sa reštartuje o # sekúnd}}</translation>
+<translation id="6241367896540709610">Chromium vyžaduje na sťahovanie súborov povolený prístup k úložisku</translation>
 <translation id="6248213926982192922">Nastavte Chromium ako svoj predvolený prehliadač</translation>
 <translation id="6266342355635466082">Chromium nemôže skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
@@ -190,7 +193,9 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="6570579332384693436">Chromium odošle text zadaný v textových poliach Googlu s cieľom opraviť pravopisné chyby</translation>
 <translation id="6598877126913850652">Prejsť do nastavení upozornení prehliadača Chromium</translation>
 <translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
+<translation id="665732753414869868">Chromium vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>
+<translation id="6709350901466051922">Chromium vyžaduje pre tento web povolený prístup k mikrofónu</translation>
 <translation id="6717134281241384636">Váš profil sa nedá použiť, pretože pochádza z novšej verzie prehliadača Chromium.
 
 Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu alebo použite novšiu verziu prehliadača Chromium.</translation>
@@ -202,6 +207,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6847869444787758381">Ak budú vaše heslá napadnuté, Chromium vám to oznámi</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (skopírované do prehliadača Chromium)</translation>
+<translation id="6873893289264747459">Prehliadač Chromium zistil, že <ph name="EXTENSION_NAME" /> obsahuje malvér</translation>
 <translation id="6893813176749746474">Prehliadač Chromium bol aktualizovaný, ale najmenej 30 dní ste ho nepoužili.</translation>
 <translation id="691026815377248078">Prehliadač Chromium potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
  v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -210,6 +216,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6990124437352146030">Chromium potrebuje povolenie pre tento web na prístup k mikrofónu</translation>
 <translation id="705851970750939768">Aktualizovať Chromium</translation>
 <translation id="7067091210845072982">Ak obrázok nemá užitočný popis, Chromium sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
+<translation id="718435575166326686">Chromium vyžaduje pre tento web povolený prístup ku kamere</translation>
 <translation id="7196312274710523067">Chromium sa nepodarilo spustiť. Skúste to znova.</translation>
 <translation id="7197677400338048821">Chromium nemôže skontrolovať heslá. Skúste to znova o 24 hodín.</translation>
 <translation id="7223968959479464213">Správca úloh – Chromium</translation>
@@ -232,10 +239,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7585853947355360626">Ak určité nastavenie nevidíte na tejto stránke, skontrolujte <ph name="LINK_BEGIN" />nastavenia operačného systému Chromium<ph name="LINK_END" /></translation>
 <translation id="761356813943268536">Chromium používa vašu kameru a mikrofón.</translation>
 <translation id="7617377681829253106">Prehliadač Chromium bol práve vylepšený</translation>
-<translation id="7627575518938382525"><ph name="BEGIN_PARAGRAPH1" />Než začneme, skontrolujte, či ste si vytvorili aktuálnu zálohu údajov. Inštaláciou systému Chromium OS sa prepíšu všetky dáta na pevnom disku.<ph name="END_PARAGRAPH1" />
-          <ph name="BEGIN_PARAGRAPH2" />Google nenesie zodpovednosť za stratu akýchkoľvek údajov a nezaručuje, že Chromium OS bude fungovať na modeloch bez certifikácie. Prejdite na [TBD] a prečítajte si viac o modeloch bez certifikácie.<ph name="END_PARAGRAPH2" />
-          <ph name="BEGIN_PARAGRAPH3" />Prečítajte si viac o inštalácii systému Chromium OS a vymazaní údajov: [TBD URL]<ph name="END_PARAGRAPH3" />
-          <ph name="BEGIN_PARAGRAPH4" />Ak je všetko pripravené, kliknite na Inštalovať Chromium OS a my vás prevedieme inštaláciou v niekoľkých jednoduchých krokoch. Než vykonáme zmeny vo vašom počítači, budete mať ďalšiu možnosť voľbu potvrdiť.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="7686590090926151193">Chromium nie je váš predvolený prehliadač</translation>
 <translation id="7689606757190482937">Synchronizujte a prispôsobte si Chromium v rôznych zariadeniach</translation>
 <translation id="7729447699958282447">Prehliadaču Chromium sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
@@ -250,6 +253,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7975919845073681630">Toto je sekundárna inštalácia prehliadača Chromium – nemôže byť nastavený ako váš predvolený prehliadač.</translation>
 <translation id="8013436988911883588">Keď Chromium získa prístup, weby vás budú môcť žiadať o prístup.</translation>
 <translation id="8045118833343856403">Nasledujúce účtu nie sú prihlásené do žiadneho profilu prehliadača Chromium. Ak chcete používať účet v inom profile, najprv daný profil odstráňte.</translation>
+<translation id="8105840573057009683">Chromium vyžaduje pre tento web povolený prístup k polohe</translation>
 <translation id="81770708095080097">Tento súbor je nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
 <translation id="8248265253516264921">Ak obrázok nemá užitočný popis, Chromium sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy. Môžete to kedykoľvek vypnúť v nastaveniach.</translation>
 <translation id="8266560134891435528">Chromium nemôže skontrolovať heslá, pretože ste sa neprihlásili</translation>

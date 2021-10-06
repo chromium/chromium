@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Ներբեռնումը դադարեցվել է</translation>
 <translation id="1415402041810619267">URL-ը կրճատվել է</translation>
 <translation id="1446450296470737166">Տրամադրել ամբողջական հսկողություն MIDI սարքերի նկատմամբ</translation>
-<translation id="1509960214886564027">Շատ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1647582022260550163">Իսկապե՞ս ուզում եք վերակայել թույլտվությունները և մաքրել քուքիներն ու մյուս տվյալները։</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Թույլատրված է, բացի երրորդ կողմի cookie ֆայլերից</translation>
 <translation id="1989112275319619282">Ընտրել</translation>
 <translation id="1994173015038366702">Կայքի URL</translation>
+<translation id="2004697686368036666">Որոշ կայքերում գործառույթները կարող են չաշխատել</translation>
 <translation id="2025115093177348061">Լրացված իրականություն</translation>
 <translation id="2030769033451695672">Հպեք՝ <ph name="URL_OF_THE_CURRENT_TAB" /> վերադառնալու համար</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Թույլատրել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="4165986682804962316">Կայքի կարգավորումներ</translation>
+<translation id="4176463684765177261">Անջատված է</translation>
 <translation id="4200726100658658164">Բացել տեղադրության կարգավորումները</translation>
 <translation id="4226663524361240545">Ծանուցումների ժամանակ սարքը կթրթռա</translation>
 <translation id="4259722352634471385">Նավիգացիան արգելափակված է՝ <ph name="URL" /></translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Դադարեցնել</translation>
 <translation id="5887687176710214216">Վերջին այցելությունը՝ երեկ</translation>
 <translation id="5916664084637901428">Միացնել</translation>
+<translation id="59174027418879706">Միացված</translation>
 <translation id="5922853908706496913">Էկրանը ցուցադրվում է</translation>
 <translation id="5939518447894949180">Վերակայել</translation>
 <translation id="5975083100439434680">Փոքրացնել</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
 <translation id="6216432067784365534">Ընտրանքներ՝ <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Ապատեղադրե՞լ <ph name="APP_NAME" /> հավելվածը</translation>
+<translation id="6233545266937675277">Պահանջել կայքերի համակարգչի դիտակերպը</translation>
 <translation id="6262279340360821358">Արգելափակված են՝ «<ph name="PERMISSION_1" />» և «<ph name="PERMISSION_2" />»</translation>
 <translation id="6270391203985052864">Կայքերը կարող են խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="6295158916970320988">Բոլոր կայքերը</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}one{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}other{Արգելափակված են՝ «<ph name="PERMISSION_1" />», «<ph name="PERMISSION_2" />» ու ևս <ph name="NUM_MORE" /> թույլտվություն}}</translation>
 <translation id="6554732001434021288">Վերջին այցելությունը՝ <ph name="NUM_DAYS" /> օր առաջ</translation>
 <translation id="6561560012278703671">Օգտագործել ավելի հանգիստ հաղորդագրություններ (արգելափակում է շեղող ծանուցումները)</translation>
+<translation id="6593061639179217415">Համակարգչային տարբերակ</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ԳԲ</translation>
 <translation id="6612358246767739896">Պաշտպանված բովանդակություն</translation>
 <translation id="662080504995468778">Մնալ կայքում</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Չեղարկել ընտրվածքը</translation>
 <translation id="7846621471902887024">Դուք դուրս կգաք բոլոր կայքերից։</translation>
 <translation id="7882806643839505685">Թույլատրել ձայնը առանձին կայքերում</translation>
+<translation id="7940722705963108451">Հիշեցնել ինձ</translation>
 <translation id="7986741934819883144">Ընտրեք կոնտակտ</translation>
-<translation id="7993619969781047893">Որոշ կայքերում գործառույթները կարող են չաշխատել։</translation>
 <translation id="7999064672810608036">Համոզվա՞ծ եք, որ ուզում եք մաքրել բոլոր տեղային տվյալները, այդ թվում նաև քուքիները, և զրոյացնել այս կայքի թույլտվությունները:</translation>
 <translation id="8007176423574883786">Անջատված է այս սարքի համար</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Անջատած ձայնով կայքեր</translation>
 <translation id="813082847718468539">Դիտել կայքի տեղեկությունները</translation>
 <translation id="8131740175452115882">Հաստատել</translation>
+<translation id="8154912474061769055">Շատ կայքերում գործառույթները կարող են չաշխատել</translation>
 <translation id="8197286292360124385">Թույլատրված է՝ «<ph name="PERMISSION_1" />»</translation>
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="8206354486702514201">Այս կարգավորումը պարտադրված է ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="8211406090763984747">Կապն անվտանգ է</translation>
 <translation id="8249310407154411074">Տեղափոխել ցանկի սկիզբ</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8267092878336850213">Պահանջել կայքերի բջջային դիտակերպը</translation>
 <translation id="8300705686683892304">Հավելվածի կողմից կառավարվող</translation>
 <translation id="8324158725704657629">Նորից չհարցնել</translation>
 <translation id="8372893542064058268">Թույլատրել ֆոնային համաժամացումը նշված կայքում:</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Մաքրել ներածումը</translation>
 <translation id="868929229000858085">Որոնեք կոնտակտներ</translation>
 <translation id="8702612070107455751">Անցանց ռեժիմում պահված բոլոր տվյալները կջնջվեն։</translation>
+<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8719283222052720129">Միացնել <ph name="APP_NAME" />-ի թույլտվությունը <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Տեղեկացեք, երբ գների իջեցում լինի</translation>
 <translation id="1657719826150349398">Տեղափոխել ներդիրը ներքև</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
+<translation id="2118649612461486615">Տեղեկություններ խանութի մասին</translation>
+<translation id="2162620598375156287">Այժմ <ph name="CURRENT_PRICE" />՝ <ph name="SOURCE_WEBSITE" /> կայքում</translation>
 <translation id="2277224997687551299">Փոփոխել խմբի անունը</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Հեռացնել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը խմբից։}one{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը խմբից։}other{Հեռացնել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները խմբից։}}</translation>
 <translation id="2479148705183875116">Անցնել կարգավորումներ</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Խումբ</translation>
 <translation id="2613747923081026172">Ստեղծել խումբ</translation>
 <translation id="2662028055331606429">Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
+<translation id="266935134738038806">Անցնել կայք</translation>
 <translation id="2671423594960767771">Ուղարկել խումբը</translation>
 <translation id="2759453070259087442">Ծավալել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։</translation>
 <translation id="2801787514987684416">Դիտե՞լ խանութի մասին տեղեկությունները։</translation>
 <translation id="2928243913527329289">Google | Այս խանութի մասին</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> գնիջեցում <ph name="PRODUCT_NAME" />-ի համար</translation>
 <translation id="3194464645767632461">գնահատական</translation>
+<translation id="3267416433995960648">Անջատել ծանուցումները</translation>
 <translation id="3291470810748040983">Դուք ծանուցում կստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6054741997831917303">Այս ապրանքի գինը <ph name="PREVIOUS_PRICE" />-ից իջել է <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">Ընտրեք ներդիրներ</translation>
+<translation id="6228793724645064692">(խանութի վարկանիշը)</translation>
+<translation id="6333260925957816943">Տեղեկություններ այս խանութի մասին</translation>
 <translation id="6510648526783655549">Փակել ներդիրների հատվածը</translation>
+<translation id="6549021453810473782">Դիտել խանութի մասին տեղեկությունները</translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
 <translation id="6840760312327750441">Ներդիրները խմբավորելու համար հպեք ներդիրին և պահեք։ Ապա այն քաշեք մյուս ներդիրի վրա։</translation>
 <translation id="6856809498882026482">Թաքցնել մի քանի ներդիրի ընտրության ռեժիմը</translation>
+<translation id="7129458170538955174">Այս խանութի մասին տեղեկությունները բացված են կիսով չափ</translation>
 <translation id="7151209024774799310">Հեռացնել ներդիները խմբից</translation>
 <translation id="7204204600596740190">Մի քանի ներդիրի ընտրության ռեժիմ</translation>
+<translation id="7326879924029668159">Դիտեք վերադարձման կանոնները և այլ տեղեկություններ</translation>
 <translation id="7352298686197644113">Տեսեք, թե ձեր բացված ներդիրներում որ ապրանքն ունի ամենացածր գինը</translation>
 <translation id="753732157349120914">Ներդիրների փոխանջատիչ</translation>
 <translation id="7559245342362162951">Ցուցադրել խմբի ներդիրները լիաէկրան ցանցի ռեժիմում</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_ONE" /> կարծիք}one{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}other{Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" />, <ph name="REVIEWS_COUNT_MANY" /> կարծիք}}</translation>
 <translation id="7885132941432959125">Տեղափոխել ներդիրն աջ</translation>
 <translation id="7966321538264951561">Փակել հուշումները։</translation>
+<translation id="8029301326595421733">Այս խանութի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
 <translation id="814503310257431685">Դիտել բոլորը</translation>
 <translation id="8205266828577616993">Տեղափոխել ներդիրը վերև</translation>
 <translation id="8304833501377495048">Այլևս ցույց չտա՞լ ներդիրների հատվածը։</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Ավելի ցածր գին</translation>
 <translation id="8749939518995770034">Ներդիրների հատվածը փակված է</translation>
 <translation id="8820741577754260431">Դիտեք ձեր ներդիրներում գների իջեցման մասին ծանուցումները</translation>
+<translation id="9090098097337832354">Այս խանութի մասին տեղեկությունները փակված են</translation>
 <translation id="9150694013019234766">Էկրանի ներքևի հատվածում գտնվող ներդիրների խմբում կարող եք անցնել մի ներդիրից մյուսը</translation>
 <translation id="9169594135889675189">Ավելացնել նոր ներդիր խմբում</translation>
 <translation id="959682366969460160">Աշխատանքի կազմակերպում</translation>

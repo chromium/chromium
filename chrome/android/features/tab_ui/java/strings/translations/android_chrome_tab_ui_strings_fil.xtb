@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Maabisuhan kapag bumaba ang mga presyo</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
+<translation id="2118649612461486615">Impormasyon ng store</translation>
+<translation id="2162620598375156287"><ph name="CURRENT_PRICE" /> ngayon sa <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2277224997687551299">I-edit ang pangalan ng grupo</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Alisin ang <ph name="TABS_COUNT_ONE" /> piniling tab sa grupo.}one{Alisin ang <ph name="TABS_COUNT_MANY" /> piniling tab sa grupo.}other{Alisin ang <ph name="TABS_COUNT_MANY" /> na piniling tab sa grupo.}}</translation>
 <translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Pangkat</translation>
 <translation id="2613747923081026172">Gumawa ng pangkat</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating</translation>
+<translation id="266935134738038806">Bisitahin ang site</translation>
 <translation id="2671423594960767771">Ibahagi ang pangkat</translation>
 <translation id="2759453070259087442">I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="NUMBER_OF_TABS" /> (na) tab.</translation>
 <translation id="2801787514987684416">Tingnan ang impormasyon ng store?</translation>
 <translation id="2928243913527329289">Google | Tungkol sa store na ito</translation>
 <translation id="2977480621796371840">Alisin sa grupo</translation>
+<translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
 <translation id="3194464645767632461">rating</translation>
+<translation id="3267416433995960648">I-off ang alerto</translation>
 <translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6054741997831917303">Kamakailang bumaba ang presyo ng item na ito sa <ph name="NEW_PRICE" /> mula sa <ph name="PREVIOUS_PRICE" /></translation>
 <translation id="6193448654517602979">Pumili ng mga tab</translation>
+<translation id="6228793724645064692">(rating ng store)</translation>
+<translation id="6333260925957816943">Impormasyon tungkol sa store na ito</translation>
 <translation id="6510648526783655549">Isara ang tab strip</translation>
+<translation id="6549021453810473782">Tingnan ang impormasyon ng store</translation>
 <translation id="6562820390860419811">Ilipat ang tab sa kaliwa</translation>
 <translation id="6615455863669487791">Ipakita sa akin</translation>
 <translation id="6840760312327750441">Sa mga tab ng grupo, pindutin nang matagal ang isang tab. Pagkatapos, i-drag ito sa isa pang tab.</translation>
 <translation id="6856809498882026482">Itago ang multi-select mode</translation>
+<translation id="7129458170538955174">Binuksan ang impormasyon tungkol sa store na to nang kalahati ang taas</translation>
 <translation id="7151209024774799310">Mag-alis ng mga tab sa grupo</translation>
 <translation id="7204204600596740190">Multi-select mode</translation>
+<translation id="7326879924029668159">Tingnan ang patakaran sa pagbabalik at higit pa</translation>
 <translation id="7352298686197644113">Tingnan kung aling item sa iyong mga nakabukas na tab ang may mas mababang presyo</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7559245342362162951">Ipakita ang mga tab ng grupo sa fullscreen grid</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> na review}}</translation>
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>
+<translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
 <translation id="814503310257431685">Tingnan lahat</translation>
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>
 <translation id="8304833501377495048">Huwag ipakita ulit ang tabstrip?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8749939518995770034">Nakasarang tabstrip</translation>
 <translation id="8820741577754260431">Tingnan ang mga pagbaba ng presyo sa iyong mga tab</translation>
+<translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
 <translation id="9150694013019234766">Magpalipat-lipat sa mga tab sa iyong grupo ng tab malapit sa ibaba ng screen</translation>
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>
 <translation id="959682366969460160">Maging organisado</translation>

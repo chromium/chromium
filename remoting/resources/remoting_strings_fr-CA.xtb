@@ -79,6 +79,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="4512952200932940229">© 2021 Les auteurs de Chromium. Tous droits réservés.</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="4563926062592110512">Déconnexion du client : <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> n'est pas configuré correctement. Veuillez choisir un autre navigateur Web par défaut, puis réactivez le transfert d'URL.</translation>
 <translation id="4635770493235256822">Appareils distants</translation>
 <translation id="4660011489602794167">Afficher le clavier</translation>
 <translation id="4703799847237267011">Votre session Chromoting a pris fin.</translation>
@@ -109,6 +110,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="5750083143895808682">Connecté en tant que <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconnexion</translation>
 <translation id="5810269635982033450">L'écran devient un pavé tactile</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> a demandé un accès afin de voir votre écran et de contrôler votre clavier ainsi que votre souris. Appuyez sur « <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> » si vous n'attendiez pas cette demande. Sinon, sélectionnez « <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> » pour autoriser la connexion lorsque vous êtes prêt.</translation>
 <translation id="5823658491130719298">Sur l'ordinateur auquel vous souhaitez accéder à distance, ouvrez Chrome et consultez <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Options d'affichage</translation>
 <translation id="6033507038939587647">Options du clavier</translation>
@@ -130,7 +132,6 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 <translation id="6963936880795878952">Les connexions à l'ordinateur distant sont momentanément bloquées, car un utilisateur a tenté de s'y connecter en utilisant un NIP erroné. Veuillez réessayer plus tard.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Voulez-vous vraiment désactiver les connexions à distance à <ph name="HOSTNAME" />? Si vous changez d'idée, vous devrez visiter cet ordinateur pour réactiver les connexions.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> a demandé l'accès pour consulter et contrôler votre ordinateur. Appuyez sur « <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> » si vous ne connaissez pas cette personne ou si vous devez apporter des modifications avant de partager l'accès.  Sinon, sélectionnez « <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> » pour autoriser la connexion.</translation>
 <translation id="7019153418965365059">Erreur d'hôte non reconnue : <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Assistance à distance</translation>
 <translation id="7026930240735156896">Suivez les instructions pour configurer votre ordinateur pour l'accès à distance</translation>
@@ -169,6 +170,7 @@ Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décoc
 Pour accorder cette autorisation, cliquez sur le bouton « <ph name="BUTTON_NAME" /> » ci-dessous. Dans le volet des préférences « Accessibilité » qui s'ouvre, cochez la case à côté de « <ph name="SERVICE_SCRIPT_NAME" /> ».
 
 Si l'option « <ph name="SERVICE_SCRIPT_NAME" /> » est déjà cochée, décochez-la, puis cochez-la de nouveau.</translation>
+<translation id="8305209735512572429">Processus d'authentification Web à distance</translation>
 <translation id="8383794970363966105">Pour utiliser Chromoting, vous devez ajouter un compte Google à votre appareil.</translation>
 <translation id="8386846956409881180">L'hôte est configuré avec des authentifiants OAuth non valides.</translation>
 <translation id="8397385476380433240">Accorder l'autorisation à <ph name="PRODUCT_NAME" /></translation>

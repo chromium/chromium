@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">曾於 <ph name="DAYS" /> 天前在線</translation>
 <translation id="2074131957428911366">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。</translation>
 <translation id="2079545284768500474">復原</translation>
+<translation id="2080769225927880590">請使用有效的帳戶登入</translation>
 <translation id="209018056901015185">切換為電腦版網站</translation>
 <translation id="2103075008456228677">開啟 history.google.com</translation>
 <translation id="2116625576999540962">已移動 <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> 個項目</translation>
@@ -219,6 +220,7 @@
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕式分頁。</translation>
 <translation id="3153862085237805241">儲存付款卡</translation>
+<translation id="315401415709252194">您的機構要求您登入。</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
 <translation id="3157684681743766797">標示全部…</translation>
 <translation id="3169472444629675720">探索</translation>
@@ -229,6 +231,7 @@
 <translation id="3184767182050912705">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
 <translation id="3207960819495026254">已加入書籤</translation>
 <translation id="3224641773458703735">如要匯出密碼，您必須先在裝置上設定密碼。</translation>
+<translation id="3230318355092723906">同步功能關閉時，您仍可在此裝置上查看自己的所有書籤、記錄、密碼和其他設定，但您作出的變更將不會同步到 Google 帳戶。</translation>
 <translation id="3240426699337459095">連結已複製</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />，<ph name="ADDITIONAL_INFO" /> (第 <ph name="INDEX" /> 項建議，共 <ph name="NUM_SUGGESTIONS" /> 項)</translation>
@@ -311,7 +314,6 @@
 <translation id="4038354071007134711">這個裝置上沒有能開啟此檔案的應用程式。</translation>
 <translation id="4042870976416480368">在網頁中查找</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
-<translation id="4079195788735381731">您的機構已將您登出</translation>
 <translation id="408404951701638773">簡易存取搜尋列</translation>
 <translation id="411254640334432676">下載失敗。</translation>
 <translation id="4112644173421521737">搜尋</translation>
@@ -355,6 +357,7 @@
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4619615317237390068">在其他裝置上開啟的分頁</translation>
 <translation id="4620246317052452550">您已閱讀的網頁</translation>
+<translation id="4620888520263267479">顯示連結預覽</translation>
 <translation id="4630540211544979320">翻譯網頁</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4636930964841734540">資訊</translation>
@@ -452,6 +455,7 @@
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5580834567471114021">要加入閱讀清單以便稍後瀏覽嗎？</translation>
 <translation id="5592679540098330836">開啟「<ph name="NAME" />」的同步功能</translation>
+<translation id="560322036295180549">已由您的機構停用</translation>
 <translation id="5614553682702429503">要儲存密碼嗎？</translation>
 <translation id="5626245204502895507">目前無法下載這個檔案。</translation>
 <translation id="5631164295104953411">新增付款方法</translation>
@@ -467,6 +471,8 @@
 <translation id="5737974891429562743">帳戶登入資料已過時。請先更新，然後開始同步資料。</translation>
 <translation id="5738887413654608789">這樣您便可根據周圍環境探索相關網頁。</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
+<translation id="575902488528307720">搜尋圖片</translation>
+<translation id="5781453543752460388">加入至相片</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5812974770859303494">新增至…</translation>
@@ -504,6 +510,7 @@
 <translation id="6042308850641462728">更多選項</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
+<translation id="6064824697233747382">您的機構要求您關閉同步功能。</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
 <translation id="60829778314739003">接受並繼續</translation>
 <translation id="6084848228346514841">選取分頁</translation>
@@ -519,6 +526,7 @@
 <translation id="6189413832092199491">未讀</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />查看您可同步的內容<ph name="END_LINK" />。</translation>
 <translation id="6219688215832490856">永不翻譯</translation>
 <translation id="6223816392543092032">您可從任何裝置取得自己的書籤、記錄、密碼和其他設定。</translation>
 <translation id="6232329973559504466">無痕搜尋</translation>
@@ -601,10 +609,12 @@
 <translation id="6801927553864092214">如要私密瀏覽，請開啟無痕式分頁</translation>
 <translation id="6807889908376551050">全部顯示…</translation>
 <translation id="681368974849482173">項目已建立</translation>
+<translation id="681450999322335505">您的機構已關閉同步功能。</translation>
 <translation id="6830804042318138535">瞭解詳情</translation>
 <translation id="6831043979455480757">翻譯</translation>
 <translation id="6842136130964845393">為確保您可隨時存取已儲存的密碼，請驗證您的身分</translation>
 <translation id="6851516051005285358">切換至電腦版網站</translation>
+<translation id="6856384753476268833">由您的機構管理。</translation>
 <translation id="6858855187367714033">已經掃咗瞄</translation>
 <translation id="6859944681507688231">如要掃瞄二維條碼或信用卡，請在設定中啟用相機。</translation>
 <translation id="6869389390665537774">您可查看瀏覽過的網頁，或從記錄移除網頁</translation>
@@ -626,7 +636,6 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">最近開啟的分頁</translation>
 <translation id="7006788746334555276">內容設定</translation>
-<translation id="7015203776128479407">尚未完成初始同步處理設定。已關閉同步功能。</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7053983685419859001">封鎖</translation>
 <translation id="7062545763355031412">接受並切換帳戶</translation>
@@ -649,7 +658,6 @@
 <translation id="7265758999917665941">一律不儲存此網站的密碼</translation>
 <translation id="7272437679830969316">無法驗證您的身分。未複製密碼。</translation>
 <translation id="7291368939935408496">正在準備密碼…</translation>
-<translation id="7293171162284876153">如要開始同步處理，請開啟「同步處理 Chrome 資料」。</translation>
 <translation id="7313347584264171202">您可在此查看無痕式分頁</translation>
 <translation id="7319242366286515846">繼續即表示您同意《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》</translation>
 <translation id="7336264872878993241">已下載 <ph name="PERCENT" /> %</translation>
@@ -705,6 +713,7 @@
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
 <translation id="7887198238286927132">為保障您的私隱，Chrome 不會自動填入此欄位。</translation>
+<translation id="7911190106180361398">您的機構不允許同步處理所有資料。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼…</translation>
 <translation id="794799177247607889">停止記錄</translation>
@@ -714,6 +723,7 @@
 
 網站可使用 Cookie 來查看您在各網站的瀏覽活動，例如放送個人化廣告。</translation>
 <translation id="7971521879845308059">封鎖彈出式視窗</translation>
+<translation id="797413074872316787">如要在不同裝置上同步並享受個人化體驗，請開啟同步處理功能。</translation>
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7993619969781047893">部分網站的功能可能會無法正常運作</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟已輸入的網址。</translation>
@@ -732,8 +742,8 @@
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="8114753159095730575">您可以下載檔案。可用選項喺螢幕底部附近。</translation>
-<translation id="8131740175452115882">確定</translation>
 <translation id="8156478151976189188">密碼同步功能無法正常運作</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">翻譯網頁</translation>
 <translation id="8205564605687841303">取消</translation>
 <translation id="8206354486702514201">這項設定由管理員執行。</translation>
@@ -759,7 +769,6 @@
 <translation id="8487667956631253959">開</translation>
 <translation id="8487700953926739672">可離線使用</translation>
 <translation id="8490978609246021741">儲存變更</translation>
-<translation id="8495097701594799854">已由您的機構關閉。</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="850600235656508448">以無痕模式開啟</translation>
 <translation id="8517375800490286174">開放原始碼授權</translation>
@@ -832,6 +841,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">當機報告已送出。</translation>
 <translation id="952704832371081537">取消</translation>
+<translation id="981498610235328462">您的機構只允許您透過特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984509647832111802">同步功能無法正常運作。</translation>
 <translation id="988141524645182168">其他裝置</translation>
 <translation id="989988560359834682">編輯地址</translation>

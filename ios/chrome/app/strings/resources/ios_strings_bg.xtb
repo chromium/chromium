@@ -116,6 +116,7 @@
 <translation id="2073572773299281212">Активно преди <ph name="DAYS" /> дни</translation>
 <translation id="2074131957428911366">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Отмяна</translation>
+<translation id="2080769225927880590">Влезте с валиден профил</translation>
 <translation id="209018056901015185">Заявка за настолния сайт</translation>
 <translation id="2103075008456228677">Към history.google.com</translation>
 <translation id="2116625576999540962">Преместихте <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> елемента</translation>
@@ -219,6 +220,7 @@
 <translation id="3131206671572504478">Блокиране на всички</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="3153862085237805241">Запазване на картата</translation>
+<translation id="315401415709252194">Организацията ви изисква да влезете в профила си.</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157684681743766797">Означаване на всички…</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -229,6 +231,7 @@
 <translation id="3184767182050912705">Отключване с <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3207960819495026254">С отметка</translation>
 <translation id="3224641773458703735">За да експортирате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
+<translation id="3230318355092723906">Когато синхронизирането е изключено, пак можете да преглеждате отметките, историята, паролите и другите си настройки на това устройство. В случай че направите промени, те няма да се синхронизират с профила ви.</translation>
 <translation id="3240426699337459095">Връзката е копирана</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3252394070589632019"><ph name="VALUE" />, <ph name="ADDITIONAL_INFO" />, <ph name="INDEX" /> от <ph name="NUM_SUGGESTIONS" /></translation>
@@ -311,7 +314,6 @@
 <translation id="4038354071007134711">Няма приложение, което може да отвори файла.</translation>
 <translation id="4042870976416480368">Търсене в страницата</translation>
 <translation id="4049507953662678203">Уверете се, че сте свързани с мрежа, и опитайте отново.</translation>
-<translation id="4079195788735381731">Излязохте от профила си заради правилата на организацията ви</translation>
 <translation id="408404951701638773">До лентата за търсене вече се стига по-лесно</translation>
 <translation id="411254640334432676">Изтеглянето не бе успешно.</translation>
 <translation id="4112644173421521737">Търсене</translation>
@@ -355,6 +357,7 @@
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4619615317237390068">Раздели от други устройства</translation>
 <translation id="4620246317052452550">Страници, които сте прочели</translation>
+<translation id="4620888520263267479">Показване на визуализациите на връзки</translation>
 <translation id="4630540211544979320">Превод на страници</translation>
 <translation id="4634124774493850572">Използване на паролата</translation>
 <translation id="4636930964841734540">Информация</translation>
@@ -452,6 +455,7 @@
 <translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5580834567471114021">Да се добави ли към списъка за четене по-късно?</translation>
 <translation id="5592679540098330836">Включване на синхронизирането за <ph name="NAME" /></translation>
+<translation id="560322036295180549">Изключено от организацията ви</translation>
 <translation id="5614553682702429503">Да се запази ли паролата?</translation>
 <translation id="5626245204502895507">Понастоящем файлът не можа да бъде изтеглен.</translation>
 <translation id="5631164295104953411">Добавяне на начин на плащане</translation>
@@ -467,6 +471,8 @@
 <translation id="5737974891429562743">Данните за вход в профила не са актуални. Актуализирайте ги, за да започне синхронизирането.</translation>
 <translation id="5738887413654608789">Това ви позволява да откривате подходящи уеб страници въз основа на заобикалящата ви среда.</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
+<translation id="575902488528307720">Търсене на изображението</translation>
+<translation id="5781453543752460388">Добавяне към Photos</translation>
 <translation id="5782227691023083829">Превежда се...</translation>
 <translation id="5803566855766646066">Наистина ли искате да отхвърлите тази нова карта?</translation>
 <translation id="5812974770859303494">Добавяне към...</translation>
@@ -504,6 +510,7 @@
 <translation id="6042308850641462728">Още</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
+<translation id="6064824697233747382">Организацията ви изисква да изключите синхронизирането.</translation>
 <translation id="6066301408025741299">Докоснете, за да анулирате.</translation>
 <translation id="60829778314739003">Приемам и продължавам</translation>
 <translation id="6084848228346514841">Избиране на раздели</translation>
@@ -519,6 +526,7 @@
 <translation id="6189413832092199491">Непрочетени</translation>
 <translation id="6196207969502475924">Гласово търсене</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затваряне на {COUNT} раздел}other{Затваряне на {COUNT} раздела}}</translation>
+<translation id="6207754106943147310"><ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" />.</translation>
 <translation id="6219688215832490856">Никога да не се превежда</translation>
 <translation id="6223816392543092032">Получете отметките, историята, паролите и другите си настройки на всичките си устройства.</translation>
 <translation id="6232329973559504466">Търсене в режим „инкогнито“</translation>
@@ -603,10 +611,12 @@
 <translation id="6801927553864092214">За да сърфирате частно, отворете раздел в режим „инкогнито“</translation>
 <translation id="6807889908376551050">Показване на всички...</translation>
 <translation id="681368974849482173">Елементът е създаден</translation>
+<translation id="681450999322335505">Организацията ви изключи синхронизирането.</translation>
 <translation id="6830804042318138535">Прочетете повече</translation>
 <translation id="6831043979455480757">Превод</translation>
 <translation id="6842136130964845393">Потвърдете, че сте вие, за да имате постоянен достъп до запазените си пароли</translation>
 <translation id="6851516051005285358">Заявка за настолния сайт</translation>
+<translation id="6856384753476268833">Управлява се от организацията ви.</translation>
 <translation id="6858855187367714033">Сканирано</translation>
 <translation id="6859944681507688231">За да сканирате код за бърза реакция или кредитна карта, активирайте камерата от настройките.</translation>
 <translation id="6869389390665537774">Можете да видите посетените от вас страници или да ги изчистите от историята си</translation>
@@ -628,7 +638,6 @@
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="7004499039102548441">Скорошни раздели</translation>
 <translation id="7006788746334555276">Настройки за съдържанието</translation>
-<translation id="7015203776128479407">Първоначалното настройване на синхронизирането не бе завършено. Синхронизирането е изключено.</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7053983685419859001">Блокиране</translation>
 <translation id="7062545763355031412">Приемане и превключване на профилите</translation>
@@ -651,7 +660,6 @@
 <translation id="7265758999917665941">Никога за този сайт</translation>
 <translation id="7272437679830969316">Паролата не бе копирана поради неуспешно удостоверяване.</translation>
 <translation id="7291368939935408496">Паролите се подготвят...</translation>
-<translation id="7293171162284876153">За да стартирате синхронизирането, включете „Синхронизиране на данните ви в Chrome“.</translation>
 <translation id="7313347584264171202">Тук ще се показват разделите ви в режим „инкогнито“</translation>
 <translation id="7319242366286515846">Продължавайки, приемате <ph name="BEGIN_LINK" />Общите условия<ph name="END_LINK" /></translation>
 <translation id="7336264872878993241">Изтеглено: <ph name="PERCENT" />%</translation>
@@ -707,6 +715,7 @@
 <translation id="7856733331829174190">Неуспешно изтегляне</translation>
 <translation id="7859704718976024901">История на сърфирането</translation>
 <translation id="7887198238286927132">За да защити поверителността ви, Chrome няма да попълни автоматично това поле.</translation>
+<translation id="7911190106180361398">Организацията ви не разрешава синхронизирането на всичко.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортиране на паролите...</translation>
 <translation id="794799177247607889">Спиране на регистрирането</translation>
@@ -716,6 +725,7 @@
 
 Сайтовете могат да използват „бисквитки“, за да следят активността ви при сърфиране в различни сайтове, например за да персонализират реклами.</translation>
 <translation id="7971521879845308059">Изск. прозорци: Блокиране</translation>
+<translation id="797413074872316787">Включете синхронизирането, за да се възползвате от синхронизиране и персонализиране на всички устройства.</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7993619969781047893">Функциите в някои сайтове може да не работят правилно</translation>
 <translation id="800361585186029508">Въведените URL адреси се отварят в Google Chrome.</translation>
@@ -734,8 +744,8 @@
 <translation id="8080028325999236607">Затваряне на разделите</translation>
 <translation id="8105368624971345109">Изключване</translation>
 <translation id="8114753159095730575">Наличен е файл за изтегляне. Съответните опции са достъпни в долната част на екрана.</translation>
-<translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8156478151976189188">Синхронизирането на паролите не работи</translation>
+<translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Превод на страницата</translation>
 <translation id="8205564605687841303">Отказ</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>
@@ -761,7 +771,6 @@
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Налице офлайн</translation>
 <translation id="8490978609246021741">Запазване на промените</translation>
-<translation id="8495097701594799854">Изключено от организацията ви.</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="850600235656508448">Отваряне в режим „инкогнито“</translation>
 <translation id="8517375800490286174">Лицензи за отворен код</translation>
@@ -834,6 +843,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Сигналите за сривове са изпратени.</translation>
 <translation id="952704832371081537">Отказ</translation>
+<translation id="981498610235328462">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити.</translation>
 <translation id="984509647832111802">Синхронизирането не работи.</translation>
 <translation id="988141524645182168">Други устройства</translation>
 <translation id="989988560359834682">Редактиране на адреса</translation>

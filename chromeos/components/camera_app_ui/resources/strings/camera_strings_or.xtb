@@ -8,8 +8,9 @@
 <translation id="1430915738399379752">ପ୍ରିଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" />କୁ ଅନପ୍ଲଗ୍ କରାଯାଇଛି।</translation>
 <translation id="1473110567575736769">3 ସେକେଣ୍ଡର ଟାଇମର୍</translation>
-<translation id="1478594628797167447">ସ୍କାନର୍</translation>
 <translation id="1545749641540134597">QR କୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">ସାଧାରଣ</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">କିଛି ରେକର୍ଡ କରାଯାଇ ନାହିଁ</translation>
@@ -24,14 +25,15 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ସକ୍ରିୟ ଅଛି</translation>
 <translation id="2144806332417375165">କଷ୍ଟମ୍ ଭିଡିଓ ପାରାମିଟରଗୁଡ଼ିକ</translation>
 <translation id="2175927920773552910">QR କୋଡ୍</translation>
-<translation id="2268107369530950373">ସ୍କାନର୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="229579744168541441">ଡିସ୍କକୁ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2320741269052147773">ବାମକୁ ପ୍ୟାନ୍ କରନ୍ତୁ</translation>
 <translation id="2501278716633472235">ଫେରନ୍ତୁ</translation>
 <translation id="2501853267655415902">ରେକର୍ଡିଂ ବନ୍ଦ ହୋଇଗଲା।</translation>
 <translation id="2501953888035679275">ଆପଣଙ୍କର କ୍ୟାମେରାରେ ଫଟୋଗୁଡ଼ିକ ଉଠାନ୍ତୁ ଏବଂ ଭିଡିଓଗୁଡ଼ିକ ରେକର୍ଡ କରନ୍ତୁ।</translation>
+<translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2549985041256363841">ରେକର୍ଡିଂ ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="2599796128805996109">ପଛ କ୍ୟାମେରା</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" /> ସେକେଣ୍ଡ</translation>
 <translation id="2879583609344924966"><ph name="CAMERA" />କୁ ପ୍ଲଗ୍ ଇନ୍ କରାଯାଇଛି।</translation>
 <translation id="2968794441791257519">କ୍ୟାମେରାରେ ଉଠାଯାଇଥିବା ଫଟୋ ଏବଂ ଭିଡିଓଗୁଡ଼ିକ ଡାଉନ୍‌ଲୋଡ୍ ଫୋଲ୍ଡର୍‍କୁ ନିଆଯିବ। ଆପଣ ସେଗୁଡ଼ିକ ଫାଇଲ୍‌ଗୁଡ଼ିକରେ ଆକ୍ସେସ୍ କରାଯାଇପାରିବ।
 
@@ -45,8 +47,10 @@
 <translation id="3259149966178251584">କ୍ୟାମେରା ରିଜୋଲ୍ୟୁଶନ୍</translation>
 <translation id="3260401663013584785">କୌଣସି ଡକ୍ୟୁମେଣ୍ଟ ଚିହ୍ନଟ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3448774564454087943">ଭିଡିଓଟି ବହୁତ ଛୋଟ ହୋଇଥିବା ଯୋଗୁଁ ଏହା ସେଭ୍ ହୋଇନାହିଁ</translation>
+<translation id="346539236881580388">ପୁଣି ଉଠାନ୍ତୁ</translation>
 <translation id="3517926952904427380">ପୋଟ୍ରେଟ୍ ଫଟୋ ଉଠାଇବା ପାଇଁ ଅକ୍ଷମ</translation>
 <translation id="3569311554794739032">ଆପଣ କ'ଣ ପ୍ରକୃତରେ <ph name="FILE" />କୁ କାଢ଼ି ଦେବାକୁ ଚାହୁଁଛନ୍ତି?</translation>
+<translation id="3573890771273113519">ସ୍କାନ୍ ମୋଡକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="3810838688059735925">ଭିଡିଓ</translation>
 <translation id="3838931309141338733">ବାରକୋଡ୍ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
@@ -68,8 +72,10 @@
 <translation id="5152121255775685072">ଗ୍ୟାଲେରୀକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="520537883758714667">ଡକ୍ୟୁମେଣ୍ଟ ସ୍କାନ୍ କରିବା ସୁବିଧା ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5268823927180092501">ସବୁ କ୍ୟାମେରାରେ ଡକ୍ୟୁମେଣ୍ଟ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5444515100983837161">ଡକ୍ୟୁମେଣ୍ଟର ସମସ୍ତ ଧାରକୁ ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ। ଯଦି ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ପୃଷ୍ଠପଟ ଭିନ୍ନ ରଙ୍ଗର ହୋଇଥାଏ ତେବେ ସ୍କାନିଂ ଭଲ କାମ କରେ।</translation>
 <translation id="5671277269877808209">ବର୍ଗାକାର</translation>
+<translation id="5746169159649715125">PDF ଭାବରେ ସେଭ୍‍ କରନ୍ତୁ</translation>
 <translation id="5753488212459587150">ଏକ୍ସପର୍ଟ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="5759254179196327752">ଡକ୍ୟୁମେଣ୍ଟକୁ ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="5775960006311140197">ଏକ୍ସପାର୍ଟ ମୋଡ୍</translation>
@@ -84,6 +90,7 @@
 
 ଯଦି ଆପଣଙ୍କ ମତାମତ ଛବି କିମ୍ବା ଭିଡିଓର ଗୁଣବତ୍ତା ବିଷୟରେ ହୋଇଥାଏ, ତେବେ ଦୟାକରି ଏକ ନମୁନା ଫଟୋ କିମ୍ବା ଭିଡିଓ ଆଟାଚ୍ କରନ୍ତୁ ଏବଂ କଣ ସମସ୍ୟା ହୋଇଛି ତାହା ବର୍ଣ୍ଣନା କରନ୍ତୁ। (ଉଦାହରଣ ସ୍ୱରୂପ, ଫଟୋଟି ଅତ୍ୟଧିକ ଗାଢ଼ା ଅଛି କିମ୍ବା ଫଟୋ ନିଆଯାଉଥିବା ବସ୍ତୁଟି ଉପରେ ଫୋକସ୍ କରାଯାଇ ନାହିଁ।)</translation>
 <translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> ମେଗା ପିକ୍ସେଲ୍</translation>
+<translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="667999046851023355">ଡକ୍ୟୁମେଣ୍ଟ</translation>
 <translation id="6681668084120808868">ଫଟୋ ଉଠାନ୍ତୁ</translation>
 <translation id="6778482348691154169">ଫଟୋ ଉଠାଇବାରେ ଅକ୍ଷମ</translation>
@@ -95,17 +102,20 @@
 <translation id="7243947652761655814">ଭିଡିଓ ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="7337660886763914220">ଫାଇଲ୍ ସିଷ୍ଟମ୍‌ର ତ୍ରୁଟିଗୁଡ଼ିକ।</translation>
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
+<translation id="7488619942230388918">GIF ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7557677699350329807">ପରବର୍ତ୍ତୀ କ୍ୟାମେରାକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7608223098072244877">4 ଗୁଣନ 4</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">ସାଧାରଣ ଭିଡିଓ ରେକର୍ଡ କରନ୍ତୁ</translation>
 <translation id="7983668134180549431">ଟେକ୍ସଟ୍ ଚିହ୍ନଟ କରାଯାଇଛି।</translation>
 <translation id="8067883171444229417">ଭିଡିଓ ଚଲାନ୍ତୁ</translation>
 <translation id="8120146556401698679">ପ୍ୟାନ୍ ଟିଲ୍ଟ ଜୁମ୍</translation>
 <translation id="8131740175452115882">ନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8145038249676204903">ଫଟୋ ଉଠାଇବା ପାଇଁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
+<translation id="8167081290930651932">ଫଟୋ ଭାବେ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="8239780215768881278">ଭିଡିଓର ସ୍ନାପସଟ୍ ନିଅନ୍ତୁ</translation>
 <translation id="8261506727792406068">ବିଲୋପ</translation>
 <translation id="8425673304802773841">ତଳକୁ ଟିଲ୍ଟ କରନ୍ତୁ</translation>
@@ -119,5 +129,6 @@
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="9045010116236796332">ଡକ୍ୟୁମେଣ୍ଟର ସମସ୍ତ ଧାରକୁ ଫ୍ରେମ୍ ଭିତରେ ରଖନ୍ତୁ</translation>
 <translation id="9045155556724273246">10 ସେକେଣ୍ଡ</translation>
+<translation id="906331135292332864">ଇମେଜର ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି...</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 </translationbundle>

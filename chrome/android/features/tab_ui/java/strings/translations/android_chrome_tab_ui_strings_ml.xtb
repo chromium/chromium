@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">വിലയിടിയുമ്പോൾ അറിയിപ്പ് നേടുക</translation>
 <translation id="1657719826150349398">ടാബ് താഴേക്ക് നീക്കുക</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ടാബ്}other{<ph name="TABS_COUNT_MANY" /> ടാബുകൾ}}</translation>
+<translation id="2118649612461486615">സ്റ്റോർ വിവരങ്ങൾ</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> -ൽ ഇപ്പോൾ <ph name="CURRENT_PRICE" />-ന് ലഭ്യം</translation>
 <translation id="2277224997687551299">ഗ്രൂപ്പിന്റെ പേര് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ്, ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക.}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ, ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക.}}</translation>
 <translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">ഗ്രൂപ്പ്</translation>
 <translation id="2613747923081026172">ഗ്രൂപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്</translation>
+<translation id="266935134738038806">സൈറ്റ് സന്ദർശിക്കുക</translation>
 <translation id="2671423594960767771">ഗ്രൂപ്പ് പങ്കിടുക</translation>
 <translation id="2759453070259087442"><ph name="TITLE_OF_GROUP" /> ടാബ് ഗ്രൂപ്പ്, <ph name="NUMBER_OF_TABS" /> ടാബുകൾ ഉപയോഗിച്ച് വികസിപ്പിക്കുക.</translation>
 <translation id="2801787514987684416">സ്റ്റോർ വിവരങ്ങൾ കാണണോ?</translation>
 <translation id="2928243913527329289">Google | ഈ സ്റ്റോറിനെക്കുറിച്ച്</translation>
 <translation id="2977480621796371840">ഗ്രൂപ്പിൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> എന്നതിന് <ph name="PRICE_DROP" /> വിലക്കുറവ്</translation>
 <translation id="3194464645767632461">റേറ്റിംഗ്</translation>
+<translation id="3267416433995960648">മുന്നറിയിപ്പ് ഓഫാക്കുക</translation>
 <translation id="3291470810748040983">തുറന്നിരിക്കുന്ന ടാബിൽ, വിലക്കുറവുള്ളപ്പോൾ നിങ്ങൾക്ക് മുന്നറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="3328308545011660196">നിർദ്ദേശം: <ph name="NUMBER_OF_TABS" /> ടാബുകൾ സമാനമാണെന്ന് തോന്നുന്നു. അവ ഗ്രൂപ്പ് ചെയ്യണോ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6054741997831917303">ഈ ഇനത്തിന്റെ വില അടുത്തിടെ <ph name="PREVIOUS_PRICE" /> എന്നതിൽ നിന്ന് <ph name="NEW_PRICE" /> ആയി കുറഞ്ഞു</translation>
 <translation id="6193448654517602979">തിരഞ്ഞെടുക്കൂ</translation>
+<translation id="6228793724645064692">(സ്റ്റോർ റേറ്റിംഗ്)</translation>
+<translation id="6333260925957816943">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ</translation>
 <translation id="6510648526783655549">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകൾ അടയ്ക്കുക</translation>
+<translation id="6549021453810473782">സ്റ്റോർ വിവരങ്ങൾ കാണുക</translation>
 <translation id="6562820390860419811">ടാബ് ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="6615455863669487791">എന്നെ കാണിക്കുക</translation>
 <translation id="6840760312327750441">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാൻ, ഒരു ടാബിൽ സ്‌പർശിച്ച് പിടിക്കുക. തുടർന്ന്, അത് മറ്റൊരു ടാബിലേക്ക് വലിച്ചിടുക.</translation>
 <translation id="6856809498882026482">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ് മറയ്ക്കുക</translation>
+<translation id="7129458170538955174">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങളുടെ പകുതി ഉയരത്തിൽ തുറന്ന ലിസ്റ്റ്</translation>
 <translation id="7151209024774799310">ഗ്രൂപ്പിൽ നിന്ന് ടാബുകൾ നീക്കൂ</translation>
 <translation id="7204204600596740190">ഒന്നിലധികം തിരഞ്ഞെടുക്കൽ മോഡ്</translation>
+<translation id="7326879924029668159">മടക്കി നൽകൽ നയവും മറ്റും കാണുക</translation>
 <translation id="7352298686197644113">തുറന്നിരിക്കുന്ന ടാബുകളിൽ ഏത് ഇനത്തിനാണ് കുറഞ്ഞ വിലയുള്ളതെന്ന് കാണുക</translation>
 <translation id="753732157349120914">ടാബ് സ്വിച്ചർ</translation>
 <translation id="7559245342362162951">ഗ്രൂപ്പിന്റെ ടാബുകൾ പൂർണ്ണസ്ക്രീൻ ഗ്രിഡിൽ കാണിക്കുക</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> റേറ്റിംഗ്, <ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ}}</translation>
 <translation id="7885132941432959125">ടാബ് വലത്തേക്ക് നീക്കുക</translation>
 <translation id="7966321538264951561">നിർദ്ദേശങ്ങൾ ഡിസ്‌മിസ് ചെയ്യുക.</translation>
+<translation id="8029301326595421733">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങളുടെ മുഴുവൻ ഉയരത്തിൽ തുറന്ന ലിസ്റ്റ്</translation>
 <translation id="814503310257431685">എല്ലാം കാണുക</translation>
 <translation id="8205266828577616993">ടാബ് മുകളിലേക്ക് നീക്കുക</translation>
 <translation id="8304833501377495048">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകൾ വീണ്ടും കാണിക്കേണ്ടതില്ലേ?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">കുറഞ്ഞ വില</translation>
 <translation id="8749939518995770034">തുറന്ന് വച്ച ടാബുകൾ അടച്ചു</translation>
 <translation id="8820741577754260431">നിങ്ങളുടെ ടാബുകളിൽ വിലയിടിവുകൾ കാണുക</translation>
+<translation id="9090098097337832354">ഈ സ്റ്റോറിനെ കുറിച്ചുള്ള വിവരങ്ങൾ അടച്ചു</translation>
 <translation id="9150694013019234766">സ്ക്രീനിന്റെ ചുവടെയുള്ള നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പിലെ, ടാബുകൾക്കിടയിൽ മാറുക</translation>
 <translation id="9169594135889675189">ഗ്രൂപ്പിലേക്ക് പുതിയ ടാബ് ചേർക്കുക</translation>
 <translation id="959682366969460160">ഓർഗനൈസ് ചെയ്‌ത നിലയിൽ തുടരുക</translation>

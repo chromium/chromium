@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">在降價時收到通知</translation>
 <translation id="1657719826150349398">將分頁向下移</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="2118649612461486615">商店資訊</translation>
+<translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">編輯群組名稱</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{從群組中移除 <ph name="TABS_COUNT_ONE" /> 個已選取的分頁。}other{從群組中移除 <ph name="TABS_COUNT_MANY" /> 個已選取的分頁。}}</translation>
 <translation id="2479148705183875116">前往「設定」</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">群組</translation>
 <translation id="2613747923081026172">建立群組</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" /> 分)</translation>
+<translation id="266935134738038806">造訪網站</translation>
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2759453070259087442">使用 <ph name="NUMBER_OF_TABS" /> 個分頁展開「<ph name="TITLE_OF_GROUP" />」分頁群組。</translation>
 <translation id="2801787514987684416">要查看商店資訊嗎？</translation>
 <translation id="2928243913527329289">Google | 關於這間商店</translation>
 <translation id="2977480621796371840">從群組中移除</translation>
+<translation id="3052964831964880138">「<ph name="PRODUCT_NAME" />」降價 <ph name="PRICE_DROP" /></translation>
 <translation id="3194464645767632461">評分</translation>
+<translation id="3267416433995960648">關閉快訊</translation>
 <translation id="3291470810748040983">每當開啟的分頁中有降價商品，你就會收到通知</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6054741997831917303">這個商品的價格最近從 <ph name="PREVIOUS_PRICE" />降為 <ph name="NEW_PRICE" /></translation>
 <translation id="6193448654517602979">選取分頁</translation>
+<translation id="6228793724645064692">(商店評分)</translation>
+<translation id="6333260925957816943">這間店的資訊</translation>
 <translation id="6510648526783655549">關閉分頁列</translation>
+<translation id="6549021453810473782">查看商店資訊</translation>
 <translation id="6562820390860419811">將分頁向左移</translation>
 <translation id="6615455863669487791">顯示</translation>
 <translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將其拖曳到其他分頁上。</translation>
 <translation id="6856809498882026482">隱藏多選模式</translation>
+<translation id="7129458170538955174">這間店的資訊已開啟，顯示在畫面下半部</translation>
 <translation id="7151209024774799310">從群組中移除分頁</translation>
 <translation id="7204204600596740190">多選模式</translation>
+<translation id="7326879924029668159">查看退貨政策等資訊</translation>
 <translation id="7352298686197644113">查看已開啟分頁中的降價商品</translation>
 <translation id="753732157349120914">分頁切換工具</translation>
 <translation id="7559245342362162951">以全螢幕格狀檢視顯示群組的分頁</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{<ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" />)，有 <ph name="REVIEWS_COUNT_ONE" /> 則評論}other{<ph name="CURRENT_RATING" /> 分 (滿分 <ph name="RATING_BASELINE" />)，有 <ph name="REVIEWS_COUNT_MANY" /> 則評論}}</translation>
 <translation id="7885132941432959125">將分頁向右移</translation>
 <translation id="7966321538264951561">關閉建議項目。</translation>
+<translation id="8029301326595421733">這間店的資訊已開啟，顯示於整個畫面</translation>
 <translation id="814503310257431685">查看全部</translation>
 <translation id="8205266828577616993">將分頁上移</translation>
 <translation id="8304833501377495048">不再顯示分頁列嗎？</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8749939518995770034">已關閉分頁列</translation>
 <translation id="8820741577754260431">在分頁上查看降價資訊</translation>
+<translation id="9090098097337832354">這間店的資訊已關閉</translation>
 <translation id="9150694013019234766">在靠近畫面底部的分頁群組中切換分頁</translation>
 <translation id="9169594135889675189">在群組中新增分頁</translation>
 <translation id="959682366969460160">保持井然有序</translation>

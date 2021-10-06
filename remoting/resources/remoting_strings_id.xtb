@@ -79,6 +79,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="4513946894732546136">Masukan</translation>
 <translation id="4563926062592110512">Klien terputus: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> tidak dikonfigurasi dengan benar. Pilih browser web default lain, lalu aktifkan penerusan URL lagi.</translation>
 <translation id="4635770493235256822">Perangkat jarak jauh</translation>
 <translation id="4660011489602794167">Tampilkan keyboard</translation>
 <translation id="4703799847237267011">Sesi Chromoting Anda berakhir.</translation>
@@ -109,6 +110,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="5750083143895808682">Login sebagai <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Sambungkan ulang</translation>
 <translation id="5810269635982033450">Layar berfungsi seperti trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat layar Anda serta mengontrol keyboard dan mouse Anda. Tekan ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' jika Anda tidak mengharapkan permintaan ini. Atau, pilih ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' untuk mengizinkan koneksi saat sudah siap.</translation>
 <translation id="5823658491130719298">Pada komputer yang ingin diakses dari jarak jauh, buka Chrome lalu buka <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opsi tampilan</translation>
 <translation id="6033507038939587647">Opsi keyboard</translation>
@@ -130,7 +132,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="6963936880795878952">Sambungan ke komputer jarak jauh diblokir untuk sementara karena seseorang mencoba untuk menyambungkannya dengan PIN yang tidak valid. Coba lagi nanti.</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6985691951107243942">Yakin ingin menonaktifkan sambungan jarak jauh dengan <ph name="HOSTNAME" />? Jika Anda berubah pikiran, Anda harus mengunjungi komputer tersebut untuk mengaktifkan kembali sambungan.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat dan mengontrol komputer Anda. Tekan ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' jika Anda tidak mengetahui pengguna ini atau Anda perlu melakukan perubahan sebelum berbagi.  Atau, pilih ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' untuk mengizinkan koneksi.</translation>
 <translation id="7019153418965365059">Kesalahan host tidak dikenal: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Bantuan Jarak Jauh</translation>
 <translation id="7026930240735156896">Ikuti petunjuk menyiapkan komputer untuk akses jarak jauh</translation>
@@ -169,6 +170,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 Untuk memberikan izin ini, klik '<ph name="BUTTON_NAME" />' di bawah. Di panel preferensi 'Aksesibilitas' yang terbuka, centang kotak di samping '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu centang kembali.</translation>
+<translation id="8305209735512572429">Web Authentication Remoting Process</translation>
 <translation id="8383794970363966105">Untuk menggunakan Chromoting, Anda perlu menambahkan Akun Google ke perangkat.</translation>
 <translation id="8386846956409881180">Host dikonfigurasi dengan kredensial OAuth yang tidak valid.</translation>
 <translation id="8397385476380433240">Beri izin ke <ph name="PRODUCT_NAME" /></translation>

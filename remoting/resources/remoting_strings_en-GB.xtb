@@ -79,6 +79,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="4512952200932940229">Copyright 2021 The Chromium Authors. All rights reserved.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4563926062592110512">Client disconnected: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> is not configured correctly. Please choose a different default web browser and then enable URL forwarding again.</translation>
 <translation id="4635770493235256822">Remote devices</translation>
 <translation id="4660011489602794167">Show keyboard</translation>
 <translation id="4703799847237267011">Your Chromoting session has ended.</translation>
@@ -109,6 +110,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="5750083143895808682">Signed in as <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconnect</translation>
 <translation id="5810269635982033450">Screen acts like a trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> has requested access to see your screen and control your keyboard and mouse. Press '<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />' if you are not expecting this request. Otherwise select '<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />' to allow the connection when ready.</translation>
 <translation id="5823658491130719298">On the computer that you want to access remotely, open Chrome and visit <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Display options</translation>
 <translation id="6033507038939587647">Keyboard options</translation>
@@ -130,7 +132,6 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="6963936880795878952">Connections to the remote computer are temporarily blocked because somebody was trying to connect to it with an invalid PIN. Please try again later.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Are you sure you want to disable remote connections to <ph name="HOSTNAME" />? If you change your mind, you'll need to visit that computer to re-enable connections.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> has requested access to see and control your computer. Press '<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />' if you do not know this person or if you need to make any changes before sharing.  Otherwise, select '<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />' to allow connection.</translation>
 <translation id="7019153418965365059">Unrecognised host error: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Remote Assistance</translation>
 <translation id="7026930240735156896">Follow the instructions to set up your computer for remote access</translation>
@@ -169,6 +170,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 To grant this permission, click '<ph name="BUTTON_NAME" />' below. In the 'Accessibility' preferences pane that opens, tick the box next to '<ph name="SERVICE_SCRIPT_NAME" />'.
 
 If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tick it again.</translation>
+<translation id="8305209735512572429">Web authentication remoting process</translation>
 <translation id="8383794970363966105">To use Chromoting, you'll need to add a Google Account to your device.</translation>
 <translation id="8386846956409881180">Host is configured with invalid OAuth credentials.</translation>
 <translation id="8397385476380433240">Grant permission to <ph name="PRODUCT_NAME" /></translation>

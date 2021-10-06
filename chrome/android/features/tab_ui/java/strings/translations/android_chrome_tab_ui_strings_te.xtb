@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">ధరలు తగ్గినప్పుడు నోటిఫికేషన్‌ను పొందండి</translation>
 <translation id="1657719826150349398">ట్యాబ్‌ని కిందికి తరలించు</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
+<translation id="2118649612461486615">స్టోర్ సమాచారం</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" />లోని ప్రస్తుత ధర <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">గ్రూప్ పేరును ఎడిట్ చేయండి</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{గ్రూప్ నుండి <ph name="TABS_COUNT_ONE" /> ఎంచుకున్న ట్యాబ్‌ను తీసివేయండి.}other{గ్రూప్ నుండి <ph name="TABS_COUNT_MANY" /> ఎంచుకున్న ట్యాబ్‌లను తీసివేయండి.}}</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">గ్రూప్‌గా చేయి</translation>
 <translation id="2613747923081026172">సమూహాన్ని సృష్టించు</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్</translation>
+<translation id="266935134738038806">సైట్‌కు వెళ్లండి</translation>
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లతో <ph name="TITLE_OF_GROUP" /> ట్యాబ్ గ్రూప్‌ను విస్తరించండి.</translation>
 <translation id="2801787514987684416">స్టోర్ సమాచారాన్ని చూడాలా?</translation>
 <translation id="2928243913527329289">Google | ఈ స్టోర్ గురించి</translation>
 <translation id="2977480621796371840">గుంపు నుండి తీసివేయి</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> పైన <ph name="PRICE_DROP" /> తగ్గింపు</translation>
 <translation id="3194464645767632461">రేటింగ్</translation>
+<translation id="3267416433995960648">అలర్ట్‌ను ఆఫ్ చేయండి</translation>
 <translation id="3291470810748040983">తెరిచి ఉన్న ట్యాబ్‌లో ధర తగ్గినప్పుడు మీరు అలర్ట్‌ను పొందుతారు</translation>
 <translation id="3328308545011660196">సూచన: <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు సంబంధించినవిగా అనిపిస్తున్నాయి. వాటిని గ్రూప్ చేయాలా?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6054741997831917303">ఈ ఐటెమ్ ధర ఇటీవల <ph name="PREVIOUS_PRICE" /> నుండి <ph name="NEW_PRICE" />కు తగ్గింది</translation>
 <translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
+<translation id="6228793724645064692">(స్టోర్ రేటింగ్)</translation>
+<translation id="6333260925957816943">ఈ స్టోర్‌కు సంబంధించిన సమాచారం</translation>
 <translation id="6510648526783655549">ట్యాబ్‌ స్ట్రిప్‌ను మూసివేస్తుంది</translation>
+<translation id="6549021453810473782">స్టోర్ సమాచారాన్ని చూడండి</translation>
 <translation id="6562820390860419811">ట్యాబ్‌ను ఎడమకు తరలించు</translation>
 <translation id="6615455863669487791">నాకు చూపించు</translation>
 <translation id="6840760312327750441">ట్యాబ్‌లను సమూహంగా చేయడానికి, ట్యాబ్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి. ట్యాబ్‌ను మరొక ట్యాబ్‌ మీదకు లాగండి.</translation>
 <translation id="6856809498882026482">బహుళ-ఎంపిక మోడ్‌ను దాచండి</translation>
+<translation id="7129458170538955174">ఈ స్టోర్ గురించిన సమాచారం స్క్రీన్‌లో సగం వరకు తెరవబడింది</translation>
 <translation id="7151209024774799310">గ్రూప్ నుండి ట్యాబ్‌లు తీసివేయి</translation>
 <translation id="7204204600596740190">బహుళ-ఎంపిక మోడ్</translation>
+<translation id="7326879924029668159">రిటర్న్ పాలసీ, ఇంకా మరిన్నింటిని చూడండి</translation>
 <translation id="7352298686197644113">మీరు ప్రస్తుతం తెరిచి ఉంచిన ట్యాబ్‌లలో ఏ ఐటెమ్ ధర తగ్గిందో చూడండి</translation>
 <translation id="753732157349120914">ట్యాబ్ స్విచర్</translation>
 <translation id="7559245342362162951">సమూహంలోని ట్యాబ్‌లను పూర్తి స్క్రీన్ గ్రిడ్‌లో చూపు</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_ONE" /> రివ్యూ}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> రేటింగ్, <ph name="REVIEWS_COUNT_MANY" /> రివ్యూలు}}</translation>
 <translation id="7885132941432959125">ట్యాబ్‌ను కుడి వైపునకు తరలించు</translation>
 <translation id="7966321538264951561">సూచనలను తీసివేయండి.</translation>
+<translation id="8029301326595421733">ఈ స్టోర్ గురించిన సమాచారం పూర్తి స్క్రీన్‌లో తెరవబడింది</translation>
 <translation id="814503310257431685">అన్నింటినీ చూడండి</translation>
 <translation id="8205266828577616993">ట్యాబ్‌ను పైక్ తరలించండి</translation>
 <translation id="8304833501377495048">ట్యాబ్‌ స్ట్రిప్‌ను మళ్లీ చూపవద్దా?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">తక్కువ ధర</translation>
 <translation id="8749939518995770034">మూసివేయబడిన ట్యాబ్‌ స్ట్రిప్</translation>
 <translation id="8820741577754260431">మీ ట్యాబ్‌లలో ధర తగ్గింపు వివరాలను చూడండి</translation>
+<translation id="9090098097337832354">ఈ స్టోర్ గురించిన సమాచారాన్ని చూపించే స్క్రీన్ మూసివేయబడింది</translation>
 <translation id="9150694013019234766">స్క్రీన్ దిగువ భాగం దగ్గరలో ఉండే మీ ట్యాబ్ సమూహంలో కోరుకునే ట్యాబ్‌లకు మారండి</translation>
 <translation id="9169594135889675189">సమూహానికి కొత్త ట్యాబ్‌ను జోడించు</translation>
 <translation id="959682366969460160">అన్నింటిని క్రమ పద్దతిలో అమర్చండి</translation>

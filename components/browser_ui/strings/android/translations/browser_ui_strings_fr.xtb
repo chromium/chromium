@@ -18,7 +18,6 @@
 <translation id="1384959399684842514">Téléchargement suspendu</translation>
 <translation id="1415402041810619267">URL tronquée</translation>
 <translation id="1446450296470737166">Autoriser le contrôle complet des appareils MIDI</translation>
-<translation id="1509960214886564027">Des fonctionnalités sur de nombreux sites risquent de ne pas fonctionner</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1647582022260550163">Voulez-vous vraiment réinitialiser les autorisations et supprimer les cookies et les données de ce site ?</translation>
@@ -37,6 +36,7 @@
 <translation id="1984937141057606926">Autorisés, sauf cookies tiers</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="1994173015038366702">URL du site</translation>
+<translation id="2004697686368036666">Les fonctionnalités de certains sites peuvent ne pas fonctionner</translation>
 <translation id="2025115093177348061">Réalité augmentée</translation>
 <translation id="2030769033451695672">Appuyez pour revenir à l'adresse <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
 <translation id="2079545284768500474">Annuler</translation>
@@ -113,6 +113,7 @@
 <translation id="4008040567710660924">Autorisez les cookies pour un site spécifique.</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
 <translation id="4165986682804962316">Paramètres de site</translation>
+<translation id="4176463684765177261">Désactivé</translation>
 <translation id="4200726100658658164">Accéder aux paramètres de localisation</translation>
 <translation id="4226663524361240545">L'appareil vibrera en cas de notifications.</translation>
 <translation id="4259722352634471385">La navigation sur <ph name="URL" /> est bloquée.</translation>
@@ -180,6 +181,7 @@
 <translation id="5876056640971328065">Mettre la vidéo en pause</translation>
 <translation id="5887687176710214216">Dernière visite : hier</translation>
 <translation id="5916664084637901428">Activé</translation>
+<translation id="59174027418879706">Activé</translation>
 <translation id="5922853908706496913">Partage de votre écran…</translation>
 <translation id="5939518447894949180">Réinitialiser</translation>
 <translation id="5975083100439434680">Zoom arrière</translation>
@@ -196,6 +198,7 @@
 <translation id="6196640612572343990">Bloquer les cookies tiers</translation>
 <translation id="6216432067784365534">Options pour <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Désinstaller <ph name="APP_NAME" /> ?</translation>
+<translation id="6233545266937675277">Demander l'affichage pour ordinateur des sites</translation>
 <translation id="6262279340360821358">Autorisations refusées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
@@ -209,6 +212,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}one{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}other{Autorisations refusées : <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="NUM_MORE" /> de plus}}</translation>
 <translation id="6554732001434021288">Dernière visite : il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6561560012278703671">Activer les notifications discrètes (empêche les notifications de vous interrompre)</translation>
+<translation id="6593061639179217415">Version pour ordinateur</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="662080504995468778">Rester</translation>
@@ -258,8 +262,8 @@
 <translation id="7846076177841592234">Annuler la sélection</translation>
 <translation id="7846621471902887024">Vous allez être déconnecté de tous les sites.</translation>
 <translation id="7882806643839505685">Autorisez le son pour un site spécifique.</translation>
+<translation id="7940722705963108451">M'envoyer un rappel</translation>
 <translation id="7986741934819883144">Sélectionner un contact</translation>
-<translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="7999064672810608036">Voulez-vous vraiment effacer toutes les données locales, y compris les cookies, et réinitialiser toutes les autorisations pour ce site Web ?</translation>
 <translation id="8007176423574883786">Désactivée pour cet appareil</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
@@ -269,12 +273,14 @@
 <translation id="8116925261070264013">Son coupé</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8131740175452115882">Confirmer</translation>
+<translation id="8154912474061769055">Les fonctionnalités de nombreux sites peuvent ne pas fonctionner</translation>
 <translation id="8197286292360124385">Autorisation accordée : <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Reprendre</translation>
 <translation id="8206354486702514201">Ce paramètre est appliqué par votre administrateur.</translation>
 <translation id="8211406090763984747">La connexion est sécurisée</translation>
 <translation id="8249310407154411074">Déplacer vers le haut</translation>
 <translation id="8261506727792406068">Supprimer</translation>
+<translation id="8267092878336850213">Demander l'affichage pour mobile des sites</translation>
 <translation id="8300705686683892304">Gérés par l'application</translation>
 <translation id="8324158725704657629">Ne plus me demander</translation>
 <translation id="8372893542064058268">Autorisez la synchronisation en arrière-plan pour un site spécifique.</translation>
@@ -295,6 +301,7 @@
 <translation id="8676374126336081632">Effacer la saisie</translation>
 <translation id="868929229000858085">Rechercher des contacts</translation>
 <translation id="8702612070107455751">Toutes les données hors connexion vont être effacées.</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8719283222052720129">Activez l'autorisation pour <ph name="APP_NAME" /> dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8730621377337864115">OK</translation>

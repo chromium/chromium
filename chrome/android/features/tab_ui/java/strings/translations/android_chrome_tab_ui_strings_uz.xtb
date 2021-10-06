@@ -8,6 +8,8 @@
 <translation id="1378979118429748177">Narxlar tushganda xabar olish</translation>
 <translation id="1657719826150349398">Varaqni pastga tushirish</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
+<translation id="2118649612461486615">Doʻkon haqida</translation>
+<translation id="2162620598375156287"><ph name="SOURCE_WEBSITE" /> saytidagi joriy narxi: <ph name="CURRENT_PRICE" /></translation>
 <translation id="2277224997687551299">Guruh nomini tahrirlash</translation>
 <translation id="228946090561406413">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni guruhdan olib tashlash.}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni guruhdan olib tashlash.}}</translation>
 <translation id="2479148705183875116">Sozlamalarni ochish</translation>
@@ -16,12 +18,15 @@
 <translation id="257674075312929031">Guruh</translation>
 <translation id="2613747923081026172">Guruh yaratish</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho</translation>
+<translation id="266935134738038806">Saytni ochish</translation>
 <translation id="2671423594960767771">Guruhni ulashish</translation>
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.</translation>
 <translation id="2801787514987684416">Doʻkon axboroti ochilsinmi?</translation>
 <translation id="2928243913527329289">Google | Bu doʻkon haqida</translation>
 <translation id="2977480621796371840">Guruhdan chiqarish</translation>
+<translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> narxlari <ph name="PRICE_DROP" /> ga tushdi</translation>
 <translation id="3194464645767632461">reyting</translation>
+<translation id="3267416433995960648">Faolsizlantirish</translation>
 <translation id="3291470810748040983">Ochiq varaqda narx tushganda xabar olasiz</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
@@ -50,13 +55,18 @@
 <translation id="6040143037577758943">Yopish</translation>
 <translation id="6054741997831917303">Bu mahsulot narxi yaqinda <ph name="PREVIOUS_PRICE" /> dan <ph name="NEW_PRICE" /> ga tushdi</translation>
 <translation id="6193448654517602979">Varaqlarni tanlang</translation>
+<translation id="6228793724645064692">(doʻkon reytingi)</translation>
+<translation id="6333260925957816943">Bu doʻkon haqidagi axborot</translation>
 <translation id="6510648526783655549">Varaqlar panelini yopish</translation>
+<translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
 <translation id="6840760312327750441">Varaqlarni guruhlash uchun: bitta varaqni bosib ushlang, keyin uni boshqa varaqning ustiga tortib tashlang.</translation>
 <translation id="6856809498882026482">Bir nechta variant tanlanadigan rejimni yopish</translation>
+<translation id="7129458170538955174">Bu doʻkon haqidagi axborot yarim hajmda ochildi</translation>
 <translation id="7151209024774799310">Varaqlarni guruhdan olib tashlash</translation>
 <translation id="7204204600596740190">Bir nechta elementni tanlash rejimi</translation>
+<translation id="7326879924029668159">Qaytarish siyosati va boshqalar</translation>
 <translation id="7352298686197644113">Ochiq varaqlardagi qaysi narsalar narxi arzonlaganini bilish</translation>
 <translation id="753732157349120914">Varaq almashtirgich</translation>
 <translation id="7559245342362162951">Guruh varaqlarini butun ekranga jadval shaklida chiqarish</translation>
@@ -65,6 +75,7 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_ONE" /> ta sharh}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_MANY" /> ta sharh}}</translation>
 <translation id="7885132941432959125">Varaqni oʻngga siljitish</translation>
 <translation id="7966321538264951561">Bildirgilarni yopish</translation>
+<translation id="8029301326595421733">Bu doʻkon haqidagi axborot toʻliq hajmda ochildi</translation>
 <translation id="814503310257431685">Hammasi</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>
 <translation id="8304833501377495048">Darchalar paneli boshqa chiqmasinmi?</translation>
@@ -74,6 +85,7 @@
 <translation id="8714939927607906138">Past narxda</translation>
 <translation id="8749939518995770034">Darchalar paneli yopildi</translation>
 <translation id="8820741577754260431">Narxlar tushishini varaqlarda kuzating</translation>
+<translation id="9090098097337832354">Bu doʻkon haqidagi axborot yopildi</translation>
 <translation id="9150694013019234766">Ekranning quyi qismidagi varaqlar guruhidagi varaqlarni almashtirish</translation>
 <translation id="9169594135889675189">Guruhga yangi varaq kiritish</translation>
 <translation id="959682366969460160">Ishni tashkillash</translation>

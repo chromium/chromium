@@ -79,6 +79,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="4512952200932940229">Copyright 2021 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="4563926062592110512">Rozłączył się klient: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">Rozszerzenie <ph name="URL_FORWARDER_NAME" /> nie jest poprawnie skonfigurowane. Wybierz inną domyślną przeglądarkę, a potem ponownie włącz przekierowywanie adresów URL.</translation>
 <translation id="4635770493235256822">Urządzenia zdalne</translation>
 <translation id="4660011489602794167">Pokaż klawiaturę</translation>
 <translation id="4703799847237267011">Sesja Chromoting została zakończona.</translation>
@@ -109,6 +110,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="5750083143895808682">W tej chwili używasz konta <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Połącz ponownie</translation>
 <translation id="5810269635982033450">Ekran działa jak trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> prosi o dostęp umożliwiający wyświetlanie Twojego ekranu oraz sterowanie Twoją klawiaturą i myszą. Jeśli nie oczekujesz takiej prośby, naciśnij „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”. W innym przypadku, gdy wszystko będzie gotowe, wybierz „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”, aby zezwolić na połączenie.</translation>
 <translation id="5823658491130719298">Na komputerze, do którego chcesz uzyskać zdalny dostęp, otwórz Chrome i wejdź na <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opcje wyświetlania</translation>
 <translation id="6033507038939587647">Opcje klawiatury</translation>
@@ -130,7 +132,6 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="6963936880795878952">Połączenia z komputerem zdalnym są chwilowo zablokowane, bo ktoś próbował się z nim połączyć, podając nieprawidłowy kod PIN. Spróbuj ponownie później.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6985691951107243942">Na pewno chcesz wyłączyć połączenia zdalne z: <ph name="HOSTNAME" />? Jeśli zmienisz zdanie, połączenia będzie trzeba włączyć na tamtym komputerze.</translation>
-<translation id="6998890551706945177"><ph name="CLIENT_USERNAME" /> prosi o dostęp umożliwiający przeglądanie zawartości Twojego komputera i sterowanie nim. Jeśli nie znasz tej osoby lub jeśli przed udostępnieniem musisz wprowadzić jakieś zmiany, naciśnij „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />”.  W innym przypadku wybierz „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />”, aby zezwolić na połączenie.</translation>
 <translation id="7019153418965365059">Nieznany błąd hosta: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Pomoc zdalna</translation>
 <translation id="7026930240735156896">Wykonaj te instrukcje, by skonfigurować komputer do dostępu zdalnego</translation>
@@ -169,6 +170,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 Kliknij przycisk „<ph name="BUTTON_NAME" />” poniżej, by otworzyć okienko ustawień „Ułatwienia dostępu”, a potem zaznacz pole obok opcji „<ph name="SERVICE_SCRIPT_NAME" />”.
 
 Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odznacz ją i zaznacz jeszcze raz.</translation>
+<translation id="8305209735512572429">Proces zdalnego uwierzytelniania w sieci</translation>
 <translation id="8383794970363966105">Aby użyć funkcji Chromoting, musisz dodać do urządzenia konto Google.</translation>
 <translation id="8386846956409881180">Host został skonfigurowany z nieprawidłowymi danymi logowania protokołu OAuth.</translation>
 <translation id="8397385476380433240">Przyznaj uprawnienia usłudze <ph name="PRODUCT_NAME" /></translation>
