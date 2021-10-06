@@ -1051,6 +1051,7 @@ junit_binary("chrome_junit_tests") {
     "//components/favicon/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/feed/core/proto:proto_java_v2",
+    "//components/feed/core/v2:feedv2_core_java",
     "//components/image_fetcher:java",
     "//components/infobars/android:java",
     "//components/messages/android:java",

@@ -117,8 +117,10 @@ enum class FeedUserActionType {
   kTappedDiscoverFeedPreview = 39,
   // User tapped "Settings" link to open feed autoplay settings.
   kOpenedAutoplaySettings = 40,
+  // User tapped "Add to Reading List" in the context menu.
+  kTappedAddToReadingList = 41,
 
-  kMaxValue = kOpenedAutoplaySettings,
+  kMaxValue = kTappedAddToReadingList,
 };
 
 // For testing and debugging only.

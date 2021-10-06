@@ -33,6 +33,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.CardMenuBottomSheetContent;
 import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
@@ -153,6 +155,19 @@ public class FeedStream implements Stream {
             RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
                     .savePageLater(url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE,
                             true /* user requested*/);
+        }
+
+        @Override
+        public void addToReadingList(String title, String url) {
+            assert ThreadUtils.runningOnUiThread();
+            FeedStreamJni.get().reportOtherUserAction(mNativeFeedStream, FeedStream.this,
+                    FeedUserActionType.TAPPED_ADD_TO_READING_LIST);
+
+            mBookmarkBridge.finishLoadingBookmarkModel(() -> {
+                assert ThreadUtils.runningOnUiThread();
+                BookmarkUtils.addToReadingList(
+                        new GURL(url), title, mSnackManager, mBookmarkBridge, mActivity);
+            });
         }
 
         @Override
@@ -414,6 +429,7 @@ public class FeedStream implements Stream {
     private WindowAndroid mWindowAndroid;
     private final FeedAutoplaySettingsDelegate mFeedAutoplaySettingsDelegate;
     private UnreadContentObserver mUnreadContentObserver;
+    private BookmarkBridge mBookmarkBridge;
 
     // For loading more content.
     private int mAccumulatedDySinceLastLoadMore;
@@ -462,12 +478,14 @@ public class FeedStream implements Stream {
      * @param shareDelegateSupplier The supplier for {@link ShareDelegate} for sharing actions.
      * @param isInterestFeed Whether this stream is for interest feed (true) or web feed (false).
      * @param feedAutoplaySettingsDelegate The delegate to invoke autoplay settings.
+     * @param bookmarkBridge Used to add feed items to the reading list.
      */
     public FeedStream(Activity activity, SnackbarManager snackbarManager,
             NativePageNavigationDelegate nativePageNavigationDelegate,
             BottomSheetController bottomSheetController, boolean isPlaceholderShown,
             WindowAndroid windowAndroid, Supplier<ShareDelegate> shareDelegateSupplier,
-            boolean isInterestFeed, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate) {
+            boolean isInterestFeed, FeedAutoplaySettingsDelegate feedAutoplaySettingsDelegate,
+            BookmarkBridge bookmarkBridge) {
         this.mActivity = activity;
         mIsInterestFeed = isInterestFeed;
         mReliabilityLoggingBridge = new FeedReliabilityLoggingBridge();
@@ -483,6 +501,7 @@ public class FeedStream implements Stream {
         mWindowAndroid = windowAndroid;
         mFeedAutoplaySettingsDelegate = feedAutoplaySettingsDelegate;
         mRotationObserver = new RotationObserver();
+        mBookmarkBridge = bookmarkBridge;
 
         mHandlersMap = new HashMap<>();
         mHandlersMap.put(SurfaceActionsHandler.KEY, new FeedSurfaceActionsHandler());
@@ -557,6 +576,7 @@ public class FeedStream implements Stream {
             mUnreadContentObserver.destroy();
         }
         mReliabilityLoggingBridge.destroy();
+        mBookmarkBridge.destroy();
     }
 
     @Override

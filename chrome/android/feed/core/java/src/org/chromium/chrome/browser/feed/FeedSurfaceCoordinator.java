@@ -35,6 +35,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
 import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
@@ -175,6 +176,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     private FeedSwipeRefreshLayout mSwipeRefreshLayout;
 
     private BackToTopBubble mBackToTopBubble;
+    private final BookmarkBridge mBookmarkBridge;
 
     @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
     public @interface StreamTabId {
@@ -281,6 +283,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
      * @param overScrollDisabled Whether the overscroll effect is disabled.
      * @param viewportView The view that should be used as a container for viewport measurement
      *   purposes, or |null| if the view returned by HybridListRenderer is to be used.
+     * @param bookmarkBridge Allows interacting with bookmarks.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             WindowAndroid windowAndroid, @Nullable SnapScrollHelper snapScrollHelper,
@@ -295,7 +298,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
             @NonNull Supplier<Toolbar> toolbarSupplier,
             FeedLaunchReliabilityLoggingState launchReliabilityLoggingState,
             @Nullable FeedSwipeRefreshLayout swipeRefreshLayout, boolean overScrollDisabled,
-            @Nullable ViewGroup viewportView) {
+            @Nullable ViewGroup viewportView, @NonNull BookmarkBridge bookmarkBridge) {
         FeedSurfaceTracker.getInstance().initServiceBridge(new FeedServiceBridgeDelegateImpl());
         mActivity = activity;
         mSnackbarManager = snackbarManager;
@@ -315,6 +318,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
         mSwipeRefreshLayout = swipeRefreshLayout;
         mOverScrollDisabled = overScrollDisabled;
         mViewportView = viewportView;
+        mBookmarkBridge = bookmarkBridge;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mActivity.getResources().getDimensionPixelSize(
@@ -684,7 +688,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider, FeedBubbleDe
     FeedStream createFeedStream(boolean isInterestFeed) {
         return new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
                 mBottomSheetController, mIsPlaceholderShownInitially, mWindowAndroid,
-                mShareSupplier, isInterestFeed, this);
+                mShareSupplier, isInterestFeed, this, mBookmarkBridge);
     }
 
     private void setHeaders(List<View> headerViews) {

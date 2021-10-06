@@ -32,6 +32,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.download.DownloadManagerService;
@@ -468,7 +469,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 PrivacyPreferencesManagerImpl.getInstance(), mToolbarSupplier,
                 new FeedLaunchReliabilityLoggingState(SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs),
                 FeedSwipeRefreshLayout.create(activity),
-                /* overScrollDisabled= */ false, /* viewportView= */ null);
+                /* overScrollDisabled= */ false, /* viewportView= */ null,
+                new BookmarkBridge(profile));
 
         // Record the timestamp at which the new tab page's construction started.
         uma.trackTimeToFirstDraw(mFeedSurfaceProvider.getView(), mConstructedTimeNs);

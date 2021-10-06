@@ -26,6 +26,7 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #endif
 
 namespace feed {
@@ -151,6 +152,12 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(
         feedwire::Capability::AMP_GROUP_DATASTORE);
   }
+
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    feed_request.add_client_capability(feedwire::Capability::READ_LATER);
+  }
+#endif
 
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();

@@ -17,6 +17,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,6 +58,7 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MetricsUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.feed.FeedReliabilityLoggingBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
@@ -77,7 +80,9 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feed.proto.FeedUiProto;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,7 +91,8 @@ import java.util.Map;
 
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class, ShadowRecordHistogram.class})
+@Config(manifest = Config.NONE,
+        shadows = {ShadowPostTask.class, ShadowRecordHistogram.class, ShadowGURL.class})
 // TODO(crbug.com/1210371): Rewrite using paused loop. See crbug for details.
 @LooperMode(LooperMode.Mode.LEGACY)
 public class FeedStreamTest {
@@ -135,6 +141,8 @@ public class FeedStreamTest {
     private RecyclerView.Adapter mAdapter;
     @Mock
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
+    @Mock
+    private BookmarkBridge mBookmarkBridge;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> mMapCaptor;
@@ -171,13 +179,21 @@ public class FeedStreamTest {
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mPageNavigationDelegate,
                 mBottomSheetController, /* isPlaceholderShown= */ false, mWindowAndroid,
                 mShareDelegateSupplier, /* isInterestFeed= */ true,
-                /* FeedAutoplaySettingsDelegate= */ null);
+                /* FeedAutoplaySettingsDelegate= */ null, mBookmarkBridge);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
         mRecyclerView = new RecyclerView(mActivity);
         mRecyclerView.setAdapter(mAdapter);
         mContentManager = new NtpListContentManager();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        doAnswer((invocation) -> {
+            ((Runnable) invocation.getArgument(0)).run();
+            return null;
+        })
+                .when(mBookmarkBridge)
+                .finishLoadingBookmarkModel(any());
+        doReturn(true).when(mBookmarkBridge).isBookmarkModelLoaded();
 
         setFeatureOverrides(true);
 
@@ -635,6 +651,22 @@ public class FeedStreamTest {
         handler.showBottomSheet(new AppCompatTextView(mActivity), null);
         mFeedStream.dismissBottomSheet();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testAddToReadingList() {
+        bindToView();
+        FeedStream.FeedSurfaceActionsHandler handler =
+                (FeedStream.FeedSurfaceActionsHandler) mContentManager.getContextValues(0).get(
+                        SurfaceActionsHandler.KEY);
+        handler.addToReadingList("title", TEST_URL);
+
+        verify(mFeedStreamJniMock)
+                .reportOtherUserAction(anyLong(), any(FeedStream.class),
+                        eq(FeedUserActionType.TAPPED_ADD_TO_READING_LIST));
+        verify(mBookmarkBridge).finishLoadingBookmarkModel(any());
+        verify(mBookmarkBridge).addToReadingList(eq("title"), eq(new GURL(TEST_URL)));
     }
 
     @Test

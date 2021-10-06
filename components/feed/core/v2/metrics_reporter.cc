@@ -447,6 +447,11 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
           "ContentSuggestions.Feed.CardAction.Download"));
       RecordInteraction(stream_type);
       break;
+    case FeedUserActionType::kTappedAddToReadingList:
+      base::RecordAction(base::UserMetricsAction(
+          "ContentSuggestions.Feed.CardAction.ReadLater"));
+      RecordInteraction(stream_type);
+      break;
     case FeedUserActionType::kOpenedContextMenu:
       base::RecordAction(base::UserMetricsAction(
           "ContentSuggestions.Feed.CardAction.ContextMenu"));

@@ -130,6 +130,7 @@ source_set("feed_core_v2") {
     "//components/leveldb_proto:leveldb_proto",
     "//components/offline_pages/task:task",
     "//components/prefs",
+    "//components/reading_list/features:flags",
     "//components/signin/public/identity_manager",
     "//components/url_matcher:url_matcher",
     "//components/variations",

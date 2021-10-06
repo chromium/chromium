@@ -41,6 +41,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooksImpl;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.FeedSurfaceDelegate;
 import org.chromium.chrome.browser.feed.v2.FakeLinearLayoutManager;
@@ -144,6 +145,8 @@ public class FeedSurfaceCoordinatorTest {
     private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
     private SectionHeaderView mSectionHeaderView;
+    @Mock
+    private BookmarkBridge mBookmarkBridge;
 
     // Mocked JNI.
     @Mock
@@ -359,6 +362,6 @@ public class FeedSurfaceCoordinatorTest {
                 ()
                         -> { return null; },
                 new FeedLaunchReliabilityLoggingState(SURFACE_TYPE, SURFACE_CREATION_TIME_NS), null,
-                false, null);
+                false, null, mBookmarkBridge);
     }
 }
