@@ -100,6 +100,7 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate {
 
   // FastPairDataEncryptor::WriteAccountKey callback
   void OnWriteAccountKey(
+      std::array<uint8_t, 16> account_key,
       absl::optional<device::BluetoothGattService::GattErrorCode> error);
 
   uint32_t expected_passkey_;

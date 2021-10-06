@@ -11,6 +11,7 @@
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "base/callback.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -266,7 +267,8 @@ void FastPairPairer::OnParseDecryptedPasskey(
 }
 
 void FastPairPairer::SendAccountKey() {
-  if (fast_pair_data_encryptor_->GetPublicKey()) {
+  // No public key indicates that this is a subsequent pairing.
+  if (!fast_pair_data_encryptor_->GetPublicKey()) {
     return;
   }
 
@@ -275,12 +277,13 @@ void FastPairPairer::SendAccountKey() {
   account_key[0] = 0x04;
 
   fast_pair_gatt_service_client_->WriteAccountKey(
-      std::move(account_key), fast_pair_data_encryptor_.get(),
+      account_key, fast_pair_data_encryptor_.get(),
       base::BindOnce(&FastPairPairer::OnWriteAccountKey,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), account_key));
 }
 
 void FastPairPairer::OnWriteAccountKey(
+    std::array<uint8_t, 16> account_key,
     absl::optional<device::BluetoothGattService::GattErrorCode> error) {
   if (error) {
     QP_LOG(WARNING)
@@ -290,6 +293,9 @@ void FastPairPairer::OnWriteAccountKey(
         .Run(device_, AccountKeyFailure::kAccountKeyCharacteristicWrite);
     return;
   }
+
+  FastPairRepository::Get()->AssociateAccountKey(
+      device_, std::vector<uint8_t>(account_key.begin(), account_key.end()));
 
   QP_LOG(INFO) << "Account key written to device. Pairing procedure complete.";
   std::move(pairing_procedure_complete_).Run(device_);

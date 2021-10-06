@@ -16,6 +16,7 @@
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_data_encryptor_impl.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/pairing/fast_pair/fast_pair_gatt_service_client_impl.h"
+#include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
@@ -402,6 +403,11 @@ class FastPairPairerTest : public testing::Test {
 
   bool IsDevicePaired() { return fake_bluetooth_device_ptr_->IsDevicePaired(); }
 
+  bool IsAccountKeySavedToFootprints() {
+    return fast_pair_repository_.HasKeyForDevice(
+        fake_bluetooth_device_ptr_->GetAddress());
+  }
+
   void SetPublicKey() {
     fast_pair_data_encryptor_factory.data_encryptor()->SetPublicKey();
   }
@@ -430,6 +436,7 @@ class FastPairPairerTest : public testing::Test {
       pairing_procedure_complete_;
   FakeFastPairGattServiceClientImplFactory fast_pair_gatt_service_factory_;
   FastPairFakeDataEncryptorImplFactory fast_pair_data_encryptor_factory;
+  FakeFastPairRepository fast_pair_repository_;
   std::unique_ptr<FastPairPairer> pairer_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -612,6 +619,7 @@ TEST_F(FastPairPairerTest, WriteAccountKey) {
   RunOnGattClientInitializedCallback();
   SetDecryptResponseForSuccess();
   SetGetDeviceFailure();
+  SetPublicKey();
   RunWriteResponseCallback(kResponseBytes);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
@@ -625,6 +633,7 @@ TEST_F(FastPairPairerTest, WriteAccountKey) {
   EXPECT_TRUE(IsDevicePaired());
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWriteAccountKeyCallback();
+  EXPECT_TRUE(IsAccountKeySavedToFootprints());
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKeyFailure) {
@@ -633,6 +642,7 @@ TEST_F(FastPairPairerTest, WriteAccountKeyFailure) {
   RunOnGattClientInitializedCallback();
   SetDecryptResponseForSuccess();
   SetGetDeviceFailure();
+  SetPublicKey();
   RunWriteResponseCallback(kResponseBytes);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
@@ -646,6 +656,7 @@ TEST_F(FastPairPairerTest, WriteAccountKeyFailure) {
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
       device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED);
+  EXPECT_FALSE(IsAccountKeySavedToFootprints());
 }
 
 }  // namespace quick_pair

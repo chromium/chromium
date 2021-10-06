@@ -34,6 +34,10 @@ void FakeFastPairRepository::SetCheckAccountKeysResult(
   check_account_key_result_ = result;
 }
 
+bool FakeFastPairRepository::HasKeyForDevice(const std::string& mac_address) {
+  return saved_account_keys_.contains(mac_address);
+}
+
 void FakeFastPairRepository::GetDeviceMetadata(
     const std::string& hex_model_id,
     DeviceMetadataCallback callback) {
@@ -60,7 +64,9 @@ void FakeFastPairRepository::CheckAccountKeys(
 
 void FakeFastPairRepository::AssociateAccountKey(
     scoped_refptr<Device> device,
-    const std::vector<uint8_t>& account_key) {}
+    const std::vector<uint8_t>& account_key) {
+  saved_account_keys_[device->address] = account_key;
+}
 
 void FakeFastPairRepository::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {}
