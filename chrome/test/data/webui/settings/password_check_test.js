@@ -873,7 +873,7 @@ suite('PasswordsCheckSection', function() {
     expectEquals(section.i18n('checkPasswordsCanceled'), title.innerText);
   });
 
-  // Before the first run, show only a description of what the check does.
+  // Before the first run, show nothing.
   test('showOnlyDescriptionIfNotRun', async function() {
     const section = createCheckPasswordSection();
     await passwordManager.whenCalled('getPasswordCheckStatus');
@@ -882,7 +882,7 @@ suite('PasswordsCheckSection', function() {
     const subtitle = section.$.subtitle;
     assertTrue(isElementVisible(title));
     assertFalse(isElementVisible(subtitle));
-    expectEquals(section.i18n('checkPasswordsDescription'), title.innerText);
+    expectEquals('', title.innerText);
   });
 
   // After running, show confirmation, timestamp and number of leaks.

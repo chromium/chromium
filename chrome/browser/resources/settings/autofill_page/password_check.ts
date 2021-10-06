@@ -471,9 +471,7 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   private computeTitle_(): string {
     switch (this.status.state) {
       case CheckState.IDLE:
-        return this.waitsForFirstCheck_() ?
-            this.i18n('checkPasswordsDescription') :
-            this.i18n('checkedPasswords');
+        return this.waitsForFirstCheck_() ? '' : this.i18n('checkedPasswords');
       case CheckState.CANCELED:
         return this.i18n('checkPasswordsCanceled');
       case CheckState.RUNNING:
