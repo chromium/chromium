@@ -665,7 +665,9 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
 
   // Allow some fuzziness so that this doesn't fail when Skia makes minor
   // changes to blur or rectangle rendering.
-  float percentage_pixels_large_error = 4.f;
+  // Fuchsia/Flutter forces off the lowp skia raster pipeline resulting
+  // in a totally different code path for software rendering.
+  float percentage_pixels_large_error = 5.f;
   float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 2.f;
   int large_error_allowed = 2;
@@ -838,8 +840,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 #if defined(ARCH_CPU_ARM64)
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference
   // crbug.com/1029728, crbug.com/1048249, crbug.com/1128443
-  float percentage_pixels_large_error = 0.391112f;
-  float average_error_allowed_in_bad_pixels = 1.1f;
+  float percentage_pixels_large_error = 1.f;
+  float average_error_allowed_in_bad_pixels = 2.f;
   int large_error_allowed = 3;
 #elif defined(OS_WIN)
   // Windows has 1 pixel off by 1: crbug.com/259915

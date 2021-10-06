@@ -6657,6 +6657,18 @@ crbug.com/1228246 http/tests/inspector-protocol/network/webbundle.js [ Crash Fai
 crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Failure Pass ]
 crbug.com/1231699 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-text-alignment.html [ Failure Pass ]
 crbug.com/1231699 [ Linux ] virtual/gpu/fast/canvas/canvas-text-alignment.html [ Failure Pass ]
+crbug.com/1231699 [ Linux ] fast/borders/border-inner-bleed.html [ Failure Pass ]
+crbug.com/1231699 [ Linux ] fast/canvas/canvas-composite-video-shadow.html [ Failure Pass ]
+crbug.com/1231699 [ Linux ] fast/canvas/canvas-composite-video.html [ Failure Pass ]
+crbug.com/1231699 [ Linux ] fast/reflections/opacity-reflection-transform.html [ Failure Pass ]
+crbug.com/1231699 [ Linux ] svg/custom/focus-ring.svg [ Failure Pass ]
+crbug.com/1231699 [ Linux ] svg/custom/transformed-outlines.svg [ Failure Pass ]
+crbug.com/1231699 [ Linux ] virtual/text-antialias/color-emoji.html [ Failure Pass ]
+
+# linux_layout_tests_composite_after_paint failures.
+crbug.com/1257251 [ Linux ] compositing/reflections/nested-reflection-transformed.html [ Failure Pass ]
+crbug.com/1257251 [ Linux ] compositing/reflections/nested-reflection-transformed2.html [ Failure Pass ]
+crbug.com/1257251 [ Linux ] css3/blending/effect-background-blend-mode-stacking.html [ Failure Pass ]
 
 # Other devtools flaky tests outside of http/tests/inspector-protocol/network.
 crbug.com/1228261 http/tests/devtools/console/console-context-selector.js [ Crash Failure Pass Skip Timeout ]
