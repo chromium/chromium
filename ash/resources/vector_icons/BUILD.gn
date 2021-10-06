@@ -196,6 +196,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "projector_selfie_cam_on.icon",
     "remove_outline.icon",
     "resume.icon",
+    "save_desk_as_template.icon",
     "select_to_speak_next_paragraph.icon",
     "select_to_speak_next_sentence.icon",
     "select_to_speak_pause.icon",

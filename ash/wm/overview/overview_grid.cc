@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/metrics/histogram_macros.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -16,6 +17,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/rotator/screen_rotation_animator.h"
@@ -63,7 +65,9 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/transform_util.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -242,6 +246,40 @@ std::unique_ptr<views::Widget> CreateDropTargetWidget(
   aura::Window* drop_target_window = widget->GetNativeWindow();
   drop_target_window->parent()->StackChildAtBottom(drop_target_window);
   widget->Show();
+  return widget;
+}
+
+std::unique_ptr<views::LabelButton> CreateDesksTemplatesButton(
+    views::ImageButton::PressedCallback callback) {
+  // TODO(sophiewen): Add icon and button styling when specs come out.
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor icon_color = color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  const gfx::ImageSkia& icon_image =
+      gfx::CreateVectorIcon(kSaveDeskAsTemplateIcon, icon_color);
+  // TODO(sophiewen): Replace button label with localized text string.
+  auto button = std::make_unique<views::LabelButton>(
+      callback, u"Save desk as a template", views::style::CONTEXT_BUTTON);
+  button->SetImage(views::Button::STATE_NORMAL, icon_image);
+  return button;
+}
+
+// Creates `create_desk_templates_widget_`. It contains a button that saves the
+// active desk as a template.
+std::unique_ptr<views::Widget> CreateDesksTemplatesWidget(
+    aura::Window* root_window) {
+  views::Widget::InitParams params;
+  params.type = views::Widget::InitParams::TYPE_POPUP;
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.name = "CreateDesksTemplatesWidget";
+  params.accept_events = true;
+  params.parent = desks_util::GetActiveDeskContainerForRoot(root_window);
+  params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
+
+  auto widget = std::make_unique<views::Widget>();
+  widget->set_focus_on_creation(false);
+  widget->Init(std::move(params));
   return widget;
 }
 
@@ -434,6 +472,9 @@ void OverviewGrid::PrepareForOverview() {
 
   grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
   Shell::Get()->wallpaper_controller()->AddObserver(this);
+
+  if (features::AreDesksTemplatesEnabled())
+    ShowCreateDesksTemplatesButtons();
 }
 
 void OverviewGrid::PositionWindows(
@@ -802,6 +843,20 @@ void OverviewGrid::ShowDesksTemplatesGrid() {
   }
 
   desks_templates_grid_->Show();
+}
+
+void OverviewGrid::ShowCreateDesksTemplatesButtons() {
+  create_desks_templates_widget_ = CreateDesksTemplatesWidget(root_window_);
+  create_desks_templates_widget_->SetContentsView(CreateDesksTemplatesButton(
+      base::BindRepeating(&OverviewGrid::OnCreateDesksTemplatesButtonPressed,
+                          base::Unretained(this))));
+  create_desks_templates_widget_->Show();
+  // TODO(sophiewen): Set bounds when specs come out.
+  create_desks_templates_widget_->SetBounds(gfx::Rect(20, 136, 180, 32));
+}
+
+void OverviewGrid::OnCreateDesksTemplatesButtonPressed() {
+  // TODO(sophiewen): This logic will be implemented.
 }
 
 bool OverviewGrid::IsShowingDesksTemplatesGrid() const {

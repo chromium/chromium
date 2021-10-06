@@ -448,6 +448,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // Updates frame throttling on overview item windows.
   void UpdateFrameThrottling();
 
+  // Shows the button that saves the active desk as a template.
+  void ShowCreateDesksTemplatesButtons();
+
+  // Called back when the button to save a desk template is pressed.
+  void OnCreateDesksTemplatesButtonPressed();
+
   // Root window the grid is in.
   aura::Window* root_window_;
 
@@ -523,6 +529,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // The widget that contains the view for all the existing templates.
   views::UniqueWidgetPtr desks_templates_grid_;
+
+  // A widget that contains a button which creates a new desk template when
+  // pressed.
+  std::unique_ptr<views::Widget> create_desks_templates_widget_;
 };
 
 }  // namespace ash
