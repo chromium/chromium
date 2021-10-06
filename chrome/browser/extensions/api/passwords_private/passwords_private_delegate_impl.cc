@@ -288,72 +288,50 @@ void PasswordsPrivateDelegateImpl::RequestPlaintextPassword(
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
-  if (!password_access_authenticator_.EnsureUserIsAuthenticated(
-          GetReauthPurpose(reason))) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  // Request the password. When it is retrieved, ShowPassword() will be called.
-  const std::string* sort_key = password_id_generator_.TryGetKey(id);
-  if (!sort_key) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  if (reason == api::passwords_private::PLAINTEXT_REASON_COPY) {
-    // In case of copy we don't need to give password back to UI. callback
-    // will receive either empty string in case of success or null otherwise.
-    // Copying occurs here so javascript doesn't need plaintext password.
-    callback = base::BindOnce(
-        [](PlaintextPasswordCallback callback,
-           absl::optional<std::u16string> password) {
-          if (!password) {
-            std::move(callback).Run(absl::nullopt);
-            return;
-          }
-          ui::ScopedClipboardWriter clipboard_writer(
-              ui::ClipboardBuffer::kCopyPaste);
-          clipboard_writer.WriteText(*password);
-          clipboard_writer.MarkAsConfidential();
-          std::move(callback).Run(std::u16string());
-        },
-        std::move(callback));
-  }
-
-  password_manager_presenter_->RequestPlaintextPassword(
-      *sort_key, ConvertPlaintextReason(reason), std::move(callback));
+  password_access_authenticator_.EnsureUserIsAuthenticated(
+      GetReauthPurpose(reason),
+      base::BindOnce(
+          &PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult,
+          weak_ptr_factory_.GetWeakPtr(), id, reason, std::move(callback)));
 }
 
-bool PasswordsPrivateDelegateImpl::OsReauthCall(
-    password_manager::ReauthPurpose purpose) {
+void PasswordsPrivateDelegateImpl::OsReauthCall(
+    password_manager::ReauthPurpose purpose,
+    password_manager::PasswordAccessAuthenticator::AuthResultCallback
+        callback) {
 #if defined(OS_WIN)
   DCHECK(web_contents_);
-  return password_manager_util_win::AuthenticateUser(
+  bool result = password_manager_util_win::AuthenticateUser(
       web_contents_->GetTopLevelNativeWindow(), purpose);
+  std::move(callback).Run(result);
 #elif defined(OS_MAC)
-  return password_manager_util_mac::AuthenticateUser(purpose);
+  bool result = password_manager_util_mac::AuthenticateUser(purpose);
+  std::move(callback).Run(result);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   const bool user_cannot_manually_enter_password =
       !chromeos::password_visibility::AccountHasUserFacingPassword(
           chromeos::ProfileHelper::Get()
               ->GetUserByProfile(profile_)
               ->GetAccountId());
-  if (user_cannot_manually_enter_password)
-    return true;
+  if (user_cannot_manually_enter_password) {
+    std::move(callback).Run(true);
+    return;
+  }
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
   const ash::quick_unlock::AuthToken* auth_token =
       quick_unlock_storage->GetAuthToken();
-  if (!auth_token || !auth_token->GetAge())
-    return false;
+  if (!auth_token || !auth_token->GetAge()) {
+    std::move(callback).Run(false);
+    return;
+  }
   const base::TimeDelta auth_token_lifespan =
       (purpose == password_manager::ReauthPurpose::EXPORT)
           ? kExportPasswordsAuthTokenLifetime
           : kShowPasswordAuthTokenLifetime;
-  return auth_token->GetAge() <= auth_token_lifespan;
+  std::move(callback).Run(auth_token->GetAge() <= auth_token_lifespan);
 #else
-  return true;
+  std::move(callback).Run(true);
 #endif
 }
 
@@ -454,7 +432,7 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
 }
 
 void PasswordsPrivateDelegateImpl::ExportPasswords(
-    base::OnceCallback<void(const std::string&)> callback,
+    base::OnceCallback<void(const std::string&)> accepted_callback,
     content::WebContents* web_contents) {
   // Save |web_contents| so that it can be used later when OsReauthCall() is
   // called. Note: This is safe because the |web_contents| is used before
@@ -462,15 +440,11 @@ void PasswordsPrivateDelegateImpl::ExportPasswords(
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
-  if (!password_access_authenticator_.ForceUserReauthentication(
-          password_manager::ReauthPurpose::EXPORT)) {
-    std::move(callback).Run(kReauthenticationFailed);
-    return;
-  }
-
-  password_manager_porter_->set_web_contents(web_contents);
-  bool accepted = password_manager_porter_->Store();
-  std::move(callback).Run(accepted ? std::string() : kExportInProgress);
+  password_access_authenticator_.ForceUserReauthentication(
+      password_manager::ReauthPurpose::EXPORT,
+      base::BindOnce(&PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(accepted_callback), web_contents));
 }
 
 void PasswordsPrivateDelegateImpl::CancelExportPasswords() {
@@ -524,14 +498,12 @@ void PasswordsPrivateDelegateImpl::GetPlaintextInsecurePassword(
   // TODO(crbug.com/495290): Pass the native window directly to the
   // reauth-handling code.
   web_contents_ = web_contents;
-  if (!password_access_authenticator_.EnsureUserIsAuthenticated(
-          GetReauthPurpose(reason))) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(password_check_delegate_.GetPlaintextInsecurePassword(
-      std::move(credential)));
+  password_access_authenticator_.EnsureUserIsAuthenticated(
+      GetReauthPurpose(reason),
+      base::BindOnce(&PasswordsPrivateDelegateImpl::
+                         OnGetPlaintextInsecurePasswordAuthResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(credential),
+                     reason, std::move(callback)));
 }
 
 bool PasswordsPrivateDelegateImpl::ChangeInsecureCredential(
@@ -573,6 +545,76 @@ void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
   if (router) {
     router->OnPasswordsExportProgress(ConvertStatus(status), folder_name);
   }
+}
+
+void PasswordsPrivateDelegateImpl::OnRequestPlaintextPasswordAuthResult(
+    int id,
+    api::passwords_private::PlaintextReason reason,
+    PlaintextPasswordCallback callback,
+    bool authenticated) {
+  if (!authenticated) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  // Request the password. When it is retrieved, ShowPassword() will be called.
+  const std::string* sort_key = password_id_generator_.TryGetKey(id);
+  if (!sort_key) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  if (reason == api::passwords_private::PLAINTEXT_REASON_COPY) {
+    // In case of copy we don't need to give password back to UI. callback
+    // will receive either empty string in case of success or null otherwise.
+    // Copying occurs here so javascript doesn't need plaintext password.
+    callback = base::BindOnce(
+        [](PlaintextPasswordCallback callback,
+           absl::optional<std::u16string> password) {
+          if (!password) {
+            std::move(callback).Run(absl::nullopt);
+            return;
+          }
+          ui::ScopedClipboardWriter clipboard_writer(
+              ui::ClipboardBuffer::kCopyPaste);
+          clipboard_writer.WriteText(*password);
+          clipboard_writer.MarkAsConfidential();
+          std::move(callback).Run(std::u16string());
+        },
+        std::move(callback));
+  }
+
+  password_manager_presenter_->RequestPlaintextPassword(
+      *sort_key, ConvertPlaintextReason(reason), std::move(callback));
+}
+
+void PasswordsPrivateDelegateImpl::OnExportPasswordsAuthResult(
+    base::OnceCallback<void(const std::string&)> accepted_callback,
+    content::WebContents* web_contents,
+    bool authenticated) {
+  if (!authenticated) {
+    std::move(accepted_callback).Run(kReauthenticationFailed);
+    return;
+  }
+
+  password_manager_porter_->set_web_contents(web_contents);
+  bool accepted = password_manager_porter_->Store();
+  std::move(accepted_callback)
+      .Run(accepted ? std::string() : kExportInProgress);
+}
+
+void PasswordsPrivateDelegateImpl::OnGetPlaintextInsecurePasswordAuthResult(
+    api::passwords_private::InsecureCredential credential,
+    api::passwords_private::PlaintextReason reason,
+    PlaintextInsecurePasswordCallback callback,
+    bool authenticated) {
+  if (!authenticated) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  std::move(callback).Run(password_check_delegate_.GetPlaintextInsecurePassword(
+      std::move(credential)));
 }
 
 void PasswordsPrivateDelegateImpl::OnAccountStorageOptInStateChanged() {

@@ -385,8 +385,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResult) {
   MockReauthCallback callback;
   delegate.set_os_reauth_call(callback.Get());
 
-  EXPECT_CALL(callback, Run(ReauthPurpose::COPY_PASSWORD))
-      .WillOnce(Return(true));
+  EXPECT_CALL(callback, Run(ReauthPurpose::COPY_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(true); }));
 
   MockPlaintextPasswordCallback password_callback;
   EXPECT_CALL(password_callback, Run(Eq(std::u16string())));
@@ -456,8 +458,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestCopyPasswordCallbackResultFail) {
   MockReauthCallback callback;
   delegate.set_os_reauth_call(callback.Get());
 
-  EXPECT_CALL(callback, Run(ReauthPurpose::COPY_PASSWORD))
-      .WillOnce(Return(false));
+  EXPECT_CALL(callback, Run(ReauthPurpose::COPY_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(false); }));
 
   base::Time before_call = test_clipboard_->GetLastModifiedTime();
 
@@ -488,8 +492,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestPassedReauthOnView) {
   MockReauthCallback callback;
   delegate.set_os_reauth_call(callback.Get());
 
-  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD))
-      .WillOnce(Return(true));
+  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(true); }));
 
   MockPlaintextPasswordCallback password_callback;
   EXPECT_CALL(password_callback, Run(Eq(u"test")));
@@ -513,8 +519,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestFailedReauthOnView) {
   MockReauthCallback callback;
   delegate.set_os_reauth_call(callback.Get());
 
-  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD))
-      .WillOnce(Return(false));
+  EXPECT_CALL(callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(false); }));
 
   MockPlaintextPasswordCallback password_callback;
   EXPECT_CALL(password_callback, Run(Eq(absl::nullopt)));
@@ -541,11 +549,17 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnExport) {
 
   EXPECT_CALL(mock_accepted, Run(std::string())).Times(2);
 
-  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT)).WillOnce(Return(true));
+  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(true); }));
   delegate.ExportPasswords(mock_accepted.Get(), nullptr);
 
   // Export should ignore previous reauthentication results.
-  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT)).WillOnce(Return(true));
+  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(true); }));
   delegate.ExportPasswords(mock_accepted.Get(), nullptr);
 }
 
@@ -564,7 +578,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnExport) {
   MockReauthCallback callback;
   delegate.set_os_reauth_call(callback.Get());
 
-  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT)).WillOnce(Return(false));
+  EXPECT_CALL(callback, Run(ReauthPurpose::EXPORT, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(false); }));
   delegate.ExportPasswords(mock_accepted.Get(), nullptr);
 }
 
@@ -581,8 +598,11 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       PasswordsPrivateDelegate::PlaintextInsecurePasswordCallback>
       credential_callback;
 
-  EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD))
-      .WillOnce(Return(false));
+  EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(false); }));
+
   EXPECT_CALL(credential_callback, Run(Eq(absl::nullopt)));
 
   delegate.GetPlaintextInsecurePassword(
@@ -616,8 +636,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, TestReauthOnGetPlaintextCompPassword) {
       credential_callback;
 
   absl::optional<api::passwords_private::InsecureCredential> opt_credential;
-  EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD))
-      .WillOnce(Return(true));
+  EXPECT_CALL(reauth_callback, Run(ReauthPurpose::VIEW_PASSWORD, _))
+      .WillOnce(testing::WithArg<1>(
+          [&](password_manager::PasswordAccessAuthenticator::AuthResultCallback
+                  callback) { std::move(callback).Run(true); }));
   EXPECT_CALL(credential_callback, Run).WillOnce(MoveArg(&opt_credential));
 
   delegate.GetPlaintextInsecurePassword(
