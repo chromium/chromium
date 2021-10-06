@@ -8,9 +8,11 @@
 // ui::InteractionSequence with Views elements like Widgets and menus.
 // Similar suites should be created for other platforms.
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,6 +57,7 @@ const char16_t kMenuItem1[] = u"Menu item";
 const char16_t kMenuItem2[] = u"Menu item 2";
 constexpr int kMenuID1 = 1;
 constexpr int kMenuID2 = 2;
+const char kElementName[] = "ElementName";
 
 }  // namespace
 
@@ -117,6 +120,7 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
         contents_, BubbleBorder::Arrow::TOP_LEFT);
     bubble_view_ = delegate->AddChildView(std::make_unique<LabelButton>());
     bubble_view_->SetProperty(kElementIdentifierKey, id);
+    no_id_view_ = delegate->AddChildView(std::make_unique<LabelButton>());
     bubble_widget_ =
         BubbleDialogDelegateView::CreateBubble(std::move(delegate));
     test::WidgetVisibleWaiter visible_waiter(bubble_widget_);
@@ -176,6 +180,7 @@ class InteractionSequenceViewsTest : public ViewsTestBase {
   View* contents_ = nullptr;
   Widget* bubble_widget_ = nullptr;
   View* bubble_view_ = nullptr;
+  View* no_id_view_ = nullptr;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   std::unique_ptr<MenuRunner> menu_runner_;
   MenuItemView* menu_item_ = nullptr;
@@ -613,6 +618,117 @@ TEST_F(InteractionSequenceViewsTest, TransitionOnKeyboardMenuActivation) {
     generator.PressKey(ui::VKEY_DOWN, 0);
     generator.PressKey(ui::VKEY_DOWN, 0);
     generator.PressKey(ui::VKEY_RETURN, 0);
+  });
+}
+
+// NameView tests:
+
+TEST_F(InteractionSequenceViewsTest, NameView_NameViewWithIdentifier) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepStartCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepStartCallback, step3);
+  auto step2 = base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
+                                              ui::TrackedElement* element) {
+    EXPECT_EQ(bubble_view_, element->AsA<TrackedElementViews>()->view());
+    InteractionSequenceViews::NameView(sequence, bubble_view_, kElementName);
+  });
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequenceViews::WithInitialView(contents_))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kTestElementID)
+                       .SetType(ui::InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step.Get())
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kTestElementID2)
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetStartCallback(std::move(step2))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName)
+                       .SetType(ui::InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step3.Get())
+                       .Build())
+          .Build();
+  auto* const button = contents_->AddChildView(
+      std::make_unique<LabelButton>(Button::PressedCallback(
+          base::BindRepeating(&InteractionSequenceViewsTest::ShowBubble,
+                              base::Unretained(this), kTestElementID2))));
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  sequence->Start();
+
+  EXPECT_CALL_IN_SCOPE(step, Run, {
+    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                      ui::EF_NONE, ui::EventTimeForNow()));
+    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                       ui::EF_NONE, ui::EventTimeForNow()));
+  });
+
+  EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
+    bubble_view_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                            ui::EF_NONE,
+                                            ui::EventTimeForNow()));
+    bubble_view_->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED,
+                                             ui::VKEY_SPACE, ui::EF_NONE,
+                                             ui::EventTimeForNow()));
+  });
+}
+
+TEST_F(InteractionSequenceViewsTest, NameView_NameViewWithNoIdentifier) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepStartCallback, step);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::StepStartCallback, step3);
+  auto step2 = base::BindLambdaForTesting(
+      [&](ui::InteractionSequence* sequence, ui::TrackedElement* element) {
+        EXPECT_EQ(bubble_view_, element->AsA<TrackedElementViews>()->view());
+        InteractionSequenceViews::NameView(sequence, no_id_view_, kElementName);
+      });
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequenceViews::WithInitialView(contents_))
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kTestElementID)
+                       .SetType(ui::InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step.Get())
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementID(kTestElementID2)
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetStartCallback(std::move(step2))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName)
+                       .SetType(ui::InteractionSequence::StepType::kActivated)
+                       .SetStartCallback(step3.Get())
+                       .Build())
+          .Build();
+  auto* const button = contents_->AddChildView(
+      std::make_unique<LabelButton>(Button::PressedCallback(
+          base::BindRepeating(&InteractionSequenceViewsTest::ShowBubble,
+                              base::Unretained(this), kTestElementID2))));
+  button->SetProperty(kElementIdentifierKey, kTestElementID);
+  sequence->Start();
+
+  EXPECT_CALL_IN_SCOPE(step, Run, {
+    button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                      ui::EF_NONE, ui::EventTimeForNow()));
+    button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                       ui::EF_NONE, ui::EventTimeForNow()));
+  });
+
+  EXPECT_CALLS_IN_SCOPE_2(step3, Run, completed, Run, {
+    no_id_view_->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_SPACE,
+                                           ui::EF_NONE, ui::EventTimeForNow()));
+    no_id_view_->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_SPACE,
+                                            ui::EF_NONE,
+                                            ui::EventTimeForNow()));
   });
 }
 

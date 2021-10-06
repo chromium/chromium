@@ -24,6 +24,8 @@ namespace ui {
 
 namespace {
 
+const char kElementName1[] = "Element1";
+const char kElementName2[] = "Element2";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier2);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestIdentifier3);
@@ -204,6 +206,7 @@ TEST(InteractionSequenceTest,
                        .Build())
           .AddStep(InteractionSequence::StepBuilder()
                        .SetElementID(element.identifier())
+                       .SetMustBeVisibleAtStart(false)
                        .SetType(InteractionSequence::StepType::kActivated)
                        .Build())
           .Build();
@@ -390,6 +393,47 @@ TEST(InteractionSequenceTest, FailOnOtherElementAlreadyHiddenIfMustBeVisible) {
           InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep))
       .Times(1);
   sequence->Start();
+}
+
+TEST(InteractionSequenceTest, FailIfFirstElementBecomesHiddenBeforeActivation) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(aborted, Run, element1.Hide());
+}
+
+TEST(InteractionSequenceTest,
+     FailIfSecondElementBecomesHiddenBeforeActivation) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element2.identifier())
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(aborted, Run, element2.Hide());
 }
 
 TEST(InteractionSequenceTest, NoWithInitialElementTransitionsOnActivation) {
@@ -1582,6 +1626,604 @@ TEST(InteractionSequenceTest,
 
   // Fail step four.
   EXPECT_CALLS_IN_SCOPE_2(step_start, Run, completed, Run, element2.Hide());
+}
+
+// Named element tests:
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementShown_NamedBeforeSequenceStarts) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element2, kElementName1);
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementShown_NamedDuringStepCallback_SameIdentifier) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier1, kTestContext1);
+  auto step1_start = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        EXPECT_EQ(&element1, element);
+        sequence->NameElement(&element2, kElementName1);
+      });
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetStartCallback(step.Get())
+                       .Build())
+          .Build();
+  sequence->NameElement(&element2, kElementName1);
+  EXPECT_CALLS_IN_SCOPE_2(step, Run(sequence.get(), &element2), completed, Run,
+                          sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementShown_NamedDuringStepCallback_DifferentIdentifiers) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  auto step1_start = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        EXPECT_EQ(&element1, element);
+        sequence->NameElement(&element2, kElementName1);
+      });
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetStartCallback(step.Get())
+                       .Build())
+          .Build();
+  sequence->NameElement(&element2, kElementName1);
+  EXPECT_CALLS_IN_SCOPE_2(step, Run(sequence.get(), &element2), completed, Run,
+                          sequence->Start());
+}
+
+TEST(InteractionSequenceTest, NameElement_ElementShown_FirstElementNamed) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element1, kElementName1);
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest, NameElement_ElementShown_MultipleNamedElements) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step1_start);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::StepStartCallback, step2_start);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetStartCallback(step1_start.Get())
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName2)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetStartCallback(step2_start.Get())
+                       .Build())
+          .Build();
+  sequence->NameElement(&element1, kElementName1);
+  sequence->NameElement(&element2, kElementName2);
+  EXPECT_CALLS_IN_SCOPE_3(step1_start, Run(sequence.get(), &element1),
+                          step2_start, Run(sequence.get(), &element2),
+                          completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementShown_DisappearsBeforeSequenceStart) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element1, kElementName1);
+  element1.Hide();
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(nullptr, element1.identifier(), InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+      sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementShown_DisappearsBeforeStepAbortsTheSequence) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element2, kElementName1);
+  sequence->Start();
+  element2.Hide();
+  EXPECT_CALL_IN_SCOPE(
+      aborted,
+      Run(nullptr, element2.identifier(), InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kElementNotVisibleAtStartOfStep),
+      element1.Activate());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementShown_RespectsMustRemainVisibleFalse) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .SetMustRemainVisible(false)
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(element1.identifier())
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element2, kElementName1);
+  sequence->Start();
+  element2.Hide();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element1.Activate());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementActivated_NamedBeforeSequenceStarts) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element1, kElementName1);
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element1.Activate());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementActivated_NamedBeforeSequenceStarts_AbortsIfHidden) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .SetContext(element1.context())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element1, kElementName1);
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(aborted, Run, element1.Hide());
+}
+
+TEST(InteractionSequenceTest, NameElement_ElementActivated_NamedDuringStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto step = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        sequence->NameElement(&element2, kElementName1);
+      });
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1,
+                                                           std::move(step)))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element2.Activate());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementActivated_NamedDuringStep_AbortsIfHidden) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto step = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        sequence->NameElement(&element2, kElementName1);
+      });
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1,
+                                                           std::move(step)))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(aborted, Run, element2.Hide());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementActivated_NamedAndActivatedDuringStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto step = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        sequence->NameElement(&element2, kElementName1);
+        element2.Activate();
+      });
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1,
+                                                           std::move(step)))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementActivated_NamedAndHiddenDuringStep_Aborts) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto step = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        sequence->NameElement(&element2, kElementName1);
+        element2.Hide();
+      });
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1,
+                                                           std::move(step)))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  EXPECT_CALL_IN_SCOPE(aborted, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementActivated_NamedActivatedAndHiddenDuringStep) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto step = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        sequence->NameElement(&element2, kElementName1);
+        element2.Activate();
+        element2.Hide();
+      });
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1,
+                                                           std::move(step)))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementHidden_NamedBeforeSequenceAndHiddenBeforeSequence) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element2, kElementName1);
+  element2.Hide();
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementHidden_NamedBeforeSequenceAndHiddenDuringSequence) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .Build())
+          .Build();
+  sequence->NameElement(&element2, kElementName1);
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element2.Hide());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementHidden_NamedDuringCallbackAndHiddenDuringSequence) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto step = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        sequence->NameElement(&element2, kElementName1);
+      });
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1,
+                                                           std::move(step)))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .Build())
+          .Build();
+  sequence->Start();
+  EXPECT_CALL_IN_SCOPE(completed, Run, element2.Hide());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementHidden_NamedAndHiddenDuringCallback) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto step = base::BindLambdaForTesting(
+      [&](InteractionSequence* sequence, TrackedElement* element) {
+        sequence->NameElement(&element2, kElementName1);
+        element2.Hide();
+      });
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1,
+                                                           std::move(step)))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .Build())
+          .Build();
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest, NameElement_ElementHidden_NoElementExplicitly) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kHidden)
+                       .Build())
+          .Build();
+  sequence->NameElement(nullptr, kElementName1);
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementShown_NoElementExplicitly_Aborts) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kShown)
+                       .Build())
+          .Build();
+  sequence->NameElement(nullptr, kElementName1);
+  EXPECT_CALL_IN_SCOPE(aborted, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_ElementActivated_NoElementExplicitly_Aborts) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  element1.Show();
+  auto sequence =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted.Get())
+          .SetCompletedCallback(completed.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence->NameElement(nullptr, kElementName1);
+  EXPECT_CALL_IN_SCOPE(aborted, Run, sequence->Start());
+}
+
+TEST(InteractionSequenceTest,
+     NameElement_TwoSequencesWithSameElementWithDifferentNames) {
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed1);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::AbortedCallback, aborted2);
+  UNCALLED_MOCK_CALLBACK(InteractionSequence::CompletedCallback, completed2);
+  TestElement element1(kTestIdentifier1, kTestContext1);
+  TestElement element2(kTestIdentifier2, kTestContext1);
+  element1.Show();
+  element2.Show();
+  auto sequence1 =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted1.Get())
+          .SetCompletedCallback(completed1.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName1)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  auto sequence2 =
+      InteractionSequence::Builder()
+          .SetAbortedCallback(aborted2.Get())
+          .SetCompletedCallback(completed2.Get())
+          .AddStep(InteractionSequence::WithInitialElement(&element1))
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementName(kElementName2)
+                       .SetType(InteractionSequence::StepType::kActivated)
+                       .Build())
+          .Build();
+  sequence1->NameElement(&element2, kElementName1);
+  sequence2->NameElement(&element2, kElementName2);
+  sequence1->Start();
+  sequence2->Start();
+  EXPECT_CALL(completed1, Run).Times(1);
+  EXPECT_CALL(completed2, Run).Times(1);
+  element2.Activate();
 }
 
 // RunSynchronouslyForTesting() tests:

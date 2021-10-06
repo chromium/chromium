@@ -6,10 +6,13 @@
 #define UI_BASE_INTERACTION_INTERACTION_SEQUENCE_H_
 
 #include <list>
+#include <map>
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_piece_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -113,8 +116,11 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     void operator=(const Step& other) = delete;
     ~Step();
 
+    bool uses_named_element() const { return !element_name.empty(); }
+
     StepType type = StepType::kShown;
     ElementIdentifier id;
+    std::string element_name;
     ElementContext context;
 
     // These will always have values when the sequence is built, but can be
@@ -178,8 +184,13 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     StepBuilder(const StepBuilder& other) = delete;
     void operator=(StepBuilder& other) = delete;
 
-    // Sets the unique identifier for this step. Required.
+    // Sets the unique identifier for this step. Either this or
+    // SetElementName() is required.
     StepBuilder& SetElementID(ElementIdentifier element_id);
+
+    // Sets the step to refer to a named element instead of an
+    // ElementIdentifier. Either this or SetElementID() is required.
+    StepBuilder& SetElementName(const base::StringPiece& name);
 
     // Sets the context for the element; useful for setting up the initial
     // element of the sequence if you do not know the context ahead of time.
@@ -267,6 +278,35 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // always run asynchronously.
   void RunSynchronouslyForTesting();
 
+  // Assigns an element to a given name. The name is local to this interaction
+  // sequence. It is valid for `element` to be null; in this case, we are
+  // explicitly saying "there is no element with this name [yet]".
+  //
+  // It is safe to call this method from a step start callback, but not a step
+  // end or aborted callback, as in the latter case the sequence might be in
+  // the process of being destructed.
+  void NameElement(TrackedElement* element, const base::StringPiece& name);
+
+  // Retrieves a named element, which may be null if we specified "no element"
+  // or if the element has gone away.
+  //
+  // It is safe to call this method from a step start callback, but not a step
+  // end or aborted callback, as in the latter case the sequence might be in
+  // the process of being destructed.
+  TrackedElement* GetNamedElement(const base::StringPiece& name);
+  const TrackedElement* GetNamedElement(const base::StringPiece& name) const;
+
+  // Identifier that should be used by each framework to create a
+  // TrackedElement for use with NameElement() if the element does not already
+  // have an identifier.
+  //
+  // Currently, the identifier is not removed when the sequence completes, but
+  // in the future we may implement a ref-counting system for named elements
+  // that use a temporary identifier so that it does not persist after the
+  // sequences that reference the element are gone.
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(InteractionSequence,
+                                         kTemporaryIdentifier);
+
  private:
   explicit InteractionSequence(std::unique_ptr<Configuration> configuration);
 
@@ -278,6 +318,12 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // Callbacks used only during step transitions to cache certain events.
   void OnElementActivatedDuringStepTransition(TrackedElement* element);
   void OnElementHiddenDuringStepTransition(TrackedElement* element);
+  void OnElementHiddenWaitingForActivate(TrackedElement* element);
+
+  // While we're transitioning steps, it's possible for an activation that
+  // would trigger the following step to come in. This method adds a callback
+  // that's valid only during the step transition to watch for this event.
+  void MaybeWatchForActivationDuringStepTransition();
 
   // A note on the next three methods - DoStepTransition(), StageNextStep(), and
   // Abort(): To prevent re-entrancy issues, they must always be the final call
@@ -300,6 +346,12 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // during the most recent callback.
   bool AbortedDuringCallback() const;
 
+  // Returns true if `name` is non-empty and `element` matches the element
+  // with the specified name, or if `name` is empty (indicating we don't care
+  // about it being a named element). Otherwise returns false.
+  bool MatchesNameIfSpecified(const TrackedElement* element,
+                              const base::StringPiece& name) const;
+
   // The following would be inline if not for the fact that the data that holds
   // the values is an implementation detail.
 
@@ -314,7 +366,9 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   bool activated_during_callback_ = false;
   bool processing_step_ = false;
   std::unique_ptr<Step> current_step_;
+  ElementTracker::Subscription next_step_hidden_subscription_;
   std::unique_ptr<Configuration> configuration_;
+  std::map<std::string, SafeElementReference> named_elements_;
   base::OnceClosure quit_run_loop_closure_for_testing_;
 
   // This is necessary because this object could be deleted during any callback,

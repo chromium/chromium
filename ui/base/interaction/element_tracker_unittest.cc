@@ -551,4 +551,30 @@ TEST(SafeElementReferenceTest, MoveOperator) {
   EXPECT_EQ(nullptr, ref.get());
 }
 
+TEST(SafeElementReferenceTest, CopyConstructor) {
+  TestElement e1(kElementIdentifier1, kElementContext1);
+  e1.Show();
+  std::unique_ptr<SafeElementReference> ref;
+  SafeElementReference ref2(&e1);
+  ref = std::make_unique<SafeElementReference>(ref2);
+  EXPECT_EQ(&e1, ref2.get());
+  EXPECT_EQ(&e1, ref->get());
+  e1.Hide();
+  EXPECT_EQ(nullptr, ref->get());
+  EXPECT_EQ(nullptr, ref2.get());
+}
+
+TEST(SafeElementReferenceTest, CopyOperator) {
+  TestElement e1(kElementIdentifier1, kElementContext1);
+  e1.Show();
+  SafeElementReference ref;
+  SafeElementReference ref2(&e1);
+  ref = ref2;
+  EXPECT_EQ(&e1, ref2.get());
+  EXPECT_EQ(&e1, ref.get());
+  e1.Hide();
+  EXPECT_EQ(nullptr, ref.get());
+  EXPECT_EQ(nullptr, ref2.get());
+}
+
 }  // namespace ui

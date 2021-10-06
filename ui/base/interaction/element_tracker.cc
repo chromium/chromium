@@ -211,6 +211,8 @@ ElementTracker::Subscription ElementTracker::AddElementShownCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
+  DCHECK(id);
+  DCHECK(context);
   return GetOrAddElementData(id, context)->AddElementShownCallback(callback);
 }
 
@@ -218,6 +220,8 @@ ElementTracker::Subscription ElementTracker::AddElementActivatedCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
+  DCHECK(id);
+  DCHECK(context);
   return GetOrAddElementData(id, context)
       ->AddElementActivatedCallback(callback);
 }
@@ -226,6 +230,8 @@ ElementTracker::Subscription ElementTracker::AddElementHiddenCallback(
     ElementIdentifier id,
     ElementContext context,
     Callback callback) {
+  DCHECK(id);
+  DCHECK(context);
   return GetOrAddElementData(id, context)->AddElementHiddenCallback(callback);
 }
 
@@ -297,6 +303,11 @@ SafeElementReference::SafeElementReference(SafeElementReference&& other)
   other.element_ = nullptr;
 }
 
+SafeElementReference::SafeElementReference(const SafeElementReference& other)
+    : element_(other.element_) {
+  Subscribe();
+}
+
 SafeElementReference& SafeElementReference::operator=(
     SafeElementReference&& other) {
   if (&other != this) {
@@ -310,11 +321,23 @@ SafeElementReference& SafeElementReference::operator=(
   return *this;
 }
 
+SafeElementReference& SafeElementReference::operator=(
+    const SafeElementReference& other) {
+  if (&other != this) {
+    element_ = other.element_;
+    Subscribe();
+  }
+  return *this;
+}
+
 SafeElementReference::~SafeElementReference() = default;
 
 void SafeElementReference::Subscribe() {
-  if (!element_)
+  if (!element_) {
+    if (subscription_)
+      subscription_ = ElementTracker::Subscription();
     return;
+  }
 
   subscription_ = ElementTracker::GetElementTracker()->AddElementHiddenCallback(
       element_->identifier(), element_->context(),
