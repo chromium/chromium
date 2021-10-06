@@ -4,6 +4,7 @@
 
 #import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -30,17 +31,19 @@
 using base::test::ios::kWaitForFileOperationTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
+namespace breadcrumbs {
+
 namespace {
 
 // Estimate number of events too large to fit in the persisted file. 6 is based
 // on the event string format which is slightly smaller than each event.
 constexpr unsigned long kEventCountTooManyForPersisting =
-    breadcrumbs::kPersistedFilesizeInBytes / 6.0;
+    kPersistedFilesizeInBytes / 6.0;
 
 // Creates a new BreadcrumbManagerKeyedService for |browser_state|.
 std::unique_ptr<KeyedService> BuildBreadcrumbManagerKeyedService(
     web::BrowserState* browser_state) {
-  return std::make_unique<breadcrumbs::BreadcrumbManagerKeyedService>(
+  return std::make_unique<BreadcrumbManagerKeyedService>(
       browser_state->IsOffTheRecord());
 }
 
@@ -97,17 +100,15 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
         base::BindRepeating(&BuildBreadcrumbManagerKeyedService));
     chrome_browser_state_ = test_cbs_builder.Build();
 
-    breadcrumb_manager_service_ =
-        static_cast<breadcrumbs::BreadcrumbManagerKeyedService*>(
-            BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-                chrome_browser_state_.get()));
-    persistent_storage_ =
-        std::make_unique<breadcrumbs::BreadcrumbPersistentStorageManager>(
-            directory_name,
-            breadcrumb_persistent_storage_util::
-                GetOldBreadcrumbPersistentStorageFilePath(directory_name),
-            breadcrumb_persistent_storage_util::
-                GetOldBreadcrumbPersistentStorageTempFilePath(directory_name));
+    breadcrumb_manager_service_ = static_cast<BreadcrumbManagerKeyedService*>(
+        BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get()));
+    persistent_storage_ = std::make_unique<BreadcrumbPersistentStorageManager>(
+        directory_name,
+        breadcrumb_persistent_storage_util::
+            GetOldBreadcrumbPersistentStorageFilePath(directory_name),
+        breadcrumb_persistent_storage_util::
+            GetOldBreadcrumbPersistentStorageTempFilePath(directory_name));
     breadcrumb_manager_service_->StartPersisting(persistent_storage_.get());
   }
 
@@ -121,9 +122,8 @@ class BreadcrumbPersistentStorageManagerTest : public PlatformTest {
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::ScopedTempDir scoped_temp_directory_;
-  breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service_;
-  std::unique_ptr<breadcrumbs::BreadcrumbPersistentStorageManager>
-      persistent_storage_;
+  BreadcrumbManagerKeyedService* breadcrumb_manager_service_;
+  std::unique_ptr<BreadcrumbPersistentStorageManager> persistent_storage_;
 };
 
 // Ensures that logged events are persisted.
@@ -258,8 +258,7 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
 TEST_F(BreadcrumbPersistentStorageManagerTest,
        GetStoredEventsAfterFilesizeReduction) {
   const base::FilePath breadcrumbs_file_path =
-      breadcrumbs::GetBreadcrumbPersistentStorageFilePath(
-          scoped_temp_directory_.GetPath());
+      GetBreadcrumbPersistentStorageFilePath(scoped_temp_directory_.GetPath());
 
   auto file = std::make_unique<base::File>(
       breadcrumbs_file_path,
@@ -267,7 +266,7 @@ TEST_F(BreadcrumbPersistentStorageManagerTest,
   ASSERT_TRUE(file->IsValid());
 
   // Simulate an old persisted file larger than the current one.
-  const size_t old_filesize = breadcrumbs::kPersistedFilesizeInBytes * 1.2;
+  const size_t old_filesize = kPersistedFilesizeInBytes * 1.2;
   std::string past_breadcrumbs;
   unsigned long written_events = 0;
   while (past_breadcrumbs.length() < old_filesize) {
@@ -324,7 +323,7 @@ TEST_F(BreadcrumbPersistentStorageManagerFilenameTest,
             old_breadcrumb_file.Write(0, test_data.c_str(), test_data.size()));
   old_breadcrumb_file.Close();
 
-  breadcrumbs::BreadcrumbPersistentStorageManager persistent_storage(
+  BreadcrumbPersistentStorageManager persistent_storage(
       directory_name, old_breadcrumb_file_path, old_temp_file_path);
   task_env.RunUntilIdle();
 
@@ -332,9 +331,8 @@ TEST_F(BreadcrumbPersistentStorageManagerFilenameTest,
   // be present.
   EXPECT_FALSE(base::PathExists(old_breadcrumb_file_path));
   EXPECT_FALSE(base::PathExists(old_temp_file_path));
-  base::File new_file(
-      breadcrumbs::GetBreadcrumbPersistentStorageFilePath(directory_name),
-      base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File new_file(GetBreadcrumbPersistentStorageFilePath(directory_name),
+                      base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_TRUE(new_file.IsValid());
   const size_t test_data_size = test_data.size();
   char new_file_data[test_data_size];
@@ -342,3 +340,5 @@ TEST_F(BreadcrumbPersistentStorageManagerFilenameTest,
             new_file.Read(0, new_file_data, test_data_size));
   EXPECT_EQ(test_data, std::string(new_file_data, test_data_size));
 }
+
+}  // namespace breadcrumbs
