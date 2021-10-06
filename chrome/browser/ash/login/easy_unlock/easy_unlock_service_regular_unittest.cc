@@ -447,6 +447,8 @@ TEST_F(EasyUnlockServiceRegularTest, GetRemoteDevices_SmartLockHostChanged) {
 // Test through the core flow of unlocking the screen with Smart Lock.
 // Unfortunately, the only observable side effect we have available is verifying
 // that the success metric is emitted.
+// The "SmartLock.AuthResult" Failure bucket is incorrectly emitted to during
+// this test. See crbug.com/1255964 for more info.
 TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
@@ -458,13 +460,21 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlock) {
   service->FinalizeUnlock(true);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
 
   SetScreenLockState(false /* is_locked */);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
 }
 
 // Regression test for crbug.com/974410.
+// The "SmartLock.AuthResult" Failure bucket is incorrectly emitted to during
+// this test. See crbug.com/1255964 for more info.
 TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   InitializeService(true /* should_initialize_all_dependencies */);
   SetScreenLockState(true /* is_locked */);
@@ -480,10 +490,16 @@ TEST_F(EasyUnlockServiceRegularTest, AuthenticateWithEasyUnlockMultipleTimes) {
   EXPECT_FALSE(service->AttemptAuth(account_id_));
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 0);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 0);
 
   SetScreenLockState(false /* is_locked */);
 
   histogram_tester_.ExpectBucketCount("SmartLock.AuthResult.Unlock", 1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ChromeOS.FeatureUsage.SmartLock",
+      feature_usage::FeatureUsageMetrics::Event::kUsedWithSuccess, 1);
 }
 
 }  // namespace ash

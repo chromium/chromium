@@ -357,6 +357,10 @@ void EasyUnlockServiceRegular::InitializeInternal() {
 
   OnFeatureStatesChanged(multidevice_setup_client_->GetFeatureStates());
   multidevice_setup_client_->AddObserver(this);
+  feature_usage_metrics_ =
+      std::make_unique<SmartLockFeatureUsageMetrics>(multidevice_setup_client_);
+  SmartLockMetricsRecorder::SetUsageRecorderInstance(
+      feature_usage_metrics_.get());
 
   proximity_auth::ScreenlockBridge::Get()->AddObserver(this);
 
@@ -374,6 +378,9 @@ void EasyUnlockServiceRegular::ShutdownInternal() {
   device_sync_client_->RemoveObserver(this);
 
   multidevice_setup_client_->RemoveObserver(this);
+
+  feature_usage_metrics_.reset();
+  SmartLockMetricsRecorder::SetUsageRecorderInstance(nullptr);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 }

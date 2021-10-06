@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_SMARTLOCK_FEATURE_USAGE_METRICS_H_
 
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
 
 namespace chromeos {
 namespace multidevice_setup {
@@ -18,7 +19,8 @@ namespace ash {
 // Tracks Smart Lock feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
 class SmartLockFeatureUsageMetrics
-    : public feature_usage::FeatureUsageMetrics::Delegate {
+    : public feature_usage::FeatureUsageMetrics::Delegate,
+      public SmartLockMetricsRecorder::UsageRecorder {
  public:
   explicit SmartLockFeatureUsageMetrics(
       chromeos::multidevice_setup::MultiDeviceSetupClient*
@@ -28,9 +30,8 @@ class SmartLockFeatureUsageMetrics
       delete;
   ~SmartLockFeatureUsageMetrics() override;
 
-  // To be called by the owner of this SmartLockFeatureUsageMetrics
-  // instance when the user uses the feature.
-  void RecordUsage(bool success);
+  // SmartLockMetricsRecorder::UsageRecorder:
+  void RecordUsage(bool success) override;
 
  private:
   // feature_usage::FeatureUsageMetrics::Delegate:
