@@ -349,7 +349,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, EmbedExtensionWithoutOptionsPage) {
 
 // Tests crbug.com/1253745 where adding and removing listeners in a WebUI frame
 // causes all listeners to be removed.
-IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MultipleURLListeners) {
+// Flaky on Mac, Linux, ChromeOS. https://crbug.com/1257291.
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_MultipleURLListeners DISABLED_MultipleURLListeners
+#else
+#define MAYBE_MultipleURLListeners MultipleURLListeners
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, MAYBE_MultipleURLListeners) {
   content::URLDataSource::Add(profile(),
                               std::make_unique<TestDataSource>("extensions"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
