@@ -389,7 +389,11 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       icon_cache_.RemoveIcon(update.AppType(), update.AppId());
     }
 
-    owner()->NotifyAppsUpdated();
+    if (update.Readiness() == apps::mojom::Readiness::kReady) {
+      owner()->RefreshAppsAndUpdateResultsDeferred();
+    } else {
+      owner()->RefreshAppsAndUpdateResults();
+    }
   }
 
   void OnAppRegistryCacheWillBeDestroyed(
@@ -445,21 +449,10 @@ void AppSearchProvider::Start(const std::u16string& query) {
     UpdateResults();
 }
 
-void AppSearchProvider::AppListShown() {
-  app_list_visible_ = true;
-}
-
 void AppSearchProvider::ViewClosing() {
-  app_list_visible_ = false;
   ClearResultsSilently();
   for (auto& data_source : data_sources_)
     data_source->ViewClosing();
-}
-
-void AppSearchProvider::NotifyAppsUpdated() {
-  if (app_list_visible_) {
-    RefreshAppsAndUpdateResultsDeferred();
-  }
 }
 
 ash::AppListSearchResultType AppSearchProvider::ResultType() {

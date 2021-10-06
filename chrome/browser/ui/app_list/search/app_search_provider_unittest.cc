@@ -294,7 +294,6 @@ class AppSearchProviderTest : public AppListTestBase {
   const SearchProvider::Results& results() { return app_search_->results(); }
   ArcAppTest& arc_test() { return arc_test_; }
 
-  void CallAppListShown() { app_search_->AppListShown(); }
   void CallViewClosing() { app_search_->ViewClosing(); }
 
   sync_sessions::SyncedSessionTracker* session_tracker() {
@@ -365,54 +364,14 @@ TEST_F(AppSearchProviderTest, DisableAndEnable) {
   EXPECT_EQ("Hosted App", RunQuery("host"));
 }
 
-TEST_F(AppSearchProviderTest, ResultsClearedWhenClosed) {
-  CreateSearch();
-
-  EXPECT_EQ("Packaged App 1", RunQuery("pa1"));
-  EXPECT_FALSE(results().empty());
-
-  // Simulate UI opening and closing.
-  CallAppListShown();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(results().empty());
-  CallViewClosing();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(results().empty());
-
-  // Rerunning the query should return previous results.
-  EXPECT_EQ("Packaged App 1", RunQuery("pa1"));
-  EXPECT_FALSE(results().empty());
-}
-
-TEST_F(AppSearchProviderTest, AppUpdatesDontRefreshWhenUIClosed) {
-  CreateSearch();
-
-  EXPECT_EQ("Packaged App 1", RunQuery("pa1"));
-  EXPECT_FALSE(results().empty());
-
-  service_->UninstallExtension(kPackagedApp1Id,
-                               extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
-  base::RunLoop().RunUntilIdle();
-  // App results should not be refreshed yet, due to UI being closed.
-  EXPECT_FALSE(results().empty());
-
-  // Rerunning the query also should return no results.
-  // Must go through empty query in UI, which refreshes apps.
-  EXPECT_EQ("Hosted App,Packaged App 2", RunQuery(""));
-  EXPECT_EQ("", RunQuery("pa1"));
-  EXPECT_TRUE(results().empty());
-}
-
 TEST_F(AppSearchProviderTest, UninstallExtension) {
   CreateSearch();
 
-  CallAppListShown();
   EXPECT_EQ("Packaged App 1", RunQuery("pa1"));
   EXPECT_FALSE(results().empty());
-
-  // Notify UI shown, so app updates refresh results.
   service_->UninstallExtension(kPackagedApp1Id,
                                extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
 
@@ -437,7 +396,6 @@ TEST_F(AppSearchProviderTest, InstallUninstallArc) {
 
   CreateSearch();
 
-  CallAppListShown();
   EXPECT_TRUE(results().empty());
   EXPECT_EQ("", RunQuery("fapp0"));
 

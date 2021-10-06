@@ -51,14 +51,15 @@ class AppSearchProvider : public SearchProvider {
   // SearchProvider overrides:
   void Start(const std::u16string& query) override;
   void ViewClosing() override;
-  void AppListShown() override;
   ash::AppListSearchResultType ResultType() override;
+
+  // Refreshes apps and updates results inline
+  void RefreshAppsAndUpdateResults();
 
   // Refreshes apps deferred to prevent multiple redundant refreshes in case of
   // batch update events from app providers. Used in case when no removed app is
   // detected.
   void RefreshAppsAndUpdateResultsDeferred();
-  void NotifyAppsUpdated();
 
   void set_open_tabs_ui_delegate_for_testing(
       sync_sessions::OpenTabsUIDelegate* delegate) {
@@ -69,8 +70,6 @@ class AppSearchProvider : public SearchProvider {
   }
 
  private:
-  // Refreshes apps and updates results inline
-  void RefreshAppsAndUpdateResults();
   void UpdateResults();
   void UpdateRecommendedResults(
       const base::flat_map<std::string, uint16_t>& id_to_app_list_index);
@@ -98,7 +97,6 @@ class AppSearchProvider : public SearchProvider {
   std::vector<std::unique_ptr<DataSource>> data_sources_;
   sync_sessions::OpenTabsUIDelegate* open_tabs_ui_delegate_for_testing_ =
       nullptr;
-  bool app_list_visible_ = false;
   base::WeakPtrFactory<AppSearchProvider> refresh_apps_factory_{this};
   base::WeakPtrFactory<AppSearchProvider> update_results_factory_{this};
 };
