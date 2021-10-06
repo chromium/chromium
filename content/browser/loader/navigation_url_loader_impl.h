@@ -100,14 +100,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   scoped_refptr<network::SharedURLLoaderFactory>
   PrepareForNonInterceptedRequest(uint32_t* out_options);
 
-  // TODO(kinuko): Merge this back to FollowRedirect().
-  void FollowRedirectInternal(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      blink::PreviewsState new_previews_state,
-      base::Time ui_post_time);
-
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
@@ -308,9 +300,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // calls like WillCreateURLLoaderFactory are already called)
   std::map<std::string, mojo::Remote<network::mojom::URLLoaderFactory>>
       non_network_url_loader_factory_remotes_;
-
-  // Counts the time overhead of all the hops from the IO to the UI threads.
-  base::TimeDelta io_to_ui_time_;
 
   std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 

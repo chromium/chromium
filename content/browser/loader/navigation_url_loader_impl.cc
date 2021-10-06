@@ -716,67 +716,6 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
   return factory;
 }
 
-void NavigationURLLoaderImpl::FollowRedirectInternal(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    blink::PreviewsState new_previews_state,
-    base::Time ui_post_time) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!redirect_info_.new_url.is_empty());
-
-  // Update |resource_request_| and call Restart to give our |interceptors_| a
-  // chance at handling the new location. If no interceptor wants to take
-  // over, we'll use the existing url_loader to follow the redirect, see
-  // MaybeStartLoader.
-  // TODO(michaeln): This is still WIP and is based on URLRequest::Redirect,
-  // there likely remains more to be done.
-  // a. For subframe navigations, the Origin header may need to be modified
-  //    differently?
-
-  bool should_clear_upload = false;
-  net::RedirectUtil::UpdateHttpRequest(
-      resource_request_->url, resource_request_->method, redirect_info_,
-      removed_headers, modified_headers, &resource_request_->headers,
-      &should_clear_upload);
-  if (should_clear_upload) {
-    // The request body is no longer applicable.
-    resource_request_->request_body.reset();
-  }
-
-  resource_request_->url = redirect_info_.new_url;
-  resource_request_->method = redirect_info_.new_method;
-  resource_request_->site_for_cookies = redirect_info_.new_site_for_cookies;
-
-  // See if navigation network isolation key needs to be updated.
-  resource_request_->trusted_params->isolation_info =
-      resource_request_->trusted_params->isolation_info.CreateForRedirect(
-          url::Origin::Create(resource_request_->url));
-
-  resource_request_->referrer = GURL(redirect_info_.new_referrer);
-  resource_request_->referrer_policy = redirect_info_.new_referrer_policy;
-  resource_request_->previews_state = new_previews_state;
-  url_chain_.push_back(redirect_info_.new_url);
-
-  // Need to cache modified headers for |url_loader_| since it doesn't use
-  // |resource_request_| during redirect.
-  url_loader_removed_headers_ = removed_headers;
-  url_loader_modified_headers_ = modified_headers;
-  url_loader_modified_cors_exempt_headers_ = modified_cors_exempt_headers;
-
-  // Don't send Accept: application/signed-exchange for fallback redirects.
-  if (redirect_info_.is_signed_exchange_fallback_redirect) {
-    std::string header_value =
-        FrameAcceptHeaderValue(/*allow_sxg_responses=*/false, browser_context_);
-    url_loader_modified_headers_.SetHeader(net::HttpRequestHeaders::kAccept,
-                                           header_value);
-    resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                         header_value);
-  }
-
-  Restart();
-}
-
 void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // Early Hints should not come after actual response.
@@ -1338,9 +1277,59 @@ void NavigationURLLoaderImpl::FollowRedirect(
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     blink::PreviewsState new_previews_state) {
-  FollowRedirectInternal(removed_headers, modified_headers,
-                         modified_cors_exempt_headers, new_previews_state,
-                         base::Time::Now());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!redirect_info_.new_url.is_empty());
+
+  // Update |resource_request_| and call Restart to give our |interceptors_| a
+  // chance at handling the new location. If no interceptor wants to take
+  // over, we'll use the existing url_loader to follow the redirect, see
+  // MaybeStartLoader.
+  // TODO(michaeln): This is still WIP and is based on URLRequest::Redirect,
+  // there likely remains more to be done.
+  // a. For subframe navigations, the Origin header may need to be modified
+  //    differently?
+
+  bool should_clear_upload = false;
+  net::RedirectUtil::UpdateHttpRequest(
+      resource_request_->url, resource_request_->method, redirect_info_,
+      removed_headers, modified_headers, &resource_request_->headers,
+      &should_clear_upload);
+  if (should_clear_upload) {
+    // The request body is no longer applicable.
+    resource_request_->request_body.reset();
+  }
+
+  resource_request_->url = redirect_info_.new_url;
+  resource_request_->method = redirect_info_.new_method;
+  resource_request_->site_for_cookies = redirect_info_.new_site_for_cookies;
+
+  // See if navigation network isolation key needs to be updated.
+  resource_request_->trusted_params->isolation_info =
+      resource_request_->trusted_params->isolation_info.CreateForRedirect(
+          url::Origin::Create(resource_request_->url));
+
+  resource_request_->referrer = GURL(redirect_info_.new_referrer);
+  resource_request_->referrer_policy = redirect_info_.new_referrer_policy;
+  resource_request_->previews_state = new_previews_state;
+  url_chain_.push_back(redirect_info_.new_url);
+
+  // Need to cache modified headers for |url_loader_| since it doesn't use
+  // |resource_request_| during redirect.
+  url_loader_removed_headers_ = removed_headers;
+  url_loader_modified_headers_ = modified_headers;
+  url_loader_modified_cors_exempt_headers_ = modified_cors_exempt_headers;
+
+  // Don't send Accept: application/signed-exchange for fallback redirects.
+  if (redirect_info_.is_signed_exchange_fallback_redirect) {
+    std::string header_value =
+        FrameAcceptHeaderValue(/*allow_sxg_responses=*/false, browser_context_);
+    url_loader_modified_headers_.SetHeader(net::HttpRequestHeaders::kAccept,
+                                           header_value);
+    resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                         header_value);
+  }
+
+  Restart();
 }
 
 void NavigationURLLoaderImpl::NotifyResponseStarted(
