@@ -80,6 +80,10 @@ KioskLaunchController* FakeLoginDisplayHost::GetKioskLaunchController() {
   return nullptr;
 }
 
+WizardContext* FakeLoginDisplayHost::GetWizardContext() {
+  return nullptr;
+}
+
 void FakeLoginDisplayHost::StartUserAdding(
     base::OnceClosure completion_callback) {}
 

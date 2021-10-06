@@ -75,6 +75,7 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void VerifyOwnerForKiosk(base::OnceClosure on_success) override;
   void AddObserver(LoginDisplayHost::Observer* observer) override;
   void RemoveObserver(LoginDisplayHost::Observer* observer) override;
+  WizardContext* GetWizardContext() override;
   SigninUI* GetSigninUI() override;
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const final;

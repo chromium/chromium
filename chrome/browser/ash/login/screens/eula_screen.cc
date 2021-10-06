@@ -131,17 +131,17 @@ bool EulaScreen::MaybeSkip(WizardContext* context) {
     return true;
   }
 
+  if (!context->is_branded_build) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
   if (StartupUtils::IsEulaAccepted()) {
     const auto* const demo_setup_controller =
         WizardController::default_controller()->demo_setup_controller();
     exit_callback_.Run(demo_setup_controller
                            ? Result::ALREADY_ACCEPTED_DEMO_MODE
                            : Result::ALREADY_ACCEPTED);
-    return true;
-  }
-
-  if (!WizardController::IsBrandedBuild()) {
-    exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
 

@@ -48,7 +48,8 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
 
  protected:
   void StartOnboardingFlow() {
-    auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
     EXPECT_TRUE(LoginScreenTestApi::ClickAddUserButton());
     OobeScreenWaiter(UserCreationView::kScreenId).Wait();
     LoginDisplayHost::default_host()

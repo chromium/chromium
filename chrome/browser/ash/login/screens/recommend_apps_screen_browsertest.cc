@@ -536,7 +536,7 @@ class RecommendAppsScreenManagedTest : public RecommendAppsScreenTest {
 IN_PROC_BROWSER_TEST_F(RecommendAppsScreenManagedTest, SkipDueToManagedUser) {
   // Force the sync screen to be shown so that OOBE isn't destroyed
   // right after login due to all screens being skipped.
-  auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
 
   // Mark user as managed.
   user_policy_mixin_.RequestPolicyUpdate();

@@ -649,7 +649,7 @@ void LoginDisplayHostMojo::EnsureOobeDialogLoaded() {
   scoped_observation_.Observe(web_dialog_view);
 
   // Should be created after dialog was created and OobeUI was loaded.
-  wizard_controller_ = std::make_unique<WizardController>(wizard_context());
+  wizard_controller_ = std::make_unique<WizardController>(GetWizardContext());
 
   GetLoginScreenCertProviderService()->pin_dialog_manager()->AddPinDialogHost(
       &security_token_pin_dialog_host_impl_);

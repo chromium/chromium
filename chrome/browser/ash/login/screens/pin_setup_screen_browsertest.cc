@@ -104,7 +104,8 @@ class PinSetupScreenTest
   void ShowPinSetupScreen() {
     // Force the sync screen to be shown so that we don't jump to PIN setup
     // screen (consuming auth session) in unbranded build
-    auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
 
     LogIn();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
@@ -328,7 +329,8 @@ class PinSetupForManagedUsers : public PinForLoginSetupScreenTest {
   void ManagedLogIn() {
     // Force the sync screen to be shown so that we don't jump to PIN setup
     // screen (consuming auth session) in unbranded build
-    auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
     policy_reset_ = PinSetupScreen::SetForceNoSkipBecauseOfPolicyForTests(true);
     user_policy_mixin_->RequestPolicyUpdate();
     fake_gaia_->SetupFakeGaiaForLogin(

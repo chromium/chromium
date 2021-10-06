@@ -71,6 +71,9 @@ class WizardContext {
   // flag helps to set right error message.
   bool tpm_owned_error = false;
 
+  // True if this is a branded build (i.e. Google Chrome).
+  bool is_branded_build;
+
   // Authorization data that is required by PinSetup screen to add PIN as
   // another possible auth factor. Can be empty (if PIN is not supported).
   // In future will be replaced by AuthSession.

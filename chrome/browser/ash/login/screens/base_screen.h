@@ -69,7 +69,7 @@ class BaseScreen {
   // counterpart. Not called if the screen is hidden
   virtual void OnUserAction(const std::string& action_id);
 
-  WizardContext* context() { return wizard_context_; }
+  WizardContext* context() const { return wizard_context_; }
 
  private:
   bool is_hidden_ = true;

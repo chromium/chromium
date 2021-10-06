@@ -482,8 +482,8 @@ class WizardControllerFlowTest : public WizardControllerTest {
     WizardControllerTest::SetUpOnMainThread();
 
     // Make sure that OOBE is run as an "official" build.
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
 
     WizardController* wizard_controller =
         WizardController::default_controller();
@@ -1879,25 +1879,18 @@ class WizardControllerScreenPriorityOOBETest : public OobeBaseTest {
   WizardControllerScreenPriorityOOBETest() = default;
   ~WizardControllerScreenPriorityOOBETest() override = default;
 
-  void SetUpOnMainThread() override {
-    OobeBaseTest::SetUpOnMainThread();
-    autoreset_ = WizardController::ForceBrandedBuildForTesting(true);
-  }
-
   void CheckCurrentScreen(OobeScreenId screen) {
     EXPECT_EQ(WizardController::default_controller()->GetScreen(screen),
               WizardController::default_controller()->current_screen());
   }
-
- private:
-  std::unique_ptr<base::AutoReset<bool>> autoreset_;
 };
 
 IN_PROC_BROWSER_TEST_F(WizardControllerScreenPriorityOOBETest,
                        DefaultPriorityTest) {
   ASSERT_TRUE(WizardController::default_controller() != nullptr);
-  CheckCurrentScreen(WelcomeView::kScreenId);
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
 
+  CheckCurrentScreen(WelcomeView::kScreenId);
   // Showing network screen should pass it has default priority which is same as
   // welcome screen.
   WizardController::default_controller()->AdvanceToScreen(
@@ -2721,8 +2714,8 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
     WizardControllerTest::SetUpOnMainThread();
 
     // Make sure that OOBE is run as an "official" build.
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
 
     WizardController* wizard_controller =
         WizardController::default_controller();

@@ -117,6 +117,8 @@ class LoginDisplayHost {
   // Result should not be stored.
   virtual WizardController* GetWizardController() = 0;
 
+  virtual WizardContext* GetWizardContext() = 0;
+
   // Returns current KioskLaunchController, if it exists.
   // Result should not be stored.
   virtual KioskLaunchController* GetKioskLaunchController() = 0;

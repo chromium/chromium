@@ -621,14 +621,10 @@ class OobeInteractiveUITest : public OobeBaseTest,
                               public ::testing::WithParamInterface<
                                   std::tuple<bool, bool, bool, ArcState>> {
  public:
-  OobeInteractiveUITest() {
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
-  }
-
   OobeInteractiveUITest(const OobeInteractiveUITest&) = delete;
   OobeInteractiveUITest& operator=(const OobeInteractiveUITest&) = delete;
 
+  OobeInteractiveUITest() = default;
   ~OobeInteractiveUITest() override = default;
 
   // OobeBaseTest:
@@ -662,7 +658,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
   const OobeEndToEndTestSetupMixin* test_setup() const { return &setup_; }
 
  private:
-  std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
+  void ForceBrandedBuild() const;
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
 
@@ -672,7 +668,12 @@ class OobeInteractiveUITest : public OobeBaseTest,
   OobeEndToEndTestSetupMixin setup_{&mixin_host_, &arc_tos_server_, GetParam()};
 };
 
+void OobeInteractiveUITest::ForceBrandedBuild() const {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
+}
+
 void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
+  ForceBrandedBuild();
   test::WaitForWelcomeScreen();
   RunWelcomeScreenChecks();
   test::TapWelcomeNext();
@@ -690,6 +691,7 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
 }
 
 void OobeInteractiveUITest::PerformSessionSignInSteps() {
+  ForceBrandedBuild();
   if (GetFirstSigninScreen() == UserCreationView::kScreenId) {
     test::WaitForUserCreationScreen();
     test::TapUserCreationNext();

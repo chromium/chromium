@@ -117,8 +117,8 @@ class DemoSetupTestBase : public OobeBaseTest {
     OobeBaseTest::SetUpOnMainThread();
     update_engine_client()->set_update_check_result(
         UpdateEngineClient::UPDATE_RESULT_FAILED);
-    branded_build_override_ =
-        WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
     DisconnectAllNetworks();
   }
 

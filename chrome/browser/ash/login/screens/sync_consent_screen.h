@@ -97,7 +97,7 @@ class SyncConsentScreen : public BaseScreen,
   ~SyncConsentScreen() override;
 
   // Inits `user_`, its `profile_` and `behavior_` before using the screen.
-  void Init();
+  void Init(const WizardContext* context);
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -137,6 +137,10 @@ class SyncConsentScreen : public BaseScreen,
   static void SetSyncConsentScreenExitTestDelegate(
       SyncConsentScreenExitTestDelegate* test_delegate);
 
+  // Test API
+  // Returns true if profile sync is disabled by policy for test.
+  bool IsProfileSyncDisabledByPolicyForTest() const;
+
  private:
   // Marks the dialog complete and runs `exit_callback_`.
   void Finish(Result result);
@@ -147,10 +151,10 @@ class SyncConsentScreen : public BaseScreen,
   void HideImpl() override;
 
   // Returns new SyncScreenBehavior value.
-  SyncScreenBehavior GetSyncScreenBehavior() const;
+  SyncScreenBehavior GetSyncScreenBehavior(const WizardContext& context) const;
 
   // Calculates updated `behavior_` and performs required update actions.
-  void UpdateScreen();
+  void UpdateScreen(const WizardContext& context);
 
   // Records user Sync consent.
   void RecordConsent(ConsentGiven consent_given,

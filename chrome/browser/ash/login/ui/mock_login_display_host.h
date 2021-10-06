@@ -108,6 +108,7 @@ class MockLoginDisplayHost : public LoginDisplayHost {
               (base::RepeatingClosure on_created),
               (final));
   MOCK_METHOD(WizardContext*, GetWizardContextForTesting, (), (final));
+  MOCK_METHOD(WizardContext*, GetWizardContext, (), (override));
 };
 
 }  // namespace ash

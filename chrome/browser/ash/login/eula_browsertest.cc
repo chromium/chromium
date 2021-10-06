@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/login/test/scoped_help_app_for_test.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -121,7 +122,8 @@ class EulaTest : public OobeBaseTest {
  protected:
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
-    branded_build_ = WizardController::ForceBrandedBuildForTesting(true);
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
   }
 
   content::WebContents* FindEulaContents() {
@@ -201,9 +203,6 @@ class EulaTest : public OobeBaseTest {
   }
 
   FakeEulaMixin fake_eula_{&mixin_host_, embedded_test_server()};
-
- private:
-  std::unique_ptr<base::AutoReset<bool>> branded_build_;
 };
 
 // When testing the offline fallback mechanism, the requests reaching the

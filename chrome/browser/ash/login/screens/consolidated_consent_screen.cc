@@ -111,7 +111,7 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext* context) {
                                 ->IsManaged();
   if ((is_managed_account &&
        !arc::IsArcTermsOfServiceOobeNegotiationNeeded()) ||
-      !WizardController::IsBrandedBuild()) {
+      !context->is_branded_build) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }

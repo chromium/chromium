@@ -504,7 +504,7 @@ void LoginDisplayHostCommon::ShowSigninError(SigninError error,
 }
 
 WizardContext* LoginDisplayHostCommon::GetWizardContextForTesting() {
-  return wizard_context();
+  return GetWizardContext();
 }
 
 void LoginDisplayHostCommon::OnBrowserAdded(Browser* browser) {
@@ -527,6 +527,10 @@ void LoginDisplayHostCommon::Observe(
     const content::NotificationDetails& details) {
   if (type == chrome::NOTIFICATION_APP_TERMINATING)
     ShutdownDisplayHost();
+}
+
+WizardContext* LoginDisplayHostCommon::GetWizardContext() {
+  return wizard_context_.get();
 }
 
 void LoginDisplayHostCommon::OnCancelPasswordChangedFlow() {

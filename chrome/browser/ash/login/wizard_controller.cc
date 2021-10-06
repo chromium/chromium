@@ -32,7 +32,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -383,13 +382,6 @@ bool WizardController::skip_post_login_screens_ = false;
 
 // static
 bool WizardController::skip_enrollment_prompts_ = false;
-
-// static
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-bool WizardController::is_branded_build_ = true;
-#else
-bool WizardController::is_branded_build_ = false;
-#endif
 
 // static
 WizardController* WizardController::default_controller() {
@@ -2235,12 +2227,6 @@ void WizardController::SkipPostLoginScreensForTesting() {
 // static
 void WizardController::SkipEnrollmentPromptsForTesting() {
   skip_enrollment_prompts_ = true;
-}
-
-// static
-std::unique_ptr<base::AutoReset<bool>>
-WizardController::ForceBrandedBuildForTesting(bool value) {
-  return std::make_unique<base::AutoReset<bool>>(&is_branded_build_, value);
 }
 
 // static

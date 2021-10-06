@@ -1594,7 +1594,7 @@ class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
 // TODO(crbug.com/1184714): Fix flakiness.
 IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
   // Force sync screen.
-  auto reset = WizardController::ForceBrandedBuildForTesting(true);
+  LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   sm_.ExpectSpeechPattern("*");
 
