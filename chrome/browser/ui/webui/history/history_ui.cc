@@ -35,6 +35,7 @@
 #include "chrome/grit/locale_settings.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -126,6 +127,9 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   // History clusters
   source->AddBoolean("isHistoryClustersEnabled",
                      base::FeatureList::IsEnabled(history_clusters::kJourneys));
+  source->AddBoolean(
+      "isHistoryClustersVisible",
+      profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
   source->AddBoolean("isHistoryClustersDebug",
                      base::FeatureList::IsEnabled(history_clusters::kDebug));
 

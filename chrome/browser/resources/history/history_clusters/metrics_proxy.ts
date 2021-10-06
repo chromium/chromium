@@ -35,6 +35,7 @@ export enum VisitType {
 export interface MetricsProxy {
   recordClusterAction(action: ClusterAction, index: number): void;
   recordRelatedSearchAction(action: RelatedSearchAction, index: number): void;
+  recordToggledVisibility(visible: boolean): void;
   recordVisitAction(action: VisitAction, index: number, type: VisitType): void;
 }
 
@@ -47,6 +48,11 @@ export class MetricsProxyImpl implements MetricsProxy {
   recordRelatedSearchAction(action: RelatedSearchAction, index: number) {
     chrome.metricsPrivate.recordMediumCount(
         `History.Clusters.UIActions.RelatedSearch.${action}`, index);
+  }
+
+  recordToggledVisibility(visible: boolean) {
+    chrome.metricsPrivate.recordBoolean(
+        'History.Clusters.UIActions.ToggledVisibility', visible);
   }
 
   recordVisitAction(action: VisitAction, index: number, type: VisitType) {

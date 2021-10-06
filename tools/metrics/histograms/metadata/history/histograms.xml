@@ -589,6 +589,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="History.Clusters.UIActions.ToggledVisibility"
+    units="BooleanVisible" expires_after="2022-02-25">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Recorded every time the user toggles the visibility of the history clusters
+    Web UI shown at chrome://history/journeys from the history Web UI sidebar.
+    The value represents the visibility of the history clusters Web UI.
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.UIActions.{VisitType}Visit.{VisitAction}"
     units="index" expires_after="2022-02-25">
   <owner>mahmadi@chromium.org</owner>

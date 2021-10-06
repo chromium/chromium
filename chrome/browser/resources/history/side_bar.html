@@ -121,8 +121,8 @@
           selectable=".page-item" attr-for-selected="path"
           on-iron-activate="onSelectorActivate_" selected-attribute="selected">
         <a id="history" role="menuitem" class="page-item cr-nav-menu-item"
-            href="[[getHistoryItemHref_(selectedTab, historyClustersEnabled_)]]"
-            path="[[getHistoryItemPath_(selectedTab, historyClustersEnabled_)]]"
+            href="[[getHistoryItemHref_(selectedTab, showHistoryClusters_)]]"
+            path="[[getHistoryItemPath_(selectedTab, showHistoryClusters_)]]"
             on-click="onItemClick_">
           <iron-icon icon="cr:schedule"></iron-icon>
           $i18n{historyMenuItem}
@@ -146,6 +146,19 @@
           $i18n{clearBrowsingData}
           <div class="cr-icon icon-external"></div>
           <paper-ripple id="cbd-ripple"></paper-ripple>
+        </a>
+        <!-- tabindex is needed below because <a> without href attribute is not
+             focusable in sequential keyboard navigation by default. -->
+        <a role="menuitem" id="toggle-history-clusters"
+            class="cr-nav-menu-item"
+            tabindex="0"
+            on-click="onToggleHistoryClustersClick_"
+            on-keydown="onToggleHistoryClustersKeydown_"
+            on-mousedown="onToggleHistoryClustersMousedown_"
+            hidden="[[!historyClustersEnabled]]">
+          <iron-icon icon="cr:close"></iron-icon>
+          [[getToggleHistoryClustersItemLabel(historyClustersVisible)]]
+          <paper-ripple id="thc-ripple"></paper-ripple>
         </a>
       </iron-selector>
     </cr-menu-selector>

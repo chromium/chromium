@@ -739,7 +739,7 @@ void AutocompleteController::UpdateResult(
 
   // Below are all annotations after the match list is ready.
   AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
-                               result_);
+                               provider_client_->GetPrefs(), result_);
   UpdateKeywordDescriptions(&result_);
   UpdateAssociatedKeywords(&result_);
   UpdateAssistedQueryStats(&result_);

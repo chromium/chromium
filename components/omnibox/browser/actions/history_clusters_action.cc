@@ -9,10 +9,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/escape.h"
 
@@ -62,6 +64,7 @@ class HistoryClustersAction : public OmniboxAction {
 
 void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
+    PrefService* prefs,
     AutocompleteResult& result) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
   // Compile out this method for Mobile, which doesn't omnibox actions yet.
@@ -74,6 +77,11 @@ void AttachHistoryClustersActions(
   // Both features must be enabled to ever attach the action chip.
   if (!base::FeatureList::IsEnabled(history_clusters::kJourneys) ||
       !base::FeatureList::IsEnabled(history_clusters::kOmniboxAction)) {
+    return;
+  }
+
+  // History Clusters must be visible to the user to attach the action chip.
+  if (!prefs->GetBoolean(history_clusters::prefs::kVisible)) {
     return;
   }
 

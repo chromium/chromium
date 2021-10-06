@@ -133,6 +133,11 @@ interface PageHandler {
   // The ClustersBrowserProxy singleton calls this when it's first initialized.
   SetPage(pending_remote<Page> page);
 
+  // Toggles the visibility of the History Clusters. The returned Promise echos
+  // the given value for `visible`. The page uses the returned value to update
+  // its state once the request is fulfilled by the browser.
+  ToggleVisibility(bool visible) => (bool visible);
+
   // Requests the freshest Clusters created from the user visit history, in
   // reverse chronological order, based on the parameters in `query_params`.
   // Note: Returns mock Clusters in non-chrome-branded builds if no remote

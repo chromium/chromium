@@ -42,6 +42,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   // mojom::PageHandler:
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
+  void ToggleVisibility(bool visible,
+                        ToggleVisibilityCallback callback) override;
   void QueryClusters(mojom::QueryParamsPtr query_params) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;

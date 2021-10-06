@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ACTIONS_HISTORY_CLUSTERS_ACTION_H_
 
 class AutocompleteResult;
+class PrefService;
 
 namespace history_clusters {
 
@@ -15,6 +16,7 @@ class HistoryClustersService;
 // onto any relevant matches in `result`.
 void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
+    PrefService* prefs,
     AutocompleteResult& result);
 
 }  // namespace history_clusters

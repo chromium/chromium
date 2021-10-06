@@ -20,6 +20,8 @@ import {PaperRippleElement} from 'chrome://resources/polymer/v3_0/paper-ripple/p
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserService} from './browser_service.js';
+import {BrowserProxyImpl} from './history_clusters/browser_proxy.js';
+import {MetricsProxyImpl} from './history_clusters/metrics_proxy.js';
 import {Page, TABBED_PAGES} from './router.js';
 
 export type FooterInfo = {
@@ -30,6 +32,7 @@ export type FooterInfo = {
 export interface HistorySideBarElement {
   $: {
     'cbd-ripple': PaperRippleElement,
+    'thc-ripple': PaperRippleElement,
   };
 }
 
@@ -46,6 +49,13 @@ export class HistorySideBarElement extends PolymerElement {
     return {
       footerInfo: Object,
 
+      historyClustersEnabled: Boolean,
+
+      historyClustersVisible: {
+        type: Boolean,
+        notify: true,
+      },
+
       /* The id of the currently selected page. */
       selectedPage: {
         type: String,
@@ -53,14 +63,12 @@ export class HistorySideBarElement extends PolymerElement {
       },
 
       /* The index of the currently selected tab. */
-      selectedTab: Number,
+      selectedTab: {
+        type: Number,
+        notify: true,
+      },
 
       guestSession_: Boolean,
-
-      historyClustersEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('isHistoryClustersEnabled'),
-      },
 
       /**
        * Used to display notices for profile sign-in status and managed status.
@@ -70,15 +78,23 @@ export class HistorySideBarElement extends PolymerElement {
         computed: 'computeShowFooter_(' +
             'footerInfo.otherFormsOfHistory, footerInfo.managed)',
       },
+
+      showHistoryClusters_: {
+        type: Boolean,
+        computed: 'computeShowHistoryClusters_(' +
+            'historyClustersEnabled, historyClustersVisible)',
+      },
     };
   }
 
   footerInfo: FooterInfo;
+  historyClustersEnabled: boolean;
+  historyClustersVisible: boolean;
   selectedPage: Page;
   selectedTab: number;
   private guestSession_ = loadTimeData.getBoolean('isGuestSession');
-  private historyClustersEnabled_: boolean;
   private showFooter_: boolean;
+  private showHistoryClusters_: boolean;
 
   /** @override */
   ready() {
@@ -124,9 +140,8 @@ export class HistorySideBarElement extends PolymerElement {
    * @returns The url to navigate to when the history menu item is clicked. It
    *     reflects the currently selected tab.
    */
-  private getHistoryItemHref_(
-      _selectedHistoryTab: number, _historyClustersEnabled: boolean): string {
-    return this.historyClustersEnabled_ &&
+  private getHistoryItemHref_(): string {
+    return this.showHistoryClusters_ &&
             TABBED_PAGES[this.selectedTab] === Page.HISTORY_CLUSTERS ?
         '/' + Page.HISTORY_CLUSTERS :
         '/';
@@ -136,17 +151,53 @@ export class HistorySideBarElement extends PolymerElement {
    * @returns The path that determines if the history menu item is selected. It
    *     reflects the currently selected tab.
    */
-  private getHistoryItemPath_(
-      _selectedHistoryTab: number, _historyClustersEnabled: boolean): string {
-    return this.historyClustersEnabled_ &&
+  private getHistoryItemPath_(): string {
+    return this.showHistoryClusters_ &&
             TABBED_PAGES[this.selectedTab] === Page.HISTORY_CLUSTERS ?
         Page.HISTORY_CLUSTERS :
         Page.HISTORY;
   }
 
+  private getToggleHistoryClustersItemLabel(): string {
+    return loadTimeData.getString(
+        this.historyClustersVisible ? 'disableHistoryClusters' :
+                                      'enableHistoryClusters');
+  }
+
+  private onToggleHistoryClustersClick_() {
+    MetricsProxyImpl.getInstance().recordToggledVisibility(
+        !this.historyClustersVisible);
+    BrowserProxyImpl.getInstance()
+        .handler.toggleVisibility(!this.historyClustersVisible)
+        .then(({visible}) => {
+          this.historyClustersVisible = visible;
+          this.selectedTab = TABBED_PAGES.indexOf(
+              visible ? Page.HISTORY_CLUSTERS : Page.HISTORY);
+        });
+
+    this.$['thc-ripple'].upAction();
+  }
+
+  private onToggleHistoryClustersKeydown_(e: KeyboardEvent) {
+    // Handle 'Enter' keypress because the menu item is missing href attribute.
+    if (e.key === 'Enter') {
+      this.onToggleHistoryClustersClick_();
+    }
+  }
+
+  private onToggleHistoryClustersMousedown_(e: MouseEvent) {
+    // The menu item steals the focus on mousedown event because it is given a
+    // tabindex="0" so that it is focusable in sequential keyboard navigation.
+    e.preventDefault();
+  }
+
   private computeShowFooter_(
       includeOtherFormsOfBrowsingHistory: boolean, managed: boolean): boolean {
     return includeOtherFormsOfBrowsingHistory || managed;
+  }
+
+  private computeShowHistoryClusters_(): boolean {
+    return this.historyClustersEnabled && this.historyClustersVisible;
   }
 }
 

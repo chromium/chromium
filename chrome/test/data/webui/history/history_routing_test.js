@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BrowserProxyImpl, BrowserService} from 'chrome://history/history.js';
+import {BrowserProxyImpl, BrowserService, MetricsProxyImpl} from 'chrome://history/history.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
 import {flushTasks} from 'chrome://test/test_util.js';
-import {TestBrowserProxy} from './history_clusters/utils.js';
+import {TestBrowserProxy, TestMetricsProxy} from './history_clusters/utils.js';
 
 [true, false].forEach(isHistoryClustersEnabled => {
   suite('routing-test', function() {
@@ -15,6 +15,7 @@ import {TestBrowserProxy} from './history_clusters/utils.js';
     let list;
     let sidebar;
     let toolbar;
+
 
     function navigateTo(route) {
       window.history.replaceState({}, '', route);
@@ -24,7 +25,12 @@ import {TestBrowserProxy} from './history_clusters/utils.js';
     }
 
     suiteSetup(() => {
-      loadTimeData.overrideValues({isHistoryClustersEnabled});
+      loadTimeData.overrideValues({
+        disableHistoryClusters: 'Disable',
+        enableHistoryClusters: 'Enable',
+        isHistoryClustersEnabled,
+        isHistoryClustersVisible: true,
+      });
     });
 
     setup(function() {
@@ -32,6 +38,7 @@ import {TestBrowserProxy} from './history_clusters/utils.js';
       document.body.innerHTML = '';
       BrowserService.setInstance(new TestBrowserService());
       BrowserProxyImpl.setInstance(new TestBrowserProxy());
+      MetricsProxyImpl.setInstance(new TestMetricsProxy());
       app = document.createElement('history-app');
       document.body.appendChild(app);
 
@@ -122,6 +129,71 @@ import {TestBrowserProxy} from './history_clusters/utils.js';
         assertEquals('history', sidebar.$.menu.selected);
         assertEquals('chrome://history/', window.location.href);
       }
+    });
+
+    test('toggle history clusters on/off from sidebar menu item', async () => {
+      const handler = BrowserProxyImpl.getInstance().handler;
+
+      assertEquals('history', sidebar.$.menu.selected);
+      assertEquals('chrome://history/', window.location.href);
+
+      if (!isHistoryClustersEnabled) {
+        assertTrue(sidebar.$['toggle-history-clusters'].hidden);
+        return;
+      }
+
+      // Navigate to chrome://history/journeys.
+      app.$$('cr-tabs').selected = 1;
+      assertEquals('journeys', sidebar.$.menu.selected);
+      assertEquals('chrome://history/journeys', window.location.href);
+      await flushTasks();
+      assertTrue(
+          app.$$('#history-clusters').classList.contains('iron-selected'));
+
+      handler.setResultFor(
+          'toggleVisibility', Promise.resolve({visible: false}));
+
+      // Verify the menu item label and press it.
+      assertEquals(
+          'Disable', sidebar.$['toggle-history-clusters'].textContent.trim());
+      keyDownOn(sidebar.$['toggle-history-clusters'], 0, '', ' ');
+
+      // Verify that the browser is notified and the histogram is recorded.
+      let visible = await MetricsProxyImpl.getInstance().whenCalled(
+          'recordToggledVisibility');
+      assertFalse(visible);
+      visible = await handler.whenCalled('toggleVisibility');
+      assertFalse(visible);
+
+      // Toggling history clusters off navigates to chrome://history/.
+      assertEquals('history', sidebar.$.menu.selected);
+      assertEquals('chrome://history/', window.location.href);
+      assertFalse(
+          app.$$('#history-clusters').classList.contains('iron-selected'));
+
+      handler.reset();
+      MetricsProxyImpl.getInstance().reset();
+
+      handler.setResultFor(
+          'toggleVisibility', Promise.resolve({visible: true}));
+
+      // Verify the updated menu item label and press it again.
+      assertEquals(
+          'Enable', sidebar.$['toggle-history-clusters'].textContent.trim());
+      keyDownOn(sidebar.$['toggle-history-clusters'], 0, '', ' ');
+
+      // Verify that the browser is notified and the histogram is recorded.
+      visible = await MetricsProxyImpl.getInstance().whenCalled(
+          'recordToggledVisibility');
+      assertTrue(visible);
+      visible = await handler.whenCalled('toggleVisibility');
+      assertTrue(visible);
+
+      // Toggling history clusters on navigates to chrome://history/journeys.
+      assertEquals('journeys', sidebar.$.menu.selected);
+      assertEquals('chrome://history/journeys', window.location.href);
+      assertTrue(
+          app.$$('#history-clusters').classList.contains('iron-selected'));
     });
 
     test('search updates from route', function() {

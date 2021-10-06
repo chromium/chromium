@@ -22,6 +22,8 @@ buildflag_header("history_clusters_buildflags") {
 
 static_library("core") {
   sources = [
+    "history_clusters_prefs.cc",
+    "history_clusters_prefs.h",
     "history_clusters_service.cc",
     "history_clusters_service.h",
     "history_clusters_types.cc",
@@ -39,6 +41,7 @@ static_library("core") {
     "//components/history_clusters/core/proto",
     "//components/keyed_service/core",
     "//components/optimization_guide/core:entities",
+    "//components/pref_registry",
     "//components/query_parser",
     "//components/search_engines",
     "//components/url_formatter",

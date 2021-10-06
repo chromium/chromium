@@ -12,3 +12,13 @@ export class TestBrowserProxy extends BaseTestBrowserProxy {
     this.callbackRouter = new PageCallbackRouter();
   }
 }
+
+export class TestMetricsProxy extends BaseTestBrowserProxy {
+  constructor() {
+    super(['recordToggledVisibility']);
+  }
+
+  recordToggledVisibility(visible) {
+    this.methodCalled('recordToggledVisibility', visible);
+  }
+}

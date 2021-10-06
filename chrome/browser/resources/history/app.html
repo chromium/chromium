@@ -45,7 +45,7 @@
         height: 100%;
       }
 
-      :host([history-clusters-enabled_]) #tabs-content {
+      :host([show-history-clusters_]) #tabs-content {
         height: calc(100% - var(--cr-tabs-height));
       }
 
@@ -76,8 +76,10 @@
     <div id="drop-shadow" class="cr-container-shadow"></div>
     <div id="main-container">
       <history-side-bar id="content-side-bar" selected-page="{{selectedPage_}}"
-          selected-tab="[[selectedTab_]]"
+          selected-tab="{{selectedTab_}}"
           footer-info="[[footerInfo]]"
+          history-clusters-enabled="[[historyClustersEnabled_]]"
+          history-clusters-visible="{{historyClustersVisible_}}"
           hidden$="[[hasDrawer_]]">
       </history-side-bar>
       <iron-pages id="content" attr-for-selected="path"
@@ -86,7 +88,7 @@
           on-selected-item-changed="selectedItemChanged_"
           items="{{items}}">
         <div id="tabs-container" path="history">
-          <template is="dom-if" if="[[historyClustersEnabled_]]">
+          <template is="dom-if" if="[[showHistoryClusters_]]">
             <div id="tabs">
               <cr-tabs tab-names="[[tabsNames_]]"
                   tab-icons="[[tabsIcons_]]"
@@ -105,7 +107,7 @@
                 path="history">
             </history-list>
             <template is="dom-if"
-                if="[[historyClustersSelected_(selectedPage_, historyClustersEnabled_)]]">
+                if="[[historyClustersSelected_(selectedPage_, showHistoryClusters_)]]">
               <history-clusters id="history-clusters"
                   query="[[queryState_.searchTerm]]"
                   path="journeys">
@@ -129,7 +131,9 @@
         <cr-drawer heading="$i18n{title}" align="$i18n{textdirection}">
           <history-side-bar id="drawer-side-bar" slot="body"
               selected-page="{{selectedPage_}}"
-              selected-tab="[[selectedTab_]]"
+              selected-tab="{{selectedTab_}}"
+              history-clusters-enabled="[[historyClustersEnabled_]]"
+              history-clusters-visible="{{historyClustersVisible_}}"
               footer-info="[[footerInfo]]">
           </history-side-bar>
         </cr-drawer>

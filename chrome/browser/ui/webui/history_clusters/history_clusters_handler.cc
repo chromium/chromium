@@ -19,7 +19,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/memories_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -198,6 +200,13 @@ HistoryClustersHandler::~HistoryClustersHandler() = default;
 void HistoryClustersHandler::SetPage(
     mojo::PendingRemote<mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
+}
+
+void HistoryClustersHandler::ToggleVisibility(
+    bool visible,
+    ToggleVisibilityCallback callback) {
+  profile_->GetPrefs()->SetBoolean(prefs::kVisible, visible);
+  std::move(callback).Run(visible);
 }
 
 void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
