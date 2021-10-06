@@ -630,7 +630,8 @@
     "matches": [
       "chrome://extensions/*",
       // System Web App version of File Manager.
-      "chrome://file-manager/*"
+      "chrome://file-manager/*",
+      "chrome://test/*"
     ]
   }, {
     "channel": "stable",

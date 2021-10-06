@@ -356,7 +356,10 @@ std::string GetContextOwner(v8::Local<v8::Context> context) {
   const std::string& extension_id = script_context->GetExtensionID();
   bool id_is_valid = crx_file::id_util::IdIsValid(extension_id);
   CHECK(id_is_valid || script_context->url().is_valid());
-  return id_is_valid ? extension_id : script_context->url().spec();
+  // Use only origin for URLs to match browser logic in EventListener::ForURL().
+  return id_is_valid
+             ? extension_id
+             : url::Origin::Create(script_context->url()).GetURL().spec();
 }
 
 // Returns true if any portion of the runtime API is available to the given
