@@ -36,26 +36,12 @@ class Layer;
 
 namespace image_editor {
 
-// Result codes to distinguish between how the capture mode was closed.
-enum class ScreenshotCaptureResultCode {
-  // Successful capture.
-  SUCCESS = 0,
-  // User navigated away from the primary web contents page while the capture
-  // mode was active.
-  USER_NAVIGATED_EXIT = 1,
-  // User exited the capture mode via key press.
-  USER_ESCAPE_EXIT = 2,
-  kMaxValue = USER_ESCAPE_EXIT
-};
-
 // Structure containing image data and any future metadata.
 struct ScreenshotCaptureResult {
   // The image obtained from capture. Empty on failure.
   gfx::Image image;
   // The bounds of the screen during which capture took place. Empty on failure.
   gfx::Rect screen_bounds;
-  // The result code of the capture describing why the user exited.
-  ScreenshotCaptureResultCode result_code;
 };
 
 // Callback for obtaining image data.
@@ -121,20 +107,15 @@ class ScreenshotFlow : public ui::LayerDelegate, public ui::EventHandler {
 
   // Captures a new screenshot for the chosen region, and runs the completion
   // callback.
-  void CaptureAndRunScreenshotCompleteCallback(
-      ScreenshotCaptureResultCode result_code,
-      gfx::Rect region);
+  void CaptureAndRunScreenshotCompleteCallback(gfx::Rect region);
 
   // Completes the capture process for |region| and runs the callback provided
   // to Start().
-  void CompleteCapture(ScreenshotCaptureResultCode result_code,
-                       const gfx::Rect& region);
+  void CompleteCapture(const gfx::Rect& region);
 
   // Completes the capture process and runs the |flow_callback| with provided
   // |image| data sourced from |bounds|.
-  void RunScreenshotCompleteCallback(ScreenshotCaptureResultCode result_code,
-                                     gfx::Rect bounds,
-                                     gfx::Image image);
+  void RunScreenshotCompleteCallback(gfx::Rect bounds, gfx::Image image);
 
   // Paints the screenshot selection layer. The user's selection is left
   // unpainted to be hollowed out. |invalidation_region| specifies an optional

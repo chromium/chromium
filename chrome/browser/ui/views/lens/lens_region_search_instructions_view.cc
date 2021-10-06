@@ -32,25 +32,16 @@ constexpr int kCornerRadius = 15;
 
 LensRegionSearchInstructionsView::LensRegionSearchInstructionsView(
     views::View* anchor_view,
-    base::OnceClosure close_callback,
-    base::OnceClosure escape_callback)
+    base::RepeatingClosure close_callback)
     : views::BubbleDialogDelegateView(anchor_view,
                                       views::BubbleBorder::Arrow::TOP_CENTER) {
-  // The cancel close_callback is called when VKEY_ESCAPE is hit.
-  SetCancelCallback(std::move(escape_callback));
+  // The cancel close_callback is called when VKEY_ESCAPE is hit. Run the close
+  // close_callback in this case.
+  SetCancelCallback(base::BindOnce(close_callback));
 
-  // Create our own close button to align with label. We need to rebind our
-  // OnceClosure to repeating due tot ImageButton::PressedCallback inheritance.
-  // However, this callback should still only be called once and this is
-  // verified with a DCHECK.
+  // Create our own close button to align with label.
   close_button_ = views::CreateVectorImageButtonWithNativeTheme(
-      base::BindRepeating(
-          [](base::OnceClosure callback) {
-            DCHECK(callback);
-            std::move(callback).Run();
-          },
-          base::Passed(std::move(close_callback))),
-      views::kIcCloseIcon, kCloseButtonSize);
+      close_callback, views::kIcCloseIcon, kCloseButtonSize);
 }
 
 LensRegionSearchInstructionsView::~LensRegionSearchInstructionsView() = default;

@@ -27,10 +27,7 @@ enum class LensRegionSearchCaptureResult {
   SUCCESS = 0,
   FAILED_TO_OPEN_TAB = 1,
   ERROR_CAPTURING_REGION = 2,
-  USER_EXITED_CAPTURE_ESCAPE = 3,
-  USER_EXITED_CAPTURE_CLOSE_BUTTON = 4,
-  USER_NAVIGATED_FROM_CAPTURE = 5,
-  kMaxValue = USER_NAVIGATED_FROM_CAPTURE
+  kMaxValue = ERROR_CAPTURING_REGION
 };
 
 // This should be kept in sync with the LensRegionSearchAspectRatio enum

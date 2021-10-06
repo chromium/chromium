@@ -129,15 +129,12 @@ void ScreenshotFlow::StartFullscreenCapture(
   // Start and finish the capture process by screenshotting the full window.
   // There is no region selection step in this mode.
   flow_callback_ = std::move(flow_callback);
-  CaptureAndRunScreenshotCompleteCallback(ScreenshotCaptureResultCode::SUCCESS,
-                                          gfx::Rect(web_contents_->GetSize()));
+  CaptureAndRunScreenshotCompleteCallback(gfx::Rect(web_contents_->GetSize()));
 }
 
-void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
-    ScreenshotCaptureResultCode result_code,
-    gfx::Rect region) {
+void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(gfx::Rect region) {
   if (region.IsEmpty()) {
-    RunScreenshotCompleteCallback(result_code, gfx::Rect(), gfx::Image());
+    RunScreenshotCompleteCallback(gfx::Rect(), gfx::Image());
     return;
   }
 
@@ -149,11 +146,10 @@ void ScreenshotFlow::CaptureAndRunScreenshotCompleteCallback(
   // If |img| is empty, clients should treat it as a canceled action, but
   // we have a DCHECK for development as we expected this call to succeed.
   DCHECK(rval);
-  RunScreenshotCompleteCallback(result_code, bounds, img);
+  RunScreenshotCompleteCallback(bounds, img);
 #else
-  ui::GrabWindowSnapshotAsyncCallback screenshot_callback =
-      base::BindOnce(&ScreenshotFlow::RunScreenshotCompleteCallback, weak_this_,
-                     result_code, bounds);
+  ui::GrabWindowSnapshotAsyncCallback screenshot_callback = base::BindOnce(
+      &ScreenshotFlow::RunScreenshotCompleteCallback, weak_this_, bounds);
   const gfx::NativeWindow& native_window = web_contents_->GetNativeView();
   ui::GrabWindowSnapshotAsync(native_window, region,
                               std::move(screenshot_callback));
@@ -167,7 +163,7 @@ void ScreenshotFlow::CancelCapture() {
 void ScreenshotFlow::OnKeyEvent(ui::KeyEvent* event) {
   if (event->type() == ui::ET_KEY_PRESSED &&
       event->key_code() == ui::VKEY_ESCAPE) {
-    CompleteCapture(ScreenshotCaptureResultCode::USER_ESCAPE_EXIT, gfx::Rect());
+    CompleteCapture(gfx::Rect());
     event->StopPropagation();
   }
 }
@@ -230,7 +226,7 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
         drag_end_.SetPoint(0, 0);
         if (selection.width() >= kMinimumValidSelectionEdgePixels &&
             selection.height() >= kMinimumValidSelectionEdgePixels) {
-          CompleteCapture(ScreenshotCaptureResultCode::SUCCESS, selection);
+          CompleteCapture(selection);
         } else {
           RequestRepaint(gfx::Rect());
         }
@@ -241,18 +237,15 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
-void ScreenshotFlow::CompleteCapture(ScreenshotCaptureResultCode result_code,
-                                     const gfx::Rect& region) {
+void ScreenshotFlow::CompleteCapture(const gfx::Rect& region) {
   RemoveUIOverlay();
-  CaptureAndRunScreenshotCompleteCallback(result_code, region);
+  CaptureAndRunScreenshotCompleteCallback(region);
 }
 
-void ScreenshotFlow::RunScreenshotCompleteCallback(
-    ScreenshotCaptureResultCode result_code,
-    gfx::Rect bounds,
-    gfx::Image image) {
+void ScreenshotFlow::RunScreenshotCompleteCallback(gfx::Rect bounds,
+                                                   gfx::Image image) {
   ScreenshotCaptureResult result;
-  result.result_code = result_code;
+
   result.image = image;
   result.screen_bounds = bounds;
 
@@ -334,8 +327,7 @@ class ScreenshotFlow::UnderlyingWebContentsObserver
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override {
-    screenshot_flow_->CompleteCapture(
-        ScreenshotCaptureResultCode::USER_NAVIGATED_EXIT, gfx::Rect());
+    screenshot_flow_->CancelCapture();
   }
 
  private:

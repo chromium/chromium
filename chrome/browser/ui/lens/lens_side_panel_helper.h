@@ -26,8 +26,7 @@ void OpenLensSidePanel(Browser* browser,
 // Opens the Lens region search bubble view with given params.
 views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
-    base::OnceClosure close_callback,
-    base::OnceClosure escape_callback);
+    base::RepeatingClosure callback);
 
 }  // namespace lens
 

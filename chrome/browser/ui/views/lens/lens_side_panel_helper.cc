@@ -20,13 +20,12 @@ void OpenLensSidePanel(Browser* browser,
 
 views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
-    base::OnceClosure close_callback,
-    base::OnceClosure escape_callback) {
+    base::RepeatingClosure callback) {
   views::View* anchor =
       BrowserView::GetBrowserViewForBrowser(browser)->top_container();
   return views::BubbleDialogDelegateView::CreateBubble(
-      std::make_unique<LensRegionSearchInstructionsView>(
-          anchor, std::move(close_callback), std::move(escape_callback)));
+      std::make_unique<LensRegionSearchInstructionsView>(anchor,
+                                                         std::move(callback)));
 }
 
 }  // namespace lens
