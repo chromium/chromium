@@ -4,17 +4,47 @@
 
 #include "chrome/browser/ui/views/theme_profile_key.h"
 
+#include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
 
-DEFINE_UI_CLASS_PROPERTY_TYPE(Profile*)
+namespace {
 
-DEFINE_UI_CLASS_PROPERTY_KEY(Profile*, kThemeProfileKey, nullptr)
+// A wrapper around Profile* that resets to nullptr when the Profile is
+// destroyed, much like a WeakPtr. This is not thread-safe.
+class ProfileTracker : public ProfileObserver {
+ public:
+  explicit ProfileTracker(Profile* profile) : profile_(profile) {
+    if (profile_)
+      observation_.Observe(profile_);
+  }
+  ~ProfileTracker() override = default;
+
+  void OnProfileWillBeDestroyed(Profile* profile) override {
+    observation_.Reset();
+    profile_ = nullptr;
+  }
+
+  Profile* profile() { return profile_; }
+
+ private:
+  Profile* profile_;
+  base::ScopedObservation<Profile, ProfileObserver> observation_{this};
+};
+
+}  // namespace
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(ProfileTracker*)
+
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ProfileTracker, kThemeProfileKey, nullptr)
 
 void SetThemeProfileForWindow(aura::Window* window, Profile* profile) {
-  window->SetProperty(kThemeProfileKey, profile);
+  window->SetProperty(kThemeProfileKey, new ProfileTracker(profile));
 }
 
 Profile* GetThemeProfileForWindow(aura::Window* window) {
-  return window->GetProperty(kThemeProfileKey);
+  ProfileTracker* const tracker = window->GetProperty(kThemeProfileKey);
+  return tracker ? tracker->profile() : nullptr;
 }
