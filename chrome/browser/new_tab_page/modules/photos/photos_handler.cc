@@ -36,3 +36,7 @@ void PhotosHandler::ShouldShowOptInScreen(
 void PhotosHandler::OnUserOptIn(bool accept) {
   PhotosServiceFactory::GetForProfile(profile_)->OnUserOptIn(accept);
 }
+
+void PhotosHandler::OnMemoryOpen() {
+  PhotosServiceFactory::GetForProfile(profile_)->OnMemoryOpen();
+}

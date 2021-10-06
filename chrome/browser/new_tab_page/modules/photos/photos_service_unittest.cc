@@ -192,6 +192,107 @@ TEST_F(PhotosServiceTest, RequestIsCached) {
                    PhotosService::RequestResult::kCached));
 }
 
+TEST_F(PhotosServiceTest, CacheIsSkippedOnMemoryOpen) {
+  std::vector<photos::mojom::MemoryPtr> actual_memories;
+  base::MockCallback<PhotosService::GetMemoriesCallback> callback;
+
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(2)
+      .WillRepeatedly(
+          testing::Invoke([&](std::vector<photos::mojom::MemoryPtr> memories) {
+            actual_memories = std::move(memories);
+          }));
+
+  network::URLLoaderCompletionStatus status;
+  status.exists_in_cache = true;
+  test_url_loader_factory_.AddResponse(
+      GURL("https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read"),
+      network::CreateURLResponseHead(net::HTTP_OK),
+      R"(
+        {
+          "memory": [
+            {
+              "memoryMediaKey": "key1",
+              "title": {
+                "header": "Title 1",
+                "subheader": "Something something 1"
+              },
+              "coverMediaKey": "coverKey1",
+              "coverUrl": "https://photos.google.com/img/coverKey1"
+            },
+            {
+              "memoryMediaKey": "key2",
+              "title": {
+                "header": "Title 2",
+                "subheader": "Something something 2"
+              },
+              "coverMediaKey": "coverKey2",
+              "coverUrl": "https://photos.google.com/img/coverKey2"
+            }
+          ]
+        }
+      )",
+      status);
+
+  service_->GetMemories(callback.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+  base::RunLoop().RunUntilIdle();
+
+  // API response is cached
+  EXPECT_EQ(2u, actual_memories.size());
+  ASSERT_EQ(0,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("photos")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataRequest",
+                   PhotosService::RequestResult::kCached));
+
+  // Save last time memory was opened as a timestamp
+  EXPECT_TRUE(
+      prefs_.GetTime(PhotosService::kLastMemoryOpenTimePrefName).is_null());
+  service_->OnMemoryOpen();
+  EXPECT_FALSE(
+      prefs_.GetTime(PhotosService::kLastMemoryOpenTimePrefName).is_null());
+
+  // Expecting new API call with last opened timestamp in URL
+  base::Time now = base::Time::Now();
+  prefs_.SetTime(PhotosService::kLastMemoryOpenTimePrefName, now);
+  service_->GetMemories(callback.Get());
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "foo", base::Time());
+  std::string url =
+      "https://photosfirstparty-pa.googleapis.com/v1/ntp/"
+      "memories:read?lastViewed=" +
+      base::NumberToString(now.ToTimeT());
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      url,
+      R"(
+        {
+          "memory": [
+            {
+              "memoryMediaKey": "key1",
+              "title": {
+                "header": "Title 1",
+                "subheader": "Something something 1"
+              },
+              "coverMediaKey": "coverKey1",
+              "coverUrl": "https://photos.google.com/img/coverKey1"
+            }
+          ]
+        }
+      )",
+      net::HTTP_OK,
+      network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
+  EXPECT_EQ(1u, actual_memories.size());
+  ASSERT_EQ(1,
+            histogram_tester_.GetBucketCount("NewTabPage.Modules.DataRequest",
+                                             base::PersistentHash("photos")));
+  ASSERT_EQ(1, histogram_tester_.GetBucketCount(
+                   "NewTabPage.Photos.DataRequest",
+                   PhotosService::RequestResult::kSuccess));
+}
+
 TEST_F(PhotosServiceTest, PassesDataToMultipleRequestsToPhotosService) {
   std::vector<photos::mojom::MemoryPtr> response1;
   std::vector<photos::mojom::MemoryPtr> response2;

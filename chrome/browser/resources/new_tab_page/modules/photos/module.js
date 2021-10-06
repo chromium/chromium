@@ -143,6 +143,7 @@ class PhotosModuleElement extends mixinBehaviors
   /** @private */
   onMemoryClick_() {
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
+    PhotosProxy.getHandler().onMemoryOpen();
   }
 
   /**

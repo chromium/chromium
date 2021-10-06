@@ -31,4 +31,6 @@ interface PhotosHandler {
   // Stores in profile prefs whether the user has opt-in
   // see the module content.
   OnUserOptIn(bool accept);
+  // Stores the last time the user opened a memory.
+  OnMemoryOpen();
 };

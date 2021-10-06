@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -81,6 +82,8 @@ const char PhotosService::kLastDismissedTimePrefName[] =
     "NewTabPage.Photos.LastDimissedTime";
 const char PhotosService::kOptInAcknowledgedPrefName[] =
     "NewTabPage.Photos.OptInAcknowledged";
+const char PhotosService::kLastMemoryOpenTimePrefName[] =
+    "NewTabPage.Photos.LastMemoryOpenTime";
 
 // static
 const base::TimeDelta PhotosService::kDismissDuration = base::Days(1);
@@ -99,6 +102,7 @@ PhotosService::PhotosService(
 void PhotosService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
   registry->RegisterBooleanPref(kOptInAcknowledgedPrefName, false);
+  registry->RegisterTimePref(kLastMemoryOpenTimePrefName, base::Time());
 }
 
 void PhotosService::GetMemories(GetMemoriesCallback callback) {
@@ -168,6 +172,10 @@ void PhotosService::OnUserOptIn(bool accept) {
   pref_service_->SetBoolean(kOptInAcknowledgedPrefName, accept);
 }
 
+void PhotosService::OnMemoryOpen() {
+  pref_service_->SetTime(kLastMemoryOpenTimePrefName, base::Time::Now());
+}
+
 void PhotosService::OnTokenReceived(GoogleServiceAuthError error,
                                     signin::AccessTokenInfo token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -181,9 +189,17 @@ void PhotosService::OnTokenReceived(GoogleServiceAuthError error,
     return;
   }
 
+  std::string cache_bust_param = "";
+  if (!pref_service_->GetTime(kLastMemoryOpenTimePrefName).is_null()) {
+    cache_bust_param =
+        "?lastViewed=" +
+        base::NumberToString(
+            pref_service_->GetTime(kLastMemoryOpenTimePrefName).ToTimeT());
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "GET";
-  resource_request->url = GURL(server_url);
+  resource_request->url = GURL(server_url + cache_bust_param);
   // Cookies should not be allowed.
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,

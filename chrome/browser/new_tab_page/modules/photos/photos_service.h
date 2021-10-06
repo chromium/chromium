@@ -38,6 +38,7 @@ class PhotosService : public KeyedService {
   };
   static const char kLastDismissedTimePrefName[];
   static const char kOptInAcknowledgedPrefName[];
+  static const char kLastMemoryOpenTimePrefName[];
   static const base::TimeDelta kDismissDuration;
 
   PhotosService(const PhotosService&) = delete;
@@ -60,6 +61,8 @@ class PhotosService : public KeyedService {
   bool ShouldShowOptInScreen();
   // Stores whether the user has opt-in to see the module content.
   void OnUserOptIn(bool accept);
+  // Stores the last time the user opened a memory.
+  void OnMemoryOpen();
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,

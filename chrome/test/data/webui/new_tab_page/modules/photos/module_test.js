@@ -337,7 +337,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     assertEquals(1, metrics.count('NewTabPage.Photos.UserOptIn', true));
   });
 
-  test('click on memory trigger proper logging', async () => {
+  test('click on memory trigger proper logging and pref change', async () => {
     // Arrange.
     const data = {
       memories: [{
@@ -361,6 +361,7 @@ suite('NewTabPageModulesPhotosModuleTest', () => {
     $$(module, '#memories > .memory').click();
 
     // Assert.
+    assertEquals(1, handler.getCallCount('onMemoryOpen'));
     assertTrue(!!usage.event);
   });
 });
