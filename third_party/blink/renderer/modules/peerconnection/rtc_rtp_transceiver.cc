@@ -261,19 +261,25 @@ void RTCRtpTransceiver::setCodecPreferences(
       webrtc_codec.num_channels = codec->channels();
     }
     if (codec->hasSdpFmtpLine()) {
-      WTF::Vector<WTF::String> parameters;
-      codec->sdpFmtpLine().Split(';', parameters);
-      for (const auto& parameter : parameters) {
-        auto equal_position = parameter.find('=');
-        if (equal_position == WTF::kNotFound) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kInvalidModificationError, "Invalid codec");
-          return;
+      auto sdpFmtpLine = codec->sdpFmtpLine();
+      if (sdpFmtpLine.find('=') == WTF::kNotFound) {
+        // Some parameters don't follow the key=value form.
+        webrtc_codec.parameters.emplace("", sdpFmtpLine.Ascii());
+      } else {
+        WTF::Vector<WTF::String> parameters;
+        sdpFmtpLine.Split(';', parameters);
+        for (const auto& parameter : parameters) {
+          auto equal_position = parameter.find('=');
+          if (equal_position == WTF::kNotFound) {
+            exception_state.ThrowDOMException(
+                DOMExceptionCode::kInvalidModificationError, "Invalid codec");
+            return;
+          }
+          auto parameter_name = parameter.Left(equal_position);
+          auto parameter_value = parameter.Substring(equal_position + 1);
+          webrtc_codec.parameters.emplace(parameter_name.Ascii(),
+                                          parameter_value.Ascii());
         }
-        auto parameter_name = parameter.Left(equal_position);
-        auto parameter_value = parameter.Substring(equal_position + 1);
-        webrtc_codec.parameters.emplace(parameter_name.Ascii(),
-                                        parameter_value.Ascii());
       }
     }
   }
