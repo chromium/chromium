@@ -292,7 +292,8 @@ LayoutUnit NGLineTruncator::TruncateLineInTheMiddle(
     } else {
       PlaceEllipsisNextTo(line_box, &line[new_index]);
       available_width_right +=
-          available_width_left - line[new_index].inline_size;
+          available_width_left -
+          line[new_index].inline_size.ClampNegativeToZero();
     }
 
     // Find truncation point at the right.
