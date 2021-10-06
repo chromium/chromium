@@ -17,7 +17,7 @@ import org.chromium.ui.base.ViewUtils;
 /**
  * Manages the scene UI and the reactions on the scene.
  */
-public class SceneCoordinator {
+public class SceneCoordinator implements SceneEditorDelegate {
     private static final int DEFAULT_REACTION_SIZE = 100;
     private final Activity mActivity;
 
@@ -36,7 +36,7 @@ public class SceneCoordinator {
         mSceneBackground = sceneBackground;
     }
 
-    public void addReaction() {
+    public void addInitialReaction() {
         if (mSceneBackground == null) {
             return;
         }
@@ -54,5 +54,27 @@ public class SceneCoordinator {
                 - res.getDimensionPixelSize(R.dimen.toolbar_total_height);
         lp.setMargins(leftPx, topPx, 0, 0);
         mSceneBackground.addView(reactionLayout, lp);
+    }
+
+    // SceneEditorCallback implementation.
+    @Override
+    public boolean canAddReaction() {
+        // no-op for now
+        return true;
+    }
+
+    @Override
+    public void addReaction(ReactionLayout reactionLayout) {
+        // no-op for now
+    }
+
+    @Override
+    public void removeReaction(ReactionLayout reactionLayout) {
+        // no-op for now
+    }
+
+    @Override
+    public void markActiveStatus(ReactionLayout reactionLayout, boolean activeStatus) {
+        // no-op for now
     }
 }

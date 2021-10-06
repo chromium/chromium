@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/ReactionLayout.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneCoordinator.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneEditorDelegate.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarControlsDelegate.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/toolbar/ToolbarCoordinator.java",
   ]
