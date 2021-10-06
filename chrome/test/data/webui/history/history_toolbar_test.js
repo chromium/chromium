@@ -36,11 +36,12 @@ suite('history-toolbar', function() {
   test('selecting checkbox causes toolbar to change', function() {
     testService.setQueryResult(
         {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
-    element.fire('query-history', true);
+    element.dispatchEvent(new CustomEvent(
+        'query-history', {bubbles: true, composed: true, detail: true}));
     return testService.whenCalled('queryHistoryContinuation')
         .then(flushTasks)
         .then(function() {
-          const item = element.$$('history-item');
+          const item = element.shadowRoot.querySelector('history-item');
           item.$.checkbox.click();
 
           // Ensure that when an item is selected that the count held by the

@@ -39,7 +39,8 @@ suite('#overflow-menu', function() {
 
   test('opening and closing menu', function() {
     const detail1 = {target: target1};
-    listContainer.fire('open-menu', detail1);
+    listContainer.dispatchEvent(new CustomEvent(
+        'open-menu', {bubbles: true, composed: true, detail: detail1}));
     assertTrue(sharedMenu.open);
     assertEquals(detail1, listContainer.actionMenuModel_);
 
@@ -47,7 +48,8 @@ suite('#overflow-menu', function() {
     assertFalse(sharedMenu.open);
 
     const detail2 = {target: target2};
-    listContainer.fire('open-menu', detail2);
+    listContainer.dispatchEvent(new CustomEvent(
+        'open-menu', {bubbles: true, composed: true, detail: detail2}));
     assertEquals(detail2, listContainer.actionMenuModel_);
     assertTrue(sharedMenu.open);
 

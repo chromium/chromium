@@ -22,7 +22,7 @@ import {FindShortcutBehavior} from 'chrome://resources/cr_elements/find_shortcut
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
@@ -128,10 +128,10 @@ export interface HistoryAppElement {
 
 const HistoryAppElementBase =
     mixinBehaviors(
-        [FindShortcutBehavior, IronScrollTargetBehavior, WebUIListenerBehavior],
-        PolymerElement) as {
+        [FindShortcutBehavior, IronScrollTargetBehavior],
+        WebUIListenerMixin(PolymerElement)) as {
       new (): PolymerElement & FindShortcutBehavior & IronScrollTargetBehavior &
-      WebUIListenerBehavior
+      WebUIListenerMixinInterface
     };
 
 export class HistoryAppElement extends HistoryAppElementBase {

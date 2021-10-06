@@ -44,7 +44,10 @@ group("preprocess") {
 preprocess_if_expr("preprocess_src_ts") {
   in_folder = "./"
   out_folder = "$preprocess_folder"
-  in_files = [ "i18n_mixin.ts" ]
+  in_files = [
+    "i18n_mixin.ts",
+    "web_ui_listener_mixin.ts",
+  ]
 }
 
 preprocess_if_expr("preprocess_src") {

@@ -55,6 +55,7 @@ suite('history-list supervised-user', function() {
   test('remove history menu button disabled', function() {
     const listContainer = app.$['history'];
     listContainer.$.sharedMenu.get();
-    assertTrue(listContainer.$$('#menuRemoveButton').hidden);
+    assertTrue(
+        listContainer.shadowRoot.querySelector('#menuRemoveButton').hidden);
   });
 });

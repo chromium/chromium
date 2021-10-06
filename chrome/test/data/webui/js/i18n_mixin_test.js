@@ -9,7 +9,7 @@ const TestElementBase = I18nMixin(PolymerElement);
 class TestElement extends TestElementBase {}
 customElements.define('test-element', TestElement);
 
-suite('I18nBehaviorModuleTest', function() {
+suite('I18nMixinTest', function() {
   const allowedByDefault = '<a href="https://google.com">Google!</a>';
   const text = 'I\'m just text, nobody should have a problem with me!';
   const nonBreakingSpace = 'A\u00a0B\u00a0C';  // \u00a0 is a unicode nbsp.
@@ -29,7 +29,7 @@ suite('I18nBehaviorModuleTest', function() {
     };
   });
 
-  suite('I18nMixinTest', function() {
+  setup(function() {
     document.body.innerHTML = '';
     testElement = document.createElement('test-element');
     document.body.appendChild(testElement);

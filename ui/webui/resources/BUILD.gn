@@ -200,6 +200,7 @@ ts_library("library") {
   in_files = [
     "cr_elements/cr_nav_menu_item_style.ts",
     "js/i18n_mixin.ts",
+    "js/web_ui_listener_mixin.ts",
   ]
 
   definitions = []
