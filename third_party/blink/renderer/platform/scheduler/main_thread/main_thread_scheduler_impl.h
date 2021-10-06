@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/scheduler/common/thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/auto_advancing_virtual_time_domain.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/compositor_priority_experiments.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/deadline_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/idle_time_estimator.h"
@@ -399,8 +398,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   void SetPrioritizeCompositingAfterInput(
       bool prioritize_compositing_after_input);
 
-  void OnCompositorPriorityExperimentUpdateCompositorPriority();
-
   // Allow places in the scheduler to do some work after the current task.
   // The primary use case here is batching – to allow updates to be processed
   // only once per task.
@@ -455,7 +452,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   friend class main_thread_scheduler_impl_unittest::MockPageSchedulerImpl;
   friend class main_thread_scheduler_impl_unittest::MainThreadSchedulerImplTest;
 
-  friend class CompositorPriorityExperiments;
   friend class FindInPageBudgetPoolController;
 
   FRIEND_TEST_ALL_PREFIXES(
@@ -730,6 +726,12 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Used to update the compositor priority on the main thread.
   void UpdateCompositorTaskQueuePriority();
 
+  // Called from OnTaskCompleted, this method checks to see if the compositor
+  // task queue priority needs to be updated.
+  void MaybeUpdateCompositorTaskQueuePriorityOnTaskCompleted(
+      MainThreadTaskQueue* queue,
+      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
+
   // Computes the priority for compositing based on the current use case.
   // Returns nullopt if the use case does not need to set the priority.
   absl::optional<TaskQueue::QueuePriority>
@@ -920,15 +922,17 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // List of callbacks to execute after the current task.
     WTF::Vector<base::OnceClosure> on_task_completion_callbacks;
 
-    // Compositing priority experiments (crbug.com/966177).
-    CompositorPriorityExperiments compositor_priority_experiments;
-
     bool main_thread_compositing_is_fast;
 
     // Priority given to the main thread's compositor task queue. Defaults to
     // kNormalPriority and is updated via UpdateCompositorTaskQueuePriority().
+    // After 100ms with nothing running from this queue, the compositor will
+    // be set to kVeryHighPriority until a frame is run.
     TraceableState<TaskQueue::QueuePriority, TracingCategoryName::kDefault>
         compositor_priority;
+    base::TimeTicks last_frame_time;
+    bool should_prioritize_compositor_task_queue_after_delay;
+    bool have_seen_a_frame;
 
     WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
 

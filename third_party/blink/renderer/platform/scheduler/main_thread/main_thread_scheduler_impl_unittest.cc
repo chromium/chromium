@@ -3709,123 +3709,7 @@ TEST_F(MainThreadSchedulerImplTest, FindInPageTasksChangeToNormalPriority) {
               testing::ElementsAre("D1", "D2", "F1", "F2", "D3", "F3"));
 }
 
-class VeryHighPriorityForCompositingAlwaysExperimentTest
-    : public MainThreadSchedulerImplTest {
- public:
-  VeryHighPriorityForCompositingAlwaysExperimentTest()
-      : MainThreadSchedulerImplTest({kVeryHighPriorityForCompositingAlways},
-                                    {}) {}
-};
-
-TEST_F(VeryHighPriorityForCompositingAlwaysExperimentTest,
-       TestCompositorPolicy) {
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "I1 D1 C1 D2 C2 P1");
-
-  EnableIdleTasks();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order,
-              testing::ElementsAre("P1", "C1", "C2", "D1", "D2", "I1"));
-  EXPECT_EQ(UseCase::kNone, CurrentUseCase());
-}
-
-class VeryHighPriorityForCompositingWhenFastExperimentTest
-    : public MainThreadSchedulerImplTest {
- public:
-  VeryHighPriorityForCompositingWhenFastExperimentTest()
-      : MainThreadSchedulerImplTest({kVeryHighPriorityForCompositingWhenFast},
-                                    {}) {}
-};
-
-TEST_F(VeryHighPriorityForCompositingWhenFastExperimentTest,
-       TestCompositorPolicy_FastCompositing) {
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "I1 D1 C1 D2 C2 P1");
-
-  EnableIdleTasks();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order,
-              testing::ElementsAre("P1", "C1", "C2", "D1", "D2", "I1"));
-  EXPECT_EQ(UseCase::kNone, CurrentUseCase());
-}
-
-TEST_F(VeryHighPriorityForCompositingWhenFastExperimentTest,
-       TestCompositorPolicy_SlowCompositing) {
-  RunSlowCompositorTask();
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "I1 D1 C1 D2 C2 P1");
-
-  EnableIdleTasks();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order,
-              testing::ElementsAre("P1", "D1", "C1", "D2", "C2", "I1"));
-  EXPECT_EQ(UseCase::kNone, CurrentUseCase());
-}
-
-TEST_F(VeryHighPriorityForCompositingWhenFastExperimentTest,
-       TestCompositorPolicy_CompositingStaysAtHighest) {
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "L1 I1 D1 C1 D2 P1 C2");
-
-  scheduler_->SetHasVisibleRenderWidgetWithTouchHandler(true);
-  EnableIdleTasks();
-  SimulateMainThreadGestureStart(
-      TouchEventPolicy::kSendTouchStart,
-      blink::WebInputEvent::Type::kGestureScrollBegin);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order,
-              testing::ElementsAre("C1", "P1", "C2", "L1", "D1", "D2", "I1"));
-  EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
-}
-class VeryHighPriorityForCompositingAlternatingExperimentTest
-    : public MainThreadSchedulerImplTest {
- public:
-  VeryHighPriorityForCompositingAlternatingExperimentTest()
-      : MainThreadSchedulerImplTest(
-            {kVeryHighPriorityForCompositingAlternating},
-            {}) {}
-};
-
-TEST_F(VeryHighPriorityForCompositingAlternatingExperimentTest,
-       TestCompositorPolicy_AlternatingCompositorTasks) {
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "D1 D2 D3 C1 C2 C3");
-
-  // Compositor is very high priority, we do a main frame and it is set to
-  // normal priority for a task before being reprioritzed.
-  DoMainFrame();
-  EnableIdleTasks();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order,
-              testing::ElementsAre("C1", "D1", "C2", "C3", "D2", "D3"));
-  EXPECT_EQ(UseCase::kNone, CurrentUseCase());
-}
-
-TEST_F(VeryHighPriorityForCompositingAlternatingExperimentTest,
-       TestCompositorPolicy_AlternatingCompositorStaysAtHighest) {
-  Vector<String> run_order;
-  PostTestTasks(&run_order, "D1 D2 D3 C1 C2 C3");
-
-  scheduler_->SetHasVisibleRenderWidgetWithTouchHandler(true);
-  EnableIdleTasks();
-  SimulateMainThreadGestureStart(
-      TouchEventPolicy::kSendTouchStart,
-      blink::WebInputEvent::Type::kGestureScrollBegin);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(run_order,
-              testing::ElementsAre("C1", "C2", "C3", "D1", "D2", "D3"));
-  EXPECT_EQ(UseCase::kMainThreadCustomInputHandling, CurrentUseCase());
-}
-
-class VeryHighPriorityForCompositingAfterDelayExperimentTest
-    : public MainThreadSchedulerImplTest {
- public:
-  VeryHighPriorityForCompositingAfterDelayExperimentTest()
-      : MainThreadSchedulerImplTest({kVeryHighPriorityForCompositingAfterDelay},
-                                    {}) {}
-};
-
-TEST_F(VeryHighPriorityForCompositingAfterDelayExperimentTest,
+TEST_F(MainThreadSchedulerImplTest,
        TestCompositorPolicy_CompositorStaysAtNormalPriority) {
   Vector<String> run_order;
   PostTestTasks(&run_order, "I1 D1 C1 D2 C2 P1");
@@ -3838,7 +3722,7 @@ TEST_F(VeryHighPriorityForCompositingAfterDelayExperimentTest,
   EXPECT_EQ(UseCase::kNone, CurrentUseCase());
 }
 
-TEST_F(VeryHighPriorityForCompositingAfterDelayExperimentTest,
+TEST_F(MainThreadSchedulerImplTest,
        TestCompositorPolicy_FirstCompositorTaskSetToVeryHighPriority) {
   // 150ms task to complete the countdown and prioritze compositing.
   AdvanceTimeWithTask(0.15);
@@ -3861,7 +3745,7 @@ TEST_F(VeryHighPriorityForCompositingAfterDelayExperimentTest,
   EXPECT_EQ(UseCase::kNone, CurrentUseCase());
 }
 
-TEST_F(VeryHighPriorityForCompositingAfterDelayExperimentTest,
+TEST_F(MainThreadSchedulerImplTest,
        TestCompositorPolicy_FirstCompositorTaskStaysAtNormalPriority) {
   // 0.5ms task should not prioritize compositing.
   AdvanceTimeWithTask(0.05);
