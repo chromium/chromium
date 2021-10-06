@@ -130,13 +130,6 @@ const views::View* SendTabToSelfBubbleViewImpl::GetButtonContainerForTesting()
 
 void SendTabToSelfBubbleViewImpl::Init() {
   auto* provider = ChromeLayoutProvider::Get();
-  set_margins(
-      gfx::Insets(provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
-                  0,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-                  0));
   int width =
       provider->GetDistanceMetric(views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
   // TODO(crbug.com/1243793): Use views::BoxLayout since there's only 1 column.
@@ -153,15 +146,19 @@ void SendTabToSelfBubbleViewImpl::Init() {
 
   CreateDevicesScrollView(layout);
 
+  int bottom_margin = provider->GetDistanceMetric(
+      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL);
   if (base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfManageDevicesLink)) {
     CreateManageDevicesLink(layout);
     // Remove the extra bottom space because the link has a different background
     // color.
-    gfx::Insets margins = GetInsets();
-    margins.set_bottom(0);
-    set_margins(margins);
+    bottom_margin = 0;
   }
+  set_margins(
+      gfx::Insets(provider->GetDistanceMetric(
+                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL),
+                  0, bottom_margin, 0));
 }
 
 void SendTabToSelfBubbleViewImpl::AddedToWidget() {
