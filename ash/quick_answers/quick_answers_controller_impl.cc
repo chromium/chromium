@@ -115,14 +115,9 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
 
 void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
     const quick_answers::QuickAnswersRequest& request) {
-  if (features::IsQuickAnswersV2Enabled() &&
-      QuickAnswersState::Get()->consent_status() ==
-          quick_answers::prefs::ConsentStatus::kUnknown) {
+  if (QuickAnswersState::Get()->consent_status() ==
+      quick_answers::prefs::ConsentStatus::kUnknown) {
     ShowUserConsent(
-        IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
-        base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
-  } else if (!features::IsQuickAnswersV2Enabled() && ShouldShowUserNotice()) {
-    ShowUserNotice(
         IntentTypeToString(request.preprocessed_output.intent_info.intent_type),
         base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
   } else {
@@ -191,10 +186,7 @@ void QuickAnswersControllerImpl::OnQuickAnswerReceived(
         std::make_unique<quick_answers::QuickAnswerText>(title_));
     quick_answer_with_no_result.first_answer_row.push_back(
         std::make_unique<quick_answers::QuickAnswerResultText>(
-            l10n_util::GetStringUTF8(
-                features::IsQuickAnswersV2Enabled()
-                    ? IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT_V2
-                    : IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT)));
+            l10n_util::GetStringUTF8(IDS_ASH_QUICK_ANSWERS_VIEW_NO_RESULT_V2)));
     quick_answers_ui_controller_->RenderQuickAnswersViewWithResult(
         anchor_bounds_, quick_answer_with_no_result);
     // Fallback query to title if no result is available.
@@ -306,21 +298,6 @@ void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {
   if (quick_answers_ui_controller_->is_showing_user_consent_view())
     ash::QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kDismiss);
   quick_answers_ui_controller_->CloseUserConsentView();
-}
-
-bool QuickAnswersControllerImpl::ShouldShowUserNotice() const {
-  return notice_controller_->ShouldShowNotice();
-}
-
-void QuickAnswersControllerImpl::ShowUserNotice(
-    const std::u16string& intent_type,
-    const std::u16string& intent_text) {
-  // Show notice informing user about the feature if required.
-  if (!quick_answers_ui_controller_->is_showing_user_notice_view()) {
-    quick_answers_ui_controller_->CreateUserNoticeView(
-        anchor_bounds_, intent_type, intent_text);
-    notice_controller_->StartNotice();
-  }
 }
 
 void QuickAnswersControllerImpl::ShowUserConsent(

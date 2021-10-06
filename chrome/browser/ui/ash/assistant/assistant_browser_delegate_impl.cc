@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/assistant/assistant_interface_binder.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
@@ -212,8 +211,7 @@ void AssistantBrowserDelegateImpl::OnAssistantFeatureAllowedChanged(
     // This is a short term workaround since Quick Answers also use the webview
     // factory.
     // TODO(b/198811694): Refactor AssistantWebViewFactoryImpl.
-    if (chromeos::features::IsQuickAnswersV2Enabled() &&
-        !assistant_web_view_factory_) {
+    if (!assistant_web_view_factory_) {
       assistant_web_view_factory_ =
           std::make_unique<AssistantWebViewFactoryImpl>(profile);
     }

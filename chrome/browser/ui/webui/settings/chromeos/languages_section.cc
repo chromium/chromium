@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/quick_answers/quick_answers_state.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -317,7 +318,8 @@ void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "translateTargetLabel",
       l10n_util::GetStringUTF16(
-          ash::features::IsQuickAnswersV2Enabled()
+          ash::QuickAnswersState::Get() &&
+                  ash::QuickAnswersState::Get()->is_eligible()
               ? IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL_WITH_QUICK_ANSWERS
               : IDS_OS_SETTINGS_LANGUAGES_TRANSLATE_TARGET_LABEL));
   html_source->AddString(

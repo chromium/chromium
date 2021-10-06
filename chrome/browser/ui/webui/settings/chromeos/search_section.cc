@@ -36,8 +36,7 @@ namespace settings {
 namespace {
 
 bool ShouldShowQuickAnswersSettings() {
-  return ash::features::IsQuickAnswersV2Enabled() &&
-         ash::QuickAnswersState::Get() &&
+  return ash::QuickAnswersState::Get() &&
          ash::QuickAnswersState::Get()->is_eligible();
 }
 

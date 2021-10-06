@@ -4,7 +4,6 @@
 
 #include "ash/quick_answers/quick_answers_state_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 
@@ -16,9 +15,6 @@ QuickAnswersStateController::QuickAnswersStateController()
 QuickAnswersStateController::~QuickAnswersStateController() = default;
 
 void QuickAnswersStateController::OnFirstSessionStarted() {
-  if (!features::IsQuickAnswersV2Enabled())
-    return;
-
   state_.RegisterPrefChanges(
       Shell::Get()->session_controller()->GetPrimaryUserPrefService());
 }

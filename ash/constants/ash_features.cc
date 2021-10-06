@@ -891,10 +891,6 @@ const base::Feature kProjectorFeaturePod{"ProjectorFeaturePod",
 const base::Feature kProjectorAnnotator{"ProjectorAnnotator",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to enable quick answers V2 features.
-const base::Feature kQuickAnswersV2{"QuickAnswersV2",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable quick answers V2 settings sub-toggles.
 const base::Feature kQuickAnswersV2SettingsSubToggle{
     "QuickAnswersV2SettingsSubToggle", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1586,10 +1582,6 @@ bool IsProjectorFeaturePodEnabled() {
 bool IsProjectorAnnotatorEnabled() {
   return IsProjectorEnabled() &&
          base::FeatureList::IsEnabled(kProjectorAnnotator);
-}
-
-bool IsQuickAnswersV2Enabled() {
-  return base::FeatureList::IsEnabled(kQuickAnswersV2);
 }
 
 bool IsQuickAnswersV2TranslationDisabled() {

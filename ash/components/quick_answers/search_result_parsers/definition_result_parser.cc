@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/components/quick_answers/utils/quick_answers_utils.h"
-#include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "url/gurl.h"
@@ -63,9 +62,7 @@ bool DefinitionResultParser::Parse(const Value* result,
       std::make_unique<QuickAnswerText>(secondary_answer));
   quick_answer->first_answer_row.push_back(
       std::make_unique<QuickAnswerResultText>(*definition));
-  if (features::IsQuickAnswersV2Enabled()) {
-    quick_answer->phonetics_audio = ExtractPhoneticsAudio(first_entry);
-  }
+  quick_answer->phonetics_audio = ExtractPhoneticsAudio(first_entry);
   return true;
 }
 

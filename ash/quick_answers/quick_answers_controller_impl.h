@@ -99,12 +99,6 @@ class ASH_EXPORT QuickAnswersControllerImpl
   void HandleQuickAnswerRequest(
       const quick_answers::QuickAnswersRequest& request);
 
-  bool ShouldShowUserNotice() const;
-  // Show the user notice view. Does nothing if the view is already
-  // visible.
-  void ShowUserNotice(const std::u16string& intent_type,
-                      const std::u16string& intent_text);
-
   // Show the user consent view. Does nothing if the view is already
   // visible.
   void ShowUserConsent(const std::u16string& intent_type,

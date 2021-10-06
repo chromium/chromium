@@ -5,7 +5,6 @@
 #include "ash/quick_answers/quick_answers_ui_controller.h"
 
 #include "ash/components/quick_answers/quick_answers_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/assistant/controller/assistant_interaction_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/quick_answers/quick_answers_controller_impl.h"
@@ -70,16 +69,10 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
-  if (chromeos::features::IsQuickAnswersV2Enabled()) {
-    NewWindowDelegate::GetInstance()->OpenUrl(
-        GURL(kGoogleSearchUrlPrefix +
-             net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
-        /*from_user_interaction=*/true);
-  } else {
-    ash::AssistantInteractionController::Get()->StartTextInteraction(
-        query_, /*allow_tts=*/false,
-        chromeos::assistant::AssistantQuerySource::kQuickAnswers);
-  }
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(kGoogleSearchUrlPrefix +
+           net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
+      /*from_user_interaction=*/true);
   controller_->OnQuickAnswerClick();
 }
 

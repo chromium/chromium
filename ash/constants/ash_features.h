@@ -334,14 +334,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjector;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorFeaturePod;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kProjectorAnnotator;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kQuickAnswersTranslation;
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kQuickAnswersV2;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDisableQuickAnswersV2Translation;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickAnswersV2SettingsSubToggle;
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kQuickAnswersStandaloneSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickUnlockFingerprint;
 COMPONENT_EXPORT(ASH_CONSTANTS)

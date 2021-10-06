@@ -5,6 +5,7 @@
 #include "ash/public/cpp/quick_answers/quick_answers_state.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -120,16 +121,9 @@ QuickAnswersState* QuickAnswersState::Get() {
 QuickAnswersState::QuickAnswersState() {
   DCHECK(!g_quick_answers_state);
   g_quick_answers_state = this;
-  if (!chromeos::features::IsQuickAnswersV2Enabled()) {
-    DCHECK(AssistantState::Get());
-    AssistantState::Get()->AddObserver(this);
-  }
 }
 
 QuickAnswersState::~QuickAnswersState() {
-  if (!chromeos::features::IsQuickAnswersV2Enabled() && AssistantState::Get()) {
-    AssistantState::Get()->RemoveObserver(this);
-  }
   DCHECK_EQ(g_quick_answers_state, this);
   g_quick_answers_state = nullptr;
 }
@@ -172,10 +166,6 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
       kQuickAnswersUnitConverstionEnabled,
       base::BindRepeating(&QuickAnswersState::UpdateUnitConverstionEnabled,
                           base::Unretained(this)));
-  pref_change_registrar_->Add(
-      language::prefs::kApplicationLocale,
-      base::BindRepeating(&QuickAnswersState::OnLocaleChanged,
-                          base::Unretained(this)));
 
   UpdateSettingsEnabled();
   UpdateConsentStatus();
@@ -186,23 +176,6 @@ void QuickAnswersState::RegisterPrefChanges(PrefService* pref_service) {
   prefs_initialized_ = true;
 
   MigrateQuickAnswersConsentStatus(pref_service);
-  UpdateEligibility();
-}
-
-void QuickAnswersState::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState state) {
-  UpdateEligibility();
-}
-
-void QuickAnswersState::OnAssistantSettingsEnabled(bool enabled) {
-  UpdateEligibility();
-}
-
-void QuickAnswersState::OnAssistantContextEnabled(bool enabled) {
-  UpdateEligibility();
-}
-
-void QuickAnswersState::OnLocaleChanged(const std::string& locale) {
   UpdateEligibility();
 }
 
@@ -321,35 +294,16 @@ void QuickAnswersState::UpdateUnitConverstionEnabled() {
 }
 
 void QuickAnswersState::UpdateEligibility() {
-  if (chromeos::features::IsQuickAnswersV2Enabled()) {
-    if (!pref_change_registrar_)
-      return;
-
-    std::string locale = pref_change_registrar_->prefs()->GetString(
-        language::prefs::kApplicationLocale);
-    std::string resolved_locale;
-    l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
-                                     /*perform_io=*/false);
-    is_eligible_ = IsQuickAnswersAllowedForLocale(
-        resolved_locale, icu::Locale::getDefault().getName());
+  if (!pref_change_registrar_)
     return;
-  }
 
-  auto* assistant_state = AssistantState::Get();
-  if (!assistant_state->settings_enabled().has_value() ||
-      !assistant_state->locale().has_value() ||
-      !assistant_state->context_enabled().has_value() ||
-      !assistant_state->allowed_state().has_value()) {
-    // Assistant state has not finished initialization, let's wait.
-    return;
-  }
-  is_eligible_ =
-      (assistant_state->settings_enabled().value() &&
-       IsQuickAnswersAllowedForLocale(assistant_state->locale().value(),
-                                      icu::Locale::getDefault().getName()) &&
-       assistant_state->context_enabled().value() &&
-       assistant_state->allowed_state().value() ==
-           chromeos::assistant::AssistantAllowedState::ALLOWED);
+  std::string locale = pref_change_registrar_->prefs()->GetString(
+      language::prefs::kApplicationLocale);
+  std::string resolved_locale;
+  l10n_util::CheckAndResolveLocale(locale, &resolved_locale,
+                                   /*perform_io=*/false);
+  is_eligible_ = IsQuickAnswersAllowedForLocale(
+      resolved_locale, icu::Locale::getDefault().getName());
 }
 
 }  // namespace ash

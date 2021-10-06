@@ -10,7 +10,6 @@
 
 #include "ash/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -44,7 +43,7 @@ class ASH_PUBLIC_EXPORT QuickAnswersStateObserver
 };
 
 // A class that holds Quick Answers related prefs and states.
-class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
+class ASH_PUBLIC_EXPORT QuickAnswersState {
  public:
   static QuickAnswersState* Get();
 
@@ -53,19 +52,12 @@ class ASH_PUBLIC_EXPORT QuickAnswersState : public AssistantStateObserver {
   QuickAnswersState(const QuickAnswersState&) = delete;
   QuickAnswersState& operator=(const QuickAnswersState&) = delete;
 
-  ~QuickAnswersState() override;
+  ~QuickAnswersState();
 
   void AddObserver(QuickAnswersStateObserver* observer);
   void RemoveObserver(QuickAnswersStateObserver* observer);
 
   void RegisterPrefChanges(PrefService* pref_service);
-
-  // AssistantStateObserver:
-  void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState state) override;
-  void OnAssistantSettingsEnabled(bool enabled) override;
-  void OnAssistantContextEnabled(bool enabled) override;
-  void OnLocaleChanged(const std::string& locale) override;
 
   void StartConsent();
   void OnConsentResult(ConsentResultType result);

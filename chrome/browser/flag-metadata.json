@@ -2401,11 +2401,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "enable-quick-answers-v2",
-    "owners": [ "croissant-eng" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "enable-raw-draw",
     "owners": [ "penghuang" ],
     "expiry_milestone": 110
