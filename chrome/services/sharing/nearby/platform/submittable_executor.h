@@ -30,6 +30,7 @@ class SubmittableExecutor : public api::SubmittableExecutor {
   bool DoSubmit(Runnable&& runnable) override;
   void Execute(Runnable&& runnable) override;
   void Shutdown() override;
+  int GetTid(int index) const override;
 
  private:
   // Directly calls run() on |runnable|. This is only meant to be posted as an

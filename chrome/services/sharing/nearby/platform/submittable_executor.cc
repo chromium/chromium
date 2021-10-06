@@ -43,6 +43,12 @@ void SubmittableExecutor::Shutdown() {
   is_shut_down_ = true;
 }
 
+int SubmittableExecutor::GetTid(int index) const {
+  // SubmittableExecutor does not own a thread pool directly nor manages
+  // threads, thus cannot support this debug feature.
+  return 0;
+}
+
 // Posts the given |runnable| and returns true immediately. If Shutdown() has
 // been called, this method will return false.
 bool SubmittableExecutor::DoSubmit(Runnable&& runnable) {
