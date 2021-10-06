@@ -443,3 +443,43 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
       HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
   EXPECT_EQ(0U, result_metrics.size());
 }
+TEST_F(BackForwardCachePageLoadMetricsObserverTest,
+       TestPageEndWhenBackgrounding) {
+  // Give the stored BackForwardCacheRestoreState a starting navigation time of
+  // twenty seconds ago, because later in the test we'll need a page_end_time,
+  // and we can use base::TimeTicks::Now for that.
+  auto bf_state = PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+      /*was_in_foreground=*/true,
+      base::TimeTicks::Now() - base::TimeDelta::FromSeconds(20));
+
+  fake_delegate_->AddBackForwardCacheRestore(bf_state);
+  // 'END_NONE' is the default, but set it explicitly because this test needs to
+  // be sure the backgrounding only overrides the END_NONE end reason.
+  fake_delegate_->page_end_reason_ = page_load_metrics::PageEndReason::END_NONE;
+  observer_with_fake_delegate_->FlushMetricsOnAppEnterBackground(timing_);
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kPageEndReasonAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(HistoryNavigation::kPageEndReasonAfterBackForwardCacheRestoreName,
+            result_metrics.begin()->begin()->first);
+  EXPECT_EQ(page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND,
+            result_metrics.begin()->begin()->second);
+
+  // Verify that backgrounding does not take precedence over other page end
+  // reasons. Note that if there's a page_end_reason, there needs to be a
+  // page_end_time as well.
+  fake_delegate_->page_end_reason_ =
+      page_load_metrics::PageEndReason::END_NEW_NAVIGATION;
+  fake_delegate_->page_end_time_ = base::TimeTicks::Now();
+  observer_with_fake_delegate_->FlushMetricsOnAppEnterBackground(timing_);
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      HistoryNavigation::kEntryName,
+      HistoryNavigation::kPageEndReasonAfterBackForwardCacheRestoreName);
+  EXPECT_EQ(2U, result_metrics.size());
+  EXPECT_EQ(HistoryNavigation::kPageEndReasonAfterBackForwardCacheRestoreName,
+            result_metrics[1].begin()->first);
+  EXPECT_EQ(page_load_metrics::PageEndReason::END_NEW_NAVIGATION,
+            result_metrics[1].begin()->second);
+}

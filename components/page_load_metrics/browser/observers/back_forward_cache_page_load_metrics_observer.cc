@@ -228,7 +228,7 @@ void BackForwardCachePageLoadMetricsObserver::RecordMetricsOnPageVisitEnd(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     bool app_entering_background) {
   MaybeRecordLayoutShiftScoreAfterBackForwardCacheRestore(timing);
-  MaybeRecordPageEndAfterBackForwardCacheRestore();
+  MaybeRecordPageEndAfterBackForwardCacheRestore(app_entering_background);
   MaybeRecordForegroundDurationAfterBackForwardCacheRestore(
       app_entering_background);
 }
@@ -317,10 +317,16 @@ void BackForwardCachePageLoadMetricsObserver::
 }
 
 void BackForwardCachePageLoadMetricsObserver::
-    MaybeRecordPageEndAfterBackForwardCacheRestore() {
+    MaybeRecordPageEndAfterBackForwardCacheRestore(
+        bool app_entering_background) {
   if (!has_ever_entered_back_forward_cache_)
     return;
   auto page_end_reason = GetDelegate().GetPageEndReason();
+  if (page_end_reason == page_load_metrics::PageEndReason::END_NONE &&
+      app_entering_background) {
+    page_end_reason =
+        page_load_metrics::PageEndReason::END_APP_ENTER_BACKGROUND;
+  }
   // HistoryNavigation is a singular event, and we share the same instance as
   // long as we use the same source ID.
   ukm::builders::HistoryNavigation builder(

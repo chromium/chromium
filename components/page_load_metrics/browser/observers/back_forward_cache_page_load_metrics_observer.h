@@ -96,7 +96,8 @@ class BackForwardCachePageLoadMetricsObserver
   // Records a page end reason when the page is navigated away from or closed,
   // after it has been restored from the back forward cache at least once.
   // Does nothing if the page has never been restored.
-  void MaybeRecordPageEndAfterBackForwardCacheRestore();
+  void MaybeRecordPageEndAfterBackForwardCacheRestore(
+      bool app_entering_background);
 
   // Returns the UKM source ID for index-th back-foward restore navigation.
   int64_t GetUkmSourceIdForBackForwardCacheRestore(size_t index) const;
