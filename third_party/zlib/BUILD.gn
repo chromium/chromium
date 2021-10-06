@@ -27,6 +27,17 @@ config("zlib_internal_config") {
     # Enable zlib's asserts in debug and fuzzer builds.
     defines += [ "ZLIB_DEBUG" ]
   }
+
+  if (is_win && !is_clang) {
+    # V8 supports building with msvc, these silence some warnings that
+    # causes compilation to fail (https://crbug.com/1255096).
+    cflags = [
+      "/wd4244",
+      "/wd4100",
+      "/wd4702",
+      "/wd4127",
+    ]
+  }
 }
 
 source_set("zlib_common_headers") {
