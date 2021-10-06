@@ -85,7 +85,7 @@
       <iron-pages id="content" attr-for-selected="path"
           fallback-selection="history"
           selected="[[getSelectedPage_(selectedPage_, items)]]"
-          on-selected-item-changed="selectedItemChanged_"
+          on-selected-item-changed="updateScrollTarget_"
           items="{{items}}">
         <div id="tabs-container" path="history">
           <template is="dom-if" if="[[showHistoryClusters_]]">
@@ -99,6 +99,7 @@
           <iron-pages id="tabs-content" attr-for-selected="path"
               fallback-selection="history"
               selected="[[getSelectedPage_(selectedPage_, items)]]"
+              on-selected-item-changed="updateScrollTarget_"
               items="{{items}}">
             <history-list id="history" query-state="[[queryState_]]"
                 searched-term="[[queryResult_.info.term]]"

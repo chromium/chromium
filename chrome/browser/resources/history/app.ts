@@ -118,6 +118,7 @@ declare global {
 
 export interface HistoryAppElement {
   $: {
+    'content': IronPagesElement,
     'drawer': CrLazyRenderElement<CrDrawerElement>,
     'history': HistoryListElement,
     'tabs-container': Element,
@@ -462,15 +463,21 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.maybeUpdateSelectedHistoryTab_();
   }
 
-  private selectedItemChanged_(e: Event) {
-    // <history-list> and <history-clusters> are inside two nested <iron-pages>.
-    // Adjust the scroll target when the selection on the outer one changes.
-    const selectedItem =
-        ((e.target as IronPagesElement).selectedItem as HTMLElement);
-    if (selectedItem && selectedItem !== this.$['tabs-container']) {
-      this.scrollTarget = selectedItem;
-    } else if (this.$['tabs-content'].selectedItem) {
-      this.scrollTarget = (this.$['tabs-content'].selectedItem as HTMLElement);
+  private updateScrollTarget_() {
+    const topLevelIronPages = this.$['content'];
+    const lowerLevelIronPages = this.$['tabs-content'];
+
+    const topLevelHistoryPage = this.$['tabs-container'];
+    if (topLevelIronPages.selectedItem &&
+        topLevelIronPages.selectedItem === topLevelHistoryPage) {
+      // The top-level History page has another inner IronPages element that
+      // can toggle between different pages. If this is the case, set the
+      // scroll target to the currently selected inner tab.
+      this.scrollTarget = lowerLevelIronPages.selectedItem as HTMLElement;
+    } else if (topLevelIronPages.selectedItem) {
+      this.scrollTarget = topLevelIronPages.selectedItem as HTMLElement;
+    } else {
+      this.scrollTarget = null;
     }
   }
 
