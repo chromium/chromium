@@ -82,6 +82,15 @@ bool NetworkPreSpawnTarget(sandbox::TargetPolicy* policy) {
     return false;
   app_container->AddCapability(lpac_capability.c_str());
 
+  // Add capability SID for 'network_service' for loopback access for testing.
+  // Run 'checkNetIsolation.exe loopbackExempt -a -n=network_service' while
+  // elevated to allow network service loopback access.
+  // TODO(wfh): Remove this once the socket broker has landed. See
+  // https://crbug.com/841001.
+  app_container->AddCapabilitySddl(
+      L"S-1-15-3-893703388-718787801-2109771152-172907555-2119217564-716812919-"
+      L"652991501");
+
   // All other app container policies are set in
   // SandboxWin::StartSandboxedProcess.
   return true;
