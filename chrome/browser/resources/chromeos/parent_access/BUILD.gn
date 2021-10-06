@@ -1,0 +1,27 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [ ":parent_access_ui" ]
+}
+
+js_library("parent_access_ui") {
+  deps = [
+    "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings_js_library_for_compile",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "parent_access_ui.js" ]
+}

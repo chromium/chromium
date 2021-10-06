@@ -5675,6 +5675,10 @@ You can manage this account’s settings by installing the Family Link app on yo
     Sign out
   </message>
 
+  <!-- Strings for Parent Access screen -->
+  <message name="IDS_PARENT_ACCESS_PAGE_TITLE" desc="Title for the Chrome OS Parent Access screen.">
+    Parent Access
+  </message>
     <!-- Strings for gnubby U2FD authentication UI -->
   <message name="IDS_GNUBBY_NOTIFICATION_TITLE" desc="Title for notification informing user to press power button for gnubby U2FD.">
     A security key is being requested

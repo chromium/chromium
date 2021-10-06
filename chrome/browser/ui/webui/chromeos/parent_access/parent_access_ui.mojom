@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module parent_access_ui.mojom;
+
+enum GetOAuthTokenStatus {
+  kSuccess,
+  kError,
+  kOnlyOneFetchAtATime,
+};
+
+// Interface that supports integration between the ParentAccess WebUI and
+// ChromeOS.
+interface ParentAccessUIHandler {
+  // Returns the oauth token to be passed to the server.
+  GetOAuthToken() => (GetOAuthTokenStatus status, string oauth_token);
+};

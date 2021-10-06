@@ -214,6 +214,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
+#include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
@@ -836,6 +838,10 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::multidevice_setup::mojom::MultiDeviceSetup, chromeos::OobeUI,
       chromeos::multidevice::ProximityAuthUI,
       chromeos::multidevice_setup::MultiDeviceSetupDialogUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      parent_access_ui::mojom::ParentAccessUIHandler, chromeos::ParentAccessUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       chromeos::multidevice_setup::mojom::PrivilegedHostDeviceSetter,

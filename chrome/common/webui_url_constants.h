@@ -281,6 +281,8 @@ extern const char kChromeUIOSCreditsHost[];
 extern const char kChromeUIOSCreditsURL[];
 extern const char kChromeUIOobeHost[];
 extern const char kChromeUIOobeURL[];
+extern const char kChromeUIParentAccessHost[];
+extern const char kChromeUIParentAccessURL[];
 extern const char kChromeUIPasswordChangeHost[];
 extern const char kChromeUIPasswordChangeUrl[];
 extern const char kChromeUIPrintManagementUrl[];
