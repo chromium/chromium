@@ -444,6 +444,30 @@ export let fakeWifiNetworkInvalidNameServers = {
   },
 };
 
+/** @type {!Network} */
+export let fakeWifiNetworkNoIpAddress = {
+  state: NetworkState.kNotConnected,
+  type: NetworkType.kWiFi,
+  typeProperties: {
+    wifi: {
+      signalStrength: 65,
+      frequency: 5745,
+      bssid: '44:07:0b:06:2d:85',
+      ssid: 'Dial Up',
+      security: SecurityType.kNone,
+    },
+  },
+  observerGuid: 'wifiGuidNoIpAddress',
+  name: 'Dial Up',
+  macAddress: '84:C5:A6:30:3F:31',
+  ipConfig: {
+    ipAddress: '',
+    gateway: '192.168.86.1',
+    nameServers: ['0.0.0.0', '192.168.86.1'],
+    routingPrefix: 24,
+  },
+};
+
 export let fakeDisconnectedWifiNetwork = {
   state: NetworkState.kNotConnected,
   type: NetworkType.kWiFi,

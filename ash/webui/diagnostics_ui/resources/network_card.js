@@ -129,8 +129,20 @@ Polymer({
     this.networkHealthProvider_ = getNetworkHealthProvider();
   },
 
+  /** @override */
+  detached() {
+    this.resetTimer_();
+  },
+
   /** @private */
   observeNetwork_() {
+    // If necessary, clear setInterval and reset the timerId.
+    this.resetTimer_();
+
+    // Reset this flag in case we were unable to obtain an IP Address for the
+    // previous network.
+    this.unableToObtainIpAddress_ = false;
+
     if (!this.guid) {
       return;
     }
@@ -167,8 +179,6 @@ Polymer({
     let isTimerInProgress = this.timerId_ !== -1;
 
     if (!isIpAddressMissing) {
-      // Reset this flag now that this network has a valid IP Address.
-      this.unableToObtainIpAddress_ = false;
       this.isMissingNameServers_ = isNetworkMissingNameServers(network);
     }
 
@@ -178,8 +188,7 @@ Polymer({
       let tickCount = 0;
       this.timerId_ = setInterval(() => {
         if (tickCount >= maxTicks) {
-          clearInterval(this.timerId_);
-          this.timerId_ = -1;
+          this.resetTimer_();
           this.unableToObtainIpAddress_ = true;
         }
         tickCount++;
@@ -379,6 +388,14 @@ Polymer({
         return {
           header: '', linkText: '', url: '',
         }
+    }
+  },
+
+  /** @private */
+  resetTimer_() {
+    if (this.timerId_ !== -1) {
+      clearInterval(this.timerId_);
+      this.timerId_ = -1;
     }
   },
 });

@@ -4,7 +4,7 @@
 
 import 'chrome://diagnostics/network_card.js';
 
-import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers} from 'chrome://diagnostics/fake_data.js';
+import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -54,6 +54,8 @@ export function networkCardTestSuite() {
         'ethernetConnectingGuid', [fakeConnectingEthernetNetwork]);
     provider.setFakeNetworkState(
         'wifiGuidInvalidNameServers', [fakeWifiNetworkInvalidNameServers]);
+    provider.setFakeNetworkState(
+        'wifiGuidNoIpAddress', [fakeWifiNetworkNoIpAddress]);
     // Add the network info to the DOM.
     networkCardElement = /** @type {!NetworkCardElement} */ (
         document.createElement('network-card'));
@@ -61,6 +63,15 @@ export function networkCardTestSuite() {
     networkCardElement.guid = guid;
     document.body.appendChild(networkCardElement);
 
+    return flushTasks();
+  }
+
+  /**
+   * @param {string} guid
+   * @return {!Promise}
+   */
+  function changeGuid(guid) {
+    networkCardElement.guid = guid;
     return flushTasks();
   }
 
@@ -120,6 +131,15 @@ export function networkCardTestSuite() {
   function openIpConfigDrawer() {
     networkCardElement.$$('#ipConfigInfoDrawer').$$('#drawerToggle').click();
     return flushTasks();
+  }
+
+  /**
+   * Get timerId_ private member for testing.
+   * @suppress {visibility} // access private member
+   * @return {number}
+   */
+  function getTimerId() {
+    return networkCardElement.timerId_;
   }
 
   test('CardTitleWiFiConnectedInitializedCorrectly', () => {
@@ -220,6 +240,21 @@ export function networkCardTestSuite() {
               dx_utils.getDataPointValue(
                   ipConfigInfoDrawerElement, '#nameServers'),
               '192.168.86.1');
+        });
+  });
+
+  test('TimerResetsOnNetworkChange', () => {
+    return initializeNetworkCard('wifiGuidNoIpAddress')
+        .then(() => {
+          // Timer should be in progress since this network is missing an
+          // IP Address.
+          assertTrue(getTimerId() !== -1);
+        })
+        .then(() => changeGuid('ethernetGuid'))
+        .then(() => {
+          // After a network change event, the timer should have been cleared
+          // and reset.
+          assertTrue(getTimerId() === -1);
         });
   });
 }
