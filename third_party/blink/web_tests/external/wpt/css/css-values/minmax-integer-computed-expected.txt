@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS min(1) should be used-value-equivalent to 1
+PASS max(1) should be used-value-equivalent to 1
+FAIL min(0.4) should be used-value-equivalent to 0 assert_equals: min(0.4) and 0 serialize to the same thing in used values. expected "0" but got "auto"
+FAIL min(0.6) should be used-value-equivalent to 1 assert_equals: min(0.6) and 1 serialize to the same thing in used values. expected "1" but got "auto"
+FAIL max(0.4) should be used-value-equivalent to 0 assert_equals: max(0.4) and 0 serialize to the same thing in used values. expected "0" but got "auto"
+FAIL max(0.6) should be used-value-equivalent to 1 assert_equals: max(0.6) and 1 serialize to the same thing in used values. expected "1" but got "auto"
+FAIL min(1.1, max(0.4, 0.6)) should be used-value-equivalent to 1 assert_equals: min(1.1, max(0.4, 0.6)) and 1 serialize to the same thing in used values. expected "1" but got "auto"
+FAIL max(0.3, min(1.1, 0.4)) should be used-value-equivalent to 0 assert_equals: max(0.3, min(1.1, 0.4)) and 0 serialize to the same thing in used values. expected "0" but got "auto"
+FAIL calc(min(0.3, 0.6) * 2) should be used-value-equivalent to 1 assert_equals: calc(min(0.3, 0.6) * 2) and 1 serialize to the same thing in used values. expected "1" but got "auto"
+FAIL calc(max(0.3, 0.6) / 2) should be used-value-equivalent to 0 assert_equals: calc(max(0.3, 0.6) / 2) and 0 serialize to the same thing in used values. expected "0" but got "auto"
+Harness: the test ran to completion.
+

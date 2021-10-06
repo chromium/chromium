@@ -531,10 +531,6 @@
       status: "test",
     },
     {
-      name: "CSSCalcAsInt",
-      status: "test",
-    },
-    {
       // https://github.com/DevSDK/calc-infinity-and-NaN/blob/master/explainer.md
       name: "CSSCalcInfinityAndNaN",
       status: "test",

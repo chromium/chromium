@@ -648,16 +648,6 @@ class MathFunctionParser {
     return result;
   }
 
-  CSSPrimitiveValue* ConsumeRoundedInt() {
-    if (!calc_value_)
-      return nullptr;
-    source_range_ = range_;
-    CSSPrimitiveValue::UnitType unit_type =
-        CSSPrimitiveValue::UnitType::kInteger;
-    double rounded_value = floor(calc_value_->GetDoubleValue() + 0.5);
-    return CSSNumericLiteralValue::Create(rounded_value, unit_type);
-  }
-
   CSSPrimitiveValue* ConsumeNumber() {
     if (!calc_value_)
       return nullptr;
@@ -697,18 +687,12 @@ CSSPrimitiveValue* ConsumeInteger(CSSParserTokenRange& range,
   }
   MathFunctionParser math_parser(range, context);
   if (const CSSMathFunctionValue* math_value = math_parser.Value()) {
-    if (!RuntimeEnabledFeatures::CSSCalcAsIntEnabled() && !math_value->IsInt())
-      return nullptr;
-    if (math_value->Category() != kCalcNumber)
+    if (math_value->Category() != kCalcNumber || !math_value->IsInt())
       return nullptr;
     double double_value = math_value->GetDoubleValue();
     if (double_value < minimum_value)
       return nullptr;
-    if (!RuntimeEnabledFeatures::CSSCalcAsIntEnabled())
-      return math_parser.ConsumeNumber();
-    if (math_value->IsInt())
-      return math_parser.ConsumeNumber();
-    return math_parser.ConsumeRoundedInt();
+    return math_parser.ConsumeNumber();
   }
   return nullptr;
 }

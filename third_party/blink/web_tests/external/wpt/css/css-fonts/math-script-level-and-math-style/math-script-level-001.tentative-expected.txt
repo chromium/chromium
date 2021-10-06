@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Initial value of math-depth
+PASS Inherited values of math-depth
+PASS Specified math-depth: auto-add
+PASS Specified math-depth: <integer>
+PASS Specified math-depth: add(<integer>)
+PASS Specified math-depth: invalid expressions
+FAIL Specified math-depth: calc() expressions assert_equals: expected "12" but got "9"
+Harness: the test ran to completion.
+

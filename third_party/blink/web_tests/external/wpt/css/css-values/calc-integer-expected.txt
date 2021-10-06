@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Sanity
+FAIL Basic division works assert_equals: expected "2" but got "42"
+FAIL Rounds up if fractional part is >= 0.5 assert_equals: expected "1" but got "42"
+FAIL Accepts numbers, and rounds assert_equals: expected "1" but got "42"
+FAIL Operation between <integer> and <number> works assert_equals: expected "3" but got "42"
+FAIL Rounds down if fractional part is < 0.5 assert_equals: expected "0" but got "42"
+FAIL Only rounds at the end of the conversion assert_equals: expected "1" but got "42"
+Harness: the test ran to completion.
+
