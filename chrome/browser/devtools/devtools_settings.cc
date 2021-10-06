@@ -12,7 +12,14 @@ const char DevToolsSettings::kSyncDevToolsPreferencesFrontendName[] =
     "sync_preferences";
 const bool DevToolsSettings::kSyncDevToolsPreferencesDefault = false;
 
-DevToolsSettings::DevToolsSettings(Profile* profile) : profile_(profile) {}
+DevToolsSettings::DevToolsSettings(Profile* profile) : profile_(profile) {
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kDevToolsSyncPreferences,
+      base::BindRepeating(&DevToolsSettings::DevToolsSyncPreferencesChanged,
+                          base::Unretained(this)));
+}
+
 DevToolsSettings::~DevToolsSettings() = default;
 
 void DevToolsSettings::Register(const std::string& name,
@@ -120,4 +127,34 @@ const char* DevToolsSettings::GetDictionaryNameForSyncedPrefs() const {
       profile_->GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences);
   return isDevToolsSyncEnabled ? prefs::kDevToolsSyncedPreferencesSyncEnabled
                                : prefs::kDevToolsSyncedPreferencesSyncDisabled;
+}
+
+void DevToolsSettings::DevToolsSyncPreferencesChanged() {
+  // There are two cases to handle:
+  //
+  // Sync was enabled: We assume this was triggered by the user in the local
+  // DevTools session as opposed to synced from a different device. As such, the
+  // local settings have precedence when merging. The unsynced dictonary is
+  // cleared.
+  //
+  // Sync was disabled: As kDevToolsSyncPreferences is synced itself we can
+  // clear the synced dictionary after copying to the unsynced one. The unsynced
+  // dictionary is empty.
+  //
+  // Considering the points above, the implementation between both cases can be
+  // shared modulo the source/target dictionary.
+  const bool sync_enabled =
+      profile_->GetPrefs()->GetBoolean(prefs::kDevToolsSyncPreferences);
+  const char* target_dictionary =
+      sync_enabled ? prefs::kDevToolsSyncedPreferencesSyncEnabled
+                   : prefs::kDevToolsSyncedPreferencesSyncDisabled;
+  const char* source_dictionary =
+      sync_enabled ? prefs::kDevToolsSyncedPreferencesSyncDisabled
+                   : prefs::kDevToolsSyncedPreferencesSyncEnabled;
+
+  DictionaryPrefUpdate target_update(profile_->GetPrefs(), target_dictionary);
+  target_update.Get()->MergeDictionary(
+      profile_->GetPrefs()->GetDictionary(source_dictionary));
+  DictionaryPrefUpdate source_update(profile_->GetPrefs(), source_dictionary);
+  source_update.Get()->Clear();
 }

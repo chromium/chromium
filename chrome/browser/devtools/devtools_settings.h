@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class Profile;
 
@@ -41,6 +42,7 @@ class DevToolsSettings {
  private:
   const char* GetDictionaryNameForSettingsName(const std::string& name) const;
   const char* GetDictionaryNameForSyncedPrefs() const;
+  void DevToolsSyncPreferencesChanged();
 
   Profile* const profile_;
 
@@ -48,6 +50,12 @@ class DevToolsSettings {
   // The DevTools frontend *must* call `Register` for each setting prior to
   // use, which guarantees that this set must not be persisted.
   base::flat_set<std::string> synced_setting_names_;
+
+  // Settings pref observer that moves synced settings between their two
+  // dictionaries depending on the state of kDevToolsSyncPreferences.
+  // kDevToolsSyncPreferences is only changed via the frontend, so it is
+  // sufficient to only listen for changes during a DevTools session.
+  PrefChangeRegistrar pref_change_registrar_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVTOOLS_SETTINGS_H_
