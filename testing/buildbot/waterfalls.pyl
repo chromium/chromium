@@ -6680,38 +6680,6 @@
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
-      'chromeos-betty-arc-r-chrome': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_browser_integration_tests',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chrome.tests',
-              # Due to the nature of the ARC VM inside CrOS, betty-arc-r tests
-              # can't run on GCE images. GCE VM -> CrOS VM -> Android VM proves
-              # to be too many layers of virtualization for the tests. However,
-              # we can use KVM-enable baremetal machines in the lab, which
-              # avoids the GCE VM layer and makes the tests happier. Use the
-              # device hosts in the CrOS device pool for this purpose since
-              # they're all running CrOS tests anyway.
-              'os': 'ChromeOS',
-              # The eve-arc-r and kevin pools aren't very busy, use those. Note
-              # that the devices themselves will be unused for the duration of
-              # these tests.
-              # FIXME: Allocate dedicated baremetal machines for these tests
-              # rather than using CrOS device bots.
-              'device_type': 'eve-arc-r|kevin',
-            },
-          ],
-        },
-      },
       'chromeos-betty-pi-arc-chrome-dchecks': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -6724,27 +6692,6 @@
           'gtest_tests': 'chromeos_vm_gtests',
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
-      },
-      'chromeos-eve-arc-r-chrome': {
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromeos_device_gtests',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'eve-arc-r',
-              'pool': 'chrome.tests',
-            },
-          ],
-        },
-        'os_type': 'chromeos'
       },
       'lacros-amd64-generic-chrome-fyi': {
         'additional_compile_targets': [
