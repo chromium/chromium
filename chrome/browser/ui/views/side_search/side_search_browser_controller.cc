@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -15,7 +16,9 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -305,6 +308,16 @@ void SideSearchBrowserController::SidePanelCloseButtonPressed() {
 void SideSearchBrowserController::OpenSidePanel() {
   RecordSideSearchOpenAction(
       SideSearchOpenActionType::kTapOnSideSearchToolbarButton);
+  // Close the Side Search IPH if it is showing.
+  FeaturePromoControllerViews* controller =
+      FeaturePromoControllerViews::GetForView(toolbar_button_);
+  if (controller)
+    controller->CloseBubble(feature_engagement::kIPHSideSearchFeature);
+  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+      browser_view_->GetProfile());
+  if (tracker)
+    tracker->NotifyEvent(feature_engagement::events::kSideSearchOpened);
+
   SetSidePanelToggledOpen(true);
   UpdateSidePanel();
 

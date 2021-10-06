@@ -51,6 +51,9 @@ extern const char kFocusModeOpened[];
 // All conditions for show Focus Mode IPH were met.
 extern const char kFocusModeConditionsMet[];
 
+// The Side search panel was opened by the user.
+extern const char kSideSearchOpened[];
+
 // Tab Search tab strip was opened by the user.
 extern const char kTabSearchOpened[];
 
