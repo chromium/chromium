@@ -666,7 +666,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
-    enum="SharingHubSharesheetResult" expires_after="M97">
+    enum="SharingHubSharesheetResult" expires_after="M99">
   <owner>kristipark@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
   <summary>
