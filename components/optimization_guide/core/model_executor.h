@@ -10,8 +10,8 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros_local.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -118,11 +118,14 @@ class ModelExecutor {
 
     model_file_path_ = file_path;
 
-    LOCAL_HISTOGRAM_BOOLEAN(
+    // crbug/1257189: Histogram enums can't use dynamically created histogram
+    // names, so factory create the local histogram (used in testing).
+    base::HistogramBase* histogram = base::BooleanHistogram::FactoryGet(
         "OptimizationGuide.ModelExecutor.ModelFileUpdated." +
             optimization_guide::GetStringNameForOptimizationTarget(
                 optimization_target_),
-        true);
+        base::Histogram::kNoFlags);
+    histogram->Add(true);
   }
 
   // Starts the execution of the model. When complete, |ui_callback_on_complete|
