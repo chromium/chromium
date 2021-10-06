@@ -189,21 +189,6 @@ class ClipboardInternal {
     return GetData()->png();
   }
 
-  // Reads image from the ClipboardData.
-  SkBitmap ReadImage() const {
-    SkBitmap img;
-    if (!HasFormat(ClipboardInternalFormat::kPng))
-      return img;
-
-    // A shallow copy should be fine here, but just to be safe...
-    const SkBitmap& clipboard_bitmap = GetData()->bitmap();
-    if (img.tryAllocPixels(clipboard_bitmap.info())) {
-      clipboard_bitmap.readPixels(img.info(), img.getPixels(), img.rowBytes(),
-                                  0, 0);
-    }
-    return img;
-  }
-
   // Reads data of type |type| from the ClipboardData.
   void ReadCustomData(const std::u16string& type,
                       std::u16string* result) const {
@@ -600,24 +585,6 @@ void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
 
   RecordRead(ClipboardFormatMetric::kPng);
   std::move(callback).Run(clipboard_internal_->ReadPng());
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
-#endif
-}
-
-void ClipboardNonBacked::ReadImage(ClipboardBuffer buffer,
-                                   const DataTransferEndpoint* data_dst,
-                                   ReadImageCallback callback) const {
-  DCHECK(CalledOnValidThread());
-
-  if (!clipboard_internal_->IsReadAllowed(data_dst)) {
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
-
-  RecordRead(ClipboardFormatMetric::kImage);
-  std::move(callback).Run(clipboard_internal_->ReadImage());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();

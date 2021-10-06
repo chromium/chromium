@@ -304,15 +304,6 @@ void ClipboardMac::ReadPng(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardMac::ReadImage(ClipboardBuffer buffer,
-                             const DataTransferEndpoint* data_dst,
-                             ReadImageCallback callback) const {
-  RecordRead(ClipboardFormatMetric::kImage);
-  std::move(callback).Run(ReadImageInternal(buffer, GetPasteboard()));
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardMac::ReadCustomData(ClipboardBuffer buffer,
                                   const std::u16string& type,
                                   const DataTransferEndpoint* data_dst,
@@ -495,33 +486,6 @@ std::vector<uint8_t> ClipboardMac::ReadPngInternal(
   scoped_refptr<base::RefCountedMemory> mem = gfx_image.As1xPNGBytes();
   std::vector<uint8_t> image_data(mem->data(), mem->data() + mem->size());
   return image_data;
-}
-
-SkBitmap ClipboardMac::ReadImageInternal(ClipboardBuffer buffer,
-                                         NSPasteboard* pasteboard) const {
-  DCHECK(CalledOnValidThread());
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
-  base::scoped_nsobject<NSImage> image = GetNSImage(pasteboard);
-  if (!image)
-    return SkBitmap();
-
-  // This logic prevents loss of pixels from retina images, where size != pixel
-  // size. In an ideal world, the concept of "retina-ness" would be plumbed all
-  // the way through to the web, but the clipboard API doesn't support the
-  // additional metainformation.
-  if ([[image representations] count] == 1u) {
-    NSImageRep* rep = [image representations][0];
-    NSInteger width = [rep pixelsWide];
-    NSInteger height = [rep pixelsHigh];
-    if (width != 0 && height != 0) {
-      return skia::NSImageRepToSkBitmapWithColorSpace(
-          rep, NSMakeSize(width, height), /*is_opaque=*/false,
-          base::mac::GetSystemColorSpace());
-    }
-  }
-  return skia::NSImageToSkBitmapWithColorSpace(
-      image.get(), /*is_opaque=*/false, base::mac::GetSystemColorSpace());
 }
 
 }  // namespace ui

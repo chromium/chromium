@@ -71,9 +71,6 @@ class ClipboardWin : public Clipboard {
   void ReadPng(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                ReadPngCallback callback) const override;
-  void ReadImage(ClipboardBuffer buffer,
-                 const DataTransferEndpoint* data_dst,
-                 ReadImageCallback callback) const override;
   void ReadCustomData(ClipboardBuffer buffer,
                       const std::u16string& type,
                       const DataTransferEndpoint* data_dst,
@@ -110,7 +107,7 @@ class ClipboardWin : public Clipboard {
                  const char* data_data,
                  size_t data_len) override;
   std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
-  SkBitmap ReadImageInternal(ClipboardBuffer buffer) const;
+  SkBitmap ReadBitmapInternal(ClipboardBuffer buffer) const;
 
   // Safely write to system clipboard. Free |handle| on failure.
   // This function takes ownership of the given handle's memory.

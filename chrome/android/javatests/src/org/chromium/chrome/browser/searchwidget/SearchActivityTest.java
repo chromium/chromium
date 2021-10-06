@@ -748,7 +748,7 @@ public class SearchActivityTest {
         Clipboard.getInstance().setImage(mTestImageData, TEST_PNG_IMAGE_FILE_EXTENSION);
 
         CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().getImage(), Matchers.notNullValue());
+            Criteria.checkThat(Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
         });
     }
 

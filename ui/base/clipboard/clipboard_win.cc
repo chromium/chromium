@@ -486,20 +486,11 @@ void ClipboardWin::ReadPng(ClipboardBuffer buffer,
   // On Windows, PNG and bitmap are separate formats. Read PNG if possible,
   // otherwise fall back to reading as a bitmap.
   if (data.empty()) {
-    SkBitmap bitmap = ReadImageInternal(buffer);
+    SkBitmap bitmap = ReadBitmapInternal(buffer);
     gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
                                       &data);
   }
   std::move(callback).Run(data);
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadImage(ClipboardBuffer buffer,
-                             const DataTransferEndpoint* data_dst,
-                             ReadImageCallback callback) const {
-  RecordRead(ClipboardFormatMetric::kImage);
-  std::move(callback).Run(ReadImageInternal(buffer));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -786,7 +777,7 @@ std::vector<uint8_t> ClipboardWin::ReadPngInternal(
   return std::vector<uint8_t>(result.begin(), result.end());
 }
 
-SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
+SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   // Acquire the clipboard.

@@ -152,17 +152,6 @@ void HeadlessClipboard::ReadPng(ui::ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void HeadlessClipboard::ReadImage(ui::ClipboardBuffer buffer,
-                                  const ui::DataTransferEndpoint* data_dst,
-                                  ReadImageCallback callback) const {
-  const std::vector<uint8_t>& png_data = GetStore(buffer).png;
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  std::move(callback).Run(bitmap);
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void HeadlessClipboard::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                                        const std::u16string& type,
                                        const ui::DataTransferEndpoint* data_dst,

@@ -170,6 +170,7 @@ class CONTENT_EXPORT ClipboardHostImpl
                ReadRtfCallback callback) override;
   void ReadPng(ui::ClipboardBuffer clipboard_buffer,
                ReadPngCallback callback) override;
+  // TODO(crbug.com/1223849): Remove this method.
   void ReadImage(ui::ClipboardBuffer clipboard_buffer,
                  ReadImageCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
@@ -222,9 +223,6 @@ class CONTENT_EXPORT ClipboardHostImpl
   void OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                  ReadPngCallback callback,
                  const std::vector<uint8_t>& data);
-  void OnReadImage(ui::ClipboardBuffer clipboard_buffer,
-                   ReadImageCallback callback,
-                   const SkBitmap& bitmap);
 
   std::unique_ptr<ui::DataTransferEndpoint> CreateDataEndpoint();
 

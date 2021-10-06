@@ -232,19 +232,6 @@ void ClipboardX11::ReadPng(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardX11::ReadImage(ClipboardBuffer buffer,
-                             const DataTransferEndpoint* data_dst,
-                             ReadImageCallback callback) const {
-  DCHECK(IsSupportedClipboardBuffer(buffer));
-  RecordRead(ClipboardFormatMetric::kImage);
-  auto png_data = ReadPngInternal(buffer);
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  std::move(callback).Run(bitmap);
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
 void ClipboardX11::ReadCustomData(ClipboardBuffer buffer,
                                   const std::u16string& type,
                                   const DataTransferEndpoint* data_dst,

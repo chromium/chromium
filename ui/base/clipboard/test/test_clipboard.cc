@@ -232,19 +232,6 @@ void TestClipboard::ReadPng(ClipboardBuffer buffer,
   std::move(callback).Run(store.png);
 }
 
-void TestClipboard::ReadImage(ClipboardBuffer buffer,
-                              const DataTransferEndpoint* data_dst,
-                              ReadImageCallback callback) const {
-  const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src.get(), data_dst)) {
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(store.png.data(), store.png.size(), &bitmap);
-  std::move(callback).Run(bitmap);
-}
-
 // TODO(crbug.com/1103215): |data_dst| should be supported.
 void TestClipboard::ReadCustomData(ClipboardBuffer buffer,
                                    const std::u16string& type,

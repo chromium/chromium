@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -105,11 +106,10 @@ void MockClipboardHost::ReadPng(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(mojo_base::BigBuffer(png_));
 }
 
+// TODO(crbug.com/1223849): Remove this method.
 void MockClipboardHost::ReadImage(ui::ClipboardBuffer clipboard_buffer,
                                   ReadImageCallback callback) {
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_.data(), png_.size(), &bitmap);
-  std::move(callback).Run(std::move(bitmap));
+  NOTIMPLEMENTED();
 }
 
 void MockClipboardHost::ReadFiles(ui::ClipboardBuffer clipboard_buffer,

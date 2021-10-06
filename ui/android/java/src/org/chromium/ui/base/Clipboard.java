@@ -410,31 +410,6 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
         }
     }
 
-    /**
-     * Reads the Uri of top item on the primary clip on the Android clipboard, and try to get the
-     * {@link Bitmap}. for that Uri.
-     * Fetching images can result in I/O, so should not be called on UI thread.
-     *
-     * @return an {@link Bitmap} if available, otherwise null.
-     */
-    @CalledByNative
-    public Bitmap getImage() {
-        ThreadUtils.assertOnBackgroundThread();
-        try {
-            Uri uri = getImageUri();
-            if (uri == null) return null;
-
-            Bitmap bitmap = ApiCompatibilityUtils.getBitmapByUri(
-                    ContextUtils.getApplicationContext().getContentResolver(), uri);
-            if (!bitmapSupportByGfx(bitmap)) {
-                return bitmap.copy(Bitmap.Config.ARGB_8888, /*mutable=*/false);
-            }
-            return bitmap;
-        } catch (IOException | SecurityException e) {
-            return null;
-        }
-    }
-
     @CalledByNative
     private boolean hasImage() {
         ClipDescription description = mClipboardManager.getPrimaryClipDescription();

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.clipboard;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Looper;
 
 import androidx.test.filters.SmallTest;
@@ -17,7 +18,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -99,9 +102,11 @@ public class ClipboardImageFileProviderTest {
                     Matchers.is(Clipboard.getInstance().getImageUri()));
         });
 
-        // Make sure Clipboard::getImage is call on non UI thread.
-        AsyncTask.SERIAL_EXECUTOR.execute(
-                () -> { Assert.assertNotNull(Clipboard.getInstance().getImage()); });
+        Uri uri = Clipboard.getInstance().getImageUri();
+        Assert.assertNotNull(uri);
+        Bitmap bitmap = ApiCompatibilityUtils.getBitmapByUri(
+                ContextUtils.getApplicationContext().getContentResolver(), uri);
+        Assert.assertNotNull(bitmap);
 
         // Wait for the above check to complete.
         waitForAsync();

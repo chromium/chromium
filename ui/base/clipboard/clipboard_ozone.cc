@@ -482,17 +482,6 @@ void ClipboardOzone::ReadPng(ClipboardBuffer buffer,
 }
 
 // TODO(crbug.com/1103194): |data_dst| should be supported.
-void ClipboardOzone::ReadImage(ClipboardBuffer buffer,
-                               const DataTransferEndpoint* data_dst,
-                               ReadImageCallback callback) const {
-  RecordRead(ClipboardFormatMetric::kImage);
-  auto png_data = ReadPngInternal(buffer);
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
-  std::move(callback).Run(bitmap);
-}
-
-// TODO(crbug.com/1103194): |data_dst| should be supported.
 void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
                                     const std::u16string& type,
                                     const DataTransferEndpoint* data_dst,

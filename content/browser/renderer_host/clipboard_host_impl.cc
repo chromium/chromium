@@ -349,35 +349,11 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
           },
           std::move(data), std::move(callback)));
 }
+
+// TODO(crbug.com/1223849): Remove this method.
 void ClipboardHostImpl::ReadImage(ui::ClipboardBuffer clipboard_buffer,
                                   ReadImageCallback callback) {
-  if (!IsRendererPasteAllowed(*render_frame_host())) {
-    std::move(callback).Run(SkBitmap());
-    return;
-  }
-  auto data_dst = CreateDataEndpoint();
-  ui::Clipboard::GetForCurrentThread()->ReadImage(
-      clipboard_buffer, data_dst.get(),
-      base::BindOnce(&ClipboardHostImpl::OnReadImage,
-                     weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
-                     std::move(callback)));
-}
-
-void ClipboardHostImpl::OnReadImage(ui::ClipboardBuffer clipboard_buffer,
-                                    ReadImageCallback callback,
-                                    const SkBitmap& bitmap) {
-  std::string data(reinterpret_cast<const char*>(bitmap.getPixels()),
-                  bitmap.computeByteSize());
-  PasteIfPolicyAllowed(clipboard_buffer, ui::ClipboardFormatType::BitmapType(),
-                       std::move(data),
-                       base::BindOnce(
-                           [](SkBitmap bitmap, ReadImageCallback callback,
-                              ClipboardPasteContentAllowed allowed) {
-                             if (!allowed)
-                               bitmap.reset();
-                             std::move(callback).Run(bitmap);
-                           },
-                           std::move(bitmap), std::move(callback)));
+  NOTIMPLEMENTED();
 }
 
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
