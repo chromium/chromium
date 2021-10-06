@@ -44,6 +44,16 @@ TEST_F(ScanningFilePathHelperTest, BaseNameFromGenericPath) {
                              base::FilePath("/test/directory")));
 }
 
+// Validates that the correct base name is returned from a generic filepath
+// when the Google Drive path is empty.
+TEST_F(ScanningFilePathHelperTest,
+       BaseNameFromGenericPathWithGoogleDriveAbsent) {
+  drive_path_ = base::FilePath();
+  file_path_helper_ = ScanningFilePathHelper(drive_path_, my_files_path_);
+  EXPECT_EQ("directory", file_path_helper_.GetBaseNameFromPath(
+                             base::FilePath("/test/directory")));
+}
+
 // Validates that the correct base name is returned from the file paths under
 // the Google Drive root.
 TEST_F(ScanningFilePathHelperTest, BaseNameFromGoogleDrivePath) {

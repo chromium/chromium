@@ -41,11 +41,10 @@ ScanningFilePathHelper::~ScanningFilePathHelper() = default;
 
 std::string ScanningFilePathHelper::GetBaseNameFromPath(
     const base::FilePath& path) const {
-  DCHECK(!google_drive_path_.empty());
   DCHECK(!my_files_path_.empty());
 
   // Returns string "Google Drive" from path "/media/fuse/drivefs-xxx/root".
-  if (google_drive_path_.Append(kRoot) == path)
+  if (!google_drive_path_.empty() && google_drive_path_.Append(kRoot) == path)
     return l10n_util::GetStringUTF8(IDS_SCANNING_APP_MY_DRIVE);
 
   // Returns string "My Files" from path "/home/chronos/u-xxx/MyFiles".
