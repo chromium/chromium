@@ -8,21 +8,27 @@ import './print_preview_shared_css.js';
 import './settings_section.js';
 import '../strings.m.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {SettingsMixinInterface}
- */
+type CheckboxOption = {
+  name: string,
+  label: string,
+  value?: boolean,
+  managed?: boolean,
+  available?: boolean,
+};
+
+type RepeaterEvent = {
+  model: {item: CheckboxOption},
+};
+
 const PrintPreviewOtherOptionsSettingsElementBase =
-    mixinBehaviors([I18nBehavior], SettingsMixin(PolymerElement));
+    SettingsMixin(I18nMixin(PolymerElement));
 
-/** @polymer */
 export class PrintPreviewOtherOptionsSettingsElement extends
     PrintPreviewOtherOptionsSettingsElementBase {
   static get is() {
@@ -37,13 +43,6 @@ export class PrintPreviewOtherOptionsSettingsElement extends
     return {
       disabled: Boolean,
 
-      /**
-       * @private {!Array<!{name: string,
-       *                    label: string,
-       *                    value: (boolean | undefined),
-       *                    managed: (boolean | undefined),
-       *                    available: (boolean | undefined)}>}
-       */
       options_: {
         type: Array,
         value() {
@@ -58,13 +57,11 @@ export class PrintPreviewOtherOptionsSettingsElement extends
 
       /**
        * The index of the checkbox that should display the "Options" title.
-       * @private {number}
        */
       firstIndex_: {
         type: Number,
         value: 0,
       },
-
     };
   }
 
@@ -74,25 +71,20 @@ export class PrintPreviewOtherOptionsSettingsElement extends
       'onCssBackgroundSettingChange_(settings.cssBackground.*)',
       'onRasterizeSettingChange_(settings.rasterize.*)',
       'onSelectionOnlySettingChange_(settings.selectionOnly.*)',
-
     ];
   }
 
-  constructor() {
-    super();
-
-    /** @private {!Map<string, ?number>} */
-    this.timeouts_ = new Map();
-
-    /** @private {!Map<string, boolean>} */
-    this.previousValues_ = new Map();
-  }
+  disabled: boolean;
+  private options_: CheckboxOption[];
+  private firstIndex_: number;
+  private timeouts_: Map<string, number|null> = new Map();
+  private previousValues_: Map<string, boolean> = new Map();
 
   /**
-   * @param {string} settingName The name of the setting to updated.
-   * @param {boolean} newValue The new value for the setting.
+   * @param settingName The name of the setting to updated.
+   * @param newValue The new value for the setting.
    */
-  updateSettingWithTimeout_(settingName, newValue) {
+  private updateSettingWithTimeout_(settingName: string, newValue: boolean) {
     const timeout = this.timeouts_.get(settingName);
     if (timeout !== null) {
       clearTimeout(timeout);
@@ -115,10 +107,9 @@ export class PrintPreviewOtherOptionsSettingsElement extends
   }
 
   /**
-   * @param {number} index The index of the option to update.
-   * @private
+   * @param index The index of the option to update.
    */
-  updateOptionFromSetting_(index) {
+  private updateOptionFromSetting_(index: number) {
     const setting = this.getSetting(this.options_[index].name);
     this.set(`options_.${index}.available`, setting.available);
     this.set(`options_.${index}.value`, setting.value);
@@ -132,52 +123,46 @@ export class PrintPreviewOtherOptionsSettingsElement extends
   }
 
   /**
-   * @param {boolean} managed Whether the setting is managed by policy.
-   * @param {boolean} disabled value of this.disabled
-   * @return {boolean} Whether the checkbox should be disabled.
-   * @private
+   * @param managed Whether the setting is managed by policy.
+   * @param disabled value of this.disabled
+   * @return Whether the checkbox should be disabled.
    */
-  getDisabled_(managed, disabled) {
+  private getDisabled_(managed: boolean, disabled: boolean): boolean {
     return managed || disabled;
   }
 
-  /** @private */
-  onHeaderFooterSettingChange_() {
+  private onHeaderFooterSettingChange_() {
     this.updateOptionFromSetting_(0);
   }
 
-  /** @private */
-  onCssBackgroundSettingChange_() {
+  private onCssBackgroundSettingChange_() {
     this.updateOptionFromSetting_(1);
   }
 
-  /** @private */
-  onRasterizeSettingChange_() {
+  private onRasterizeSettingChange_() {
     this.updateOptionFromSetting_(2);
   }
 
-  /** @private */
-  onSelectionOnlySettingChange_() {
+  private onSelectionOnlySettingChange_() {
     this.updateOptionFromSetting_(3);
   }
 
   /**
-   * @param {!Event} e Contains the checkbox item that was checked.
-   * @private
+   * @param e Contains the checkbox item that was checked.
    */
-  onChange_(e) {
+  private onChange_(e: RepeaterEvent) {
     const name = e.model.item.name;
     this.updateSettingWithTimeout_(
-        name, this.shadowRoot.querySelector(`#${name}`).checked);
+        name,
+        this.shadowRoot!.querySelector<CrCheckboxElement>(`#${name}`)!.checked);
   }
 
   /**
-   * @param {number} index The index of the settings section.
-   * @return {string} Class string containing 'first-visible' if the settings
+   * @param index The index of the settings section.
+   * @return Class string containing 'first-visible' if the settings
    *     section is the first visible.
-   * @private
    */
-  getClass_(index) {
+  private getClass_(index: number): string {
     return index === this.firstIndex_ ? 'first-visible' : '';
   }
 }

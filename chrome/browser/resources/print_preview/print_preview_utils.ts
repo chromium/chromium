@@ -8,7 +8,7 @@ import {IronIconsetSvgElement} from 'chrome://resources/polymer/v3_0/iron-iconse
 import {inDarkMode} from './dark_mode_mixin.js';
 import {LocalizedString} from './data/cdd.js';
 
-type Range = {
+export type Range = {
   to: number,
   from: number,
 };

@@ -11,19 +11,12 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {MarginsType} from '../data/margins.js';
 import {State} from '../data/state.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SelectMixinInterface}
- * @implements {SettingsMixinInterface}
- */
 const PrintPreviewMarginsSettingsElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
 
-/** @polymer */
 export class PrintPreviewMarginsSettingsElement extends
     PrintPreviewMarginsSettingsElementBase {
   static get is() {
@@ -47,11 +40,13 @@ export class PrintPreviewMarginsSettingsElement extends
         observer: 'onStateChange_',
       },
 
-      /** @private */
       marginsDisabled_: Boolean,
 
       /** Mirroring the enum so that it can be used from HTML bindings. */
-      MarginsTypeEnum: Object,
+      marginsTypeEnum_: {
+        type: Object,
+        value: MarginsType,
+      }
     };
   }
 
@@ -65,29 +60,18 @@ export class PrintPreviewMarginsSettingsElement extends
     ];
   }
 
-  constructor() {
-    super();
+  disabled: boolean;
+  state: State;
+  private marginsDisabled_: boolean;
+  private loaded_: boolean = false;
 
-    /** @private {boolean} */
-    this.loaded_ = false;
-  }
-
-  /** @override */
-  ready() {
-    super.ready();
-
-    this.MarginsTypeEnum = MarginsType;
-  }
-
-  /** @private */
-  onStateChange_() {
+  private onStateChange_() {
     if (this.state === State.READY) {
       this.loaded_ = true;
     }
   }
 
-  /** @private */
-  onMediaSizeOrLayoutChange_() {
+  private onMediaSizeOrLayoutChange_() {
     if (this.loaded_ &&
         this.getSetting('margins').value === MarginsType.CUSTOM) {
       this.setSetting('margins', MarginsType.DEFAULT);
@@ -95,32 +79,27 @@ export class PrintPreviewMarginsSettingsElement extends
   }
 
   /**
-   * @param {number} newValue The new value of the pages per sheet setting.
-   * @private
+   * @param newValue The new value of the pages per sheet setting.
    */
-  onPagesPerSheetSettingChange_(newValue) {
+  private onPagesPerSheetSettingChange_(newValue: number) {
     if (newValue > 1) {
       this.setSetting('margins', MarginsType.DEFAULT);
     }
     this.updateMarginsDisabled_();
   }
 
-  /** @param {*} newValue The new value of the margins setting. */
-  onMarginsSettingChange_(newValue) {
-    this.selectedValue =
-        /** @type {!MarginsType} */ (newValue).toString();
+  /** @param newValue The new value of the margins setting. */
+  private onMarginsSettingChange_(newValue: MarginsType) {
+    this.selectedValue = newValue.toString();
   }
 
-  /** @param {string} value The new select value. */
-  onProcessSelectChange(value) {
+  onProcessSelectChange(value: string) {
     this.setSetting('margins', parseInt(value, 10));
   }
 
-  /** @private */
-  updateMarginsDisabled_() {
+  private updateMarginsDisabled_() {
     this.marginsDisabled_ =
-        /** @type {number} */ (this.getSettingValue('pagesPerSheet')) > 1 ||
-        this.disabled;
+        (this.getSettingValue('pagesPerSheet') as number) > 1 || this.disabled;
   }
 }
 

@@ -10,19 +10,12 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {MarginsType} from '../data/margins.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SelectMixinInterface}
- * @implements {SettingsMixinInterface}
- */
 const PrintPreviewPagesPerSheetSettingsElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
 
-/** @polymer */
 export class PrintPreviewPagesPerSheetSettingsElement extends
     PrintPreviewPagesPerSheetSettingsElementBase {
   static get is() {
@@ -36,7 +29,6 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
   static get properties() {
     return {
       disabled: Boolean,
-
     };
   }
 
@@ -47,15 +39,13 @@ export class PrintPreviewPagesPerSheetSettingsElement extends
   }
 
   /**
-   * @param {*} newValue The new value of the pages per sheet setting.
-   * @private
+   * @param newValue The new value of the pages per sheet setting.
    */
-  onPagesPerSheetSettingChange_(newValue) {
-    this.selectedValue = /** @type {number} */ (newValue).toString();
+  private onPagesPerSheetSettingChange_(newValue: number) {
+    this.selectedValue = newValue.toString();
   }
 
-  /** @param {string} value The new select value. */
-  onProcessSelectChange(value) {
+  onProcessSelectChange(value: string) {
     this.setSetting('pagesPerSheet', parseInt(value, 10));
   }
 }

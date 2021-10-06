@@ -157,6 +157,13 @@ export class PrintPreviewNumberSettingsSectionElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-number-settings-section':
+        PrintPreviewNumberSettingsSectionElement;
+  }
+}
+
 customElements.define(
     PrintPreviewNumberSettingsSectionElement.is,
     PrintPreviewNumberSettingsSectionElement);

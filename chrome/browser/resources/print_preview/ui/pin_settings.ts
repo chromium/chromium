@@ -8,28 +8,32 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {State} from '../data/state.js';
 
-import {InputBehaviorInterface, InputMixin} from './input_mixin.js';
+import {InputMixin, InputMixinInterface} from './input_mixin.js';
 import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- * @implements {InputMixinInterface}
- * @implements {SettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const PrintPreviewPinSettingsElementBase = mixinBehaviors(
-    [I18nBehavior, WebUIListenerBehavior],
-    InputMixin(SettingsMixin(PolymerElement)));
+interface PrintPreviewPinSettingsElement {
+  $: {
+    pin: CrCheckboxElement,
+    pinValue: CrInputElement,
+  };
+}
 
-/** @polymer */
+const PrintPreviewPinSettingsElementBase =
+    mixinBehaviors(
+        [WebUIListenerBehavior],
+        InputMixin(SettingsMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
+      InputMixinInterface & SettingsMixinInterface
+    };
+
 class PrintPreviewPinSettingsElement extends
     PrintPreviewPinSettingsElementBase {
   static get is() {
@@ -42,32 +46,27 @@ class PrintPreviewPinSettingsElement extends
 
   static get properties() {
     return {
-      /** @type {!State} */
       state: Number,
 
       disabled: Boolean,
 
-      /** @private {boolean} */
       checkboxDisabled_: {
         type: Boolean,
         computed: 'computeCheckboxDisabled_(inputValid_, disabled, ' +
             'settings.pin.setByPolicy)',
       },
 
-      /** @private {boolean} */
       pinEnabled_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {string} */
       inputString_: {
         type: String,
         value: '',
         observer: 'onInputChanged_',
       },
 
-      /** @private */
       inputValid_: {
         type: Boolean,
         value: true,
@@ -83,69 +82,65 @@ class PrintPreviewPinSettingsElement extends
     ];
   }
 
-  /** @override */
+  state: State;
+  disabled: boolean;
+  private checkboxDisabled_: boolean;
+  private inputString_: string;
+  private inputValid_: boolean;
+  private pinEnabled_: boolean;
+
   ready() {
     super.ready();
 
-    this.addEventListener(
-        'input-change',
-        e => this.onInputChange_(/** @type {!CustomEvent<string>} */ (e)));
+    this.addEventListener('input-change', e => this.onInputChange_(e));
   }
 
-  /** @return {!CrInputElement} The cr-input field element for InputMixin. */
+  /** @return The cr-input field element for InputMixin. */
   getInput() {
-    return /** @type {!CrInputElement} */ (this.$.pinValue);
+    return this.$.pinValue;
   }
 
-  /**
-   * @param {!CustomEvent<string>} e Contains the new input value.
-   * @private
-   */
-  onInputChange_(e) {
+  private onInputChange_(e: CustomEvent<string>) {
     this.inputString_ = e.detail;
   }
 
-  /** @private */
-  onCollapseChanged_() {
+  private onCollapseChanged_() {
     if (this.pinEnabled_) {
-      /** @type {!CrInputElement} */ (this.$.pinValue).focusInput();
+      this.$.pinValue.focusInput();
     }
   }
 
   /**
-   * @param {boolean} inputValid Whether pin value is valid.
-   * @param {boolean} disabled Whether pin setting is disabled.
-   * @param {boolean} managed Whether pin setting is managed.
-   * @return {boolean} Whether pin checkbox should be disabled.
-   * @private
+   * @param inputValid Whether pin value is valid.
+   * @param disabled Whether pin setting is disabled.
+   * @param managed Whether pin setting is managed.
+   * @return Whether pin checkbox should be disabled.
    */
-  computeCheckboxDisabled_(inputValid, disabled, managed) {
+  private computeCheckboxDisabled_(
+      inputValid: boolean, disabled: boolean, managed: boolean): boolean {
     return managed || (inputValid && disabled);
   }
 
   /**
-   * @return {boolean} Whether to disable the pin value input.
-   * @private
+   * @return Whether to disable the pin value input.
    */
-  inputDisabled_() {
+  private inputDisabled_(): boolean {
     return !this.pinEnabled_ || (this.inputValid_ && this.disabled);
   }
 
   /**
    * Updates the checkbox state when the setting has been initialized.
-   * @private
    */
-  onSettingsChanged_() {
-    const pinEnabled = /** @type {boolean} */ (this.getSetting('pin').value);
+  private onSettingsChanged_() {
+    const pinEnabled = this.getSetting('pin').value as boolean;
     this.$.pin.checked = pinEnabled;
     this.pinEnabled_ = pinEnabled;
     const pinValue = this.getSetting('pinValue');
-    this.inputString_ = /** @type {string} */ (pinValue.value);
+    this.inputString_ = pinValue.value as string;
     this.resetString();
   }
 
-  /** @private */
-  onPinChange_() {
+  private onPinChange_() {
     this.setSetting('pin', this.$.pin.checked);
     // We need to set validity of pinValue to true to return to READY state
     // after unchecking the pin and to check the validity again after checking
@@ -157,19 +152,15 @@ class PrintPreviewPinSettingsElement extends
     }
   }
 
-  /**
-   * @private
-   */
-  onInputChanged_() {
+  private onInputChanged_() {
     this.changePinValueSetting_();
   }
 
   /**
    * Updates pin value setting based on the current value of the pin value
    * input.
-   * @private
    */
-  changePinValueSetting_() {
+  private changePinValueSetting_() {
     if (this.settings === undefined) {
       return;
     }
@@ -178,7 +169,7 @@ class PrintPreviewPinSettingsElement extends
     // It's done because we don't permit multiple simultaneous validation errors
     // in Print Preview and we also don't want to set the value when sticky
     // settings may not yet have been set.
-    if (this.state !== State.READY && this.settings.pinValue.valid) {
+    if (this.state !== State.READY && this.settings.pinValue!.valid) {
       return;
     }
     this.inputValid_ = this.computeValid_();
@@ -193,22 +184,17 @@ class PrintPreviewPinSettingsElement extends
   }
 
   /**
-   * @return {boolean} Whether input value represented by inputString_ is
+   * @return Whether input value represented by inputString_ is
    *     valid, so that it can be used to update the setting.
-   * @private
    */
-  computeValid_() {
+  private computeValid_(): boolean {
     // Make sure value updates first, in case inputString_ was updated by JS.
     this.$.pinValue.value = this.inputString_;
     this.$.pinValue.validate();
     return !this.$.pinValue.invalid;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getPinErrorMessage_() {
+  private getPinErrorMessage_(): string {
     return this.inputValid_ ? '' : this.i18n('pinErrorMessage');
   }
 }

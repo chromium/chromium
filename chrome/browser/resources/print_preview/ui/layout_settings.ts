@@ -8,20 +8,12 @@ import './settings_section.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SelectMixin, SelectMixinInterface} from './select_mixin.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SelectMixin} from './select_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
-
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsMixinInterface}
- * @implements {SelectMixinInterface}
- */
 const PrintPreviewLayoutSettingsElementBase =
     SettingsMixin(SelectMixin(PolymerElement));
 
-/** @polymer */
 export class PrintPreviewLayoutSettingsElement extends
     PrintPreviewLayoutSettingsElementBase {
   static get is() {
@@ -42,17 +34,11 @@ export class PrintPreviewLayoutSettingsElement extends
     return ['onLayoutSettingChange_(settings.layout.value)'];
   }
 
-  /**
-   * @param {*} newValue The new value of the layout setting.
-   * @private
-   */
-  onLayoutSettingChange_(newValue) {
-    this.selectedValue =
-        /** @type {boolean} */ (newValue) ? 'landscape' : 'portrait';
+  private onLayoutSettingChange_(newValue: boolean) {
+    this.selectedValue = newValue ? 'landscape' : 'portrait';
   }
 
-  /** @param {string} value The new select value. */
-  onProcessSelectChange(value) {
+  onProcessSelectChange(value: string) {
     this.setSetting('layout', value === 'landscape');
   }
 }
