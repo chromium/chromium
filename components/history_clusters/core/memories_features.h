@@ -62,8 +62,13 @@ extern const base::Feature kJourneys;
 // for this to take effect.
 extern const base::Feature kOmniboxAction;
 
-// Enables debug info; e.g. shows visit metadata on chrome://history entries.
-extern const base::Feature kDebug;
+// Enables debug info in non-user-visible surfaces, like Chrome Inspector.
+// Does nothing if `kJourneys` is disabled.
+extern const base::Feature kNonUserVisibleDebug;
+
+// Enables debug info in user-visible surfaces, like the actual WebUI page.
+// Does nothing if `kJourneys` is disabled.
+extern const base::Feature kUserVisibleDebug;
 
 // Enables using a remote model endpoint for Memories clustering for debugging
 // purposes. This should not be ever enabled in production.

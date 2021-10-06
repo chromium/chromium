@@ -265,9 +265,8 @@ base::Value HistoryEntryToValue(
   result.SetStringKey("remoteIconUrlForUma",
                       entry.remote_icon_url_for_uma.spec());
 
-  // Additional debugging fields that are only shown if the
-  // history_clusters::kDebug feature is enabled.
-  if (base::FeatureList::IsEnabled(history_clusters::kDebug)) {
+  // Additional debugging fields shown only if the debug feature is enabled.
+  if (base::FeatureList::IsEnabled(history_clusters::kUserVisibleDebug)) {
     base::Value debug(base::Value::Type::DICTIONARY);
     debug.SetBoolKey("isUrlInLocalDatabase", IsUrlInLocalDatabase(entry));
     debug.SetIntKey("visitCount", entry.visit_count);

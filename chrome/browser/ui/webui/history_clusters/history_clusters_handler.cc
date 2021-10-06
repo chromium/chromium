@@ -79,7 +79,7 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile, const Visit& visit) {
     visit_mojom->annotations.push_back(mojom::Annotation::kSearchResultsPage);
   }
 
-  if (base::FeatureList::IsEnabled(kDebug)) {
+  if (base::FeatureList::IsEnabled(kUserVisibleDebug)) {
     visit_mojom->debug_info["score"] = base::NumberToString(visit.score);
     visit_mojom->debug_info["visit_duration"] = base::NumberToString(
         annotated_visit.visit_row.visit_duration.InSecondsF());
@@ -276,7 +276,8 @@ void HistoryClustersHandler::RemoveVisits(
 }
 
 void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
-  if (content::RenderFrameHost* rfh = web_contents_->GetMainFrame()) {
+  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
+  if (rfh && base::FeatureList::IsEnabled(kNonUserVisibleDebug)) {
     rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kInfo, message);
   }
 }

@@ -130,8 +130,9 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean(
       "isHistoryClustersVisible",
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
-  source->AddBoolean("isHistoryClustersDebug",
-                     base::FeatureList::IsEnabled(history_clusters::kDebug));
+  source->AddBoolean(
+      "isHistoryClustersDebug",
+      base::FeatureList::IsEnabled(history_clusters::kUserVisibleDebug));
 
   static constexpr webui::LocalizedString kHistoryClustersStrings[] = {
       {"disableHistoryClusters", IDS_HISTORY_CLUSTERS_DISABLE_MENU_ITEM_LABEL},

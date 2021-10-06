@@ -52,7 +52,11 @@ const base::Feature kJourneys{"Journeys", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOmniboxAction{"JourneysOmniboxAction",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kDebug{"JourneysDebug", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kNonUserVisibleDebug{"JourneysNonUserVisibleDebug",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kUserVisibleDebug{"JourneysUserVisibleDebug",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kRemoteModelForDebugging{"JourneysRemoteModelForDebugging",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
