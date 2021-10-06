@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -266,12 +267,15 @@ void AshNotificationView::ExpandButton::OnThemeChanged() {
 AshNotificationView::AshNotificationView(
     const message_center::Notification& notification,
     bool shown_in_popup)
-    : NotificationViewBase(notification), shown_in_popup_(shown_in_popup) {
+    : NotificationViewBase(notification),
+      layout_manager_(SetLayoutManager(std::make_unique<views::BoxLayout>(
+          Orientation::kVertical,
+          notification.group_child() ? gfx::Insets() : kNotificationViewPadding,
+          0))),
+      shown_in_popup_(shown_in_popup) {
   // TODO(crbug/1232197): fix views and layout to match spec.
   // Instantiate view instances and define layout and view hierarchy.
-  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kVertical, kNotificationViewPadding, 0));
-  layout_manager->set_cross_axis_alignment(
+  layout_manager_->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kEnd);
 
   auto control_buttons_view = CreateControlButtonsView();
@@ -316,8 +320,8 @@ AshNotificationView::AshNotificationView(
           &AshNotificationView::ToggleExpand, base::Unretained(this))));
 
   // TODO(crbug/1241990): add an icon view here.
-  auto app_icon_view = std::make_unique<views::ImageView>();
-  app_icon_view->SetImageSize(gfx::Size(kAppIconViewSize, kAppIconViewSize));
+  auto app_icon_view = std::make_unique<RoundedImageView>(
+      kAppIconViewSize / 2, RoundedImageView::Alignment::kCenter);
 
   // Main right view contains all the views besides control buttons and icon.
   auto main_right_view = std::make_unique<views::View>();
@@ -346,9 +350,9 @@ AshNotificationView::AshNotificationView(
   auto grouped_notifications_container = std::make_unique<views::View>();
   grouped_notifications_container->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
-          Orientation::kVertical,
-          message_center_style::kGroupedNotificationContainerInsets,
-          /*between_child_spacing=*/0));
+          Orientation::kVertical, kGroupedNotificationContainerInsets,
+          IsExpanded() ? kGroupedNotificationsExpandedSpacing
+                       : kGroupedNotificationsCollapsedSpacing));
   grouped_notifications_container_ =
       AddChildView(std::move(grouped_notifications_container));
 
@@ -438,20 +442,18 @@ std::unique_ptr<views::View> AshNotificationView::CreateCollapsedSummaryView(
   auto collapsed_summary_view = std::make_unique<views::View>();
   collapsed_summary_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      message_center_style::kGroupedCollapsedSummaryInsets,
-      message_center_style::kGroupedCollapsedSummaryLabelSpacing));
+      kGroupedCollapsedSummaryInsets, kGroupedCollapsedSummaryLabelSpacing));
   collapsed_summary_view->SetVisible(false);
 
   auto title_label = std::make_unique<views::Label>(
       notification.title(), views::style::CONTEXT_DIALOG_BODY_TEXT);
-  title_label->SetMaximumWidthSingleLine(
-      message_center_style::kGroupedCollapsedSummaryTitleLength);
+  title_label->SetMaximumWidthSingleLine(kGroupedCollapsedSummaryTitleLength);
 
   auto content_label = std::make_unique<views::Label>(
       notification.message(), views::style::CONTEXT_DIALOG_BODY_TEXT,
       views::style::STYLE_SECONDARY);
   content_label->SetMaximumWidthSingleLine(
-      message_center_style::kGroupedCollapsedSummaryMessageLength);
+      kGroupedCollapsedSummaryMessageLength);
 
   collapsed_summary_view->AddChildView(std::move(title_label));
   collapsed_summary_view->AddChildView(std::move(content_label));
@@ -463,6 +465,9 @@ void AshNotificationView::SetGroupedChildExpanded(bool expanded) {
   collapsed_summary_view_->SetVisible(!expanded);
   main_view_->SetVisible(expanded);
   control_buttons_view_->SetVisible(expanded);
+  layout_manager_->set_cross_axis_alignment(
+      expanded ? views::BoxLayout::CrossAxisAlignment::kEnd
+               : views::BoxLayout::CrossAxisAlignment::kStretch);
 }
 
 void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
@@ -497,6 +502,12 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   expand_button_->SetVisible(IsExpandable());
   expand_button_->SetExpanded(expanded);
 
+  static_cast<views::BoxLayout*>(
+      grouped_notifications_container_->GetLayoutManager())
+      ->set_between_child_spacing(expanded
+                                      ? kGroupedNotificationsExpandedSpacing
+                                      : kGroupedNotificationsCollapsedSpacing);
+
   int notification_count = 0;
   for (auto* child : grouped_notifications_container_->children()) {
     auto* notification_view = static_cast<AshNotificationView*>(child);
@@ -515,6 +526,7 @@ void AshNotificationView::UpdateWithNotification(
     const message_center::Notification& notification) {
   is_grouped_child_view_ = notification.group_child();
   is_grouped_parent_view_ = notification.group_parent();
+
   grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
   header_row()->SetVisible(!is_grouped_child_view_);
 
@@ -548,6 +560,12 @@ void AshNotificationView::CreateOrUpdateTitleView(
 
 void AshNotificationView::CreateOrUpdateSmallIconView(
     const message_center::Notification& notification) {
+  if (is_grouped_child_view_ && !notification.icon().IsEmpty()) {
+    app_icon_view_->SetImage(notification.icon().AsImageSkia(),
+                             gfx::Size(kAppIconViewSize, kAppIconViewSize));
+    return;
+  }
+
   // TODO(crbug/1241990): Since we haven't decided which color we will use for
   // app icon, we will need to change this part later.
   SkColor icon_color = notification.accent_color().value_or(
@@ -564,11 +582,18 @@ void AshNotificationView::CreateOrUpdateSmallIconView(
           ash::AshColorProvider::ContentLayerType::kTextColorPrimary));
 
   if (masked_small_icon.IsEmpty()) {
-    app_icon_view_->SetImage(gfx::CreateVectorIcon(
-        message_center::kProductIcon, kAppIconViewSize, SK_ColorWHITE));
+    app_icon_view_->SetImage(
+        gfx::CreateVectorIcon(message_center::kProductIcon, kAppIconViewSize,
+                              SK_ColorWHITE),
+        gfx::Size(kAppIconViewSize, kAppIconViewSize));
   } else {
-    app_icon_view_->SetImage(masked_small_icon.AsImageSkia());
+    app_icon_view_->SetImage(masked_small_icon.AsImageSkia(),
+                             gfx::Size(kAppIconViewSize, kAppIconViewSize));
   }
+}
+
+bool AshNotificationView::IsIconViewShown() const {
+  return NotificationViewBase::IsIconViewShown() && !is_grouped_child_view_;
 }
 
 void AshNotificationView::SetExpandButtonEnabled(bool enabled) {

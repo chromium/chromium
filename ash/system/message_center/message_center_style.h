@@ -45,15 +45,10 @@ constexpr SkColor kSwipeControlBackgroundColor =
 constexpr float kSwipeControlFullOpacityRatio = 1.5f;
 
 constexpr int kMaxGroupedNotificationsInCollapsedState = 3;
-constexpr int kGroupedCollapsedSummaryLabelSpacing = 6;
-constexpr int kGroupedCollapsedSummaryTitleLength = 150;
-constexpr int kGroupedCollapsedSummaryMessageLength = 250;
-constexpr gfx::Insets kGroupedNotificationContainerInsets(0, 0, 16, 0);
 constexpr gfx::Insets kGroupedCollapsedCountViewInsets(0,
                                                        0,
                                                        16,
                                                        kTrayMenuWidth - 100);
-constexpr gfx::Insets kGroupedCollapsedSummaryInsets(2, 52);
 
 }  // namespace message_center_style
 

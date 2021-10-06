@@ -168,7 +168,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
                                  const std::u16string& text) override;
 
   // Whether the notification view is showing `icon_view_`.
-  bool IsIconViewShown() const;
+  virtual bool IsIconViewShown() const;
 
  protected:
   explicit NotificationViewBase(const Notification& notification);

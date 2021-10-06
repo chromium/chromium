@@ -16,7 +16,13 @@ namespace message_center {
 class Notification;
 }  // namespace message_center
 
+namespace views {
+class BoxLayout;
+}  // namespace views
+
 namespace ash {
+
+class RoundedImageView;
 
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
@@ -59,6 +65,7 @@ class ASH_EXPORT AshNotificationView
       const message_center::Notification& notification) override;
   void CreateOrUpdateSmallIconView(
       const message_center::Notification& notification) override;
+  bool IsIconViewShown() const override;
   void SetExpandButtonEnabled(bool enabled) override;
   void UpdateCornerRadius(int top_radius, int bottom_radius) override;
   void SetDrawBackgroundAsActive(bool active) override;
@@ -159,13 +166,14 @@ class ASH_EXPORT AshNotificationView
   void UpdateBackground(int top_radius, int bottom_radius);
 
   // Owned by views hierarchy.
-  views::ImageView* app_icon_view_ = nullptr;
+  RoundedImageView* app_icon_view_ = nullptr;
   ExpandButton* expand_button_ = nullptr;
   views::View* left_content_ = nullptr;
   views::View* grouped_notifications_container_ = nullptr;
   views::View* collapsed_summary_view_ = nullptr;
   views::View* control_buttons_view_ = nullptr;
   views::View* main_view_ = nullptr;
+  views::BoxLayout* const layout_manager_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
   NotificationTitleRow* title_row_ = nullptr;

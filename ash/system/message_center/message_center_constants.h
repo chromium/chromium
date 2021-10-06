@@ -10,6 +10,15 @@
 
 namespace ash {
 
+constexpr int kGroupedCollapsedSummaryLabelSpacing = 6;
+constexpr int kGroupedCollapsedSummaryTitleLength = 150;
+constexpr int kGroupedCollapsedSummaryMessageLength = 250;
+constexpr gfx::Insets kGroupedCollapsedSummaryInsets(0, 40, 0, 16);
+
+constexpr int kGroupedNotificationsExpandedSpacing = 20;
+constexpr int kGroupedNotificationsCollapsedSpacing = 6;
+constexpr gfx::Insets kGroupedNotificationContainerInsets(8, 0);
+
 constexpr int kMessagePopupCornerRadius = 16;
 constexpr int kMessageCenterNotificationCornerRadius = 2;
 
