@@ -190,9 +190,6 @@ class DownloadRequestLimiter
 
     DownloadRequestLimiter* host_;
 
-    // Host of the first page the download started on. This may be empty.
-    std::string initial_page_host_;
-
     // Current tab status and UI status. Renderer initiated navigations will
     // not change these values if the current tab state is restricted.
     DownloadStatus status_;
