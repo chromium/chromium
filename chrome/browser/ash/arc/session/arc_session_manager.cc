@@ -1756,8 +1756,11 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
     // Because of this, crosvm for ARCVM won't start until the user signs into
     // their user session. Second, after the sign-in, the rest of the mini-ARCVM
     // startup sequence is executed regardless of whether the user has opted
-    // into ARC. For opt-out users, this is a complete waste of resources and
-    // may also cause page caches evictions making Chrome UI less reponsive.
+    // into ARC. For opt-out users(*), ARCVM will eventually be stopped, but the
+    // stop request may be issued after mini-VM is started. This is a complete
+    // waste of resources and may also cause page caches evictions making Chrome
+    // UI less reponsive.
+    // (*) This includes non-ARC Kiosk mode. See b/197510998 for more info.
     VLOG(1) << "Starting ARCVM on login screen is not supported.";
     return;
   }
