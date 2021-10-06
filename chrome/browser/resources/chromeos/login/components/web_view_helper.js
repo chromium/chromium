@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {assert, assertNotReached} from '//resources/js/assert.m.js';
+
 /**
  * @fileoverview Web view helper.
  */
 
 /** Web view helper shared between OOBE screens. */
-class WebViewHelper {
+/* #export */ class WebViewHelper {
   /**
    * Loads content of the given url into the given web view.
    * The content is loaded via XHR and is sent to web view via data url so that

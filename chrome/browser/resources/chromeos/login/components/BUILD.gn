@@ -51,6 +51,8 @@ group("closure_compile_module") {
     ":oobe_icons.m",
     ":oobe_network_icons.m",
     ":oobe_types.m",
+    ":web_view_helper.m",
+    ":web_view_loader.m",
   ]
 }
 
@@ -123,6 +125,12 @@ js_library("oobe_select") {
 js_library("oobe_types") {
 }
 
+js_library("web_view_helper") {
+}
+
+js_library("web_view_loader") {
+}
+
 #### Polymer3 / JS Modules
 
 js_library("display_manager_types.m") {
@@ -179,6 +187,18 @@ js_library("oobe_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("web_view_helper.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_helper.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("web_view_loader.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_loader.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
 polymer_modulizer("hd_iron_icon") {
   js_file = "hd_iron_icon.js"
   html_file = "hd_iron_icon.html"
@@ -223,6 +243,8 @@ js_modulizer("modulize") {
   input_files = [
     "display_manager_types.js",
     "oobe_types.js",
+    "web_view_helper.js",
+    "web_view_loader.js",
   ]
   namespace_rewrites = []
 }

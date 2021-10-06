@@ -33,8 +33,8 @@ disableTextSelectAndDrag(function(e) {
 
 // <include src="../../gaia_auth_host/authenticator.js">
 // <include src="multi_tap_detector.js">
-// <include src="web_view_helper.js">
-// <include src="web_view_loader.js">
+// <include src="components/web_view_helper.js">
+// <include src="components/web_view_loader.js">
 
 HTMLImports.whenReady(() => {
   i18nTemplate.process(document, loadTimeData);

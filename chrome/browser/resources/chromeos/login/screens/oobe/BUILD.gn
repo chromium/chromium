@@ -77,7 +77,7 @@ js_library("enable_debugging") {
 
 js_library("oobe_eula") {
   deps = [
-    "../..:web_view_helper",
+    "../../components:web_view_helper",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
