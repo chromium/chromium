@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/check.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
@@ -20,6 +21,7 @@ namespace ash {
 namespace {
 
 using chromeos::bluetooth_config::GetPairedDeviceName;
+using chromeos::bluetooth_config::mojom::DeviceBatteryInfoPtr;
 using chromeos::bluetooth_config::mojom::DeviceConnectionState;
 using chromeos::bluetooth_config::mojom::DeviceType;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
@@ -86,6 +88,19 @@ void BluetoothDeviceListItemView::UpdateDeviceProperties(
   // Adds a sub-label to show that the device is in the process of connecting.
   if (connection_state == DeviceConnectionState::kConnecting) {
     SetupConnectingScrollListItem(this);
+  } else if (connection_state == DeviceConnectionState::kConnected) {
+    const DeviceBatteryInfoPtr& battery_info =
+        device_properties_->device_properties->battery_info;
+
+    if (!battery_info || !battery_info->default_properties) {
+      sub_row()->RemoveAllChildViews();
+      return;
+    }
+    if (!battery_view_) {
+      battery_view_ = sub_row()->AddChildView(
+          std::make_unique<BluetoothDeviceListItemBatteryView>());
+    }
+    battery_view_->UpdateBatteryInfo(battery_info->default_properties);
   }
 }
 

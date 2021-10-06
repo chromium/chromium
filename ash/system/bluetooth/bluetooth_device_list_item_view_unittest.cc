@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_map.h"
@@ -25,6 +26,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -43,6 +45,7 @@ using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 const char kDeviceId[] = "/device/id";
 const std::string kDeviceNickname = "clicky keys";
 const std::u16string kDevicePublicName = u"Mechanical Keyboard";
+constexpr uint8_t kBatteryPercentage = 27;
 
 PairedBluetoothDevicePropertiesPtr CreatePairedDeviceProperties() {
   PairedBluetoothDevicePropertiesPtr paired_device_properties =
@@ -52,6 +55,13 @@ PairedBluetoothDevicePropertiesPtr CreatePairedDeviceProperties() {
   paired_device_properties->device_properties->id = kDeviceId;
   paired_device_properties->device_properties->public_name = kDevicePublicName;
   return paired_device_properties;
+}
+
+DeviceBatteryInfoPtr CreateBatteryInfo(uint8_t battery_percentage) {
+  DeviceBatteryInfoPtr battery_info = DeviceBatteryInfo::New();
+  battery_info->default_properties = BatteryProperties::New();
+  battery_info->default_properties->battery_percentage = battery_percentage;
+  return battery_info;
 }
 
 }  // namespace
@@ -141,8 +151,26 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectSubLabel) {
   bluetooth_device_list_item()->UpdateDeviceProperties(
       paired_device_properties);
 
-  // There should not be a sub-label unless battery information is available.
-  EXPECT_FALSE(bluetooth_device_list_item()->sub_text_label());
+  // There should not be any content in the sub-row unless battery information
+  // is available.
+  EXPECT_EQ(0u, bluetooth_device_list_item()->sub_row()->children().size());
+
+  paired_device_properties->device_properties->battery_info =
+      CreateBatteryInfo(kBatteryPercentage);
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  EXPECT_EQ(1u, bluetooth_device_list_item()->sub_row()->children().size());
+  EXPECT_TRUE(views::IsViewClass<BluetoothDeviceListItemBatteryView>(
+      bluetooth_device_list_item()->sub_row()->children().at(0)));
+
+  paired_device_properties->device_properties->battery_info = nullptr;
+  bluetooth_device_list_item()->UpdateDeviceProperties(
+      paired_device_properties);
+
+  // The sub-row should be cleared if the battery information is no longer
+  // available.
+  EXPECT_EQ(0u, bluetooth_device_list_item()->sub_row()->children().size());
 }
 
 // We only have access to the ImageSkia instance generated using the vector icon

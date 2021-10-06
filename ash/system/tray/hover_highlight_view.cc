@@ -23,6 +23,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
@@ -74,13 +75,12 @@ void HoverHighlightView::SetRightViewVisible(bool visible) {
 }
 
 void HoverHighlightView::SetSubText(const std::u16string& sub_text) {
-  DCHECK(is_populated_);
-  DCHECK(text_label_);
+  DCHECK(sub_row_);
   DCHECK(!sub_text.empty());
 
   if (!sub_text_label_) {
-    sub_text_label_ = TrayPopupUtils::CreateUnfocusableLabel();
-    tri_view_->AddView(TriView::Container::CENTER, sub_text_label_);
+    sub_text_label_ =
+        sub_row_->AddChildView(TrayPopupUtils::CreateUnfocusableLabel());
   }
 
   sub_text_label_->SetEnabledColor(
@@ -119,6 +119,8 @@ void HoverHighlightView::AddIconAndLabel(const gfx::ImageSkia& image,
       views::CreateEmptyBorder(0, 0, 0, kTrayPopupLabelRightPadding));
   tri_view_->SetContainerVisible(TriView::Container::END, false);
 
+  AddSubRowContainer();
+
   SetAccessibleName(text);
 }
 
@@ -137,6 +139,8 @@ void HoverHighlightView::AddLabelRow(const std::u16string& text) {
   TrayPopupUtils::SetLabelFontList(
       text_label_, TrayPopupUtils::FontStyle::kDetailedViewLabel);
   tri_view_->AddView(TriView::Container::CENTER, text_label_);
+
+  AddSubRowContainer();
 
   SetAccessibleName(text);
 }
@@ -169,6 +173,7 @@ void HoverHighlightView::Reset() {
   sub_text_label_ = nullptr;
   left_icon_ = nullptr;
   right_view_ = nullptr;
+  sub_row_ = nullptr;
   tri_view_ = nullptr;
   is_populated_ = false;
 }
@@ -240,6 +245,17 @@ int HoverHighlightView::GetHeightForWidth(int width) const {
 void HoverHighlightView::OnFocus() {
   ScrollRectToVisible(gfx::Rect(gfx::Point(), size()));
   ActionableView::OnFocus();
+}
+
+void HoverHighlightView::AddSubRowContainer() {
+  DCHECK(is_populated_);
+  DCHECK(tri_view_);
+  DCHECK(text_label_);
+  DCHECK(!sub_row_);
+  sub_row_ = new views::View();
+  sub_row_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+  tri_view_->AddView(TriView::Container::CENTER, sub_row_);
 }
 
 void HoverHighlightView::OnEnabledChanged() {

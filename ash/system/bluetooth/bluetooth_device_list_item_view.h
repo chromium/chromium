@@ -11,6 +11,7 @@
 
 namespace ash {
 
+class BluetoothDeviceListItemBatteryView;
 class ViewClickListener;
 
 // This class encapsulates the logic of configuring the view shown for a single
@@ -37,6 +38,7 @@ class ASH_EXPORT BluetoothDeviceListItemView : public HoverHighlightView {
   // views::View:
   const char* GetClassName() const override;
 
+  BluetoothDeviceListItemBatteryView* battery_view_ = nullptr;
   chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr
       device_properties_;
 };
