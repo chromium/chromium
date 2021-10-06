@@ -102,6 +102,7 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
   if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
+    DCHECK(sandbox::policy::features::IsWinNetworkServiceSandboxEnabled());
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
     return true;
   }
@@ -130,6 +131,7 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       return true;
     case sandbox::policy::SandboxType::kNetwork:
       // An LPAC specific policy for network service is set elsewhere.
+      DCHECK(sandbox::policy::features::IsWinNetworkServiceSandboxEnabled());
       return true;
     default:
       return false;

@@ -704,7 +704,6 @@ extern const char kMediaDeviceIdSalt[];
 extern const char kMediaStorageIdSalt[];
 #if defined(OS_WIN)
 extern const char kMediaCdmOriginData[];
-extern const char kNetworkServiceSandboxEnabled[];
 #endif  // defined(OS_WIN)
 
 extern const char kPrintPreviewStickySettings[];

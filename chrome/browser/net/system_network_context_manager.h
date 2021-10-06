@@ -141,11 +141,6 @@ class SystemNetworkContextManager {
   // or destroyed, and so that it's destroyed before Mojo is shut down.
   net_log::NetExportFileWriter* GetNetExportFileWriter();
 
-  // Returns whether the network sandbox is enabled. This depends on  policy but
-  // also feature status from sandbox. Called before there is an instance of
-  // SystemNetworkContextManager.
-  static bool IsNetworkSandboxEnabled();
-
   // Flushes all pending SSL configuration changes.
   void FlushSSLConfigManagerForTesting();
 

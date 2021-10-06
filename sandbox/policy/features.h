@@ -43,13 +43,9 @@ SANDBOX_POLICY_EXPORT extern const base::Feature
 // Windows platform. Call this function rather than checking the
 // kNetworkServiceSandbox feature directly.
 SANDBOX_POLICY_EXPORT bool IsWinNetworkServiceSandboxSupported();
+// Returns whether Windows Network Service Sandbox is enabled.
+SANDBOX_POLICY_EXPORT bool IsWinNetworkServiceSandboxEnabled();
 #endif
-
-// Returns whether the network sandbox is enabled for the current platform
-// configuration. This might be overridden by the content embedder so prefer
-// calling ContentBrowserClient::ShouldSandboxNetworkService().
-SANDBOX_POLICY_EXPORT bool IsNetworkSandboxEnabled();
-
 }  // namespace features
 }  // namespace policy
 }  // namespace sandbox

@@ -9,7 +9,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
-#include "chrome/browser/net/system_network_context_manager.h"
+#include "sandbox/policy/features.h"
 #endif
 
 namespace features {
@@ -78,7 +78,7 @@ const base::Feature kTriggerNetworkDataMigration{
 bool ShouldTriggerNetworkDataMigration() {
 #if defined(OS_WIN)
   // On Windows, if sandbox enabled means data must be migrated.
-  if (SystemNetworkContextManager::IsNetworkSandboxEnabled())
+  if (sandbox::policy::features::IsWinNetworkServiceSandboxEnabled())
     return true;
 #endif  // defined(OS_WIN)
   if (base::FeatureList::IsEnabled(kTriggerNetworkDataMigration))

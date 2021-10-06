@@ -2067,11 +2067,6 @@ const char kMediaStorageIdSalt[] = "media.storage_id_salt";
 // Mapping of origin to their origin id (UnguessableToken). Origin IDs are only
 // stored for origins using MediaFoundation-based CDMs.
 const char kMediaCdmOriginData[] = "media.cdm.origin_data";
-
-// A boolean pref to determine whether or not the network service is running
-// sandboxed.
-const char kNetworkServiceSandboxEnabled[] = "net.network_service_sandbox";
-
 #endif  // defined(OS_WIN)
 
 // The last used printer and its settings.

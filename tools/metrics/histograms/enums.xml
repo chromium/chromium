@@ -26472,7 +26472,6 @@ Called by update_document_policy_enum.py.-->
       label="DeviceLoginScreenPromptOnMultipleMatchingCertificates"/>
   <int value="905" label="PromptOnMultipleMatchingCertificates"/>
   <int value="906" label="SideSearchEnabled"/>
-  <int value="907" label="NetworkServiceSandboxEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

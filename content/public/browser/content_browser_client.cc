@@ -49,7 +49,6 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
-#include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
@@ -1044,10 +1043,6 @@ base::FilePath ContentBrowserClient::GetSandboxedStorageServiceDataDirectory() {
 
 bool ContentBrowserClient::ShouldSandboxAudioService() {
   return base::FeatureList::IsEnabled(features::kAudioServiceSandbox);
-}
-
-bool ContentBrowserClient::ShouldSandboxNetworkService() {
-  return sandbox::policy::features::IsNetworkSandboxEnabled();
 }
 
 blink::PreviewsState ContentBrowserClient::DetermineAllowedPreviews(

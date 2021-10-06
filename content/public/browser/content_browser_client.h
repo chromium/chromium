@@ -1842,10 +1842,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns true if the audio service should be sandboxed. false otherwise.
   virtual bool ShouldSandboxAudioService();
 
-  // Returns true if the network service should be sandboxed. false otherwise.
-  // This is called on the UI thread.
-  virtual bool ShouldSandboxNetworkService();
-
   // Asks the embedder for the PreviewsState which says which previews should
   // be enabled for the given navigation. The PreviewsState is a bitmask of
   // potentially several Previews optimizations. |initial_state| is used to

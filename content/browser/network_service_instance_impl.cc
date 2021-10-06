@@ -54,6 +54,10 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "sql/database.h"
 
+#if !defined(OS_MAC)
+#include "sandbox/policy/features.h"
+#endif
+
 #if defined(OS_WIN)
 #include <windows.h>
 
@@ -61,7 +65,6 @@
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
-#include "sandbox/policy/features.h"
 #endif  // defined(OS_WIN)
 
 namespace content {
@@ -93,10 +96,7 @@ const base::FilePath::CharType kCheckpointFileName[] =
 struct SandboxParameters {
 #if defined(OS_WIN)
   std::wstring lpac_capability_name;
-#if DCHECK_IS_ON()
-  bool sandbox_enabled;
-#endif  // DCHECK_IS_ON()
-#endif  // defined(OS_WIN)
+#endif
 };
 
 // The outcome of attempting to allow the sandbox access to network context data
@@ -687,7 +687,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 #if defined(OS_WIN)
     // On Windows, if network sandbox is enabled then there a migration must
     // happen, so a `unsandboxed_data_path` must be specified.
-    DCHECK(!sandbox_params.sandbox_enabled);
+    DCHECK(!IsNetworkSandboxEnabled());
 #endif
     // Trigger migration should never be requested if `unsandboxed_data_path` is
     // not set.
@@ -727,7 +727,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     // On Windows, if network sandbox is enabled then there a migration must
     // happen, so `trigger_migration` must be true, or a migration must have
     // already happened.
-    DCHECK(!sandbox_params.sandbox_enabled);
+    DCHECK(!IsNetworkSandboxEnabled());
 #endif
     return SandboxGrantResult::kNoMigrationRequested;
   }
@@ -1225,6 +1225,17 @@ void SetCertVerifierServiceFactoryForTesting(
   g_cert_verifier_service_factory_for_testing = service_factory;
 }
 
+bool IsNetworkSandboxEnabled() {
+#if defined(OS_MAC) || defined(OS_FUCHSIA)
+  return true;
+#elif defined(OS_WIN)
+  return sandbox::policy::features::IsWinNetworkServiceSandboxEnabled();
+#else
+  return base::FeatureList::IsEnabled(
+      sandbox::policy::features::kNetworkServiceSandbox);
+#endif
+}
+
 void CreateNetworkContextInNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkContext> context,
     network::mojom::NetworkContextParamsPtr params) {
@@ -1248,11 +1259,7 @@ void CreateNetworkContextInNetworkService(
 #if defined(OS_WIN)
   sandbox_params.lpac_capability_name =
       GetContentClient()->browser()->GetLPACCapabilityNameForNetworkService();
-#if DCHECK_IS_ON()
-  sandbox_params.sandbox_enabled =
-      GetContentClient()->browser()->ShouldSandboxNetworkService();
-#endif  // DCHECK_IS_ON()
-#endif  // defined(OS_WIN)
+#endif
   base::OnceCallback<SandboxGrantResult()> worker_task =
       base::BindOnce(&MaybeGrantSandboxAccessToNetworkContextData,
                      sandbox_params, params.get());

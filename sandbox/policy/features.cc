@@ -66,20 +66,16 @@ bool IsWinNetworkServiceSandboxSupported() {
     return false;
   return true;
 }
-#endif  // defined(OS_WIN)
 
-bool IsNetworkSandboxEnabled() {
-#if defined(OS_MAC) || defined(OS_FUCHSIA)
-  return true;
-#else
-#if defined(OS_WIN)
+bool IsWinNetworkServiceSandboxEnabled() {
+  // Check platform support.
   if (!IsWinNetworkServiceSandboxSupported())
     return false;
-#endif  // defined(OS_WIN)
+
   // Check feature status.
   return base::FeatureList::IsEnabled(kNetworkServiceSandbox);
-#endif  // defined(OS_MAC) || defined(OS_FUCHSIA)
 }
+#endif  // defined(OS_WIN)
 
 }  // namespace features
 }  // namespace policy
