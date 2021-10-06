@@ -141,8 +141,6 @@ class AddMatchedPropertiesOptions {
   unsigned GetLayerOrder() const { return layer_order_; }
   bool IsInlineStyle() const { return is_inline_style_; }
 
-  // TODO(crbug.com/1095765): Add a flag for whether it's inline style.
-
  private:
   unsigned link_match_type_ = CSSSelector::kMatchAll;
   ValidPropertyFilter valid_property_filter_ = ValidPropertyFilter::kNoFilter;
