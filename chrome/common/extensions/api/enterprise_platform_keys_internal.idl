@@ -48,10 +48,13 @@ namespace enterprise.platformKeysInternal {
     // RSASSA-PKCS1-v1_5 and ECDSA.
     // |tokenId| The id of a Token returned by |getTokens|.
     // |algorithm| The algorithm parameters as specified by WebCrypto.
+    // |softwareBacked| Whether the key operations should be executed in
+    //     software.
     // |callback| Called back with the Subject Public Key Info of the generated
     //     key.
     static void generateKey(DOMString tokenId,
                             Algorithm algorithm,
+                            boolean softwareBacked,
                             GenerateKeyCallback callback);
   };
 };
