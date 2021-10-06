@@ -2327,6 +2327,21 @@ TEST_P(CacheStorageManagerTestP, SlowPutCompletesWithoutExternalRef) {
   EXPECT_EQ(CacheStorageError::kSuccess, callback_error_);
 }
 
+TEST_P(CacheStorageManagerTestP, StoragePutPartialContentForBackgroundFetch) {
+  EXPECT_TRUE(Open(storage_key1_, "foo",
+                   storage::mojom::CacheStorageOwner::kBackgroundFetch));
+  auto request = blink::mojom::FetchAPIRequest::New();
+  request->url = GURL("http://example.com/foo");
+  auto request_clone = BackgroundFetchSettledFetch::CloneRequest(request);
+
+  EXPECT_TRUE(CachePutWithStatusCode(callback_cache_handle_.value(),
+                                     std::move(request), 206));
+  EXPECT_TRUE(StorageMatchAllWithRequest(
+      storage_key1_, std::move(request_clone), /* match_options= */ nullptr,
+      storage::mojom::CacheStorageOwner::kBackgroundFetch));
+  EXPECT_EQ(206, callback_cache_handle_response_->status_code);
+}
+
 class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
  protected:
   CacheStorageQuotaClientTest() = default;

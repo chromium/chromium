@@ -1888,7 +1888,9 @@ void LegacyCacheStorageCache::PutDidCreateEntry(
   }
 
   proto::CacheResponse* response_metadata = metadata.mutable_response();
-  DCHECK_NE(put_context->response->status_code, net::HTTP_PARTIAL_CONTENT);
+  if (owner_ != storage::mojom::CacheStorageOwner::kBackgroundFetch) {
+    DCHECK_NE(put_context->response->status_code, net::HTTP_PARTIAL_CONTENT);
+  }
   response_metadata->set_status_code(put_context->response->status_code);
   response_metadata->set_status_text(put_context->response->status_text);
   response_metadata->set_response_type(FetchResponseTypeToProtoResponseType(
