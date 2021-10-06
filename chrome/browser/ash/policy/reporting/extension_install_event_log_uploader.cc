@@ -40,7 +40,7 @@ CreateReportQueueConfigGetter(Profile* profile) {
                base::OnceCallback<void(
                    ::reporting::StatusOr<std::unique_ptr<
                        ::reporting::ReportQueueConfiguration>>)> complete_cb) {
-              auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
+              auto dm_token = GetDMToken(profile);
               if (!dm_token.is_valid()) {
                 std::move(complete_cb)
                     .Run(::reporting::Status(

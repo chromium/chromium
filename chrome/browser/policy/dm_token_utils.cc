@@ -37,7 +37,7 @@ DMToken* GetTestingDMTokenStorage() {
 
 }  // namespace
 
-DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
+DMToken GetDMToken(Profile* const profile) {
   DMToken dm_token = *GetTestingDMTokenStorage();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -61,8 +61,8 @@ DMToken GetDMToken(Profile* const profile, bool only_affiliated) {
     policy_manager = profile->GetUserCloudPolicyManagerAsh();
   }
 
-  if (dm_token.is_empty() && (user->IsAffiliated() || !only_affiliated) &&
-      policy_manager && policy_manager->IsClientRegistered()) {
+  if (dm_token.is_empty() && policy_manager &&
+      policy_manager->IsClientRegistered()) {
     dm_token = DMToken(DMToken::Status::kValid,
                        policy_manager->core()->client()->dm_token());
   }

@@ -48,6 +48,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/user_manager/user.h"
 #include "extensions/common/constants.h"
 #endif
 
@@ -467,8 +469,7 @@ ConnectorsService::DmToken::~DmToken() = default;
 absl::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On CrOS, the device must be affiliated to use the DM token for
-  // scanning/reporting so we always use the browser DM token.
+  // On CrOS the settings from primary profile applies to all profiles.
   return GetBrowserDmToken();
 #else
   return GetPolicyScope(scope_pref) == policy::POLICY_SCOPE_USER
@@ -571,8 +572,14 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata() {
   if (!reporting_settings.has_value())
     return nullptr;
 
-  bool include_device_info = !reporting_settings.value().per_profile;
   Profile* profile = Profile::FromBrowserContext(context_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const user_manager::User* user =
+      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+  const bool include_device_info = user && user->IsAffiliated();
+#else
+  const bool include_device_info = !reporting_settings.value().per_profile;
+#endif
 
   auto metadata = std::make_unique<ClientMetadata>(
       reporting::GetContextAsClientMetadata(profile));

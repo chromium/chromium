@@ -66,7 +66,7 @@ KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
   if (!local_state)
     return nullptr;
 
-  auto dm_token = GetDMToken(profile, /*only_affiliated=*/false);
+  auto dm_token = GetDMToken(profile);
   if (!dm_token.is_valid()) {
     LOG(ERROR) << "DlpReporting has invalid DMToken. Reporting disabled.";
     return nullptr;

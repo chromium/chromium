@@ -30,7 +30,11 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -131,6 +135,12 @@ class ConnectorsServiceProfileBrowserTest
       SetUpDeviceData();
   }
 
+  void TearDownOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    user_manager_enabler_.reset();
+#endif
+  }
+
   void SetUpProfileData() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EXPECT_TRUE(browser()->profile()->IsMainProfile());
@@ -172,6 +182,15 @@ class ConnectorsServiceProfileBrowserTest
                                                             : kAffiliationId2};
     chromeos::LacrosService::Get()->SetInitParamsForTests(
         std::move(init_params));
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+    auto* fake_user_manager = new ash::FakeChromeUserManager();
+    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(std::move(fake_user_manager)));
+    AccountId account_id = AccountId::FromUserEmailGaiaId(
+        browser()->profile()->GetProfileUserName(), "123");
+    fake_user_manager->AddUserWithAffiliation(
+        account_id, management_status() == ManagementStatus::AFFILIATED);
+    fake_user_manager->LoginUser(account_id);
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
     auto* browser_policy_manager =
         g_browser_process->browser_policy_connector()
@@ -221,6 +240,10 @@ class ConnectorsServiceProfileBrowserTest
  protected:
   std::unique_ptr<policy::FakeBrowserDMTokenStorage> browser_dm_token_storage_;
   ManagementStatus management_status_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+ private:
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+#endif
 };
 
 class ConnectorsServiceReportingProfileBrowserTest
@@ -320,7 +343,13 @@ class ConnectorsServiceAnalysisProfileBrowserTest
 
   void ValidateClientMetadata(const ClientMetadata& metadata,
                               bool profile_reporting) {
-    base::Value reporting_metadata = ReportingMetadata(!profile_reporting);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    bool includes_device_info =
+        management_status() == ManagementStatus::AFFILIATED;
+#else
+    bool includes_device_info = !profile_reporting;
+#endif
+    base::Value reporting_metadata = ReportingMetadata(includes_device_info);
 
     ASSERT_TRUE(metadata.has_browser());
 
@@ -338,16 +367,16 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     ASSERT_EQ(metadata.browser().chrome_version(),
               *reporting_metadata.FindStringPath("browser.chromeVersion"));
 
-    ASSERT_NE(profile_reporting, metadata.browser().has_machine_user());
-    ASSERT_NE(profile_reporting,
+    ASSERT_EQ(includes_device_info, metadata.browser().has_machine_user());
+    ASSERT_EQ(includes_device_info,
               !!reporting_metadata.FindStringPath("browser.machineUser"));
     if (metadata.browser().has_machine_user()) {
       ASSERT_EQ(metadata.browser().machine_user(),
                 *reporting_metadata.FindStringPath("browser.machineUser"));
     }
 
-    ASSERT_NE(profile_reporting, metadata.has_device());
-    if (!profile_reporting) {
+    ASSERT_EQ(includes_device_info, metadata.has_device());
+    if (includes_device_info) {
       // The device DM token should only be populated when reporting is set at
       // the device level, aka not the profile level.
       ASSERT_TRUE(metadata.device().has_dm_token());
