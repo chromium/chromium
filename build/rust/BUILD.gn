@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_source_set.gni")
+config("edition_2018") {
+  rustflags = [ "--edition=2018" ]
+}
 
-# Dependent Rust targets should depend on this.
-rust_source_set("test_rust_source_set") {
-  sources = [ "src/lib.rs" ]
+config("edition_2015") {
+  rustflags = [ "--edition=2015" ]
 }

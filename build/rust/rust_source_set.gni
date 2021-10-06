@@ -1,0 +1,226 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+
+# Defines a Rust static library which can be used by downstream Rust or C++
+# targets.
+#
+# Important: downstream C++ targets should NOT depend upon this
+# type of target. Instead they should append the suffix "_cpp_bindings"
+# when adding this to their deps:
+#
+#   deps += [ "//example:foo_bar_cpp_bindings" ]
+#
+# This arranges to ensure that any downstream C++ linker invocations
+# are supplied with the required extra bits to include Rust code; for
+# instance, the Rust standard library.
+#
+# Downstream Rust targets should depend on this rust_source_set directly.
+#
+# Parameters
+#
+#   sources
+#     List of source files which this crate is allowed to compile, which is
+#     used to determine the impact of source code changes on other GN targets.
+#     This is not used by the Rust compiler, as it discovers source files by
+#     following `mod` declarations starting at the `crate_root`. The
+#     discovered source files must match this list. (This is not yet enforced,
+#     but will be.)
+#
+#   edition (optional)
+#     Edition of the Rust language to be used.
+#     Options are "2015" and "2018". Defaults to "2018".
+#     # TODO add 2021 when it arrives
+#
+#   configs (optional)
+#     A list of config labels (in the GN meaning) applying to this target.
+#
+#   deps (optional)
+#     List of GN targets on which this crate depends. These may be Rust
+#     or non-Rust targets.
+#
+#   test_deps (optional)
+#     List of GN targets on which this crate's tests depend, in addition
+#     to deps.
+#
+#   mutually_dependent_target (optional)
+#     If this Rust code is intrinsically paired with some C/C++ code,
+#     with bidirectional calls between the two, then this would
+#     be a circular dependency. GN does not allow circular dependencies,
+#     (other than for header files per allow_circular_includes_from).
+#     But this is common for a 'component' which has both Rust and C++
+#     code. You should structure things such that the C++ code depends
+#     on the Rust code in the normal way:
+#        source_set("cpp_stuff") {
+#          deps = [ "rust_stuff_cpp_bindings" ]
+#          # ..
+#        }
+#     but that the Rust target also notes the C++ target using this
+#     'mutually_dependent_target' parameter.
+#        rust_source_set("rust_stuff") {
+#          mutually_dependent_target = "cpp_stuff"
+#          # ..
+#        }
+#
+#     The resultant behavior:
+#     * Downstream C++ targets should depend on the main C++ target
+#       ("cpp_stuff" in the above example). They'll come to depend on
+#       both Rust and C++ code (plus the Rust standard library,
+#       noted above).
+#     * Downstream Rust targets should depend on the Rust target
+#       ("rust_stuff"). They'll come to depend on both Rust and C++
+#       code, because this "mutually_dependent_target" will be put into
+#       their dependency list.
+#     * Rust unit tests, similarly, will depend on the Rust and C++
+#       code.
+#     Note that this arrangement carefully avoids actual circular
+#     dependencies.
+#
+#   skip_unit_tests (optional)
+#     Avoids building unit tests associated with this Rust crate. Normally,
+#     this template will create a `<name>_unittests` executable in the output
+#     directory; this behavior is suppressed if this flag is set to true.
+#
+#   crate_root (optional)
+#     Location of the crate root.
+#     This defaults to `./src/lib.rs` and should only be changed when
+#     absolutely necessary (such as in the case of generated code).
+#
+#   features (optional)
+#     A list of conditional compilation flags to enable. This can be used
+#     to set features for crates built in-tree which are also published to
+#     crates.io. Each feature in the list will be passed to rustc as
+#     '--cfg feature=XXX'
+#
+# Example of usage:
+#
+#   rust_source_set("foo_bar") {
+#     deps = [
+#       "//boo/public/rust/bar",
+#       "//third_party/rust/crates:argh",
+#       "//third_party/rust/crates:serde",
+#       "//third_party/rust/crates:slab",
+#     ]
+#     sources = [ "src/lib.rs" ]
+#   }
+#
+# This template is intended to serve the same purpose as 'rustc_library'
+# in Fuchsia.
+
+template("rust_source_set") {
+  _target_name = target_name
+  if (defined(invoker.crate_root)) {
+    crate_root = invoker.crate_root
+  } else {
+    crate_root = "src/lib.rs"
+  }
+
+  _features = []
+  if (defined(invoker.features)) {
+    foreach(i, invoker.features) {
+      _features += [ "--cfg=feature=\"${i}\"" ]
+    }
+  }
+  if (defined(invoker.edition) && invoker.edition == "2015") {
+    _configs = [ "//build/rust:edition_2015" ]
+  } else {
+    _configs = [ "//build/rust:edition_2018" ]
+  }
+  if (defined(invoker.configs)) {
+    _configs += invoker.configs
+  }
+  assert(!defined(invoker.rustflags),
+         "rustflags not supported by rust_source_set")
+  _deps_for_rust_targets = []
+  if (defined(invoker.mutually_dependent_target)) {
+    _deps_for_rust_targets += [ invoker.mutually_depependent_peer ]
+  }
+  _deps = []
+  if (defined(invoker.deps)) {
+    _deps += invoker.deps
+  }
+
+  # We require that all source files are listed, even though this is
+  # not a requirement for rustc. The reason is to ensure that tools
+  # such as `gn deps` give the correct answer, and thus we trigger
+  # the right test suites etc. on code change.
+  # TODO(crbug.com/1256930) - verify this is correct
+  assert(defined(invoker.sources), "sources must be listed")
+
+  # Downstream Rust targets should include this in their deps.
+  group(target_name) {
+    deps = [ ":${_target_name}_rlib" ]
+    deps += _deps_for_rust_targets
+  }
+
+  # Downstream C++ targets should include this in their deps.
+  group("${_target_name}_cpp_bindings") {
+    deps = [
+      ":${_target_name}_rlib",
+      "//build/rust/std",  # explanation: any C++ code depending on this
+                           # target should also depend on the Rust standard
+                           # library to ensure it's linked into the final
+                           # binary by the C++ linker.
+    ]
+    if (defined(invoker.mutually_dependent_target)) {
+      visibility = invoker.mutually_dependent_target
+    }
+  }
+
+  rust_library("${target_name}_rlib") {
+    crate_name = _target_name
+    configs += _configs
+    deps = _deps
+    rustflags = _features
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "features",
+                             "deps",
+                             "rustflags",
+                             "configs",
+                             "output_name",
+                             "crate_name",
+                             "crate_root",
+                           ])
+    visibility = [
+      ":${_target_name}",
+      ":${_target_name}_cpp_bindings",
+    ]
+  }
+
+  if (build_rust_unit_tests &&
+      !(defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true)) {
+    # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
+    # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source sets.
+    # This is important in cases where Rust tests may depend upon C/C++
+    # dependencies.
+    executable("${_target_name}_unittests") {
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "features",
+                               "deps",
+                               "rustflags",
+                               "configs",
+                               "output_name",
+                               "crate_name",
+                               "crate_root",
+                             ])
+      rustflags = [
+        "--cfg",
+        "feature=\"test\"",
+        "--test",
+      ]
+      rustflags += _features
+      configs += _configs
+      deps = _deps
+      if (defined(invoker.test_deps)) {
+        deps += invoker.test_deps
+      }
+      deps += _deps_for_rust_targets
+    }
+  }
+}
