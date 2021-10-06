@@ -2816,6 +2816,9 @@ extern const char kPhoneHubRecentAppsDescription[];
 extern const char kProductivityLauncherName[];
 extern const char kProductivityLauncherDescription[];
 
+extern const char kForceShowContinueSectionName[];
+extern const char kForceShowContinueSectionDescription[];
+
 extern const char kReduceDisplayNotificationsName[];
 extern const char kReduceDisplayNotificationsDescription[];
 

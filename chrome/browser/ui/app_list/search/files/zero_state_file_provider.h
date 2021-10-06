@@ -61,6 +61,10 @@ class ZeroStateFileProvider : public SearchProvider,
   // results. The invalid paths are removed from the model.
   void SetSearchResults(const internal::ValidAndInvalidResults& results);
 
+  // TODO(crbug.com/1216084): Remove this after finishing developing Continue
+  // Section. Appends mock results to the driver provider.
+  void AppendFakeSearchResults(Results* results);
+
   // The reference to profile to get ZeroStateFileProvider service.
   Profile* const profile_;
 

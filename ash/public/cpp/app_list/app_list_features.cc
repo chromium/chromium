@@ -52,6 +52,8 @@ const base::Feature kCategoricalSearch{"CategoricalSearch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kLauncherQueryHighlighting{
     "LauncherQueryHighlighting", base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kForceShowContinueSection{
+    "ForceShowContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
@@ -137,6 +139,10 @@ bool IsLauncherQueryHighlightingEnabled() {
 
 std::string CategoricalSearchType() {
   return GetFieldTrialParamValueByFeature(kCategoricalSearch, "ranking");
+}
+
+bool IsForceShowContinueSectionEnabled() {
+  return base::FeatureList::IsEnabled(kForceShowContinueSection);
 }
 
 }  // namespace app_list_features

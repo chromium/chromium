@@ -12,6 +12,8 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -133,6 +135,9 @@ void ZeroStateFileProvider::SetSearchResults(
     }
   }
 
+  if (app_list_features::IsForceShowContinueSectionEnabled())
+    AppendFakeSearchResults(&new_results);
+
   UMA_HISTOGRAM_TIMES("Apps.AppList.ZeroStateFileProvider.Latency",
                       base::TimeTicks::Now() - query_start_time_);
   SwapResults(&new_results);
@@ -150,6 +155,18 @@ void ZeroStateFileProvider::OnFilesOpened(
   for (const auto& file_open : file_opens) {
     if (profile_path.AppendRelativePath(file_open.path, nullptr))
       files_ranker_->Record(file_open.path.value());
+  }
+}
+
+void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
+  constexpr int kTotalFakeFiles = 3;
+  for (int i = 0; i < kTotalFakeFiles; ++i) {
+    results->emplace_back(std::make_unique<FileResult>(
+        kFileChipSchema,
+        base::FilePath(FILE_PATH_LITERAL(
+            base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
+        ash::AppListSearchResultType::kFileChip,
+        ash::SearchResultDisplayType::kChip, 0.1f, profile_));
   }
 }
 

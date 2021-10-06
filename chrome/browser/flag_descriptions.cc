@@ -4890,6 +4890,12 @@ const char kProductivityLauncherDescription[] =
     "To evaluate an enhanced Launcher experience that aims to improve app "
     "workflows by optimizing access to apps, app content, and app actions.";
 
+const char kForceShowContinueSectionName[] =
+    "App Launcher: Force Continue Section Suggestions";
+const char kForceShowContinueSectionDescription[] =
+    "Forces the continue section of the app launcher to show. If there are no "
+    "file suggestions available, the suggestions will be faked.";
+
 const char kReduceDisplayNotificationsName[] = "Reduce display notifications";
 const char kReduceDisplayNotificationsDescription[] =
     "If enabled, notifications for display rotation, display removed, display "

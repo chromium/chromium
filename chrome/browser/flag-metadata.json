@@ -3106,6 +3106,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "force-show-continue-section",
+    "owners":["anasalazar@chromium.org", "gzadina@google.com"],
+    "expiry_milestone": 97
+  },
+  {
     "name": "force-show-update-menu-badge",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

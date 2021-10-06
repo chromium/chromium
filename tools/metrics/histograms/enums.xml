@@ -49896,6 +49896,7 @@ from previous Chrome versions.
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
   <int value="-424134004" label="WebPaymentsExperimentalFeatures:disabled"/>
   <int value="-421428607" label="InheritNativeThemeFromParentWidget:disabled"/>
+  <int value="-421314301" label="ForceShowContinueSection:enabled"/>
   <int value="-420956156" label="WebApkGenerator:disabled"/>
   <int value="-420347911" label="MobileIdentityConsistencyFRE:disabled"/>
   <int value="-419733676" label="IsolatePrerendersMustProbeOrigin:disabled"/>
@@ -50214,6 +50215,7 @@ from previous Chrome versions.
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
   <int value="-165756594" label="enable-touch-feedback"/>
   <int value="-165006916" label="EnableNeuralPalmDetectionFilter:enabled"/>
+  <int value="-164673139" label="ForceShowContinueSection:disabled"/>
   <int value="-164539906"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:disabled"/>
   <int value="-162928621" label="ForceStartupSigninPromo:disabled"/>

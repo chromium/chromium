@@ -79,6 +79,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 // Enables search query highlighting in the launcher.
 ASH_PUBLIC_EXPORT extern const base::Feature kLauncherQueryHighlighting;
 
+// Forces the launcher to show the continue section even if there are no file
+// suggestions.
+ASH_PUBLIC_EXPORT extern const base::Feature kForceShowContinueSection;
+
 bool ASH_PUBLIC_EXPORT IsAppRankerEnabled();
 bool ASH_PUBLIC_EXPORT IsZeroStateAppsRankerEnabled();
 bool ASH_PUBLIC_EXPORT IsQueryBasedMixedTypesRankerEnabled();
@@ -91,6 +95,7 @@ bool ASH_PUBLIC_EXPORT IsAppGridGhostEnabled();
 bool ASH_PUBLIC_EXPORT IsAppListLaunchRecordingEnabled();
 bool ASH_PUBLIC_EXPORT IsFuzzyAppSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsExactMatchForNonLatinLocaleEnabled();
+bool ASH_PUBLIC_EXPORT IsForceShowContinueSectionEnabled();
 bool ASH_PUBLIC_EXPORT IsLauncherSettingsSearchEnabled();
 bool ASH_PUBLIC_EXPORT IsAggregatedMlSearchRankingEnabled();
 bool ASH_PUBLIC_EXPORT IsNewDragSpecInLauncherEnabled();

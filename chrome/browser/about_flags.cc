@@ -6586,6 +6586,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"shelf-drag-to-pin", flag_descriptions::kShelfDragToPinName,
      flag_descriptions::kShelfDragToPinDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDragUnpinnedAppToPin)},
+    {"force-show-continue-section",
+     flag_descriptions::kForceShowContinueSectionName,
+     flag_descriptions::kForceShowContinueSectionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(app_list_features::kForceShowContinueSection)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
