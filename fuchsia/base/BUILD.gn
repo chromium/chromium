@@ -16,7 +16,6 @@ source_set("base") {
     "fuchsia_dir_scheme.cc",
     "init_logging.cc",
     "inspect.cc",
-    "mem_buffer_util.cc",
     "string_util.cc",
   ]
   public = [
@@ -25,14 +24,12 @@ source_set("base") {
     "fuchsia_dir_scheme.h",
     "init_logging.h",
     "inspect.h",
-    "mem_buffer_util.h",
     "string_util.h",
   ]
   deps = [
     "//base",
     "//components/version_info",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.feedback",
-    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/sys_inspect_cpp",
