@@ -85,7 +85,7 @@ std::unique_ptr<Vp9Decoder> CreateDecoder(
       << "Only VP9 is supported, got: "
       << media::FourccToString(driver_codec_fourcc);
 
-  return Vp9Decoder::Create(std::move(ivf_parser));
+  return Vp9Decoder::Create(std::move(ivf_parser), file_header);
 }
 
 int main(int argc, char** argv) {
@@ -104,33 +104,29 @@ int main(int argc, char** argv) {
   }
 
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
-  if (video_path.empty()) {
-    std::cout << "No input video path provided to decode.\n" << kUsageMsg;
-    return EXIT_FAILURE;
-  }
+  if (video_path.empty())
+    LOG(FATAL) << "No input video path provided to decode.\n" << kUsageMsg;
 
   const std::string frames = cmd->GetSwitchValueASCII("frames");
   int n_frames;
   if (frames.empty()) {
     n_frames = 0;
   } else if (!base::StringToInt(frames, &n_frames) || n_frames <= 0) {
-    LOG(ERROR) << "Number of frames to decode must be positive integer, got "
+    LOG(FATAL) << "Number of frames to decode must be positive integer, got "
                << frames;
-    return EXIT_FAILURE;
   }
 
   // Set up video stream.
   base::MemoryMappedFile stream;
-  if (!stream.Initialize(video_path)) {
-    LOG(ERROR) << "Couldn't open file: " << video_path;
-    return EXIT_FAILURE;
-  }
+  if (!stream.Initialize(video_path))
+    LOG(FATAL) << "Couldn't open file: " << video_path;
 
   const std::unique_ptr<Vp9Decoder> dec = CreateDecoder(stream);
-  if (!dec) {
-    LOG(ERROR) << "Failed to create decoder for file: " << video_path;
-    return EXIT_FAILURE;
-  }
+  if (!dec)
+    LOG(FATAL) << "Failed to create decoder for file: " << video_path;
+
+  if (!dec->Initialize())
+    LOG(FATAL) << "Initialization for decoding failed.";
 
   return EXIT_SUCCESS;
 }
