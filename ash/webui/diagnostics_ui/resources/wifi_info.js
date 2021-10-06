@@ -103,7 +103,7 @@ Polymer({
    */
   computeSignalStrength_() {
     if (this.network.typeProperties && this.network.typeProperties.wifi &&
-        this.network.typeProperties.wifi.signalStrength > 0) {
+        this.network.typeProperties.wifi.signalStrength > 1) {
       return `${this.network.typeProperties.wifi.signalStrength}`;
     }
     return '';

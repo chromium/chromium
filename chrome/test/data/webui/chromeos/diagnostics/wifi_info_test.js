@@ -188,4 +188,12 @@ export function wifiInfoTestSuite() {
       assertEquals(getDataPointValue(wifiInfoElement, '#signalStrength'), '');
     });
   });
+
+  test('SignalStrengthOneDisplaysEmptyString', () => {
+    const testNetwork = getWifiNetworkWithWiFiStatePropertiesOf(
+        /** @type {!WiFiStateProperties} */ ({signalStrength: 1}));
+    return initializeWifiInfo(testNetwork).then(() => {
+      assertEquals(getDataPointValue(wifiInfoElement, '#signalStrength'), '');
+    });
+  });
 }
