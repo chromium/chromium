@@ -16,3 +16,17 @@ source_set("breadcrumbs") {
     "breadcrumb_manager_keyed_service_factory.h",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":breadcrumbs",
+    "//chrome/test:test_support",
+    "//components/breadcrumbs/core",
+    "//components/crash/core/common:crash_key",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  sources = [ "crash_reporter_breadcrumb_observer_unittest.cc" ]
+}
