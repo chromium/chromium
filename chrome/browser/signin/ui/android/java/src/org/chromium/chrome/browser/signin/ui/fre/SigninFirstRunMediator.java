@@ -72,19 +72,20 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
     void onNativeAndPolicyLoaded(boolean hasPolicies) {
         mModel.set(SigninFirstRunProperties.ARE_NATIVE_AND_POLICY_LOADED, true);
         mModel.set(SigninFirstRunProperties.FRE_POLICY, hasPolicies ? new FrePolicy() : null);
+        final boolean isSigninSupported = ExternalAuthUtils.getInstance().canUseGooglePlayServices()
+                && !IdentityServicesProvider.get()
+                            .getSigninManager(Profile.getLastUsedRegularProfile())
+                            .isSigninDisabledByPolicy();
+        mModel.set(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED, isSigninSupported);
     }
 
-    /**
-     * Implements {@link ProfileDataCache.Observer}.
-     */
+    /** Implements {@link ProfileDataCache.Observer}. */
     @Override
     public void onProfileDataUpdated(String accountEmail) {
         updateSelectedAccountData(accountEmail);
     }
 
-    /**
-     * Implements {@link AccountsChangeObserver}.
-     */
+    /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onAccountsChanged() {
         mAccountManagerFacade.getAccounts().then(this::updateAccounts);

@@ -32,7 +32,10 @@ import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.PolicyLoadListener;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragmentTest.CustomSigninFirstRunFragment;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -87,6 +90,9 @@ public class SigninFirstRunFragmentRenderTest {
 
     @Mock
     private PolicyLoadListener mPolicyLoadListenerMock;
+
+    @Mock
+    private SigninManager mSigninManagerMock;
 
     private CustomSigninFirstRunFragment mFragment;
 
@@ -152,6 +158,31 @@ public class SigninFirstRunFragmentRenderTest {
         });
         mRenderTestRule.render(
                 mFragment.getView(), "signin_first_run_fragment_with_account_managed");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testFragmentWithAccountWhenSigninIsDisabledByPolicy(boolean nightModeEnabled)
+            throws IOException {
+        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(IdentityServicesProvider.get().getSigninManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mSigninManagerMock);
+        });
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mAccountManagerTestRule.addAccountWithNameAndAvatar(TEST_EMAIL1);
+
+        launchActivityWithFragment();
+
+        CriteriaHelper.pollUiThread(() -> {
+            return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
+        });
+        mRenderTestRule.render(
+                mFragment.getView(), "signin_first_run_fragment_when_signin_disabled_by_policy");
     }
 
     @Test

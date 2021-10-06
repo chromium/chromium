@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -138,6 +139,9 @@ public class SigninFirstRunFragmentTest {
 
     @Mock
     private PolicyLoadListener mPolicyLoadListenerMock;
+
+    @Mock
+    private SigninManager mSigninManagerMock;
 
     @Captor
     private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
@@ -229,6 +233,45 @@ public class SigninFirstRunFragmentTest {
         onView(withText(R.string.continue_button)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWhenSigninIsDisabledByPolicy() {
+        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(IdentityServicesProvider.get().getSigninManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mSigninManagerMock);
+        });
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+
+        launchActivityWithFragment();
+
+        checkFragmentWhenSigninIsDisabledByPolicy();
+    }
+
+    @Test
+    @MediumTest
+    public void testFragmentWhenAddingAccountDynamicallyAndSigninIsDisabledByPolicy() {
+        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            when(IdentityServicesProvider.get().getSigninManager(
+                         Profile.getLastUsedRegularProfile()))
+                    .thenReturn(mSigninManagerMock);
+        });
+        when(mSigninManagerMock.isSigninDisabledByPolicy()).thenReturn(true);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mFragment.onNativeInitialized(); });
+        launchActivityWithFragment();
+        checkFragmentWhenSigninIsDisabledByPolicy();
+
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+
+        checkFragmentWhenSigninIsDisabledByPolicy();
     }
 
     @Test
@@ -577,6 +620,16 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
+    }
+
+    private void checkFragmentWhenSigninIsDisabledByPolicy() {
+        CriteriaHelper.pollUiThread(() -> {
+            return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
+        });
+        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(isDisplayed()));
+        onView(withText(R.string.continue_button)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
     }
 
     private void launchActivityWithFragment() {

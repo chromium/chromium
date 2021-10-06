@@ -58,18 +58,18 @@ class SigninFirstRunViewBinder {
     }
 
     private static void updateSelectedAccount(View view, PropertyModel model) {
+        if (!model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
+            return;
+        }
         final @Nullable DisplayableProfileData profileData =
                 model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA);
+        final ButtonCompat continueButton = view.findViewById(R.id.signin_fre_continue_button);
         if (profileData == null) {
-            if (model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
-                ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
-                button.setText(R.string.signin_add_account_to_device);
-            }
+            continueButton.setText(R.string.signin_add_account_to_device);
         } else {
             ExistingAccountRowViewBinder.bindAccountView(
                     profileData, view.findViewById(R.id.signin_fre_selected_account));
-            ButtonCompat button = view.findViewById(R.id.signin_fre_continue_button);
-            button.setText(view.getContext().getString(R.string.signin_promo_continue_as,
+            continueButton.setText(view.getContext().getString(R.string.signin_promo_continue_as,
                     profileData.getGivenNameOrFullNameOrEmail()));
         }
         updateVisibility(view, model);
@@ -83,6 +83,7 @@ class SigninFirstRunViewBinder {
 
         final int selectedAccountVisibility = areNativeAndPolicyLoaded
                         && model.get(SigninFirstRunProperties.SELECTED_ACCOUNT_DATA) != null
+                        && model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)
                 ? View.VISIBLE
                 : View.GONE;
         view.findViewById(R.id.signin_fre_selected_account)
