@@ -19,6 +19,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -54,8 +55,8 @@ class AutofillOfferManagerTest : public testing::Test {
                                 /*image_fetcher=*/nullptr,
                                 /*is_off_the_record=*/false);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
-    autofill_offer_manager_ =
-        std::make_unique<AutofillOfferManager>(&personal_data_manager_);
+    autofill_offer_manager_ = std::make_unique<AutofillOfferManager>(
+        &personal_data_manager_, &coupon_service_delegate_);
   }
 
   CreditCard CreateCreditCard(std::string guid,
@@ -108,6 +109,12 @@ class AutofillOfferManagerTest : public testing::Test {
   }
 
  protected:
+  class MockCouponServiceDelegate : public CouponServiceDelegate {
+   public:
+    MOCK_METHOD1(GetFreeListingCouponsForUrl,
+                 std::vector<AutofillOfferData*>(const GURL& url));
+  };
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestAutofillClient autofill_client_;
@@ -115,6 +122,7 @@ class AutofillOfferManagerTest : public testing::Test {
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  MockCouponServiceDelegate coupon_service_delegate_;
 };
 
 TEST_F(AutofillOfferManagerTest, UpdateSuggestionsWithOffers_EligibleCashback) {
@@ -270,6 +278,32 @@ TEST_F(AutofillOfferManagerTest,
 
   AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
+  EXPECT_EQ(offer2, *result);
+}
+
+TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnOfferFromCouponDelegate) {
+  const GURL example_url("http://www.example.com");
+  // Add card-linked offer to PersonalDataManager.
+  CreditCard card = CreateCreditCard(kTestGuid, kTestNumber, 100);
+  AutofillOfferData offer1 = CreateCreditCardOfferForCard(
+      card, "5%", /*expired=*/false,
+      /*merchant_origins=*/
+      {example_url, GURL("http://www.example2.com")});
+  personal_data_manager_.AddAutofillOfferData(offer1);
+
+  // Add promo code offer to FreeListingCouponService.
+  AutofillOfferData offer2 = CreatePromoCodeOffer(
+      /*merchant_origins=*/{example_url, GURL("http://www.example2.com")});
+  std::vector<AutofillOfferData*> data;
+  data.emplace_back(&offer2);
+  EXPECT_CALL(coupon_service_delegate_,
+              GetFreeListingCouponsForUrl(example_url))
+      .Times(1)
+      .WillOnce(::testing::Return(data));
+
+  // Free-listing coupon should take precedence over card-linked offer.
+  AutofillOfferData* result =
+      autofill_offer_manager_->GetOfferForUrl(example_url);
   EXPECT_EQ(offer2, *result);
 }
 

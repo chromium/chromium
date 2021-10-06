@@ -422,7 +422,8 @@ void AutofillMetricsTest::SetUp() {
   autofill_client_.set_test_form_data_importer(
       std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
   autofill_client_.set_autofill_offer_manager(
-      std::make_unique<AutofillOfferManager>(personal_data_.get()));
+      std::make_unique<AutofillOfferManager>(
+          personal_data_.get(), /*coupon_service_delegate=*/nullptr));
 
   browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
       autofill_driver_.get(), &autofill_client_, personal_data_.get());

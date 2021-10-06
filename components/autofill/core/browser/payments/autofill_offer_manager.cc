@@ -23,8 +23,11 @@
 
 namespace autofill {
 
-AutofillOfferManager::AutofillOfferManager(PersonalDataManager* personal_data)
-    : personal_data_(personal_data) {
+AutofillOfferManager::AutofillOfferManager(
+    PersonalDataManager* personal_data,
+    CouponServiceDelegate* coupon_service_delegate)
+    : personal_data_(personal_data),
+      coupon_service_delegate_(coupon_service_delegate) {
   personal_data_->AddObserver(this);
   UpdateEligibleMerchantDomains();
 }
@@ -81,6 +84,16 @@ bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
 
 AutofillOfferData* AutofillOfferManager::GetOfferForUrl(
     const GURL& last_committed_url) {
+  if (coupon_service_delegate_) {
+    for (AutofillOfferData* offer :
+         coupon_service_delegate_->GetFreeListingCouponsForUrl(
+             last_committed_url)) {
+      if (offer->IsActiveAndEligibleForOrigin(last_committed_url.GetOrigin())) {
+        return offer;
+      }
+    }
+  }
+
   for (AutofillOfferData* offer : personal_data_->GetAutofillOffers()) {
     if (offer->IsActiveAndEligibleForOrigin(last_committed_url.GetOrigin())) {
       return offer;

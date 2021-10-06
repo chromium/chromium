@@ -23,6 +23,18 @@
 
 namespace autofill {
 
+// A delegate class to expose relevant CouponService functionalities.
+class CouponServiceDelegate {
+ public:
+  // Get FreeListing coupons for the given URL. Will return an empty
+  // list if there is no coupon data associated with this URL.
+  virtual std::vector<AutofillOfferData*> GetFreeListingCouponsForUrl(
+      const GURL& url) = 0;
+
+ protected:
+  virtual ~CouponServiceDelegate() = default;
+};
+
 // Manages all Autofill related offers. One per frame; owned by the
 // BrowserAutofillManager.
 class AutofillOfferManager : public KeyedService,
@@ -31,7 +43,8 @@ class AutofillOfferManager : public KeyedService,
   // Mapping from suggestion backend ID to offer data.
   using OffersMap = std::map<std::string, AutofillOfferData*>;
 
-  explicit AutofillOfferManager(PersonalDataManager* personal_data);
+  AutofillOfferManager(PersonalDataManager* personal_data,
+                       CouponServiceDelegate* coupon_service_delegate);
   ~AutofillOfferManager() override;
   AutofillOfferManager(const AutofillOfferManager&) = delete;
   AutofillOfferManager& operator=(const AutofillOfferManager&) = delete;
@@ -65,6 +78,7 @@ class AutofillOfferManager : public KeyedService,
       const GURL& last_committed_url_origin) const;
 
   PersonalDataManager* personal_data_;
+  CouponServiceDelegate* coupon_service_delegate_;
   std::set<GURL> eligible_merchant_domains_ = {};
 };
 
