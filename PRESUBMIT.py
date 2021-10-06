@@ -1124,7 +1124,6 @@ _GENERIC_PYDEPS_FILES = [
     'build/android/gyp/create_r_txt.pydeps',
     'build/android/gyp/create_size_info_files.pydeps',
     'build/android/gyp/create_ui_locale_resources.pydeps',
-    'build/android/gyp/desugar.pydeps',
     'build/android/gyp/dex.pydeps',
     'build/android/gyp/dex_jdk_libs.pydeps',
     'build/android/gyp/dexsplitter.pydeps',
