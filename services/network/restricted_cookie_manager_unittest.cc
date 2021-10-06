@@ -701,6 +701,114 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
                   {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
 }
 
+TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
+  service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
+
+  const char* kCookieName = "cookie-name";
+  const char* kCookieValue = "cookie-value";
+  const char* kCookieSite = "example.com";
+  std::string cookie_name_field =
+      std::string(kCookieName) + std::string("=") + std::string(kCookieValue);
+
+  service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
+  SetSessionCookie(kCookieName, kCookieValue, kCookieSite, "/");
+
+  // With default policy, should be able to get all cookies, even third-party.
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = kCookieName;
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
+                                    kDefaultOrigin, std::move(options)),
+        ElementsAre(net::MatchesCookieNameValue(kCookieName, kCookieValue)));
+
+    EXPECT_THAT(
+        recorded_activity(),
+        ElementsAre(MatchesCookieOp(
+            mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+            net::SiteForCookies(),
+            CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::COOKIE),
+            net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                {},
+                {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
+  }
+
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = kCookieName;
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
+                                    kDefaultOrigin, std::move(options)),
+        ElementsAre(net::MatchesCookieNameValue(kCookieName, kCookieValue)));
+
+    // A second cookie access should not generate a notification.
+    EXPECT_THAT(
+        recorded_activity(),
+        ElementsAre(MatchesCookieOp(
+            mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
+            net::SiteForCookies(),
+            CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::COOKIE),
+            net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                {},
+                {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
+  }
+
+  // Change the cookie with a new value so that a cookie access
+  // event is possible, then block the cookie access.
+  const char* kNewCookieValue = "new-cookie-value";
+  cookie_name_field = std::string(kCookieName) + std::string("=") +
+                      std::string(kNewCookieValue);
+  SetSessionCookie(kCookieName, kNewCookieValue, kCookieSite, "/");
+  cookie_settings_.set_block_third_party_cookies(true);
+
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = kCookieName;
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
+                                    kDefaultOrigin, std::move(options)),
+        IsEmpty());
+
+    // A change in access result (allowed -> blocked) should generate a new
+    // notification.
+    EXPECT_EQ(recorded_activity().size(), 2ul);
+  }
+
+  // Allow the cookie access.
+  cookie_settings_.set_block_third_party_cookies(false);
+
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = kCookieName;
+    options->match_type = mojom::CookieMatchType::STARTS_WITH;
+
+    EXPECT_THAT(
+        sync_service_->GetAllForUrl(kDefaultUrlWithPath, net::SiteForCookies(),
+                                    kDefaultOrigin, std::move(options)),
+        ElementsAre(net::MatchesCookieNameValue(kCookieName, kNewCookieValue)));
+
+    // A change in access result (blocked -> allowed) should generate a new
+    // notification.
+    EXPECT_THAT(
+        recorded_activity(),
+        ElementsAre(testing::_, testing::_,
+                    MatchesCookieOp(
+                        mojom::CookieAccessDetails::Type::kRead,
+                        kDefaultUrlWithPath, net::SiteForCookies(),
+                        CookieOrLine(cookie_name_field,
+                                     mojom::CookieOrLine::Tag::COOKIE),
+                        net::CookieInclusionStatus::MakeFromReasonsForTesting(
+                            {}, {net::CookieInclusionStatus::
+                                     WARN_SAMESITE_NONE_REQUIRED}))));
+  }
+}
+
 TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicyWarnActual) {
   service_->OverrideIsolationInfoForTesting(kOtherIsolationInfo);
 

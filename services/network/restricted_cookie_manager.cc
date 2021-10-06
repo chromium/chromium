@@ -140,6 +140,77 @@ net::CookieOptions MakeOptionsForGet(
 
 }  // namespace
 
+bool CookieWithAccessResultComparer::operator()(
+    const net::CookieWithAccessResult& cookie_with_access_result1,
+    const net::CookieWithAccessResult& cookie_with_access_result2) const {
+  // Compare just the cookie portion of the CookieWithAccessResults so a cookie
+  // only ever has one entry in the map. For a given cookie we want to send a
+  // new access notification whenever its access results change. If we keyed off
+  // of both the cookie and its current access result, if a cookie shifted from
+  // "allowed" to "blocked" the cookie would wind up with two entries in the
+  // map. If the cookie then shifted back to "allowed" we wouldn't send a new
+  // notification because cookie/allowed already existed in the map. In the case
+  // of a cookie shifting from "allowed" to "blocked,"
+  // SkipAccessNotificationForCookieItem() checks the access result. If the
+  // cookie exists in the map but its status is "allowed" we evict the old
+  // entry.
+  return cookie_with_access_result1.cookie < cookie_with_access_result2.cookie;
+}
+
+CookieAccesses* RestrictedCookieManager::GetCookieAccessesForURLAndSite(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies) {
+  std::unique_ptr<CookieAccesses>& entry =
+      recent_cookie_accesses_[std::tie(url, site_for_cookies)];
+  if (!entry) {
+    entry = std::make_unique<CookieAccesses>();
+  }
+
+  return entry.get();
+}
+
+bool RestrictedCookieManager::SkipAccessNotificationForCookieItem(
+    CookieAccesses* cookie_accesses,
+    const net::CookieWithAccessResult& cookie_item) {
+  DCHECK(cookie_accesses);
+
+  // Have we sent information about this cookie to the |cookie_observer_|
+  // before?
+  std::set<net::CookieWithAccessResult>::iterator existing_slot =
+      cookie_accesses->find(cookie_item);
+
+  // If this is the first time seeing this cookie make a note and don't skip
+  // the notification.
+  if (existing_slot == cookie_accesses->end()) {
+    // Don't store more than a max number of cookies, in the interest of
+    // limiting memory consumption.
+    const int kMaxCookieCount = 32;
+    if (cookie_accesses->size() == kMaxCookieCount) {
+      cookie_accesses->clear();
+    }
+    cookie_accesses->insert(cookie_item);
+
+    return false;
+  }
+
+  // If the cookie and its access result are unchanged since we last updated
+  // the |cookie_observer_|, skip notifying the |cookie_observer_| again.
+  if (existing_slot->cookie.HasEquivalentDataMembers(cookie_item.cookie) &&
+      existing_slot->access_result == cookie_item.access_result) {
+    return true;
+  }
+
+  // The cookie's access result has changed - update it in our record of what
+  // we've sent to the |cookie_observer_|. It's safe to update the existing
+  // entry in the set because the access_result field does not determine the
+  // CookieWithAccessResult's location in the set.
+  const_cast<net::CookieWithAccessResult&>(*existing_slot).access_result =
+      cookie_item.access_result;
+
+  // Don't skip notifying the |cookie_observer_| of the change.
+  return false;
+}
+
 class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
  public:
   Listener(net::CookieStore* cookie_store,
@@ -334,17 +405,28 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   std::vector<mojom::CookieOrLineWithAccessResultPtr>
       on_cookies_accessed_result;
 
+  CookieAccesses* cookie_accesses =
+      GetCookieAccessesForURLAndSite(url, site_for_cookies);
+
   // TODO(https://crbug.com/977040): Stop reporting accesses of cookies with
   // warning reasons once samesite tightening up is rolled out.
   for (const auto& cookie_and_access_result : excluded_cookies) {
-    if (cookie_and_access_result.access_result.status.ShouldWarn() ||
-        cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
+    if (!cookie_and_access_result.access_result.status.ShouldWarn() &&
+        !cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
-      on_cookies_accessed_result.push_back(
-          mojom::CookieOrLineWithAccessResult::New(
-              mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
-              cookie_and_access_result.access_result));
+      continue;
     }
+
+    // Skip sending a notification about this cookie access?
+    if (SkipAccessNotificationForCookieItem(cookie_accesses,
+                                            cookie_and_access_result)) {
+      continue;
+    }
+
+    on_cookies_accessed_result.push_back(
+        mojom::CookieOrLineWithAccessResult::New(
+            mojom::CookieOrLine::NewCookie(cookie_and_access_result.cookie),
+            cookie_and_access_result.access_result));
   }
 
   if (!maybe_included_cookies.empty())
@@ -372,6 +454,12 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     if (access_result.status.IsInclude()) {
       result.push_back(cookie_item);
     }
+
+    // Skip sending a notification about this cookie access?
+    if (SkipAccessNotificationForCookieItem(cookie_accesses, cookie_item)) {
+      continue;
+    }
+
     on_cookies_accessed_result.push_back(
         mojom::CookieOrLineWithAccessResult::New(
             mojom::CookieOrLine::NewCookie(cookie), access_result));
