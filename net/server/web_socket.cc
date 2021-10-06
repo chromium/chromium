@@ -116,15 +116,11 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
   }
 
   ParseResult result = FRAME_OK_MIDDLE;
-  while (result == FRAME_OK_MIDDLE) {
-    HttpConnection::ReadIOBuffer* read_buf = connection_->read_buf();
-    base::StringPiece frame(read_buf->StartOfBuffer(), read_buf->GetSize());
-    int bytes_consumed = 0;
-    result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
-    if (result == FRAME_OK_FINAL || result == FRAME_OK_MIDDLE ||
-        result == FRAME_PING || result == FRAME_PONG)
-      read_buf->DidConsume(bytes_consumed);
-  }
+  HttpConnection::ReadIOBuffer* read_buf = connection_->read_buf();
+  base::StringPiece frame(read_buf->StartOfBuffer(), read_buf->GetSize());
+  int bytes_consumed = 0;
+  result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
+  read_buf->DidConsume(bytes_consumed);
   if (result == FRAME_CLOSE)
     closed_ = true;
   if (result == FRAME_PING) {
