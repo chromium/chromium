@@ -106,13 +106,13 @@ class CompositorFrameReporterTest : public testing::Test {
   }
 
   std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
+    GlobalMetricsTrackers trackers{&dropped_frame_counter_, nullptr};
     auto reporter = std::make_unique<CompositorFrameReporter>(
         ActiveTrackers(), viz::BeginFrameArgs(),
-        /*latency_ukm_reporter=*/nullptr,
         /*should_report_metrics=*/true,
         CompositorFrameReporter::SmoothThread::kSmoothBoth,
         FrameSequenceMetrics::ThreadType::kUnknown,
-        /*layer_tree_host_id=*/1, &dropped_frame_counter_);
+        /*layer_tree_host_id=*/1, trackers);
     reporter->set_tick_clock(&test_tick_clock_);
     return reporter;
   }

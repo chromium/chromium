@@ -25,7 +25,9 @@ CompositorFrameReportingController::CompositorFrameReportingController(
     int layer_tree_host_id)
     : should_report_metrics_(should_report_metrics),
       layer_tree_host_id_(layer_tree_host_id),
-      latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()) {}
+      latency_ukm_reporter_(std::make_unique<LatencyUkmReporter>()) {
+  global_trackers_.latency_ukm_reporter = latency_ukm_reporter_.get();
+}
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
   base::TimeTicks now = Now();
@@ -93,9 +95,8 @@ void CompositorFrameReportingController::WillBeginImplFrame(
     }
   }
   auto reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers_, args, latency_ukm_reporter_.get(),
-      should_report_metrics_, GetSmoothThread(), scrolling_thread_,
-      layer_tree_host_id_, dropped_frame_counter_);
+      active_trackers_, args, should_report_metrics_, GetSmoothThread(),
+      scrolling_thread_, layer_tree_host_id_, global_trackers_);
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
@@ -120,9 +121,8 @@ void CompositorFrameReportingController::WillBeginMainFrame(
     // beginMain frame before next BeginImplFrame (Not reached the ImplFrame
     // deadline yet). So will start a new reporter at BeginMainFrame.
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        active_trackers_, args, latency_ukm_reporter_.get(),
-        should_report_metrics_, GetSmoothThread(), scrolling_thread_,
-        layer_tree_host_id_, dropped_frame_counter_);
+        active_trackers_, args, should_report_metrics_, GetSmoothThread(),
+        scrolling_thread_, layer_tree_host_id_, global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kSendBeginMainFrameToCommit, Now());
     reporters_[PipelineStage::kBeginMainFrame] = std::move(reporter);
@@ -490,8 +490,8 @@ void CompositorFrameReportingController::AddActiveTracker(
 void CompositorFrameReportingController::RemoveActiveTracker(
     FrameSequenceTrackerType type) {
   active_trackers_.reset(static_cast<size_t>(type));
-  if (dropped_frame_counter_)
-    dropped_frame_counter_->ReportFrames();
+  if (global_trackers_.dropped_frame_counter)
+    global_trackers_.dropped_frame_counter->ReportFrames();
 }
 
 void CompositorFrameReportingController::SetScrollingThread(
@@ -656,10 +656,10 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
     // start time, but they were skipped and history of scrolling thread might
     // change in the diff of start time and report time.
     auto reporter = std::make_unique<CompositorFrameReporter>(
-        active_trackers_, args, latency_ukm_reporter_.get(),
-        should_report_metrics_, GetSmoothThreadAtTime(timestamp),
+        active_trackers_, args, should_report_metrics_,
+        GetSmoothThreadAtTime(timestamp),
         FrameSequenceMetrics::ThreadType::kUnknown, layer_tree_host_id_,
-        dropped_frame_counter_);
+        global_trackers_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                          timestamp);

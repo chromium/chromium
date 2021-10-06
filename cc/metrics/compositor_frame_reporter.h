@@ -32,6 +32,11 @@ namespace cc {
 class DroppedFrameCounter;
 class LatencyUkmReporter;
 
+struct GlobalMetricsTrackers {
+  DroppedFrameCounter* dropped_frame_counter = nullptr;
+  LatencyUkmReporter* latency_ukm_reporter = nullptr;
+};
+
 // This is used for tracing and reporting the duration of pipeline stages within
 // a single frame.
 //
@@ -225,12 +230,11 @@ class CC_EXPORT CompositorFrameReporter {
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
-                          LatencyUkmReporter* latency_ukm_reporter,
                           bool should_report_metrics,
                           SmoothThread smooth_thread,
                           FrameSequenceMetrics::ThreadType scrolling_thread,
                           int layer_tree_host_id,
-                          DroppedFrameCounter* dropped_frame_counter);
+                          const GlobalMetricsTrackers& trackers);
   ~CompositorFrameReporter();
 
   CompositorFrameReporter(const CompositorFrameReporter& reporter) = delete;
@@ -402,8 +406,6 @@ class CC_EXPORT CompositorFrameReporter {
   const ActiveTrackers active_trackers_;
   const FrameSequenceMetrics::ThreadType scrolling_thread_;
 
-  LatencyUkmReporter* latency_ukm_reporter_;
-
   // Indicates if work on Impl frame is finished.
   bool did_finish_impl_frame_ = false;
   // The time that work on Impl frame is finished. It's only valid if the
@@ -418,7 +420,6 @@ class CC_EXPORT CompositorFrameReporter {
 
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 
-  DroppedFrameCounter* dropped_frame_counter_ = nullptr;
   bool has_partial_update_ = false;
 
   // If the submitted frame has update from main thread
@@ -449,6 +450,8 @@ class CC_EXPORT CompositorFrameReporter {
   // these reporters (using |AdoptReporter()|).
   std::queue<std::unique_ptr<CompositorFrameReporter>>
       owned_partial_update_dependents_;
+
+  const GlobalMetricsTrackers global_trackers_;
 
   base::WeakPtrFactory<CompositorFrameReporter> weak_factory_{this};
 };

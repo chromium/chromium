@@ -537,21 +537,20 @@ CompositorFrameReporter::ProcessedVizBreakdown::CreateIterator(
 CompositorFrameReporter::CompositorFrameReporter(
     const ActiveTrackers& active_trackers,
     const viz::BeginFrameArgs& args,
-    LatencyUkmReporter* latency_ukm_reporter,
     bool should_report_metrics,
     SmoothThread smooth_thread,
     FrameSequenceMetrics::ThreadType scrolling_thread,
     int layer_tree_host_id,
-    DroppedFrameCounter* dropped_frame_counter)
+    const GlobalMetricsTrackers& trackers)
     : should_report_metrics_(should_report_metrics),
       args_(args),
       active_trackers_(active_trackers),
       scrolling_thread_(scrolling_thread),
-      latency_ukm_reporter_(latency_ukm_reporter),
-      dropped_frame_counter_(dropped_frame_counter),
       smooth_thread_(smooth_thread),
-      layer_tree_host_id_(layer_tree_host_id) {
-  dropped_frame_counter_->OnBeginFrame(args, IsScrollActive(active_trackers_));
+      layer_tree_host_id_(layer_tree_host_id),
+      global_trackers_(trackers) {
+  global_trackers_.dropped_frame_counter->OnBeginFrame(
+      args, IsScrollActive(active_trackers_));
   DCHECK(IsScrollActive(active_trackers_) ||
          scrolling_thread_ == FrameSequenceMetrics::ThreadType::kUnknown);
 }
@@ -569,9 +568,8 @@ CompositorFrameReporter::CopyReporterAtBeginImplStage() {
     return nullptr;
   }
   auto new_reporter = std::make_unique<CompositorFrameReporter>(
-      active_trackers_, args_, latency_ukm_reporter_, should_report_metrics_,
-      smooth_thread_, scrolling_thread_, layer_tree_host_id_,
-      dropped_frame_counter_);
+      active_trackers_, args_, should_report_metrics_, smooth_thread_,
+      scrolling_thread_, layer_tree_host_id_, global_trackers_);
   new_reporter->did_finish_impl_frame_ = did_finish_impl_frame_;
   new_reporter->impl_frame_finish_time_ = impl_frame_finish_time_;
   new_reporter->main_frame_abort_time_ = main_frame_abort_time_;
@@ -769,18 +767,19 @@ void CompositorFrameReporter::TerminateReporter() {
       ReportEventLatencyHistograms();
   }
 
-  if (dropped_frame_counter_) {
+  auto* dropped_frame_counter = global_trackers_.dropped_frame_counter;
+  if (dropped_frame_counter) {
     if (TestReportType(FrameReportType::kDroppedFrame)) {
-      dropped_frame_counter_->AddDroppedFrame();
+      dropped_frame_counter->AddDroppedFrame();
     } else {
       if (has_partial_update_)
-        dropped_frame_counter_->AddPartialFrame();
+        dropped_frame_counter->AddPartialFrame();
       else
-        dropped_frame_counter_->AddGoodFrame();
+        dropped_frame_counter->AddGoodFrame();
     }
 
-    dropped_frame_counter_->OnEndFrame(args_,
-                                       IsDroppedFrameAffectingSmoothness());
+    dropped_frame_counter->OnEndFrame(args_,
+                                      IsDroppedFrameAffectingSmoothness());
   }
 
   if (discarded_partial_update_dependents_count_ > 0)
@@ -813,8 +812,8 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
       continue;
     FrameReportType report_type = static_cast<FrameReportType>(type);
     UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type", report_type);
-    if (latency_ukm_reporter_) {
-      latency_ukm_reporter_->ReportCompositorLatencyUkm(
+    if (global_trackers_.latency_ukm_reporter) {
+      global_trackers_.latency_ukm_reporter->ReportCompositorLatencyUkm(
           report_type, stage_history_, active_trackers_,
           *processed_blink_breakdown_, *processed_viz_breakdown_);
     }
@@ -1042,8 +1041,8 @@ void CompositorFrameReporter::ReportEventLatencyHistograms() const {
         kEventLatencyHistogramMax, kEventLatencyHistogramBucketCount);
   }
 
-  if (latency_ukm_reporter_) {
-    latency_ukm_reporter_->ReportEventLatencyUkm(
+  if (global_trackers_.latency_ukm_reporter) {
+    global_trackers_.latency_ukm_reporter->ReportEventLatencyUkm(
         events_metrics_, stage_history_, *processed_blink_breakdown_,
         *processed_viz_breakdown_);
   }
