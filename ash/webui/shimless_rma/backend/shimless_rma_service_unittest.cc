@@ -325,7 +325,6 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
         EXPECT_EQ(state, mojom::RmaState::kWelcomeScreen);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
-  LOG(ERROR) << "Waiting to get current state";
   run_loop.RunUntilIdle();
 
   // No network should prompt select network page
@@ -335,7 +334,6 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
         EXPECT_EQ(state, mojom::RmaState::kConfigureNetwork);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
-  LOG(ERROR) << "Waiting to begin finalization";
   run_loop.RunUntilIdle();
   SetupWiFiNetwork();
 
@@ -347,7 +345,6 @@ TEST_F(ShimlessRmaServiceTest, ChooseNetworkHasNetworkConnection) {
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
         run_loop.Quit();
       }));
-  LOG(ERROR) << "Waiting for network selection";
   run_loop.Run();
 }
 
