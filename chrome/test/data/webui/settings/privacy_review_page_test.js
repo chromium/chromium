@@ -216,7 +216,8 @@ suite('PrivacyReviewPage', function() {
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
     assertWelcomeCardVisible();
 
-    page.shadowRoot.querySelector('#startButton').click();
+    const welcomeFragment = page.shadowRoot.querySelector('#welcomeFragment');
+    welcomeFragment.shadowRoot.querySelector('#startButton').click();
     flush();
     assertMsbbCardVisible();
 

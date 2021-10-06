@@ -14,6 +14,7 @@ import '../../settings_shared_css.js';
 import './privacy_review_clear_on_exit_fragment.js';
 import './privacy_review_history_sync_fragment.js';
 import './privacy_review_msbb_fragment.js';
+import './privacy_review_welcome_fragment.js';
 import './step_indicator.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

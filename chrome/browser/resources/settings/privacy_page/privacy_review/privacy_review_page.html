@@ -33,15 +33,9 @@
   <template is="dom-if"
       if="[[showFragment_(
              privacyReviewStepEnum_.WELCOME, privacyReviewStep_)]]">
-    <div id="welcomeFragment">
-      <div>$i18n{privacyReviewWelcomeCardHeader}</div>
-      <div class="footer">
-        <cr-button class="action-button" id="startButton" role="button"
-            tabindex="0" on-click="onNextButtonClick_">
-          $i18n{privacyReviewWelcomeCardStartButton}
-        </cr-button>
-      </div>
-    </div>
+      <privacy-review-welcome-fragment id="welcomeFragment"
+          on-start-button-click="onNextButtonClick_">
+      </privacy-review-welcome-fragment>
   </template>
   <template is="dom-if"
       if="[[showFragment_(
