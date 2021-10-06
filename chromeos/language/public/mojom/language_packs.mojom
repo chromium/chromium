@@ -9,7 +9,6 @@
 module language.mojom;
 
 // ID of the Feature using LanguagePacks.
-[Stable, Extensible]
 enum FeatureId {
   // Unknown feature, not supported.
   UNSUPPORTED_UNKNOWN = 0,
@@ -19,7 +18,6 @@ enum FeatureId {
 
 // Current state of Pack on disk.
 // INSTALLED means that it's mounted and can be used.
-[Stable, Extensible]
 enum PackState {
   ERROR = 0,
   NOT_INSTALLED = 1,
@@ -28,7 +26,6 @@ enum PackState {
 };
 
 // This struct holds information that allows clients to use a Pack.
-[Stable]
 struct LanguagePackInfo {
   PackState pack_state;
   string path;
@@ -40,7 +37,6 @@ struct LanguagePackInfo {
 // Language Packs are mounted to the user partition once they are installed and
 // this interface allows to get the path to the files.
 // Next ordinal: 2
-[Stable]
 interface LanguagePacks {
   // Gets information about the current state of a Language Pack.
   // Takes the id of the feature (for example handwriting) and the language.
