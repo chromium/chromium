@@ -24,6 +24,14 @@
 
 namespace web_app {
 
+namespace {
+
+constexpr unsigned int kMaxProgIdLen = 39;
+const AppId app_id1 = "app_id12345678901234567890123456789012345678901234";
+const AppId app_id2 = "different_appid";
+
+}  // namespace
+
 class WebAppHandlerRegistrationUtilsWinTest : public testing::Test {
  protected:
   WebAppHandlerRegistrationUtilsWinTest() = default;
@@ -148,25 +156,58 @@ TEST_F(WebAppHandlerRegistrationUtilsWinTest,
 
 // Test various attributes of ProgIds returned by GetAppIdForApp.
 TEST_F(WebAppHandlerRegistrationUtilsWinTest, GetProgIdForApp) {
-  // Create a long app_id and verify that the prog id is less
-  // than 39 characters, and only contains alphanumeric characters and
-  // non leading '.'s See
-  // https://docs.microsoft.com/en-us/windows/win32/com/-progid--key.
-  AppId app_id1("app_id12345678901234567890123456789012345678901234");
-  constexpr unsigned int kMaxProgIdLen = 39;
-  std::wstring prog_id1 = GetProgIdForApp(profile()->GetPath(), app_id1);
+  // Create a long app_id and verify that the prog id is less than 39
+  // characters, and only contains alphanumeric characters and non-leading '.'s.
+  // See https://docs.microsoft.com/en-us/windows/win32/com/-progid--key.
+  const std::wstring prog_id1 = GetProgIdForApp(profile()->GetPath(), app_id1);
   EXPECT_LE(prog_id1.length(), kMaxProgIdLen);
   for (auto itr = prog_id1.begin(); itr != prog_id1.end(); itr++)
     EXPECT_TRUE(std::isalnum(*itr) || (*itr == '.' && itr != prog_id1.begin()));
-  AppId app_id2("different_appid");
-  // Check that different app ids in the same profile have different
-  // prog ids.
+  // Check that different app ids in the same profile have different prog ids.
   EXPECT_NE(prog_id1, GetProgIdForApp(profile()->GetPath(), app_id2));
 
-  // Create a different profile, and verify that the prog id for the same
-  // app_id in a different profile is different.
-  TestingProfile profile2;
+  // Create a different profile, and verify that the prog id for the same app_id
+  // in a different profile is different.
+  const TestingProfile profile2;
   EXPECT_NE(prog_id1, GetProgIdForApp(profile2.GetPath(), app_id1));
+}
+
+TEST_F(WebAppHandlerRegistrationUtilsWinTest, GetProgIdForAppFileHandler) {
+  // Create a long app_id and file-extensions string, and verify that the prog
+  // id is less than 39 characters and only contains alphanumeric characters
+  // and non-leading '.'s.
+  // See https://docs.microsoft.com/en-us/windows/win32/com/-progid--key.
+  const std::set<std::string> file_extensions1 = {
+      ".txt", ".csv", ".md", ".cc", ".h", ".mm", ".py", ".etc"};
+  const std::wstring prog_id1 = GetProgIdForAppFileHandler(
+      profile()->GetPath(), app_id1, file_extensions1);
+  EXPECT_LE(prog_id1.length(), kMaxProgIdLen);
+  for (auto itr = prog_id1.begin(); itr != prog_id1.end(); itr++)
+    EXPECT_TRUE(std::isalnum(*itr) || (*itr == '.' && itr != prog_id1.begin()));
+  // Check that different app ids in the same profile with the same file
+  // extensions have different prog ids.
+  EXPECT_NE(prog_id1, GetProgIdForAppFileHandler(profile()->GetPath(), app_id2,
+                                                 file_extensions1));
+
+  // Create a different profile, and verify that the prog id for the same app_id
+  // with the same file extensions in a different profile is different.
+  const TestingProfile profile2;
+  EXPECT_NE(prog_id1, GetProgIdForAppFileHandler(profile2.GetPath(), app_id1,
+                                                 file_extensions1));
+
+  // Verify that the prog id for the same app_id and profile with different file
+  // extensions is different.
+  const std::set<std::string> file_extensions2 = {".jpg"};
+  EXPECT_NE(GetProgIdForAppFileHandler(profile()->GetPath(), app_id1,
+                                       file_extensions1),
+            GetProgIdForAppFileHandler(profile()->GetPath(), app_id1,
+                                       file_extensions2));
+
+  // Verify that a prog id that includes file extensions is different from the
+  // equivalent prog id without file extensions.
+  EXPECT_NE(GetProgIdForApp(profile()->GetPath(), app_id1),
+            GetProgIdForAppFileHandler(profile()->GetPath(), app_id1,
+                                       file_extensions1));
 }
 
 TEST_F(WebAppHandlerRegistrationUtilsWinTest,

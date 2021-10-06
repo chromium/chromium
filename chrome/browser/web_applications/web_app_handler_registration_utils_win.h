@@ -32,6 +32,20 @@ base::FilePath GetAppSpecificLauncherFilename(const std::wstring& app_name);
 std::wstring GetProgIdForApp(const base::FilePath& profile_path,
                              const AppId& app_id);
 
+// Returns the prog_id for a file handler for |app_id| that handles the given
+// |file_extensions|. An app's handled file extensions are encoded into its
+// distinct prog_id so that apps can customize the displayed type name and icon
+// for file types (shown when the app is the type's default handler). File
+// extensions should include a leading period, e.g., ".txt". See
+// https://docs.microsoft.com/en-us/windows/win32/com/-progid--key for the
+// allowed characters in a prog_id. Since the prog_id is stored in the Windows
+// registry, the prog_id corresponding to the given profile, app_id, and
+// file_extensions combination can't be changed.
+std::wstring GetProgIdForAppFileHandler(
+    const base::FilePath& profile_path,
+    const AppId& app_id,
+    const std::set<std::string>& file_extensions);
+
 // Makes an app-specific copy of chrome_pwa_launcher.exe that lives in the web
 // application directory |web_app_path|. Returns path of the launcher file if
 // successful, absl::nullopt otherwise.
