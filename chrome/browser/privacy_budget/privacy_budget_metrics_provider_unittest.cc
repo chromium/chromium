@@ -15,21 +15,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
-TEST(PrivacyBudgetMetricsProvider, Init) {
+TEST(PrivacyBudgetMetricsProvider, InitOnConstruction) {
   test::ScopedPrivacyBudgetConfig scoped_config(
       test::ScopedPrivacyBudgetConfig::kEnable);
 
   TestingPrefServiceSimple pref_service;
   prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
-  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
-
+  pref_service.SetInteger(prefs::kPrivacyBudgetGeneration,
+                          test::ScopedPrivacyBudgetConfig::kDefaultGeneration);
   pref_service.SetString(prefs::kPrivacyBudgetSeenSurfaces, "100");
 
-  EXPECT_TRUE(state.seen_surfaces().empty());
-
-  auto metrics_provider =
-      std::make_unique<PrivacyBudgetMetricsProvider>(&state);
-  metrics_provider->Init();
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
 
   EXPECT_TRUE(base::Contains(state.seen_surfaces(),
                              blink::IdentifiableSurface::FromMetricHash(100)));

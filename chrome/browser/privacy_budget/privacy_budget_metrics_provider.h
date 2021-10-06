@@ -21,7 +21,6 @@ class PrivacyBudgetMetricsProvider : public metrics::MetricsProvider {
   explicit PrivacyBudgetMetricsProvider(IdentifiabilityStudyState* study_state);
 
   // metrics::MetricsProvider
-  void Init() final;
   void OnClientStateCleared() final;
 
  private:
