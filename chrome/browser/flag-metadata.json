@@ -3657,7 +3657,7 @@
   {
     "name": "messages-for-android-infrastructure",
     "owners": [ "pavely", "lazzzis" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 102
   },
   {
     "name": "messages-for-android-near-oom-reduction",
