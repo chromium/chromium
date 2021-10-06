@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_PAYMENTS_REQUEST_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_PAYMENTS_REQUEST_H_
 
-#include <memory>
+#include <string>
+
+#include "components/autofill/core/browser/autofill_client.h"
+
+namespace base {
+class Value;
+}
 
 namespace autofill {
-
-class AutofillClient;
-
 namespace payments {
 
-// Interface for the various Payments request types.
+// Shared class for the various Payments request types.
 class PaymentsRequest {
  public:
-  virtual ~PaymentsRequest() {}
+  virtual ~PaymentsRequest();
 
   // Returns the URL path for this type of request.
   virtual std::string GetRequestUrlPath() = 0;
@@ -37,9 +40,16 @@ class PaymentsRequest {
   // Invokes the appropriate callback in the delegate based on what type of
   // request this is.
   virtual void RespondToDelegate(AutofillClient::PaymentsRpcResult result) = 0;
+
+ protected:
+  // Shared helper function to build the risk data sent in the request.
+  base::Value BuildRiskDictionary(const std::string& encoded_risk_data);
+
+  // Shared helper function to build the customer context sent in the request.
+  base::Value BuildCustomerContextDictionary(int64_t external_customer_id);
 };
 
 }  // namespace payments
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUEST_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_PAYMENTS_REQUEST_H_
