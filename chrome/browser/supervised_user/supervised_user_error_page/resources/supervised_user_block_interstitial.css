@@ -107,6 +107,11 @@ p {
   width: 72px;
 }
 
+#illustration-light-theme,
+#illustration-dark-theme {
+  display: none;
+}
+
 .frame-blocked {
   box-sizing: border-box;
   margin: 100px auto 0;
@@ -114,6 +119,10 @@ p {
   min-width: 280px;
   overflow: visible;
   width: 100%;
+}
+
+.local-web-approvals-enabled .frame-blocked {
+  margin-top: 50px;
 }
 
 #main-message {
@@ -213,6 +222,14 @@ p {
   font-size: 14px;
 }
 
+.local-web-approvals-enabled .icon {
+  display: none;
+}
+
+.local-web-approvals-enabled #illustration-light-theme {
+  display: inline;
+}
+
 .local-web-approvals-enabled .frame-blocked {
   display: flex;
   flex-direction: column;
@@ -253,6 +270,32 @@ p {
   font-size: 13px;
 }
 
+@media (prefers-color-scheme: dark) {
+  body.supervised-user-block {
+    --avatar-stroke-color: var(--google-blue-100);
+    --custodian-email-color: var(--google-gray-500);
+    --custodian-name-color: var(--google-gray-500);
+  }
+
+  body.supervised-user-block.local-web-approvals-enabled {
+    --header-color: #e9eaed;
+    --paragraph-color: var(--google-gray-500);
+  }
+
+  .local-web-approvals-enabled #illustration-light-theme {
+    display: none;
+  }
+
+  .local-web-approvals-enabled #illustration-dark-theme {
+    display: inline;
+  }
+
+  .local-web-approvals-enabled .remote-approvals-button {
+    color: var(--google-blue-300);
+    border-color: var(--secondary-button-border-color);
+  }
+}
+
 /* If the height is smaller than min-height, set top and bottom
 margin to 0. This will be useful for subframes. */
 @media (max-height: 315px) {
@@ -290,16 +333,17 @@ margin to 0. This will be useful for subframes. */
     margin: 0 4px 16px 4px;
   }
 
+  .local-web-approvals-enabled #illustration-light-theme,
+  .local-web-approvals-enabled #illustration-dark-theme {
+    display: none;
+  }
+
   .local-web-approvals-enabled .frame-blocked {
     align-items: center;
     background-color: rgba(232, 234, 237, .38);;
     border-radius: 12px;
     padding: 0 8px;
     width: 284px;
-  }
-
-  .local-web-approvals-enabled .icon {
-    display: none;
   }
 
   .local-web-approvals-enabled .message-container {
@@ -338,24 +382,6 @@ margin to 0. This will be useful for subframes. */
 
   .local-web-approvals-enabled .go-back-button {
     margin-left: 4px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  body.supervised-user-block {
-    --avatar-stroke-color: var(--google-blue-100);
-    --custodian-email-color: var(--google-gray-500);
-    --custodian-name-color: var(--google-gray-500);
-  }
-
-  body.supervised-user-block.local-web-approvals-enabled {
-    --header-color: #e9eaed;
-    --paragraph-color: var(--google-gray-500);
-  }
-
-  .local-web-approvals-enabled .remote-approvals-button {
-    color: var(--google-blue-300);
-    border-color: var(--secondary-button-border-color);
   }
 }
 
