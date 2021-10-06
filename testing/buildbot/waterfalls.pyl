@@ -2636,6 +2636,16 @@
           'isolated_scripts': 'vulkan_swiftshader_isolated_scripts',
         },
       },
+      'MSAN Release (chained origins) (reclient shadow)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
+      'MSAN Release (no origins) (reclient shadow)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
       # TODO(crbug.com/1244441): remove this after the migration.
       'Mac Builder (reclient)': {
         'additional_compile_targets': [

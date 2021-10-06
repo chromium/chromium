@@ -155,6 +155,16 @@
       }
     ]
   },
+  "MSAN Release (chained origins) (reclient shadow)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
+  "MSAN Release (no origins) (reclient shadow)": {
+    "additional_compile_targets": [
+      "chromium_builder_asan"
+    ]
+  },
   "Mac Builder (reclient)": {
     "additional_compile_targets": [
       "all"

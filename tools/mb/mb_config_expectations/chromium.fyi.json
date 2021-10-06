@@ -277,6 +277,28 @@
       "use_goma": true
     }
   },
+  "MSAN Release (chained origins) (reclient shadow)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_msan": true,
+      "msan_track_origins": 2,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
+  "MSAN Release (no origins) (reclient shadow)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_msan": true,
+      "msan_track_origins": 0,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "Mac Builder (reclient)": {
     "gn_args": {
       "dcheck_always_on": false,

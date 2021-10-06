@@ -4300,6 +4300,40 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
+    name = "MSAN Release (chained origins) (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux msan",
+        short_name = "org",
+    ),
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 4,
+    ),
+    goma_backend = None,
+    reclient_jobs = 250,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+)
+
+ci.fyi_builder(
+    name = "MSAN Release (no origins) (reclient shadow)",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux msan",
+        short_name = "rel",
+    ),
+    triggering_policy = scheduler.greedy_batching(
+        max_concurrent_invocations = 4,
+    ),
+    goma_backend = None,
+    reclient_jobs = 250,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+)
+
+ci.fyi_builder(
     name = "UBSan Release (reclient)",
     console_view_entry = consoles.console_view_entry(
         category = "linux UBSan",

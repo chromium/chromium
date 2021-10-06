@@ -300,7 +300,8 @@
       'Mac Builder Next': 'gpu_tests_release_bot_minimal_symbols',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
-
+      'MSAN Release (chained origins) (reclient shadow)': 'msan_release_bot_reclient',
+      'MSAN Release (no origins) (reclient shadow)': 'msan_no_origins_release_bot_reclient',
       'Site Isolation Android': 'android_release_bot_minimal_symbols_arm64',
       'TSAN Debug (reclient)': 'tsan_disable_nacl_debug_bot_reclient',
       'TSAN Release (deps-cache) (reclient)':  'tsan_disable_nacl_release_bot_reclient',
@@ -2610,8 +2611,16 @@
       'msan_no_origins', 'release_bot',
     ],
 
+    'msan_no_origins_release_bot_reclient': [
+      'msan_no_origins', 'release_bot_reclient',
+    ],
+
     'msan_release_bot': [
       'msan', 'release_bot',
+    ],
+
+    'msan_release_bot_reclient': [
+      'msan', 'release_bot_reclient',
     ],
 
     'msan_release_bot_blink': [
