@@ -801,6 +801,7 @@ void PeopleHandler::OnPrimaryAccountChanged(
     }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       sync_blocker_.reset();
+      configuring_sync_ = false;
       UpdateSyncStatus();
       return;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
