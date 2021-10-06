@@ -15,6 +15,17 @@ struct ACMatchClassification {
   int32 style;
 };
 
+// See components/omnibox/browser/actions/omnibox_action.h
+struct Action {
+  mojo_base.mojom.String16 accessibility_hint;
+  mojo_base.mojom.String16 accessibility_suffix;
+  mojo_base.mojom.String16 hint;
+  mojo_base.mojom.String16 suggestion_contents;
+  // The url for the action icon. This is a relative url pointing to a
+  // bundled resource and is used directly in CSS to show the icon.
+  string icon_url;
+};
+
 // See components/omnibox/browser/suggestion_answer.h
 struct SuggestionAnswer {
   mojo_base.mojom.String16 first_line;
@@ -23,6 +34,7 @@ struct SuggestionAnswer {
 
 struct AutocompleteMatch {
   bool allowed_to_be_default_match;
+  Action? action;
   SuggestionAnswer? answer;
   mojo_base.mojom.String16 contents;
   array<ACMatchClassification> contents_class;
@@ -124,6 +136,15 @@ interface PageHandler {
   // Logs the time it took in milliseconds since the first character (in a
   // series of characters) was typed until Autocomplete results were painted.
   LogCharTypedToRepaintLatency(mojo_base.mojom.TimeDelta latency);
+  // Executes the Pedal Action. match_selection_timestamp is the number of
+  // microseconds since Jan. 1, 1970 (ECMAScript epoch).
+  ExecuteAction(uint8 line,
+                mojo_base.mojom.TimeTicks match_selection_timestamp,
+                uint8 mouse_button,
+                bool alt_key,
+                bool ctrl_key,
+                bool meta_key,
+                bool shift_key);
 };
 
 // WebUI-side handler for requests from the browser.

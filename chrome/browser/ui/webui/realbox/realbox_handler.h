@@ -66,6 +66,13 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   void DeleteAutocompleteMatch(uint8_t line) override;
   void ToggleSuggestionGroupIdVisibility(int32_t suggestion_group_id) override;
   void LogCharTypedToRepaintLatency(base::TimeDelta latency) override;
+  void ExecuteAction(uint8_t line,
+                     base::TimeTicks match_selection_timestamp,
+                     uint8_t mouse_button,
+                     bool alt_key,
+                     bool ctrl_key,
+                     bool meta_key,
+                     bool shift_key) override;
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
@@ -77,6 +84,18 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   void OnRealboxFaviconFetched(int match_index,
                                const GURL& page_url,
                                const gfx::Image& favicon);
+
+  // OpenURL function used as a callback for execution of actions.
+  void OpenURL(const GURL& destination_url,
+               TemplateURLRef::PostContent* post_content,
+               WindowOpenDisposition disposition,
+               ui::PageTransition transition,
+               AutocompleteMatchType::Type type,
+               base::TimeTicks match_selection_timestamp,
+               bool destination_url_entered_without_scheme,
+               const std::u16string&,
+               const AutocompleteMatch&,
+               const AutocompleteMatch&);
 
  private:
   Profile* profile_;

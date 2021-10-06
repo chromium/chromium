@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
 
+#include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -26,6 +27,7 @@
 #include "chrome/grit/new_tab_page_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/navigation_metrics/navigation_metrics.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -504,6 +506,20 @@ void RealboxHandler::OpenAutocompleteMatch(
                              disposition, match.transition, false));
 }
 
+void RealboxHandler::OpenURL(const GURL& destination_url,
+                             TemplateURLRef::PostContent* post_content,
+                             WindowOpenDisposition disposition,
+                             ui::PageTransition transition,
+                             AutocompleteMatchType::Type type,
+                             base::TimeTicks match_selection_timestamp,
+                             bool destination_url_entered_without_scheme,
+                             const std::u16string&,
+                             const AutocompleteMatch&,
+                             const AutocompleteMatch&) {
+  web_contents_->OpenURL(content::OpenURLParams(
+      destination_url, content::Referrer(), disposition, transition, false));
+}
+
 void RealboxHandler::DeleteAutocompleteMatch(uint8_t line) {
   if (autocomplete_controller_->result().size() <= line ||
       !autocomplete_controller_->result().match_at(line).SupportsDeletion()) {
@@ -534,6 +550,34 @@ void RealboxHandler::ToggleSuggestionGroupIdVisibility(
 void RealboxHandler::LogCharTypedToRepaintLatency(base::TimeDelta latency) {
   UMA_HISTOGRAM_TIMES("NewTabPage.Realbox.CharTypedToRepaintLatency.ToPaint",
                       latency);
+}
+
+void RealboxHandler::ExecuteAction(uint8_t line,
+                                   base::TimeTicks match_selection_timestamp,
+                                   uint8_t mouse_button,
+                                   bool alt_key,
+                                   bool ctrl_key,
+                                   bool meta_key,
+                                   bool shift_key) {
+  if (!autocomplete_controller_ ||
+      autocomplete_controller_->result().size() <= line) {
+    return;
+  }
+
+  const auto& match = autocomplete_controller_->result().match_at(line);
+  if (!match.action) {
+    return;
+  }
+  WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+
+  match.action->RecordActionExecuted(line);
+  OmniboxAction::ExecutionContext context(
+      *(autocomplete_controller_->autocomplete_provider_client()),
+      base::BindOnce(&RealboxHandler::OpenURL, weak_ptr_factory_.GetWeakPtr()),
+      match_selection_timestamp, disposition);
+  match.action->Execute(context);
 }
 
 void RealboxHandler::OnResultChanged(AutocompleteController* controller,
