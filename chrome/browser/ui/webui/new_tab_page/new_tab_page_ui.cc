@@ -335,6 +335,13 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   return source;
 }
 
+bool HasCredentials(Profile* profile) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  return
+      /* Can be null if Chrome signin is disabled. */ identity_manager &&
+      identity_manager->GetAccountsInCookieJar().signed_in_accounts.size() > 0;
+}
+
 }  // namespace
 
 NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
@@ -345,8 +352,18 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       most_visited_page_factory_receiver_(this),
       browser_command_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
-      web_contents_(web_ui->GetWebContents()) {
+      theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
+      ntp_custom_background_service_(
+          NtpCustomBackgroundServiceFactory::GetForProfile(profile_)),
+      web_contents_(web_ui->GetWebContents()),
+      // We initialize navigation_start_time_ to a reasonable value to account
+      // for the unlikely case where the NewTabPageHandler is created before we
+      // received the DidStartNavigation event.
+      navigation_start_time_(base::Time::Now()) {
   auto* source = CreateNewTabPageUiHtmlSource(profile_);
+  source->AddBoolean(
+      "customBackgroundDisabledByPolicy",
+      ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy());
   source->AddBoolean(
       "modulesVisibleManagedByPolicy",
       profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
@@ -374,6 +391,22 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       ntp_prefs::kNtpShortcutsVisible,
       base::BindRepeating(&NewTabPageUI::OnTilesVisibilityPrefChanged,
                           weak_ptr_factory_.GetWeakPtr()));
+
+  // Store basic theme info in load time data to make the background color and
+  // background image available as soon as the page loads to prevent a potential
+  // white flicker.
+
+  // Load time data is cached across page reloads. Listen for theme changes so
+  // that theme info is up-to-date when reloading.
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_service_observation_.Observe(theme_service_);
+  ntp_custom_background_service_observation_.Observe(
+      ntp_custom_background_service_);
+
+  // Populates the load time data with basic info.
+  OnThemeChanged();
+  OnCustomBackgroundImageUpdated();
+  OnLoad();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NewTabPageUI)
@@ -501,8 +534,7 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      NtpCustomBackgroundServiceFactory::GetForProfile(profile_),
-      ThemeServiceFactory::GetForProfile(profile_),
+      ntp_custom_background_service_, theme_service_,
       LogoServiceFactory::GetForProfile(profile_),
       &ThemeService::GetThemeProviderForProfile(profile_), web_contents_,
       navigation_start_time_);
@@ -543,15 +575,72 @@ void NewTabPageUI::CreatePageHandler(
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
 }
 
+void NewTabPageUI::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  OnThemeChanged();
+}
+
+void NewTabPageUI::OnThemeChanged() {
+  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  auto background_color =
+      ThemeService::GetThemeProviderForProfile(profile_).GetColor(
+          ThemeProperties::COLOR_NTP_BACKGROUND);
+  update->SetString(
+      "backgroundColor",
+      base::StringPrintf("#%02X%02X%02X", SkColorGetR(background_color),
+                         SkColorGetG(background_color),
+                         SkColorGetB(background_color)));
+  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                   std::move(update));
+}
+
+void NewTabPageUI::OnCustomBackgroundImageUpdated() {
+  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  url::RawCanonOutputT<char> encoded_url;
+  auto custom_background_url =
+      (ntp_custom_background_service_
+           ? ntp_custom_background_service_->GetCustomBackground()
+           : absl::optional<CustomBackground>())
+          .value_or(CustomBackground())
+          .custom_background_url;
+  url::EncodeURIComponent(custom_background_url.spec().c_str(),
+                          custom_background_url.spec().size(), &encoded_url);
+  update->SetString(
+      "backgroundImageUrl",
+      encoded_url.length() > 0
+          ? base::StrCat(
+                {"chrome-untrusted://new-tab-page/custom_background_image?url=",
+                 std::string(encoded_url.data(), encoded_url.length())})
+          : "");
+  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                   std::move(update));
+}
+
+void NewTabPageUI::OnNtpCustomBackgroundServiceShuttingDown() {
+  ntp_custom_background_service_observation_.Reset();
+  ntp_custom_background_service_ = nullptr;
+}
+
 void NewTabPageUI::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
   // frames. This caller was converted automatically to the primary main frame
   // to preserve its semantics. Follow up to confirm correctness.
   if (navigation_handle->IsInPrimaryMainFrame() &&
-      /* Comparing origins because NTP might be called with URL params. */
-      IsNewTabPageOrigin(navigation_handle->GetURL())) {
+      navigation_handle->GetURL() == GURL(chrome::kChromeUINewTabPageURL)) {
+    navigation_start_time_ = base::Time::Now();
     OnLoad();
+    auto prev_navigation_time =
+        profile_->GetPrefs()->GetTime(kPrevNavigationTimePrefName);
+    if (!prev_navigation_time.is_null()) {
+      base::UmaHistogramCustomTimes(
+          "NewTabPage.TimeSinceLastNTP",
+          navigation_start_time_ - prev_navigation_time,
+          base::TimeDelta::FromSeconds(1), base::TimeDelta::FromDays(1), 100);
+    }
+    profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName,
+                                  navigation_start_time_);
+    base::UmaHistogramBoolean("NewTabPage.HasCredentials",
+                              HasCredentials(profile_));
   }
 }
 
@@ -576,67 +665,19 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 }
 
 void NewTabPageUI::OnLoad() {
-  navigation_start_time_ = base::Time::Now();
-
   std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
   update->SetDoubleKey("navigationStartTime",
                        navigation_start_time_.ToJsTime());
   // Only enable modules if account credentials are available as most modules
   // won't have data to render otherwise.
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
-  bool has_credentials =
-      /* Can be null if Chrome signin is disabled. */ identity_manager &&
-      identity_manager->GetAccountsInCookieJar().signed_in_accounts.size() > 0;
-  update->SetBoolKey(
-      "modulesEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kModules) && has_credentials);
+
+  update->SetBoolKey("modulesEnabled",
+                     base::FeatureList::IsEnabled(ntp_features::kModules) &&
+                         HasCredentials(profile_));
   update->SetBoolKey("driveModuleEnabled",
                      NewTabPageUI::IsDriveModuleEnabled(profile_));
-  // Store basic theme info in load time data to make the background color and
-  // background image available as soon as the page loads to prevent a
-  // potential white flicker.
-  auto background_color =
-      ThemeService::GetThemeProviderForProfile(profile_).GetColor(
-          ThemeProperties::COLOR_NTP_BACKGROUND);
-  update->SetString(
-      "backgroundColor",
-      base::StringPrintf("#%02X%02X%02X", SkColorGetR(background_color),
-                         SkColorGetG(background_color),
-                         SkColorGetB(background_color)));
-  url::RawCanonOutputT<char> encoded_url;
-  auto* ntp_custom_background_service =
-      NtpCustomBackgroundServiceFactory::GetForProfile(profile_);
-  CHECK(ntp_custom_background_service);
-  update->SetBoolean(
-      "customBackgroundDisabledByPolicy",
-      ntp_custom_background_service->IsCustomBackgroundDisabledByPolicy());
-  auto custom_background_url =
-      ntp_custom_background_service->GetCustomBackground()
-          .value_or(CustomBackground())
-          .custom_background_url;
-  url::EncodeURIComponent(custom_background_url.spec().c_str(),
-                          custom_background_url.spec().size(), &encoded_url);
-  update->SetString("backgroundImageUrl",
-                    encoded_url.length() > 0
-                        ? base::StrCat({"chrome-untrusted://new-tab-page/"
-                                        "custom_background_image?url=",
-                                        std::string(encoded_url.data(),
-                                                    encoded_url.length())})
-                        : "");
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                    std::move(update));
-
-  auto prev_navigation_time =
-      profile_->GetPrefs()->GetTime(kPrevNavigationTimePrefName);
-  if (!prev_navigation_time.is_null()) {
-    base::UmaHistogramCustomTimes("NewTabPage.TimeSinceLastNTP",
-                                  navigation_start_time_ - prev_navigation_time,
-                                  base::Seconds(1), base::Days(1), 100);
-  }
-  profile_->GetPrefs()->SetTime(kPrevNavigationTimePrefName,
-                                navigation_start_time_);
-
-  base::UmaHistogramBoolean("NewTabPage.HasCredentials", has_credentials);
 }
 
 // static
