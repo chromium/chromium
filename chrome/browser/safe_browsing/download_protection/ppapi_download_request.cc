@@ -64,6 +64,13 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
   is_extended_reporting_ = IsExtendedReportingEnabled(*profile->GetPrefs());
   is_enhanced_protection_ = IsEnhancedProtectionEnabled(*profile->GetPrefs());
 
+  // web_contents can be null in tests.
+  if (!web_contents) {
+    return;
+  }
+
+  Observe(web_contents);
+
   if (service->navigation_observer_manager()) {
     has_user_gesture_ =
         service->navigation_observer_manager()->HasUserGesture(web_contents);
@@ -129,6 +136,10 @@ GURL PPAPIDownloadRequest::GetDownloadRequestUrl() {
     url = url.Resolve("?key=" + net::EscapeQueryParamValue(api_key, true));
 
   return url;
+}
+
+void PPAPIDownloadRequest::WebContentsDestroyed() {
+  Finish(RequestOutcome::REQUEST_DESTROYED, DownloadCheckResult::UNKNOWN);
 }
 
 // Allowlist checking needs to the done on the IO thread.
