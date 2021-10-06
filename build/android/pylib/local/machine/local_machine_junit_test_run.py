@@ -155,7 +155,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       procs = [
           subprocess.Popen(cmd,
                            stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT) for cmd in cmd_list
+                           stderr=subprocess.STDOUT,
+                           universal_newlines=True) for cmd in cmd_list
       ]
       PrintProcessesStdout(procs)
 
