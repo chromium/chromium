@@ -17,6 +17,9 @@
 // Prints the currently active tab.
 - (void)printTab;
 
+// Prints an image.
+- (void)printImage:(UIImage*)image title:(NSString*)title;
+
 // Shows the downloads folder.
 - (void)showDownloadsFolder;
 

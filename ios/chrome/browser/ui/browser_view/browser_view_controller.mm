@@ -4904,4 +4904,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
+#pragma mark - PrintControllerDelegate
+
+- (UIViewController*)baseViewControllerForPrintPreview {
+  if (self.presentedViewController) {
+    return self.presentedViewController;
+  }
+  return self;
+}
+
 @end

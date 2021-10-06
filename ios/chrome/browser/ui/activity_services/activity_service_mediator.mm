@@ -163,8 +163,12 @@
 }
 
 - (NSArray*)applicationActivitiesForImageData:(ShareImageData*)data {
-  // For images, we're using the native activities.
-  return @[];
+  // For images, we only customize the print activity. Other activities use
+  // the native ones.
+  PrintActivity* printActivity =
+      [[PrintActivity alloc] initWithImageData:data handler:self.handler];
+
+  return @[ printActivity ];
 }
 
 - (NSSet*)excludedActivityTypesForItems:

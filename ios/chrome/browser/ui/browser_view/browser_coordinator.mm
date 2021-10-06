@@ -429,7 +429,7 @@
                                                      browser:self.browser];
 
   self.printController = [[PrintController alloc] init];
-  self.printController.baseViewController = self.viewController;
+  self.printController.delegate = self.viewController;
 
   self.qrScannerCoordinator = [[QRScannerLegacyCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -613,6 +613,11 @@
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   [self.printController printWebState:webState];
+}
+
+- (void)printImage:(UIImage*)image title:(NSString*)title {
+  DCHECK(self.printController);
+  [self.printController printImage:image title:title];
 }
 
 - (void)showReadingList {
