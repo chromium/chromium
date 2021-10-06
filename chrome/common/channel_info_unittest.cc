@@ -6,6 +6,7 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/version_info/channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,7 +124,7 @@ TEST_P(ChannelInfoTest, GetChannelByName) {
             GetParam().channel);
 }
 
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_P(ChannelInfoTest, GetChannelSuffixForDataDir) {
   EXPECT_EQ(GetChannelSuffixForDataDir(), GetParam().posix_data_dir_suffix);

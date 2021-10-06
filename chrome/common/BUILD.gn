@@ -79,6 +79,8 @@ source_set("channel_info") {
   } else if (is_chromeos_ash) {
     sources += [ "channel_info_chromeos.cc" ]
     deps += [ "//chromeos/crosapi/cpp" ]
+  } else if (is_chromeos_lacros) {
+    sources += [ "channel_info_lacros.cc" ]
   } else if (is_posix) {
     sources += [ "channel_info_posix.cc" ]
   } else if (is_fuchsia) {
