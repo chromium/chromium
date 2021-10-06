@@ -149,7 +149,7 @@ void PhotosService::GetMemories(GetMemoriesCallback callback) {
       base::BindOnce(&PhotosService::OnTokenReceived,
                      weak_factory_.GetWeakPtr()),
       signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-      signin::ConsentLevel::kSync);
+      signin::ConsentLevel::kSignin);
 }
 
 void PhotosService::DismissModule() {

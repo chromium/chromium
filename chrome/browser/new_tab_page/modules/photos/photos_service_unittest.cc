@@ -34,8 +34,8 @@ class PhotosServiceTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         identity_test_env.identity_manager(), &prefs_);
-    identity_test_env.MakePrimaryAccountAvailable("example@google.com",
-                                                  signin::ConsentLevel::kSync);
+    identity_test_env.MakePrimaryAccountAvailable(
+        "example@google.com", signin::ConsentLevel::kSignin);
     service_->RegisterProfilePrefs(prefs_.registry());
   }
 
