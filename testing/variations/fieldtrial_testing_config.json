@@ -2721,6 +2721,27 @@
             ]
         }
     ],
+    "DesktopOmniboxBookmarkPaths": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows",
+                "android",
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "OmniboxBookmarkPaths"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopPwaInstallInProductHelp": [
         {
             "platforms": [
@@ -5145,15 +5166,12 @@
                     "params": {
                         "EntitySuggestionsReduceLatencyDecoderTimeout": "405",
                         "MaxZeroSuggestMatches": "10",
-                        "OmniboxBookmarkPathsCounterfactual": "enabled",
-                        "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
                         "OmniboxMaxURLMatches": "7",
                         "RichAutocompletionAutocompleteNonPrefixAll": "true",
                         "RichAutocompletionAutocompleteTitles": "true",
                         "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
-                        "OmniboxBookmarkPaths",
                         "OmniboxDocumentProviderAso",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxKeywordSearchButton",
@@ -5162,9 +5180,11 @@
                         "OmniboxPreserveLongerShortcutsText",
                         "OmniboxRemoveSuggestionsFromClipboard",
                         "OmniboxRichAutocompletion",
-                        "OmniboxShortBookmarkSuggestionsByTotalInputLength",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "SearchSuggestChips"
+                    ],
+                    "disable_features": [
+                        "OmniboxShortBookmarkSuggestionsByTotalInputLength"
                     ]
                 }
             ]
