@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -128,6 +129,13 @@ const ui::ThemeProvider* ProfilePickerDiceSignInProvider::GetThemeProvider()
   if (!IsInitialized())
     return nullptr;
   return &ThemeService::GetThemeProviderForProfile(profile_);
+}
+
+ui::ColorProviderManager::InitializerSupplier*
+ProfilePickerDiceSignInProvider::GetCustomTheme() const {
+  if (!IsInitialized())
+    return nullptr;
+  return ThemeService::GetThemeSupplierForProfile(profile_);
 }
 
 bool ProfilePickerDiceSignInProvider::HandleContextMenu(

@@ -108,10 +108,8 @@ class BrowserThemePack : public CustomThemeSupplier {
       int id,
       ui::ResourceScaleFactor scale_factor) const override;
   bool HasCustomImage(int id) const override;
-
-  // Builds the color mixers that represent the state of the current browser
-  // theme instance.
-  void AddCustomThemeColorMixers(ui::ColorProvider* provider) const;
+  void AddColorMixers(ui::ColorProvider* provider,
+                      const ui::ColorProviderManager::Key& key) const override;
 
  private:
   friend class BrowserThemePackTest;

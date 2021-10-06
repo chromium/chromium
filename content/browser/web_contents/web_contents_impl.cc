@@ -495,7 +495,7 @@ int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
 // Whilst most WebContents clients should be setting a ColorProviderSource we
 // must accommodate for cases where this is not currently being done. For these
 // cases fallback to a ColorProvider keyed to various NativeTheme bits.
-ui::ColorProviderManager::ColorProviderKey GetWebDefaultColorProviderKey() {
+ui::ColorProviderManager::Key GetWebDefaultColorProviderKey() {
   const auto* native_theme = ui::NativeTheme::GetInstanceForWeb();
   const auto color_scheme = native_theme->GetDefaultSystemColorScheme();
   return {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
@@ -506,7 +506,8 @@ ui::ColorProviderManager::ColorProviderKey GetWebDefaultColorProviderKey() {
               : ui::ColorProviderManager::ContrastMode::kNormal,
           native_theme->is_custom_system_theme()
               ? ui::ColorProviderManager::SystemTheme::kCustom
-              : ui::ColorProviderManager::SystemTheme::kDefault};
+              : ui::ColorProviderManager::SystemTheme::kDefault,
+          nullptr};
 }
 
 }  // namespace

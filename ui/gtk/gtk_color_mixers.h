@@ -13,11 +13,8 @@ class ColorProvider;
 
 namespace gtk {
 
-void AddGtkNativeCoreColorMixer(
-    ui::ColorProvider* provider,
-    ui::ColorProviderManager::ColorMode color_mode,
-    ui::ColorProviderManager::ContrastMode contrast_mode,
-    ui::ColorProviderManager::SystemTheme system_theme);
+void AddGtkNativeCoreColorMixer(ui::ColorProvider* provider,
+                                const ui::ColorProviderManager::Key& key);
 
 }  // namespace gtk
 

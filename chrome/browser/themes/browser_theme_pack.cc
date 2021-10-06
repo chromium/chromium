@@ -1040,8 +1040,9 @@ bool BrowserThemePack::HasCustomImage(int idr_id) const {
   return false;
 }
 
-void BrowserThemePack::AddCustomThemeColorMixers(
-    ui::ColorProvider* provider) const {
+void BrowserThemePack::AddColorMixers(
+    ui::ColorProvider* provider,
+    const ui::ColorProviderManager::Key& key) const {
   // A map from theme property IDs to color IDs for use in color mixers.
   constexpr struct {
     int property_id;

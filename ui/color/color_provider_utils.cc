@@ -198,7 +198,7 @@ std::string SkColorName(SkColor color) {
           {SK_ColorGRAY, "SK_ColorGRAY"},
           {SK_ColorLTGRAY, "SK_ColorLTGRAY"},
           {SK_ColorWHITE, "SK_ColorWHITE"},
-          {SK_ColorRED, "kPlaceholderColor(SK_ColorRED)"},
+          {SK_ColorRED, "kPlaceholderColor"},
           {SK_ColorGREEN, "SK_ColorGREEN"},
           {SK_ColorBLUE, "SK_ColorBLUE"},
           {SK_ColorYELLOW, "SK_ColorYELLOW"},

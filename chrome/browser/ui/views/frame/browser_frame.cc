@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -239,6 +240,21 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
     return app_controller->GetThemeProvider();
   }
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
+}
+
+ui::ColorProviderManager::InitializerSupplier* BrowserFrame::GetCustomTheme()
+    const {
+  Browser* browser = browser_view_->browser();
+  auto* app_controller = browser->app_controller();
+  // Ignore GTK+ for web apps with window-controls-overlay as the
+  // display_override so the web contents can blend with the overlay by using
+  // the developer-provided theme color for a better experience. Context:
+  // https://crbug.com/1219073.
+  if (app_controller && (!IsUsingGtkTheme(browser->profile()) ||
+                         app_controller->AppUsesWindowControlsOverlay())) {
+    return app_controller->GetThemeSupplier();
+  }
+  return ThemeService::GetThemeSupplierForProfile(browser->profile());
 }
 
 void BrowserFrame::OnNativeWidgetWorkspaceChanged() {
