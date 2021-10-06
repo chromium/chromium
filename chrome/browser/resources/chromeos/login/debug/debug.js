@@ -1098,20 +1098,6 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'app-downloading',
       kind: ScreenKind.NORMAL,
-      states: [
-        {
-          id: 'single-app',
-          data: {
-            numOfApps: 1,
-          },
-        },
-        {
-          id: 'multiple-apps',
-          data: {
-            numOfApps: 2,
-          },
-        },
-      ],
     },
     {
       id: 'assistant-optin-flow',

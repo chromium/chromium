@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://oobe/screens/common/app_downloading.m.js';
 import 'chrome://oobe/screens/common/fingerprint_setup.m.js';
 import 'chrome://oobe/screens/common/gesture_navigation.m.js';
 import 'chrome://oobe/screens/common/marketing_opt_in.m.js';

@@ -7,54 +7,65 @@
  * screen.
  */
 
-Polymer({
-  is: 'app-downloading-element',
+/* #js_imports_placeholder */
 
-  behaviors: [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const AppDownloadingBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+  Polymer.Element);
 
-  properties: {},
+class AppDownloading extends AppDownloadingBase {
+
+  static get is() { return 'app-downloading-element'; }
+
+  /* #html_template_placeholder */
+
+  static get properties() {
+    return {};
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('AppDownloadingScreen', {
       resetAllowed: true,
     });
-  },
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.ONBOARDING;
-  },
+  }
 
   /**
    * Returns the control which should receive initial focus.
    */
   get defaultControl() {
     return this.$['app-downloading-dialog'];
-  },
-
-  /*
-   * Executed on language change.
-   */
-  updateLocalizedContent() {
-    this.i18nUpdateLocale();
-  },
+  }
 
   /** Called when dialog is shown */
   onBeforeShow() {
     if (this.$.downloadingApps) {
       this.$.downloadingApps.setPlay(true);
     }
-  },
+  }
 
   /** Called when dialog is hidden */
   onBeforeHide() {
     if (this.$.downloadingApps) {
       this.$.downloadingApps.setPlay(false);
     }
-  },
+  }
 
   /** @private */
   onContinue_() {
     this.userActed('appDownloadingContinueSetup');
-  },
-});
+  }
+}
+
+customElements.define(AppDownloading.is, AppDownloading);

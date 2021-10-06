@@ -28,7 +28,6 @@ function loadCommonComponents() {
 // <include src="../oobe_enable_kiosk.js">
 // <include src="../oobe_reset.js">
 // <include src="../recommend_apps.js">
-// <include src="../app_downloading.js">
 // <include src="../pin_setup.js">
 // <include src="../oobe_screen_assistant_optin_flow.js">
 // <include src="../multidevice_setup_first_run.js">
