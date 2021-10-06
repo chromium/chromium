@@ -70,7 +70,7 @@ enum class MessageScopeType { WINDOW = 0, WEB_CONTENTS = 1, NAVIGATION = 2 };
 // A Java counterpart is generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.messages
 enum class MessageIdentifier {
-  TEST_MESSAGE = 0,
+  INVALID_MESSAGE = 0,
   SAVE_PASSWORD = 1,
   UPDATE_PASSWORD = 2,
   GENERATED_PASSWORD_SAVED = 3,
@@ -90,6 +90,7 @@ enum class MessageIdentifier {
   SYNC_ERROR = 17,
   SHARED_HIGHLIGHTING = 18,
   NEAR_OOM_REDUCTION = 19,
+  TEST_MESSAGE = 22,
 
   // Insert new values before this line.
   COUNT

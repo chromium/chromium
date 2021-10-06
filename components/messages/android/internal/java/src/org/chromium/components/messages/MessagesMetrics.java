@@ -15,15 +15,32 @@ import org.chromium.base.metrics.RecordHistogram;
  */
 public class MessagesMetrics {
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";
+    private static final String ENQUEUED_VISIBLE_HISTOGRAM_NAME =
+            "Android.Messages.Enqueued.Visible";
+    private static final String ENQUEUED_HIDDEN_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hidden";
+    private static final String ENQUEUED_HIDING_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hiding";
     private static final String DISMISSED_HISTOGRAM_PREFIX = "Android.Messages.Dismissed.";
     private static final String TIME_TO_ACTION_HISTOGRAM_PREFIX = "Android.Messages.TimeToAction.";
     private static final String TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX =
             "Android.Messages.TimeToAction.Dismiss.";
 
     /** Records metrics when a message is enqueued. */
-    public static void recordMessageEnqueued(@MessageIdentifier int messageIdentifier) {
+    public static void recordMessageEnqueuedVisible(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
                 ENQUEUED_HISTOGRAM_NAME, messageIdentifier, MessageIdentifier.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                ENQUEUED_VISIBLE_HISTOGRAM_NAME, messageIdentifier, MessageIdentifier.COUNT);
+    }
+
+    /** Records metrics when a message is enqueued. */
+    public static void recordMessageEnqueuedHidden(@MessageIdentifier int enqueuedMessage,
+            @MessageIdentifier int currentDisplayedMessage) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ENQUEUED_HISTOGRAM_NAME, enqueuedMessage, MessageIdentifier.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                ENQUEUED_HIDDEN_HISTOGRAM_NAME, enqueuedMessage, MessageIdentifier.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                ENQUEUED_HIDING_HISTOGRAM_NAME, currentDisplayedMessage, MessageIdentifier.COUNT);
     }
 
     /** Records metrics when a message is dismissed. */

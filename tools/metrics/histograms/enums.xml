@@ -55605,6 +55605,7 @@ Called by update_use_counter_css.py.-->
 </enum>
 
 <enum name="MessageIdentifier">
+  <int value="0" label="InvalidMessage"/>
   <int value="1" label="SavePassword"/>
   <int value="2" label="UpdatePassword"/>
   <int value="3" label="GeneratedPasswordSaved"/>
