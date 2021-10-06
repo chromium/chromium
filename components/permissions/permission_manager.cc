@@ -613,6 +613,9 @@ PermissionManager::SubscribePermissionStatusChange(
   // The RFH may be null if the request is for a worker.
   GURL embedding_origin;
   if (render_frame_host) {
+    // Permissions API must be deferred during the prerendering.
+    DCHECK_NE(render_frame_host->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kPrerendering);
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
     embedding_origin =
