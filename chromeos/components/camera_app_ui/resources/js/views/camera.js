@@ -1015,6 +1015,18 @@ export class Camera extends View {
             errorToReport =
                 new Error(`${e.message} (constraint = ${e.constraint})`);
             errorToReport.name = 'OverconstrainedError';
+          } else if (e.name === 'NotReadableError') {
+            // TODO(b/187879603): Remove this hacked once we understand more
+            // about such error.
+            // We cannot get the camera facing from stream since it might not be
+            // successfully opened. Therefore, we asked the camera facing via
+            // Mojo API.
+            let facing = Facing.NOT_SET;
+            if (deviceOperator !== null) {
+              facing = await deviceOperator.getCameraFacing(deviceId);
+            }
+            errorToReport = new Error(`${e.message} (facing = ${facing})`);
+            errorToReport.name = 'NotReadableError';
           }
           error.reportError(
               ErrorType.START_CAMERA_FAILURE, ErrorLevel.ERROR,
