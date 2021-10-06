@@ -68,6 +68,20 @@ namespace {
 
 NSString* const kPassphrase = @"hello";
 
+// Closes the sign-in import data dialog and choose either to combine the data
+// or keep the data separate.
+void CloseImportDataDialog(id<GREYMatcher> choiceButtonMatcher) {
+  // Select the import data choice.
+  [[EarlGrey selectElementWithMatcher:choiceButtonMatcher]
+      performAction:grey_tap()];
+
+  // Close the import data dialog.
+  [[EarlGrey selectElementWithMatcher:SettingsImportDataContinueButton()]
+      performAction:grey_tap()];
+}
+
+// Signs in with one account, signs out, and then signs in with a second
+// account.
 void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
   // Set up the fake identities.
   FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
@@ -91,11 +105,7 @@ void ChooseImportOrKeepDataSepareteDialog(id<GREYMatcher> choiceButtonMatcher) {
 
   // Switch Sync account to |fakeIdentity2| should ask whether date should be
   // imported or kept separate. Choose to keep data separate.
-  [[EarlGrey selectElementWithMatcher:choiceButtonMatcher]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:SettingsImportDataContinueButton()]
-      performAction:grey_tap()];
+  CloseImportDataDialog(choiceButtonMatcher);
 
   // Check the signed-in user did change.
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
@@ -948,4 +958,32 @@ void ExpectSyncConsentHistogram(
   // Check Sync On label is visible.
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
+
+// Tests to sign-in with one user, and then turn on syncn with a second account.
+- (void)testSignInWithOneAccountStartSyncWithAnotherAccount {
+  FakeChromeIdentity* fakeIdentity1 = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity2 = [SigninEarlGrey fakeIdentity2];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity2];
+
+  // Sign-in only with fakeIdentity1.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:NO];
+
+  // Open turn on sync dialog.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityButtonControlIdentifier)]
+      performAction:grey_tap()];
+  // Select fakeIdentity2.
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity2.userEmail)]
+      performAction:grey_tap()];
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+  CloseImportDataDialog(SettingsImportDataKeepSeparateButton());
+
+  // Check fakeIdentity2 is signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
+}
+
 @end
