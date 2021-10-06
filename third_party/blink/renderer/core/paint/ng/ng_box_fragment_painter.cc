@@ -2420,8 +2420,8 @@ bool NGBoxFragmentPainter::HitTestItemsChildren(
 
     cursor.MoveToPreviousSibling();
 
-    if (item->Type() != NGFragmentItem::kLine &&
-        hit_test.action == kHitTestForeground) {
+    if (hit_test.action == kHitTestForeground &&
+        item->Type() != NGFragmentItem::kLine && !item->IsBlockInInline()) {
       // Hit test culled inline boxes between |fragment| and its parent
       // fragment.
       const PhysicalOffset child_offset =
