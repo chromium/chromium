@@ -43,7 +43,7 @@ const base::Feature kOptimizationHintsFieldTrials{
 const base::Feature kRemoteOptimizationGuideFetching{
     "OptimizationHintsFetching", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent{
+const base::Feature kRemoteOptimizationGuideFetchingAnonymousDataConsent {
   "OptimizationHintsFetchingAnonymousDataConsent",
 #if defined(OS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -84,11 +84,6 @@ const base::Feature kPushNotifications{"OptimizationGuidePushNotifications",
 // experiment parameters.
 const base::Feature kPageTextExtraction{
     "OptimizationGuidePageContentExtraction", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables the model file to be loaded for each execution, then unloaded on
-// completion.
-const base::Feature kLoadModelFileForEachExecution{
-    "LoadModelFileForEachExecution", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the validation of optimization guide metadata.
 const base::Feature kOptimizationGuideMetadataValidation{
@@ -411,10 +406,6 @@ GetPageContentModelsToExecute() {
   }
 
   return model_targets.vector();
-}
-
-bool LoadModelFileForEachExecution() {
-  return base::FeatureList::IsEnabled(kLoadModelFileForEachExecution);
 }
 
 base::TimeDelta GetOnloadDelayForHintsFetching() {
