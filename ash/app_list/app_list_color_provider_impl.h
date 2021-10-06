@@ -50,6 +50,7 @@ class AppListColorProviderImpl : public AppListColorProvider {
   SkColor GetSearchResultViewHighlightColor() const override;
 
  private:
+  bool ShouldUseDarkLightColors() const;
   // Unowned.
   AshColorProvider* const ash_color_provider_;
   // Whether feature DarkLightMode is enabled. Cached for efficiency.

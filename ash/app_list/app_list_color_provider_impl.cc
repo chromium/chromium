@@ -32,77 +32,95 @@ AppListColorProviderImpl::AppListColorProviderImpl()
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
 SkColor AppListColorProviderImpl::GetExpandArrowIconBaseColor() const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor,
-      /*default_color*/ SK_ColorWHITE);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kButtonIconColor);
+  }
+  return SK_ColorWHITE;  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetExpandArrowIconBackgroundColor() const {
-  return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      /*default_color*/ SkColorSetARGB(0xF, 0xFF, 0xFF, 0xFF));
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetControlsLayerColor(
+        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  }
+  return SkColorSetARGB(0xF, 0xFF, 0xFF, 0xFF);  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetAppListBackgroundColor(
     bool is_tablet_mode,
     SkColor default_color) const {
-  return DeprecatedGetShieldLayerColor(
-      is_tablet_mode ? AshColorProvider::ShieldLayerType::kShield40
-                     : AshColorProvider::ShieldLayerType::kShield80,
-      default_color);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetShieldLayerColor(
+        is_tablet_mode ? AshColorProvider::ShieldLayerType::kShield40
+                       : AshColorProvider::ShieldLayerType::kShield80);
+  }
+  return default_color;
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
-  if (IsTabletModeEnabled()) {
-    return DeprecatedGetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80,
-        /*default_color*/ SK_ColorWHITE);
+  if (ShouldUseDarkLightColors()) {
+    if (IsTabletModeEnabled()) {
+      return ash_color_provider_->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80);
+    } else {
+      return ash_color_provider_->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+    }
   }
-
-  return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      SK_ColorWHITE);
+  return SK_ColorWHITE;  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
-  return DeprecatedGetBaseLayerColor(
-      AshColorProvider::BaseLayerType::kTransparent80,
-      /*default_color*/ SK_ColorWHITE);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetBaseLayerColor(
+        AshColorProvider::BaseLayerType::kTransparent80);
+  }
+  return SK_ColorWHITE;  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxTextColor(
     SkColor default_color) const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary, default_color);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+  }
+  return default_color;
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor(
     SkColor default_color) const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary, default_color);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary);
+  }
+  return default_color;
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipBackgroundColor() const {
-  if (IsTabletModeEnabled()) {
-    return DeprecatedGetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80,
-        /*default_color*/ SkColorSetA(gfx::kGoogleGrey100, 0x14));
+  if (ShouldUseDarkLightColors()) {
+    if (IsTabletModeEnabled()) {
+      return ash_color_provider_->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kTransparent80);
+    } else {
+      return ash_color_provider_->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+    }
   }
-
-  return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      /*default_color*/ SkColorSetA(gfx::kGoogleGrey100, 0x14));
+  return SkColorSetA(gfx::kGoogleGrey100, 0x14);  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetSuggestionChipTextColor() const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary,
-      /*default_color*/ gfx::kGoogleGrey100);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
+  }
+  return gfx::kGoogleGrey100;  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetAppListItemTextColor(
     bool is_in_folder) const {
-  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
+  if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetContentLayerColor(
         ColorProvider::ContentLayerType::kTextColorPrimary);
   }
@@ -111,20 +129,26 @@ SkColor AppListColorProviderImpl::GetAppListItemTextColor(
 
 SkColor AppListColorProviderImpl::GetPageSwitcherButtonColor(
     bool is_root_app_grid_page_switcher) const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor,
-      is_root_app_grid_page_switcher ? SkColorSetARGB(255, 232, 234, 237)
-                                     : SkColorSetA(SK_ColorBLACK, 138));
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kButtonIconColor);
+  }
+  // default_color
+  return is_root_app_grid_page_switcher ? SkColorSetARGB(255, 232, 234, 237)
+                                        : SkColorSetA(SK_ColorBLACK, 138);
 }
 
 SkColor AppListColorProviderImpl::GetSearchBoxIconColor(
     SkColor default_color) const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor, default_color);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kButtonIconColor);
+  }
+  return default_color;
 }
 
 SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
-  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
+  if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetBaseLayerColor(
         ColorProvider::BaseLayerType::kTransparent80);
   }
@@ -132,7 +156,7 @@ SkColor AppListColorProviderImpl::GetFolderBackgroundColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
-  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
+  if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetControlsLayerColor(
         ColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   }
@@ -140,7 +164,7 @@ SkColor AppListColorProviderImpl::GetFolderBubbleColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
-  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
+  if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetContentLayerColor(
         ColorProvider::ContentLayerType::kTextColorPrimary);
   }
@@ -148,7 +172,7 @@ SkColor AppListColorProviderImpl::GetFolderTitleTextColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetFolderHintTextColor() const {
-  if (is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_) {
+  if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetContentLayerColor(
         ColorProvider::ContentLayerType::kTextColorSecondary);
   }
@@ -169,9 +193,11 @@ SkColor AppListColorProviderImpl::GetFolderNameSelectionColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetContentsBackgroundColor() const {
-  return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive,
-      /*default_color*/ SkColorSetRGB(0xF2, 0xF2, 0xF2));
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetControlsLayerColor(
+        ColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
+  }
+  return SkColorSetRGB(0xF2, 0xF2, 0xF2);  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetGridBackgroundCardActiveColor() const {
@@ -188,15 +214,19 @@ SkColor AppListColorProviderImpl::GetGridBackgroundCardInactiveColor() const {
 }
 
 SkColor AppListColorProviderImpl::GetSeparatorColor() const {
-  return DeprecatedGetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor,
-      /*default_color*/ SkColorSetA(gfx::kGoogleGrey900, 0x24));
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        ColorProvider::ContentLayerType::kSeparatorColor);
+  }
+  return SkColorSetA(gfx::kGoogleGrey900, 0x24);  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetFocusRingColor() const {
-  return DeprecatedGetControlsLayerColor(
-      AshColorProvider::ControlsLayerType::kFocusRingColor,
-      gfx::kGoogleBlue600);
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetControlsLayerColor(
+        ColorProvider::ControlsLayerType::kFocusRingColor);
+  }
+  return gfx::kGoogleBlue600;  // default_color
 }
 
 SkColor AppListColorProviderImpl::GetRippleAttributesBaseColor(
@@ -216,7 +246,7 @@ float AppListColorProviderImpl::GetRippleAttributesHighlightOpacity(
 
 SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
   // Use highlight colors when Dark Light mode is enabled.
-  if (is_dark_light_mode_enabled_) {
+  if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kHighlightColorHover);
   }
@@ -224,6 +254,10 @@ SkColor AppListColorProviderImpl::GetSearchResultViewHighlightColor() const {
   return SkColorSetA(
       GetRippleAttributesBaseColor(GetSearchBoxBackgroundColor()),
       GetRippleAttributesHighlightOpacity(GetSearchBoxBackgroundColor()) * 255);
+}
+
+bool AppListColorProviderImpl::ShouldUseDarkLightColors() const {
+  return is_dark_light_mode_enabled_ || is_productivity_launcher_enabled_;
 }
 
 }  // namespace ash
