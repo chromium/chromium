@@ -138,7 +138,7 @@ class MockPasswordManagerClient
               (),
               (override));
 
-  password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface()
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override {
     return password_store_;
   }

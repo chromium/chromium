@@ -176,26 +176,15 @@ PrefService* IOSChromePasswordManagerClient::GetPrefs() const {
   return (bridge_.browserState)->GetPrefs();
 }
 
-PasswordStore* IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
-  return IOSChromePasswordStoreFactory::GetForBrowserState(
-             bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
-      .get();
-}
-
-PasswordStore* IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
-  // AccountPasswordStore is currenly not supported on iOS.
-  return nullptr;
-}
-
 PasswordStoreInterface*
-IOSChromePasswordManagerClient::GetProfilePasswordStoreInterface() const {
-  return IOSChromePasswordStoreFactory::GetForBrowserState(
+IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
+  return IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
              bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
 PasswordStoreInterface*
-IOSChromePasswordManagerClient::GetAccountPasswordStoreInterface() const {
+IOSChromePasswordManagerClient::GetAccountPasswordStore() const {
   // AccountPasswordStore is currenly not supported on iOS.
   return nullptr;
 }

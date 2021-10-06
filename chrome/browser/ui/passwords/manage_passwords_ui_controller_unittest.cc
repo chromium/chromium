@@ -126,8 +126,7 @@ class TestPasswordManagerClient
                base::OnceCallback<void(ReauthSucceeded)>),
               (override));
 
-  MockPasswordStoreInterface* GetProfilePasswordStoreInterface()
-      const override {
+  MockPasswordStoreInterface* GetProfilePasswordStore() const override {
     return mock_profile_store_.get();
   }
 
@@ -1466,7 +1465,7 @@ TEST_F(ManagePasswordsUIControllerTest, SaveUnsyncedCredentialsInProfileStore) {
 
   // Set expectations on the store.
   MockPasswordStoreInterface* profile_store =
-      client().GetProfilePasswordStoreInterface();
+      client().GetProfilePasswordStore();
   EXPECT_CALL(*profile_store,
               AddLogin(MatchesLoginAndURL(credentials[0].username_value,
                                           credentials[0].password_value,
@@ -1495,7 +1494,7 @@ TEST_F(ManagePasswordsUIControllerTest, DiscardUnsyncedCredentials) {
 
   // No save should happen on the profile store.
   MockPasswordStoreInterface* profile_store =
-      client().GetProfilePasswordStoreInterface();
+      client().GetProfilePasswordStore();
   EXPECT_CALL(*profile_store, AddLogin).Times(0);
 
   // Discard.
@@ -1555,8 +1554,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
       .WillOnce(Return(saved));
   password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
 
-  EXPECT_CALL(*client().GetProfilePasswordStoreInterface(),
-              GetAutofillableLogins)
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
       .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
         post_save_helper = consumer;
       }));
@@ -1599,8 +1597,7 @@ TEST_F(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
 
   password_manager::PasswordStoreConsumer* post_save_helper = nullptr;
 
-  EXPECT_CALL(*client().GetProfilePasswordStoreInterface(),
-              GetAutofillableLogins)
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
       .WillOnce(testing::WithArg<0>([&post_save_helper](auto* consumer) {
         post_save_helper = consumer;
       }));

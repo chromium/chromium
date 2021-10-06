@@ -191,7 +191,7 @@ class WebsiteLoginManagerImpl::PendingDeletePasswordRequest
                        std::move(notify_finished_callback)),
         login_(login),
         callback_(std::move(callback)),
-        store_(client->GetProfilePasswordStoreInterface()) {}
+        store_(client->GetProfilePasswordStore()) {}
 
  protected:
   // From PendingRequest:
@@ -231,7 +231,7 @@ class WebsiteLoginManagerImpl::PendingEditPasswordRequest
         new_password_(new_password),
         callback_(std::move(callback)),
         form_saver_(std::make_unique<password_manager::FormSaverImpl>(
-            client->GetProfilePasswordStoreInterface())) {}
+            client->GetProfilePasswordStore())) {}
 
  protected:
   // From PendingRequest:

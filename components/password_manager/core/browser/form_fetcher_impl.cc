@@ -21,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/psl_matching_helper.h"
+#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
@@ -97,7 +98,7 @@ void FormFetcherImpl::Fetch() {
   }
 
   PasswordStoreInterface* profile_password_store =
-      client_->GetProfilePasswordStoreInterface();
+      client_->GetProfilePasswordStore();
   if (!profile_password_store) {
     if (logger)
       logger->LogMessage(Logger::STRING_NO_STORE);
@@ -106,7 +107,7 @@ void FormFetcherImpl::Fetch() {
   }
 
   PasswordStoreInterface* account_password_store =
-      client_->GetAccountPasswordStoreInterface();
+      client_->GetAccountPasswordStore();
 
   // Issue a fetch from the profile store and, if it exists, also from the
   // account store.

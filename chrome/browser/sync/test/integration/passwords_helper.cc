@@ -123,19 +123,19 @@ void RemoveLogins(PasswordStoreInterface* store) {
                                     /*completion=*/base::NullCallback());
 }
 PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {
-  return PasswordStoreFactory::GetForProfile(test()->GetProfile(index),
-                                             ServiceAccessType::IMPLICIT_ACCESS)
+  return PasswordStoreFactory::GetInterfaceForProfile(
+             test()->GetProfile(index), ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
 
 PasswordStoreInterface* GetVerifierProfilePasswordStoreInterface() {
-  return PasswordStoreFactory::GetForProfile(test()->verifier(),
-                                             ServiceAccessType::IMPLICIT_ACCESS)
+  return PasswordStoreFactory::GetInterfaceForProfile(
+             test()->verifier(), ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }
 
 PasswordStoreInterface* GetAccountPasswordStoreInterface(int index) {
-  return AccountPasswordStoreFactory::GetForProfile(
+  return AccountPasswordStoreFactory::GetInterfaceForProfile(
              test()->GetProfile(index), ServiceAccessType::IMPLICIT_ACCESS)
       .get();
 }

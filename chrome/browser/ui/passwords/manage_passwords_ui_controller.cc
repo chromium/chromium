@@ -534,8 +534,8 @@ void ManagePasswordsUIController::SavePassword(const std::u16string& username,
       std::make_unique<password_manager::PostSaveCompromisedHelper>(
           passwords_data_.form_manager()->GetInsecureCredentials(), username);
   post_save_compromised_helper_->AnalyzeLeakedCredentials(
-      passwords_data_.client()->GetProfilePasswordStoreInterface(),
-      passwords_data_.client()->GetAccountPasswordStoreInterface(),
+      passwords_data_.client()->GetProfilePasswordStore(),
+      passwords_data_.client()->GetAccountPasswordStore(),
       Profile::FromBrowserContext(web_contents()->GetBrowserContext())
           ->GetPrefs(),
       base::BindOnce(
@@ -554,7 +554,7 @@ void ManagePasswordsUIController::SaveUnsyncedCredentialsInProfileStore(
     const std::vector<password_manager::PasswordForm>& selected_credentials) {
   auto profile_store_form_saver =
       std::make_unique<password_manager::FormSaverImpl>(
-          passwords_data_.client()->GetProfilePasswordStoreInterface());
+          passwords_data_.client()->GetProfilePasswordStore());
   for (const password_manager::PasswordForm& form : selected_credentials) {
     // Only newly-saved or newly-updated credentials can be unsynced. Since
     // conflicts are solved in that process, any entry in the profile store

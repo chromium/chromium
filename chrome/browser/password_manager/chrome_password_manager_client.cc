@@ -644,20 +644,20 @@ PrefService* ChromePasswordManagerClient::GetPrefs() const {
   return profile_->GetPrefs();
 }
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordManagerClient::GetProfilePasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
   // itself when it shouldn't access the PasswordStore.
-  return PasswordStoreFactory::GetForProfile(profile_,
-                                             ServiceAccessType::EXPLICIT_ACCESS)
+  return PasswordStoreFactory::GetInterfaceForProfile(
+             profile_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
-password_manager::PasswordStore*
+password_manager::PasswordStoreInterface*
 ChromePasswordManagerClient::GetAccountPasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
   // itself when it shouldn't access the PasswordStore.
-  return AccountPasswordStoreFactory::GetForProfile(
+  return AccountPasswordStoreFactory::GetInterfaceForProfile(
              profile_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }

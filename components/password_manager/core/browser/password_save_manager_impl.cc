@@ -203,11 +203,10 @@ PasswordSaveManagerImpl::PasswordSaveManagerImpl(
 PasswordSaveManagerImpl::PasswordSaveManagerImpl(
     const PasswordManagerClient* client)
     : PasswordSaveManagerImpl(
-          std::make_unique<FormSaverImpl>(
-              client->GetProfilePasswordStoreInterface()),
-          client->GetAccountPasswordStoreInterface()
+          std::make_unique<FormSaverImpl>(client->GetProfilePasswordStore()),
+          client->GetAccountPasswordStore()
               ? std::make_unique<FormSaverImpl>(
-                    client->GetAccountPasswordStoreInterface())
+                    client->GetAccountPasswordStore())
               : nullptr) {}
 
 PasswordSaveManagerImpl::~PasswordSaveManagerImpl() = default;

@@ -62,7 +62,8 @@ PrefService* TestPasswordManagerClient::GetPrefs() const {
   return prefs_.get();
 }
 
-PasswordStore* TestPasswordManagerClient::GetProfilePasswordStore() const {
+PasswordStoreInterface* TestPasswordManagerClient::GetProfilePasswordStore()
+    const {
   return store_.get();
 }
 

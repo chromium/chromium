@@ -26,7 +26,6 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
-#include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -81,7 +80,6 @@ class PasswordManagerMetricsRecorder;
 class HttpAuthManager;
 class PasswordRequirementsService;
 class PasswordReuseManager;
-class PasswordStore;
 class PasswordStoreInterface;
 class WebAuthnCredentialsDelegate;
 struct PasswordForm;
@@ -270,15 +268,10 @@ class PasswordManagerClient {
   virtual PrefService* GetPrefs() const = 0;
 
   // Returns the profile PasswordStore associated with this instance.
-  virtual PasswordStore* GetProfilePasswordStore() const = 0;
+  virtual PasswordStoreInterface* GetProfilePasswordStore() const = 0;
 
   // Returns the account PasswordStore associated with this instance.
-  virtual PasswordStore* GetAccountPasswordStore() const = 0;
-
-  // TODO(crbug.com/1218413): remove the follow two method once the two above
-  // methods are returning PasswordStoreInterface.
-  virtual PasswordStoreInterface* GetProfilePasswordStoreInterface() const;
-  virtual PasswordStoreInterface* GetAccountPasswordStoreInterface() const;
+  virtual PasswordStoreInterface* GetAccountPasswordStore() const = 0;
 
   // Returns the PasswordReuseManager associated with this instance.
   virtual PasswordReuseManager* GetPasswordReuseManager() const = 0;

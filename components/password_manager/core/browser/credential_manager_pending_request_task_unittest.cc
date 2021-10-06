@@ -21,11 +21,10 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
   TestPasswordManagerClient(PasswordStoreInterface* profile_store,
                             PasswordStoreInterface* account_store)
       : profile_store_(profile_store), account_store_(account_store) {}
-
-  PasswordStoreInterface* GetProfilePasswordStoreInterface() const override {
+  PasswordStoreInterface* GetProfilePasswordStore() const override {
     return profile_store_;
   }
-  PasswordStoreInterface* GetAccountPasswordStoreInterface() const override {
+  PasswordStoreInterface* GetAccountPasswordStore() const override {
     return account_store_;
   }
 

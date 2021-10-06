@@ -163,11 +163,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const PasswordForm&, const PasswordFormManagerForUI*),
               (override));
   MOCK_METHOD(PasswordStoreInterface*,
-              GetProfilePasswordStoreInterface,
+              GetProfilePasswordStore,
               (),
               (const, override));
   MOCK_METHOD(PasswordStoreInterface*,
-              GetAccountPasswordStoreInterface,
+              GetAccountPasswordStore,
               (),
               (const, override));
   MOCK_METHOD(PasswordReuseManager*,
@@ -385,7 +385,7 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
   void SetUp() override {
     store_ = new MockPasswordStoreInterface;
 
-    ON_CALL(client_, GetProfilePasswordStoreInterface())
+    ON_CALL(client_, GetProfilePasswordStore())
         .WillByDefault(Return(store_.get()));
 
     ON_CALL(*store_, GetSmartBubbleStatsStore)
@@ -395,7 +395,7 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
             features::kEnablePasswordsAccountStorage)) {
       account_store_ = new MockPasswordStoreInterface;
 
-      ON_CALL(client_, GetAccountPasswordStoreInterface())
+      ON_CALL(client_, GetAccountPasswordStore())
           .WillByDefault(Return(account_store_.get()));
 
       // Most tests don't really need the account store, but it'll still get

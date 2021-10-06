@@ -226,11 +226,11 @@ PasswordManagerClient* CredentialManagerImpl::client() const {
 }
 
 PasswordStoreInterface* CredentialManagerImpl::GetProfilePasswordStore() {
-  return client_ ? client_->GetProfilePasswordStoreInterface() : nullptr;
+  return client_ ? client_->GetProfilePasswordStore() : nullptr;
 }
 
 PasswordStoreInterface* CredentialManagerImpl::GetAccountPasswordStore() {
-  return client_ ? client_->GetAccountPasswordStoreInterface() : nullptr;
+  return client_ ? client_->GetAccountPasswordStore() : nullptr;
 }
 
 void CredentialManagerImpl::DoneRequiringUserMediation() {

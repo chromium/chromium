@@ -116,10 +116,10 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
     NotifyUserCouldBeAutoSignedInPtr(form.get());
   }
 
-  PasswordStoreInterface* GetProfilePasswordStoreInterface() const override {
+  PasswordStoreInterface* GetProfilePasswordStore() const override {
     return profile_store_;
   }
-  PasswordStoreInterface* GetAccountPasswordStoreInterface() const override {
+  PasswordStoreInterface* GetAccountPasswordStore() const override {
     return account_store_;
   }
 

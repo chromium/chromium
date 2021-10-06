@@ -55,7 +55,7 @@ GetLoginsWithAffiliationsRequestHandler::AffiliationsClosure() {
       this);
 }
 
-base::OnceCallback<void(LoginsResult)>
+base::OnceCallback<void(GetLoginsWithAffiliationsRequestHandler::LoginsResult)>
 GetLoginsWithAffiliationsRequestHandler::AffiliatedLoginsClosure() {
   return base::BindOnce(
       &GetLoginsWithAffiliationsRequestHandler::HandleAffiliatedLoginsReceived,

@@ -87,13 +87,9 @@ class WebViewPasswordManagerClient
   const password_manager::PasswordFeatureManager* GetPasswordFeatureManager()
       const override;
   PrefService* GetPrefs() const override;
-  // TODO(crbug.com/1218413): Remove the following two methods once migration
-  // from PasswordStore to PasswordStoreInterface is complete.
-  password_manager::PasswordStore* GetProfilePasswordStore() const override;
-  password_manager::PasswordStore* GetAccountPasswordStore() const override;
-  password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface()
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override;
-  password_manager::PasswordStoreInterface* GetAccountPasswordStoreInterface()
+  password_manager::PasswordStoreInterface* GetAccountPasswordStore()
       const override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;

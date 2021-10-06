@@ -219,7 +219,7 @@ class PasswordAccessoryControllerImpl
 
   // Helper for determining whether a bottom sheet showing passwords is useful.
   AllPasswordsBottomSheetHelper all_passwords_helper_{
-      password_client_->GetProfilePasswordStoreInterface()};
+      password_client_->GetProfilePasswordStore()};
 
   // Security level used for testing only.
   security_state::SecurityLevel security_level_for_testing_ =

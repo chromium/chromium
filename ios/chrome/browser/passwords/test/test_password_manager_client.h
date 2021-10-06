@@ -13,13 +13,12 @@
 namespace password_manager {
 class PasswordFormManagerForUI;
 class TestPasswordStore;
-class PasswordStore;
 }  // namespace password_manager
 class TestingPrefServiceSimple;
 
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManager;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 using password_manager::TestPasswordStore;
 
 // Test PasswordManagerClient.
@@ -53,7 +52,7 @@ class TestPasswordManagerClient
  private:
   // PasswordManagerClient:
   PrefService* GetPrefs() const override;
-  PasswordStore* GetProfilePasswordStore() const override;
+  PasswordStoreInterface* GetProfilePasswordStore() const override;
   const PasswordManager* GetPasswordManager() const override;
   url::Origin GetLastCommittedOrigin() const override;
   // Stores |manager| into |manager_|. Save() should be

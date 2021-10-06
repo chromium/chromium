@@ -137,10 +137,10 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
                    : StubPasswordManagerClient::GetStoreResultFilter();
   }
 
-  PasswordStoreInterface* GetProfilePasswordStoreInterface() const override {
+  PasswordStoreInterface* GetProfilePasswordStore() const override {
     return profile_store_;
   }
-  PasswordStoreInterface* GetAccountPasswordStoreInterface() const override {
+  PasswordStoreInterface* GetAccountPasswordStore() const override {
     return account_store_;
   }
 

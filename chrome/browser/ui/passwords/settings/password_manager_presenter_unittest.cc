@@ -105,11 +105,11 @@ class MockPasswordManagerClient
   ~MockPasswordManagerClient() override = default;
 
   MOCK_METHOD(password_manager::PasswordStoreInterface*,
-              GetProfilePasswordStoreInterface,
+              GetProfilePasswordStore,
               (),
               (const override));
   MOCK_METHOD(password_manager::PasswordStoreInterface*,
-              GetAccountPasswordStoreInterface,
+              GetAccountPasswordStore,
               (),
               (const override));
 };
@@ -466,9 +466,9 @@ class PasswordManagerPresenterTestWithAccountStore
       : PasswordManagerPresenterTest(/*with_account_store=*/true) {
     ON_CALL(*(client_.GetPasswordFeatureManager()), IsOptedInForAccountStorage)
         .WillByDefault(Return(true));
-    ON_CALL(client_, GetProfilePasswordStoreInterface)
+    ON_CALL(client_, GetProfilePasswordStore)
         .WillByDefault(Return(profile_store()));
-    ON_CALL(client_, GetAccountPasswordStoreInterface)
+    ON_CALL(client_, GetAccountPasswordStore)
         .WillByDefault(Return(account_store()));
   }
   password_manager::PasswordManagerClient* client() { return &client_; }

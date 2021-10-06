@@ -182,21 +182,13 @@ PrefService* WebViewPasswordManagerClient::GetPrefs() const {
   return pref_service_;
 }
 
-PasswordStore* WebViewPasswordManagerClient::GetProfilePasswordStore() const {
-  return static_cast<password_manager::PasswordStore*>(profile_store_);
-}
-
-PasswordStore* WebViewPasswordManagerClient::GetAccountPasswordStore() const {
-  return static_cast<password_manager::PasswordStore*>(account_store_);
-}
-
-PasswordStoreInterface*
-WebViewPasswordManagerClient::GetProfilePasswordStoreInterface() const {
+PasswordStoreInterface* WebViewPasswordManagerClient::GetProfilePasswordStore()
+    const {
   return profile_store_;
 }
 
-PasswordStoreInterface*
-WebViewPasswordManagerClient::GetAccountPasswordStoreInterface() const {
+PasswordStoreInterface* WebViewPasswordManagerClient::GetAccountPasswordStore()
+    const {
   return account_store_;
 }
 

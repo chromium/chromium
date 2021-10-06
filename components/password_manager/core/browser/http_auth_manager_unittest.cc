@@ -57,11 +57,11 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const PasswordForm&, const PasswordFormManagerForUI*),
               (override));
   MOCK_METHOD(PasswordStoreInterface*,
-              GetProfilePasswordStoreInterface,
+              GetProfilePasswordStore,
               (),
               (const, override));
   MOCK_METHOD(PasswordStoreInterface*,
-              GetAccountPasswordStoreInterface,
+              GetAccountPasswordStore,
               (),
               (const, override));
   MOCK_METHOD(void, PromptUserToSaveOrUpdatePasswordPtr, (), ());
@@ -116,9 +116,9 @@ class HttpAuthManagerTest : public testing::Test {
               WithArg<1>(InvokeEmptyConsumerWithForms(account_store_.get())));
     }
 
-    ON_CALL(client_, GetProfilePasswordStoreInterface())
+    ON_CALL(client_, GetProfilePasswordStore())
         .WillByDefault(Return(store_.get()));
-    ON_CALL(client_, GetAccountPasswordStoreInterface())
+    ON_CALL(client_, GetAccountPasswordStore())
         .WillByDefault(Return(account_store_.get()));
     EXPECT_CALL(*store_, GetSmartBubbleStatsStore)
         .WillRepeatedly(Return(&smart_bubble_stats_store_));

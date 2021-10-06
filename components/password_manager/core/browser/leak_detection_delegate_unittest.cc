@@ -63,7 +63,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
                const std::u16string&),
               (override));
   MOCK_METHOD(PasswordStoreInterface*,
-              GetProfilePasswordStoreInterface,
+              GetProfilePasswordStore,
               (),
               (const override));
 };
@@ -298,7 +298,7 @@ TEST_F(LeakDetectionDelegateTest,
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
-  EXPECT_CALL(client(), GetProfilePasswordStoreInterface())
+  EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
   ExpectPasswords({});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
@@ -322,7 +322,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
-  EXPECT_CALL(client(), GetProfilePasswordStoreInterface())
+  EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
   ExpectPasswords({});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
@@ -346,7 +346,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   PasswordForm form = CreateTestForm();
 
-  EXPECT_CALL(client(), GetProfilePasswordStoreInterface())
+  EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
   ExpectPasswords({form});
   EXPECT_CALL(factory(), TryCreateLeakCheck)
@@ -369,7 +369,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
 
 // crbug.com/1083937 regression
 TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
-  EXPECT_CALL(client(), GetProfilePasswordStoreInterface())
+  EXPECT_CALL(client(), GetProfilePasswordStore())
       .WillRepeatedly(testing::Return(store()));
   ExpectPasswords({});
   auto check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();

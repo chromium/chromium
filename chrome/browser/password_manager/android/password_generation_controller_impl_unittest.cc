@@ -53,7 +53,7 @@ class TestPasswordManagerClient
   TestPasswordManagerClient();
   ~TestPasswordManagerClient() override;
 
-  password_manager::PasswordStoreInterface* GetProfilePasswordStoreInterface()
+  password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override;
 
  private:
@@ -67,7 +67,7 @@ TestPasswordManagerClient::TestPasswordManagerClient() {
 TestPasswordManagerClient::~TestPasswordManagerClient() = default;
 
 password_manager::PasswordStoreInterface*
-TestPasswordManagerClient::GetProfilePasswordStoreInterface() const {
+TestPasswordManagerClient::GetProfilePasswordStore() const {
   return mock_password_store_.get();
 }
 

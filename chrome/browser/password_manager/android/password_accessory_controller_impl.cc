@@ -438,7 +438,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
       password_manager::PasswordForm::Scheme::kHtml,
       password_manager::GetSignonRealm(origin_as_gurl), origin_as_gurl);
   password_manager::PasswordStoreInterface* store =
-      password_client_->GetProfilePasswordStoreInterface();
+      password_client_->GetProfilePasswordStore();
   if (saving_enabled) {
     store->Unblocklist(form_digest, base::NullCallback());
   } else {
@@ -508,7 +508,7 @@ void PasswordAccessoryControllerImpl::ShowAllPasswords() {
   // TODO(crbug.com/1104132): Update the controller with the last focused field.
   all_passords_bottom_sheet_controller_ =
       std::make_unique<AllPasswordsBottomSheetController>(
-          web_contents_, password_client_->GetProfilePasswordStoreInterface(),
+          web_contents_, password_client_->GetProfilePasswordStore(),
           base::BindOnce(
               &PasswordAccessoryControllerImpl::AllPasswordsSheetDismissed,
               base::Unretained(this)),
