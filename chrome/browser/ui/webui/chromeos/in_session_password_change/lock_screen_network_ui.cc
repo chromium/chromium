@@ -69,23 +69,22 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  private:
   void ShowNetworkDetails(const base::ListValue* arg_list) {
     CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid;
-    CHECK(arg_list->GetString(0, &guid));
+    std::string guid = arg_list->GetList()[0].GetString();
 
     InternetDetailDialog::ShowDialog(guid);
   }
 
   void ShowNetworkConfig(const base::ListValue* arg_list) {
     CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid;
-    CHECK(arg_list->GetString(0, &guid));
+    std::string guid = arg_list->GetList()[0].GetString();
 
     InternetConfigDialog::ShowDialogForNetworkId(guid);
   }
 
   void AddNetwork(const base::ListValue* args) {
-    std::string onc_type;
-    args->GetString(0, &onc_type);
+    CHECK_EQ(1u, args->GetList().size());
+    std::string onc_type = args->GetList()[0].GetString();
+
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
   }
 

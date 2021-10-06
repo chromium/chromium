@@ -42,9 +42,8 @@ void OncImportMessageHandler::Respond(const std::string& callback_id,
 
 void OncImportMessageHandler::OnImportONC(const base::ListValue* list) {
   CHECK_EQ(2u, list->GetList().size());
-  std::string callback_id, onc_blob;
-  CHECK(list->GetString(0, &callback_id));
-  CHECK(list->GetString(1, &onc_blob));
+  std::string callback_id = list->GetList()[0].GetString();
+  std::string onc_blob = list->GetList()[1].GetString();
   AllowJavascript();
   GetNSSCertDatabaseForProfile(
       Profile::FromWebUI(web_ui()),

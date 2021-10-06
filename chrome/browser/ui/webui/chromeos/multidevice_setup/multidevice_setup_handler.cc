@@ -39,9 +39,8 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
     const base::ListValue* args) {
   AllowJavascript();
 
-  std::string callback_id;
-  bool result = args->GetString(0, &callback_id);
-  DCHECK(result);
+  DCHECK(!args->GetList().empty());
+  std::string callback_id = args->GetList()[0].GetString();
 
   const user_manager::User* user =
       chromeos::ProfileHelper::Get()->GetUserByProfile(

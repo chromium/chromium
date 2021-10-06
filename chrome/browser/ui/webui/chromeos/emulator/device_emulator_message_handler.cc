@@ -204,8 +204,8 @@ void DeviceEmulatorMessageHandler::RequestPowerInfo(
 
 void DeviceEmulatorMessageHandler::HandleRemoveBluetoothDevice(
     const base::ListValue* args) {
-  std::string path;
-  CHECK(args->GetString(0, &path));
+  CHECK(!args->GetList().empty());
+  std::string path = args->GetList()[0].GetString();
   fake_bluetooth_device_client_->RemoveDevice(
       dbus::ObjectPath(bluez::FakeBluetoothAdapterClient::kAdapterPath),
       dbus::ObjectPath(path));
@@ -323,9 +323,9 @@ void DeviceEmulatorMessageHandler::HandleInsertAudioNode(
 
 void DeviceEmulatorMessageHandler::HandleRemoveAudioNode(
     const base::ListValue* args) {
-  std::string tmp_id;
+  CHECK(!args->GetList().empty());
+  std::string tmp_id = args->GetList()[0].GetString();
   uint64_t id;
-  CHECK(args->GetString(0, &tmp_id));
   CHECK(base::StringToUint64(tmp_id, &id));
 
   chromeos::FakeCrasAudioClient::Get()->RemoveAudioNodeFromList(id);

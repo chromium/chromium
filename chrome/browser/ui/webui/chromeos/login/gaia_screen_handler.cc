@@ -926,8 +926,9 @@ void GaiaScreenHandler::HandleShowAddUser(const base::ListValue* args) {
 
   std::string email;
   // `args` can be null if it's OOBE.
-  if (args)
-    args->GetString(0, &email);
+  if (args && !args->GetList().empty() && args->GetList()[0].is_string()) {
+    email = args->GetList()[0].GetString();
+  }
   populated_account_id_ = AccountId::FromUserEmail(email);
   OnShowAddUser();
 }

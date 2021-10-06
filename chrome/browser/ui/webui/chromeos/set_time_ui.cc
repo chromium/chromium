@@ -112,11 +112,11 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
   // selects a new time zone. Expects the time zone ID as a string, as it
   // appears in the time zone option values.
   void OnSetTimezone(const base::ListValue* args) {
-    std::string timezone_id;
-    if (!args->GetString(0, &timezone_id)) {
+    if (args->GetList().empty() || !args->GetList()[0].is_string()) {
       NOTREACHED();
       return;
     }
+    std::string timezone_id = args->GetList()[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
     DCHECK(profile);

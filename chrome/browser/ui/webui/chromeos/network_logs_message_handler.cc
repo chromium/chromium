@@ -86,8 +86,7 @@ void NetworkLogsMessageHandler::Respond(const std::string& callback_id,
 
 void NetworkLogsMessageHandler::OnStoreLogs(const base::ListValue* list) {
   CHECK_EQ(2u, list->GetList().size());
-  std::string callback_id;
-  CHECK(list->GetString(0, &callback_id));
+  std::string callback_id = list->GetList()[0].GetString();
   const base::Value* options;
   CHECK(list->Get(1, &options));
   AllowJavascript();
@@ -183,9 +182,8 @@ void NetworkLogsMessageHandler::OnWriteSystemLogsCompleted(
 void NetworkLogsMessageHandler::OnSetShillDebugging(
     const base::ListValue* list) {
   CHECK_EQ(2u, list->GetList().size());
-  std::string callback_id, subsystem;
-  CHECK(list->GetString(0, &callback_id));
-  CHECK(list->GetString(1, &subsystem));
+  std::string callback_id = list->GetList()[0].GetString();
+  std::string subsystem = list->GetList()[1].GetString();
   AllowJavascript();
   chromeos::DBusThreadManager::Get()->GetDebugDaemonClient()->SetDebugMode(
       subsystem,

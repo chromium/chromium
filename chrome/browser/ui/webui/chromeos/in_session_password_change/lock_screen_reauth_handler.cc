@@ -304,8 +304,8 @@ void LockScreenReauthHandler::CheckCredentials(
 
 void LockScreenReauthHandler::HandleUpdateUserPassword(
     const base::ListValue* value) {
-  std::string old_password;
-  value->GetString(0, &old_password);
+  DCHECK(!value->GetList().empty());
+  std::string old_password = value->GetList()[0].GetString();
   password_sync_manager_->UpdateUserPassword(old_password);
 }
 

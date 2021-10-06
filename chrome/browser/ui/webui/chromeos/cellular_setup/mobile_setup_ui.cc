@@ -470,9 +470,9 @@ void MobileSetupHandler::HandleSetTransactionStatus(
   if (args->GetList().size() != kSetTransactionStatusParamCount)
     return;
   // Get change callback function name.
-  std::string status;
-  if (!args->GetString(0, &status))
+  if (!args->GetList()[0].is_string())
     return;
+  std::string status = args->GetList()[0].GetString();
 
   ash::MobileActivator::GetInstance()->OnSetTransactionStatus(
       base::LowerCaseEqualsASCII(status, kJsApiResultOK));
@@ -487,9 +487,9 @@ void MobileSetupHandler::HandlePaymentPortalLoad(const base::ListValue* args) {
   if (args->GetList().size() != kPaymentPortalLoadParamCount)
     return;
   // Get change callback function name.
-  std::string result;
-  if (!args->GetString(0, &result))
+  if (!args->GetList()[0].is_string())
     return;
+  std::string result = args->GetList()[0].GetString();
 
   ash::MobileActivator::GetInstance()->OnPortalLoaded(
       base::LowerCaseEqualsASCII(result, kJsApiResultOK));
