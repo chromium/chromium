@@ -15,11 +15,27 @@
     background-color: var(--highlight-color);
   }
 
+  :host-context([enable-branding-update]):host {
+    --iron-icon-fill-color: var(--google-grey-refresh-700);
+  }
+
+  :host-context([enable-branding-update]):host([is-selected-item_]) {
+    --iron-icon-fill-color: var(--google-blue-600);
+  }
+
   @media (prefers-color-scheme: dark) {
     :host([is-selected-item_]),
     :host([is-selected-item_]) .folder-icon {
       --cr-icon-button-focus-outline-color: white;
       color: var(--google-grey-refresh-700);
+    }
+
+    :host-context([enable-branding-update]):host {
+      --iron-icon-fill-color: var(--google-grey-refresh-500);
+    }
+
+    :host-context([enable-branding-update]):host([is-selected-item_]) {
+      --iron-icon-fill-color: black;
     }
   }
 
