@@ -18,7 +18,6 @@ TEST(NetworkIsolationKeyMojomTraitsTest, SerializeAndDeserialize) {
   std::vector<net::NetworkIsolationKey> keys = {
       net::NetworkIsolationKey(),
       net::NetworkIsolationKey::CreateTransient(),
-      net::NetworkIsolationKey::CreateOpaqueAndNonTransient(),
       net::NetworkIsolationKey(url::Origin::Create(GURL("http://a.test/")),
                                url::Origin::Create(GURL("http://b.test/"))),
       net::NetworkIsolationKey(url::Origin::Create(GURL("http://foo.a.test/")),

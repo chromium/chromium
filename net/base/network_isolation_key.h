@@ -17,17 +17,6 @@ namespace base {
 class Value;
 }
 
-namespace network {
-namespace mojom {
-class NetworkIsolationKeyDataView;
-}  // namespace mojom
-}  // namespace network
-
-namespace mojo {
-template <typename DataViewType, typename T>
-struct StructTraits;
-}  // namespace mojo
-
 namespace url {
 class Origin;
 }
@@ -73,11 +62,6 @@ class NET_EXPORT NetworkIsolationKey {
   // persisted to disk.
   static NetworkIsolationKey CreateTransient();
 
-  // Creates a non-empty NetworkIsolationKey with an opaque origin that is not
-  // considered transient. The returned NetworkIsolationKey will be cross-origin
-  // with all other keys and associated data is able to be persisted to disk.
-  static NetworkIsolationKey CreateOpaqueAndNonTransient();
-
   // Creates a new key using |top_frame_site_| and |new_frame_site|.
   NetworkIsolationKey CreateWithNewFrameSite(
       const SchemefulSite& new_frame_site) const;
@@ -95,10 +79,8 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_,
-                    nonce_) ==
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.opaque_and_non_transient_, other.nonce_);
+    return std::tie(top_frame_site_, frame_site_, nonce_) ==
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
   }
 
   // Compare keys for inequality, true if any enabled field varies.
@@ -108,10 +90,8 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_,
-                    nonce_) < std::tie(other.top_frame_site_, other.frame_site_,
-                                       other.opaque_and_non_transient_,
-                                       other.nonce_);
+    return std::tie(top_frame_site_, frame_site_, nonce_) <
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
   }
 
   // Returns the string representation of the key, which is the string
@@ -162,16 +142,6 @@ class NET_EXPORT NetworkIsolationKey {
       WARN_UNUSED_RESULT;
 
  private:
-  // These classes need to be able to set |opaque_and_non_transient_|
-  friend class IsolationInfo;
-  friend struct mojo::StructTraits<network::mojom::NetworkIsolationKeyDataView,
-                                   net::NetworkIsolationKey>;
-
-  NetworkIsolationKey(SchemefulSite&& top_frame_site,
-                      SchemefulSite&& frame_site,
-                      bool opaque_and_non_transient,
-                      const base::UnguessableToken* nonce);
-
   // Whether this key has opaque origins or a nonce.
   bool IsOpaque() const;
 
@@ -179,10 +149,6 @@ class NET_EXPORT NetworkIsolationKey {
   // Need this to call it on a const |site|.
   static absl::optional<std::string> SerializeSiteWithNonce(
       const SchemefulSite& site);
-
-  // Whether opaque origins cause the key to be transient. Always false, unless
-  // created with |CreateOpaqueAndNonTransient|.
-  bool opaque_and_non_transient_ = false;
 
   // The origin/etld+1 of the top frame of the page making the request.
   absl::optional<SchemefulSite> top_frame_site_;

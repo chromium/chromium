@@ -35,7 +35,6 @@ TEST(IsolationInfoMojomTraitsTest, SerializeAndDeserialize) {
   std::vector<net::IsolationInfo> keys = {
       net::IsolationInfo(),
       net::IsolationInfo::CreateTransient(),
-      net::IsolationInfo::CreateOpaqueAndNonTransient(),
       net::IsolationInfo::Create(
           net::IsolationInfo::RequestType::kMainFrame, kOrigin1, kOrigin1,
           net::SiteForCookies::FromOrigin(kOrigin1), kPartyContext2),

@@ -33,12 +33,8 @@ bool StructTraits<network::mojom::NetworkIsolationKeyDataView,
                                     std::move(frame_site.value()),
                                     nonce ? &nonce.value() : nullptr);
   }
-  out->opaque_and_non_transient_ = data.opaque_and_non_transient();
 
-  // If opaque_and_non_transient_ is set, then the key must also be opaque.
-  // Moreover, it cannot have a nonce. Otherwise, the key is not valid.
-  return !out->opaque_and_non_transient_ ||
-         (out->IsOpaque() && !out->GetNonce());
+  return true;
 }
 
 }  // namespace mojo

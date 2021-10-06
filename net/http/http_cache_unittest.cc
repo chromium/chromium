@@ -10529,24 +10529,6 @@ TEST_F(HttpCacheTest, SplitCacheWithNetworkIsolationKey) {
                                 trans_info, &response);
   EXPECT_FALSE(response.was_cached);
 
-  // Make a request with an opaque but non-transient key. It should be cached.
-  trans_info.network_isolation_key =
-      NetworkIsolationKey::CreateOpaqueAndNonTransient();
-  RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
-                                trans_info, &response);
-  EXPECT_FALSE(response.was_cached);
-  RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
-                                trans_info, &response);
-  EXPECT_TRUE(response.was_cached);
-
-  // Using a new opaque but non-transient key should not use the previously
-  // cached entry.
-  trans_info.network_isolation_key =
-      NetworkIsolationKey::CreateOpaqueAndNonTransient();
-  RunTransactionTestWithRequest(cache.http_cache(), kSimpleGET_Transaction,
-                                trans_info, &response);
-  EXPECT_FALSE(response.was_cached);
-
   // Verify that a post transaction with a data stream uses a separate key.
   const int64_t kUploadId = 1;  // Just a dummy value.
 

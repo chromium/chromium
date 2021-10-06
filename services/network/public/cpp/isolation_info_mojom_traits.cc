@@ -80,7 +80,7 @@ bool StructTraits<network::mojom::IsolationInfoDataView, net::IsolationInfo>::
   absl::optional<net::IsolationInfo> isolation_info =
       net::IsolationInfo::CreateIfConsistent(
           request_type, top_frame_origin, frame_origin, site_for_cookies,
-          data.opaque_and_non_transient(), std::move(party_context),
+          std::move(party_context),
           nonce.has_value() ? &nonce.value() : nullptr);
   if (!isolation_info) {
     network::debug::SetDeserializationCrashKeyString("isolation_inconsistent");

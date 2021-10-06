@@ -14,7 +14,5 @@ struct NetworkIsolationKey {
   SchemefulSite? top_frame_site;
   SchemefulSite? frame_site;
 
-  bool opaque_and_non_transient;
-
   mojo_base.mojom.UnguessableToken? nonce;
 };

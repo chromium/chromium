@@ -237,45 +237,6 @@ TEST(NetworkIsolationKeyTest, FromValueBadData) {
   }
 }
 
-TEST(NetworkIsolationKeyTest, OpaqueNonTransient) {
-  NetworkIsolationKey key = NetworkIsolationKey::CreateOpaqueAndNonTransient();
-  NetworkIsolationKey other_key =
-      NetworkIsolationKey::CreateOpaqueAndNonTransient();
-  EXPECT_TRUE(key.IsFullyPopulated());
-  EXPECT_FALSE(key.IsTransient());
-  EXPECT_FALSE(key.IsEmpty());
-  EXPECT_EQ(key.ToString(), key.ToString());
-  EXPECT_NE(key.ToString(), other_key.ToString());
-  EXPECT_EQ(key.GetTopFrameSite()->GetDebugString() + " " +
-                key.GetFrameSite()->GetDebugString() + " non-transient",
-            key.ToDebugString());
-
-  // |opaque_and_non_transient_| is kept when a new frame site is opaque.
-  SchemefulSite opaque_site;
-  NetworkIsolationKey modified_key = key.CreateWithNewFrameSite(opaque_site);
-  EXPECT_TRUE(modified_key.IsFullyPopulated());
-  EXPECT_FALSE(modified_key.IsTransient());
-  EXPECT_FALSE(modified_key.IsEmpty());
-  EXPECT_NE(key.ToString(), modified_key.ToString());
-  EXPECT_EQ(modified_key.GetTopFrameSite()->GetDebugString() + " " +
-                modified_key.GetFrameSite()->GetDebugString() +
-                " non-transient",
-            modified_key.ToDebugString());
-
-  // Should not be equal to a similar NetworkIsolationKey derived from it.
-  EXPECT_NE(key,
-            NetworkIsolationKey(*key.GetTopFrameSite(), *key.GetFrameSite()));
-
-  // To and back from a Value should yield the same key.
-  base::Value value;
-  ASSERT_TRUE(key.ToValue(&value));
-  NetworkIsolationKey from_value;
-  ASSERT_TRUE(NetworkIsolationKey::FromValue(value, &from_value));
-  EXPECT_EQ(key, from_value);
-  EXPECT_EQ(key.ToString(), from_value.ToString());
-  EXPECT_EQ(key.ToDebugString(), from_value.ToDebugString());
-}
-
 TEST(NetworkIsolationKeyTest, WithFrameSite) {
   NetworkIsolationKey key(SchemefulSite(GURL("http://b.test")),
                           SchemefulSite(GURL("http://a.test/")));

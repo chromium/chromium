@@ -32,13 +32,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.GetFrameSite();
   }
 
-  static bool opaque_and_non_transient(const net::NetworkIsolationKey& input) {
-    return input.opaque_and_non_transient_;
-  }
-
   static const absl::optional<base::UnguessableToken>& nonce(
       const net::NetworkIsolationKey& input) {
-    return input.nonce_;
+    return input.GetNonce();
   }
 
   static bool Read(network::mojom::NetworkIsolationKeyDataView data,

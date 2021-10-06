@@ -45,10 +45,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.frame_origin();
   }
 
-  static bool opaque_and_non_transient(const net::IsolationInfo& input) {
-    return input.opaque_and_non_transient();
-  }
-
   static const absl::optional<base::UnguessableToken>& nonce(
       const net::IsolationInfo& input) {
     return input.nonce_;

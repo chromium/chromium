@@ -28,16 +28,16 @@ NetworkIsolationKey::NetworkIsolationKey(const SchemefulSite& top_frame_site,
                                          const base::UnguessableToken* nonce)
     : NetworkIsolationKey(SchemefulSite(top_frame_site),
                           SchemefulSite(frame_site),
-                          false /* opaque_and_non_transient */,
                           nonce) {}
 
 NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
                                          SchemefulSite&& frame_site,
                                          const base::UnguessableToken* nonce)
-    : NetworkIsolationKey(std::move(top_frame_site),
-                          std::move(frame_site),
-                          false /* opaque_and_non_transient */,
-                          nonce) {}
+    : top_frame_site_(std::move(top_frame_site)),
+      frame_site_(std::move(frame_site)),
+      nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
+  DCHECK(!nonce || !nonce->is_empty());
+}
 
 NetworkIsolationKey::NetworkIsolationKey(const url::Origin& top_frame_origin,
                                          const url::Origin& frame_origin)
@@ -65,20 +65,11 @@ NetworkIsolationKey NetworkIsolationKey::CreateTransient() {
   return NetworkIsolationKey(site_with_opaque_origin, site_with_opaque_origin);
 }
 
-NetworkIsolationKey NetworkIsolationKey::CreateOpaqueAndNonTransient() {
-  SchemefulSite site_with_opaque_origin;
-  return NetworkIsolationKey(SchemefulSite(site_with_opaque_origin),
-                             SchemefulSite(site_with_opaque_origin),
-                             true /* opaque_and_non_transient */,
-                             nullptr /* nonce */);
-}
-
 NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
     const SchemefulSite& new_frame_site) const {
   if (!top_frame_site_)
     return NetworkIsolationKey();
   NetworkIsolationKey key(top_frame_site_.value(), new_frame_site);
-  key.opaque_and_non_transient_ = opaque_and_non_transient_;
   key.nonce_ = nonce_;
   return key;
 }
@@ -86,23 +77,6 @@ NetworkIsolationKey NetworkIsolationKey::CreateWithNewFrameSite(
 std::string NetworkIsolationKey::ToString() const {
   if (IsTransient())
     return "";
-
-  if (IsOpaque()) {
-    // This key is opaque but not transient.
-
-    absl::optional<std::string> serialized_top_frame_site =
-        SerializeSiteWithNonce(top_frame_site_.value());
-    absl::optional<std::string> serialized_frame_site =
-        SerializeSiteWithNonce(frame_site_.value());
-
-    // SerializeSiteWithNonce() can't fail for valid origins, and only valid
-    // origins can be opaque.
-    DCHECK(serialized_top_frame_site);
-    DCHECK(serialized_frame_site);
-
-    return "opaque non-transient " + *serialized_top_frame_site + " " +
-           *serialized_frame_site;
-  }
 
   return top_frame_site_->Serialize() + " " + frame_site_->Serialize();
 }
@@ -112,10 +86,6 @@ std::string NetworkIsolationKey::ToDebugString() const {
   // |frame_site_|.
   std::string return_string = GetSiteDebugString(top_frame_site_);
   return_string += " " + GetSiteDebugString(frame_site_);
-
-  if (IsFullyPopulated() && IsOpaque() && opaque_and_non_transient_) {
-    return_string += " non-transient";
-  }
 
   if (nonce_.has_value()) {
     return_string += " (with nonce " + nonce_->ToString() + ")";
@@ -131,10 +101,6 @@ bool NetworkIsolationKey::IsFullyPopulated() const {
 bool NetworkIsolationKey::IsTransient() const {
   if (!IsFullyPopulated())
     return true;
-  if (opaque_and_non_transient_) {
-    DCHECK(IsOpaque());
-    return false;
-  }
   return IsOpaque();
 }
 
@@ -147,6 +113,10 @@ bool NetworkIsolationKey::ToValue(base::Value* out_value) const {
   if (IsTransient())
     return false;
 
+  // NetworkIsolationKeys with nonces are now always transient, so serializing
+  // with nonces isn't strictly needed, but it's used for backwards
+  // compatibility, Origin::Deserialize() is not compatible with
+  // SerializeWithNonce().
   absl::optional<std::string> top_frame_value =
       SerializeSiteWithNonce(*top_frame_site_);
   if (!top_frame_value)
@@ -180,44 +150,23 @@ bool NetworkIsolationKey::FromValue(
 
   absl::optional<SchemefulSite> top_frame_site =
       SchemefulSite::DeserializeWithNonce(list[0].GetString());
-  if (!top_frame_site)
+  // Opaque origins are currently never serialized to disk, but they used to be.
+  if (!top_frame_site || top_frame_site->opaque())
     return false;
-
-  // An opaque origin key will only be serialized into a base::Value if
-  // |opaque_and_non_transient_| is set. Therefore if either origin is opaque,
-  // |opaque_and_non_transient_| must be true.
-  bool opaque_and_non_transient = top_frame_site->opaque();
 
   absl::optional<SchemefulSite> frame_site =
       SchemefulSite::DeserializeWithNonce(list[1].GetString());
-  if (!frame_site)
+  // Opaque origins are currently never serialized to disk, but they used to be.
+  if (!frame_site || frame_site->opaque())
     return false;
-
-  opaque_and_non_transient |= frame_site->opaque();
 
   *network_isolation_key =
       NetworkIsolationKey(std::move(*top_frame_site), std::move(*frame_site));
-  network_isolation_key->opaque_and_non_transient_ = opaque_and_non_transient;
   return true;
 }
 
 bool NetworkIsolationKey::IsEmpty() const {
   return !top_frame_site_.has_value() && !frame_site_.has_value();
-}
-
-NetworkIsolationKey::NetworkIsolationKey(SchemefulSite&& top_frame_site,
-                                         SchemefulSite&& frame_site,
-                                         bool opaque_and_non_transient,
-                                         const base::UnguessableToken* nonce)
-    : opaque_and_non_transient_(opaque_and_non_transient),
-      top_frame_site_(std::move(top_frame_site)),
-      frame_site_(std::move(frame_site)),
-      nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
-  DCHECK(!opaque_and_non_transient || top_frame_site_->opaque());
-  DCHECK(!opaque_and_non_transient || frame_site.opaque());
-  DCHECK(!nonce || !nonce->is_empty());
-  // If there is a nonce, this is always transient.
-  DCHECK(!nonce || !opaque_and_non_transient);
 }
 
 bool NetworkIsolationKey::IsOpaque() const {
