@@ -19,9 +19,9 @@ CardUnmaskOtpInputDialogControllerImpl::
     ~CardUnmaskOtpInputDialogControllerImpl() {
   // This part of code is executed only if the browser window is closed when the
   // dialog is visible. In this case the controller is destroyed before
-  // CardUnmaskOtpInputDialogViewImpl::dtor() is called, but the reference to
-  // controller is not reset. This resets the reference view
-  // CardUnmaskOtpInputDialogControllerImpl::OnControllerDestroying() to avoid
+  // CardUnmaskOtpInputDialogViews::dtor() is called, but the reference to
+  // controller is not reset. This resets the reference via
+  // CardUnmaskOtpInputDialogView::OnControllerDestroying() to avoid
   // a crash.
   if (dialog_view_)
     dialog_view_->OnControllerDestroying();
@@ -85,10 +85,12 @@ std::u16string CardUnmaskOtpInputDialogControllerImpl::GetProgressLabel()
       IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_PENDING_MESSAGE);
 }
 
+#if defined(UNIT_TEST)
 CardUnmaskOtpInputDialogView*
 CardUnmaskOtpInputDialogControllerImpl::GetDialogViewForTesting() {
   return dialog_view_;
 }
+#endif
 
 CardUnmaskOtpInputDialogControllerImpl::CardUnmaskOtpInputDialogControllerImpl(
     content::WebContents* web_contents)

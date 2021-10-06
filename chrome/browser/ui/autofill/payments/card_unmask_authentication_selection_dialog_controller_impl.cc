@@ -22,7 +22,7 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
     ~CardUnmaskAuthenticationSelectionDialogControllerImpl() {
   // This part of code is executed only if the browser window is closed when the
   // dialog is visible. In this case the controller is destroyed before
-  // CardUnmaskAuthenticationSelectionDialogViewImpl::dtor() is called,
+  // CardUnmaskAuthenticationSelectionDialogViews::dtor() is called,
   // but the reference to controller is not reset. This reference needs to be
   // reset via
   // CardUnmaskAuthenticationSelectionDialogView::OnControllerDestroying() to
@@ -31,19 +31,14 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::
     dialog_view_->OnControllerDestroying();
 }
 
-CardUnmaskAuthenticationSelectionDialogView*
-CardUnmaskAuthenticationSelectionDialogControllerImpl::GetDialogView() {
-  return dialog_view_;
-}
-
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::ShowDialog(
     const std::vector<CardUnmaskChallengeOption>& challenge_options) {
   if (dialog_view_)
     return;
 
   challenge_options_ = challenge_options;
-  dialog_view_ =
-      CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(this);
+  dialog_view_ = CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
+      this, web_contents());
 }
 
 void CardUnmaskAuthenticationSelectionDialogControllerImpl::OnDialogClosed() {
@@ -107,10 +102,13 @@ CardUnmaskAuthenticationSelectionDialogControllerImpl::GetOkButtonLabel()
       IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_OK_BUTTON_LABEL);
 }
 
-content::WebContents*
-CardUnmaskAuthenticationSelectionDialogControllerImpl::GetWebContents() {
-  return web_contents();
+#if defined(UNIT_TEST)
+CardUnmaskAuthenticationSelectionDialogView*
+CardUnmaskAuthenticationSelectionDialogControllerImpl::
+    GetDialogViewForTesting() {
+  return dialog_view_;
 }
+#endif
 
 CardUnmaskAuthenticationSelectionDialogControllerImpl::
     CardUnmaskAuthenticationSelectionDialogControllerImpl(

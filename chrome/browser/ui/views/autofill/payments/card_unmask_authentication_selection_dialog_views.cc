@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_view_impl.h"
+#include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_views.h"
 
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
@@ -20,8 +21,8 @@
 
 namespace autofill {
 
-CardUnmaskAuthenticationSelectionDialogViewImpl::
-    CardUnmaskAuthenticationSelectionDialogViewImpl(
+CardUnmaskAuthenticationSelectionDialogViews::
+    CardUnmaskAuthenticationSelectionDialogViews(
         CardUnmaskAuthenticationSelectionDialogController* controller)
     : controller_(controller) {
   SetShowTitle(true);
@@ -37,9 +38,9 @@ CardUnmaskAuthenticationSelectionDialogViewImpl::
   InitViews();
 }
 
-CardUnmaskAuthenticationSelectionDialogViewImpl::
-    ~CardUnmaskAuthenticationSelectionDialogViewImpl() {
-  // Inform `controller_` of the dialog's destruction.
+CardUnmaskAuthenticationSelectionDialogViews::
+    ~CardUnmaskAuthenticationSelectionDialogViews() {
+  // Inform |controller_| of the dialog's destruction.
   if (controller_)
     controller_->OnDialogClosed();
 }
@@ -47,31 +48,31 @@ CardUnmaskAuthenticationSelectionDialogViewImpl::
 // static
 CardUnmaskAuthenticationSelectionDialogView*
 CardUnmaskAuthenticationSelectionDialogView::CreateAndShow(
-    CardUnmaskAuthenticationSelectionDialogController* controller) {
-  CardUnmaskAuthenticationSelectionDialogViewImpl* dialog_view =
-      new CardUnmaskAuthenticationSelectionDialogViewImpl(controller);
-  constrained_window::ShowWebModalDialogViews(dialog_view,
-                                              controller->GetWebContents());
+    CardUnmaskAuthenticationSelectionDialogController* controller,
+    content::WebContents* web_contents) {
+  CardUnmaskAuthenticationSelectionDialogViews* dialog_view =
+      new CardUnmaskAuthenticationSelectionDialogViews(controller);
+  constrained_window::ShowWebModalDialogViews(dialog_view, web_contents);
   return dialog_view;
 }
 
-void CardUnmaskAuthenticationSelectionDialogViewImpl::OnControllerDestroying() {
+void CardUnmaskAuthenticationSelectionDialogViews::OnControllerDestroying() {
   controller_ = nullptr;
   GetWidget()->Close();
 }
 
-std::u16string CardUnmaskAuthenticationSelectionDialogViewImpl::GetWindowTitle()
+std::u16string CardUnmaskAuthenticationSelectionDialogViews::GetWindowTitle()
     const {
   return controller_->GetWindowTitle();
 }
 
-void CardUnmaskAuthenticationSelectionDialogViewImpl::AddedToWidget() {
+void CardUnmaskAuthenticationSelectionDialogViews::AddedToWidget() {
   GetBubbleFrameView()->SetTitleView(
       std::make_unique<TitleWithIconAndSeparatorView>(
           GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
 }
 
-void CardUnmaskAuthenticationSelectionDialogViewImpl::InitViews() {
+void CardUnmaskAuthenticationSelectionDialogViews::InitViews() {
   DCHECK(children().empty());
   // Sets the layout manager for the top level view.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -86,19 +87,20 @@ void CardUnmaskAuthenticationSelectionDialogViewImpl::InitViews() {
   AddFooterText();
 }
 
-void CardUnmaskAuthenticationSelectionDialogViewImpl::AddHeaderText() {
+void CardUnmaskAuthenticationSelectionDialogViews::AddHeaderText() {
   auto* content = AddChildView(std::make_unique<views::Label>(
       controller_->GetContentHeaderText(),
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
+  content->SetMultiLine(true);
   content->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 
-void CardUnmaskAuthenticationSelectionDialogViewImpl::
-    AddChallengeOptionsViews() {
+void CardUnmaskAuthenticationSelectionDialogViews::AddChallengeOptionsViews() {
   for (const CardUnmaskChallengeOption& challenge_option :
        controller_->GetChallengeOptions()) {
     // Initializes the current challenge option.
-    auto challenge_option_container = std::make_unique<views::BoxLayoutView>();
+    auto* challenge_option_container =
+        AddChildView(std::make_unique<views::BoxLayoutView>());
     challenge_option_container->SetOrientation(
         views::BoxLayout::Orientation::kHorizontal);
     challenge_option_container->SetBetweenChildSpacing(
@@ -113,7 +115,8 @@ void CardUnmaskAuthenticationSelectionDialogViewImpl::
     // Creates the right side of the challenge option (label and information
     // such as masked phone number, masked email, etc...) and adds it to the
     // current challenge option.
-    auto challenge_option_details = std::make_unique<views::BoxLayoutView>();
+    auto* challenge_option_details = challenge_option_container->AddChildView(
+        std::make_unique<views::BoxLayoutView>());
     challenge_option_details->SetOrientation(
         views::BoxLayout::Orientation::kVertical);
     challenge_option_details->AddChildView(std::make_unique<views::Label>(
@@ -124,19 +127,15 @@ void CardUnmaskAuthenticationSelectionDialogViewImpl::
         challenge_option.challenge_info,
         ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
         views::style::STYLE_SECONDARY));
-    challenge_option_container->AddChildView(
-        std::move(challenge_option_details));
-
-    // Adds the current challenge option to the top level view.
-    AddChildView(std::move(challenge_option_container));
   }
 }
 
-void CardUnmaskAuthenticationSelectionDialogViewImpl::AddFooterText() {
+void CardUnmaskAuthenticationSelectionDialogViews::AddFooterText() {
   auto* content = AddChildView(std::make_unique<views::Label>(
       controller_->GetContentFooterText(),
       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
       views::style::STYLE_SECONDARY));
+  content->SetMultiLine(true);
   content->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
 

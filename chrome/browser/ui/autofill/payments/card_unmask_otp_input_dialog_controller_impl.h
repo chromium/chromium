@@ -39,7 +39,9 @@ class CardUnmaskOtpInputDialogControllerImpl
   std::u16string GetOkButtonLabel() const override;
   std::u16string GetProgressLabel() const override;
 
+#if defined(UNIT_TEST)
   CardUnmaskOtpInputDialogView* GetDialogViewForTesting();
+#endif
 
  private:
   explicit CardUnmaskOtpInputDialogControllerImpl(

@@ -38,7 +38,7 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTest
       return nullptr;
 
     CardUnmaskAuthenticationSelectionDialogView* dialog_view =
-        controller()->GetDialogView();
+        controller()->GetDialogViewForTesting();
     if (!dialog_view)
       return nullptr;
 

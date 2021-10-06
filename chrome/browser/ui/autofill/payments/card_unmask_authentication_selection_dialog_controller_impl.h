@@ -8,13 +8,14 @@
 #include <string>
 
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller.h"
-#include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace autofill {
+
+class CardUnmaskAuthenticationSelectionDialogView;
 
 class CardUnmaskAuthenticationSelectionDialogControllerImpl
     : public CardUnmaskAuthenticationSelectionDialogController,
@@ -27,8 +28,6 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   CardUnmaskAuthenticationSelectionDialogControllerImpl& operator=(
       const CardUnmaskAuthenticationSelectionDialogControllerImpl&) = delete;
   ~CardUnmaskAuthenticationSelectionDialogControllerImpl() override;
-
-  CardUnmaskAuthenticationSelectionDialogView* GetDialogView();
 
   void ShowDialog(
       const std::vector<CardUnmaskChallengeOption>& challenge_options);
@@ -45,13 +44,15 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
       const CardUnmaskChallengeOption& challenge_option) const override;
   std::u16string GetContentFooterText() const override;
   std::u16string GetOkButtonLabel() const override;
-  content::WebContents* GetWebContents() override;
 
- protected:
+#if defined(UNIT_TEST)
+  CardUnmaskAuthenticationSelectionDialogView* GetDialogViewForTesting();
+#endif
+
+ private:
   explicit CardUnmaskAuthenticationSelectionDialogControllerImpl(
       content::WebContents* web_contents);
 
- private:
   friend class content::WebContentsUserData<
       CardUnmaskAuthenticationSelectionDialogControllerImpl>;
 

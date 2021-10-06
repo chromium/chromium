@@ -7,12 +7,16 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
-#include "content/public/browser/web_contents.h"
-#include "ui/views/controls/image_view.h"
+namespace ui {
+class ImageModel;
+}
 
 namespace autofill {
 
+struct CardUnmaskChallengeOption;
+
+// Interface that exposes controller functionality to
+// CardUnmaskAuthenticationSelectionDialogView.
 class CardUnmaskAuthenticationSelectionDialogController {
  public:
   CardUnmaskAuthenticationSelectionDialogController() = default;
@@ -22,7 +26,7 @@ class CardUnmaskAuthenticationSelectionDialogController {
   CardUnmaskAuthenticationSelectionDialogController& operator=(
       const CardUnmaskAuthenticationSelectionDialogController&) = delete;
 
-  // Called whenever the dialog is closed, and it sets the dialog_view_
+  // Called whenever the dialog is closed, and it sets the |dialog_view_|
   // variable in this class to nullptr.
   virtual void OnDialogClosed() = 0;
 
@@ -31,10 +35,10 @@ class CardUnmaskAuthenticationSelectionDialogController {
   virtual std::u16string GetContentHeaderText() const = 0;
 
   // Returns the vector of challenge options for authentication
-  // (text, email, etc...). Each CardUnmaskChallengeOption* in the vector
-  // points to a struct that has the challenge option type, as well as the
-  // relevant data to send the authentication to (such as a
-  // masked phone number or masked email).
+  // (text, email, etc...). Each CardUnmaskChallengeOption in the vector
+  // is a struct that has the challenge option type, as well as the relevant
+  // data to send the authentication to (such as a masked phone number or masked
+  // email).
   virtual const std::vector<CardUnmaskChallengeOption>& GetChallengeOptions()
       const = 0;
 
@@ -51,8 +55,6 @@ class CardUnmaskAuthenticationSelectionDialogController {
   virtual std::u16string GetContentFooterText() const = 0;
 
   virtual std::u16string GetOkButtonLabel() const = 0;
-
-  virtual content::WebContents* GetWebContents() = 0;
 };
 
 }  // namespace autofill

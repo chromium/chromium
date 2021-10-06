@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEW_IMPL_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEW_IMPL_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEWS_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEWS_H_
 
 #include <string>
 
@@ -16,17 +16,17 @@ namespace autofill {
 
 class CardUnmaskAuthenticationSelectionDialogController;
 
-class CardUnmaskAuthenticationSelectionDialogViewImpl
+class CardUnmaskAuthenticationSelectionDialogViews
     : public CardUnmaskAuthenticationSelectionDialogView,
       public views::DialogDelegateView {
  public:
-  explicit CardUnmaskAuthenticationSelectionDialogViewImpl(
+  explicit CardUnmaskAuthenticationSelectionDialogViews(
       CardUnmaskAuthenticationSelectionDialogController* controller);
-  CardUnmaskAuthenticationSelectionDialogViewImpl(
-      const CardUnmaskAuthenticationSelectionDialogViewImpl&) = delete;
-  CardUnmaskAuthenticationSelectionDialogViewImpl& operator=(
-      const CardUnmaskAuthenticationSelectionDialogViewImpl&) = delete;
-  ~CardUnmaskAuthenticationSelectionDialogViewImpl() override;
+  CardUnmaskAuthenticationSelectionDialogViews(
+      const CardUnmaskAuthenticationSelectionDialogViews&) = delete;
+  CardUnmaskAuthenticationSelectionDialogViews& operator=(
+      const CardUnmaskAuthenticationSelectionDialogViews&) = delete;
+  ~CardUnmaskAuthenticationSelectionDialogViews() override;
 
   // CardUnmaskAuthenticationSelectionDialogView:
   void OnControllerDestroying() override;
@@ -53,4 +53,4 @@ class CardUnmaskAuthenticationSelectionDialogViewImpl
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEW_IMPL_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_VIEWS_H_
