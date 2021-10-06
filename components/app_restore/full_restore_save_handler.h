@@ -16,6 +16,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/arc_save_handler.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -55,7 +56,8 @@ class FullRestoreFileHandler;
 // later time.
 class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
     : public aura::EnvObserver,
-      public aura::WindowObserver {
+      public aura::WindowObserver,
+      public app_restore::AppRestoreArcInfo::Observer {
  public:
   using AppLaunchInfoPtr = std::unique_ptr<app_restore::AppLaunchInfo>;
 
@@ -85,6 +87,16 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override;
 
+  // app_restore::AppRestoreArcInfo::Observer:
+  void OnTaskCreated(const std::string& app_id,
+                     int32_t task_id,
+                     int32_t session_id) override;
+  void OnTaskDestroyed(int32_t task_id) override;
+  void OnArcConnectionChanged(bool is_connection_ready) override;
+  void OnTaskThemeColorUpdated(int32_t task_id,
+                               uint32_t primary_color,
+                               uint32_t status_bar_color) override;
+
   // Saves |app_launch_info| to the full restore file in |profile_path|.
   void SaveAppLaunchInfo(
       const base::FilePath& profile_path,
@@ -92,19 +104,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
 
   // Saves |window_info| to |profile_path_to_restore_data_|.
   void SaveWindowInfo(const app_restore::WindowInfo& window_info);
-
-  // Invoked when the task is created for an ARC app.
-  void OnTaskCreated(const std::string& app_id,
-                     int32_t task_id,
-                     int32_t session_id);
-
-  // Invoked when the task is destroyed for an ARC app.
-  void OnTaskDestroyed(int32_t task_id);
-
-  // Invoked when the task theme color is updated for an ARC app.
-  void OnTaskThemeColorUpdated(int32_t task_id,
-                               uint32_t primary_color,
-                               uint32_t status_bar_color);
 
   // Flushes the full restore file in |profile_path| with the current restore
   // data.
@@ -170,9 +169,6 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // Returns the full restore app id for |window| that can be used to look up
   // the window's associated AppRestoreData.
   std::string GetAppId(aura::Window* window);
-
-  // Invoked when the ARC instance connection is ready or closed.
-  void SetArcConnection(bool is_connection_ready);
 
   int window_count() const { return window_count_; }
 
@@ -292,6 +288,10 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
+
+  base::ScopedObservation<app_restore::AppRestoreArcInfo,
+                          app_restore::AppRestoreArcInfo::Observer>
+      arc_info_observer_{this};
 
   base::WeakPtrFactory<FullRestoreSaveHandler> weak_factory_{this};
 };

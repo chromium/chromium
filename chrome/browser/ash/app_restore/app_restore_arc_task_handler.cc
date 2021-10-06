@@ -10,11 +10,18 @@
 #include "chrome/browser/ash/app_restore/arc_window_utils.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/features.h"
-#include "components/app_restore/full_restore_utils.h"
 
 namespace ash {
 namespace app_restore {
+namespace {
+
+::app_restore::AppRestoreArcInfo* GetAppRestoreArcInfo() {
+  return ::app_restore::AppRestoreArcInfo::GetInstance();
+}
+
+}  // namespace
 
 // static
 AppRestoreArcTaskHandler* AppRestoreArcTaskHandler::GetForProfile(
@@ -60,11 +67,11 @@ void AppRestoreArcTaskHandler::OnTaskCreated(int32_t task_id,
                                              const std::string& intent,
                                              int32_t session_id) {
   const std::string app_id = ArcAppListPrefs::GetAppId(package_name, activity);
-  ::full_restore::OnTaskCreated(app_id, task_id, session_id);
+  GetAppRestoreArcInfo()->NotifyTaskCreated(app_id, task_id, session_id);
 }
 
 void AppRestoreArcTaskHandler::OnTaskDestroyed(int32_t task_id) {
-  ::full_restore::OnTaskDestroyed(task_id);
+  GetAppRestoreArcInfo()->NotifyTaskDestroyed(task_id);
 }
 
 void AppRestoreArcTaskHandler::OnTaskDescriptionChanged(
@@ -73,8 +80,8 @@ void AppRestoreArcTaskHandler::OnTaskDescriptionChanged(
     const arc::mojom::RawIconPngData& icon,
     uint32_t primary_color,
     uint32_t status_bar_color) {
-  ::full_restore::OnTaskThemeColorUpdated(task_id, primary_color,
-                                          status_bar_color);
+  GetAppRestoreArcInfo()->NotifyTaskThemeColorUpdated(task_id, primary_color,
+                                                      status_bar_color);
 }
 
 void AppRestoreArcTaskHandler::OnAppConnectionReady() {
@@ -89,11 +96,13 @@ void AppRestoreArcTaskHandler::OnAppConnectionReady() {
       handler->OnAppConnectionReady();
   }
 
-  ::full_restore::SetArcConnection(/*is_connection_ready=*/true);
+  GetAppRestoreArcInfo()->NotifyArcConnectionChanged(
+      /*is_connection_ready=*/true);
 }
 
 void AppRestoreArcTaskHandler::OnAppConnectionClosed() {
-  ::full_restore::SetArcConnection(/*is_connection_ready=*/false);
+  GetAppRestoreArcInfo()->NotifyArcConnectionChanged(
+      /*is_connection_ready=*/false);
 }
 
 void AppRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {

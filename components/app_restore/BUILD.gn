@@ -7,6 +7,8 @@ component("app_restore") {
   sources = [
     "app_launch_info.cc",
     "app_launch_info.h",
+    "app_restore_arc_info.cc",
+    "app_restore_arc_info.h",
     "app_restore_data.cc",
     "app_restore_data.h",
     "arc_read_handler.cc",

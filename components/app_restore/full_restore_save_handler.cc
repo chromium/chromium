@@ -55,6 +55,7 @@ FullRestoreSaveHandler* FullRestoreSaveHandler::GetInstance() {
 FullRestoreSaveHandler::FullRestoreSaveHandler() {
   if (aura::Env::HasInstance())
     env_observer_.Observe(aura::Env::GetInstance());
+  arc_info_observer_.Observe(app_restore::AppRestoreArcInfo::GetInstance());
 }
 
 FullRestoreSaveHandler::~FullRestoreSaveHandler() = default;
@@ -189,6 +190,33 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
   RemoveAppRestoreData(window_id);
 }
 
+void FullRestoreSaveHandler::OnTaskCreated(const std::string& app_id,
+                                           int32_t task_id,
+                                           int32_t session_id) {
+  if (arc_save_handler_)
+    arc_save_handler_->OnTaskCreated(app_id, task_id, session_id);
+}
+
+void FullRestoreSaveHandler::OnTaskDestroyed(int32_t task_id) {
+  if (arc_save_handler_)
+    arc_save_handler_->OnTaskDestroyed(task_id);
+}
+
+void FullRestoreSaveHandler::OnArcConnectionChanged(bool is_connection_ready) {
+  if (arc_save_handler_)
+    arc_save_handler_->set_is_connection_ready(is_connection_ready);
+}
+
+void FullRestoreSaveHandler::OnTaskThemeColorUpdated(
+    int32_t task_id,
+    uint32_t primary_color,
+    uint32_t status_bar_color) {
+  if (arc_save_handler_) {
+    arc_save_handler_->OnTaskThemeColorUpdated(task_id, primary_color,
+                                               status_bar_color);
+  }
+}
+
 void FullRestoreSaveHandler::SaveAppLaunchInfo(
     const base::FilePath& profile_path,
     AppLaunchInfoPtr app_launch_info) {
@@ -258,28 +286,6 @@ void FullRestoreSaveHandler::SaveWindowInfo(
     return;
 
   ModifyWindowInfo(window_id, window_info);
-}
-
-void FullRestoreSaveHandler::OnTaskCreated(const std::string& app_id,
-                                           int32_t task_id,
-                                           int32_t session_id) {
-  if (arc_save_handler_)
-    arc_save_handler_->OnTaskCreated(app_id, task_id, session_id);
-}
-
-void FullRestoreSaveHandler::OnTaskDestroyed(int32_t task_id) {
-  if (arc_save_handler_)
-    arc_save_handler_->OnTaskDestroyed(task_id);
-}
-
-void FullRestoreSaveHandler::OnTaskThemeColorUpdated(
-    int32_t task_id,
-    uint32_t primary_color,
-    uint32_t status_bar_color) {
-  if (arc_save_handler_) {
-    arc_save_handler_->OnTaskThemeColorUpdated(task_id, primary_color,
-                                               status_bar_color);
-  }
 }
 
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
@@ -464,11 +470,6 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
     return iter != window_id_to_app_restore_info_.end() ? iter->second.second
                                                         : std::string();
   }
-}
-
-void FullRestoreSaveHandler::SetArcConnection(bool is_connection_ready) {
-  if (arc_save_handler_)
-    arc_save_handler_->set_is_connection_ready(is_connection_ready);
 }
 
 void FullRestoreSaveHandler::ClearForTesting() {
