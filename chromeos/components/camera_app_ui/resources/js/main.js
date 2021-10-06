@@ -16,6 +16,7 @@ import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as focusRing from './focus_ring.js';
 import {GalleryButton} from './gallerybutton.js';
+import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
@@ -27,6 +28,7 @@ import * as nav from './nav.js';
 import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
 import * as state from './state.js';
+import * as toast from './toast.js';
 import * as tooltip from './tooltip.js';
 import {
   ErrorLevel,
@@ -366,11 +368,28 @@ export class App {
     state.set(state.State.SUSPEND, false);
     nav.close(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
+
+  /**
+   * Begins to take photo or recording with the current options, e.g. timer.
+   * @param {!metrics.ShutterType} shutterType The shutter is triggered by which
+   *     shutter type.
+   * @return {?Promise<void>} Promise resolved when take action completes.
+   *     Returns null if CCA can't start take action.
+   */
+  beginTake(shutterType) {
+    return this.cameraView_.beginTake(shutterType);
+  }
 }
 
 /**
  * Parse search params in URL.
- * @return {{intent: ?Intent, facing: ?Facing, mode: ?Mode}}
+ * @return {{
+ *     intent: ?Intent,
+ *     facing: ?Facing,
+ *     mode: ?Mode,
+ *     openFrom: ?string,
+ *     autoTake: boolean,
+ * }}
  */
 function parseSearchParams() {
   const url = new URL(window.location.href);
@@ -407,7 +426,10 @@ function parseSearchParams() {
     return Intent.create(url, mode);
   })();
 
-  return {intent, facing, mode};
+  const autoTake = params.get('autoTake') === '1';
+  const openFrom = params.get('openFrom');
+
+  return {intent, facing, mode, autoTake, openFrom};
 }
 
 /**
@@ -426,7 +448,7 @@ let instance = null;
 
   const perfLogger = new PerfLogger();
 
-  const {intent, facing, mode} = parseSearchParams();
+  const {intent, facing, mode, autoTake, openFrom} = parseSearchParams();
 
   state.set(state.State.INTENT, intent !== null);
 
@@ -488,4 +510,17 @@ let instance = null;
 
   instance = new App({perfLogger, intent, facing, mode});
   await instance.start();
+
+  if (autoTake) {
+    const takePromise = instance.beginTake(
+        openFrom === 'assistant' ? metrics.ShutterType.ASSISTANT :
+                                   metrics.ShutterType.UNKNOWN);
+    if (takePromise === null) {
+      toast.show(
+          mode === Mode.VIDEO ? I18nString.ERROR_MSG_RECORD_START_FAILED :
+                                I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
+    } else {
+      await takePromise;
+    }
+  }
 })();

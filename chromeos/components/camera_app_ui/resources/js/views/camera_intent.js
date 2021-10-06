@@ -139,12 +139,12 @@ export class CameraIntent extends Camera {
   /**
    * @override
    */
-  beginTake_(shutterType) {
+  beginTake(shutterType) {
     // TODO(inker): Clean unused photo result blob properly.
     this.photoResult_ = null;
     this.videoResult_ = null;
 
-    const take = super.beginTake_(shutterType);
+    const take = super.beginTake(shutterType);
     if (take === null) {
       return null;
     }

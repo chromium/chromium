@@ -155,6 +155,7 @@ export const ShutterType = {
   KEYBOARD: 'keyboard',
   TOUCH: 'touch',
   VOLUME_KEY: 'volume-key',
+  ASSISTANT: 'assistant',
 };
 
 /**
