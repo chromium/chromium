@@ -1310,6 +1310,12 @@ void ExtensionService::CheckForExternalUpdates() {
     OnAllExternalProvidersReady();
 }
 
+void ExtensionService::ReinstallProviderExtensions() {
+  for (const auto& provider : external_extension_providers_) {
+    provider->TriggerOnExternalExtensionFound();
+  }
+}
+
 void ExtensionService::OnExternalProviderReady(
     const ExternalProviderInterface* provider) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

@@ -46,6 +46,7 @@ class MockExternalProvider : public ExternalProviderInterface {
       const std::string& id,
       mojom::ManifestLocation* location,
       std::unique_ptr<base::Version>* version) const override;
+  void TriggerOnExternalExtensionFound() override;
   bool IsReady() const override;
   void ServiceShutdown() override {}
 

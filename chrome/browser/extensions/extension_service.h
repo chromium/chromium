@@ -149,6 +149,12 @@ class ExtensionServiceInterface
   // Whether a user is able to disable a given extension.
   virtual bool UserCanDisableInstalledExtension(
       const std::string& extension_id) = 0;
+
+  // Ask each external extension provider to call
+  // OnExternalExtension(File|UpdateUrl)Found() with their known extensions.
+  // This will trigger an update/reinstall of the extensions saved in the
+  // provider's prefs.
+  virtual void ReinstallProviderExtensions() = 0;
 };
 
 // Manages installed and running Chromium extensions. An instance is shared
@@ -196,6 +202,7 @@ class ExtensionService : public ExtensionServiceInterface,
                                         bool install_immediately) override;
   void CheckManagementPolicy() override;
   void CheckForUpdatesSoon() override;
+  void ReinstallProviderExtensions() override;
 
   // ExternalProvider::VisitorInterface implementation.
   // Exposed for testing.

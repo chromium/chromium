@@ -349,13 +349,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
   int Visit(const std::string& json_data,
             ManifestLocation crx_location,
             ManifestLocation download_location) {
-    crx_location_ = crx_location;
-    // Give the test json file to the provider for parsing.
-    provider_ = std::make_unique<ExternalProviderImpl>(
-        this, new ExternalTestingLoader(json_data, fake_base_path_),
-        profile_.get(), crx_location, download_location, Extension::NO_FLAGS);
-    if (crx_location == ManifestLocation::kExternalRegistry)
-      provider_->set_allow_updates(true);
+    SetUp(json_data, crx_location, download_location);
 
     // We also parse the file into a dictionary to compare what we get back
     // from the provider.
@@ -365,6 +359,32 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
     ids_found_ = 0;
     // Ask the provider to look up all extensions and return them.
     provider_->VisitRegisteredExtension();
+
+    return ids_found_;
+  }
+
+  int ReinstallProviderExtensions(const std::string& json_data) {
+    return ReinstallProviderExtensions(json_data,
+                                       ManifestLocation::kExternalPref,
+                                       ManifestLocation::kExternalPrefDownload);
+  }
+
+  int ReinstallProviderExtensions(const std::string& json_data,
+                                  ManifestLocation crx_location,
+                                  ManifestLocation download_location) {
+    // Don't recreate the provider_ because that way we will never have any
+    // saved prefs inside.
+    if (!provider_)
+      SetUp(json_data, crx_location, download_location);
+
+    // We also parse the file into a dictionary to compare what we get back
+    // from the provider.
+    prefs_ = GetDictionaryFromJSON(json_data);
+
+    // Reset our counter.
+    ids_found_ = 0;
+    // Ask the provider to look up all extensions and notify the visitor.
+    provider_->TriggerOnExternalExtensionFound();
 
     return ids_found_;
   }
@@ -461,10 +481,22 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
   }
 
   Profile* profile() { return profile_.get(); }
-  const ExternalProviderImpl& provider() const { return *provider_; }
+  ExternalProviderImpl* provider() { return provider_.get(); }
 
  protected:
   std::unique_ptr<ExternalProviderImpl> provider_;
+
+  void SetUp(const std::string& json_data,
+             ManifestLocation crx_location,
+             ManifestLocation download_location) {
+    crx_location_ = crx_location;
+    // Give the test json file to the provider for parsing.
+    provider_ = std::make_unique<ExternalProviderImpl>(
+        this, new ExternalTestingLoader(json_data, fake_base_path_),
+        profile_.get(), crx_location, download_location, Extension::NO_FLAGS);
+    if (crx_location == ManifestLocation::kExternalRegistry)
+      provider_->set_allow_updates(true);
+  }
 
   std::unique_ptr<base::DictionaryValue> GetDictionaryFromJSON(
       const std::string& json_data) {
@@ -5955,12 +5987,12 @@ TEST_F(ExtensionServiceTest, ExternalPrefProvider) {
       base::AutoReset<bool> testing_scope =
           web_app::SetPreinstalledAppInstallFeatureAlwaysEnabledForTesting();
       EXPECT_EQ(0, visitor.Visit(json_data));
-      visitor.provider().HasExtension("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      visitor.provider()->HasExtension("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
 
     {
       EXPECT_EQ(1, visitor.Visit(json_data));
-      visitor.provider().HasExtension("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+      visitor.provider()->HasExtension("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
   }
 
@@ -6045,6 +6077,39 @@ TEST_F(ExtensionServiceTest, ExternalPrefProvider) {
   min_profile_created_by_version_visitor.profile()->GetPrefs()->SetString(
       prefs::kProfileCreatedByVersion, "45.0.0.1");
   EXPECT_EQ(3, min_profile_created_by_version_visitor.Visit(json_data));
+}
+
+TEST_F(ExtensionServiceTest, ReinstallProviderExtensions) {
+  InitializeEmptyExtensionService();
+
+  // Check that ReinstallProviderExtensions() will not return any extensions if
+  // no prefs are already stored in the provider.
+  base::FilePath base_path(FILE_PATH_LITERAL("//base/path"));
+  ASSERT_TRUE(base_path.IsAbsolute());
+  MockProviderVisitor visitor(base_path);
+  std::string json_data =
+      "{"
+      "  \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": {"
+      "    \"external_crx\": \"RandomExtension.crx\","
+      "    \"external_version\": \"1.0\""
+      "  },"
+      "  \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\": {"
+      "    \"external_crx\": \"RandomExtension2.crx\","
+      "    \"external_version\": \"2.0\""
+      "  },"
+      "  \"cccccccccccccccccccccccccccccccc\": {"
+      "    \"external_update_url\": \"http:\\\\foo.com/update\","
+      "    \"install_parameter\": \"id\""
+      "  }"
+      "}";
+  EXPECT_EQ(0, visitor.ReinstallProviderExtensions(json_data));
+
+  // Add the extension records to the provider's prefs.
+  visitor.provider()->VisitRegisteredExtension();
+
+  // Check that ReinstallProviderExtensions() returns the extensions from the
+  // saved prefs.
+  EXPECT_EQ(3, visitor.ReinstallProviderExtensions(json_data));
 }
 
 TEST_F(ExtensionServiceTest, DoNotInstallForEnterprise) {

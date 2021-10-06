@@ -166,18 +166,34 @@ void ExternalProviderImpl::SetPrefs(
   prefs_ = std::move(prefs);
   ready_ = true;  // Queries for extensions are allowed from this point.
 
+  NotifyServiceOnExternalExtensionsFound(/*is_initial_load=*/true);
+  service_->OnExternalProviderReady(this);
+}
+
+void ExternalProviderImpl::TriggerOnExternalExtensionFound() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Check if the service is still alive. It is possible that it went
+  // away while |loader_| was working on the FILE thread. The prefs can be
+  // missing if SetPrefs() was not called yet.
+  if (!service_ || !prefs_)
+    return;
+
+  NotifyServiceOnExternalExtensionsFound(/*is_initial_load=*/false);
+}
+
+void ExternalProviderImpl::NotifyServiceOnExternalExtensionsFound(
+    bool is_initial_load) {
   std::vector<ExternalInstallInfoUpdateUrl> external_update_url_extensions;
   std::vector<ExternalInstallInfoFile> external_file_extensions;
 
   RetrieveExtensionsFromPrefs(&external_update_url_extensions,
                               &external_file_extensions);
   for (const auto& extension : external_update_url_extensions)
-    service_->OnExternalExtensionUpdateUrlFound(extension, true);
+    service_->OnExternalExtensionUpdateUrlFound(extension, is_initial_load);
 
   for (const auto& extension : external_file_extensions)
     service_->OnExternalExtensionFileFound(extension);
-
-  service_->OnExternalProviderReady(this);
 }
 
 void ExternalProviderImpl::UpdatePrefs(
