@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Sign in item.
   ItemTypeSignInHeader,
   ItemTypeAddAccount,
-  // Indication that some restricted accoints were removed from the list.
+  // Indicates that restricted accounts are removed from the list.
   ItemTypeRestrictedAccountsFooter,
   // Provides sign out items used only for non-managed accounts.
   ItemTypeSignOut,
