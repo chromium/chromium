@@ -1043,36 +1043,6 @@ class WebTestDirMergerTests(unittest.TestCase):
   "version": 3
 }"""
 
-    shard0_archived_results_json = b"""\
-ADD_RESULTS({
-  "result_links": [
-    "results.html"
-  ],
-  "tests": {
-    "testdir1": {
-      "test1.html": {
-        "archived_results": [
-          "PASS"
-        ]
-      },
-      "test2.html": {
-        "archived_results": [
-          "PASS"
-        ]
-      }
-    },
-    "testdir2": {
-      "testdir2.1": {
-        "test3.html": {
-          "archived_results": [
-            "PASS"
-          ]
-        }
-      }
-    }
-  }
-});"""
-
     shard0_stats_json = b"""\
 {
   "testdir1": {
@@ -1159,31 +1129,6 @@ ADD_RESULTS({
   "version": 3
 }"""
 
-    shard1_archived_results_json = b"""\
-ADD_RESULTS({
-  "result_links": [
-    "results.html"
-  ],
-  "tests": {
-    "testdir2": {
-      "testdir2.1": {
-        "test4.html": {
-          "archived_results": [
-            "FAIL"
-          ]
-        }
-      }
-    },
-    "testdir3": {
-      "test5.html": {
-        "archived_results": [
-          "PASS"
-        ]
-      }
-    }
-  }
-});"""
-
     shard1_stats_json = b"""\
 {
   "testdir2": {
@@ -1223,8 +1168,6 @@ ADD_RESULTS({
         # Files for shard0
         '/shards/0/layout-test-results/access_log.txt':
         shard0_access_log,
-        '/shards/0/layout-test-results/archived_results.json':
-        shard0_archived_results_json,
         '/shards/0/layout-test-results/error_log.txt':
         shard0_error_log,
         '/shards/0/layout-test-results/failing_results.json':
@@ -1270,8 +1213,6 @@ ADD_RESULTS({
         # Files for shard1
         '/shards/1/layout-test-results/access_log.txt':
         shard1_access_log,
-        '/shards/1/layout-test-results/archived_results.json':
-        shard1_archived_results_json,
         '/shards/1/layout-test-results/error_log.txt':
         shard1_error_log,
         '/shards/1/layout-test-results/failing_results.json':
@@ -1369,49 +1310,6 @@ ADD_RESULTS({
   "version": 3
 }"""
 
-    output_archived_results_json = """\
-ADD_RESULTS({
-  "result_links": [
-    "results.html",
-    "results.html"
-  ],
-  "tests": {
-    "testdir1": {
-      "test1.html": {
-        "archived_results": [
-          "PASS"
-        ]
-      },
-      "test2.html": {
-        "archived_results": [
-          "PASS"
-        ]
-      }
-    },
-    "testdir2": {
-      "testdir2.1": {
-        "test3.html": {
-          "archived_results": [
-            "PASS"
-          ]
-        },
-        "test4.html": {
-          "archived_results": [
-            "FAIL"
-          ]
-        }
-      }
-    },
-    "testdir3": {
-      "test5.html": {
-        "archived_results": [
-          "PASS"
-        ]
-      }
-    }
-  }
-});"""
-
     output_stats_json = """\
 {
   "testdir1": {
@@ -1499,8 +1397,6 @@ ADD_RESULTS({
     web_test_output_filesystem = {
         '/out/layout-test-results/access_log.txt':
         output_access_log,
-        '/out/layout-test-results/archived_results.json':
-        output_archived_results_json,
         '/out/layout-test-results/error_log.txt':
         output_error_log,
         '/out/layout-test-results/failing_results.json':
@@ -1568,7 +1464,7 @@ ADD_RESULTS({
             if fname.endswith(".json"):
                 actual_json_str = fs.files[fname]
                 expected_json_str = expected_contents
-                if "archived_results" in fname or "failing_results" in fname:
+                if "failing_results" in fname:
                     self.assertTrue(
                         MergeFilesJSONPTests.check_before_after(
                             fs.files[fname], b'ADD_RESULTS(', b");"))
