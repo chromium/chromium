@@ -223,6 +223,7 @@ void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
   // Set of windows to move.
   constexpr int kContainerIdsToMove[] = {
       kShellWindowId_AlwaysOnTopContainer,
+      kShellWindowId_FloatContainer,
       kShellWindowId_PipContainer,
       kShellWindowId_SystemModalContainer,
       kShellWindowId_LockSystemModalContainer,
@@ -1080,6 +1081,12 @@ void RootWindowController::CreateContainers() {
                       "AlwaysOnTopContainer", non_lock_screen_containers);
   ::wm::SetChildWindowVisibilityChangesAnimated(always_on_top_container);
   always_on_top_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
+
+  aura::Window* float_container =
+      CreateContainer(kShellWindowId_FloatContainer, "FloatContainer",
+                      non_lock_screen_containers);
+  wm::SetChildWindowVisibilityChangesAnimated(float_container);
+  float_container->SetProperty(wm::kUsesScreenCoordinatesKey, true);
 
   aura::Window* app_list_container =
       CreateContainer(kShellWindowId_AppListContainer, "AppListContainer",

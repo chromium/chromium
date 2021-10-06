@@ -572,7 +572,8 @@ std::unique_ptr<WindowResizer> CreateWindowResizer(
   if (parent &&
       // TODO(afakhry): Maybe use switchable containers?
       (desks_util::IsDeskContainer(parent) ||
-       parent->GetId() == kShellWindowId_AlwaysOnTopContainer)) {
+       parent->GetId() == kShellWindowId_AlwaysOnTopContainer ||
+       parent->GetId() == kShellWindowId_FloatContainer)) {
     window_resizer = WorkspaceWindowResizer::Create(window_state, {});
   } else {
     window_resizer = DefaultWindowResizer::Create(window_state);

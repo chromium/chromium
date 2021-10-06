@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -205,8 +206,7 @@ void ToggleFloating() {
   aura::Window* active_window = window_util::GetActiveWindow();
   if (!active_window)
     return;
-  WMEvent event(WM_EVENT_TOGGLE_FLOATING);
-  WindowState::Get(active_window)->OnWMEvent(&event);
+  Shell::Get()->float_controller()->ToggleFloatCurrentWindow(active_window);
 }
 
 void ToggleFullscreen() {

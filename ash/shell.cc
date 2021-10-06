@@ -147,6 +147,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/event_client_impl.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_event_handler.h"
 #include "ash/wm/immersive_context_ash.h"
 #include "ash/wm/lock_state_controller.h"
@@ -771,6 +772,7 @@ Shell::~Shell() {
   lock_state_controller_.reset();
   backlights_forced_off_setter_.reset();
 
+  float_controller_.reset();
   screen_pinning_controller_.reset();
 
   multidevice_notification_presenter_.reset();
@@ -1299,6 +1301,9 @@ void Shell::Init(
     marker_controller_ = std::make_unique<MarkerController>();
     projector_controller_ = std::make_unique<ProjectorControllerImpl>();
   }
+
+  if (features::IsWindowControlMenuEnabled())
+    float_controller_ = std::make_unique<FloatController>();
 
   // Injects the factory which fulfills the implementation of the text context
   // menu exclusive to CrOS.

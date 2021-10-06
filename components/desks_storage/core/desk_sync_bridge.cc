@@ -237,7 +237,6 @@ WindowState FromChromeOsWindowState(chromeos::WindowStateType state) {
     case chromeos::WindowStateType::kAutoPositioned:
     case chromeos::WindowStateType::kPinned:
     case chromeos::WindowStateType::kTrustedPinned:
-    case chromeos::WindowStateType::kFloating:
     case chromeos::WindowStateType::kPip:
       return WindowState::WorkspaceDeskSpecifics_WindowState_NORMAL;
     case chromeos::WindowStateType::kMinimized:

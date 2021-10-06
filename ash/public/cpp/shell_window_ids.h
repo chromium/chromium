@@ -82,6 +82,9 @@ enum ShellWindowId {
   // The container for the app list.
   kShellWindowId_AppListContainer,
 
+  // The container for the floating window.
+  kShellWindowId_FloatContainer,
+
   // The container for the home screen, e.g. the app list in tablet mode.
   kShellWindowId_HomeScreenContainer,
 

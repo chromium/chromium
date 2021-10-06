@@ -32,12 +32,13 @@ constexpr std::array<int, 11> kPreDesksActivatableContainersIds = {
 
 // List of IDs of the containers whose windows are actiavated *after* windows in
 // the desks containers.
-constexpr std::array<int, 4> kPostDesksActivatableContainersIds = {
+constexpr std::array<int, 5> kPostDesksActivatableContainersIds = {
     kShellWindowId_HomeScreenContainer,
 
     // Launcher and status are intentionally checked after other containers
     // even though these layers are higher. The user expects their windows
     // to be focused before these elements.
+    kShellWindowId_FloatContainer,
     kShellWindowId_PipContainer,
     kShellWindowId_ShelfContainer,
     kShellWindowId_ShelfBubbleContainer,
