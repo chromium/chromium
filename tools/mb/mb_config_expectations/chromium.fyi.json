@@ -430,17 +430,15 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "never_remove_from_brp_pool_blocklist": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
       "use_allocator": "partition",
-      "use_backup_ref_ptr": true,
+      "use_backup_ref_ptr": false,
       "use_goma": true
     }
   },
@@ -448,17 +446,15 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "never_remove_from_brp_pool_blocklist": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
       "use_allocator": "partition",
-      "use_backup_ref_ptr": true,
+      "use_backup_ref_ptr": false,
       "use_goma": true
     }
   },
@@ -860,14 +856,12 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
       "is_component_build": false,
       "is_debug": false,
-      "never_remove_from_brp_pool_blocklist": true,
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_allocator": "partition",
-      "use_backup_ref_ptr": true,
+      "use_backup_ref_ptr": false,
       "use_goma": true
     }
   },
@@ -1201,14 +1195,12 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
       "is_component_build": false,
       "is_debug": false,
-      "never_remove_from_brp_pool_blocklist": true,
       "symbol_level": 1,
       "target_cpu": "x64",
       "use_allocator": "partition",
-      "use_backup_ref_ptr": true,
+      "use_backup_ref_ptr": false,
       "use_goma": true
     }
   },
@@ -1216,14 +1208,12 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
-      "enable_backup_ref_ptr_slow_checks": true,
       "is_component_build": false,
       "is_debug": false,
-      "never_remove_from_brp_pool_blocklist": true,
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_allocator": "partition",
-      "use_backup_ref_ptr": true,
+      "use_backup_ref_ptr": false,
       "use_goma": true
     }
   },
