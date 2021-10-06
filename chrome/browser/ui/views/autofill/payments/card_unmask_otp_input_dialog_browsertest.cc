@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
@@ -56,21 +57,47 @@ class CardUnmaskOtpInputDialogBrowserTest : public DialogBrowserTest {
   }
 };
 
+// Ensures the UI can be shown.
+#if defined(OS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_InvokeUi_CardUnmaskOtpInputDialogDisplays \
+  DISABLED_InvokeUi_CardUnmaskOtpInputDialogDisplays
+#else
+#define MAYBE_InvokeUi_CardUnmaskOtpInputDialogDisplays \
+  InvokeUi_CardUnmaskOtpInputDialogDisplays
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
-                       InvokeUi_CardUnmaskOtpInputDialogDisplays) {
+                       MAYBE_InvokeUi_CardUnmaskOtpInputDialogDisplays) {
   ShowAndVerifyUi();
 }
 
+// Ensures closing tab while dialog being visible is correctly handled.
+#if defined(OS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_CanCloseTabWhileDialogShowing \
+  DISABLED_CanCloseTabWhileDialogShowing
+#else
+#define MAYBE_CanCloseTabWhileDialogShowing CanCloseTabWhileDialogShowing
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
-                       CanCloseTabWhileDialogShowing) {
+                       MAYBE_CanCloseTabWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
   browser()->tab_strip_model()->GetActiveWebContents()->Close();
   base::RunLoop().RunUntilIdle();
 }
 
+// Ensures closing browser while dialog being visible is correctly handled.
+#if defined(OS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_CanCloseBrowserWhileDialogShowing \
+  DISABLED_CanCloseBrowserWhileDialogShowing
+#else
+#define MAYBE_CanCloseBrowserWhileDialogShowing \
+  CanCloseBrowserWhileDialogShowing
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskOtpInputDialogBrowserTest,
-                       CanCloseBrowserWhileDialogShowing) {
+                       MAYBE_CanCloseBrowserWhileDialogShowing) {
   ShowUi("");
   VerifyUi();
   browser()->window()->Close();

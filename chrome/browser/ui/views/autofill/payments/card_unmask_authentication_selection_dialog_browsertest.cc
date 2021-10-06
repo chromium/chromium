@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
@@ -66,15 +67,30 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTest
 };
 
 // Ensures the UI can be shown.
+#if defined(OS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_InvokeUi_CardUnmaskAuthSelectionDialogDisplays \
+  DISABLED_InvokeUi_CardUnmaskAuthSelectionDialogDisplays
+#else
+#define MAYBE_InvokeUi_CardUnmaskAuthSelectionDialogDisplays \
+  InvokeUi_CardUnmaskAuthSelectionDialogDisplays
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
-                       InvokeUi_CardUnmaskAuthSelectionDialogDisplays) {
+                       MAYBE_InvokeUi_CardUnmaskAuthSelectionDialogDisplays) {
   InitChallengeOptions();
   ShowAndVerifyUi();
 }
 
 // Ensures closing tab while dialog being visible is correctly handled.
+#if defined(OS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_CanCloseTabWhileDialogShowing \
+  DISABLED_CanCloseTabWhileDialogShowing
+#else
+#define MAYBE_CanCloseTabWhileDialogShowing CanCloseTabWhileDialogShowing
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
-                       CanCloseTabWhileDialogShowing) {
+                       MAYBE_CanCloseTabWhileDialogShowing) {
   InitChallengeOptions();
   ShowUi("");
   VerifyUi();
@@ -83,8 +99,16 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
 }
 
 // Ensures closing browser while dialog being visible is correctly handled.
+#if defined(OS_WIN)
+// Triggering logic required for Windows OS runs: https://crbug.com/1254686
+#define MAYBE_CanCloseBrowserWhileDialogShowing \
+  DISABLED_CanCloseBrowserWhileDialogShowing
+#else
+#define MAYBE_CanCloseBrowserWhileDialogShowing \
+  CanCloseBrowserWhileDialogShowing
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskAuthenticationSelectionDialogBrowserTest,
-                       CanCloseBrowserWhileDialogShowing) {
+                       MAYBE_CanCloseBrowserWhileDialogShowing) {
   InitChallengeOptions();
   ShowUi("");
   VerifyUi();
