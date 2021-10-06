@@ -49,6 +49,7 @@ class OAuthHttpFetcher : public HttpFetcher, public OAuth2ApiCallFlow {
   // google_apis::OAuth2ApiCallFlow:
   GURL CreateApiCallUrl() override;
   std::string CreateApiCallBody() override;
+  std::string CreateApiCallBodyContentType() override;
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
   void ProcessApiCallFailure(int net_error,

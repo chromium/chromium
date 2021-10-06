@@ -120,6 +120,17 @@ std::string OAuthHttpFetcher::CreateApiCallBody() {
   }
 }
 
+std::string OAuthHttpFetcher::CreateApiCallBodyContentType() {
+  switch (request_type_) {
+    case RequestType::GET:
+    case RequestType::DELETE:
+      return std::string();
+
+    case RequestType::POST:
+      return "application/x-protobuf";
+  }
+}
+
 std::string OAuthHttpFetcher::GetRequestTypeForBody(const std::string& body) {
   switch (request_type_) {
     case RequestType::GET:
