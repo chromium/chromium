@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -98,8 +99,7 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
 
   // InkDropRipple:
   void AnimateStateChange(InkDropState old_ink_drop_state,
-                          InkDropState new_ink_drop_state,
-                          ui::LayerAnimationObserver* observer) override;
+                          InkDropState new_ink_drop_state) override;
   void SetStateToHidden() override;
   void AbortAllAnimations() override;
 
@@ -111,8 +111,7 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
       const InkDropTransforms transforms,
       base::TimeDelta duration,
       ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween,
-      ui::LayerAnimationObserver* observer);
+      gfx::Tween::Type tween);
 
   // Sets the |transforms| on all of the shape layers. Note that this does not
   // perform any animation.
@@ -130,8 +129,7 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
       float opacity,
       base::TimeDelta duration,
       ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween,
-      ui::LayerAnimationObserver* observer);
+      gfx::Tween::Type tween);
 
   // Updates all of the Transforms in |transforms_out| for a circle of the given
   // |size|.
@@ -169,6 +167,10 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
   // Adds and configures a new |painted_shape| layer to |painted_layers_|.
   void AddPaintLayer(PaintedShape painted_shape);
 
+  // Called from LayerAnimator when a new LayerAnimationSequence is scheduled
+  // which allows for assigning the observer to the sequence.
+  void OnLayerAnimationSequenceScheduled(ui::LayerAnimationSequence* sequence);
+
   // The shape used for the ACTIVATED/DEACTIVATED states.
   ActivatedShape activated_shape_;
 
@@ -205,8 +207,14 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
   // the different painted shapes that compose the ink drop.
   ui::Layer root_layer_;
 
+  // Sequence scheduled callback subscription for the root layer.
+  base::CallbackListSubscription root_callback_subscription_;
+
   // ui::Layers for all of the painted shape layers that compose the ink drop.
   std::unique_ptr<ui::Layer> painted_layers_[PAINTED_SHAPE_COUNT];
+
+  // Sequence scheduled callback subscriptions for the painted layers.
+  base::CallbackListSubscription callback_subscriptions_[PAINTED_SHAPE_COUNT];
 };
 
 }  // namespace views

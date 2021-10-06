@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -167,6 +168,11 @@ SquareInkDropRipple::SquareInkDropRipple(const gfx::Size& large_size,
 
   root_layer_.SetMasksToBounds(false);
   root_layer_.SetBounds(gfx::Rect(large_size_));
+  root_callback_subscription_ =
+      root_layer_.GetAnimator()->AddSequenceScheduledCallback(
+          base::BindRepeating(
+              &SquareInkDropRipple::OnLayerAnimationSequenceScheduled,
+              base::Unretained(this)));
 
   SetStateToHidden();
 }
@@ -214,10 +220,8 @@ std::string SquareInkDropRipple::ToLayerName(PaintedShape painted_shape) {
   return "UNKNOWN";
 }
 
-void SquareInkDropRipple::AnimateStateChange(
-    InkDropState old_ink_drop_state,
-    InkDropState new_ink_drop_state,
-    ui::LayerAnimationObserver* animation_observer) {
+void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
+                                             InkDropState new_ink_drop_state) {
   InkDropTransforms transforms;
 
   switch (new_ink_drop_state) {
@@ -228,12 +232,12 @@ void SquareInkDropRipple::AnimateStateChange(
       } else {
         AnimateToOpacity(kHiddenOpacity, GetAnimationDuration(HIDDEN_FADE_OUT),
                          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                         gfx::Tween::EASE_IN_OUT, animation_observer);
+                         gfx::Tween::EASE_IN_OUT);
         CalculateCircleTransforms(small_size_, &transforms);
         AnimateToTransforms(
             transforms, GetAnimationDuration(HIDDEN_TRANSFORM),
             ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-            gfx::Tween::EASE_IN_OUT, animation_observer);
+            gfx::Tween::EASE_IN_OUT);
       }
       break;
     case InkDropState::ACTION_PENDING:
@@ -247,16 +251,16 @@ void SquareInkDropRipple::AnimateStateChange(
       AnimateToOpacity(visible_opacity_,
                        GetAnimationDuration(ACTION_PENDING_FADE_IN),
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN, animation_observer);
+                       gfx::Tween::EASE_IN);
       AnimateToOpacity(visible_opacity_,
                        GetAnimationDuration(ACTION_PENDING_TRANSFORM),
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN, animation_observer);
+                       gfx::Tween::EASE_IN);
       CalculateCircleTransforms(large_size_, &transforms);
       AnimateToTransforms(transforms,
                           GetAnimationDuration(ACTION_PENDING_TRANSFORM),
                           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                          gfx::Tween::EASE_IN_OUT, animation_observer);
+                          gfx::Tween::EASE_IN_OUT);
       break;
     case InkDropState::ACTION_TRIGGERED: {
       DLOG_IF(WARNING, old_ink_drop_state != InkDropState::HIDDEN &&
@@ -266,19 +270,16 @@ void SquareInkDropRipple::AnimateStateChange(
           << " new_ink_drop_state=" << ToString(new_ink_drop_state);
 
       if (old_ink_drop_state == InkDropState::HIDDEN) {
-        AnimateStateChange(old_ink_drop_state, InkDropState::ACTION_PENDING,
-                           animation_observer);
+        AnimateStateChange(old_ink_drop_state, InkDropState::ACTION_PENDING);
       }
-      AnimateToOpacity(kHiddenOpacity,
-                       GetAnimationDuration(ACTION_TRIGGERED_FADE_OUT),
-                       ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
-                       gfx::Tween::EASE_IN_OUT, animation_observer);
+      AnimateToOpacity(
+          kHiddenOpacity, GetAnimationDuration(ACTION_TRIGGERED_FADE_OUT),
+          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT);
       gfx::Size s = ScaleToRoundedSize(large_size_, kQuickActionBurstScale);
       CalculateCircleTransforms(s, &transforms);
-      AnimateToTransforms(transforms,
-                          GetAnimationDuration(ACTION_TRIGGERED_TRANSFORM),
-                          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
-                          gfx::Tween::EASE_IN_OUT, animation_observer);
+      AnimateToTransforms(
+          transforms, GetAnimationDuration(ACTION_TRIGGERED_TRANSFORM),
+          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT);
       break;
     }
     case InkDropState::ALTERNATE_ACTION_PENDING:
@@ -290,12 +291,12 @@ void SquareInkDropRipple::AnimateStateChange(
       AnimateToOpacity(visible_opacity_,
                        GetAnimationDuration(ALTERNATE_ACTION_PENDING),
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN, animation_observer);
+                       gfx::Tween::EASE_IN);
       CalculateRectTransforms(small_size_, small_corner_radius_, &transforms);
       AnimateToTransforms(transforms,
                           GetAnimationDuration(ALTERNATE_ACTION_PENDING),
                           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                          gfx::Tween::EASE_IN_OUT, animation_observer);
+                          gfx::Tween::EASE_IN_OUT);
       break;
     case InkDropState::ALTERNATE_ACTION_TRIGGERED: {
       DLOG_IF(WARNING,
@@ -309,18 +310,17 @@ void SquareInkDropRipple::AnimateStateChange(
           GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_FADE_OUT);
       AnimateToOpacity(visible_opacity_, visible_duration,
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN_OUT, animation_observer);
+                       gfx::Tween::EASE_IN_OUT);
       AnimateToOpacity(
           kHiddenOpacity,
           GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_FADE_OUT),
-          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT,
-          animation_observer);
+          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT);
       CalculateRectTransforms(large_size_, large_corner_radius_, &transforms);
       AnimateToTransforms(
           transforms,
           GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_TRANSFORM),
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-          gfx::Tween::EASE_IN_OUT, animation_observer);
+          gfx::Tween::EASE_IN_OUT);
       break;
     }
     case InkDropState::ACTIVATED: {
@@ -328,7 +328,7 @@ void SquareInkDropRipple::AnimateStateChange(
       // in progress.
       AnimateToOpacity(visible_opacity_, base::TimeDelta(),
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN_OUT, animation_observer);
+                       gfx::Tween::EASE_IN_OUT);
 
       ui::LayerAnimator::PreemptionStrategy rect_transform_preemption_strategy =
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET;
@@ -339,17 +339,16 @@ void SquareInkDropRipple::AnimateStateChange(
         AnimateToTransforms(
             transforms, GetAnimationDuration(ACTIVATED_CIRCLE_TRANSFORM),
             ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-            gfx::Tween::EASE_IN_OUT, animation_observer);
+            gfx::Tween::EASE_IN_OUT);
       } else if (old_ink_drop_state == InkDropState::ACTION_PENDING) {
         rect_transform_preemption_strategy =
             ui::LayerAnimator::ENQUEUE_NEW_ANIMATION;
       }
 
       GetActivatedTargetTransforms(&transforms);
-      AnimateToTransforms(transforms,
-                          GetAnimationDuration(ACTIVATED_RECT_TRANSFORM),
-                          rect_transform_preemption_strategy,
-                          gfx::Tween::EASE_IN_OUT, animation_observer);
+      AnimateToTransforms(
+          transforms, GetAnimationDuration(ACTIVATED_RECT_TRANSFORM),
+          rect_transform_preemption_strategy, gfx::Tween::EASE_IN_OUT);
       break;
     }
     case InkDropState::DEACTIVATED: {
@@ -358,16 +357,15 @@ void SquareInkDropRipple::AnimateStateChange(
           GetAnimationDuration(DEACTIVATED_FADE_OUT);
       AnimateToOpacity(visible_opacity_, visible_duration,
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN_OUT, animation_observer);
-      AnimateToOpacity(kHiddenOpacity,
-                       GetAnimationDuration(DEACTIVATED_FADE_OUT),
-                       ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
-                       gfx::Tween::EASE_IN_OUT, animation_observer);
+                       gfx::Tween::EASE_IN_OUT);
+      AnimateToOpacity(
+          kHiddenOpacity, GetAnimationDuration(DEACTIVATED_FADE_OUT),
+          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT);
       GetDeactivatedTargetTransforms(&transforms);
       AnimateToTransforms(transforms,
                           GetAnimationDuration(DEACTIVATED_TRANSFORM),
                           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                          gfx::Tween::EASE_IN_OUT, animation_observer);
+                          gfx::Tween::EASE_IN_OUT);
       break;
     }
   }
@@ -392,8 +390,7 @@ void SquareInkDropRipple::AnimateToTransforms(
     const InkDropTransforms transforms,
     base::TimeDelta duration,
     ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-    gfx::Tween::Type tween,
-    ui::LayerAnimationObserver* animation_observer) {
+    gfx::Tween::Type tween) {
   for (int i = 0; i < PAINTED_SHAPE_COUNT; ++i) {
     ui::LayerAnimator* animator = painted_layers_[i]->GetAnimator();
     ui::ScopedLayerAnimationSettings animation(animator);
@@ -404,9 +401,6 @@ void SquareInkDropRipple::AnimateToTransforms(
                                                           duration);
     ui::LayerAnimationSequence* sequence =
         new ui::LayerAnimationSequence(std::move(element));
-
-    if (animation_observer)
-      sequence->AddObserver(animation_observer);
 
     animator->StartAnimation(sequence);
   }
@@ -425,8 +419,7 @@ void SquareInkDropRipple::AnimateToOpacity(
     float opacity,
     base::TimeDelta duration,
     ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-    gfx::Tween::Type tween,
-    ui::LayerAnimationObserver* animation_observer) {
+    gfx::Tween::Type tween) {
   ui::LayerAnimator* animator = root_layer_.GetAnimator();
   ui::ScopedLayerAnimationSettings animation_settings(animator);
   animation_settings.SetPreemptionStrategy(preemption_strategy);
@@ -435,9 +428,6 @@ void SquareInkDropRipple::AnimateToOpacity(
       ui::LayerAnimationElement::CreateOpacityElement(opacity, duration);
   ui::LayerAnimationSequence* animation_sequence =
       new ui::LayerAnimationSequence(std::move(animation_element));
-
-  if (animation_observer)
-    animation_sequence->AddObserver(animation_observer);
 
   animator->StartAnimation(animation_sequence);
 }
@@ -596,8 +586,17 @@ void SquareInkDropRipple::AddPaintLayer(PaintedShape painted_shape) {
   layer->SetOpacity(1.0);
   layer->SetMasksToBounds(false);
   layer->SetName("PAINTED_SHAPE_COUNT:" + ToLayerName(painted_shape));
+  callback_subscriptions_[painted_shape] =
+      layer->GetAnimator()->AddSequenceScheduledCallback(base::BindRepeating(
+          &SquareInkDropRipple::OnLayerAnimationSequenceScheduled,
+          base::Unretained(this)));
 
   painted_layers_[painted_shape].reset(layer);
+}
+
+void SquareInkDropRipple::OnLayerAnimationSequenceScheduled(
+    ui::LayerAnimationSequence* sequence) {
+  sequence->AddObserver(GetLayerAnimationObserver());
 }
 
 }  // namespace views

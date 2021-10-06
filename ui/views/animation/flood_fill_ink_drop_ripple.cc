@@ -5,8 +5,10 @@
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
@@ -125,12 +127,16 @@ FloodFillInkDropRipple::FloodFillInkDropRipple(const gfx::Size& host_size,
       root_layer_(ui::LAYER_NOT_DRAWN),
       circle_layer_delegate_(color,
                              CalculateCircleLayerRadius(
-                                 CalculateClipBounds(host_size, clip_insets))),
-      ink_drop_state_(InkDropState::HIDDEN) {
+                                 CalculateClipBounds(host_size, clip_insets))) {
   gfx::Rect clip_bounds = CalculateClipBounds(host_size, clip_insets);
   root_layer_.SetName("FloodFillInkDropRipple:ROOT_LAYER");
   root_layer_.SetMasksToBounds(true);
   root_layer_.SetBounds(clip_bounds);
+  root_callback_subscription_ =
+      root_layer_.GetAnimator()->AddSequenceScheduledCallback(
+          base::BindRepeating(
+              &FloodFillInkDropRipple::OnLayerAnimationSequenceScheduled,
+              base::Unretained(this)));
 
   const int painted_size_length =
       std::max(clip_bounds.width(), clip_bounds.height());
@@ -142,6 +148,11 @@ FloodFillInkDropRipple::FloodFillInkDropRipple(const gfx::Size& host_size,
   painted_layer_.SetOpacity(1.0);
   painted_layer_.SetMasksToBounds(false);
   painted_layer_.SetName("FloodFillInkDropRipple:PAINTED_LAYER");
+  painted_layer_callback_subscription_ =
+      painted_layer_.GetAnimator()->AddSequenceScheduledCallback(
+          base::BindRepeating(
+              &FloodFillInkDropRipple::OnLayerAnimationSequenceScheduled,
+              base::Unretained(this)));
 
   root_layer_.Add(&painted_layer_);
 
@@ -176,8 +187,7 @@ ui::Layer* FloodFillInkDropRipple::GetRootLayer() {
 
 void FloodFillInkDropRipple::AnimateStateChange(
     InkDropState old_ink_drop_state,
-    InkDropState new_ink_drop_state,
-    ui::LayerAnimationObserver* animation_observer) {
+    InkDropState new_ink_drop_state) {
   switch (new_ink_drop_state) {
     case InkDropState::HIDDEN:
       if (!IsVisible()) {
@@ -185,11 +195,11 @@ void FloodFillInkDropRipple::AnimateStateChange(
       } else {
         AnimateToOpacity(kHiddenOpacity, GetAnimationDuration(HIDDEN_FADE_OUT),
                          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                         gfx::Tween::EASE_IN_OUT, animation_observer);
+                         gfx::Tween::EASE_IN_OUT);
         const gfx::Transform transform = CalculateTransform(kMinRadius);
         AnimateToTransform(transform, GetAnimationDuration(HIDDEN_TRANSFORM),
                            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                           gfx::Tween::EASE_IN_OUT, animation_observer);
+                           gfx::Tween::EASE_IN_OUT);
       }
       break;
     case InkDropState::ACTION_PENDING: {
@@ -201,16 +211,15 @@ void FloodFillInkDropRipple::AnimateStateChange(
       AnimateToOpacity(visible_opacity_,
                        GetAnimationDuration(ACTION_PENDING_FADE_IN),
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN, animation_observer);
+                       gfx::Tween::EASE_IN);
       PauseOpacityAnimation(GetAnimationDuration(ACTION_PENDING_TRANSFORM) -
                                 GetAnimationDuration(ACTION_PENDING_FADE_IN),
-                            ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
-                            animation_observer);
+                            ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
 
       AnimateToTransform(GetMaxSizeTargetTransform(),
                          GetAnimationDuration(ACTION_PENDING_TRANSFORM),
                          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                         gfx::Tween::FAST_OUT_SLOW_IN, animation_observer);
+                         gfx::Tween::FAST_OUT_SLOW_IN);
       break;
     }
     case InkDropState::ACTION_TRIGGERED: {
@@ -221,13 +230,11 @@ void FloodFillInkDropRipple::AnimateStateChange(
           << " new_ink_drop_state=" << ToString(new_ink_drop_state);
 
       if (old_ink_drop_state == InkDropState::HIDDEN) {
-        AnimateStateChange(old_ink_drop_state, InkDropState::ACTION_PENDING,
-                           animation_observer);
+        AnimateStateChange(old_ink_drop_state, InkDropState::ACTION_PENDING);
       }
-      AnimateToOpacity(kHiddenOpacity,
-                       GetAnimationDuration(ACTION_TRIGGERED_FADE_OUT),
-                       ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
-                       gfx::Tween::EASE_IN_OUT, animation_observer);
+      AnimateToOpacity(
+          kHiddenOpacity, GetAnimationDuration(ACTION_TRIGGERED_FADE_OUT),
+          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT);
       break;
     }
     case InkDropState::ALTERNATE_ACTION_PENDING: {
@@ -239,11 +246,11 @@ void FloodFillInkDropRipple::AnimateStateChange(
       AnimateToOpacity(visible_opacity_,
                        GetAnimationDuration(ALTERNATE_ACTION_PENDING),
                        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                       gfx::Tween::EASE_IN, animation_observer);
+                       gfx::Tween::EASE_IN);
       AnimateToTransform(GetMaxSizeTargetTransform(),
                          GetAnimationDuration(ALTERNATE_ACTION_PENDING),
                          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                         gfx::Tween::EASE_IN_OUT, animation_observer);
+                         gfx::Tween::EASE_IN_OUT);
       break;
     }
     case InkDropState::ALTERNATE_ACTION_TRIGGERED:
@@ -256,8 +263,7 @@ void FloodFillInkDropRipple::AnimateStateChange(
       AnimateToOpacity(
           kHiddenOpacity,
           GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_FADE_OUT),
-          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT,
-          animation_observer);
+          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT);
       break;
     case InkDropState::ACTIVATED: {
       if (old_ink_drop_state == InkDropState::ACTION_PENDING) {
@@ -266,29 +272,26 @@ void FloodFillInkDropRipple::AnimateStateChange(
         // so that animation observers are notified in order.
         PauseOpacityAnimation(
             base::TimeDelta(),
-            ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION,
-            animation_observer);
+            ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION);
         PauseTransformAnimation(
             base::TimeDelta(),
-            ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION,
-            animation_observer);
+            ui::LayerAnimator::PreemptionStrategy::ENQUEUE_NEW_ANIMATION);
       } else {
         AnimateToOpacity(visible_opacity_,
                          GetAnimationDuration(ACTIVATED_FADE_IN),
                          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                         gfx::Tween::EASE_IN, animation_observer);
+                         gfx::Tween::EASE_IN);
         AnimateToTransform(GetMaxSizeTargetTransform(),
                            GetAnimationDuration(ACTIVATED_TRANSFORM),
                            ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET,
-                           gfx::Tween::EASE_IN_OUT, animation_observer);
+                           gfx::Tween::EASE_IN_OUT);
       }
       break;
     }
     case InkDropState::DEACTIVATED:
-      AnimateToOpacity(kHiddenOpacity,
-                       GetAnimationDuration(DEACTIVATED_FADE_OUT),
-                       ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
-                       gfx::Tween::EASE_IN_OUT, animation_observer);
+      AnimateToOpacity(
+          kHiddenOpacity, GetAnimationDuration(DEACTIVATED_FADE_OUT),
+          ui::LayerAnimator::ENQUEUE_NEW_ANIMATION, gfx::Tween::EASE_IN_OUT);
       break;
   }
 }
@@ -308,8 +311,7 @@ void FloodFillInkDropRipple::AnimateToTransform(
     const gfx::Transform& transform,
     base::TimeDelta duration,
     ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-    gfx::Tween::Type tween,
-    ui::LayerAnimationObserver* animation_observer) {
+    gfx::Tween::Type tween) {
   ui::LayerAnimator* animator = painted_layer_.GetAnimator();
   ui::ScopedLayerAnimationSettings animation(animator);
   animation.SetPreemptionStrategy(preemption_strategy);
@@ -321,16 +323,12 @@ void FloodFillInkDropRipple::AnimateToTransform(
   ui::LayerAnimationSequence* sequence =
       new ui::LayerAnimationSequence(std::move(element));
 
-  if (animation_observer)
-    sequence->AddObserver(animation_observer);
-
   animator->StartAnimation(sequence);
 }
 
 void FloodFillInkDropRipple::PauseTransformAnimation(
     base::TimeDelta duration,
-    ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-    ui::LayerAnimationObserver* observer) {
+    ui::LayerAnimator::PreemptionStrategy preemption_strategy) {
   ui::LayerAnimator* animator = painted_layer_.GetAnimator();
   ui::ScopedLayerAnimationSettings animation(animator);
   animation.SetPreemptionStrategy(preemption_strategy);
@@ -341,9 +339,6 @@ void FloodFillInkDropRipple::PauseTransformAnimation(
 
   ui::LayerAnimationSequence* sequence =
       new ui::LayerAnimationSequence(std::move(element));
-
-  if (observer)
-    sequence->AddObserver(observer);
 
   animator->StartAnimation(sequence);
 }
@@ -356,8 +351,7 @@ void FloodFillInkDropRipple::AnimateToOpacity(
     float opacity,
     base::TimeDelta duration,
     ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-    gfx::Tween::Type tween,
-    ui::LayerAnimationObserver* animation_observer) {
+    gfx::Tween::Type tween) {
   ui::LayerAnimator* animator = root_layer_.GetAnimator();
   ui::ScopedLayerAnimationSettings animation_settings(animator);
   animation_settings.SetPreemptionStrategy(preemption_strategy);
@@ -367,16 +361,12 @@ void FloodFillInkDropRipple::AnimateToOpacity(
   ui::LayerAnimationSequence* animation_sequence =
       new ui::LayerAnimationSequence(std::move(animation_element));
 
-  if (animation_observer)
-    animation_sequence->AddObserver(animation_observer);
-
   animator->StartAnimation(animation_sequence);
 }
 
 void FloodFillInkDropRipple::PauseOpacityAnimation(
     base::TimeDelta duration,
-    ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-    ui::LayerAnimationObserver* observer) {
+    ui::LayerAnimator::PreemptionStrategy preemption_strategy) {
   ui::LayerAnimator* animator = root_layer_.GetAnimator();
   ui::ScopedLayerAnimationSettings animation(animator);
   animation.SetPreemptionStrategy(preemption_strategy);
@@ -387,9 +377,6 @@ void FloodFillInkDropRipple::PauseOpacityAnimation(
 
   ui::LayerAnimationSequence* sequence =
       new ui::LayerAnimationSequence(std::move(element));
-
-  if (observer)
-    sequence->AddObserver(observer);
 
   animator->StartAnimation(sequence);
 }
@@ -450,6 +437,11 @@ base::TimeDelta FloodFillInkDropRipple::GetAnimationDuration(int state) {
 
   return base::Milliseconds(kAnimationDurationInMs[state_override] *
                             duration_factor_);
+}
+
+void FloodFillInkDropRipple::OnLayerAnimationSequenceScheduled(
+    ui::LayerAnimationSequence* sequence) {
+  sequence->AddObserver(GetLayerAnimationObserver());
 }
 
 }  // namespace views
