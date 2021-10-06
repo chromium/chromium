@@ -137,6 +137,7 @@ class TabWebContentsDelegateAndroid
   bool ShouldEnableEmbeddedMediaExperience() const;
   bool IsPictureInPictureEnabled() const;
   bool IsNightModeEnabled() const;
+  bool IsForceDarkWebContentEnabled() const;
   bool CanShowAppBanners() const;
   bool IsTabLargeEnoughForDesktopSite() const;
 

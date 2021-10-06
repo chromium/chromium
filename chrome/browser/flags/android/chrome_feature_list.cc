@@ -98,6 +98,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill_assistant::features::
         kAutofillAssistantDisableProactiveHelpTiedToMSBB,
     &blink::features::kPrerender2,
+    &blink::features::kForceWebContentsDarkMode,
     &commerce::kCommerceMerchantViewer,
     &commerce::kCommercePriceTracking,
     &commerce::kShoppingList,

@@ -10,6 +10,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/ShortcutHelperTest.java",
   "junit/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/app/appmenu/AppMenuPropertiesDelegateUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/app/tab_activity_glue/ActivityTabWebContentsDelegateAndroidUnitTest.java",
   "junit/src/org/chromium/chrome/browser/app/tab_activity_glue/TabReparentingControllerTest.java",
   "junit/src/org/chromium/chrome/browser/app/tabmodel/TabPersistentStoreIntegrationTest.java",
   "junit/src/org/chromium/chrome/browser/app/tabmodel/TabbedModeTabModelOrchestratorUnitTest.java",
