@@ -64,7 +64,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       /**
        * Has value for dialog in VIEW and EDIT modes.
        */
-      existingEntry: Object,
+      existingEntry: {type: Object, value: null},
 
       isAccountStoreUser: {type: Boolean, value: false},
 

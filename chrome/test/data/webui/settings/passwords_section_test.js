@@ -2141,6 +2141,21 @@ suite('PasswordsSection', function() {
                 '#addPasswordButton'));
       });
 
+  test('addPasswordButtonOpensAddPasswordDialog', function() {
+    loadTimeData.overrideValues({addPasswordsInSettingsEnabled: true});
+    const passwordsSection =
+        elementFactory.createPasswordsSection(passwordManager, [], []);
+    assertFalse(
+        !!passwordsSection.shadowRoot.querySelector('#addPasswordDialog'));
+
+    passwordsSection.shadowRoot.querySelector('#addPasswordButton').click();
+    flush();
+    const addDialog =
+        passwordsSection.shadowRoot.querySelector('#addPasswordDialog');
+    assertTrue(!!addDialog);
+    assertAddDialogParts(addDialog);
+  });
+
   test('editDialogWhenAddPasswordHasCorrectInitialState', function() {
     const addDialog = elementFactory.createPasswordEditDialog();
     assertAddDialogParts(addDialog);

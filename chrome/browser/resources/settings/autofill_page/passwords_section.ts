@@ -264,6 +264,8 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showPasswordsExportDialog_: Boolean,
 
+      showAddPasswordDialog_: Boolean,
+
       showAddPasswordButton_: {
         type: Boolean,
         value() {
@@ -306,6 +308,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
   // </if>
 
   private showPasswordsExportDialog_: boolean;
+  private showAddPasswordDialog_: boolean;
   private showAddPasswordButton_: boolean;
 
   private activeDialogAnchorStack_: Array<HTMLElement>;
@@ -609,6 +612,17 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onPasswordsExportDialogClosed_() {
     this.showPasswordsExportDialog_ = false;
+    focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()!));
+  }
+
+  private onAddPasswordTap_() {
+    this.showAddPasswordDialog_ = true;
+    this.activeDialogAnchorStack_.push(
+        this.shadowRoot!.querySelector('#addPasswordButton')!);
+  }
+
+  private onAddPasswordDialogClosed_() {
+    this.showAddPasswordDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()!));
   }
 

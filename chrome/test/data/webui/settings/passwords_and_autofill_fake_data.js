@@ -377,20 +377,20 @@ export class PasswordSectionElementFactory {
 
   /**
    * Helper method used to create a password editing dialog.
-   * @param {!MultiStorePasswordUiEntry} passwordEntry
-   * @param {!Array<!MultiStorePasswordUiEntry>} passwords
+   * @param {MultiStorePasswordUiEntry=} passwordEntry
+   * @param {Array<!MultiStorePasswordUiEntry>=} passwords
    * @return {!Object}
    */
-  createPasswordEditDialog(passwordEntry, passwords) {
+  createPasswordEditDialog(passwordEntry = null, passwords = []) {
     const passwordDialog = this.document.createElement('password-edit-dialog');
-    passwordDialog.existingEntry = passwordEntry ? passwordEntry : null;
+    passwordDialog.existingEntry = passwordEntry;
     if (passwordEntry && !passwordEntry.federationText) {
       // Edit dialog is always opened with plaintext password for non-federated
       // credentials since user authentication is required before opening the
       // edit dialog.
       passwordDialog.existingEntry.password = 'password';
     }
-    passwordDialog.savedPasswords = passwords ? passwords : [];
+    passwordDialog.savedPasswords = passwords;
     this.document.body.appendChild(passwordDialog);
     flush();
     return passwordDialog;
