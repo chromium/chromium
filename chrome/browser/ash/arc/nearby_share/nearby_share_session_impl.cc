@@ -211,13 +211,7 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
   DCHECK(share_info_);
 
   DVLOG(1) << __func__;
-  std::string text;
-  if (share_info_->extras.has_value() &&
-      share_info_->extras->contains(kIntentExtraText)) {
-    text = share_info_->extras->at(kIntentExtraText);
-  }
-
-  // Sharing files & text
+  // Sharing files
   if (share_info_->files.has_value()) {
     const auto share_file_paths = file_handler_->GetFilePaths();
     DCHECK_GT(share_file_paths.size(), 0);
@@ -232,14 +226,15 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
       return nullptr;
     }
     return apps_util::CreateShareIntentFromFiles(
-        absl::nullopt, share_file_paths, share_file_mime_types, text,
+        absl::nullopt, share_file_paths, share_file_mime_types, std::string(),
         share_info_->title);
   }
 
-  // Sharing only text
-  if (!text.empty()) {
-    apps::mojom::IntentPtr share_intent =
-        apps_util::CreateShareIntentFromText(text, share_info_->title);
+  // Sharing text
+  if (share_info_->extras.has_value() &&
+      share_info_->extras->contains(kIntentExtraText)) {
+    apps::mojom::IntentPtr share_intent = apps_util::CreateShareIntentFromText(
+        share_info_->extras->at(kIntentExtraText), share_info_->title);
     share_intent->mime_type = share_info_->mime_type;
     return share_intent;
   }
