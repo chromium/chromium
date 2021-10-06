@@ -268,6 +268,7 @@
     'chromium.fyi': {
       'Afl Upload Linux ASan': 'afl_asan_shared_release_bot',
       'ASAN Debug (reclient)': 'asan_lsan_debug_bot_reclient',
+      'ASAN Release (reclient shadow)': 'asan_lsan_fuzzer_v8_heap_release_bot_reclient',
       'Comparison Linux': {
         'goma': 'gpu_tests_release_bot',
         'reclient': 'gpu_tests_release_bot_reclient',
@@ -1748,6 +1749,10 @@
 
     'asan_lsan_fuzzer_v8_heap_release_bot': [
       'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot',
+    ],
+
+    'asan_lsan_fuzzer_v8_heap_release_bot_reclient': [
+      'asan', 'lsan', 'fuzzer', 'v8_heap', 'release_bot_reclient',
     ],
 
     'asan_lsan_release_bot': [

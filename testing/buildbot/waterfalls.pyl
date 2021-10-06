@@ -2581,6 +2581,16 @@
           'chromium_builder_asan',
         ],
       },
+      'ASAN Release (reclient shadow)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
+      'ASAN Release Media (reclient shadow)': {
+        'additional_compile_targets': [
+          'chromium_builder_asan',
+        ],
+      },
       'Comparison Linux': {
         'mixins': [
           'isolate_profile_data',

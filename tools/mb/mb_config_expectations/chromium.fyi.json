@@ -10,6 +10,19 @@
       "use_remoteexec": true
     }
   },
+  "ASAN Release (reclient shadow)": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_ipc_fuzzer": true,
+      "is_asan": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_lsan": true,
+      "use_rbe": true,
+      "use_remoteexec": true,
+      "v8_enable_verify_heap": true
+    }
+  },
   "Afl Upload Linux ASan": {
     "gn_args": {
       "archive_seed_corpus": false,
