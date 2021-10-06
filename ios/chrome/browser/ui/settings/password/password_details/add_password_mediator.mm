@@ -4,11 +4,18 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator.h"
 
+#include "base/bind.h"
+#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/task_runner_util.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/add_password_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 #include "net/base/mac/url_conversions.h"
@@ -20,9 +27,32 @@
 using base::SysNSStringToUTF16;
 using base::SysUTF8ToNSString;
 
+namespace {
+// Checks for existing credentials with the same website and username.
+bool CheckForDuplicates(
+    NSString* website,
+    NSString* username,
+    const password_manager::SavedPasswordsPresenter::SavedPasswordsView&
+        credentials) {
+  GURL gurl = net::GURLWithNSURL([NSURL URLWithString:website]);
+  std::string signon_realm = password_manager::GetSignonRealm(
+      password_manager_util::StripAuthAndParams(gurl));
+  std::u16string username_value = SysNSStringToUTF16(username);
+  for (const auto& form : credentials) {
+    if (form.signon_realm == signon_realm &&
+        form.username_value == username_value) {
+      return true;
+    }
+  }
+  return false;
+}
+}
+
 @interface AddPasswordMediator () <PasswordDetailsTableViewControllerDelegate> {
   // Password Check manager.
   IOSChromePasswordCheckManager* _manager;
+  // Used to create and run validation tasks.
+  std::unique_ptr<base::CancelableTaskTracker> _validationTaskTracker;
 }
 
 // Caches the password form data submitted by the user. This value is set only
@@ -34,6 +64,10 @@ using base::SysUTF8ToNSString;
 // Delegate for this mediator.
 @property(nonatomic, weak) id<AddPasswordMediatorDelegate> delegate;
 
+// Task runner on which validation operations happen.
+@property(nonatomic, assign) scoped_refptr<base::SequencedTaskRunner>
+    sequencedTaskRunner;
+
 @end
 
 @implementation AddPasswordMediator
@@ -44,8 +78,22 @@ using base::SysUTF8ToNSString;
   if (self) {
     _delegate = delegate;
     _manager = manager;
+    _sequencedTaskRunner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+    _validationTaskTracker = std::make_unique<base::CancelableTaskTracker>();
   }
   return self;
+}
+
+- (void)setConsumer:(id<AddPasswordDetailsConsumer>)consumer {
+  if (_consumer == consumer)
+    return;
+  _consumer = consumer;
+}
+
+- (void)dealloc {
+  _validationTaskTracker->TryCancelAll();
+  _validationTaskTracker.reset();
 }
 
 #pragma mark - PasswordDetailsTableViewControllerDelegate
@@ -87,6 +135,19 @@ using base::SysUTF8ToNSString;
   _manager->AddPasswordForm(passwordForm);
   [self.delegate setUpdatedPasswordForm:passwordForm];
   [self.delegate dismissPasswordDetailsTableViewController];
+}
+
+- (void)checkForDuplicatesWithSite:(NSString*)website
+                          username:(NSString*)username {
+  _validationTaskTracker->TryCancelAll();
+  __weak __typeof(self) weakSelf = self;
+  _validationTaskTracker->PostTaskAndReplyWithResult(
+      _sequencedTaskRunner.get(), FROM_HERE,
+      base::BindOnce(&CheckForDuplicates, website, username,
+                     _manager->GetAllCredentials()),
+      base::BindOnce(^(bool duplicateFound) {
+        [weakSelf.consumer onDuplicateCheckCompletion:duplicateFound];
+      }));
 }
 
 - (void)didCancelAddPasswordDetails {

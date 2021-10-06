@@ -45,6 +45,7 @@ source_set("password_details") {
 source_set("password_details_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "add_password_details_consumer.h",
     "add_password_handler.h",
     "password_details.h",
     "password_details.mm",

@@ -559,6 +559,13 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   [self reloadData];
 }
 
+#pragma mark - AddPasswordDetailsConsumer
+
+- (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
+  self.navigationItem.rightBarButtonItem.enabled = !duplicateFound;
+  // TODO(crbug.com/1226006): Update model when a duplicate is found.
+}
+
 #pragma mark - TableViewTextEditItemDelegate
 
 - (void)tableViewItemDidBeginEditing:(TableViewTextEditItem*)tableViewItem {
@@ -568,9 +575,16 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  BOOL isInputValid = [self checkIfValidSite] & [self checkIfValidUsername] &
-                      [self checkIfValidPassword];
-  self.navigationItem.rightBarButtonItem.enabled = isInputValid;
+  // TODO(crbug.com/1226006): Add validations for the site.
+  if (self.credentialType == CredentialTypeNew) {
+    [self.delegate
+        checkForDuplicatesWithSite:self.websiteTextItem.textFieldValue
+                          username:self.usernameTextItem.textFieldValue];
+  } else {
+    BOOL isInputValid = [self checkIfValidSite] & [self checkIfValidUsername] &
+                        [self checkIfValidPassword];
+    self.navigationItem.rightBarButtonItem.enabled = isInputValid;
+  }
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
@@ -765,7 +779,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (BOOL)checkIfValidSite {
-  // TODO(crbug.com/1226006): Add validations for the site.
   BOOL siteEmpty = [self.websiteTextItem.textFieldValue length] == 0;
   self.websiteTextItem.hasValidText = !siteEmpty;
 

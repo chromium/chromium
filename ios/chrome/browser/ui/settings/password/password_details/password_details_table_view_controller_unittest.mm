@@ -106,6 +106,10 @@ constexpr char kPassword[] = "test";
                              password:(NSString*)password {
 }
 
+- (void)checkForDuplicatesWithSite:(NSString*)website
+                          username:(NSString*)username {
+}
+
 - (void)didConfirmReplaceExistingCredential {
 }
 

@@ -96,6 +96,11 @@ using InsecureCredentialsView =
   NOTREACHED();
 }
 
+- (void)checkForDuplicatesWithSite:(NSString*)website
+                          username:(NSString*)username {
+  NOTREACHED();
+}
+
 - (void)didCancelAddPasswordDetails {
   NOTREACHED();
 }

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_edit_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 
 @protocol ApplicationCommands;
@@ -24,7 +25,8 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 
 // Screen which shows password details and allows to edit it.
 @interface PasswordDetailsTableViewController
-    : AutofillEditTableViewController <PasswordDetailsConsumer>
+    : AutofillEditTableViewController <AddPasswordDetailsConsumer,
+                                       PasswordDetailsConsumer>
 
 // The designated initializer.
 - (instancetype)initWithCredentialType:(CredentialType)credentialType

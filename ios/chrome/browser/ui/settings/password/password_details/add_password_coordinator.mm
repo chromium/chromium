@@ -79,6 +79,7 @@
 
   self.mediator = [[AddPasswordMediator alloc] initWithDelegate:self
                                            passwordCheckManager:_manager];
+  self.mediator.consumer = self.viewController;
   self.viewController.delegate = self.mediator;
   self.viewController.addPasswordHandler = self;
   self.viewController.reauthModule = self.reauthenticationModule;

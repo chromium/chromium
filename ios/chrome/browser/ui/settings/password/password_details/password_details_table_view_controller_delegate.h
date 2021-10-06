@@ -22,6 +22,11 @@
                              username:(NSString*)username
                              password:(NSString*)password;
 
+// Called on every keystroke to check whether duplicates exist before adding a
+// new credential.
+- (void)checkForDuplicatesWithSite:(NSString*)website
+                          username:(NSString*)username;
+
 // Called when the user cancels the add password view.
 - (void)didCancelAddPasswordDetails;
 
