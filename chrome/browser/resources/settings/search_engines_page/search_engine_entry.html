@@ -14,12 +14,22 @@
         word-break: break-word;
       }
 
+      #shortcut-column {
+        flex: 4;
+        word-break: break-word;
+      }
+
       #keyword-column > div {
         margin-inline-end: 8px;
       }
 
       #url-column {
         flex: 4;
+      }
+
+      #url-column-padded {
+        flex: 3;
+        margin-inline-end: 40px;
       }
     </style>
 
@@ -31,8 +41,19 @@
         </site-favicon>
         <div>[[engine.displayName]]</div>
       </div>
-      <div id="keyword-column"><div>[[engine.keyword]]</div></div>
-      <div id="url-column" class="text-elide">[[engine.url]]</div>
+      <div id="keyword-column" hidden="[[isActiveSearchEnginesFlagEnabled]]">
+        <div>[[engine.keyword]]</div>
+      </div>
+      <div id="shortcut-column" hidden="[[!showShortcut]]">
+        <div>[[engine.keyword]]</div>
+      </div>
+      <div id="url-column" class="text-elide"
+           hidden="[[isActiveSearchEnginesFlagEnabled]]">
+        <div>[[engine.url]]</div>
+      </div>
+      <div id="url-column-padded" class="text-elide" hidden="[[!showQueryUrl]]">
+        <div>[[engine.url]]</div>
+      </div>
       <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled]]">
         <cr-button class="secondary-button" on-click="onActivateTap_"
              hidden="[[!engine.canBeActivated]]" id="activate">

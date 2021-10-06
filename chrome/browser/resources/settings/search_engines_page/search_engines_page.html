@@ -32,27 +32,40 @@
       </settings-radio-group>
     </div>
 
-    <div class="cr-row first" hidden="[[isActiveSearchEnginesFlagEnabled_]]">
-      <h2>$i18n{searchEnginesDefault}</h2>
-    </div>
-    <div class="cr-row first" hidden="[[!isActiveSearchEnginesFlagEnabled_]]">
-      <div class="flex cr-padded-text">
-        <h2>$i18n{searchEnginesSearchEngines}</h2>
-        <div class="secondary">
+    <template is="dom-if" if="[[!isActiveSearchEnginesFlagEnabled_]]">
+      <div class="cr-row first">
+        <h2>$i18n{searchEnginesDefault}</h2>
+      </div>
+      <settings-search-engines-list fixed-height
+          hidden="[[!matchingDefaultEngines_.length]]"
+          engines="[[matchingDefaultEngines_]]"
+          is-active-search-engines-flag-enabled=
+            "[[isActiveSearchEnginesFlagEnabled_]]">
+      </settings-search-engines-list>
+    </template>
+    <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
+      <div class="cr-row first">
+        <div class="flex cr-padded-text">
+          <h2>$i18n{searchEnginesSearchEngines}</h2>
+          <div class="secondary">
             $i18n{searchEnginesSearchEnginesExplanation}
+          </div>
         </div>
       </div>
-    </div>
+      <settings-search-engines-list
+          hidden="[[!matchingDefaultEngines_.length]]"
+          engines="[[matchingDefaultEngines_]]"
+          is-active-search-engines-flag-enabled=
+                  "[[isActiveSearchEnginesFlagEnabled_"]] show-shortcut
+          shortcut-column-header="$i18n{searchEnginesSearchEngine}">
+      </settings-search-engines-list>
+    </template>
+
     <div class="no-search-results list-frame"
         hidden="[[matchingDefaultEngines_.length]]">
       $i18n{searchNoResults}
     </div>
-    <settings-search-engines-list fixed-height
-        hidden="[[!matchingDefaultEngines_.length]]"
-        engines="[[matchingDefaultEngines_]]"
-        is-active-search-engines-flag-enabled=
-          "[[isActiveSearchEnginesFlagEnabled_]]">
-    </settings-search-engines-list>
+
     <template is="dom-if" if="[[showDialog_]]" restamp>
       <settings-search-engine-dialog model="[[dialogModel_]]"
           on-close="onCloseDialog_">
@@ -84,20 +97,43 @@
           engines="[[matchingActiveEngines_]]"
           scroll-target="[[subpageScrollTarget]]"
           is-active-search-engines-flag-enabled=
-                "[[isActiveSearchEnginesFlagEnabled_]]">
+                "[[isActiveSearchEnginesFlagEnabled_]]"
+          show-shortcut collapse-list
+          shortcut-column-header="$i18n{searchEnginesSiteOrPage}">
       </settings-search-engines-list>
     </template>
 
-    <div class="cr-row first" hidden="[[isActiveSearchEnginesFlagEnabled_]]">
-      <h2 class="flex">$i18n{searchEnginesOther}</h2>
-      <cr-button class="secondary-button header-aligned-button"
-                 on-click="onAddSearchEngineTap_" id="addSearchEngine">
-        $i18n{add}
-      </cr-button>
+    <div hidden="[[isActiveSearchEnginesFlagEnabled_]]">
+      <div class="cr-row first">
+        <h2 class="flex">$i18n{searchEnginesOther}</h2>
+        <cr-button class="secondary-button header-aligned-button"
+                   on-click="onAddSearchEngineTap_" id="addSearchEngine">
+          $i18n{add}
+        </cr-button>
+      </div>
+      <settings-search-engines-list id="otherEngines"
+          hidden="[[!matchingOtherEngines_.length]]"
+          engines="[[matchingOtherEngines_]]"
+          scroll-target="[[subpageScrollTarget]]"
+          is-active-search-engines-flag-enabled=
+                "[[isActiveSearchEnginesFlagEnabled_]]">
+      </settings-search-engines-list>
     </div>
-    <div class="cr-row first" hidden="[[!isActiveSearchEnginesFlagEnabled_]]">
+
+    <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
+      <div class="cr-row first">
         <h2>$i18n{searchEnginesInactiveShortcuts}</h2>
-    </div>
+      </div>
+      <settings-search-engines-list
+          hidden="[[!matchingOtherEngines_.length]]"
+          engines="[[matchingOtherEngines_]]"
+          scroll-target="[[subpageScrollTarget]]"
+          is-active-search-engines-flag-enabled=
+                "[[isActiveSearchEnginesFlagEnabled_]]"
+          show-query-url collapse-list
+          shortcut-column-header="$i18n{searchEnginesInactiveSite}">
+      </settings-search-engines-list>
+    </template>
     <div id="noOtherEngines" class="list-frame"
         hidden="[[otherEngines.length]]">
       $i18n{searchEnginesNoOtherEngines}
@@ -107,13 +143,7 @@
             otherEngines, matchingOtherEngines_)]]">
       $i18n{searchNoResults}
     </div>
-    <settings-search-engines-list id="otherEngines"
-        hidden="[[!matchingOtherEngines_.length]]"
-        engines="[[matchingOtherEngines_]]"
-        scroll-target="[[subpageScrollTarget]]"
-        is-active-search-engines-flag-enabled=
-              "[[isActiveSearchEnginesFlagEnabled_]]">
-    </settings-search-engines-list>
+
     <template is="dom-if" if="[[showExtensionsList_]]">
       <div class="cr-row first">
         <div class="flex cr-padded-text">

@@ -38,6 +38,10 @@ class SettingsSearchEngineEntryElement extends
     return {
       engine: Object,
 
+      showShortcut: {type: Boolean, value: false, reflectToAttribute: true},
+
+      showQueryUrl: {type: Boolean, value: false, reflectToAttribute: true},
+
       isActiveSearchEnginesFlagEnabled: Boolean,
 
       isDefault: {
@@ -50,6 +54,8 @@ class SettingsSearchEngineEntryElement extends
   }
 
   engine: SearchEngine;
+  showShortcut: boolean;
+  showQueryUrl: boolean;
   isActiveSearchEnginesFlagEnabled: boolean;
   isDefault: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =

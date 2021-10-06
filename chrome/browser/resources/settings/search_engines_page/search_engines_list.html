@@ -9,6 +9,10 @@
         flex: 3;
       }
 
+      #headers .shortcut {
+        flex: 4;
+      }
+
       #headers .url {
         flex: 4;
       }
@@ -33,12 +37,25 @@
     <div id="outer" class="list-frame">
       <div id="headers" class="column-header">
         <div class="name">$i18n{searchEnginesSearchEngine}</div>
-        <div class="keyword">$i18n{searchEnginesKeyword}</div>
-        <div class="url">$i18n{searchEnginesQueryURL}</div>
+        <div class="keyword" hidden="[[isActiveSearchEnginesFlagEnabled]]">
+          $i18n{searchEnginesKeyword}
+        </div>
+        <div class="shortcut" hidden="[[!showShortcut]]">
+          [[shortcutColumnHeader]]
+        </div>
+        <div class="url" hidden="[[isActiveSearchEnginesFlagEnabled]]">
+          $i18n{searchEnginesQueryURL}
+        </div>
+        <div class="url" hidden="[[!showQueryUrl]]">
+          $i18n{searchEnginesQueryURL}
+
+        </div>
         <div class="icon-placeholder"></div>
+        <div class="icon-placeholder"
+             hidden="[[!isActiveSearchEnginesFlagEnabled]]"></div>
       </div>
       <div id="container" class="scroll-container"
-          hidden="[[isActiveSearchEnginesFlagEnabled]]"
+          hidden="[[collapseList]]"
           scrollable$="[[fixedHeight]]">
         <iron-list items="[[engines]]" scroll-target="[[scrollTarget]]"
             scroll-offset="[[scrollOffset]]" preserve-focus risk-selection>
@@ -48,14 +65,16 @@
                 tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
                 is-active-search-engines-flag-enabled=
-                      "[[isActiveSearchEnginesFlagEnabled]]">
+                      "[[isActiveSearchEnginesFlagEnabled]]"
+                show-query-url="[[showQueryUrl]]"
+                show-shortcut="[[showShortcut]]">
             </settings-search-engine-entry>
           </template>
         </iron-list>
       </div>
 
       <div id="containerWithCollapsibleSection" class="scroll-container"
-          hidden="[[!isActiveSearchEnginesFlagEnabled]]"
+          hidden="[[!collapseList]]"
           scrollable$="[[fixedHeight]]">
         <iron-list items="[[visibleEngines]]" scroll-target="[[scrollTarget]]"
             scroll-offset="[[scrollOffset]]" preserve-focus risk-selection>
@@ -65,7 +84,9 @@
                 tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
                 is-active-search-engines-flag-enabled=
-                      "[[isActiveSearchEnginesFlagEnabled]]">
+                      "[[isActiveSearchEnginesFlagEnabled]]"
+                show-shortcut="[[showShortcut]]"
+                show-query-url="[[showQueryUrl]]">
             </settings-search-engine-entry>
           </template>
         </iron-list>
@@ -84,7 +105,9 @@
                   last-focused="{{lastFocused_}}"
                   list-blurred="{{listBlurred_}}"
                   is-active-search-engines-flag-enabled=
-                        "[[isActiveSearchEnginesFlagEnabled]]">
+                        "[[isActiveSearchEnginesFlagEnabled]]"
+                  show-shortcut="[[showShortcut]]"
+                  show-query-url="[[showQueryUrl]]">
               </settings-search-engine-entry>
             </template>
           </iron-list>

@@ -39,6 +39,29 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
        */
       scrollTarget: Object,
 
+      showShortcut: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      showQueryUrl: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      collapseList: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      shortcutColumnHeader: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
       /**
        * The number of engines visible when the list is collapsed.
        * This is currently gated behind the #omnibox-active-search-engines-flag.
@@ -88,6 +111,10 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   scrollTarget: HTMLElement|null;
   scrollOffset: number;
   fixedHeight: boolean;
+  showShortcut: boolean;
+  showQueryUrl: boolean;
+  collapseList: boolean;
+  shortcutColumnHeader: String;
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;
 
