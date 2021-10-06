@@ -1127,7 +1127,7 @@ const base::Feature kUserActivityPrediction{"UserActivityPrediction",
 
 // Enable the Virtual Keyboard API.
 const base::Feature kVirtualKeyboardApi{"VirtualKeyboardApi",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable bordered key for virtual keyboard on Chrome OS.
 const base::Feature kVirtualKeyboardBorderedKey{
