@@ -178,7 +178,7 @@ NSTimeInterval ComputeCooldown() {
   // cool down before the next promo and after it goes back to normal.
   if (DisplayedPromoCount() < 2 &&
       fre_default_browser_promo_field_trial::
-          IsInFirstRunDefaultBrowserWithoutDelayingOtherPromosGroup() &&
+          IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() &&
       HasUserInteractedWithFirstRunPromoBefore() &&
       !HasUserOpenedSettingsFromFirstRunPromo()) {
     return kPromosShortCoolDown;

@@ -16,6 +16,9 @@ const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
 const base::Feature kEnableFREDefaultBrowserScreen{
     "EnableFREDefaultBrowserScreen", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableFREDefaultBrowserScreenTesting{
+    "EnableFREDefaultBrowserScreenTesting", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOS",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

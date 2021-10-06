@@ -199,6 +199,12 @@ const char kEnableFREDefaultBrowserScreenDescription[] =
     "suggests changing the default browser in the Settings.app with a button "
     "to go directly to it.";
 
+const char kEnableFREDefaultBrowserScreenTestingName[] =
+    "Enable FRE default browser screen testing";
+const char kEnableFREDefaultBrowserScreenTestingDescription[] =
+    "This test display the FRE default browser screen and other default "
+    "browser promo depending on experiment.";
+
 const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
 const char kEnableFREUIModuleIOSDescription[] =
     "Enable the option of using new FRE UI module to show first run screens.";

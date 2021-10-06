@@ -14,17 +14,29 @@ namespace base {
 class FeatureList;
 }  // namespace base
 
+// Indicates if the FRE default browser promo variant "Wait 14 days after FRE
+// default browser promo" is enabled.
+extern const char kFREDefaultPromoTestingDefaultDelayParam[];
+
+// Indicates if the FRE default browser promo variant "FRE default browser
+// promo only" is enabled.
+extern const char kFREDefaultPromoTestingFREOnlyParam[];
+
+// Indicates if the FRE default browser promo variant "Wait 3 days after FRE
+// default promo" is enabled.
+extern const char kFREDefaultPromoTestingShortDelayParam[];
+
 namespace fre_default_browser_promo_field_trial {
 
 // Returns true if the user is in the group that will show the default browser
-// screen in first run (FRE) without activate cooldown of other default browser
-// promos.
-bool IsInFirstRunDefaultBrowserWithoutDelayingOtherPromosGroup();
+// screen in first run (FRE) with activate a short cooldown of other default
+// browser promos.
+bool IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup();
 
 // Returns true if the user is in the group that will show the default browser
 // screen in first run (FRE) and activate cooldown of other default browser
 // promos.
-bool IsInFirstRunDefaultBrowserWithDelayingOtherPromosGroup();
+bool IsInFirstRunDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup();
 
 // Returns true if the user is in the group that will show the default browser
 // screen in first run (FRE) only.

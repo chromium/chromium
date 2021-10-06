@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
+#include "ios/chrome/browser/ui/first_run/default_browser_promo_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
@@ -297,6 +298,23 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
     {"1h:Hide Shortcuts and show Return to Recent Tab tile",
      kStartSurfaceOneHourHideShortcutsReturnToRecentTab,
      base::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
+};
+
+const FeatureEntry::FeatureParam kFREDefaultPromoTestingDefaultDelay[] = {
+    {kFREDefaultPromoTestingDefaultDelayParam, "true"}};
+const FeatureEntry::FeatureParam kFREDefaultPromoTestingFREOnly[] = {
+    {kFREDefaultPromoTestingFREOnlyParam, "true"}};
+const FeatureEntry::FeatureParam kFREDefaultPromoTestingShortDelay[] = {
+    {kFREDefaultPromoTestingShortDelayParam, "true"}};
+const FeatureEntry::FeatureVariation kFREDefaultPromoTestingVariations[] = {
+    {"Wait 14 days after FRE default browser promo",
+     kFREDefaultPromoTestingDefaultDelay,
+     base::size(kFREDefaultPromoTestingDefaultDelay), nullptr},
+    {"FRE default browser promo only", kFREDefaultPromoTestingFREOnly,
+     base::size(kFREDefaultPromoTestingFREOnly), nullptr},
+    {"Wait 3 days after FRE default browser promo",
+     kFREDefaultPromoTestingShortDelay,
+     base::size(kFREDefaultPromoTestingShortDelay), nullptr},
 };
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
@@ -754,7 +772,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointName,
      flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kEnableDiscoverFeedDiscoFeedEndpoint)}};
+     FEATURE_VALUE_TYPE(kEnableDiscoverFeedDiscoFeedEndpoint)},
+    {"enable-fre-default-browser-screen-testing",
+     flag_descriptions::kEnableFREDefaultBrowserScreenTestingName,
+     flag_descriptions::kEnableFREDefaultBrowserScreenTestingDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREDefaultBrowserScreenTesting,
+                                    kFREDefaultPromoTestingVariations,
+                                    "EnableFREDefaultBrowserScreenTesting")}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

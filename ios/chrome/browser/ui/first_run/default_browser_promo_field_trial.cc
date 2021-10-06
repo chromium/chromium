@@ -16,16 +16,22 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/common/channel_info.h"
 
+const char kFREDefaultPromoTestingDefaultDelayParam[] =
+    "variant_default_delay_enabled";
+const char kFREDefaultPromoTestingFREOnlyParam[] = "variant_fre_only_enabled";
+const char kFREDefaultPromoTestingShortDelayParam[] =
+    "variant_short_delay_enabled";
+
 namespace {
 // String local state preference with the name of the assigned trial group.
 // Empty if no group has been assigned yet.
 const char kTrialGroupPrefName[] = "fre_default_browser_promo.trial_group";
 
 // Group names for the default browser promo trial.
-const char kFREDefaultBrowserWithoutDelayingOtherPromosGroup[] =
-    "FREDefaultBrowserWithoutDelayingOtherPromos";
-const char kFREDefaultBrowserWithDelayingOtherPromosGroup[] =
-    "FREDefaultBrowserWithDelayingOtherPromos";
+const char kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup[] =
+    "FREDefaultBrowserAndSmallDelayBeforeOtherPromos";
+const char kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup[] =
+    "FREDefaultBrowserAndDefaultDelayBeforeOtherPromos";
 const char kDefaultBrowserPromoAtFirstRunOnlyGroup[] =
     "DefaultBrowserPromoAtFirstRunOnly";
 const char kDisabledGroup[] = "Disabled";
@@ -34,10 +40,10 @@ const char kDefaultGroup[] = "Default";
 const variations::VariationID kDefaultTrialID = 3342134;
 const variations::VariationID kDisabledTrialID = 3342135;
 const variations::VariationID kDefaultBrowserPromoAtFirstRunOnlyID = 3342136;
-const variations::VariationID kFREDefaultBrowserWithDelayingOtherPromosID =
-    3342137;
-const variations::VariationID kFREDefaultBrowserWithoutDelayingOtherPromosID =
-    3342138;
+const variations::VariationID
+    kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID = 3342137;
+const variations::VariationID
+    kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3342138;
 
 // Default local state pref value.
 const int kDefaultPrefValue = -1;
@@ -51,8 +57,8 @@ void SetFeatureState(const std::string& group_name,
                      base::FieldTrial* trial) {
   base::FeatureList::OverrideState feature_state =
       base::FeatureList::OVERRIDE_DISABLE_FEATURE;
-  if (group_name == kFREDefaultBrowserWithoutDelayingOtherPromosGroup ||
-      group_name == kFREDefaultBrowserWithDelayingOtherPromosGroup ||
+  if (group_name == kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup ||
+      group_name == kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup ||
       group_name == kDefaultBrowserPromoAtFirstRunOnlyGroup) {
     feature_state = base::FeatureList::OVERRIDE_ENABLE_FEATURE;
   }
@@ -61,21 +67,36 @@ void SetFeatureState(const std::string& group_name,
                                            feature_state, trial);
 }
 
-bool IsInFirstRunDefaultBrowserWithoutDelayingOtherPromosGroup() {
+bool IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() {
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreenTesting)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableFREDefaultBrowserScreenTesting,
+        kFREDefaultPromoTestingShortDelayParam, false);
+  }
   return base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreen) &&
          base::FieldTrialList::FindFullName(
              kEnableFREDefaultBrowserScreen.name) ==
-             kFREDefaultBrowserWithoutDelayingOtherPromosGroup;
+             kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup;
 }
 
-bool IsInFirstRunDefaultBrowserWithDelayingOtherPromosGroup() {
+bool IsInFirstRunDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup() {
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreenTesting)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableFREDefaultBrowserScreenTesting,
+        kFREDefaultPromoTestingDefaultDelayParam, false);
+  }
   return base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreen) &&
          base::FieldTrialList::FindFullName(
              kEnableFREDefaultBrowserScreen.name) ==
-             kFREDefaultBrowserWithDelayingOtherPromosGroup;
+             kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup;
 }
 
 bool IsInDefaultBrowserPromoAtFirstRunOnlyGroup() {
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreenTesting)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableFREDefaultBrowserScreenTesting,
+        kFREDefaultPromoTestingFREOnlyParam, false);
+  }
   return base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreen) &&
          base::FieldTrialList::FindFullName(
              kEnableFREDefaultBrowserScreen.name) ==
@@ -83,8 +104,8 @@ bool IsInDefaultBrowserPromoAtFirstRunOnlyGroup() {
 }
 
 bool IsFREDefaultBrowserScreenEnabled() {
-  return IsInFirstRunDefaultBrowserWithoutDelayingOtherPromosGroup() ||
-         IsInFirstRunDefaultBrowserWithDelayingOtherPromosGroup() ||
+  return IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() ||
+         IsInFirstRunDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup() ||
          IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
 }
 
@@ -94,8 +115,8 @@ bool IsFREDefaultBrowserScreenEnabled() {
 int CreateFirstRunTrial(
     base::FieldTrial::EntropyProvider const& low_entropy_provider,
     base::FeatureList* feature_list) {
-  int fre_and_no_cooldown_percent = 0;
-  int fre_with_cooldown_percent = 0;
+  int fre_and_short_cooldown_percent = 0;
+  int fre_and_default_cooldown_percent = 0;
   int fre_only_percent = 0;
   int disabled_percent = 0;
   int default_percent = 0;
@@ -104,15 +125,15 @@ int CreateFirstRunTrial(
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      fre_and_no_cooldown_percent = 0;
-      fre_with_cooldown_percent = 0;
+      fre_and_short_cooldown_percent = 0;
+      fre_and_default_cooldown_percent = 0;
       fre_only_percent = 0;
       disabled_percent = 0;
       default_percent = 100;
       break;
     case version_info::Channel::STABLE:
-      fre_and_no_cooldown_percent = 0;
-      fre_with_cooldown_percent = 0;
+      fre_and_short_cooldown_percent = 0;
+      fre_and_default_cooldown_percent = 0;
       fre_only_percent = 0;
       disabled_percent = 0;
       default_percent = 100;
@@ -123,12 +144,12 @@ int CreateFirstRunTrial(
   FirstRunFieldTrialConfig config(kEnableFREDefaultBrowserScreen.name);
   config.AddGroup(kDefaultGroup, kDefaultTrialID, default_percent);
 
-  config.AddGroup(kFREDefaultBrowserWithoutDelayingOtherPromosGroup,
-                  kFREDefaultBrowserWithoutDelayingOtherPromosID,
-                  fre_and_no_cooldown_percent);
-  config.AddGroup(kFREDefaultBrowserWithDelayingOtherPromosGroup,
-                  kFREDefaultBrowserWithDelayingOtherPromosID,
-                  fre_with_cooldown_percent);
+  config.AddGroup(kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup,
+                  kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID,
+                  fre_and_short_cooldown_percent);
+  config.AddGroup(kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup,
+                  kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID,
+                  fre_and_default_cooldown_percent);
   config.AddGroup(kDefaultBrowserPromoAtFirstRunOnlyGroup,
                   kDefaultBrowserPromoAtFirstRunOnlyID, fre_only_percent);
 
