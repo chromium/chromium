@@ -2815,7 +2815,6 @@ crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-paired-cascade-006.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-styling-002.html [ Pass ]
 crbug.com/1024156 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/highlight-styling-004.html [ Pass ]
-crbug.com/1254608 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/textpath-selection-011.html [ Failure ]
 crbug.com/1179938 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-001.html [ Failure ]
 crbug.com/1035708 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-002.html [ Failure ]
 crbug.com/1179938 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/target-text-dynamic-003.html [ Failure ]
