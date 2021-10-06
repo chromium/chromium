@@ -602,7 +602,7 @@
       Pay with <ph name="CARD_DETAIL">$1<ex>Visa - 1234</ex></ph> at checkout
     </message>
     <message name="IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT" desc="The tooltip text for the offer icon in the location bar.">
-      Google Pay offer available
+      Offer available
     </message>
   </if>
   <if expr="is_android">
