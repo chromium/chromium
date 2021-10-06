@@ -33,7 +33,7 @@ CardUnmaskAuthenticationSelectionDialogViewImpl::
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kControl));
+      views::DialogContentType::kText, views::DialogContentType::kText));
   InitViews();
 }
 
