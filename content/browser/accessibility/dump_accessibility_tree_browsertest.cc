@@ -2731,6 +2731,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySvgDescInGroup) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgElementsNotMapped) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-elements-not-mapped.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySvgTextAlternativeComputation) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-text-alternative-computation.html"));
 }

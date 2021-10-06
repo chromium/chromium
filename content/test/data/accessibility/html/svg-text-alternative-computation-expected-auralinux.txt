@@ -9,14 +9,14 @@
 ++++[document frame] class:name-xlink-title tag:svg
 ++++++[link] name='Link (from xlink:title)' tag:a
 ++++[document frame] class:name-aria-labelledby tag:svg
-++++++[section] name='Circle (from aria-labelledby)' labelled-by tag:circle
+++++++[image] name='Circle (from aria-labelledby)' labelled-by tag:circle
 ++++[document frame] class:name-aria-label tag:svg
-++++++[section] name='Circle (from aria-label)' tag:circle
+++++++[image] name='Circle (from aria-label)' tag:circle
 ++++[document frame] class:name-title tag:svg
-++++++[section] name='Circle (from title)' tag:circle
+++++++[image] name='Circle (from title)' tag:circle
 ++++[document frame] class:name-use-title-currently-fails tag:svg
-++++++[section] tag:use
-++++++[section] tag:use
+++++++[panel] tag:use
+++++++[panel] tag:use
 ++++[document frame] class:name-symbol-title tag:svg
-++++++[section] name='Rectangle Symbol (From symbol's title)' tag:rect
-++++++[section] name='Rectangle Symbol (From symbol's title)' tag:rect
+++++++[image] name='Rectangle Symbol (From symbol's title)' tag:rect
+++++++[image] name='Rectangle Symbol (From symbol's title)' tag:rect

@@ -1,4 +1,4 @@
 [document web] tag:#document
 ++[section] tag:body
 ++++[document frame] tag:svg
-++++++[section] id:clickable tag:rect
+++++++[image] id:clickable tag:rect

@@ -248,10 +248,18 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   if (IsA<LayoutView>(*layout_object_))
     return ax::mojom::blink::Role::kRootWebArea;
 
-  if (layout_object_->IsSVGImage())
-    return ax::mojom::blink::Role::kImage;
-  if (layout_object_->IsSVGRoot())
-    return ax::mojom::blink::Role::kSvgRoot;
+  if (node && node->IsSVGElement()) {
+    if (layout_object_->IsSVGImage())
+      return ax::mojom::blink::Role::kImage;
+    if (layout_object_->IsSVGRoot())
+      return ax::mojom::blink::Role::kSvgRoot;
+    if (layout_object_->IsSVGShape())
+      return ax::mojom::blink::Role::kGraphicsSymbol;
+    if (layout_object_->IsSVGForeignObject() || IsA<SVGGElement>(node))
+      return ax::mojom::blink::Role::kGroup;
+    if (IsA<SVGUseElement>(node))
+      return ax::mojom::blink::Role::kGraphicsObject;
+  }
 
   if (layout_object_->IsHR())
     return ax::mojom::blink::Role::kSplitter;
