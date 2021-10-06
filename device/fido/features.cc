@@ -58,7 +58,15 @@ const base::Feature kWebAuthCrosPlatformAuthenticator{
     base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-extern const base::Feature kU2fPermissionPrompt{
-    "U2fPermissionPrompt", base::FEATURE_DISABLED_BY_DEFAULT};
+extern const base::Feature kU2fPermissionPrompt {
+  "U2fPermissionPrompt",
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      // Disable the deprecation prompt on ChromeOS to work around an issue with
+      // SAML device login.
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 }  // namespace device

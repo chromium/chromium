@@ -12,6 +12,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -365,7 +366,9 @@ TEST_F(CryptoTokenPermissionTest, PolicyOverridesAttestationPrompt) {
 }
 
 TEST_F(CryptoTokenPermissionTest, RequestPrompt) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   feature_list_.InitAndEnableFeature(device::kU2fPermissionPrompt);
+#endif
   const std::vector<permissions::PermissionRequestManager::AutoResponseType>
       actions = {
           permissions::PermissionRequestManager::ACCEPT_ALL,
