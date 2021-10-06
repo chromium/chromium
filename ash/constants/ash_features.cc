@@ -830,6 +830,11 @@ const base::Feature kOsSettingsAppNotificationsPage{
 const base::Feature kOverviewButton{"OverviewButton",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables a notification warning users that their Thunderbolt device is not
+// supported on their CrOS device.
+const base::Feature kPcieBillboardNotification{
+    "PcieBillboardNotification", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Limits the items on the shelf to the ones associated with windows the
 // currently active desk.
 const base::Feature kPerDeskShelf{"PerDeskShelf",
@@ -1526,6 +1531,9 @@ bool IsOobeConsolidatedConsentEnabled() {
   return base::FeatureList::IsEnabled(kOobeConsolidatedConsent);
 }
 
+bool IsPcieBillboardNotificationEnabled() {
+  return base::FeatureList::IsEnabled(kPcieBillboardNotification);
+}
 bool IsPciguardUiEnabled() {
   return base::FeatureList::IsEnabled(kEnablePciguardUi);
 }

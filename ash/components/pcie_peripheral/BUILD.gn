@@ -10,6 +10,7 @@ component("pcie_peripheral") {
   defines = [ "IS_ASH_PCIE_PERIPHERAL_IMPL" ]
 
   deps = [
+    "//ash/constants/",
     "//base",
     "//chromeos/dbus/pciguard",
     "//chromeos/dbus/typecd",

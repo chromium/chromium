@@ -4873,6 +4873,10 @@ const char kNearbySharingBackgroundScanningDescription[] =
     "persistently scan and present a notification when a nearby device is "
     "attempting to share.";
 
+const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
+const char kPcieBillboardNotificationDescription[] =
+    "Enable Pcie peripheral billboard notification.";
+
 const char kPerformantSplitViewResizing[] = "Performant Split View Resizing";
 const char kPerformantSplitViewResizingDescription[] =
     "If enabled, windows may be moved instead of scaled when resizing split "

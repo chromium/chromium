@@ -5666,6 +5666,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPair)},
 
+    {"pcie-billboard-notification",
+     flag_descriptions::kPcieBillboardNotificationName,
+     flag_descriptions::kPcieBillboardNotificationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPcieBillboardNotification)},
+
     {"reduce-display-notifications",
      flag_descriptions::kReduceDisplayNotificationsName,
      flag_descriptions::kReduceDisplayNotificationsDescription, kOsCrOS,

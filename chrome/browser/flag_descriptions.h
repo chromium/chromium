@@ -2807,6 +2807,9 @@ extern const char kNearbySharingArcDescription[];
 extern const char kNearbySharingBackgroundScanningName[];
 extern const char kNearbySharingBackgroundScanningDescription[];
 
+extern const char kPcieBillboardNotificationName[];
+extern const char kPcieBillboardNotificationDescription[];
+
 extern const char kPerformantSplitViewResizing[];
 extern const char kPerformantSplitViewResizingDescription[];
 
