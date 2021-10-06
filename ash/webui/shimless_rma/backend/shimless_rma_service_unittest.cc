@@ -19,9 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-// TODO(gavindodd): Make sure all EXPECT_* calls have parameters in correct
-// order.
-
 namespace ash {
 namespace shimless_rma {
 
