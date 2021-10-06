@@ -1804,8 +1804,9 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
             GetAllInstallabilityErrors(browser()));
 }
 
+// Flake tests: crbug.com/1256938
 IN_PROC_BROWSER_TEST_P(InstallableManagerOfflineCapabilityBrowserTest,
-                       GetAllInstallabilityErrorsWithPlayAppManifest) {
+                       DISABLED_GetAllInstallabilityErrorsWithPlayAppManifest) {
   if (IsCheckOfflineCapableFeatureEnabled()) {
     EXPECT_EQ(std::vector<content::InstallabilityError>(
                   {GetInstallabilityError(START_URL_NOT_VALID),
