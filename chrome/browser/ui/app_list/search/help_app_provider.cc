@@ -44,10 +44,9 @@ namespace {
 
 constexpr char kHelpAppDiscoverResult[] = "help-app://discover";
 constexpr char kHelpAppUpdatesResult[] = "help-app://updates";
-constexpr float kScoreEps = 1e-5f;
 
 constexpr size_t kMinQueryLength = 3u;
-constexpr float kMinScore = 0.4f;
+constexpr double kMinScore = 0.4;
 constexpr size_t kNumRequestedResults = 5u;
 constexpr size_t kMaxShownResults = 2u;
 
@@ -75,25 +74,6 @@ void DecreaseTimesLeftToShowDiscoverTabSuggestionChip(Profile* profile) {
 void StopShowingDiscoverTabSuggestionChip(Profile* profile) {
   profile->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 0);
-}
-
-// Filter out results below the min score threshold and limit the number of
-// shown results.
-std::vector<ash::help_app::mojom::SearchResultPtr> FilterAndLimitResults(
-    const std::vector<ash::help_app::mojom::SearchResultPtr>& results) {
-  std::vector<ash::help_app::mojom::SearchResultPtr> clean_results;
-
-  for (const auto& result : results) {
-    if (clean_results.size() == kMaxShownResults) {
-      break;
-    }
-    if (result->relevance_score < kMinScore) {
-      continue;
-    }
-    clean_results.push_back(result.Clone());
-  }
-
-  return clean_results;
 }
 
 // The end result of a list search. Logged once per time a list search finishes.
@@ -279,6 +259,7 @@ void HelpAppProvider::Start(const std::u16string& query) {
       ClearResults();
       return;
     }
+
     // Invalidate weak pointers to cancel existing searches.
     weak_factory_.InvalidateWeakPtrs();
     search_handler_->Search(
@@ -296,25 +277,21 @@ void HelpAppProvider::OnSearchReturned(
     const std::u16string& query,
     const base::TimeTicks& start_time,
     std::vector<ash::help_app::mojom::SearchResultPtr> sorted_results) {
-  // TODO(b/182855408): We are currently not ranking help app results.
-  // Instead, we are gluing at most two to the middle of the search box.
-  // Ideally, we want to always show Showoff results below a Setting, App, or
-  // Shortcut result. The intention is to make sure that the most actionable
-  // result is ranked higher.
   DCHECK_LE(sorted_results.size(), kNumRequestedResults);
 
   SearchProvider::Results search_results;
-  int i = 0;
-  for (const auto& result : FilterAndLimitResults(sorted_results)) {
-    // The max score is 0.95 because settings results start at 1.0 and we want
-    // to show help app results after settings. We also want these help app
-    // results to appear before Omnibox history suggestions. The small kScoreEps
-    // difference between each result's score keeps the help app results grouped
-    // together.
-    const float score = 0.95f - i * kScoreEps;
+  for (const auto& result : sorted_results) {
+    if (result->relevance_score < kMinScore) {
+      break;
+    } else if (!app_list_features::IsCategoricalSearchEnabled() &&
+               search_results.size() == kMaxShownResults) {
+      // Categorical search imposes its own maximums on search results
+      // elsewhere.
+      break;
+    }
+
     search_results.emplace_back(std::make_unique<HelpAppResult>(
-        score, profile_, result, icon_, last_query_));
-    ++i;
+        result->relevance_score, profile_, result, icon_, last_query_));
   }
 
   base::UmaHistogramTimes("Apps.AppList.HelpAppProvider.QueryTime",
