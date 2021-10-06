@@ -125,11 +125,13 @@
       debug: "rgba($google_red_300_rgb, 0.3)",
     },
 
-    dark_ink_ripple_color: "rgba($black_rgb, 0.06)",
-    light_ink_ripple_color: "rgba($white_rgb, 0.08)",
-    ink_ripple_color: {
-      light: "$dark_ink_ripple_color",
-      dark: "$light_ink_ripple_color",
+    ripple_color: {
+      light: "rgba($black_rgb, 0.06)",
+      dark: "rgba($white_rgb, 0.08)",
+    },
+    ripple_color_prominent: {
+      light: "rgba($icon_color_prominent_rgb, 0.06)",
+      dark: "rgba($icon_color_prominent_rgb, 0.08)",
     },
 
     focus_ring_color: "$icon_color_prominent",
@@ -146,10 +148,7 @@
       light: "rgba($black_rgb, 0.06)",
       dark: "rgba($white_rgb, 0.08)",
     },
-    menu_item_ripple_color: {
-      light: "rgba($black_rgb, 0.06)",
-      dark: "rgba($white_rgb, 0.08)",
-    },
+    menu_item_ripple_color: "$ripple_color",
 
     toggle_color: "$icon_color_prominent",
     toggle_bg_color_inactive: "$google_grey_400",
@@ -171,9 +170,6 @@
       light: "$google_blue_700",
       dark: "$google_blue_300",
     },
-
-    /* button common */
-    button_focus_ring_color: "$icon_color_prominent",
 
     /* button-primary */
     button_background_color_primary: "$icon_color_prominent",
@@ -278,7 +274,7 @@
       light: "$google_grey_700",
       dark: "$google_grey_500",
     },
-    menu_item_background_hover: "$ink_ripple_color",
+    menu_item_background_hover: "$ripple_color",
 
     /* tab */
     tab_label_color_active: {
