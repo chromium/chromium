@@ -2552,11 +2552,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-switch-access-point-scanning",
-    "owners": ["anastasi@google.com", "//ui/accessibility/OWNERS"],
-    "expiry_milestone": 92
-  },
-  {
     "name": "enable-sxg-subresource-prefetching",
     "owners": [ "horo", "//content/browser/web_package/OWNERS" ],
     "expiry_milestone": 92
