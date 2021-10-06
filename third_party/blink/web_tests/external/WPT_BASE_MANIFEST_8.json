@@ -213,6 +213,13 @@
     },
     "css-backgrounds": {
      "animations": {
+      "background-color-animation-field-crash.html": [
+       "8e702fbac630b69d2b490005749575bac5718e08",
+       [
+        null,
+        {}
+       ]
+      ],
       "background-color-animation-non-empty-no-draw-crash.html": [
        "a00c08abced531c17533688279f652564fcbf5a8",
        [
@@ -136183,7 +136190,7 @@
       ]
      ],
      "textpath-selection-011.html": [
-      "1efb2fbcbb75f1b7fc75a044dce35642ed3e6143",
+      "3d7254839ad3ee6f112f244de1ee25011e2807ea",
       [
        null,
        [
@@ -219056,32 +219063,16 @@
       []
      ],
      "hash-always-converted-to-utf-8": {
-      "iso-8859-1-expected.txt": [
-       "1dc823a6e57d5e0502757b43a8ebd7cdbd71bd26",
-       []
-      ],
       "iso-8859-1.html.sub.headers": [
        "acc92f4e80b64d826f1f8cddf6c17580019a2e56",
-       []
-      ],
-      "iso-8859-3-expected.txt": [
-       "1dc823a6e57d5e0502757b43a8ebd7cdbd71bd26",
        []
       ],
       "iso-8859-3.html.sub.headers": [
        "ae3e03dae1f81ed14d381b4882e6a70b6e72b994",
        []
       ],
-      "iso-8859-7-expected.txt": [
-       "1dc823a6e57d5e0502757b43a8ebd7cdbd71bd26",
-       []
-      ],
       "iso-8859-7.html.sub.headers": [
        "9550b0de30ad89cc48896da3dac137ad6d5c9680",
-       []
-      ],
-      "iso-8859-9-expected.txt": [
-       "1dc823a6e57d5e0502757b43a8ebd7cdbd71bd26",
        []
       ],
       "iso-8859-9.html.sub.headers": [
@@ -219908,6 +219899,14 @@
     ],
     "access-control-expose-headers-parsing.window-expected.txt": [
      "0fe27f2fdca8ae7eeb0f92e9bef2717a6d8ac1d1",
+     []
+    ],
+    "cors-safelisted-request-header.any-expected.txt": [
+     "292464bc0f023dba84b7679eca19e9f7e7b8afdf",
+     []
+    ],
+    "cors-safelisted-request-header.any.worker-expected.txt": [
+     "292464bc0f023dba84b7679eca19e9f7e7b8afdf",
      []
     ],
     "resources": {
@@ -247996,7 +247995,7 @@
       []
      ],
      "textpath-selection-011-ref.html": [
-      "d9ba940518e121eeb0e9701ccd4e36772fdfa786",
+      "6950c32f1d5b54eef47a54d518962ed8b2a0dede",
       []
      ]
     },
@@ -254129,7 +254128,7 @@
        []
       ],
       "transform-interpolation-computed-value-expected.txt": [
-       "7003e91d232a7406f049e0d0b69c006d1cd81440",
+       "20077d924c1bdd04209a31b89fe9cbe16dc915b8",
        []
       ],
       "transform-interpolation-ref.html": [
@@ -263220,7 +263219,7 @@
       []
      ],
      "h2tests.md": [
-      "9a429373f567253b174ed6f7be85290d41b20dc3",
+      "7745dca55d9c3995d6bfc6cd97a3afd3d7111995",
       []
      ],
      "idlharness.md": [
@@ -263266,7 +263265,7 @@
       []
      ],
      "server-features.md": [
-      "d7207979d44c3a7f37aa9b8a11ed090308cb183d",
+      "b50b495212b53014c3ff31c71efc04eea98e70c6",
       []
      ],
      "server-pipes.md": [
@@ -287914,7 +287913,7 @@
     ]
    },
    "lint.ignore": [
-    "bcbf9e7e1d0e0fd1d634c60a8ef681c30a376927",
+    "960c1837285bb57ed7cd27818c610baf2276b02c",
     []
    ],
    "loading": {
@@ -300260,7 +300259,7 @@
     }
    },
    "update-built-tests.sh": [
-    "0dd00e77cc7d1522f0052499edbe6b1a931a8038",
+    "7bf3a66fb4bacaea3836e224f865804af07d0af3",
     []
    ],
    "upgrade-insecure-requests": {
@@ -301676,7 +301675,7 @@
       ]
      },
      "test-helpers.js": [
-      "d93e32d6a46c993b85c9e55fe37a6a949c99ce40",
+      "b512937639b4c267a6296b75aab61d42fdd4d309",
       []
      ],
      "urn-uuid.har": [
@@ -301964,6 +301963,10 @@
       ],
       "subframe-from-web-bundle-test.js": [
        "86de84174c777dc2e5017de8b1bb88c6c0ba765b",
+       []
+      ],
+      "subresource-load-test.sub.js": [
+       "b6a66866ea6a5537922ae200a3bb01f0c41d53db",
        []
       ]
      },
@@ -303205,7 +303208,7 @@
      []
     ],
     "README.md": [
-     "c6b51584ef2850e0c05f16ee05274bb79d780454",
+     "136a7649981ea41f5ea7bba6e08ba57b8e22d8b1",
      []
     ],
     "ecmascript-binding": {
@@ -303297,12 +303300,6 @@
      },
      "window-named-properties-object-expected.txt": [
       "0e4f14b96247b4855fbda1df2a719b61b07f4a48",
-      []
-     ]
-    },
-    "tools": {
-     "generate-setlike.py": [
-      "407a725da6e518c2001f43a5c0c9b4b8f86732c6",
       []
      ]
     }
@@ -304620,7 +304617,7 @@
       []
      ],
      "client-close.py": [
-      "6bb75e37b1ca0d3c036ce591467ae3f212abe1f1",
+      "01fb14b13430f73cab1562ccb0fedce528fe973e",
       []
      ],
      "custom-response.py": [
@@ -304640,7 +304637,7 @@
       []
      ],
      "server-close.py": [
-      "b3d9e10a67a9659c5316c84d434eb1e01a114dea",
+      "e9d08f483cff2859d3c1ec1426089d99bd5b253e",
       []
      ],
      "server-connection-close.py": [
@@ -312484,31 +312481,6 @@
      [
       null,
       {}
-     ]
-    ],
-    "idbobjectstore_putall.tentative.any.js": [
-     "26bcc87a4c3234c2de5699c5443d75b4419eab02",
-     [
-      "IndexedDB/idbobjectstore_putall.tentative.any.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "support-promises.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "IndexedDB/idbobjectstore_putall.tentative.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "support-promises.js"
-        ]
-       ]
-      }
      ]
     ],
     "idbrequest-onupgradeneeded.htm": [
@@ -334612,28 +334584,28 @@
      ],
      "hash-always-converted-to-utf-8": {
       "iso-8859-1.html": [
-       "64d9498d6d8443276f932823b370210fa98362c4",
+       "0d0f46fda467f58b283323b7969ba067c9506eae",
        [
         null,
         {}
        ]
       ],
       "iso-8859-3.html": [
-       "fdcc54534ccb2bbdca592cfc6ee774f61cd920d3",
+       "d4a0de41e28f88fcd668c159210dc83d1e99cec3",
        [
         null,
         {}
        ]
       ],
       "iso-8859-7.html": [
-       "23a64df179220a39a6e4be3de9582420a389231b",
+       "62876f1e4342114e665cbffb631045c9f52fa974",
        [
         null,
         {}
        ]
       ],
       "iso-8859-9.html": [
-       "a29d197a1ce653c6c4cb3fd74fd3b56b8770cd2b",
+       "8c1db6d20322d0cf0519604dd396ae0b88db4c2e",
        [
         null,
         {}
@@ -337947,7 +337919,7 @@
      ]
     ],
     "cors-safelisted-request-header.any.js": [
-     "d0927d302fe62ac12a0bd3d89f0015e2bae0da04",
+     "4783c86296c03f7df13f90befda0d3902a58efac",
      [
       "cors/cors-safelisted-request-header.any.html",
       {
@@ -367251,6 +367223,13 @@
        {}
       ]
      ],
+     "fieldset-elements.html": [
+      "dc42a57b70f9ca59a86c6fd5952bb33c12263ce7",
+      [
+       null,
+       {}
+      ]
+     ],
      "form-associated-callback.html": [
       "3a6a86dd0d00a412b420871f4d859e3cf5cb3854",
       [
@@ -367266,7 +367245,7 @@
       ]
      ],
      "form-elements-namedItem.html": [
-      "385d0f281d14a11ae86f8136433cb0ed088ad036",
+      "ab39422b5ea5284e80048276aed840597a4d3412",
       [
        null,
        {}
@@ -424881,6 +424860,13 @@
          {}
         ]
        ],
+       "dir-bdi-script.html": [
+        "30080430936213b034e09a2cb3fee14608350373",
+        [
+         null,
+         {}
+        ]
+       ],
        "dir-slots-directionality.tentative.html": [
         "1f0dc07f8ef5c1ef5a2bf2ee955285ec33f2d639",
         [
@@ -434059,7 +434045,7 @@
         ]
        ],
        "select-multiple.html": [
-        "c744144527bf14792ef276efb8d1ca22b96f79b9",
+        "e348064151a6ae2928e8c27c95c4bd0b25e4c8ac",
         [
          null,
          {}
@@ -498376,8 +498362,8 @@
        {}
       ]
      ],
-     "link-subresource-load.https.tentative.html": [
-      "426fb36cc873817734d57e03423b8c074db68bf7",
+     "link-subresource-load.https.tentative.sub.html": [
+      "fee6d41119bb159b0b133b87574e7adf33616519",
       [
        null,
        {}
@@ -498511,6 +498497,13 @@
      ],
      "script-subframe-from-web-bundle.https.tentative.html": [
       "34ed21d795838c86e2c8e5ec3a7b2651be75a43f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "script-subresource-load.https.tentative.sub.html": [
+      "fc9efe412b020cdb0e426b226f97554c6e12a98f",
       [
        null,
        {}
@@ -501794,7 +501787,7 @@
      ]
     ],
     "getcredential-extensions.https.html": [
-     "85a89bee37d9d256f2c511e6e1188f43ab5bc82e",
+     "2b5557d3f2b4bc97d146f3bc9b7158bc8c40ee80",
      [
       null,
       {
@@ -518990,7 +518983,7 @@
    },
    "webtransport": {
     "close.https.any.js": [
-     "4ccf244b18f7894d77ef27787d526d4653b0f440",
+     "6e51834e27373d5ccf3541e8ef1e5fd0ff97b543",
      [
       "webtransport/close.https.any.html",
       {
