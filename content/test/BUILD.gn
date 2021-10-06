@@ -1978,6 +1978,7 @@ test("content_unittests") {
     "../browser/file_system_access/file_system_access_handle_base_unittest.cc",
     "../browser/file_system_access/file_system_access_manager_impl_unittest.cc",
     "../browser/file_system_access/file_system_chooser_unittest.cc",
+    "../browser/file_system_access/safe_move_helper_unittest.cc",
     "../browser/font_access/font_access_manager_impl_unittest.cc",
     "../browser/generic_sensor/sensor_provider_proxy_impl_unittest.cc",
     "../browser/geolocation/geolocation_service_impl_unittest.cc",

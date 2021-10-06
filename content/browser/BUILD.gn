@@ -933,6 +933,8 @@ source_set("browser") {
     "file_system_access/file_system_chooser.h",
     "file_system_access/fixed_file_system_access_permission_grant.cc",
     "file_system_access/fixed_file_system_access_permission_grant.h",
+    "file_system_access/safe_move_helper.cc",
+    "file_system_access/safe_move_helper.h",
     "find_in_page_client.cc",
     "find_in_page_client.h",
     "find_request_manager.cc",

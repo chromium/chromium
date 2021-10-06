@@ -14,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
@@ -94,10 +93,6 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
 };
 
 }  // namespace
-
-std::string GetHexEncodedString(const std::string& input) {
-  return base::HexEncode(base::as_bytes(base::make_span(input)));
-}
 
 class FileSystemAccessFileWriterImplTest : public testing::Test {
  public:
@@ -315,77 +310,6 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote_;
   base::WeakPtr<FileSystemAccessFileWriterImpl> handle_;
 };
-
-TEST_F(FileSystemAccessFileWriterImplTest, HashSimpleOK) {
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, 3u);
-
-  base::RunLoop loop;
-  handle_->ComputeHashForSwapFileForTesting(base::BindLambdaForTesting(
-      [&](base::File::Error result, const std::string& hash_value,
-          int64_t size) {
-        EXPECT_EQ(base::File::FILE_OK, result);
-        EXPECT_EQ(
-            "BA7816BF8F01CFEA414140DE5DAE2223B00361A396177A9CB410FF61F20015AD",
-            GetHexEncodedString(hash_value));
-        EXPECT_EQ(3, size);
-        loop.Quit();
-      }));
-  loop.Run();
-}
-
-TEST_F(FileSystemAccessFileWriterImplTest, HashEmptyOK) {
-  base::RunLoop loop;
-  handle_->ComputeHashForSwapFileForTesting(base::BindLambdaForTesting(
-      [&](base::File::Error result, const std::string& hash_value,
-          int64_t size) {
-        EXPECT_EQ(base::File::FILE_OK, result);
-        EXPECT_EQ(
-            "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
-            GetHexEncodedString(hash_value));
-        EXPECT_EQ(0, size);
-        loop.Quit();
-      }));
-  loop.Run();
-}
-
-TEST_F(FileSystemAccessFileWriterImplTest, HashNonExistingFileFails) {
-  ASSERT_EQ(base::File::FILE_OK, storage::AsyncFileTestHelper::Remove(
-                                     file_system_context_.get(),
-                                     handle_->swap_url(), /*recursive=*/false));
-  base::RunLoop loop;
-  handle_->ComputeHashForSwapFileForTesting(base::BindLambdaForTesting(
-      [&](base::File::Error result, const std::string& hash_value,
-          int64_t size) {
-        EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND, result);
-        loop.Quit();
-      }));
-  loop.Run();
-}
-
-TEST_F(FileSystemAccessFileWriterImplTest, HashLargerFileOK) {
-  size_t target_size = 9 * 1024u;
-  std::string file_data(target_size, '0');
-  uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, file_data, &bytes_written);
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ(bytes_written, target_size);
-
-  base::RunLoop loop;
-  handle_->ComputeHashForSwapFileForTesting(base::BindLambdaForTesting(
-      [&](base::File::Error result, const std::string& hash_value,
-          int64_t size) {
-        EXPECT_EQ(base::File::FILE_OK, result);
-        EXPECT_EQ(
-            "34A82D28CB1E0BA92CADC4BE8497DC9EEA9AC4F63B9C445A9E52D298990AC491",
-            GetHexEncodedString(hash_value));
-        EXPECT_EQ(static_cast<int64_t>(target_size), size);
-        loop.Quit();
-      }));
-  loop.Run();
-}
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
   uint64_t bytes_written;

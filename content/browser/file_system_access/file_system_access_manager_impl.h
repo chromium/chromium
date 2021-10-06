@@ -233,6 +233,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       ResolvedTokenCallback callback);
 
+  base::WeakPtr<FileSystemAccessManagerImpl> AsWeakPtr();
+
   storage::FileSystemContext* context() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return context_.get();

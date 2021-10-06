@@ -1493,4 +1493,9 @@ void FileSystemAccessManagerImpl::DidCleanupAccessHandleCapacityAllocation(
   DCHECK_EQ(1u, count_removed);
 }
 
+base::WeakPtr<FileSystemAccessManagerImpl>
+FileSystemAccessManagerImpl::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace content
