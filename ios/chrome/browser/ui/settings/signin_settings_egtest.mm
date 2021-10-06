@@ -139,4 +139,32 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
       assertWithMatcher:grey_notNil()];
 }
 
+// This tests closes the sign-in promo, opens the sign-in view, and adds an
+// account.
+- (void)testCloseSigninPromoOpenSigninAndAddAccount {
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Check the sign-in promo view is visible.
+  [SigninEarlGreyUI
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
+  // Tap on dismiss button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                              kSigninPromoCloseButtonId),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Open the sign-in dialog.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(kSettingsSignInCellId),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Add an account.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  // Cancel the sign-in operation.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSkipSigninAccessibilityIdentifier)]
+      performAction:grey_tap()];
+}
+
 @end

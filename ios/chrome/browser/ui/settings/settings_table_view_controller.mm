@@ -560,6 +560,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   } else if (signin::IsSigninAllowed(_browserState->GetPrefs()) &&
              !authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     item = [self accountSignInItem];
+    [_signinPromoViewMediator disconnect];
+    _signinPromoViewMediator = nil;
   } else {
     [self.tableViewModel
         removeSectionWithIdentifier:SettingsSectionIdentifierSignIn];
