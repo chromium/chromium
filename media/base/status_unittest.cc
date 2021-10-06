@@ -282,24 +282,19 @@ TEST_F(StatusTest, TypedStatusWithNoDefault) {
   EXPECT_EQ(*actual.FindIntPath("code"), 1);
 }
 
-#define ASSERT_SERIALIZED_PROPERTIES(st, msg, code, stk, css, dat)           \
-  do {                                                                       \
-    base::Value __serialized__ = MediaSerialize(st);                         \
-    ASSERT_EQ(__serialized__.DictSize(), 6ul);                               \
-    ASSERT_EQ(*__serialized__.FindStringPath("message"), msg);               \
-    EXPECT_EQ(*__serialized__.FindIntPath("code"), code);                    \
-    ASSERT_EQ(__serialized__.FindListPath("stack")->GetList().size(), stk);  \
-    ASSERT_EQ(__serialized__.FindListPath("causes")->GetList().size(), css); \
-    ASSERT_EQ(__serialized__.FindDictPath("data")->DictSize(), dat);         \
-  } while (0)
-
-TEST_F(StatusTest, TypedStatusConversionDELETEME) {
+TEST_F(StatusTest, StatusOrEqOp) {
   // Test the case of a non-default (non-ok) status
-  Status failed = FailEasily();
-  ASSERT_SERIALIZED_PROPERTIES(failed, "Message", 0xffff, 1ul, 0ul, 0ul);
+  StatusOr<std::string> failed = FailEasily();
+  ASSERT_TRUE(failed == StatusCode::kCodeOnlyForTesting);
+  ASSERT_FALSE(failed == StatusCode::kOk);
+  ASSERT_TRUE(failed != StatusCode::kOk);
+  ASSERT_FALSE(failed != StatusCode::kCodeOnlyForTesting);
 
-  Status withData = DoSomethingGiveItBack(failed);
-  ASSERT_SERIALIZED_PROPERTIES(withData, "Message", 0xffff, 1ul, 0ul, 1ul);
+  StatusOr<std::string> success = std::string("Kirkland > Seattle");
+  ASSERT_TRUE(success != StatusCode::kCodeOnlyForTesting);
+  ASSERT_FALSE(success != StatusCode::kOk);
+  ASSERT_TRUE(success == StatusCode::kOk);
+  ASSERT_FALSE(success == StatusCode::kCodeOnlyForTesting);
 }
 
 }  // namespace media

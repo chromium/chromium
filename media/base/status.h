@@ -226,6 +226,14 @@ class MEDIA_EXPORT TypedStatus {
     bool has_value() const { return value_.has_value(); }
     bool has_error() const { return error_.has_value(); }
 
+    inline bool operator==(typename T::Codes code) const {
+      return code == this->code();
+    }
+
+    inline bool operator!=(typename T::Codes code) const {
+      return code != this->code();
+    }
+
     // Return the error, if we have one.
     // Callers should ensure that this |has_error()|.
     TypedStatus<T> error() && {
@@ -244,7 +252,7 @@ class MEDIA_EXPORT TypedStatus {
       return value;
     }
 
-    typename T::Codes code() {
+    typename T::Codes code() const {
       DCHECK(error_ || value_);
       // It is invalid to call |code()| on an |Or| with a value that
       // is specialized in a TypedStatus with no DefaultEnumValue.
