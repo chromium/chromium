@@ -57,10 +57,7 @@ source_set("modular") {
 
 # FIDL/Mojo adapters for MessagePorts.
 source_set("message_port") {
-  visibility = [
-    "//chromecast/bindings:bindings_manager_fuchsia",
-    "//fuchsia/*",
-  ]
+  visibility = [ "//fuchsia/*" ]
   sources = [ "message_port.cc" ]
   public = [ "message_port.h" ]
   public_deps = [

@@ -40,13 +40,14 @@ if (is_fuchsia) {
       "bindings_manager_fuchsia.cc",
       "bindings_manager_fuchsia.h",
     ]
-    deps = [
+    public_deps = [
       ":bindings_manager",
+      "//fuchsia:cast_fidl",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
+    ]
+    deps = [
       "//base",
       "//components/cast/message_port",
-      "//fuchsia:cast_fidl",
-      "//fuchsia/base:message_port",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     ]
   }
 }

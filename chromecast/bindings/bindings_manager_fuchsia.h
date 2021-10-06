@@ -6,10 +6,10 @@
 #define CHROMECAST_BINDINGS_BINDINGS_MANAGER_FUCHSIA_H_
 
 #include <fuchsia/mem/cpp/fidl.h>
+
 #include <map>
 #include <string>
 
-#include "base/callback.h"
 #include "chromecast/bindings/bindings_manager.h"
 #include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
 
