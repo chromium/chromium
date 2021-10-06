@@ -807,7 +807,8 @@ bool ArCoreGl::IsSubmitFrameExpected(int16_t frame_index) {
   if (animating_frame->index != frame_index) {
     DVLOG(1) << __func__ << ": wrong frame index, got " << frame_index
              << ", expected " << animating_frame->index;
-    mojo::ReportBadMessage("SubmitFrame called with wrong frame index");
+    presentation_receiver_.ReportBadMessage(
+        "SubmitFrame called with wrong frame index");
     CloseBindingsIfOpen();
     pending_shutdown_ = true;
     return false;
@@ -1420,7 +1421,7 @@ void ArCoreGl::SetInputSourceButtonListener(
     mojo::PendingAssociatedRemote<device::mojom::XRInputSourceButtonListener>) {
   // Input eventing is not supported. This call should not
   // be made on this device.
-  mojo::ReportBadMessage("Input eventing is not supported.");
+  frame_data_receiver_.ReportBadMessage("Input eventing is not supported.");
 }
 
 void ArCoreGl::SubscribeToHitTest(
