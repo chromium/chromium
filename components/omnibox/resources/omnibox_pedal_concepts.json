@@ -1,7 +1,7 @@
 {
   "schema": "pedals_translation_model",
   "schema_version": 3,
-  "time_generated": "2021-09-29T17:45:36.126Z",
+  "time_generated": "2021-10-06T17:49:07.241Z",
   "primary_language_code": "en",
   "pedal_definitions": [
     {
@@ -224,7 +224,7 @@
       "id": 28,
       "name": "FIND_MY_PHONE",
       "enabled": true,
-      "url": "https://www.google.com/android/find?u=0?",
+      "url": "https://myaccount.google.com/find-your-phone?utm_source=ga-chrome-actions&utm_medium=findYourPhone",
       "description": "Locate a lost device\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_FIND_MY_PHONE_HINT\nIDS_OMNIBOX_PEDAL_FIND_MY_PHONE_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE\n",
       "tags": "batch3"
     },
@@ -232,7 +232,7 @@
       "id": 29,
       "name": "MANAGE_GOOGLE_PRIVACY",
       "enabled": true,
-      "url": "https://myaccount.google.com/data-and-privacy",
+      "url": "https://myaccount.google.com/data-and-privacy?utm_source=ga-chrome-actions&utm_medium=managePrivacy",
       "description": "Manage Google privacy (control the use of their data)\n\nUser-facing strings for this Pedal:\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_HINT\nIDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUGGESTION_CONTENTS\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX\nIDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY",
       "tags": "batch3"
     },
@@ -12166,12 +12166,24 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "delete",
+                "close",
+                "clear",
+                "end"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "incognito window",
+                "incognito mode",
+                "incognito"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12187,12 +12199,21 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "play chrome dino game",
+                "play chrome dinosaur",
+                "play chrome dino",
+                "chrome dino game",
+                "chrome dinosaur",
+                "play dino game",
+                "play dino run",
+                "chrome dino",
+                "dino game",
+                "dino run"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12208,12 +12229,30 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "help me locate",
+                "help me find",
+                "help to find",
+                "help locate",
+                "help find",
+                "identify",
+                "where is",
+                "locate",
+                "find"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "lost device",
+                "lost phone",
+                "device",
+                "phone"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12229,12 +12268,24 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "manage google privacy settings",
+                "change google privacy settings",
+                "edit google privacy settings",
+                "change my privacy on google",
+                "edit my privacy on google",
+                "google privacy settings",
+                "google privacy controls",
+                "google account privacy",
+                "google privacy checkup",
+                "manage google privacy",
+                "change google privacy",
+                "edit google privacy",
+                "google privacy"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12271,12 +12322,30 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "control",
+                "revisit",
+                "change",
+                "modify",
+                "manage",
+                "revise",
+                "alter",
+                "edit"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "chrome browser settings",
+                "google chrome settings",
+                "browser settings",
+                "chrome settings",
+                "settings"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12292,12 +12361,32 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "control",
+                "revisit",
+                "change",
+                "modify",
+                "manage",
+                "revise",
+                "alter",
+                "edit",
+                "view",
+                "see"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "chrome browser downloads",
+                "google chrome downloads",
+                "browser downloads",
+                "chrome downloads",
+                "downloads"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12313,12 +12402,28 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "revisit",
+                "visit",
+                "find",
+                "view",
+                "see"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "google chrome browsing history",
+                "google chrome history",
+                "browsing history",
+                "browser history",
+                "chrome history",
+                "url history"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12334,12 +12439,26 @@
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "share link with qr code",
+                "send link with qr code",
+                "share link via qr code",
+                "send link via qr code",
+                "share this page",
+                "cast this page",
+                "save this page",
+                "save page as",
+                "cast screen",
+                "share link",
+                "share page",
+                "send link",
+                "send page",
+                "cast page",
+                "qr code"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12352,15 +12471,36 @@
           "id": 35,
           "groups": [
             {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "customize",
+                "control",
+                "manage",
+                "visit",
+                "view",
+                "edit"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "accessibility settings",
+                "accessibility features",
+                "assistive technology",
+                "chrome accessibility",
+                "low vision settings",
+                "low vision features",
+                "caption settings",
+                "assistive tech",
+                "accessibility",
+                "captions"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12373,15 +12513,42 @@
           "id": 36,
           "groups": [
             {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "customize",
+                "control",
+                "change",
+                "manage",
+                "alter",
+                "edit"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "google chrome",
+                "browser",
+                "chrome"
+              ]
+            },
+            {
+              "required": true,
+              "single": true,
+              "synonyms": [
+                "font sizing",
+                "font sizes",
+                "fonts type",
+                "font size",
+                "font type",
+                "fonts",
+                "font"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12394,15 +12561,32 @@
           "id": 37,
           "groups": [
             {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "customize",
+                "control",
+                "change",
+                "manage",
+                "modify",
+                "edit"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "chrome backgrounds",
+                "chrome appearance",
+                "chrome themes",
+                "chrome colors",
+                "chrome theme",
+                "chrome color"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12415,15 +12599,44 @@
           "id": 38,
           "groups": [
             {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "customize",
+                "control",
+                "manage",
+                "change",
+                "modify",
+                "edit",
+                "add"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "custom search engines",
+                "site search engines",
+                "customized search",
+                "search engines",
+                "tab to search",
+                "scoped search",
+                "custom search",
+                "site search"
+              ]
+            },
+            {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "google chrome",
+                "browser",
+                "chrome"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",
@@ -12436,15 +12649,36 @@
           "id": 39,
           "groups": [
             {
+              "required": false,
+              "single": true,
+              "synonyms": [
+                "customize",
+                "control",
+                "manage",
+                "visit",
+                "view",
+                "edit"
+              ]
+            },
+            {
               "required": true,
               "single": true,
               "synonyms": [
-                "一時的踏板placeholder"
+                "accessibility settings",
+                "accessibility features",
+                "assistive technology",
+                "chrome accessibility",
+                "low vision settings",
+                "low vision features",
+                "caption settings",
+                "assistive tech",
+                "accessibility",
+                "captions"
               ]
             }
           ],
           "cover_cases": [],
-          "enabled": false,
+          "enabled": true,
           "omnibox_ui_strings": {
             "button_text": "",
             "description_text": "",

@@ -345,7 +345,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     }
 
     OmniboxPedal::TokenSequence verbatim_sequence(0);
-    Tokenize(verbatim_sequence, pedal->GetLabelStrings().hint);
+    TokenizeAndExpandDictionary(verbatim_sequence,
+                                pedal->GetLabelStrings().hint);
     ignore_group_.EraseMatchesIn(verbatim_sequence, true);
     pedal->AddVerbatimSequence(std::move(verbatim_sequence));
 

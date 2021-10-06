@@ -1101,16 +1101,15 @@ class OmniboxPedalPlayChromeDinoGame : public OmniboxPedal {
 
 // =============================================================================
 
-class OmniboxPedalFindMyPhone : public OmniboxPedal {
+class OmniboxPedalFindMyPhone : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalFindMyPhone()
-      : OmniboxPedal(
+      : OmniboxPedalAuthRequired(
             OmniboxPedalId::FIND_MY_PHONE,
             LabelStrings(IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_HINT,
                          IDS_OMNIBOX_PEDAL_FIND_MY_PHONE_SUGGESTION_CONTENTS,
                          IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE_SUFFIX,
-                         IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE),
-            GURL()) {}
+                         IDS_ACC_OMNIBOX_PEDAL_FIND_MY_PHONE)) {}
 
 #if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
@@ -1124,17 +1123,16 @@ class OmniboxPedalFindMyPhone : public OmniboxPedal {
 
 // =============================================================================
 
-class OmniboxPedalManageGooglePrivacy : public OmniboxPedal {
+class OmniboxPedalManageGooglePrivacy : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalManageGooglePrivacy()
-      : OmniboxPedal(
+      : OmniboxPedalAuthRequired(
             OmniboxPedalId::MANAGE_GOOGLE_PRIVACY,
             LabelStrings(
                 IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_HINT,
                 IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUGGESTION_CONTENTS,
                 IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY_SUFFIX,
-                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY),
-            GURL()) {}
+                IDS_ACC_OMNIBOX_PEDAL_MANAGE_GOOGLE_PRIVACY)) {}
 
 #if SUPPORTS_DESKTOP_ICONS
   const gfx::VectorIcon& GetVectorIcon() const override {
@@ -1244,6 +1242,9 @@ class OmniboxPedalShareThisPage : public OmniboxPedal {
     // See: chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.cc
     // Note: When pedals are implemented on Android, we may want to
     // consider using omnibox::kShareIcon (three dots with lines).
+    // TODO(orinj): Eliminate the code duplication here and get the
+    // same icon from SharingHubIconView::GetVectorIcon once pedals
+    // are moved to src-internal.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return omnibox::kShareIcon;
 #elif defined(OS_MAC)
