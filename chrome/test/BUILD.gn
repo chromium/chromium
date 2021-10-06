@@ -3825,7 +3825,10 @@ if (!is_android && !is_fuchsia) {
       }
     }
     if (is_win) {
-      sources += [ "../browser/policy/test/audio_process_high_priority_enabled_browsertest.cc" ]
+      sources += [
+        "../browser/policy/test/audio_process_high_priority_enabled_browsertest.cc",
+        "../browser/policy/test/network_service_sandbox_enabled_browsertest.cc",
+      ]
     }
     if (((is_linux || is_chromeos_lacros) && !is_chromeos_lacros) || is_mac) {
       sources +=

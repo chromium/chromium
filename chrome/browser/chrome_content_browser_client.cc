@@ -5682,6 +5682,10 @@ bool ChromeContentBrowserClient::ShouldSandboxAudioService() {
   return IsAudioServiceSandboxEnabled();
 }
 
+bool ChromeContentBrowserClient::ShouldSandboxNetworkService() {
+  return SystemNetworkContextManager::IsNetworkSandboxEnabled();
+}
+
 void ChromeContentBrowserClient::LogWebFeatureForCurrentPage(
     content::RenderFrameHost* render_frame_host,
     blink::mojom::WebFeature feature) {

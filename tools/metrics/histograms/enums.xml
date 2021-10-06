@@ -26474,6 +26474,7 @@ Called by update_document_policy_enum.py.-->
   <int value="906" label="SideSearchEnabled"/>
   <int value="907" label="AccessCodeCastEnabled"/>
   <int value="908" label="AccessCodeCastDeviceDuration"/>
+  <int value="909" label="NetworkServiceSandboxEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
