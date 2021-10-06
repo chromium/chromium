@@ -70,7 +70,9 @@ class Tracker : public KeyedService, public base::SupportsUserData {
     // User chose to snooze the IPH.
     SNOOZED = 1,
     // User chose to dismiss the IPH.
-    DISMISSED = 2
+    DISMISSED = 2,
+    // Constant used by the histogram macros.
+    kMaxValue = DISMISSED
   };
 
   // Result of the backend query for whether or not to trigger any help UI.

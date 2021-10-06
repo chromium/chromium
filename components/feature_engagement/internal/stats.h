@@ -11,6 +11,7 @@
 #include "components/feature_engagement/internal/condition_validator.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/public/configuration.h"
+#include "components/feature_engagement/public/tracker.h"
 
 namespace feature_engagement {
 namespace stats {
@@ -155,6 +156,9 @@ void RecordShouldTriggerHelpUI(const base::Feature& feature,
 
 // Records when the user dismisses the in-product help UI.
 void RecordUserDismiss();
+
+// Records when the user dismisses or snoozes the snoozable in-product help UI.
+void RecordUserSnoozeAction(Tracker::SnoozeAction snooze_action);
 
 // Records the result of database updates.
 void RecordDbUpdate(bool success, StoreType type);

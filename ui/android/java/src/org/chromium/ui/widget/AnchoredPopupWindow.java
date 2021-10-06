@@ -23,6 +23,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.metrics.RecordUserAction;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -580,6 +581,10 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     public boolean onTouch(View v, MotionEvent event) {
         boolean touchInterceptedByClient =
                 mTouchListener != null && mTouchListener.onTouch(v, event);
+
+        RecordUserAction.record(event.getAction() == MotionEvent.ACTION_OUTSIDE
+                        ? "InProductHelp.OutsideTouch"
+                        : "InProductHelp.InsideTouch");
 
         // Pass down the touch event to child views. If the content view has clickable children,
         // make sure we give them the opportunity to trigger.

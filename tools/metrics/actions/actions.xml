@@ -8181,6 +8181,12 @@ should be able to be added at any place in this file.
   <description>The user dismissed the in-product help.</description>
 </action>
 
+<action name="InProductHelp.InsideTouch">
+  <owner>haileywang@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <description>The user tapped inside the in-product help bubble.</description>
+</action>
+
 <action name="InProductHelp.NotifyEvent.IPH" not_user_triggered="true">
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
@@ -8191,6 +8197,12 @@ should be able to be added at any place in this file.
   <owner>dtrainor@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <description>The user triggered a used event in in-product help.</description>
+</action>
+
+<action name="InProductHelp.OutsideTouch">
+  <owner>haileywang@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <description>The user tapped outside the in-product help bubble.</description>
 </action>
 
 <action name="InProductHelp.Promos.BubbleClicked">

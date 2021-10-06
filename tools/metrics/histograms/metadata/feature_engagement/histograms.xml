@@ -385,6 +385,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="IPHFeature" variants="IPHFeature"/>
 </histogram>
 
+<histogram name="InProductHelp.TextBubble.ShownTime" units="ms"
+    expires_after="2022-10-01">
+  <owner>haileywang@chromium.org</owner>
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    The time duration for which the in-product help bubble is shown.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

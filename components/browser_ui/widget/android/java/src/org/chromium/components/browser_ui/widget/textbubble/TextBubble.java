@@ -26,6 +26,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -67,6 +68,9 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     /** Runnables for snoozable text bubble option. */
     private final Runnable mSnoozeRunnable;
     private final Runnable mSnoozeDismissRunnable;
+
+    /** Time tracking for histograms. */
+    private long mBubbleShowStartTime;
 
     private final Runnable mDismissRunnable = new Runnable() {
         @Override
@@ -342,6 +346,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
 
         mPopupWindow.show();
         sBubbles.add(this);
+        mBubbleShowStartTime = System.currentTimeMillis();
     }
 
     /**
@@ -350,6 +355,12 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      */
     public void dismiss() {
         mPopupWindow.dismiss();
+
+        if (mBubbleShowStartTime != 0) {
+            RecordHistogram.recordTimesHistogram("InProductHelp.TextBubble.ShownTime",
+                    System.currentTimeMillis() - mBubbleShowStartTime);
+            mBubbleShowStartTime = 0;
+        }
     }
 
     /**

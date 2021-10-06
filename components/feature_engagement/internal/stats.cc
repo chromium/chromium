@@ -178,6 +178,10 @@ void RecordUserDismiss() {
   base::RecordAction(base::UserMetricsAction("InProductHelp.Dismissed"));
 }
 
+void RecordUserSnoozeAction(Tracker::SnoozeAction snooze_action) {
+  base::UmaHistogramEnumeration("InProductHelp.SnoozeAction", snooze_action);
+}
+
 void RecordDbUpdate(bool success, StoreType type) {
   std::string histogram_name =
       "InProductHelp.Db.Update." + ToDbHistogramSuffix(type);
