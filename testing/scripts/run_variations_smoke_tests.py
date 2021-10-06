@@ -298,12 +298,13 @@ def main_run(args):
   """Runs the variations smoke tests."""
   logging.basicConfig(level=logging.INFO)
   parser = argparse.ArgumentParser()
-  parser.add_argument('--isolated-script-test-output', type=str, required=True)
+  parser.add_argument('--isolated-script-test-output', type=str)
   args, _ = parser.parse_known_args()
   rc = _run_tests()
-  with open(args.isolated_script_test_output, 'w') as f:
-    common.record_local_script_results('run_variations_smoke_tests', f, [],
-                                       rc == 0)
+  if args.isolated_script_test_output:
+    with open(args.isolated_script_test_output, 'w') as f:
+      common.record_local_script_results('run_variations_smoke_tests', f, [],
+                                         rc == 0)
 
   return rc
 

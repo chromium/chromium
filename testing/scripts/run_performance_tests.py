@@ -5,27 +5,17 @@
 
 """Runs telemetry benchmarks and gtest perf tests.
 
-This script attempts to emulate the contract of gtest-style tests
-invoked via recipes. The main contract is that the caller passes the
-argument:
+If optional argument --isolated-script-test-output=[FILENAME] is passed
+to the script, json is written to that file in the format detailed in
+//docs/testing/json-test-results-format.md.
 
-  --isolated-script-test-output=[FILENAME]
-
-json is written to that file in the format detailed here:
-https://www.chromium.org/developers/the-json-test-results-format
-
-Optional argument:
-
-  --isolated-script-test-filter=[TEST_NAMES]
-
-is a double-colon-separated ("::") list of test names, to run just that subset
-of tests. This list is forwarded to the run_telemetry_benchmark_as_googletest
-script.
+If optional argument --isolated-script-test-filter=[TEST_NAMES] is passed to
+the script, it should be a  double-colon-separated ("::") list of test names,
+to run just that subset of tests.
 
 This script is intended to be the base command invoked by the isolate,
 followed by a subsequent Python script. It could be generalized to
 invoke an arbitrary executable.
-
 It currently runs several benchmarks. The benchmarks it will execute are
 based on the shard it is running on and the sharding_map_path.
 
@@ -33,14 +23,11 @@ If this is executed with a gtest perf test, the flag --non-telemetry
 has to be passed in to the script so the script knows it is running
 an executable and not the run_benchmark command.
 
-This script obeys the --isolated-script-test-output flag and merges test results
-from all the benchmarks into the one output.json file. The test results and perf
-results are also put in separate directories per
-benchmark. Two files will be present in each directory; perf_results.json, which
-is the perf specific results (with unenforced format, could be histogram or
-graph json), and test_results.json, which is a JSON test results
-format file
-https://chromium.googlesource.com/chromium/src/+/main/docs/testing/json_test_results_format.md
+This script merges test results from all the benchmarks into the one
+output.json file. The test results and perf results are also put in separate
+directories per benchmark. Two files will be present in each directory;
+perf_results.json, which is the perf specific results (with unenforced format,
+could be histogram or graph json), and test_results.json.
 
 TESTING:
 To test changes to this script, please run

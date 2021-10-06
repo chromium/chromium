@@ -401,8 +401,9 @@ class BaseIsolatedScriptArgsAdapter(object):
   def generate_isolated_script_cmd(self):
     isolated_script_cmd = [ self.select_python_executable() ] + self.rest_args
 
-    isolated_script_cmd += self.generate_test_output_args(
-        self.options.isolated_script_test_output)
+    if self.options.isolated_script_test_output:
+      isolated_script_cmd += self.generate_test_output_args(
+          self.options.isolated_script_test_output)
 
     # Augment test filter args if needed
     if self.options.isolated_script_test_filter:

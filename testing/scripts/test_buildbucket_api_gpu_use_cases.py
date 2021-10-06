@@ -75,8 +75,7 @@ class BuildBucketApiGpuUseCaseTests:
 def main(argv):
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--isolated-script-test-output', type=str,
-      required=True)
+      '--isolated-script-test-output', type=str)
   parser.add_argument(
       '--isolated-script-test-chartjson-output', type=str,
       required=False)
@@ -104,11 +103,12 @@ def main(argv):
     print('PASS: test_buildbucket_api_gpu_use_cases ran successfully.')
     retval = 0
 
-  with open(args.isolated_script_test_output, 'w') as json_file:
-    json.dump({
-        'valid': True,
-        'failures': failures,
-    }, json_file)
+  if args.isolated_script_test_output:
+    with open(args.isolated_script_test_output, 'w') as json_file:
+      json.dump({
+          'valid': True,
+          'failures': failures,
+      }, json_file)
 
   return retval
 
