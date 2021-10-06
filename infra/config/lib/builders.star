@@ -192,7 +192,7 @@ xcode = struct(
 
 # Git revision of the compilator_watcher luciexe sub_build binary for chromium
 # orchestrators to use
-compilator_watcher_git_revision = "ecaab12e4a31e76701a25668cb71ae964189a341"
+compilator_watcher_git_revision = "d5bee0e7798a40c3c6261c3dbc14becf1fbb693f"
 
 ################################################################################
 # Implementation details                                                       #
