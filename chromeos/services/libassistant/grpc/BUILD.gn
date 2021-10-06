@@ -20,9 +20,11 @@ source_set("assistant_client") {
   ]
 
   deps = [
+    ":grpc_service",
     ":libassistant_client",
     "../:callback_utils",
     "external_services:grpc_services_initializer",
+    "external_services:grpc_services_observer",
     "//base",
     "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:buildflags",
@@ -59,15 +61,20 @@ source_set("grpc_client") {
 
 source_set("grpc_service") {
   sources = [
-    "assistant_connection_status.h",
     "async_service_driver.h",
     "rpc_method_driver.h",
     "services_initializer_base.cc",
     "services_initializer_base.h",
+    "services_status_observer.h",
+    "services_status_provider.cc",
+    "services_status_provider.h",
   ]
+
+  public_deps = [ "//chromeos/assistant/internal/proto:assistant" ]
 
   deps = [
     ":grpc_util",
+    "external_services:grpc_services_observer",
     "//base",
     "//third_party/grpc:grpc++",
   ]

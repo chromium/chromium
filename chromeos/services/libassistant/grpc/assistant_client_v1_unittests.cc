@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
@@ -62,7 +63,8 @@ class AssistantClientV1Test : public testing::Test {
     assistant_client_ = std::make_unique<AssistantClientV1>(
         std::move(assistant_manager), assistant_manager_internal_.get());
 
-    assistant_client_->StartServices();
+    assistant_client_->StartServices(
+        /*services_ready_callback=*/base::DoNothing());
   }
 
   AssistantClientV1& v1_client() { return *assistant_client_; }

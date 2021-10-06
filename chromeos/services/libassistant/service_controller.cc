@@ -6,14 +6,12 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/check.h"
 #include "chromeos/assistant/internal/internal_util.h"
-#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
-#include "chromeos/assistant/internal/proto/shared/proto/v2/device_state_event.pb.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
-#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/util.h"
@@ -90,38 +88,6 @@ void SetServerExperiments(AssistantClient* assistant_client) {
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-//  DeviceStateEventObserver
-////////////////////////////////////////////////////////////////////////////////
-
-class ServiceController::DeviceStateEventObserver
-    : public GrpcServicesObserver<::assistant::api::OnDeviceStateEventRequest> {
- public:
-  explicit DeviceStateEventObserver(ServiceController* parent)
-      : parent_(parent) {}
-  DeviceStateEventObserver(const DeviceStateEventObserver&) = delete;
-  DeviceStateEventObserver& operator=(const DeviceStateEventObserver&) = delete;
-  ~DeviceStateEventObserver() override = default;
-
-  // GrpcServicesObserver:
-  // Invoked when a device state event has been received.
-  void OnGrpcMessage(
-      const ::assistant::api::OnDeviceStateEventRequest& request) override {
-    if (!request.event().has_on_state_changed())
-      return;
-
-    const auto& new_state = request.event().on_state_changed().new_state();
-    if (!new_state.has_startup_state())
-      return;
-
-    if (new_state.startup_state().finished())
-      parent_->OnStartFinished();
-  }
-
- private:
-  ServiceController* const parent_;
-};
-
-////////////////////////////////////////////////////////////////////////////////
 //  ServiceController
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -170,7 +136,6 @@ void ServiceController::Initialize(
       config->spoken_feedback_enabled);
   settings_controller_->SetDarkModeEnabled(config->dark_mode_enabled);
 
-  CreateAndRegisterDeviceStateEventObserver();
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
 
   SetServerExperiments(assistant_client_.get());
@@ -187,7 +152,8 @@ void ServiceController::Start() {
   DCHECK(IsInitialized()) << "Initialize() must be called before Start()";
   DVLOG(1) << "Starting Libassistant service";
 
-  assistant_client_->StartServices();
+  assistant_client_->StartServices(base::BindOnce(
+      &ServiceController::OnAllServicesReady, weak_factory_.GetWeakPtr()));
 
   SetStateAndInformObservers(ServiceState::kStarted);
 
@@ -211,7 +177,6 @@ void ServiceController::Stop() {
 
   assistant_client_ = nullptr;
   chromium_api_delegate_ = nullptr;
-  device_state_event_observer_ = nullptr;
 
   for (auto& observer : assistant_client_observers_)
     observer.OnAssistantClientDestroyed();
@@ -304,13 +269,12 @@ ServiceController::assistant_manager_internal() {
                            : nullptr;
 }
 
-void ServiceController::OnStartFinished() {
-  DVLOG(1) << "Libassistant start is finished";
+void ServiceController::OnAllServicesReady() {
+  // Notify observers on Libassistant services ready.
   SetStateAndInformObservers(mojom::ServiceState::kRunning);
 
-  for (auto& observer : assistant_client_observers_) {
+  for (auto& observer : assistant_client_observers_)
     observer.OnAssistantClientRunning(assistant_client_.get());
-  }
 }
 
 void ServiceController::SetStateAndInformObservers(
@@ -321,15 +285,6 @@ void ServiceController::SetStateAndInformObservers(
 
   for (auto& observer : state_observers_)
     observer->OnStateChanged(state_);
-}
-
-void ServiceController::CreateAndRegisterDeviceStateEventObserver() {
-  device_state_event_observer_ =
-      std::make_unique<DeviceStateEventObserver>(this);
-
-  // |device_state_event_observer_| outlives |assistant_client_|.
-  assistant_client_->AddDeviceStateEventObserver(
-      device_state_event_observer_.get());
 }
 
 void ServiceController::CreateAndRegisterChromiumApiDelegate(

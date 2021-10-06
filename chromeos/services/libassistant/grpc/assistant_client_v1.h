@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_ASSISTANT_CLIENT_V1_H_
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
@@ -27,7 +28,7 @@ class AssistantClientV1 : public AssistantClient {
   ~AssistantClientV1() override;
 
   // chromeos::libassistant::AssistantClient:
-  void StartServices() override;
+  void StartServices(base::OnceClosure services_ready_callback) override;
   void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
@@ -98,6 +99,8 @@ class AssistantClientV1 : public AssistantClient {
 
   void AddMediaManagerListener();
 
+  void NotifyAllServicesReady();
+
   void NotifyDeviceStateEvent(const OnDeviceStateEventRequest& request);
 
   void OnSpeakerIdEnrollmentUpdate(
@@ -117,6 +120,9 @@ class AssistantClientV1 : public AssistantClient {
 
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;
+
+  // Invoked when Libassistant services are ready to query.
+  base::OnceClosure services_ready_callback_;
 
   base::WeakPtrFactory<AssistantClientV1> weak_factory_{this};
 };

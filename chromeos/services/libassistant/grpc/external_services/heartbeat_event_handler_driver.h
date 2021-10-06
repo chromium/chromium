@@ -9,8 +9,10 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_service.grpc.pb.h"
 #include "chromeos/services/libassistant/grpc/async_service_driver.h"
+#include "chromeos/services/libassistant/grpc/external_services/grpc_services_observer.h"
 #include "chromeos/services/libassistant/grpc/rpc_method_driver.h"
 
 namespace assistant {
@@ -31,10 +33,17 @@ class HeartbeatEventHandlerDriver : public AsyncServiceDriver {
       delete;
   ~HeartbeatEventHandlerDriver() override;
 
+  void AddObserver(
+      GrpcServicesObserver<::assistant::api::OnHeartbeatEventRequest>*
+          observer);
+  void RemoveObserver(
+      GrpcServicesObserver<::assistant::api::OnHeartbeatEventRequest>*
+          observer);
+
  private:
   // Generally we should use fully qualified namespace inside classes to avoid
-  // potential confliction, we use |using| here to simply the naming thus
-  // increase the readability.
+  // potential conflict. We made an exception here to increase the readability
+  // with shorten names.
   using OnHeartbeatEventRequest = ::assistant::api::OnHeartbeatEventRequest;
   using OnHeartbeatEventResponse = ::assistant::api::OnHeartbeatEventResponse;
   using HeartbeatEventHandlerInterface =
@@ -55,6 +64,10 @@ class HeartbeatEventHandlerDriver : public AsyncServiceDriver {
   std::unique_ptr<
       RpcMethodDriver<OnHeartbeatEventRequest, OnHeartbeatEventResponse>>
       on_event_rpc_method_driver_;
+
+  base::ObserverList<
+      GrpcServicesObserver<::assistant::api::OnHeartbeatEventRequest>>
+      observers_;
 
   // This sequence checker ensures that all callbacks are called on the main
   // sequence.

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -147,16 +148,7 @@ class AssistantClientV1::DeviceStateListener
   void OnStartFinished() override {
     ENSURE_CALLING_SEQUENCE(&DeviceStateListener::OnStartFinished);
 
-    OnDeviceStateEventRequest request;
-    request.mutable_event()
-        ->mutable_on_state_changed()
-        ->mutable_new_state()
-        ->mutable_startup_state()
-        ->set_finished(true);
-    assistant_client_->NotifyDeviceStateEvent(request);
-
-    // AssistantManager Start() has completed, add media manager listener.
-    assistant_client_->AddMediaManagerListener();
+    assistant_client_->NotifyAllServicesReady();
   }
 
  private:
@@ -280,7 +272,10 @@ AssistantClientV1::~AssistantClientV1() {
   ResetAssistantManager();
 }
 
-void AssistantClientV1::StartServices() {
+void AssistantClientV1::StartServices(
+    base::OnceClosure services_ready_callback) {
+  services_ready_callback_ = std::move(services_ready_callback);
+
   assistant_manager()->Start();
 }
 
@@ -457,6 +452,16 @@ void AssistantClientV1::NotifyDeviceStateEvent(
   for (auto& observer : device_state_event_observer_list_) {
     observer.OnGrpcMessage(request);
   }
+}
+
+void AssistantClientV1::NotifyAllServicesReady() {
+  DCHECK(services_ready_callback_);
+  // This callback will do nothing if V2 is enabled as in V2 we'll be relying on
+  // the heartbeat ready signal.
+  std::move(services_ready_callback_).Run();
+
+  // Now |AssistantManager| is fully started, add media manager listener.
+  AddMediaManagerListener();
 }
 
 void AssistantClientV1::OnSpeakerIdEnrollmentUpdate(

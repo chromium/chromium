@@ -6,14 +6,18 @@
 
 #include <memory>
 
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/libassistant/callback_utils.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/services/libassistant/grpc/grpc_libassistant_client.h"
+#include "chromeos/services/libassistant/grpc/services_status_observer.h"
 #include "libassistant/shared/public/assistant_manager.h"
 
 namespace chromeos {
@@ -27,32 +31,45 @@ AssistantClientImpl::AssistantClientImpl(
     : AssistantClientV1(std::move(assistant_manager),
                         assistant_manager_internal),
       grpc_services_(libassistant_service_address, assistant_service_address),
-      client_(grpc_services_.GrpcLibassistantClient()),
-      task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-
-AssistantClientImpl::~AssistantClientImpl() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+      client_(grpc_services_.GrpcLibassistantClient()) {
+  services_status_observation_.Observe(
+      &grpc_services_.GetServicesStatusProvider());
 }
 
-void AssistantClientImpl::StartServices() {
+AssistantClientImpl::~AssistantClientImpl() = default;
+
+void AssistantClientImpl::StartServices(
+    base::OnceClosure services_ready_callback) {
+  DCHECK(services_ready_callback);
+  services_ready_callback_ = std::move(services_ready_callback);
+
   StartGrpcServices();
 
-  AssistantClientV1::StartServices();
+  // Passes a no-op callback as we will not use the ready signal of v1.
+  AssistantClientV1::StartServices(
+      /*services_ready_callback=*/base::DoNothing());
 }
 
 bool AssistantClientImpl::StartGrpcServices() {
   return grpc_services_.Start();
 }
 
-void AssistantClientImpl::AddExperimentIds(
-    const std::vector<std::string>& exp_ids) {}
+void AssistantClientImpl::OnServicesStatusChanged(ServicesStatus status) {
+  switch (status) {
+    case ServicesStatus::ONLINE_ALL_SERVICES_AVAILABLE:
+      DVLOG(1) << "All Libassistant services are available.";
 
-void AssistantClientImpl::SendVoicelessInteraction(
-    const ::assistant::api::Interaction& interaction,
-    const std::string& description,
-    const ::assistant::api::VoicelessOptions& options,
-    base::OnceCallback<void(bool)> on_done) {
-  NOTIMPLEMENTED();
+      std::move(services_ready_callback_).Run();
+      break;
+    case ServicesStatus::ONLINE_BOOTING_UP:
+      DVLOG(3) << "Libassistant services are booting up.";
+      // Configing internal options or other essential services that are allowed
+      // to query during bootup should happen here.
+      break;
+    case ServicesStatus::OFFLINE:
+      // No action needed.
+      break;
+  }
 }
 
 // static

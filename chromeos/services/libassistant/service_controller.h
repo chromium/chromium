@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_LIBASSISTANT_SERVICE_CONTROLLER_H_
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
@@ -69,13 +70,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
  private:
-  class DeviceStateEventObserver;
-
-  void OnStartFinished();
+  // Will be invoked when all Libassistant services are ready to query.
+  void OnAllServicesReady();
 
   void SetStateAndInformObservers(mojom::ServiceState new_state);
 
-  void CreateAndRegisterDeviceStateEventObserver();
   void CreateAndRegisterChromiumApiDelegate(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
   void CreateChromiumApiDelegate(
@@ -90,11 +89,12 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
 
   std::unique_ptr<AssistantClient> assistant_client_;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
-  std::unique_ptr<DeviceStateEventObserver> device_state_event_observer_;
 
   mojo::Receiver<mojom::ServiceController> receiver_{this};
   mojo::RemoteSet<mojom::StateObserver> state_observers_;
   base::ObserverList<AssistantClientObserver> assistant_client_observers_;
+
+  base::WeakPtrFactory<ServiceController> weak_factory_{this};
 };
 
 using ScopedAssistantClientObserver = base::ScopedObservation<

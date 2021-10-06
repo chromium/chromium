@@ -88,7 +88,10 @@ class AssistantClient {
   AssistantClient& operator=(const AssistantClient&) = delete;
   virtual ~AssistantClient();
 
-  virtual void StartServices() = 0;
+  // Starts Libassistant services. |services_ready_callback| will be invoked
+  // upon the completion of Libassistant  initialization when all services are
+  // available and ready to use.
+  virtual void StartServices(base::OnceClosure services_ready_callback) = 0;
 
   virtual void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) = 0;

@@ -122,6 +122,7 @@ source_set("internal") {
     ":constants",
     "./grpc:assistant_client",
     "./grpc/external_services:grpc_services_initializer",
+    "./grpc/external_services:grpc_services_observer",
     "//build/util:chromium_git_revision",
     "//chromeos/assistant:buildflags",
     "//chromeos/assistant/internal",

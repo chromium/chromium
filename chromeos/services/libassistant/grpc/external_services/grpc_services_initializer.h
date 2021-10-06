@@ -9,10 +9,13 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chromeos/services/libassistant/grpc/external_services/customer_registration_client.h"
+#include "chromeos/services/libassistant/grpc/external_services/heartbeat_event_handler_driver.h"
 #include "chromeos/services/libassistant/grpc/grpc_client_thread.h"
 #include "chromeos/services/libassistant/grpc/services_initializer_base.h"
+#include "chromeos/services/libassistant/grpc/services_status_provider.h"
 #include "third_party/grpc/src/include/grpcpp/server_builder.h"
 
 namespace chromeos {
@@ -39,6 +42,10 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
 
   // Expose a reference to |GrpcLibassistantClient|.
   GrpcLibassistantClient& GrpcLibassistantClient();
+
+  ServicesStatusProvider& GetServicesStatusProvider() {
+    return services_status_provider_;
+  }
 
  private:
   // ServicesInitializerBase overrides:
@@ -69,6 +76,12 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   // The entrypoint through which we can query Libassistant V2 APIs.
   std::unique_ptr<chromeos::libassistant::GrpcLibassistantClient>
       libassistant_client_;
+
+  ServicesStatusProvider services_status_provider_;
+  base::ScopedObservation<
+      HeartbeatEventHandlerDriver,
+      GrpcServicesObserver<::assistant::api::OnHeartbeatEventRequest>>
+      heartbeat_event_observation_{&services_status_provider_};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

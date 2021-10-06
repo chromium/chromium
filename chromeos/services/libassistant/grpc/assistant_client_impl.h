@@ -8,10 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/callback_forward.h"
+#include "base/scoped_observation.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/services/libassistant/grpc/external_services/grpc_services_initializer.h"
+#include "chromeos/services/libassistant/grpc/services_status_observer.h"
+#include "chromeos/services/libassistant/grpc/services_status_provider.h"
 
 namespace chromeos {
 namespace libassistant {
@@ -20,7 +22,8 @@ class GrpcLibassistantClient;
 
 // This class wraps the libassistant grpc client and exposes V2 APIs for
 // ChromeOS to use.
-class AssistantClientImpl : public AssistantClientV1 {
+class AssistantClientImpl : public AssistantClientV1,
+                            public ServicesStatusObserver {
  public:
   AssistantClientImpl(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
@@ -30,15 +33,12 @@ class AssistantClientImpl : public AssistantClientV1 {
 
   ~AssistantClientImpl() override;
 
-  // chromeos::libassistant::AssistantClient overrides:
-  void StartServices() override;
+  // chromeos::libassistant::AssistantClientV1 overrides:
+  void StartServices(base::OnceClosure services_ready_callback) override;
   bool StartGrpcServices() override;
-  void AddExperimentIds(const std::vector<std::string>& exp_ids) override;
-  void SendVoicelessInteraction(
-      const ::assistant::api::Interaction& interaction,
-      const std::string& description,
-      const ::assistant::api::VoicelessOptions& options,
-      base::OnceCallback<void(bool)> on_done) override;
+
+  // ServicesStatusObserver overrides:
+  void OnServicesStatusChanged(ServicesStatus status) override;
 
  private:
   chromeos::libassistant::GrpcServicesInitializer grpc_services_;
@@ -47,8 +47,11 @@ class AssistantClientImpl : public AssistantClientV1 {
   // invoked. Created and owned by |GrpcServicesInitializer|.
   chromeos::libassistant::GrpcLibassistantClient& client_;
 
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<AssistantClientImpl> weak_factory_{this};
+  // Invoked when all LibAssistant services are ready to query.
+  base::OnceClosure services_ready_callback_;
+
+  base::ScopedObservation<ServicesStatusProvider, ServicesStatusObserver>
+      services_status_observation_{this};
 };
 
 }  // namespace libassistant

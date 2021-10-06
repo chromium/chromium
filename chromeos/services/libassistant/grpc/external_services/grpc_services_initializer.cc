@@ -86,8 +86,11 @@ GrpcLibassistantClient& GrpcServicesInitializer::GrpcLibassistantClient() {
 
 void GrpcServicesInitializer::InitDrivers(grpc::ServerBuilder* server_builder) {
   // Inits heartbeat driver.
-  service_drivers_.emplace_back(
-      std::make_unique<HeartbeatEventHandlerDriver>(&server_builder_));
+  auto heartbeat_driver =
+      std::make_unique<HeartbeatEventHandlerDriver>(&server_builder_);
+  heartbeat_event_observation_.Observe(heartbeat_driver.get());
+
+  service_drivers_.emplace_back(std::move(heartbeat_driver));
 }
 
 void GrpcServicesInitializer::InitLibassistGrpcClient() {

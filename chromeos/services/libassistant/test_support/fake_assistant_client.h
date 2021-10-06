@@ -29,7 +29,7 @@ class FakeAssistantClient : public AssistantClient {
         AssistantClient::assistant_manager_internal());
   }
 
-  void StartServices() override;
+  void StartServices(base::OnceClosure services_ready_callback) override;
   void SetChromeOSApiDelegate(
       assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
