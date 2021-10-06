@@ -2495,7 +2495,7 @@ def CheckUniquePtrOnUpload(input_api, output_api):
 
   errors = []
   if problems_nullptr:
-    errors.append(output_api.PresubmitWarning(
+    errors.append(output_api.PresubmitPromptWarning(
         'The following files use std::unique_ptr<T>(). Use nullptr instead.',
         problems_nullptr))
   if problems_constructor:
