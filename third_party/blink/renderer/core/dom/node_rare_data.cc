@@ -47,7 +47,7 @@ namespace blink {
 
 struct SameSizeAsNodeRareData {
   Member<void*> willbe_member_[5];
-  unsigned bitfields_;
+  unsigned bitfields_[2];
 };
 
 ASSERT_SIZE(NodeRareData, SameSizeAsNodeRareData);

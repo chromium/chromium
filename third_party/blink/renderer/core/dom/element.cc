@@ -3607,7 +3607,8 @@ void Element::SetNeedsCompositingUpdate() {
 RegionCaptureCropId Element::MarkWithRegionCaptureCropId() {
   if (GetRegionCaptureCropId().is_empty()) {
     EnsureElementRareData().SetRegionCaptureCropId(
-        base::UnguessableToken::Create());
+        std::make_unique<base::UnguessableToken>(
+            base::UnguessableToken::Create()));
 
     // The crop ID needs to be propagated to the paint system by the time that
     // capture begins. The API requires the implementation to propagate the
@@ -3649,11 +3650,11 @@ const AtomicString& Element::IsValue() const {
 }
 
 void Element::SetDidAttachInternals() {
-  EnsureElementRareData().SetDidAttachInternals();
+  SetElementFlag(ElementFlags::kDidAttachInternals, true);
 }
 
 bool Element::DidAttachInternals() const {
-  return HasRareData() && GetElementRareData()->DidAttachInternals();
+  return HasElementFlag(ElementFlags::kDidAttachInternals);
 }
 
 ElementInternals& Element::EnsureElementInternals() {
@@ -4511,27 +4512,24 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
 }
 
 bool Element::StyleShouldForceLegacyLayoutInternal() const {
-  return GetElementRareData()->StyleShouldForceLegacyLayout();
+  return HasElementFlag(ElementFlags::kStyleShouldForceLegacyLayout);
 }
-
 void Element::SetStyleShouldForceLegacyLayoutInternal(bool force) {
-  EnsureElementRareData().SetStyleShouldForceLegacyLayout(force);
+  SetElementFlag(ElementFlags::kStyleShouldForceLegacyLayout, force);
 }
 
 bool Element::ShouldForceLegacyLayoutForChildInternal() const {
-  return GetElementRareData()->ShouldForceLegacyLayoutForChild();
+  return HasElementFlag(ElementFlags::kShouldForceLegacyLayoutForChild);
 }
-
 void Element::SetShouldForceLegacyLayoutForChildInternal(bool force) {
-  EnsureElementRareData().SetShouldForceLegacyLayoutForChild(force);
+  SetElementFlag(ElementFlags::kShouldForceLegacyLayoutForChild, force);
 }
 
 bool Element::HasUndoStack() const {
-  return HasRareData() && GetElementRareData()->HasUndoStack();
+  return HasElementFlag(ElementFlags::kHasUndoStack);
 }
-
 void Element::SetHasUndoStack(bool value) {
-  EnsureElementRareData().SetHasUndoStack(value);
+  SetElementFlag(ElementFlags::kHasUndoStack, value);
 }
 
 bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,

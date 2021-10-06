@@ -121,8 +121,11 @@ enum class ElementFlags {
   kContainsFullScreenElement = 1 << 3,
   kIsInTopLayer = 1 << 4,
   kContainsPersistentVideo = 1 << 5,
-
-  kNumberOfElementFlags = 6,  // Size of bitfield used to store the flags.
+  kDidAttachInternals = 1 << 6,
+  kShouldForceLegacyLayoutForChild = 1 << 7,
+  kStyleShouldForceLegacyLayout = 1 << 8,
+  kHasUndoStack = 1 << 9,
+  kNumberOfElementFlags = 10,  // Size of bitfield used to store the flags.
 };
 
 enum class ShadowRootType;

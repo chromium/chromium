@@ -53,6 +53,10 @@ class HTMLElement;
 class ResizeObservation;
 class ResizeObserver;
 
+// Element rare data is intended to store values that are not frequently
+// set on elements, but need to be associated with them still.
+// IMPORTANT NOTE: do NOT use element rare data to store boolean values,
+// instead favoring the |ElementFlags| class defined in element.h.
 class ElementRareData final : public NodeRareData {
  public:
   explicit ElementRareData(NodeRenderingData*);
@@ -141,35 +145,22 @@ class ElementRareData final : public NodeRareData {
   }
   void SetIsValue(const AtomicString& is_value) { is_value_ = is_value; }
   const AtomicString& IsValue() const { return is_value_; }
-  void SetDidAttachInternals() { did_attach_internals_ = true; }
-  bool DidAttachInternals() const { return did_attach_internals_; }
   ElementInternals& EnsureElementInternals(HTMLElement& target);
   const ElementInternals* GetElementInternals() const {
     return element_internals_;
   }
 
-  void SetStyleShouldForceLegacyLayout(bool force) {
-    style_should_force_legacy_layout_ = force;
-  }
-  bool StyleShouldForceLegacyLayout() const {
-    return style_should_force_legacy_layout_;
-  }
-  void SetShouldForceLegacyLayoutForChild(bool force) {
-    should_force_legacy_layout_for_child_ = force;
-  }
-  bool ShouldForceLegacyLayoutForChild() const {
-    return should_force_legacy_layout_for_child_;
-  }
-  bool HasUndoStack() const { return has_undo_stack_; }
-  void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
-
+  // There is no meaningful difference between a nullptr token and a Null
+  // token, so we simplify the return type here.
   base::UnguessableToken RegionCaptureCropId() const {
-    return region_capture_token_;
+    return region_capture_crop_id_ ? *region_capture_crop_id_
+                                   : base::UnguessableToken::Null();
   }
-  void SetRegionCaptureCropId(base::UnguessableToken value) {
-    DCHECK(!value.is_empty());
-    DCHECK(region_capture_token_.is_empty());
-    region_capture_token_ = value;
+  void SetRegionCaptureCropId(std::unique_ptr<base::UnguessableToken> value) {
+    if (!value || value->is_empty()) {
+      region_capture_crop_id_ = nullptr;
+    }
+    region_capture_crop_id_ = std::move(value);
   }
 
   AccessibleNode* GetAccessibleNode() const { return accessible_node_.Get(); }
@@ -271,11 +262,7 @@ class ElementRareData final : public NodeRareData {
 
   Member<DisplayLockContext> display_lock_context_;
   Member<ContainerQueryData> container_query_data_;
-  bool did_attach_internals_ = false;
-  bool should_force_legacy_layout_for_child_ = false;
-  bool style_should_force_legacy_layout_ = false;
-  bool has_undo_stack_ = false;
-  base::UnguessableToken region_capture_token_;
+  std::unique_ptr<base::UnguessableToken> region_capture_crop_id_;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

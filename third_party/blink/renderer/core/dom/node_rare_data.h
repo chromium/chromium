@@ -74,7 +74,7 @@ class NodeData : public GarbageCollected<NodeData> {
  public:
   enum {
     kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
-    kNumberOfElementFlags = 6,
+    kNumberOfElementFlags = 10,
     kNumberOfDynamicRestyleFlags = 14
   };
 
