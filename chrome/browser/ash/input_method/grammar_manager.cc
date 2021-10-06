@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
@@ -35,9 +36,19 @@ const char16_t kIgnoreButtonMessage[] =
     u"Ignore suggestion. Button. Press enter to ignore the suggestion; escape "
     u"to dismiss.";
 
-void RecordGrammarAction(GrammarActions action) {
+void RecordGrammarAction(GrammarActions action,
+                         bool is_capitalization_correction) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Actions",
                                 action);
+  if (is_capitalization_correction) {
+    base::UmaHistogramEnumeration(
+        "InputMethod.Assistive.Grammar.CapitalizationCorrection", action);
+  }
+}
+
+bool IsCapitalizationCorrection(const ui::GrammarFragment& fragment) {
+  return base::ToLowerASCII(fragment.suggestion) ==
+         base::ToLowerASCII(fragment.original_text);
 }
 
 bool IsValidSentence(const std::u16string& text, const Sentence& sentence) {
@@ -204,7 +215,8 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
   if (grammar_fragment_opt) {
     if (current_fragment_ != grammar_fragment_opt.value()) {
       current_fragment_ = grammar_fragment_opt.value();
-      RecordGrammarAction(GrammarActions::kWindowShown);
+      RecordGrammarAction(GrammarActions::kWindowShown,
+                          IsCapitalizationCorrection(current_fragment_));
     }
     std::string error;
     AssistiveWindowProperties properties;
@@ -250,7 +262,10 @@ void GrammarManager::OnGrammarCheckDone(
       corrected_results.emplace_back(
           gfx::Range(fragment.range.start() + sentence.original_range.start(),
                      fragment.range.end() + sentence.original_range.start()),
-          fragment.suggestion);
+          fragment.suggestion,
+          base::UTF16ToUTF8(current_text_.substr(
+              fragment.range.start() + sentence.original_range.start(),
+              fragment.range.length())));
     }
   }
 
@@ -267,7 +282,8 @@ void GrammarManager::OnGrammarCheckDone(
       if (recorded_marker_hashes_.find(hashValue) ==
           recorded_marker_hashes_.end()) {
         recorded_marker_hashes_.insert(hashValue);
-        RecordGrammarAction(GrammarActions::kUnderlined);
+        RecordGrammarAction(GrammarActions::kUnderlined,
+                            IsCapitalizationCorrection(fragment));
       }
     }
   }
@@ -323,7 +339,8 @@ void GrammarManager::AcceptSuggestion() {
   }
 
   suggestion_handler_->Announce(kAcceptGrammarSuggestionMessage);
-  RecordGrammarAction(GrammarActions::kAccepted);
+  RecordGrammarAction(GrammarActions::kAccepted,
+                      IsCapitalizationCorrection(current_fragment_));
 }
 
 void GrammarManager::IgnoreSuggestion() {
@@ -350,7 +367,8 @@ void GrammarManager::IgnoreSuggestion() {
                                current_sentence_.original_range.start())));
 
   suggestion_handler_->Announce(kIgnoreGrammarSuggestionMessage);
-  RecordGrammarAction(GrammarActions::kIgnored);
+  RecordGrammarAction(GrammarActions::kIgnored,
+                      IsCapitalizationCorrection(current_fragment_));
 }
 
 void GrammarManager::SetButtonHighlighted(
