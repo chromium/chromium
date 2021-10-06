@@ -62,12 +62,6 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
 
     remover_ = profile()->GetBrowsingDataRemover();
     remover_->SetEmbedderDelegate(&delegate_);
-
-    // TODO(crbug.com/1182630): This can be removed once crbug.com/1182630 is
-    // fixed. Make sure quota manager for storage partition is finished
-    // initializing.
-    profile()->GetDefaultStoragePartition();
-    task_environment()->RunUntilIdle();
   }
 
   void TearDown() override {
