@@ -591,7 +591,7 @@
 
     'chromium.perf.calibration': {
       'linux-perf-calibration': 'official_goma_linux_perf_py3',
-      'android-pixel2-perf-calibration': 'official_goma_minimal_symbols_android_arm64',
+      'android-pixel2-perf-calibration': 'official_goma_minimal_symbols_android_arm64_py3',
     },
 
     'chromium.perf.fyi': {
@@ -2688,6 +2688,10 @@
 
     'official_goma_minimal_symbols_android_arm64': [
       'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo'
+    ],
+
+    'official_goma_minimal_symbols_android_arm64_py3': [
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'use_py3_for_perf'
     ],
 
     'official_goma_minimal_symbols_android_thin_lto_opt': [

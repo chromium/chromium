@@ -11,7 +11,8 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_goma": true
+      "use_goma": true,
+      "use_py3_for_perf": true
     }
   },
   "linux-perf-calibration": {
