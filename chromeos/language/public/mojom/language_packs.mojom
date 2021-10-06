@@ -6,7 +6,7 @@
 // It allows clients to check, request and observe the files managed by
 // Language Packs.
 
-module language.mojom;
+module chromeos.language.mojom;
 
 // ID of the Feature using LanguagePacks.
 enum FeatureId {

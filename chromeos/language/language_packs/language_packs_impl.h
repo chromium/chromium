@@ -15,25 +15,25 @@
 namespace chromeos {
 namespace language_packs {
 
-class LanguagePacksImpl : public language::mojom::LanguagePacks {
+class LanguagePacksImpl : public chromeos::language::mojom::LanguagePacks {
  public:
   explicit LanguagePacksImpl(
-      mojo::PendingReceiver<language::mojom::LanguagePacks> receiver);
+      mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver);
   LanguagePacksImpl(const LanguagePacksImpl&) = delete;
   LanguagePacksImpl& operator=(const LanguagePacksImpl&) = delete;
   // Called when mojom connection is destroyed.
   ~LanguagePacksImpl() override;
 
   // mojom::LanguagePacks interface methods.
-  void GetPackInfo(language::mojom::FeatureId feature_id,
+  void GetPackInfo(chromeos::language::mojom::FeatureId feature_id,
                    const std::string& language,
                    GetPackInfoCallback callback) override;
-  void InstallPack(language::mojom::FeatureId feature_id,
+  void InstallPack(chromeos::language::mojom::FeatureId feature_id,
                    const std::string& language,
                    InstallPackCallback callback) override;
 
  private:
-  mojo::Receiver<language::mojom::LanguagePacks> receiver_;
+  mojo::Receiver<chromeos::language::mojom::LanguagePacks> receiver_;
 };
 
 }  // namespace language_packs

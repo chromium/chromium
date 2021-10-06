@@ -10,10 +10,10 @@
 namespace chromeos {
 namespace language_packs {
 
-using ::language::mojom::FeatureId;
-using ::language::mojom::LanguagePackInfo;
-using ::language::mojom::LanguagePacks;
-using ::language::mojom::PackState;
+using ::chromeos::language::mojom::FeatureId;
+using ::chromeos::language::mojom::LanguagePackInfo;
+using ::chromeos::language::mojom::LanguagePacks;
+using ::chromeos::language::mojom::PackState;
 
 namespace {
 
@@ -56,7 +56,7 @@ void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
 }  // namespace
 
 LanguagePacksImpl::LanguagePacksImpl(
-    mojo::PendingReceiver<language::mojom::LanguagePacks> receiver)
+    mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver)
     : receiver_(this, std::move(receiver)) {}
 LanguagePacksImpl::~LanguagePacksImpl() = default;
 
