@@ -1124,7 +1124,7 @@
     },
     {
       name: "FractionalLineHeight",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "FractionalScrollOffsets",

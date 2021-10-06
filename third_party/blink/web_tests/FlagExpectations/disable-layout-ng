@@ -589,6 +589,7 @@ crbug.com/612641 fast/box-decoration-break/box-decoration-break-min-max.html [ F
 
 ### fast/css/
 crbug.com/591099 fast/css/absolute-inline-alignment-2.html [ Failure ]
+crbug.com/591099 fast/css/getComputedStyle/getComputedStyle-use-computedFontSize-lineHeight.html [ Failure ]
 crbug.com/591099 fast/css/text-overflow-ellipsis-button.html [ Failure ]
 
 ### fast/css-intrinsic-dimensions/
