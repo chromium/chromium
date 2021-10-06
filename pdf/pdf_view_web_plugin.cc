@@ -173,16 +173,20 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
   }
 
   void Alert(const blink::WebString& message) override {
-    GetFrame()->Alert(message);
+    blink::WebLocalFrame* frame = GetFrame();
+    if (frame)
+      frame->Alert(message);
   }
 
   bool Confirm(const blink::WebString& message) override {
-    return GetFrame()->Confirm(message);
+    blink::WebLocalFrame* frame = GetFrame();
+    return frame && frame->Confirm(message);
   }
 
   blink::WebString Prompt(const blink::WebString& message,
                           const blink::WebString& default_value) override {
-    return GetFrame()->Prompt(message, default_value);
+    blink::WebLocalFrame* frame = GetFrame();
+    return frame ? frame->Prompt(message, default_value) : blink::WebString();
   }
 
   void TextSelectionChanged(const blink::WebString& selection_text,
