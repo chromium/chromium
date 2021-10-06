@@ -313,6 +313,7 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
                              RenderFrameHostImpl& initiator_render_frame_host)
     : attributes_(attributes),
       initiator_origin_(initiator_render_frame_host.GetLastCommittedOrigin()),
+      initiator_url_(initiator_render_frame_host.GetLastCommittedURL()),
       initiator_process_id_(initiator_render_frame_host.GetProcess()->GetID()),
       initiator_frame_token_(initiator_render_frame_host.GetFrameToken()) {
   DCHECK(blink::features::IsPrerender2Enabled());

@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_PRERENDER_PRERENDER_INTERNALS_UI_H_
 #define CONTENT_BROWSER_PRERENDER_PRERENDER_INTERNALS_UI_H_
 
+#include "content/browser/prerender/prerender_internals.mojom-forward.h"
 #include "content/public/browser/web_ui_controller.h"
 
 namespace content {
@@ -16,6 +17,16 @@ class PrerenderInternalsUI : public WebUIController {
   PrerenderInternalsUI(const PrerenderInternalsUI&) = delete;
   PrerenderInternalsUI& operator=(const PrerenderInternalsUI&) = delete;
   ~PrerenderInternalsUI() override;
+
+  void WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) override;
+
+  void BindPrerenderInternalsHandler(
+      mojo::PendingReceiver<mojom::PrerenderInternalsHandler> receiver);
+
+ private:
+  std::unique_ptr<mojom::PrerenderInternalsHandler> ui_handler_;
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace content

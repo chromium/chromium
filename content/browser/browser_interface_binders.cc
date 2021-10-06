@@ -31,6 +31,8 @@
 #include "content/browser/media/midi_host.h"
 #include "content/browser/media/session/media_session_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
+#include "content/browser/prerender/prerender_internals.mojom.h"
+#include "content/browser/prerender/prerender_internals_ui.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
 #include "content/browser/process_internals/process_internals_ui.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
@@ -276,6 +278,30 @@ void BindConversionInternalsHandler(
   DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
 
   conversion_internals_ui->BindInterface(std::move(receiver));
+}
+
+void BindPrerenderInternalsHandler(
+    content::RenderFrameHost* host,
+    mojo::PendingReceiver<mojom::PrerenderInternalsHandler> receiver) {
+  content::WebUI* web_ui = host->GetWebUI();
+
+  PrerenderInternalsUI* prerender_internals_ui =
+      web_ui ? web_ui->GetController()->GetAs<PrerenderInternalsUI>() : nullptr;
+
+  // This is expected to be called only for main frames and for the right WebUI
+  // pages matching the same WebUI associated to the RenderFrameHost.
+  if (host->GetParent() || !prerender_internals_ui) {
+    ReceivedBadMessage(
+        host->GetProcess(),
+        bad_message::BadMessageReason::RFH_INVALID_WEB_UI_CONTROLLER);
+    return;
+  }
+
+  DCHECK_EQ(host->GetLastCommittedURL().host_piece(),
+            kChromeUIPrerenderInternalsHost);
+  DCHECK(host->GetLastCommittedURL().SchemeIs(kChromeUIScheme));
+
+  prerender_internals_ui->BindPrerenderInternalsHandler(std::move(receiver));
 }
 
 void BindProcessInternalsHandler(
@@ -1008,6 +1034,8 @@ void PopulateBinderMapWithContext(
 #endif
   map->Add<mojom::ConversionInternalsHandler>(
       base::BindRepeating(&BindConversionInternalsHandler));
+  map->Add<mojom::PrerenderInternalsHandler>(
+      base::BindRepeating(&BindPrerenderInternalsHandler));
   map->Add<::mojom::ProcessInternalsHandler>(
       base::BindRepeating(&BindProcessInternalsHandler));
 #if defined(OS_ANDROID)

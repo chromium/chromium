@@ -146,6 +146,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 
+  // Applies the callback function to all prerender hosts owned by
+  // this registry.
+  void ForEachPrerenderHost(
+      base::RepeatingCallback<void(PrerenderHost&)> callback);
+
  private:
   int FindHostToActivateInternal(NavigationRequest& navigation_request);
 

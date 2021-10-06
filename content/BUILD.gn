@@ -137,6 +137,7 @@ grit("dev_ui_content_resources") {
   ]
   deps = [
     "//content/browser/attribution_reporting:mojo_bindings_webui_js",
+    "//content/browser/prerender:mojo_bindings_webui_js",
     "//content/browser/process_internals:mojo_bindings_webui_js",
   ]
 }

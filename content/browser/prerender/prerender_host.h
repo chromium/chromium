@@ -150,6 +150,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   absl::optional<int64_t> GetInitialNavigationId() const;
 
   url::Origin initiator_origin() const { return initiator_origin_; }
+  const GURL& initiator_url() const { return initiator_url_; }
 
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 
@@ -176,6 +177,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
 
   const PrerenderAttributes attributes_;
   const url::Origin initiator_origin_;
+  const GURL initiator_url_;
   const int initiator_process_id_;
   const blink::LocalFrameToken initiator_frame_token_;
 
