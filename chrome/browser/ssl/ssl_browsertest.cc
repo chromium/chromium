@@ -1280,8 +1280,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, MixedContentWithSameDocumentNavigation) {
 
 // Tests that the WebContents's flag for displaying content with cert
 // errors get cleared upon navigation.
-// Flaky on Mac. https://crbug.com/1242369.
-#if defined(OS_MAC)
+// Flaky on Mac, Linux, ChromeOS. https://crbug.com/1242369.
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_DisplayedContentWithCertErrorsClearedOnNavigation \
   DISABLED_DisplayedContentWithCertErrorsClearedOnNavigation
 #else
