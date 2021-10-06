@@ -301,21 +301,20 @@ bool DOMStorageContextWrapper::IsRequestValid(
     }
     host_storage_key_did_not_match = host->storage_key() != storage_key;
   }
-  if (host_storage_key_did_not_match ||
-      !security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
+  if (!security_policy_handle.CanAccessDataForOrigin(storage_key.origin())) {
     const std::string type_string =
         type == StorageType::kLocalStorage ? "localStorage" : "sessionStorage";
-    std::string reason;
-    if (host_storage_key_did_not_match) {
-      reason = "due to StorageKey.";
-    } else {
-      reason = "due to ChildProcessSecurityPolicy.";
-    }
-    SYSLOG(WARNING) << "Denying illegal " << type_string << " request "
-                    << reason;
+    SYSLOG(WARNING) << "Denying illegal " << type_string
+                    << " request due to ChildProcessSecurityPolicy.";
     std::move(bad_message_callback)
-        .Run(base::StrCat(
-            {"Access denied for ", type_string, " request ", reason}));
+        .Run(base::StrCat({"Access denied for ", type_string,
+                           " request due to ChildProcessSecurityPolicy."}));
+    return false;
+  }
+  if (host_storage_key_did_not_match) {
+    // Ideally we would kill the renderer here, but it's possible this is the
+    // result of a race condition between committing the new document and
+    // binding the DOM Storage. For now, we'll just fail to bind.
     return false;
   }
   return true;
