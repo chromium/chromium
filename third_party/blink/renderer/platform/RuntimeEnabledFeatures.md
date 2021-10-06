@@ -76,7 +76,7 @@ If a feature is not stable and no longer under active development, remove `statu
 
 ### Relationship between a Chromium Feature and a Blink Feature
 
-In some cases, e.g. for finch expeirment, you may need to define a Chromium feature for a blink feature. Their relationship is
+In some cases, e.g. for finch experiment, you may need to define a Chromium feature for a blink feature. Their relationship is
 defined in [content/child/runtime_features.cc]. See the [initialize blink features] doc for more details.
 
 **Note:** If a feature is implemented at both Chromium side and blink side, as the blink feature doesn't fully work by itself, we normally don't set the blink feature's status so that the Chromium feature can fully control the blink feature ([example][controlled by chromium feature]).
