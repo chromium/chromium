@@ -23,7 +23,9 @@ suite('SigninSyncConfirmationTest', function() {
   // Tests that no DCHECKS are thrown during initialization of the UI.
   test('LoadPage', function() {
     assertEquals(
-        'Turn on sync?', app.$$('#syncConfirmationHeading').textContent.trim());
+        'Turn on sync?',
+        app.shadowRoot.querySelector('#syncConfirmationHeading')
+            .textContent.trim());
   });
 });
 
@@ -64,7 +66,7 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
   // Tests that the expected strings are recorded when clicking the Confirm
   // button.
   test('recordConsentOnConfirm', async function() {
-    app.$$('#confirmButton').click();
+    app.shadowRoot.querySelector('#confirmButton').click();
     const [description, confirmation] =
         await browserProxy.whenCalled('confirm');
     assertEquals(
@@ -76,7 +78,7 @@ suite('SigninSyncConfirmationConsentRecordingTest', function() {
   // Tests that the expected strings are recorded when clicking the Confirm
   // button.
   test('recordConsentOnSettingsLink', async function() {
-    app.$$('#settingsButton').click();
+    app.shadowRoot.querySelector('#settingsButton').click();
     const [description, confirmation] =
         await browserProxy.whenCalled('goToSettings');
     assertEquals(

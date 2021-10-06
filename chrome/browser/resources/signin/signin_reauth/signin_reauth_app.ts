@@ -10,8 +10,8 @@ import './signin_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SigninReauthBrowserProxy, SigninReauthBrowserProxyImpl} from './signin_reauth_browser_proxy.js';
 
@@ -21,9 +21,7 @@ interface SigninReauthAppElement {
   };
 }
 
-const SigninReauthAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+const SigninReauthAppElementBase = WebUIListenerMixin(PolymerElement);
 
 class SigninReauthAppElement extends SigninReauthAppElementBase {
   static get is() {

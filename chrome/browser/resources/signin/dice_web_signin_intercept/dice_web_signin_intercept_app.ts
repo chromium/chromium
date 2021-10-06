@@ -11,14 +11,12 @@ import './signin_vars_css.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DiceWebSigninInterceptBrowserProxy, DiceWebSigninInterceptBrowserProxyImpl, InterceptionParameters} from './dice_web_signin_intercept_browser_proxy.js';
 
-const DiceWebSigninInterceptAppElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+const DiceWebSigninInterceptAppElementBase = WebUIListenerMixin(PolymerElement);
 
 export class DiceWebSigninInterceptAppElement extends
     DiceWebSigninInterceptAppElementBase {

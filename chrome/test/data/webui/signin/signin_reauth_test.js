@@ -56,14 +56,14 @@ suite('SigninReauthTest', function() {
     await browserProxy.whenCalled('initialize');
     assertFalse(isVisible(app.$.confirmButton));
     assertFalse(isVisible(app.$.cancelButton));
-    assertTrue(isVisible(app.$$('paper-spinner-lite')));
+    assertTrue(isVisible(app.shadowRoot.querySelector('paper-spinner-lite')));
 
     webUIListenerCallback('reauth-type-determined');
     flush();
 
     assertTrue(isVisible(app.$.confirmButton));
     assertTrue(isVisible(app.$.cancelButton));
-    assertFalse(isVisible(app.$$('paper-spinner-lite')));
+    assertFalse(isVisible(app.shadowRoot.querySelector('paper-spinner-lite')));
 
     assertEquals(getDeepActiveElement(), app.$.confirmButton);
 
