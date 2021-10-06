@@ -11,4 +11,7 @@ base::TimeDelta FontPerformance::primary_font_in_style_;
 base::TimeDelta FontPerformance::system_fallback_;
 unsigned FontPerformance::in_style_ = 0;
 
+const base::Feature kAsyncFontAccess{"AsyncFontAccess",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace blink

@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_PERFORMANCE_H_
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+
+PLATFORM_EXPORT extern const base::Feature kAsyncFontAccess;
 
 // This class collects performance data for font-related operations.
 class PLATFORM_EXPORT FontPerformance {
