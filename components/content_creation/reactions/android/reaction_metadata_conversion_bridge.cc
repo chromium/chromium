@@ -6,6 +6,7 @@
 
 #include "base/android/jni_string.h"
 #include "components/content_creation/reactions/android/jni_headers/ReactionMetadataConversionBridge_jni.h"
+#include "components/content_creation/reactions/core/reaction_metadata.h"
 #include "components/content_creation/reactions/core/reaction_types.h"
 
 namespace content_creation {
@@ -13,16 +14,34 @@ namespace content_creation {
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 
+namespace {
+
+ScopedJavaLocalRef<jobject> CreateJavaMetadataAndMaybeAddToList(
+    JNIEnv* env,
+    ScopedJavaLocalRef<jobject> jlist,
+    const ReactionMetadata& reaction_metadata) {
+  return Java_ReactionMetadataConversionBridge_createMetadataAndMaybeAddToList(
+      env, jlist, static_cast<uint32_t>(reaction_metadata.type()),
+      ConvertUTF8ToJavaString(env, reaction_metadata.localized_name()),
+      ConvertUTF8ToJavaString(env, reaction_metadata.thumbnail_url()),
+      ConvertUTF8ToJavaString(env, reaction_metadata.asset_url()));
+}
+
+}  // namespace
+
 // static
 ScopedJavaLocalRef<jobject>
-ReactionMetadataConversionBridge::CreateJavaReactionMetadata(
+ReactionMetadataConversionBridge::CreateJavaReactionMetadataList(
     JNIEnv* env,
-    const ReactionMetadata& metadata) {
-  return Java_ReactionMetadataConversionBridge_createReactionMetadata(
-      env, static_cast<uint32_t>(metadata.type()),
-      ConvertUTF8ToJavaString(env, metadata.localized_name()),
-      ConvertUTF8ToJavaString(env, metadata.thumbnail_url()),
-      ConvertUTF8ToJavaString(env, metadata.asset_url()));
+    const std::vector<ReactionMetadata>& metadata) {
+  ScopedJavaLocalRef<jobject> jlist =
+      Java_ReactionMetadataConversionBridge_createReactionList(env);
+
+  for (const auto& reaction_metadata : metadata) {
+    CreateJavaMetadataAndMaybeAddToList(env, jlist, reaction_metadata);
+  }
+
+  return jlist;
 }
 
 }  // namespace content_creation

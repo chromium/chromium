@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content_creation {
@@ -15,7 +16,7 @@ class ReactionMetadata;
 
 // Keyed service to be used by user-facing surfaces to retrieve the list of
 // available lightweight reactions.
-class ReactionService : public KeyedService {
+class ReactionService : public KeyedService, public base::SupportsUserData {
  public:
   explicit ReactionService();
   ~ReactionService() override;
