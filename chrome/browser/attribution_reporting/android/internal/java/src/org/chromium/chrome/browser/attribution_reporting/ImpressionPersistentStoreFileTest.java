@@ -103,10 +103,20 @@ public class ImpressionPersistentStoreFileTest {
         mImpressionStore.storeImpression(PARAMS_1);
         mImpressionStore.storeImpression(PARAMS_2);
         List<AttributionParameters> params = mImpressionStore.getAndClearStoredImpressions();
-        assertAllButEventTimeEqual(PARAMS_1, params.get(0));
-        assertAllButEventTimeEqual(PARAMS_2, params.get(1));
-        assertEventTimeRecorded(params.get(0), before);
-        assertEventTimeRecorded(params.get(1), before);
+        AttributionParameters params1;
+        AttributionParameters params2;
+        if (params.get(0).getSourcePackageName().equals(PACKAGE_1)) {
+            params1 = params.get(0);
+            params2 = params.get(1);
+        } else {
+            params2 = params.get(0);
+            params1 = params.get(1);
+        }
+
+        assertAllButEventTimeEqual(PARAMS_1, params1);
+        assertAllButEventTimeEqual(PARAMS_2, params2);
+        assertEventTimeRecorded(params1, before);
+        assertEventTimeRecorded(params2, before);
         // Check that attributions were cleared.
         params = mImpressionStore.getAndClearStoredImpressions();
         Assert.assertTrue(params.isEmpty());
