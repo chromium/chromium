@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.NumberOfChannels" units="units"
-    expires_after="2021-11-14">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The number of channels requested by createBuffer(). Recorded for every call
@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.ConvolverNode.ImpulseResponseLength" units="ms"
-    expires_after="2021-12-19">
+    expires_after="2021-12-31">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The duration in millisec of impulse responses for a ConvolverNode. Recorded
