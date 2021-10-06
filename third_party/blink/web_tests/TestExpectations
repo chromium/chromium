@@ -7037,6 +7037,11 @@ crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile
 crbug.com/1249176 [ Mac11-arm64 ] virtual/no-alloc-direct-call/fast/canvas/canvas-lost-gpu-context.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/html/canvas/offscreen/manual/the-offscreen-canvas/offscreencanvas.commit.html [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-profile-svg.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/scroll-unification/plugins/focus-change-1-no-change.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] plugins/plugin-remove-subframe.html [ Crash Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] fast/replaced/no-focus-ring-object.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] http/tests/serviceworker/use-counter-third-party-page-register.html [ Crash Pass ]
 
 crbug.com/1249176 [ Mac11-arm64 ] editing/selection/find-in-text-control.html [ Crash ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-min-max-attribute.html [ Crash ]
