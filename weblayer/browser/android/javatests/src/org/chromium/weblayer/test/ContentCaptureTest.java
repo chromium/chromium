@@ -29,7 +29,7 @@ import java.util.concurrent.TimeoutException;
  * testing its functionality.
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
-@CommandLineFlags.Add("enable-features=ContentCapture")
+@CommandLineFlags.Add("enable-features=ContentCaptureInWebLayer")
 public class ContentCaptureTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =

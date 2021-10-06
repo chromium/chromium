@@ -181,8 +181,6 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     ::features::kPeriodicBackgroundSync,
     // TODO(crbug.com/1174856): Support Portals.
     blink::features::kPortals,
-    // TODO(crbug.com/1174566): Enable by default after experiment.
-    content_capture::features::kContentCapture,
     // TODO(crbug.com/1144912): Support BackForwardCache on WebLayer.
     ::features::kBackForwardCache,
 

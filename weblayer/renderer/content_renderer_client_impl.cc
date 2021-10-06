@@ -155,7 +155,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
   if (render_frame->IsMainFrame())
     new webapps::WebPageMetadataAgent(render_frame);
 
-  if (content_capture::features::IsContentCaptureEnabled()) {
+  if (content_capture::features::IsContentCaptureEnabledInWebLayer()) {
     new content_capture::ContentCaptureSender(
         render_frame, render_frame_observer->associated_interfaces());
   }

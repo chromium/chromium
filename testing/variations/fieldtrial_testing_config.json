@@ -2324,21 +2324,6 @@
             ]
         }
     ],
-    "ContentCapture": [
-        {
-            "platforms": [
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContentCapture"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentCaptureExperiment": [
         {
             "platforms": [
@@ -2351,6 +2336,21 @@
                     "name": "EnableExperiment",
                     "enable_features": [
                         "ContentCaptureTriggeringForExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ContentCaptureWebLayer": [
+        {
+            "platforms": [
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContentCaptureInWebLayer"
                     ]
                 }
             ]
