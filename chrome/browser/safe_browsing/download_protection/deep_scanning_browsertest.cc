@@ -1508,7 +1508,8 @@ class SavePackageDeepScanningBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
+// TODO(crbug.com/1248459): Flaky on Win7.
+IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, DISABLED_Allowed) {
   SetUpReporting();
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
