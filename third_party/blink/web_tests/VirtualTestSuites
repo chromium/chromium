@@ -643,7 +643,7 @@
   {
     "prefix": "system-color-compute",
     "bases": ["external/wpt/css/css-color"],
-    "args": ["--enable-blink-features=CSSColorScheme,CSSSystemColorComputeToSelf"]
+    "args": ["--enable-blink-features=CSSSystemColorComputeToSelf"]
   },
   {
     "prefix": "dark-color-scheme",
@@ -651,7 +651,6 @@
               "fast/forms/color-scheme",
               "http/tests/eye-dropper"],
     "args": ["--force-dark-mode",
-             "--enable-blink-features=CSSColorScheme",
              "--enable-features=EyeDropper"]
   },
   {
