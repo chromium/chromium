@@ -365,10 +365,12 @@ def process_perf_results(output_json,
     # we are deprecating perf-id crbug.com/817823
     configuration_name = build_properties_map['buildername']
 
-  _update_perf_results_for_calibration(benchmarks_shard_map_file,
-                                       benchmark_enabled_map,
-                                       benchmark_directory_map,
-                                       configuration_name)
+  # The calibration project is paused and the experiments of adding device id,
+  # which currently broken, is removed for now.
+  # _update_perf_results_for_calibration(benchmarks_shard_map_file,
+  #                                      benchmark_enabled_map,
+  #                                      benchmark_directory_map,
+  #                                      configuration_name)
   if not smoke_test_mode and handle_perf:
     try:
       return_code, benchmark_upload_result_map = _handle_perf_results(
