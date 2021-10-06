@@ -315,7 +315,14 @@ class ChromiumDepGraph {
     ]
 
     final Map<String, DependencyDescription> dependencies = [:]
-    final Set<String> lowerVersionOverride = [] as Set
+    final Set<String> lowerVersionOverride = [
+        // kotlin deps here to prevent 3pp packager from claiming they are out
+        // of date on a ~weekly basis. https://crbug.com/1257197
+        'org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm',
+        'org_jetbrains_kotlinx_kotlinx_coroutines_android',
+        'org_jetbrains_kotlin_kotlin_stdlib_jdk8',
+        'org_jetbrains_kotlin_kotlin_stdlib_jdk7',
+        ] as Set
 
     Project[] projects
     Logger logger

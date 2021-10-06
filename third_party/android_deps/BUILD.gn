@@ -645,7 +645,6 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
   jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.12.0.jar"
   output_name = "org_checkerframework_checker_qual"
   supports_android = true
-  enable_bytecode_checks = false
 
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
@@ -653,6 +652,9 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
     ":*",
     "//third_party/androidx:*",
   ]
+
+  # Needed to break dependency cycle for errorprone_plugin_java.
+  enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
