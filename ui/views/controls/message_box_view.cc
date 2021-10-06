@@ -18,6 +18,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -120,6 +121,10 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
     message_labels_[0]->SetSelectable(true);
 
   prompt_field_ = AddChildView(std::make_unique<Textfield>());
+  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+  // able to submit accessibility checks, but this focusable View needs to
+  // add a name so that the screen reader knows what to announce.
+  prompt_field_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
   prompt_field_->SetAccessibleName(message);
   prompt_field_->SetVisible(false);
   prompt_field_->GetViewAccessibility().OverrideIsIgnored(true);

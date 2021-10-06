@@ -2158,10 +2158,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   mutable std::unique_ptr<ViewAccessibility> view_accessibility_;
 
 #if DCHECK_IS_ON()
-  // TODO(crbug.com/1218186): Change this to `false` to make sure checks run
-  // once. This is to be done separately from adding functionality in case it
-  // needs to be reverted due to pre-existing failures.
-  bool has_run_accessibility_paint_checks_ = true;
+  // Keeps track of whether accessibility checks for this View have run yet.
+  // They run once inside ::OnPaint() to keep overhead low. The idea is that if
+  // a View is ready to paint it should also be set up to be accessible.
+  bool has_run_accessibility_paint_checks_ = false;
 #endif
 
   // Observers -----------------------------------------------------------------
