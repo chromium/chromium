@@ -133,7 +133,6 @@ import org.chromium.chrome.browser.reengagement.ReengagementNotificationControll
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
-import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
 import org.chromium.chrome.browser.sync.ui.SyncErrorMessage;
@@ -995,8 +994,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         resetSavedInstanceState();
         StartSurfaceConfiguration.addFeedVisibilityObserver();
         BookmarkUtils.maybeExpireLastBookmarkLocationForReadLater(
-                mInactivityTracker.getTimeSinceLastBackgroundedMs());
-        SigninPromoController.maybeExpireNTPPromo(
                 mInactivityTracker.getTimeSinceLastBackgroundedMs());
     }
 
