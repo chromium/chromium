@@ -19,29 +19,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-const int kUnitsToMicros = 1000000;
-const int kMinimumDropThresholdAbsolute = 2 * kUnitsToMicros;
-const int kMinimumDropThresholdRelative = 10;
-
-// Not all price drops should be made available - only when there is an absolute
-// price drop of 2 units or more and a relative price drop greater than 10%.
-BOOL IsQualifyingPriceDrop(int64_t current_price_micros,
-                           int64_t previous_price_micros) {
-  if (previous_price_micros - current_price_micros <
-      kMinimumDropThresholdAbsolute) {
-    return false;
-  }
-  if ((100 * current_price_micros) / previous_price_micros >
-      (100 - kMinimumDropThresholdRelative)) {
-    return false;
-  }
-  return true;
-}
-
-}  // namespace
-
 // This class acquires pricing data corresponding to the WebState's
 // URL - should the URL be for a shopping website with an offer.
 class ShoppingPersistedDataTabHelper
@@ -82,8 +59,21 @@ class ShoppingPersistedDataTabHelper
  private:
   SEQUENCE_CHECKER(sequence_checker_);
   friend class web::WebStateUserData<ShoppingPersistedDataTabHelper>;
+  friend class ShoppingPersistedDataTabHelperTest;
 
   explicit ShoppingPersistedDataTabHelper(web::WebState* web_state);
+
+  // Not all price drops should be made available - only when there is an
+  // absolute price drop of 2 units or more and a relative price drop greater
+  // than 10%.
+  static BOOL IsQualifyingPriceDrop(int64_t current_price_micros,
+                                    int64_t previous_price_micros);
+
+  // Converts price from micros to a string according to the
+  // |currency_formatter| currency code and locale.
+  static std::u16string FormatPrice(
+      payments::CurrencyFormatter* currency_formatter,
+      long price_micros);
 
   // web::WebStateObserver overrides:
   void DidFinishNavigation(web::WebState* web_state,

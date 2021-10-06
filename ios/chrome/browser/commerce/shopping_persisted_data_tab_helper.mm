@@ -20,25 +20,14 @@
 #endif
 
 namespace {
+const int kUnitsToMicros = 1000000;
+const int kMinimumDropThresholdAbsolute = 2 * kUnitsToMicros;
+const int kMinimumDropThresholdRelative = 10;
 const int kMicrosToTwoDecimalPlaces = 10000;
+const int kTwoDecimalPlacesMaximumThreshold = 10 * kUnitsToMicros;
 const int kStaleThresholdHours = 1;
-const int kCurrencyFormatterDecimalPlaces = 2;
 const base::TimeDelta kStaleDuration =
     base::TimeDelta::FromHours(kStaleThresholdHours);
-
-// Converts price from micros to a string according to the |currency_formatter|
-// currency code and locale.
-std::string FormatPrice(payments::CurrencyFormatter* currency_formatter,
-                        long price_micros) {
-  // TODO(crbug.com/1245026) 2 decimal places for < $10, 0 decimal places
-  // otherwise.
-  currency_formatter->SetMaxFractionalDigits(kCurrencyFormatterDecimalPlaces);
-  long twoDecimalPlaces = price_micros / kMicrosToTwoDecimalPlaces;
-  std::u16string result = currency_formatter->Format(base::StringPrintf(
-      "%s.%s", base::NumberToString(twoDecimalPlaces / 100).c_str(),
-      base::NumberToString(twoDecimalPlaces % 100).c_str()));
-  return base::UTF16ToUTF8(result);
-}
 
 // Returns true if a cached price drop has gone stale and should be
 // re-fetched from OptimizationGuide.
@@ -102,6 +91,34 @@ ShoppingPersistedDataTabHelper::ShoppingPersistedDataTabHelper(
     web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
+}
+
+// static
+BOOL ShoppingPersistedDataTabHelper::IsQualifyingPriceDrop(
+    int64_t current_price_micros,
+    int64_t previous_price_micros) {
+  if (previous_price_micros - current_price_micros <
+      kMinimumDropThresholdAbsolute) {
+    return false;
+  }
+  if ((100 * current_price_micros) / previous_price_micros >
+      (100 - kMinimumDropThresholdRelative)) {
+    return false;
+  }
+  return true;
+}
+
+// static
+std::u16string ShoppingPersistedDataTabHelper::FormatPrice(
+    payments::CurrencyFormatter* currency_formatter,
+    long price_micros) {
+  currency_formatter->SetMaxFractionalDigits(
+      price_micros >= kTwoDecimalPlacesMaximumThreshold ? 0 : 2);
+  long twoDecimalPlaces = price_micros / kMicrosToTwoDecimalPlaces;
+  std::u16string result = currency_formatter->Format(base::StringPrintf(
+      "%s.%s", base::NumberToString(twoDecimalPlaces / 100).c_str(),
+      base::NumberToString(twoDecimalPlaces % 100).c_str()));
+  return result;
 }
 
 void ShoppingPersistedDataTabHelper::DidFinishNavigation(
@@ -181,9 +198,9 @@ void ShoppingPersistedDataTabHelper::ParseProto(
       GetCurrencyFormatter(product_update.old_price().currency_code(),
                            GetApplicationContext()->GetApplicationLocale());
   price_drop_ = std::make_unique<PriceDrop>();
-  price_drop_->current_price = base::SysUTF8ToNSString(FormatPrice(
+  price_drop_->current_price = base::SysUTF16ToNSString(FormatPrice(
       currencyFormatter, product_update.new_price().amount_micros()));
-  price_drop_->previous_price = base::SysUTF8ToNSString(FormatPrice(
+  price_drop_->previous_price = base::SysUTF16ToNSString(FormatPrice(
       currencyFormatter, product_update.old_price().amount_micros()));
   price_drop_->url = url;
   price_drop_->timestamp = base::Time::Now();

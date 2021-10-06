@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,14 +36,19 @@ constexpr char kNoPriceDropUrl[] =
     "https://merchant.com/has_no_price__drop.html";
 const char kCurrencyCodeUS[] = "USD";
 const char kCurrencyCodeCanada[] = "CAD";
+const char kDefaultLocale[] = "en";
 const char kCurrentPriceFormatted[] = "$5.00";
-const char kPreviousPriceFormatted[] = "$10.00";
+const char kPreviousPriceFormatted[] = "$10";
+const char kFormattedTwoDecimalPlaces[] = "$9.99";
+const char kFormattedNoDecimalPlaces[] = "$20";
 const int64_t kLessthanTwoUnitsPreviousPrice = 8'500'000;
 const int64_t kLessthanTenPercentPreviousPrice = 9'200'000;
 const int64_t kHigherThanPreviousPrice = 20'000'000;
 const int64_t kLowerThanCurrentPriceMicros = 1'000'000;
 const int64_t kCurrentPriceMicros = 5'000'000;
 const int64_t kPreviousPreiceMicros = 10'000'000;
+const int64_t kFormatNoDecimalPlacesMicros = 20'000'000;
+const int64_t kFormatTwoDecimalPlacesMicros = 9'990'000;
 const int64_t kOfferId = 50;
 
 void FillPriceTrackingProto(commerce::PriceTrackingData& price_tracking_data,
@@ -115,7 +121,25 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
         ->GetPriceDrop();
   }
 
+  BOOL IsQualifyingPriceDrop(int64_t current_price_micros,
+                             int64_t previous_price_micros) {
+    return ShoppingPersistedDataTabHelper::IsQualifyingPriceDrop(
+        current_price_micros, previous_price_micros);
+  }
+
+  std::u16string FormatPrice(payments::CurrencyFormatter* currency_formatter,
+                             long price_micros) {
+    return ShoppingPersistedDataTabHelper::FormatPrice(currency_formatter,
+                                                       price_micros);
+  }
+
   void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
+
+  std::unique_ptr<payments::CurrencyFormatter> GetCurrencyFormatter(
+      const std::string& currency_code) {
+    return std::make_unique<payments::CurrencyFormatter>(currency_code,
+                                                         kDefaultLocale);
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -225,4 +249,22 @@ TEST_F(ShoppingPersistedDataTabHelperTest,
        TestIsQualifyingPriceDropPriceIncrease) {
   EXPECT_FALSE(
       IsQualifyingPriceDrop(kHigherThanPreviousPrice, kPreviousPreiceMicros));
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest,
+       TestCurrencyFormatterNoDecimalPlaces) {
+  std::unique_ptr<payments::CurrencyFormatter> currencyFormatter =
+      GetCurrencyFormatter(kCurrencyCodeUS);
+  EXPECT_EQ(kFormattedNoDecimalPlaces,
+            base::UTF16ToUTF8(FormatPrice(currencyFormatter.get(),
+                                          kFormatNoDecimalPlacesMicros)));
+}
+
+TEST_F(ShoppingPersistedDataTabHelperTest,
+       TestCurrencyFormatterTwoDecimalPlaces) {
+  std::unique_ptr<payments::CurrencyFormatter> currencyFormatter =
+      GetCurrencyFormatter(kCurrencyCodeUS);
+  EXPECT_EQ(kFormattedTwoDecimalPlaces,
+            base::UTF16ToUTF8(FormatPrice(currencyFormatter.get(),
+                                          kFormatTwoDecimalPlacesMicros)));
 }
