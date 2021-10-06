@@ -6933,7 +6933,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kScrollCaptureDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollCapture,
                                     kScrollCaptureVariations,
-                                    "ScrollCapture")},
+                                    "AndroidScrollCapture")},
 #endif  // defined(OS_ANDROID)
 
     {"chrome-labs", flag_descriptions::kChromeLabsName,
