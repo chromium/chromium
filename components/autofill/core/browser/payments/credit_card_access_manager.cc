@@ -441,6 +441,7 @@ void CreditCardAccessManager::OnDidGetAuthenticationType(
       break;
     case UnmaskAuthFlowType::kCvc:
     case UnmaskAuthFlowType::kOtp:
+    case UnmaskAuthFlowType::kOtpFallbackFromFido:
       break;
     case UnmaskAuthFlowType::kNone:
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
@@ -493,7 +494,8 @@ void CreditCardAccessManager::Authenticate() {
       break;
     }
     case UnmaskAuthFlowType::kCvcThenFido:
-    case UnmaskAuthFlowType::kCvc: {
+    case UnmaskAuthFlowType::kCvc:
+    case UnmaskAuthFlowType::kCvcFallbackFromFido: {
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
       // Close the Webauthn verify pending dialog if it enters CVC
       // authentication flow since the card unmask prompt will pop up.
@@ -503,7 +505,8 @@ void CreditCardAccessManager::Authenticate() {
           card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_);
       break;
     }
-    case UnmaskAuthFlowType::kOtp: {
+    case UnmaskAuthFlowType::kOtp:
+    case UnmaskAuthFlowType::kOtpFallbackFromFido: {
       std::vector<CardUnmaskChallengeOption> options =
           virtual_card_unmask_response_details_.card_unmask_challenge_options;
       auto card_unmask_challenge_options_it =
@@ -529,7 +532,6 @@ void CreditCardAccessManager::Authenticate() {
       break;
     }
     case UnmaskAuthFlowType::kNone:
-    case UnmaskAuthFlowType::kCvcFallbackFromFido:
       // Run into other unexpected types.
       NOTREACHED();
       Reset();
@@ -662,16 +664,7 @@ void CreditCardAccessManager::OnCVCAuthenticationComplete(
     ShowWebauthnOfferDialog(response.card_authorization_token);
   }
 
-#if !defined(OS_IOS)
-  // If user intended to opt out, we will opt user out after cvc auth completes
-  // (no matter cvc auth succeeded or failed).
-  if (opt_in_intention_ == UserOptInIntention::kIntentToOptOut) {
-    FIDOAuthOptChange(/*opt_in=*/false);
-  }
-  // Reset |opt_in_intention_| after cvc auth completes.
-  opt_in_intention_ = UserOptInIntention::kUnspecified;
-#endif
-
+  HandleFidoOptInStatusChange();
   // TODO(crbug.com/1249665): Add Reset() to this function after cleaning up the
   // FIDO opt-in status change. This should not have any negative impact now
   // except for readability and cleanness. |should_offer_fido_auth| and
@@ -729,12 +722,17 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     accessor_->OnCreditCardFetched(result);
     Reset();
   } else {
-    // If it is an authentication error, start the CVC authentication process.
-    unmask_auth_flow_type_ = UnmaskAuthFlowType::kCvcFallbackFromFido;
-    form_event_logger_->LogCardUnmaskAuthenticationPromptShown(
-        unmask_auth_flow_type_);
-    GetOrCreateCVCAuthenticator()->Authenticate(
-        card_.get(), weak_ptr_factory_.GetWeakPtr(), personal_data_manager_);
+    // If it is an authentication error, start the CVC authentication process
+    // for masked server cards or the OTP authentication process for virtual
+    // cards.
+    if (card_->record_type() == CreditCard::VIRTUAL_CARD &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableVirtualCardsRiskBasedAuthentication)) {
+      // TODO(crbug.com/1243475): Show authentication selection dialog.
+    } else {
+      unmask_auth_flow_type_ = UnmaskAuthFlowType::kCvcFallbackFromFido;
+      Authenticate();
+    }
   }
 }
 
@@ -755,6 +753,7 @@ void CreditCardAccessManager::OnOtpAuthenticationComplete(
                                      ? CreditCardFetchResult::kSuccess
                                      : CreditCardFetchResult::kTransientError,
                                  card_.get(), cvc_);
+  HandleFidoOptInStatusChange();
   Reset();
 }
 
@@ -1005,7 +1004,11 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
   DCHECK_EQ(selected_challenge_option.type,
             CardUnmaskChallengeOptionType::kSmsOtp);
   selected_challenge_option_id_ = selected_challenge_option.id;
-  OnDidGetAuthenticationType(UnmaskAuthFlowType::kOtp);
+  UnmaskAuthFlowType selected_authentication_type =
+      unmask_auth_flow_type_ == UnmaskAuthFlowType::kFido
+          ? UnmaskAuthFlowType::kOtpFallbackFromFido
+          : UnmaskAuthFlowType::kOtp;
+  OnDidGetAuthenticationType(selected_authentication_type);
 }
 
 void CreditCardAccessManager::Reset() {
@@ -1027,6 +1030,18 @@ void CreditCardAccessManager::Reset() {
   card_ = nullptr;
   cvc_ = std::u16string();
   unmask_details_request_in_progress_ = false;
+}
+
+void CreditCardAccessManager::HandleFidoOptInStatusChange() {
+#if !defined(OS_IOS)
+  // If user intended to opt out, we will opt user out after CVC/OTP auth
+  // completes (no matter it succeeded or failed).
+  if (opt_in_intention_ == UserOptInIntention::kIntentToOptOut) {
+    FIDOAuthOptChange(/*opt_in=*/false);
+  }
+  // Reset |opt_in_intention_| after the authentication completes.
+  opt_in_intention_ = UserOptInIntention::kUnspecified;
+#endif
 }
 
 }  // namespace autofill

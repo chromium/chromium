@@ -43,11 +43,13 @@ enum class UnmaskAuthFlowType {
   kFido = 2,
   // CVC authentication was required in addition to WebAuthn.
   kCvcThenFido = 3,
-  // WebAuthn prompt failed and fell back to CVC prompt.
+  // FIDO authentication failed and fell back to CVC authentication.
   kCvcFallbackFromFido = 4,
   // OTP authentication was offered.
   kOtp = 5,
-  kMaxValue = kOtp,
+  // FIDO authentication failed and fell back to OTP authentication.
+  kOtpFallbackFromFido = 6,
+  kMaxValue = kOtpFallbackFromFido,
 };
 
 // The result of the attempt to fetch full information for a credit card.
@@ -191,6 +193,9 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
       RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_FidoFailedFallBackToOtp);
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;
@@ -343,6 +348,9 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
 
   // Reset all the member variables of |this| and restore initial states.
   void Reset();
+
+  // Handles the FIDO opt-in status change.
+  void HandleFidoOptInStatusChange();
 
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
