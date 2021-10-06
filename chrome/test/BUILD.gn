@@ -5604,6 +5604,7 @@ test("unit_tests") {
       "../browser/page_load_metrics/observers/android_page_load_metrics_observer_unittest.cc",
       "../browser/page_load_metrics/observers/offline_measurements_page_load_metrics_observer_unittest.cc",
       "../browser/permissions/permission_prompt_android_unittest.cc",
+      "../browser/permissions/permission_update_message_controller_android_unittest.cc",
       "../browser/policy/browser_dm_token_storage_android_unittest.cc",
       "../browser/policy/chrome_browser_cloud_management_controller_android_unittest.cc",
       "../browser/policy/client_data_delegate_android_unittest.cc",

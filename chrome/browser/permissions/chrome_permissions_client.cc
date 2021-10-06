@@ -49,7 +49,9 @@
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/permissions/grouped_permission_infobar_delegate_android.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
+#include "chrome/browser/permissions/permission_update_message_controller_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "components/messages/android/messages_feature.h"
 #else
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -386,8 +388,14 @@ void ChromePermissionsClient::RepromptForAndroidPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types,
     PermissionsUpdatedCallback callback) {
-  PermissionUpdateInfoBarDelegate::Create(web_contents, content_settings_types,
-                                          std::move(callback));
+  if (messages::IsPermissionUpdateMessagesUiEnabled()) {
+    PermissionUpdateMessageController::CreateForWebContents(web_contents);
+    PermissionUpdateMessageController::FromWebContents(web_contents)
+        ->ShowMessage(content_settings_types, std::move(callback));
+  } else {
+    PermissionUpdateInfoBarDelegate::Create(
+        web_contents, content_settings_types, std::move(callback));
+  }
 }
 
 int ChromePermissionsClient::MapToJavaDrawableId(int resource_id) {
