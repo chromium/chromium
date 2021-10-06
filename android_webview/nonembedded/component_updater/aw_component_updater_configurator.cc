@@ -182,8 +182,6 @@ AwComponentUpdaterConfigurator::GetActivityDataService() const {
 }
 
 bool AwComponentUpdaterConfigurator::IsPerUserInstall() const {
-  // Android doesn't have per user updaters.
-  NOTREACHED();
   return true;
 }
 

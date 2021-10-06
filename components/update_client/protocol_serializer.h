@@ -34,6 +34,7 @@ base::flat_map<std::string, std::string> BuildUpdateCheckExtraRequestHeaders(
     bool is_foreground);
 
 protocol_request::Request MakeProtocolRequest(
+    bool is_machine,
     const std::string& session_id,
     const std::string& prod_id,
     const std::string& browser_version,

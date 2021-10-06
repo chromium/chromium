@@ -139,6 +139,9 @@ struct Request {
 
   std::string protocol_version;
 
+  // True if the updater operates in the per-system configuration.
+  bool is_machine = false;
+
   // Unique identifier for this session, used to correlate multiple requests
   // associated with a single update operation.
   std::string session_id;
@@ -146,7 +149,6 @@ struct Request {
   // Unique identifier for this request, used to associate the same request
   // received multiple times on the server.
   std::string request_id;
-
   std::string updatername;
   std::string updaterversion;
   std::string prodversion;

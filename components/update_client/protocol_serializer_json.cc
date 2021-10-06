@@ -24,6 +24,7 @@ std::string ProtocolSerializerJSON::Serialize(
   auto* request_node =
       root_node.SetKey("request", Value(Value::Type::DICTIONARY));
   request_node->SetKey("protocol", Value(request.protocol_version));
+  request_node->SetKey("ismachine", Value(request.is_machine));
   request_node->SetKey("dedup", Value("cr"));
   request_node->SetKey("acceptformat", Value("crx2,crx3"));
   if (!request.additional_attributes.empty()) {

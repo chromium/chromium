@@ -76,6 +76,7 @@ base::flat_map<std::string, std::string> BuildUpdateCheckExtraRequestHeaders(
 }
 
 protocol_request::Request MakeProtocolRequest(
+    const bool is_machine,
     const std::string& session_id,
     const std::string& prod_id,
     const std::string& browser_version,
@@ -88,6 +89,7 @@ protocol_request::Request MakeProtocolRequest(
     std::vector<protocol_request::App> apps) {
   protocol_request::Request request;
   request.protocol_version = kProtocolVersion;
+  request.is_machine = is_machine;
 
   // Session id and request id.
   DCHECK(!session_id.empty());

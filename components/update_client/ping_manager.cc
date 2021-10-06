@@ -98,11 +98,11 @@ void PingSender::SendPing(const Component& component, Callback callback) {
       urls, {},
       config_->GetProtocolHandlerFactory()->CreateSerializer()->Serialize(
           MakeProtocolRequest(
-              component.session_id(), config_->GetProdId(),
-              config_->GetBrowserVersion().GetString(), config_->GetLang(),
-              config_->GetChannel(), config_->GetOSLongName(),
-              config_->GetDownloadPreference(), config_->ExtraRequestParams(),
-              nullptr, std::move(apps))),
+              !config_->IsPerUserInstall(), component.session_id(),
+              config_->GetProdId(), config_->GetBrowserVersion().GetString(),
+              config_->GetLang(), config_->GetChannel(),
+              config_->GetOSLongName(), config_->GetDownloadPreference(),
+              config_->ExtraRequestParams(), nullptr, std::move(apps))),
       false, base::BindOnce(&PingSender::SendPingComplete, this));
 }
 

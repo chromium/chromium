@@ -222,7 +222,7 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
   }
 
   const auto request = MakeProtocolRequest(
-      session_id, config_->GetProdId(),
+      !config_->IsPerUserInstall(), session_id, config_->GetProdId(),
       config_->GetBrowserVersion().GetString(), config_->GetLang(),
       config_->GetChannel(), config_->GetOSLongName(),
       config_->GetDownloadPreference(), additional_attributes,
