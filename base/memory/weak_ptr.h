@@ -289,9 +289,10 @@ class WeakPtr : public internal::WeakPtrBase {
   template <typename U> friend class WeakPtr;
   friend class SupportsWeakPtr<T>;
   friend class WeakPtrFactory<T>;
-  friend SafeRef<T> internal::MakeSafeRefFromWeakPtrInternals(
+  template <typename U>
+  friend SafeRef<U> internal::MakeSafeRefFromWeakPtrInternals(
       const internal::WeakReference& ref,
-      T* ptr);
+      U* ptr);
 
   WeakPtr(const internal::WeakReference& ref, T* ptr)
       : WeakPtrBase(ref, reinterpret_cast<uintptr_t>(ptr)) {}

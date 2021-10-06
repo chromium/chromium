@@ -88,9 +88,10 @@ class SafeRef {
  private:
   template <typename U>
   friend class SafeRef;
-  friend SafeRef internal::MakeSafeRefFromWeakPtrInternals(
+  template <typename U>
+  friend SafeRef<U> internal::MakeSafeRefFromWeakPtrInternals(
       const internal::WeakReference& ref,
-      T* ptr);
+      U* ptr);
 
   // Construction from a from WeakPtr. Will CHECK() if the WeakPtr is already
   // invalid.
