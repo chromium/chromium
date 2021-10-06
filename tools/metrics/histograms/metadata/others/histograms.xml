@@ -3909,7 +3909,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Conversions.RegisteredImpressionsPerPage" units="impressions"
-    expires_after="M95">
+    expires_after="2022-01-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -4056,7 +4056,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Conversions.UniqueReportingOriginsPerPage.Conversions"
-    units="origins" expires_after="M96">
+    units="origins" expires_after="2022-01-09">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -4069,7 +4069,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Conversions.UniqueReportingOriginsPerPage.Impressions"
-    units="origins" expires_after="M96">
+    units="origins" expires_after="2022-01-09">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
