@@ -2078,7 +2078,7 @@
     },
     {
       'name': 'ForceLegacyDefaultReferrerPolicy',
-      'owners': ['davidvc@chromium.org', 'chrome-network-stack@chromium.org'],
+      'owners': ['kaustubhag@chromium.org', 'chrome-network-stack@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-87', 'chrome_os:80-87'],
