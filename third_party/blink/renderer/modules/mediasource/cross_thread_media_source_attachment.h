@@ -39,6 +39,11 @@ class CrossThreadMediaSourceAttachment final
   CrossThreadMediaSourceAttachment(MediaSource* media_source,
                                    base::PassKey<URLMediaSource>);
 
+  CrossThreadMediaSourceAttachment(const CrossThreadMediaSourceAttachment&) =
+      delete;
+  CrossThreadMediaSourceAttachment& operator=(
+      const CrossThreadMediaSourceAttachment&) = delete;
+
   // MediaSourceAttachmentSupplement, called by MSE API on worker thread.
   // These generally require the MSE implementation to issue these calls from
   // the target of a RunExclusively() callback to ensure thread safety: much of
@@ -275,8 +280,6 @@ class CrossThreadMediaSourceAttachment final
 
   WebTimeRanges cached_buffered_;
   WebTimeRanges cached_seekable_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrossThreadMediaSourceAttachment);
 };
 
 }  // namespace blink

@@ -148,6 +148,9 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
     callback_receiver_ = callback_.BindNewPipeAndPassReceiver();
   }
 
+  FetchLoaderClient(const FetchLoaderClient&) = delete;
+  FetchLoaderClient& operator=(const FetchLoaderClient&) = delete;
+
   void DidFetchDataStartedDataPipe(
       mojo::ScopedDataPipeConsumerHandle pipe) override {
     DCHECK(!body_stream_.is_valid());
@@ -188,8 +191,6 @@ class FetchLoaderClient final : public GarbageCollected<FetchLoaderClient>,
 
   mojo::Remote<mojom::blink::ServiceWorkerStreamCallback> callback_;
   std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken> token_;
-
-  DISALLOW_COPY_AND_ASSIGN(FetchLoaderClient);
 };
 
 }  // namespace

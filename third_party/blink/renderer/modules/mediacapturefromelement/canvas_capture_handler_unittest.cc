@@ -49,6 +49,9 @@ class CanvasCaptureHandlerTest
  public:
   CanvasCaptureHandlerTest() = default;
 
+  CanvasCaptureHandlerTest(const CanvasCaptureHandlerTest&) = delete;
+  CanvasCaptureHandlerTest& operator=(const CanvasCaptureHandlerTest&) = delete;
+
   void SetUp() override {
     MediaStreamComponent* component = nullptr;
     canvas_capture_handler_ = CanvasCaptureHandler::CreateCanvasCaptureHandler(
@@ -137,9 +140,6 @@ class CanvasCaptureHandlerTest
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CanvasCaptureHandlerTest);
 };
 
 // Checks that the initialization-destruction sequence works fine.

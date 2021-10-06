@@ -41,8 +41,8 @@ class MockCDQualityAudioSource : public MediaStreamAudioSource {
         media::AudioParameters::kAudioCDSampleRate / 100));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCDQualityAudioSource);
+  MockCDQualityAudioSource(const MockCDQualityAudioSource&) = delete;
+  MockCDQualityAudioSource& operator=(const MockCDQualityAudioSource&) = delete;
 };
 
 }  // namespace

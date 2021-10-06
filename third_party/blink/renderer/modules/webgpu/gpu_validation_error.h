@@ -17,13 +17,14 @@ class GPUValidationError : public ScriptWrappable {
   static GPUValidationError* Create(const AtomicString& message);
   GPUValidationError(const AtomicString& message);
 
+  GPUValidationError(const GPUValidationError&) = delete;
+  GPUValidationError& operator=(const GPUValidationError&) = delete;
+
   // gpu_validation_error.idl
   const String& message() const;
 
  private:
   String message_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUValidationError);
 };
 
 }  // namespace blink

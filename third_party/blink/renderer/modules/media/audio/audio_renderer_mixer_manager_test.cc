@@ -51,6 +51,10 @@ class AudioRendererMixerManagerTest : public testing::Test {
             base::BindRepeating(&AudioRendererMixerManagerTest::GetPlainSink,
                                 base::Unretained(this)))) {}
 
+  AudioRendererMixerManagerTest(const AudioRendererMixerManagerTest&) = delete;
+  AudioRendererMixerManagerTest& operator=(
+      const AudioRendererMixerManagerTest&) = delete;
+
   scoped_refptr<media::MockAudioRendererSink> CreateNormalSink(
       const std::string& device_id = std::string(kDefaultDeviceId)) {
     auto sink = base::MakeRefCounted<media::MockAudioRendererSink>(
@@ -146,8 +150,6 @@ class AudioRendererMixerManagerTest : public testing::Test {
       const media::AudioSinkParameters& params) {
     return GetSink(source_frame_token, params);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(AudioRendererMixerManagerTest);
 };
 
 // Verify GetMixer() and ReturnMixer() both work as expected; particularly with

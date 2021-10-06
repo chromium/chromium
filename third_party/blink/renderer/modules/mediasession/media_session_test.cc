@@ -56,6 +56,9 @@ class MediaSessionTest : public PageTestBase {
  public:
   MediaSessionTest() = default;
 
+  MediaSessionTest(const MediaSessionTest&) = delete;
+  MediaSessionTest& operator=(const MediaSessionTest&) = delete;
+
   void SetUp() override {
     PageTestBase::SetUp();
 
@@ -99,8 +102,6 @@ class MediaSessionTest : public PageTestBase {
   std::unique_ptr<MockMediaSessionService> mock_service_;
 
   Persistent<MediaSession> media_session_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSessionTest);
 };
 
 TEST_F(MediaSessionTest, PlaybackPositionState_None) {

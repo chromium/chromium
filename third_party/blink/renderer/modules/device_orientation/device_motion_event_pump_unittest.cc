@@ -80,6 +80,10 @@ class DeviceMotionEventPumpTest : public testing::Test {
  public:
   DeviceMotionEventPumpTest() = default;
 
+  DeviceMotionEventPumpTest(const DeviceMotionEventPumpTest&) = delete;
+  DeviceMotionEventPumpTest& operator=(const DeviceMotionEventPumpTest&) =
+      delete;
+
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>();
@@ -135,8 +139,6 @@ class DeviceMotionEventPumpTest : public testing::Test {
   std::unique_ptr<DummyPageHolder> page_holder_;
 
   FakeSensorProvider sensor_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceMotionEventPumpTest);
 };
 
 TEST_F(DeviceMotionEventPumpTest, AllSensorsAreActive) {

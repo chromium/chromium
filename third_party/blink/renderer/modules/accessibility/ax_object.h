@@ -109,9 +109,10 @@ class NameSourceRelatedObject final
   NameSourceRelatedObject(AXObject* object, String text)
       : object(object), text(text) {}
 
-  void Trace(Visitor* visitor) const { visitor->Trace(object); }
+  NameSourceRelatedObject(const NameSourceRelatedObject&) = delete;
+  NameSourceRelatedObject& operator=(const NameSourceRelatedObject&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(NameSourceRelatedObject);
+  void Trace(Visitor* visitor) const { visitor->Trace(object); }
 };
 
 typedef HeapVector<Member<NameSourceRelatedObject>> AXRelatedObjectVector;

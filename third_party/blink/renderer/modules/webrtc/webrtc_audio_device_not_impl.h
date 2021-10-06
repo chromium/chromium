@@ -25,6 +25,9 @@ class MODULES_EXPORT WebRtcAudioDeviceNotImpl
  public:
   WebRtcAudioDeviceNotImpl();
 
+  WebRtcAudioDeviceNotImpl(const WebRtcAudioDeviceNotImpl&) = delete;
+  WebRtcAudioDeviceNotImpl& operator=(const WebRtcAudioDeviceNotImpl&) = delete;
+
   // Methods in webrtc::AudioDeviceModule which are not yet implemented.
   // The idea is that we can move methods from this class to the real
   // implementation in WebRtcAudioDeviceImpl when needed.
@@ -79,9 +82,6 @@ class MODULES_EXPORT WebRtcAudioDeviceNotImpl
 
  protected:
   ~WebRtcAudioDeviceNotImpl() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcAudioDeviceNotImpl);
 };
 
 }  // namespace blink

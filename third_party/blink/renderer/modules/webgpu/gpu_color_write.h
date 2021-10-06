@@ -20,8 +20,8 @@ class GPUColorWrite : public ScriptWrappable {
   static constexpr uint32_t kAlpha = 8;
   static constexpr uint32_t kAll = 15;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUColorWrite);
+  GPUColorWrite(const GPUColorWrite&) = delete;
+  GPUColorWrite& operator=(const GPUColorWrite&) = delete;
 };
 
 }  // namespace blink

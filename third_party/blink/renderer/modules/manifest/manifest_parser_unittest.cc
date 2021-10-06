@@ -24,6 +24,10 @@ bool IsManifestEmpty(const mojom::blink::ManifestPtr& manifest) {
 }
 
 class ManifestParserTest : public testing::Test {
+ public:
+  ManifestParserTest(const ManifestParserTest&) = delete;
+  ManifestParserTest& operator=(const ManifestParserTest&) = delete;
+
  protected:
   ManifestParserTest() {}
   ~ManifestParserTest() override {}
@@ -62,8 +66,6 @@ class ManifestParserTest : public testing::Test {
 
   const KURL default_document_url = KURL("http://foo.com/index.html");
   const KURL default_manifest_url = KURL("http://foo.com/manifest.json");
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestParserTest);
 };
 
 TEST_F(ManifestParserTest, CrashTest) {

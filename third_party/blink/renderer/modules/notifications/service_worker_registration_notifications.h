@@ -46,6 +46,11 @@ class ServiceWorkerRegistrationNotifications final
   ServiceWorkerRegistrationNotifications(ExecutionContext*,
                                          ServiceWorkerRegistration*);
 
+  ServiceWorkerRegistrationNotifications(
+      const ServiceWorkerRegistrationNotifications&) = delete;
+  ServiceWorkerRegistrationNotifications& operator=(
+      const ServiceWorkerRegistrationNotifications&) = delete;
+
   // ExecutionContextLifecycleObserver interface.
   void ContextDestroyed() override;
 
@@ -65,8 +70,6 @@ class ServiceWorkerRegistrationNotifications final
                         NotificationResourcesLoader* loader);
 
   HeapHashSet<Member<NotificationResourcesLoader>> loaders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationNotifications);
 };
 
 }  // namespace blink

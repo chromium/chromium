@@ -317,6 +317,10 @@ class WasmDataLoaderClient final
  public:
   explicit WasmDataLoaderClient(FetchDataLoaderForWasmStreaming* loader)
       : loader_(loader) {}
+
+  WasmDataLoaderClient(const WasmDataLoaderClient&) = delete;
+  WasmDataLoaderClient& operator=(const WasmDataLoaderClient&) = delete;
+
   void DidFetchDataLoadedCustomFormat() override {}
   void DidFetchDataLoadFailed() override { NOTREACHED(); }
   void Abort() override { loader_->AbortFromClient(); }
@@ -328,7 +332,6 @@ class WasmDataLoaderClient final
 
  private:
   Member<FetchDataLoaderForWasmStreaming> loader_;
-  DISALLOW_COPY_AND_ASSIGN(WasmDataLoaderClient);
 };
 
 // ExceptionToAbortStreamingScope converts a possible exception to an abort

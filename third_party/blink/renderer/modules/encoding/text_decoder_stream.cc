@@ -39,6 +39,9 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
         ignore_bom_(ignore_bom),
         encoding_has_bom_removal_(EncodingHasBomRemoval(encoding)) {}
 
+  Transformer(const Transformer&) = delete;
+  Transformer& operator=(const Transformer&) = delete;
+
   // Implements the type conversion part of the "decode and enqueue a chunk"
   // algorithm.
   ScriptPromise Transform(v8::Local<v8::Value> chunk,
@@ -129,8 +132,6 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
   const bool ignore_bom_;
   const bool encoding_has_bom_removal_;
   bool bom_seen_;
-
-  DISALLOW_COPY_AND_ASSIGN(Transformer);
 };
 
 TextDecoderStream* TextDecoderStream::Create(ScriptState* script_state,

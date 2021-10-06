@@ -34,6 +34,9 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
               int32_t bits_per_second,
               scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  H264Encoder(const H264Encoder&) = delete;
+  H264Encoder& operator=(const H264Encoder&) = delete;
+
  private:
   friend class H264EncoderFixture;
 
@@ -59,8 +62,6 @@ class MODULES_EXPORT H264Encoder final : public VideoTrackRecorder::Encoder {
   // The |VideoFrame::timestamp()| of the first received frame. Only used on
   // VideoTrackRecorder::Encoder::encoding_thread_.
   base::TimeTicks first_frame_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264Encoder);
 };
 
 }  // namespace blink

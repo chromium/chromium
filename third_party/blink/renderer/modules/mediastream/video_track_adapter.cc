@@ -145,6 +145,10 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
       const VideoTrackAdapterSettings& settings,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
+  VideoFrameResolutionAdapter(const VideoFrameResolutionAdapter&) = delete;
+  VideoFrameResolutionAdapter& operator=(const VideoFrameResolutionAdapter&) =
+      delete;
+
   // Add |frame_callback|, |encoded_frame_callback| to receive video frames on
   // the IO-thread and |settings_callback| to set track settings on the main
   // thread. |frame_callback| will however be released on the main render
@@ -230,8 +234,6 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   ComputedSettings source_format_settings_;
 
   base::flat_map<const MediaStreamVideoTrack*, VideoTrackCallbacks> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameResolutionAdapter);
 };
 
 VideoTrackAdapter::VideoFrameResolutionAdapter::VideoFrameResolutionAdapter(

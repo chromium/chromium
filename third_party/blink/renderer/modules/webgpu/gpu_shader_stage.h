@@ -18,8 +18,8 @@ class GPUShaderStage : public ScriptWrappable {
   static constexpr uint32_t kFragment = 2;
   static constexpr uint32_t kCompute = 4;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUShaderStage);
+  GPUShaderStage(const GPUShaderStage&) = delete;
+  GPUShaderStage& operator=(const GPUShaderStage&) = delete;
 };
 
 }  // namespace blink

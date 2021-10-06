@@ -44,6 +44,9 @@ class MODULES_EXPORT VideoTrackAdapter
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       base::WeakPtr<MediaStreamVideoSource> media_stream_video_source);
 
+  VideoTrackAdapter(const VideoTrackAdapter&) = delete;
+  VideoTrackAdapter& operator=(const VideoTrackAdapter&) = delete;
+
   // Register |track| to receive video frames in and |encoded_frame_callback|
   // and in |frame_callback| with a resolution within the boundaries of the
   // arguments, and settings updates in |settings_callback|. Must be called on
@@ -178,8 +181,6 @@ class MODULES_EXPORT VideoTrackAdapter
 
   // Resolution configured on the video source, accessed on the IO-thread.
   absl::optional<gfx::Size> source_frame_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoTrackAdapter);
 };
 
 }  // namespace blink

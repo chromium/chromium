@@ -25,14 +25,15 @@ class GPUShaderModule : public DawnObject<WGPUShaderModule> {
                                  ExceptionState& exception_state);
   explicit GPUShaderModule(GPUDevice* device, WGPUShaderModule shader_module);
 
+  GPUShaderModule(const GPUShaderModule&) = delete;
+  GPUShaderModule& operator=(const GPUShaderModule&) = delete;
+
   ScriptPromise compilationInfo(ScriptState* script_state);
 
  private:
   void OnCompilationInfoCallback(ScriptPromiseResolver* resolver,
                                  WGPUCompilationInfoRequestStatus status,
                                  const WGPUCompilationInfo* info);
-
-  DISALLOW_COPY_AND_ASSIGN(GPUShaderModule);
 };
 
 }  // namespace blink

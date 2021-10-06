@@ -102,6 +102,8 @@ class MODULES_EXPORT WebRtcAudioRenderer
     PAUSED,
   };
 
+  WebRtcAudioRenderer() = delete;
+
   WebRtcAudioRenderer(
       const scoped_refptr<base::SingleThreadTaskRunner>& signaling_thread,
       MediaStreamDescriptor* media_stream_descriptor,
@@ -109,6 +111,9 @@ class MODULES_EXPORT WebRtcAudioRenderer
       const base::UnguessableToken& session_id,
       const String& device_id,
       base::RepeatingCallback<void()> on_render_error_callback);
+
+  WebRtcAudioRenderer(const WebRtcAudioRenderer&) = delete;
+  WebRtcAudioRenderer& operator=(const WebRtcAudioRenderer&) = delete;
 
   // Initialize function called by clients like WebRtcAudioDeviceImpl.
   // Stop() has to be called before |source| is deleted.
@@ -388,8 +393,6 @@ class MODULES_EXPORT WebRtcAudioRenderer
   TranscribeAudioCallback transcribe_audio_callback_;
 
   base::WeakPtrFactory<WebRtcAudioRenderer> weak_factory_{this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebRtcAudioRenderer);
 };
 
 }  // namespace blink

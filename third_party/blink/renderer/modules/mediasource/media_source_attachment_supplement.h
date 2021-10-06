@@ -31,6 +31,11 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   using RunExclusivelyCB = base::OnceCallback<void(ExclusiveKey)>;
   using SourceBufferPassKey = base::PassKey<SourceBuffer>;
 
+  MediaSourceAttachmentSupplement(const MediaSourceAttachmentSupplement&) =
+      delete;
+  MediaSourceAttachmentSupplement& operator=(
+      const MediaSourceAttachmentSupplement&) = delete;
+
   // Communicates a change in the media resource duration to the attached media
   // element. In a same-thread attachment, communicates this information
   // synchronously. In a cross-thread attachment, underlying WebMediaSource
@@ -142,8 +147,6 @@ class MediaSourceAttachmentSupplement : public MediaSourceAttachment {
   ~MediaSourceAttachmentSupplement() override;
 
   ExclusiveKey GetExclusiveKey() const;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachmentSupplement);
 };
 
 }  // namespace blink

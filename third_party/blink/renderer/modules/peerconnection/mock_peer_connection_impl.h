@@ -143,6 +143,9 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
   explicit MockPeerConnectionImpl(MockPeerConnectionDependencyFactory* factory,
                                   webrtc::PeerConnectionObserver* observer);
 
+  MockPeerConnectionImpl(const MockPeerConnectionImpl&) = delete;
+  MockPeerConnectionImpl& operator=(const MockPeerConnectionImpl&) = delete;
+
   // PeerConnectionInterface implementation.
   rtc::scoped_refptr<webrtc::StreamCollectionInterface> local_streams()
       override {
@@ -407,8 +410,6 @@ class MockPeerConnectionImpl : public webrtc::PeerConnectionInterface {
       webrtc::RTCErrorType::NONE;
   rtc::scoped_refptr<webrtc::RTCStatsReport> stats_report_;
   Vector<rtc::scoped_refptr<webrtc::Resource>> adaptation_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPeerConnectionImpl);
 };
 
 }  // namespace blink

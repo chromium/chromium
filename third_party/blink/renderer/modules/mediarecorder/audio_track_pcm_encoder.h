@@ -20,14 +20,15 @@ class AudioTrackPcmEncoder : public AudioTrackEncoder {
  public:
   explicit AudioTrackPcmEncoder(OnEncodedAudioCB on_encoded_audio_cb);
 
+  AudioTrackPcmEncoder(const AudioTrackPcmEncoder&) = delete;
+  AudioTrackPcmEncoder& operator=(const AudioTrackPcmEncoder&) = delete;
+
   void OnSetFormat(const media::AudioParameters& params) override;
   void EncodeAudio(std::unique_ptr<media::AudioBus> input_bus,
                    base::TimeTicks capture_time) override;
 
  private:
   ~AudioTrackPcmEncoder() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTrackPcmEncoder);
 };
 
 }  // namespace blink

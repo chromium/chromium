@@ -44,6 +44,10 @@ class MODULES_EXPORT MediaStreamVideoRendererSink
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner);
 
+  MediaStreamVideoRendererSink(const MediaStreamVideoRendererSink&) = delete;
+  MediaStreamVideoRendererSink& operator=(const MediaStreamVideoRendererSink&) =
+      delete;
+
   // WebMediaStreamVideoRenderer implementation. Called on the main
   // thread.
   void Start() override;
@@ -82,8 +86,6 @@ class MODULES_EXPORT MediaStreamVideoRendererSink
   THREAD_CHECKER(main_thread_checker_);
 
   base::WeakPtrFactory<MediaStreamVideoRendererSink> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoRendererSink);
 };
 
 }  // namespace blink

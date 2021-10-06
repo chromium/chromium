@@ -123,6 +123,9 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
  public:
   MockWebMediaPlayerClient() = default;
 
+  MockWebMediaPlayerClient(const MockWebMediaPlayerClient&) = delete;
+  MockWebMediaPlayerClient& operator=(const MockWebMediaPlayerClient&) = delete;
+
   MOCK_METHOD0(NetworkStateChanged, void());
   MOCK_METHOD0(ReadyStateChanged, void());
   MOCK_METHOD0(TimeChanged, void());
@@ -182,9 +185,6 @@ class MockWebMediaPlayerClient : public WebMediaPlayerClient {
   MOCK_METHOD0(GetTextTrackMetadata, Vector<TextTrackMetadata>());
 
   bool was_always_muted_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebMediaPlayerClient);
 };
 
 class MockWebMediaPlayerEncryptedMediaClient
@@ -192,13 +192,15 @@ class MockWebMediaPlayerEncryptedMediaClient
  public:
   MockWebMediaPlayerEncryptedMediaClient() = default;
 
+  MockWebMediaPlayerEncryptedMediaClient(
+      const MockWebMediaPlayerEncryptedMediaClient&) = delete;
+  MockWebMediaPlayerEncryptedMediaClient& operator=(
+      const MockWebMediaPlayerEncryptedMediaClient&) = delete;
+
   MOCK_METHOD3(Encrypted,
                void(media::EmeInitDataType, const unsigned char*, unsigned));
   MOCK_METHOD0(DidBlockPlaybackWaitingForKey, void());
   MOCK_METHOD0(DidResumePlaybackBlockedForKey, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockWebMediaPlayerEncryptedMediaClient);
 };
 
 class MockWebMediaPlayerDelegate : public WebMediaPlayerDelegate {

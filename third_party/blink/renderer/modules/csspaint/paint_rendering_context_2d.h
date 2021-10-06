@@ -36,6 +36,9 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
                           float zoom,
                           float device_scale_factor);
 
+  PaintRenderingContext2D(const PaintRenderingContext2D&) = delete;
+  PaintRenderingContext2D& operator=(const PaintRenderingContext2D&) = delete;
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(context_settings_);
     ScriptWrappable::Trace(visitor);
@@ -112,8 +115,6 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   // paint worklet canvas needs to handle device scale factor and browser zoom,
   // and this is designed for that purpose.
   const float effective_zoom_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintRenderingContext2D);
 };
 
 }  // namespace blink

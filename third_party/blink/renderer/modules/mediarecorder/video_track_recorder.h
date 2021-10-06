@@ -149,6 +149,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
             scoped_refptr<base::SequencedTaskRunner> encoding_task_runner =
                 nullptr);
 
+    Encoder(const Encoder&) = delete;
+    Encoder& operator=(const Encoder&) = delete;
+
     // Start encoding |frame|, returning via |on_encoded_video_cb_|. This
     // call will also trigger an encode configuration upon first frame arrival
     // or parameter change, and an EncodeOnEncodingTaskRunner() to actually
@@ -246,8 +249,6 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     std::unique_ptr<WebGraphicsContext3DProvider> encoder_thread_context_;
 
     media::VideoFramePool frame_pool_;
-
-    DISALLOW_COPY_AND_ASSIGN(Encoder);
   };
 
   // Class to encapsulate the enumeration of CodecIds/VideoCodecProfiles

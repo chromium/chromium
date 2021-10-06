@@ -29,10 +29,10 @@ class GPUComputePipeline : public DawnObject<WGPUComputePipeline> {
   explicit GPUComputePipeline(GPUDevice* device,
                               WGPUComputePipeline compute_pipeline);
 
-  GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
+  GPUComputePipeline(const GPUComputePipeline&) = delete;
+  GPUComputePipeline& operator=(const GPUComputePipeline&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUComputePipeline);
+  GPUBindGroupLayout* getBindGroupLayout(uint32_t index);
 };
 
 }  // namespace blink

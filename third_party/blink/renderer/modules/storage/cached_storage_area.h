@@ -72,6 +72,9 @@ class MODULES_EXPORT CachedStorageArea
       bool is_session_storage_for_prerendering,
       mojo::PendingRemote<mojom::blink::StorageArea> storage_area = {});
 
+  CachedStorageArea(const CachedStorageArea&) = delete;
+  CachedStorageArea& operator=(const CachedStorageArea&) = delete;
+
   // These correspond to blink::Storage.
   unsigned GetLength();
   String GetKey(unsigned index);
@@ -239,8 +242,6 @@ class MODULES_EXPORT CachedStorageArea
   mojo::Receiver<mojom::blink::StorageAreaObserver> receiver_{this};
 
   Persistent<HeapHashMap<WeakMember<Source>, String>> areas_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedStorageArea);
 };
 
 }  // namespace blink

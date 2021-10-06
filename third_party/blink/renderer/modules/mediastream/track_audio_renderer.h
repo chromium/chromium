@@ -67,6 +67,9 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
                      const String& device_id,
                      base::RepeatingCallback<void()> on_render_error_callback);
 
+  TrackAudioRenderer(const TrackAudioRenderer&) = delete;
+  TrackAudioRenderer& operator=(const TrackAudioRenderer&) = delete;
+
   // WebMediaStreamAudioRenderer implementation.
   // Called on the main thread.
   void Start() override;
@@ -172,8 +175,6 @@ class TrackAudioRenderer : public WebMediaStreamAudioRenderer,
 
   // Flag to indicate whether |sink_| has been started yet.
   bool sink_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackAudioRenderer);
 };
 
 }  // namespace blink

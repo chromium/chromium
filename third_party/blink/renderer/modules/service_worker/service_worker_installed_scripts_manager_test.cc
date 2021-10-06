@@ -139,6 +139,11 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
             base::WaitableEvent::InitialState::NOT_SIGNALED)) {}
 
+  ServiceWorkerInstalledScriptsManagerTest(
+      const ServiceWorkerInstalledScriptsManagerTest&) = delete;
+  ServiceWorkerInstalledScriptsManagerTest& operator=(
+      const ServiceWorkerInstalledScriptsManagerTest&) = delete;
+
  protected:
   using RawScriptData = ThreadSafeScriptContainer::RawScriptData;
 
@@ -202,8 +207,6 @@ class ServiceWorkerInstalledScriptsManagerTest : public testing::Test {
 
   std::unique_ptr<ServiceWorkerInstalledScriptsManager>
       installed_scripts_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerInstalledScriptsManagerTest);
 };
 
 TEST_F(ServiceWorkerInstalledScriptsManagerTest, GetRawScriptData) {

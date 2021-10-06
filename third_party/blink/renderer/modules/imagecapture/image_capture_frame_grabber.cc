@@ -66,6 +66,9 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
     DCHECK(deliver_cb_);
   }
 
+  SingleShotFrameHandler(const SingleShotFrameHandler&) = delete;
+  SingleShotFrameHandler& operator=(const SingleShotFrameHandler&) = delete;
+
   // Receives a |frame| and converts its pixels into a SkImage via an internal
   // PaintSurface and SkPixmap. Alpha channel, if any, is copied.
   void OnVideoFrameOnIOThread(
@@ -83,8 +86,6 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
 
   // Null once the initial frame has been queued for delivery.
   SkImageDeliverCB deliver_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleShotFrameHandler);
 };
 
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(

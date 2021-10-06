@@ -31,6 +31,9 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
       const HeapMojoRemote<payments::mojom::blink::PaymentManager>&,
       ExecutionContext*);
 
+  PaymentInstruments(const PaymentInstruments&) = delete;
+  PaymentInstruments& operator=(const PaymentInstruments&) = delete;
+
   ScriptPromise deleteInstrument(ScriptState*,
                                  const String& instrument_key,
                                  ExceptionState&);
@@ -74,8 +77,6 @@ class MODULES_EXPORT PaymentInstruments final : public ScriptWrappable {
   const HeapMojoRemote<payments::mojom::blink::PaymentManager>& manager_;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentInstruments);
 };
 
 }  // namespace blink

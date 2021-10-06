@@ -38,6 +38,10 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
         webrtc_track_(webrtc_track),
         id_(String::FromUTF8(webrtc_track->id())) {}
 
+  RemoteMediaStreamTrackAdapter(const RemoteMediaStreamTrackAdapter&) = delete;
+  RemoteMediaStreamTrackAdapter& operator=(
+      const RemoteMediaStreamTrackAdapter&) = delete;
+
   const scoped_refptr<WebRtcMediaStreamTrackType>& observed_track() {
     return webrtc_track_;
   }
@@ -93,8 +97,6 @@ class MODULES_EXPORT RemoteMediaStreamTrackAdapter
   // const copy of the webrtc track id that allows us to check it from both the
   // main and signaling threads without incurring a synchronous thread hop.
   const String id_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteMediaStreamTrackAdapter);
 };
 
 class MODULES_EXPORT RemoteVideoTrackAdapter
@@ -125,6 +127,9 @@ class MODULES_EXPORT RemoteAudioTrackAdapter
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
       webrtc::AudioTrackInterface* webrtc_track);
 
+  RemoteAudioTrackAdapter(const RemoteAudioTrackAdapter&) = delete;
+  RemoteAudioTrackAdapter& operator=(const RemoteAudioTrackAdapter&) = delete;
+
   void Unregister();
 
  protected:
@@ -145,8 +150,6 @@ class MODULES_EXPORT RemoteAudioTrackAdapter
 #endif
 
   webrtc::MediaStreamTrackInterface::TrackState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteAudioTrackAdapter);
 };
 
 }  // namespace blink

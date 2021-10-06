@@ -16,13 +16,14 @@ class GPUDeviceLostInfo : public ScriptWrappable {
  public:
   explicit GPUDeviceLostInfo(const String& message);
 
+  GPUDeviceLostInfo(const GPUDeviceLostInfo&) = delete;
+  GPUDeviceLostInfo& operator=(const GPUDeviceLostInfo&) = delete;
+
   // gpu_device_lost_info.idl
   const String& message() const;
 
  private:
   String message_;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUDeviceLostInfo);
 };
 
 }  // namespace blink

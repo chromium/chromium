@@ -16,6 +16,9 @@ class GamepadComparisonsTest : public testing::Test {
  public:
   GamepadComparisonsTest() = default;
 
+  GamepadComparisonsTest(const GamepadComparisonsTest&) = delete;
+  GamepadComparisonsTest& operator=(const GamepadComparisonsTest&) = delete;
+
  protected:
   void InitGamepadQuaternion(device::GamepadQuaternion& q) {
     q.not_null = true;
@@ -123,9 +126,6 @@ class GamepadComparisonsTest : public testing::Test {
     list->Set(0, gamepad);
     return list;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GamepadComparisonsTest);
 };
 
 TEST_F(GamepadComparisonsTest, EmptyListCausesNoActivation) {

@@ -47,6 +47,11 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
       blink::PeerConnectionDependencyFactory* factory,
       const scoped_refptr<base::SingleThreadTaskRunner>& main_thread,
       const scoped_refptr<webrtc::MediaStreamTrackInterface>& webrtc_track);
+
+  WebRtcMediaStreamTrackAdapter(const WebRtcMediaStreamTrackAdapter&) = delete;
+  WebRtcMediaStreamTrackAdapter& operator=(
+      const WebRtcMediaStreamTrackAdapter&) = delete;
+
   // Must be called before all external references are released (i.e. before
   // destruction). Invoke on the main thread. Disposing may finish
   // asynchronously using the webrtc signaling thread and the main thread. After
@@ -140,8 +145,6 @@ class MODULES_EXPORT WebRtcMediaStreamTrackAdapter
   // the remote webrtc track and notifies Blink.
   scoped_refptr<blink::RemoteAudioTrackAdapter> remote_audio_track_adapter_;
   scoped_refptr<blink::RemoteVideoTrackAdapter> remote_video_track_adapter_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcMediaStreamTrackAdapter);
 };
 
 struct MODULES_EXPORT WebRtcMediaStreamTrackAdapterTraits {

@@ -60,6 +60,9 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
   // Instances of this object are created on the main render thread.
   WebRtcAudioDeviceImpl();
 
+  WebRtcAudioDeviceImpl(const WebRtcAudioDeviceImpl&) = delete;
+  WebRtcAudioDeviceImpl& operator=(const WebRtcAudioDeviceImpl&) = delete;
+
  protected:
   // Make destructor protected, we should only be deleted by Release().
   ~WebRtcAudioDeviceImpl() override;
@@ -191,8 +194,6 @@ class MODULES_EXPORT WebRtcAudioDeviceImpl
 
   // The output device used for echo cancellation
   String output_device_id_for_aec_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcAudioDeviceImpl);
 };
 
 }  // namespace blink

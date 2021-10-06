@@ -33,6 +33,9 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
              int32_t bits_per_second,
              scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 
+  VpxEncoder(const VpxEncoder&) = delete;
+  VpxEncoder& operator=(const VpxEncoder&) = delete;
+
  private:
   // VideoTrackRecorder::Encoder implementation.
   ~VpxEncoder() override;
@@ -89,8 +92,6 @@ class VpxEncoder final : public VideoTrackRecorder::Encoder {
   // used to predict the duration of the next frame. Only used on
   // VideoTrackRecorder::Encoder::encoding_thread_.
   base::TimeDelta last_frame_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpxEncoder);
 };
 
 }  // namespace blink

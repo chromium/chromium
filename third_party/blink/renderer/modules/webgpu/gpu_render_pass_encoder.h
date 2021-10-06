@@ -27,6 +27,9 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
   explicit GPURenderPassEncoder(GPUDevice* device,
                                 WGPURenderPassEncoder render_pass_encoder);
 
+  GPURenderPassEncoder(const GPURenderPassEncoder&) = delete;
+  GPURenderPassEncoder& operator=(const GPURenderPassEncoder&) = delete;
+
   // gpu_render_pass_encoder.idl
   void setBindGroup(uint32_t index, DawnObject<WGPUBindGroup>* bindGroup) {
     GetProcs().renderPassEncoderSetBindGroup(
@@ -140,9 +143,6 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
         GetHandle(), querySet->GetHandle(), queryIndex);
   }
   void endPass() { GetProcs().renderPassEncoderEndPass(GetHandle()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPURenderPassEncoder);
 };
 
 }  // namespace blink

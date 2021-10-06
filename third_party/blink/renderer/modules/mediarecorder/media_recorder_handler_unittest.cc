@@ -216,8 +216,8 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
       : MediaRecorderHandlerFixture(GetParam().has_video,
                                     GetParam().has_audio) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerTest);
+  MediaRecorderHandlerTest(const MediaRecorderHandlerTest&) = delete;
+  MediaRecorderHandlerTest& operator=(const MediaRecorderHandlerTest&) = delete;
 };
 
 // Checks that canSupportMimeType() works as expected, by sending supported
@@ -642,8 +642,10 @@ class MediaRecorderHandlerH264ProfileTest
   MediaRecorderHandlerH264ProfileTest()
       : MediaRecorderHandlerFixture(true, GetParam().has_audio) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaRecorderHandlerH264ProfileTest);
+  MediaRecorderHandlerH264ProfileTest(
+      const MediaRecorderHandlerH264ProfileTest&) = delete;
+  MediaRecorderHandlerH264ProfileTest& operator=(
+      const MediaRecorderHandlerH264ProfileTest&) = delete;
 };
 
 TEST_P(MediaRecorderHandlerH264ProfileTest, ActualMimeType) {

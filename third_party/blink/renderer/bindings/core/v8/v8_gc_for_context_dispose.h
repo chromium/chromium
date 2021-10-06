@@ -45,6 +45,9 @@ class V8GCForContextDispose {
  public:
   CORE_EXPORT static V8GCForContextDispose& Instance();
 
+  V8GCForContextDispose(const V8GCForContextDispose&) = delete;
+  V8GCForContextDispose& operator=(const V8GCForContextDispose&) = delete;
+
   // Notification for context disposal.
   void NotifyContextDisposed(bool is_main_frame, WindowProxy::FrameReuseStatus);
 
@@ -57,8 +60,6 @@ class V8GCForContextDispose {
   V8GCForContextDispose() = default;  // Use Instance() instead.
 
   bool force_page_navigation_gc_{false};
-
-  DISALLOW_COPY_AND_ASSIGN(V8GCForContextDispose);
 };
 
 }  // namespace blink

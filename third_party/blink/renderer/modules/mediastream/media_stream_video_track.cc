@@ -81,6 +81,9 @@ class MediaStreamVideoTrack::FrameDeliverer
                  base::WeakPtr<MediaStreamVideoTrack> media_stream_video_track,
                  bool enabled);
 
+  FrameDeliverer(const FrameDeliverer&) = delete;
+  FrameDeliverer& operator=(const FrameDeliverer&) = delete;
+
   // Sets whether the track is enabled or not. If getting enabled and encoded
   // output is enabled, the deliverer will wait until the next key frame before
   // it resumes producing encoded data.
@@ -166,8 +169,6 @@ class MediaStreamVideoTrack::FrameDeliverer
 
   // This should only be accessed on the IO thread.
   bool is_refreshing_for_min_frame_rate_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameDeliverer);
 };
 
 MediaStreamVideoTrack::FrameDeliverer::FrameDeliverer(

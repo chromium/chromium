@@ -20,6 +20,11 @@ class MODULES_EXPORT CacheStorageBlobClientList
     : public GarbageCollected<CacheStorageBlobClientList> {
  public:
   CacheStorageBlobClientList() = default;
+
+  CacheStorageBlobClientList(const CacheStorageBlobClientList&) = delete;
+  CacheStorageBlobClientList& operator=(const CacheStorageBlobClientList&) =
+      delete;
+
   void AddClient(
       ExecutionContext* context,
       mojo::PendingReceiver<mojom::blink::BlobReaderClient>
@@ -34,7 +39,6 @@ class MODULES_EXPORT CacheStorageBlobClientList
   void RevokeClient(Client* client);
 
   HeapVector<Member<Client>> clients_;
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageBlobClientList);
 };
 
 }  // namespace blink

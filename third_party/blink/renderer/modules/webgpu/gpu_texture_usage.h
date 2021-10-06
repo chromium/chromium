@@ -21,8 +21,8 @@ class GPUTextureUsage : public ScriptWrappable {
   static constexpr uint32_t kStorageBinding = 8;
   static constexpr uint32_t kRenderAttachment = 16;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUTextureUsage);
+  GPUTextureUsage(const GPUTextureUsage&) = delete;
+  GPUTextureUsage& operator=(const GPUTextureUsage&) = delete;
 };
 
 }  // namespace blink

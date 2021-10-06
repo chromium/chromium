@@ -31,6 +31,9 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
              const WGPUDeviceProperties& properties,
              scoped_refptr<DawnControlClientHolder> dawn_control_client);
 
+  GPUAdapter(const GPUAdapter&) = delete;
+  GPUAdapter& operator=(const GPUAdapter&) = delete;
+
   void Trace(Visitor* visitor) const override;
 
   const String& name() const;
@@ -69,8 +72,6 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
 
   static constexpr int kMaxAllowedConsoleWarnings = 50;
   int allowed_console_warnings_remaining_ = kMaxAllowedConsoleWarnings;
-
-  DISALLOW_COPY_AND_ASSIGN(GPUAdapter);
 };
 
 }  // namespace blink

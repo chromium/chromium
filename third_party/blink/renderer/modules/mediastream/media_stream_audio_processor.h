@@ -58,6 +58,10 @@ class MODULES_EXPORT MediaStreamAudioProcessor
       bool use_capture_multi_channel_processing,
       scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source);
 
+  MediaStreamAudioProcessor(const MediaStreamAudioProcessor&) = delete;
+  MediaStreamAudioProcessor& operator=(const MediaStreamAudioProcessor&) =
+      delete;
+
   // Called when the format of the capture data has changed.
   // Called on the main render thread. The caller is responsible for stopping
   // the capture thread before calling this method.
@@ -258,8 +262,6 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // (APM) will output max_num_preferred_output_channels_ channels as long as it
   // does not exceed the number of channels of the output format.
   int max_num_preferred_output_channels_ = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamAudioProcessor);
 };
 
 }  // namespace blink

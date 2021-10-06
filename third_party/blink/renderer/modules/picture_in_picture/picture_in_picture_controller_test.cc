@@ -136,8 +136,10 @@ class PictureInPictureControllerFrameClient
       std::unique_ptr<WebMediaPlayer> player)
       : test::MediaStubLocalFrameClient(std::move(player)) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureControllerFrameClient);
+  PictureInPictureControllerFrameClient(
+      const PictureInPictureControllerFrameClient&) = delete;
+  PictureInPictureControllerFrameClient& operator=(
+      const PictureInPictureControllerFrameClient&) = delete;
 };
 
 class PictureInPictureControllerPlayer final : public EmptyWebMediaPlayer {

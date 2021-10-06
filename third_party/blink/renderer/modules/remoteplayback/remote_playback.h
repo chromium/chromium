@@ -58,6 +58,9 @@ class MODULES_EXPORT RemotePlayback final
 
   explicit RemotePlayback(HTMLMediaElement&);
 
+  RemotePlayback(const RemotePlayback&) = delete;
+  RemotePlayback& operator=(const RemotePlayback&) = delete;
+
   // Notifies this object that disableRemotePlayback attribute was set on the
   // corresponding media element.
   void RemotePlaybackDisabled();
@@ -177,8 +180,6 @@ class MODULES_EXPORT RemotePlayback final
       target_presentation_connection_;
 
   HeapHashSet<Member<RemotePlaybackObserver>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotePlayback);
 };
 
 }  // namespace blink

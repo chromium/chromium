@@ -16,6 +16,10 @@ class CORE_EXPORT SerializedScriptValueFactory {
   USING_FAST_MALLOC(SerializedScriptValueFactory);
 
  public:
+  SerializedScriptValueFactory(const SerializedScriptValueFactory&) = delete;
+  SerializedScriptValueFactory& operator=(const SerializedScriptValueFactory&) =
+      delete;
+
   // SerializedScriptValueFactory::initialize() should be invoked when Blink is
   // initialized, i.e. initialize() in WebKit.cpp.
   static void Initialize(SerializedScriptValueFactory* new_factory) {
@@ -65,8 +69,6 @@ class CORE_EXPORT SerializedScriptValueFactory {
   }
 
   static SerializedScriptValueFactory* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerializedScriptValueFactory);
 };
 
 }  // namespace blink

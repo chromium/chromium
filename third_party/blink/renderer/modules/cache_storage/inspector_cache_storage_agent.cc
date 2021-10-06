@@ -232,6 +232,9 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
         cache_remote_(std::move(cache_pending_remote)),
         callback_(std::move(callback)) {}
 
+  ResponsesAccumulator(const ResponsesAccumulator&) = delete;
+  ResponsesAccumulator& operator=(const ResponsesAccumulator&) = delete;
+
   void Dispatch(Vector<mojom::blink::FetchAPIRequestPtr> old_requests) {
     int64_t trace_id = blink::cache_storage::CreateTraceId();
     TRACE_EVENT_WITH_FLOW0("CacheStorage", "ResponsesAccumulator::Dispatch",
@@ -376,8 +379,6 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
   Vector<RequestResponse> responses_;
   mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
   std::unique_ptr<RequestEntriesCallback> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResponsesAccumulator);
 };
 
 class GetCacheKeysForRequestData {
@@ -392,6 +393,10 @@ class GetCacheKeysForRequestData {
       : params_(params), callback_(std::move(callback)) {
     cache_remote_.Bind(std::move(cache_pending_remote));
   }
+
+  GetCacheKeysForRequestData(const GetCacheKeysForRequestData&) = delete;
+  GetCacheKeysForRequestData& operator=(const GetCacheKeysForRequestData&) =
+      delete;
 
   void Dispatch(std::unique_ptr<GetCacheKeysForRequestData> self) {
     int64_t trace_id = blink::cache_storage::CreateTraceId();
@@ -432,8 +437,6 @@ class GetCacheKeysForRequestData {
   DataRequestParams params_;
   mojo::AssociatedRemote<mojom::blink::CacheStorageCache> cache_remote_;
   std::unique_ptr<RequestEntriesCallback> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetCacheKeysForRequestData);
 };
 
 class CachedResponseFileReaderLoaderClient final
@@ -444,6 +447,11 @@ class CachedResponseFileReaderLoaderClient final
     new CachedResponseFileReaderLoaderClient(std::move(blob),
                                              std::move(callback));
   }
+
+  CachedResponseFileReaderLoaderClient(
+      const CachedResponseFileReaderLoaderClient&) = delete;
+  CachedResponseFileReaderLoaderClient& operator=(
+      const CachedResponseFileReaderLoaderClient&) = delete;
 
   void DidStartLoading() override {}
 
@@ -491,8 +499,6 @@ class CachedResponseFileReaderLoaderClient final
   std::unique_ptr<FileReaderLoader> loader_;
   std::unique_ptr<RequestCachedResponseCallback> callback_;
   scoped_refptr<SharedBuffer> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(CachedResponseFileReaderLoaderClient);
 };
 
 }  // namespace

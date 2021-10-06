@@ -201,8 +201,8 @@ class CallbackPromiseAdapterInternal {
     explicit CallbackPromiseAdapter(ScriptPromiseResolver* resolver)
         : OnErrorAdapter<WebTypeHolder<S>, WebTypeHolder<T>>(resolver) {}
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(CallbackPromiseAdapter);
+    CallbackPromiseAdapter(const CallbackPromiseAdapter&) = delete;
+    CallbackPromiseAdapter& operator=(const CallbackPromiseAdapter&) = delete;
   };
 };
 

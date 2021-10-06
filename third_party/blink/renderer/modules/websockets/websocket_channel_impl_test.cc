@@ -397,6 +397,9 @@ class CallTrackingClosure {
  public:
   CallTrackingClosure() = default;
 
+  CallTrackingClosure(const CallTrackingClosure&) = delete;
+  CallTrackingClosure& operator=(const CallTrackingClosure&) = delete;
+
   base::OnceClosure Closure() {
     // This use of base::Unretained is safe because nothing can call the
     // callback once the test has finished.
@@ -409,8 +412,6 @@ class CallTrackingClosure {
   void Called() { was_called_ = true; }
 
   bool was_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CallTrackingClosure);
 };
 
 std::ostream& operator<<(

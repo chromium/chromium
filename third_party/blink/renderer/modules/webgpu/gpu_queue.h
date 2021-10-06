@@ -32,6 +32,9 @@ class GPUQueue : public DawnObject<WGPUQueue> {
  public:
   explicit GPUQueue(GPUDevice* device, WGPUQueue queue);
 
+  GPUQueue(const GPUQueue&) = delete;
+  GPUQueue& operator=(const GPUQueue&) = delete;
+
   // gpu_queue.idl
   void submit(const HeapVector<Member<GPUCommandBuffer>>& buffers);
   ScriptPromise onSubmittedWorkDone(ScriptState* script_state);
@@ -108,8 +111,6 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                         GPUImageDataLayout* data_layout,
                         const V8GPUExtent3D* write_size,
                         ExceptionState& exception_state);
-
-  DISALLOW_COPY_AND_ASSIGN(GPUQueue);
 };
 
 }  // namespace blink

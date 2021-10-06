@@ -27,6 +27,9 @@ class ScriptPromiseTester final {
  public:
   ScriptPromiseTester(ScriptState*, ScriptPromise);
 
+  ScriptPromiseTester(const ScriptPromiseTester&) = delete;
+  ScriptPromiseTester& operator=(const ScriptPromiseTester&) = delete;
+
   // Run microtasks and tasks until the promise is either fulfilled or rejected.
   // If the promise never settles this will busy loop until the test times out.
   void WaitUntilSettled();
@@ -52,8 +55,6 @@ class ScriptPromiseTester final {
   ScriptValue value_;
 
   base::WeakPtrFactory<ScriptPromiseTester> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPromiseTester);
 };
 
 }  // namespace blink

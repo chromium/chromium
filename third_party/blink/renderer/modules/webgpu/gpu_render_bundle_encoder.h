@@ -32,6 +32,9 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
       GPUDevice* device,
       WGPURenderBundleEncoder render_bundle_encoder);
 
+  GPURenderBundleEncoder(const GPURenderBundleEncoder&) = delete;
+  GPURenderBundleEncoder& operator=(const GPURenderBundleEncoder&) = delete;
+
   // gpu_render_bundle_encoder.idl
   void setBindGroup(uint32_t index, DawnObject<WGPUBindGroup>* bindGroup) {
     GetProcs().renderBundleEncoderSetBindGroup(
@@ -117,9 +120,6 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
   }
 
   GPURenderBundle* finish(const GPURenderBundleDescriptor* webgpu_desc);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPURenderBundleEncoder);
 };
 
 }  // namespace blink

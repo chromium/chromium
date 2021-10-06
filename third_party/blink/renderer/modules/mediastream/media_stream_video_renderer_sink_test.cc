@@ -60,6 +60,11 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
     EXPECT_TRUE(IsInStoppedState());
   }
 
+  MediaStreamVideoRendererSinkTest(const MediaStreamVideoRendererSinkTest&) =
+      delete;
+  MediaStreamVideoRendererSinkTest& operator=(
+      const MediaStreamVideoRendererSinkTest&) = delete;
+
   void TearDown() override {
     media_stream_video_renderer_sink_ = nullptr;
     media_stream_source_ = nullptr;
@@ -115,8 +120,6 @@ class MediaStreamVideoRendererSinkTest : public testing::Test {
 
   Persistent<MediaStreamSource> media_stream_source_;
   MockMediaStreamVideoSource* mock_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamVideoRendererSinkTest);
 };
 
 // Checks that the initialization-destruction sequence works fine.
