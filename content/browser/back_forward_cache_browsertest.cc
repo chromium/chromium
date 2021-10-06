@@ -165,9 +165,9 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
  public:
   ~BackForwardCacheBrowserTest() override {
     if (fail_for_unexpected_messages_while_cached_) {
-      // If this is triggered, see
-      // tools/metrics/histograms/metadata/navigation/histograms.xml for
-      // which values correspond which messages.
+      // If this is triggered, see MojoInterfaceName in
+      // tools/metrics/histograms/enums.xml for which values correspond which
+      // messages.
       EXPECT_THAT(histogram_tester_.GetAllSamples(
                       "BackForwardCache.UnexpectedRendererToBrowserMessage."
                       "InterfaceName"),
