@@ -1921,11 +1921,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "enable-fullpage-screenshot",
-    "owners": [ "seblalancette" ],
-    "expiry_milestone": 94
-  },
-  {
     "name": "enable-future-v8-vm-features",
     "owners": [ "hablich" ],
     // This flag enables the rolling set of upcoming V8 features, for early

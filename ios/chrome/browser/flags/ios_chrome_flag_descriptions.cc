@@ -203,11 +203,6 @@ const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
 const char kEnableFREUIModuleIOSDescription[] =
     "Enable the option of using new FRE UI module to show first run screens.";
 
-const char kEnableFullPageScreenshotName[] = "Enable fullpage screenshots";
-const char kEnableFullPageScreenshotDescription[] =
-    "Enables the option of capturing an entire webpage as a PDF when a "
-    "screenshot is taken.";
-
 const char kEnableLongMessageDurationName[] = "Enable long message duration";
 const char kEnableLongMessageDurationDescription[] =
     "Enables a long duration when an overlay message is shown.";
