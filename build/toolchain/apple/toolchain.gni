@@ -181,9 +181,6 @@ template("apple_toolchain") {
     _strippath = invoker.bin_path + "strip"
     linker_driver += " -Wcrl,strippath," + _strippath
 
-    # This makes the linker set timestamps in Mach-O files to 0.
-    linker_driver += " --deterministic"
-
     # On iOS, the final applications are assembled using lipo (to support fat
     # builds). The correct flags are passed to the linker_driver.py script
     # directly during the lipo call. The test is against the target_os because
