@@ -3558,7 +3558,7 @@
     Settings - Remove Android apps
   </message>
   <message name="IDS_ARC_SIGN_IN_NETWORK_ERROR" desc="Android sign-in error because of network error">
-    Network connection was lost. Please check your network connection or try another Wi-Fi network.
+    Network connection was lost. Check your network connection or try another Wi-Fi network.
   </message>
   <message name="IDS_ARC_SIGN_IN_GMS_SIGNIN_ERROR" desc="Android sign-in error because of service is unavailable">
     Couldn't connect to Google Play. Check your network connection and try again. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
@@ -3582,7 +3582,7 @@
     Provisioning flow was interrupted. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_ARC_SIGN_IN_CLOUD_PROVISION_FLOW_NETWORK_ERROR" desc="Android permament sign-in error because of cloud provision flow failed">
-    Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
+    Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_ARC_SIGN_IN_CLOUD_PROVISION_FLOW_PERMANENT_ERROR" desc="Android permament sign-in error because of cloud provision flow failed">
     Something went wrong. Please contact your device owner or administrator. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
@@ -3597,13 +3597,13 @@
     Something went wrong. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_ARC_SERVER_COMMUNICATION_ERROR" desc="Android sign-in error because of server communication error">
-    Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook.
+    Couldn’t connect with the server. Check your network connection and try again. If you're still having trouble, try restarting your Chromebook.
   </message>
   <message name="IDS_ARC_ANDROID_MANAGEMENT_REQUIRED_ERROR" desc="Error message shown when Android management is required for an unmanaged Chrome OS user.">
     Your organization has not enabled Google Play Store for your account. Contact your administrator for more information.
   </message>
   <message name="IDS_ARC_NETWORK_UNAVAILABLE_ERROR" desc="Error message shown when Android cannot set up network connection.">
-    Network connection cannot be established. Please check your network connection and try again.
+    Network connection cannot be established. Check your network connection and try again.
   </message>
   <message name="IDS_ARC_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are critically low on disk space and Android apps can not be launched.">
     Device disk space critically low
