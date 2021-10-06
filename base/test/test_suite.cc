@@ -69,7 +69,7 @@
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "base/test/fontconfig_util_linux.h"
+#include "third_party/test_fonts/fontconfig_util_linux.h"
 #endif
 
 #if defined(OS_FUCHSIA)
@@ -616,7 +616,7 @@ void TestSuite::Initialize() {
   i18n::SetICUDefaultLocale("en_US");
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  SetUpFontconfig();
+  test_fonts::SetUpFontconfig();
 #endif
 
   // Add TestEventListeners to enforce certain properties across tests.

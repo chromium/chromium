@@ -5,12 +5,18 @@
 #ifndef BASE_TEST_FONTCONFIG_UTIL_LINUX_H_
 #define BASE_TEST_FONTCONFIG_UTIL_LINUX_H_
 
-namespace base {
+#include <string>
+
+namespace test_fonts {
+
+// Returns the path that contains the "test_fonts" directory.  The path will not
+// have a trailing slash.
+std::string GetSysrootDir();
 
 // Prepares Fontconfig with a custom configuration suitable for tests.  FcInit()
 // must still be called.
 void SetUpFontconfig();
 
-}  // namespace base
+}  // namespace test_fonts
 
 #endif  // BASE_TEST_FONTCONFIG_UTIL_LINUX_H_
