@@ -133,25 +133,13 @@ void EventTiming::SetTickClockForTesting(const base::TickClock* clock) {
 }
 
 EventTiming::~EventTiming() {
-  absl::optional<int> key_code;
-  if (event_->IsKeyboardEvent())
-    key_code = DynamicTo<KeyboardEvent>(event_.Get())->keyCode();
-
-  absl::optional<PointerId> pointer_id;
+  // Register Event Timing for the event.
   const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event_.Get());
-  if (pointer_event)
-    pointer_id = pointer_event->pointerId();
-
   base::TimeTicks event_timestamp =
       pointer_event ? pointer_event->OldestPlatformTimeStamp()
                     : event_->PlatformTimeStamp();
-
-  // Register Event Timing for the event.
-  performance_->RegisterEventTiming(
-      event_->type(), event_timestamp, processing_start_, Now(),
-      event_->cancelable(),
-      event_->target() ? event_->target()->ToNode() : nullptr, key_code,
-      pointer_id);
+  performance_->RegisterEventTiming(*event_, event_timestamp, processing_start_,
+                                    Now());
 }
 
 }  // namespace blink

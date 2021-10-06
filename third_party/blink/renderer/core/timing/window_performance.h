@@ -41,13 +41,13 @@
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/timing/event_counts.h"
-#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -123,14 +123,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // This method creates a PerformanceEventTiming and if needed creates a
   // presentation promise to calculate the |duration| attribute when such
   // promise is resolved.
-  void RegisterEventTiming(const AtomicString& event_type,
+  void RegisterEventTiming(const Event& event,
                            base::TimeTicks start_time,
                            base::TimeTicks processing_start,
-                           base::TimeTicks processing_end,
-                           bool cancelable,
-                           Node*,
-                           absl::optional<int> key_code,
-                           absl::optional<PointerId> pointer_id);
+                           base::TimeTicks processing_end);
 
   void OnPaintFinished();
 
@@ -236,7 +232,16 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
 
-  std::unordered_map<int, uint32_t> key_code_interaction_id_map_;
+  // Map used to map keyCodes to interactionId values.
+  HeapHashMap<int,
+              Member<PerformanceEventTiming>,
+              WTF::IntHash<int>,
+              WTF::UnsignedWithZeroKeyHashTraits<int>>
+      key_code_entry_map_;
+  // Whether we are composing or not. When we are not composing, we set
+  // interactionId for keydown and keyup events. When we are composing, we set
+  // interactionId for input events.
+  bool composition_started_ = false;
   HeapHashMap<PointerId,
               Member<PerformanceEventTiming>,
               WTF::IntHash<PointerId>,

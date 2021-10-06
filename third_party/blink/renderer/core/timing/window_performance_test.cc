@@ -3,14 +3,21 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/timing/window_performance.h"
+#include <cstdint>
 
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/trace_event_analyzer.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/events/input_event.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -23,7 +30,10 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -81,6 +91,36 @@ class WindowPerformanceTest : public testing::Test {
                              absl::optional<int> key_code,
                              absl::optional<PointerId> pointer_id) {
     performance_->SetInteractionIdForEventTiming(entry, key_code, pointer_id);
+  }
+
+  void RegisterKeyboardEvent(AtomicString type,
+                             base::TimeTicks start_time,
+                             base::TimeTicks processing_start,
+                             base::TimeTicks processing_end,
+                             int key_code) {
+    KeyboardEventInit* init = KeyboardEventInit::Create();
+    init->setKeyCode(key_code);
+    KeyboardEvent* keyboard_event =
+        MakeGarbageCollected<KeyboardEvent>(type, init);
+    performance_->RegisterEventTiming(*keyboard_event, start_time,
+                                      processing_start, processing_end);
+  }
+
+  void RegisterPointerEvent(AtomicString type,
+                            base::TimeTicks start_time,
+                            base::TimeTicks processing_start,
+                            base::TimeTicks processing_end,
+                            PointerId pointer_id) {
+    PointerEventInit* init = PointerEventInit::Create();
+    init->setPointerId(pointer_id);
+    PointerEvent* pointer_event = PointerEvent::Create(type, init);
+    performance_->RegisterEventTiming(*pointer_event, start_time,
+                                      processing_start, processing_end);
+  }
+
+  PerformanceEventTiming* CreatePerformanceEventTiming(
+      const AtomicString& name) {
+    return PerformanceEventTiming::Create(name, 0.0, 0.0, 0.0, false, nullptr);
   }
 
   LocalFrame* GetFrame() const { return &page_holder_->GetFrame(); }
@@ -268,8 +308,8 @@ TEST_F(WindowPerformanceTest, EventTimingEntryBuffering) {
   base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1.1);
   base::TimeTicks processing_start = GetTimeOrigin() + base::Seconds(3.3);
   base::TimeTicks processing_end = GetTimeOrigin() + base::Seconds(3.8);
-  performance_->RegisterEventTiming("click", start_time, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                       4);
   base::TimeTicks swap_time = GetTimeOrigin() + base::Seconds(6.0);
   SimulateSwapPromise(swap_time);
   EXPECT_EQ(1u, performance_->getBufferedEntriesByType("event").size());
@@ -279,16 +319,16 @@ TEST_F(WindowPerformanceTest, EventTimingEntryBuffering) {
       .GetDocumentLoader()
       ->GetTiming()
       .MarkLoadEventStart();
-  performance_->RegisterEventTiming("click", start_time, processing_start,
-                                    processing_end, true, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                       4);
   SimulateSwapPromise(swap_time);
   EXPECT_EQ(2u, performance_->getBufferedEntriesByType("event").size());
 
   EXPECT_TRUE(page_holder_->GetFrame().Loader().GetDocumentLoader());
   GetFrame()->DetachDocument();
   EXPECT_FALSE(page_holder_->GetFrame().Loader().GetDocumentLoader());
-  performance_->RegisterEventTiming("click", start_time, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                       4);
   SimulateSwapPromise(swap_time);
   EXPECT_EQ(3u, performance_->getBufferedEntriesByType("event").size());
 }
@@ -297,12 +337,12 @@ TEST_F(WindowPerformanceTest, Expose100MsEvents) {
   base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
   base::TimeTicks processing_start = start_time + base::Milliseconds(10);
   base::TimeTicks processing_end = processing_start + base::Milliseconds(10);
-  performance_->RegisterEventTiming("mousedown", start_time, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("mousedown", start_time, processing_start,
+                       processing_end, 4);
 
   base::TimeTicks start_time2 = start_time + base::Microseconds(200);
-  performance_->RegisterEventTiming("click", start_time2, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time2, processing_start, processing_end,
+                       4);
 
   // The swap time is 100.1 ms after |start_time| but only 99.9 ms after
   // |start_time2|.
@@ -318,23 +358,23 @@ TEST_F(WindowPerformanceTest, EventTimingDuration) {
   base::TimeTicks start_time = GetTimeOrigin() + base::Milliseconds(1000);
   base::TimeTicks processing_start = GetTimeOrigin() + base::Milliseconds(1001);
   base::TimeTicks processing_end = GetTimeOrigin() + base::Milliseconds(1002);
-  performance_->RegisterEventTiming("click", start_time, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                       4);
   base::TimeTicks short_swap_time = GetTimeOrigin() + base::Milliseconds(1003);
   SimulateSwapPromise(short_swap_time);
   EXPECT_EQ(0u, performance_->getBufferedEntriesByType("event").size());
 
-  performance_->RegisterEventTiming("click", start_time, processing_start,
-                                    processing_end, true, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                       4);
   base::TimeTicks long_swap_time = GetTimeOrigin() + base::Milliseconds(2000);
   SimulateSwapPromise(long_swap_time);
   EXPECT_EQ(1u, performance_->getBufferedEntriesByType("event").size());
 
-  performance_->RegisterEventTiming("click", start_time, processing_start,
-                                    processing_end, true, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                       4);
   SimulateSwapPromise(short_swap_time);
-  performance_->RegisterEventTiming("click", start_time, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                       4);
   SimulateSwapPromise(long_swap_time);
   EXPECT_EQ(2u, performance_->getBufferedEntriesByType("event").size());
 }
@@ -347,8 +387,8 @@ TEST_F(WindowPerformanceTest, MultipleEventsThenSwap) {
     base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(i);
     base::TimeTicks processing_start = start_time + base::Milliseconds(100);
     base::TimeTicks processing_end = start_time + base::Milliseconds(200);
-    performance_->RegisterEventTiming("click", start_time, processing_start,
-                                      processing_end, false, nullptr, 4, 4);
+    RegisterPointerEvent("click", start_time, processing_start, processing_end,
+                         4);
     EXPECT_EQ(0u, performance_->getBufferedEntriesByType("event").size());
   }
   base::TimeTicks swap_time = GetTimeOrigin() + base::Seconds(num_events);
@@ -366,10 +406,15 @@ TEST_F(WindowPerformanceTest, FirstInput) {
                 {"mousedown", true}, {"mouseover", false}};
   for (const auto& input : inputs) {
     // first-input does not have a |duration| threshold so use close values.
-    performance_->RegisterEventTiming(input.event_type, GetTimeOrigin(),
-                                      GetTimeOrigin() + base::Milliseconds(1),
-                                      GetTimeOrigin() + base::Milliseconds(2),
-                                      false, nullptr, 4, 4);
+    if (input.event_type == "keydown" || input.event_type == "keypress") {
+      RegisterKeyboardEvent(input.event_type, GetTimeOrigin(),
+                            GetTimeOrigin() + base::Milliseconds(1),
+                            GetTimeOrigin() + base::Milliseconds(2), 4);
+    } else {
+      RegisterPointerEvent(input.event_type, GetTimeOrigin(),
+                           GetTimeOrigin() + base::Milliseconds(1),
+                           GetTimeOrigin() + base::Milliseconds(2), 4);
+    }
     SimulateSwapPromise(GetTimeOrigin() + base::Milliseconds(3));
     PerformanceEntryVector firstInputs =
         performance_->getEntriesByType("first-input");
@@ -384,9 +429,9 @@ TEST_F(WindowPerformanceTest, FirstInput) {
 TEST_F(WindowPerformanceTest, FirstInputAfterIgnored) {
   AtomicString several_events[] = {"mouseover", "mousedown", "pointerup"};
   for (const auto& event : several_events) {
-    performance_->RegisterEventTiming(
-        event, GetTimeOrigin(), GetTimeOrigin() + base::Milliseconds(1),
-        GetTimeOrigin() + base::Milliseconds(2), false, nullptr, 4, 4);
+    RegisterPointerEvent(event, GetTimeOrigin(),
+                         GetTimeOrigin() + base::Milliseconds(1),
+                         GetTimeOrigin() + base::Milliseconds(2), 4);
     SimulateSwapPromise(GetTimeOrigin() + base::Milliseconds(3));
   }
   ASSERT_EQ(1u, performance_->getEntriesByType("first-input").size());
@@ -400,12 +445,12 @@ TEST_F(WindowPerformanceTest, FirstPointerUp) {
   base::TimeTicks processing_start = GetTimeStamp(1);
   base::TimeTicks processing_end = GetTimeStamp(2);
   base::TimeTicks swap_time = GetTimeStamp(3);
-  performance_->RegisterEventTiming("pointerdown", start_time, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("pointerdown", start_time, processing_start,
+                       processing_end, 4);
   SimulateSwapPromise(swap_time);
   EXPECT_EQ(0u, performance_->getEntriesByType("first-input").size());
-  performance_->RegisterEventTiming("pointerup", start_time, processing_start,
-                                    processing_end, false, nullptr, 4, 4);
+  RegisterPointerEvent("pointerup", start_time, processing_start,
+                       processing_end, 4);
   SimulateSwapPromise(swap_time);
   EXPECT_EQ(1u, performance_->getEntriesByType("first-input").size());
   // The name of the entry should be "pointerdown".
@@ -419,20 +464,17 @@ TEST_F(WindowPerformanceTest, OneKeyboardInteraction) {
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
   base::TimeTicks processing_end_keydown = GetTimeStamp(2);
   base::TimeTicks swap_time_keydown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = absl::nullopt;
-  absl::optional<int> key_code = 2;
-  performance_->RegisterEventTiming(
-      "keydown", keydown_timestamp, processing_start_keydown,
-      processing_end_keydown, false, nullptr, key_code, pointer_id);
+  int key_code = 2;
+  RegisterKeyboardEvent("keydown", keydown_timestamp, processing_start_keydown,
+                        processing_end_keydown, key_code);
   SimulateSwapPromise(swap_time_keydown);
   // Keyup
   base::TimeTicks keyup_timestamp = GetTimeStamp(3);
   base::TimeTicks processing_start_keyup = GetTimeStamp(5);
   base::TimeTicks processing_end_keyup = GetTimeStamp(6);
   base::TimeTicks swap_time_keyup = GetTimeStamp(10);
-  performance_->RegisterEventTiming(
-      "keyup", keyup_timestamp, processing_start_keyup, processing_end_keyup,
-      false, nullptr, key_code, pointer_id);
+  RegisterKeyboardEvent("keyup", keyup_timestamp, processing_start_keyup,
+                        processing_end_keyup, key_code);
   SimulateSwapPromise(swap_time_keyup);
 
   // Flush UKM logging mojo request.
@@ -466,11 +508,9 @@ TEST_F(WindowPerformanceTest, HoldingDownAKey) {
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
   base::TimeTicks processing_end_keydown = GetTimeStamp(2);
   base::TimeTicks swap_time_keydown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = absl::nullopt;
-  absl::optional<int> key_code = 2;
-  performance_->RegisterEventTiming(
-      "keydown", keydown_timestamp, processing_start_keydown,
-      processing_end_keydown, false, nullptr, key_code, pointer_id);
+  int key_code = 2;
+  RegisterKeyboardEvent("keydown", keydown_timestamp, processing_start_keydown,
+                        processing_end_keydown, key_code);
   SimulateSwapPromise(swap_time_keydown);
 
   // Second Keydown
@@ -478,9 +518,8 @@ TEST_F(WindowPerformanceTest, HoldingDownAKey) {
   processing_start_keydown = GetTimeStamp(2);
   processing_end_keydown = GetTimeStamp(3);
   swap_time_keydown = GetTimeStamp(7);
-  performance_->RegisterEventTiming(
-      "keydown", keydown_timestamp, processing_start_keydown,
-      processing_end_keydown, false, nullptr, key_code, pointer_id);
+  RegisterKeyboardEvent("keydown", keydown_timestamp, processing_start_keydown,
+                        processing_end_keydown, key_code);
   SimulateSwapPromise(swap_time_keydown);
 
   // Third Keydown
@@ -488,9 +527,8 @@ TEST_F(WindowPerformanceTest, HoldingDownAKey) {
   processing_start_keydown = GetTimeStamp(3);
   processing_end_keydown = GetTimeStamp(5);
   swap_time_keydown = GetTimeStamp(9);
-  performance_->RegisterEventTiming(
-      "keydown", keydown_timestamp, processing_start_keydown,
-      processing_end_keydown, false, nullptr, key_code, pointer_id);
+  RegisterKeyboardEvent("keydown", keydown_timestamp, processing_start_keydown,
+                        processing_end_keydown, key_code);
   SimulateSwapPromise(swap_time_keydown);
 
   // Keyup
@@ -498,9 +536,8 @@ TEST_F(WindowPerformanceTest, HoldingDownAKey) {
   base::TimeTicks processing_start_keyup = GetTimeStamp(5);
   base::TimeTicks processing_end_keyup = GetTimeStamp(6);
   base::TimeTicks swap_time_keyup = GetTimeStamp(13);
-  performance_->RegisterEventTiming(
-      "keyup", keyup_timestamp, processing_start_keyup, processing_end_keyup,
-      false, nullptr, key_code, pointer_id);
+  RegisterKeyboardEvent("keyup", keyup_timestamp, processing_start_keyup,
+                        processing_end_keyup, key_code);
   SimulateSwapPromise(swap_time_keyup);
 
   // Flush UKM logging mojo request.
@@ -539,21 +576,18 @@ TEST_F(WindowPerformanceTest, PressMultipleKeys) {
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
   base::TimeTicks processing_end_keydown = GetTimeStamp(2);
   base::TimeTicks swap_time_keydown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = absl::nullopt;
-  absl::optional<int> first_key_code = 2;
-  performance_->RegisterEventTiming(
-      "keydown", keydown_timestamp, processing_start_keydown,
-      processing_end_keydown, false, nullptr, first_key_code, pointer_id);
+  int first_key_code = 2;
+  RegisterKeyboardEvent("keydown", keydown_timestamp, processing_start_keydown,
+                        processing_end_keydown, first_key_code);
   SimulateSwapPromise(swap_time_keydown);
 
   // Press the second key.
   processing_start_keydown = GetTimeStamp(2);
   processing_end_keydown = GetTimeStamp(3);
   swap_time_keydown = GetTimeStamp(7);
-  absl::optional<int> second_key_code = 4;
-  performance_->RegisterEventTiming(
-      "keydown", keydown_timestamp, processing_start_keydown,
-      processing_end_keydown, false, nullptr, second_key_code, pointer_id);
+  int second_key_code = 4;
+  RegisterKeyboardEvent("keydown", keydown_timestamp, processing_start_keydown,
+                        processing_end_keydown, second_key_code);
   SimulateSwapPromise(swap_time_keydown);
 
   // Release the first key.
@@ -561,9 +595,8 @@ TEST_F(WindowPerformanceTest, PressMultipleKeys) {
   base::TimeTicks processing_start_keyup = GetTimeStamp(5);
   base::TimeTicks processing_end_keyup = GetTimeStamp(6);
   base::TimeTicks swap_time_keyup = GetTimeStamp(13);
-  performance_->RegisterEventTiming(
-      "keyup", keyup_timestamp, processing_start_keyup, processing_end_keyup,
-      false, nullptr, first_key_code, pointer_id);
+  RegisterKeyboardEvent("keyup", keyup_timestamp, processing_start_keyup,
+                        processing_end_keyup, first_key_code);
   SimulateSwapPromise(swap_time_keyup);
 
   // Release the second key.
@@ -571,9 +604,8 @@ TEST_F(WindowPerformanceTest, PressMultipleKeys) {
   processing_start_keyup = GetTimeStamp(5);
   processing_end_keyup = GetTimeStamp(6);
   swap_time_keyup = GetTimeStamp(20);
-  performance_->RegisterEventTiming(
-      "keyup", keyup_timestamp, processing_start_keyup, processing_end_keyup,
-      false, nullptr, second_key_code, pointer_id);
+  RegisterKeyboardEvent("keyup", keyup_timestamp, processing_start_keyup,
+                        processing_end_keyup, second_key_code);
   SimulateSwapPromise(swap_time_keyup);
 
   // Flush UKM logging mojo request.
@@ -608,29 +640,27 @@ TEST_F(WindowPerformanceTest, TapOrClick) {
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
   base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = 4;
-  absl::optional<int> key_code = absl::nullopt;
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
-      processing_end_pointerdown, false, nullptr, key_code, pointer_id);
+  PointerId pointer_id = 4;
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
   // Pointerup
   base::TimeTicks pointerup_timestamp = GetTimeStamp(3);
   base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
   base::TimeTicks processing_end_pointerup = GetTimeStamp(6);
   base::TimeTicks swap_time_pointerup = GetTimeStamp(10);
-  performance_->RegisterEventTiming(
-      "pointerup", pointerup_timestamp, processing_start_pointerup,
-      processing_end_pointerup, false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("pointerup", pointerup_timestamp,
+                       processing_start_pointerup, processing_end_pointerup,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerup);
   // Click
   base::TimeTicks click_timestamp = GetTimeStamp(13);
   base::TimeTicks processing_start_click = GetTimeStamp(15);
   base::TimeTicks processing_end_click = GetTimeStamp(16);
   base::TimeTicks swap_time_click = GetTimeStamp(20);
-  performance_->RegisterEventTiming(
-      "click", click_timestamp, processing_start_click, processing_end_click,
-      false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("click", click_timestamp, processing_start_click,
+                       processing_end_click, pointer_id);
   SimulateSwapPromise(swap_time_click);
 
   // Flush UKM logging mojo request.
@@ -663,11 +693,10 @@ TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
   base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = 4;
-  absl::optional<int> key_code = absl::nullopt;
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
-      processing_end_pointerdown, false, nullptr, key_code, pointer_id);
+  PointerId pointer_id = 4;
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
 
   // The page visibility gets changed.
@@ -678,18 +707,17 @@ TEST_F(WindowPerformanceTest, PageVisibilityChanged) {
   base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
   base::TimeTicks processing_end_pointerup = GetTimeStamp(6);
   base::TimeTicks swap_time_pointerup = GetTimeStamp(20);
-  performance_->RegisterEventTiming(
-      "pointerup", pointerup_timestamp, processing_start_pointerup,
-      processing_end_pointerup, false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("pointerup", pointerup_timestamp,
+                       processing_start_pointerup, processing_end_pointerup,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerup);
   // Click
   base::TimeTicks click_timestamp = GetTimeStamp(13);
   base::TimeTicks processing_start_click = GetTimeStamp(15);
   base::TimeTicks processing_end_click = GetTimeStamp(16);
   base::TimeTicks swap_time_click = GetTimeStamp(20);
-  performance_->RegisterEventTiming(
-      "click", click_timestamp, processing_start_click, processing_end_click,
-      false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("click", click_timestamp, processing_start_click,
+                       processing_end_click, pointer_id);
   SimulateSwapPromise(swap_time_click);
 
   // Flush UKM logging mojo request.
@@ -726,11 +754,10 @@ TEST_F(WindowPerformanceTest, Drag) {
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
   base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = 4;
-  absl::optional<int> key_code = absl::nullopt;
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdwon_timestamp, processing_start_pointerdown,
-      processing_end_pointerdown, false, nullptr, key_code, pointer_id);
+  PointerId pointer_id = 4;
+  RegisterPointerEvent("pointerdown", pointerdwon_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
   // Notify drag.
   performance_->NotifyPotentialDrag();
@@ -739,18 +766,17 @@ TEST_F(WindowPerformanceTest, Drag) {
   base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
   base::TimeTicks processing_end_pointerup = GetTimeStamp(6);
   base::TimeTicks swap_time_pointerup = GetTimeStamp(10);
-  performance_->RegisterEventTiming(
-      "pointerup", pointerup_timestamp, processing_start_pointerup,
-      processing_end_pointerup, false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("pointerup", pointerup_timestamp,
+                       processing_start_pointerup, processing_end_pointerup,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerup);
   // Click
   base::TimeTicks click_timestamp = GetTimeStamp(13);
   base::TimeTicks processing_start_click = GetTimeStamp(15);
   base::TimeTicks processing_end_click = GetTimeStamp(16);
   base::TimeTicks swap_time_click = GetTimeStamp(20);
-  performance_->RegisterEventTiming(
-      "click", click_timestamp, processing_start_click, processing_end_click,
-      false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("click", click_timestamp, processing_start_click,
+                       processing_end_click, pointer_id);
   SimulateSwapPromise(swap_time_click);
 
   // Flush UKM logging mojo request.
@@ -783,20 +809,19 @@ TEST_F(WindowPerformanceTest, Scroll) {
   base::TimeTicks processing_start_keydown = GetTimeStamp(1);
   base::TimeTicks processing_end_keydown = GetTimeStamp(2);
   base::TimeTicks swap_time_keydown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = 5;
-  absl::optional<int> key_code = absl::nullopt;
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdown_timestamp, processing_start_keydown,
-      processing_end_keydown, false, nullptr, key_code, pointer_id);
+  PointerId pointer_id = 5;
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_keydown, processing_end_keydown,
+                       pointer_id);
   SimulateSwapPromise(swap_time_keydown);
   // Pointercancel
   base::TimeTicks pointerup_timestamp = GetTimeStamp(3);
   base::TimeTicks processing_start_keyup = GetTimeStamp(5);
   base::TimeTicks processing_end_keyup = GetTimeStamp(6);
   base::TimeTicks swap_time_keyup = GetTimeStamp(10);
-  performance_->RegisterEventTiming(
-      "pointercancel", pointerup_timestamp, processing_start_keyup,
-      processing_end_keyup, false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("pointercancel", pointerup_timestamp,
+                       processing_start_keyup, processing_end_keyup,
+                       pointer_id);
   SimulateSwapPromise(swap_time_keyup);
 
   // Flush UKM logging mojo request.
@@ -815,11 +840,10 @@ TEST_F(WindowPerformanceTest, TouchesWithoutClick) {
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
   base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id = 4;
-  absl::optional<int> key_code = absl::nullopt;
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
-      processing_end_pointerdown, false, nullptr, key_code, pointer_id);
+  PointerId pointer_id = 4;
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
 
   // Second Pointerdown
@@ -827,9 +851,9 @@ TEST_F(WindowPerformanceTest, TouchesWithoutClick) {
   processing_start_pointerdown = GetTimeStamp(7);
   processing_end_pointerdown = GetTimeStamp(8);
   swap_time_pointerdown = GetTimeStamp(15);
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
-      processing_end_pointerdown, false, nullptr, key_code, pointer_id);
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id);
   SimulateSwapPromise(swap_time_pointerdown);
 
   // Flush UKM logging mojo request.
@@ -851,21 +875,20 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
   base::TimeTicks processing_start_pointerdown = GetTimeStamp(1);
   base::TimeTicks processing_end_pointerdown = GetTimeStamp(2);
   base::TimeTicks swap_time_pointerdown = GetTimeStamp(5);
-  absl::optional<PointerId> pointer_id_1 = 4;
-  absl::optional<int> key_code = absl::nullopt;
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
-      processing_end_pointerdown, false, nullptr, key_code, pointer_id_1);
+  PointerId pointer_id_1 = 4;
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id_1);
   SimulateSwapPromise(swap_time_pointerdown);
   // Second Pointerdown
   pointerdown_timestamp = GetTimeOrigin();
   processing_start_pointerdown = GetTimeStamp(1);
   processing_end_pointerdown = GetTimeStamp(2);
   swap_time_pointerdown = GetTimeStamp(6);
-  absl::optional<PointerId> pointer_id_2 = 6;
-  performance_->RegisterEventTiming(
-      "pointerdown", pointerdown_timestamp, processing_start_pointerdown,
-      processing_end_pointerdown, false, nullptr, key_code, pointer_id_2);
+  PointerId pointer_id_2 = 6;
+  RegisterPointerEvent("pointerdown", pointerdown_timestamp,
+                       processing_start_pointerdown, processing_end_pointerdown,
+                       pointer_id_2);
   SimulateSwapPromise(swap_time_pointerdown);
 
   // First Pointerup
@@ -873,9 +896,9 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
   base::TimeTicks processing_start_pointerup = GetTimeStamp(5);
   base::TimeTicks processing_end_pointerup = GetTimeStamp(6);
   base::TimeTicks swap_time_pointerup = GetTimeStamp(9);
-  performance_->RegisterEventTiming(
-      "pointerup", pointerup_timestamp, processing_start_pointerup,
-      processing_end_pointerup, false, nullptr, key_code, pointer_id_2);
+  RegisterPointerEvent("pointerup", pointerup_timestamp,
+                       processing_start_pointerup, processing_end_pointerup,
+                       pointer_id_2);
   SimulateSwapPromise(swap_time_pointerup);
 
   // Second Pointerup
@@ -883,9 +906,9 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
   processing_start_pointerup = GetTimeStamp(6);
   processing_end_pointerup = GetTimeStamp(7);
   swap_time_pointerup = GetTimeStamp(13);
-  performance_->RegisterEventTiming(
-      "pointerup", pointerup_timestamp, processing_start_pointerup,
-      processing_end_pointerup, false, nullptr, key_code, pointer_id_1);
+  RegisterPointerEvent("pointerup", pointerup_timestamp,
+                       processing_start_pointerup, processing_end_pointerup,
+                       pointer_id_1);
   SimulateSwapPromise(swap_time_pointerup);
 
   // Click
@@ -893,9 +916,8 @@ TEST_F(WindowPerformanceTest, MultiTouch) {
   base::TimeTicks processing_start_click = GetTimeStamp(15);
   base::TimeTicks processing_end_click = GetTimeStamp(16);
   base::TimeTicks swap_time_click = GetTimeStamp(20);
-  performance_->RegisterEventTiming(
-      "click", click_timestamp, processing_start_click, processing_end_click,
-      false, nullptr, key_code, pointer_id_2);
+  RegisterPointerEvent("click", click_timestamp, processing_start_click,
+                       processing_end_click, pointer_id_2);
   SimulateSwapPromise(swap_time_click);
 
   // Flush UKM logging mojo request.
@@ -979,24 +1001,24 @@ TEST_F(WindowPerformanceTest, ElementTimingTraceEvent) {
 
 TEST_F(WindowPerformanceTest, InteractionID) {
   // Keyboard
-  PerformanceEventTiming* keydown_entry = PerformanceEventTiming::Create(
-      event_type_names::kKeydown, 0.0, 0.0, 0.0, false, nullptr);
+  PerformanceEventTiming* keydown_entry =
+      CreatePerformanceEventTiming(event_type_names::kKeydown);
   SimulateInteractionId(keydown_entry, 1, absl::nullopt);
-  PerformanceEventTiming* keyup_entry = PerformanceEventTiming::Create(
-      event_type_names::kKeyup, 0.0, 0.0, 0.0, false, nullptr);
+  PerformanceEventTiming* keyup_entry =
+      CreatePerformanceEventTiming(event_type_names::kKeyup);
   SimulateInteractionId(keyup_entry, 1, absl::nullopt);
   EXPECT_EQ(keydown_entry->interactionId(), keyup_entry->interactionId());
   EXPECT_GT(keydown_entry->interactionId(), 0u);
 
   // Tap or Click
-  PerformanceEventTiming* pointerdown_entry = PerformanceEventTiming::Create(
-      event_type_names::kPointerdown, 0.0, 0.0, 0.0, false, nullptr);
+  PerformanceEventTiming* pointerdown_entry =
+      CreatePerformanceEventTiming(event_type_names::kPointerdown);
   SimulateInteractionId(pointerdown_entry, absl::nullopt, 10);
-  PerformanceEventTiming* pointerup_entry = PerformanceEventTiming::Create(
-      event_type_names::kPointerup, 0.0, 0.0, 0.0, false, nullptr);
+  PerformanceEventTiming* pointerup_entry =
+      CreatePerformanceEventTiming(event_type_names::kPointerup);
   SimulateInteractionId(pointerup_entry, absl::nullopt, 10);
-  PerformanceEventTiming* click_entry = PerformanceEventTiming::Create(
-      event_type_names::kClick, 0.0, 0.0, 0.0, false, nullptr);
+  PerformanceEventTiming* click_entry =
+      CreatePerformanceEventTiming(event_type_names::kClick);
   SimulateInteractionId(click_entry, absl::nullopt, 10);
   EXPECT_GT(pointerdown_entry->interactionId(), 0u);
   EXPECT_EQ(pointerdown_entry->interactionId(),
@@ -1004,25 +1026,227 @@ TEST_F(WindowPerformanceTest, InteractionID) {
   EXPECT_EQ(pointerup_entry->interactionId(), click_entry->interactionId());
 
   // Drag
-  pointerdown_entry = PerformanceEventTiming::Create(
-      event_type_names::kPointerdown, 0.0, 0.0, 0.0, false, nullptr);
+  pointerdown_entry =
+      CreatePerformanceEventTiming(event_type_names::kPointerdown);
   SimulateInteractionId(pointerdown_entry, absl::nullopt, 20);
-  pointerup_entry = PerformanceEventTiming::Create(
-      event_type_names::kPointerup, 0.0, 0.0, 0.0, false, nullptr);
+  pointerup_entry = CreatePerformanceEventTiming(event_type_names::kPointerup);
   SimulateInteractionId(pointerup_entry, absl::nullopt, 20);
   EXPECT_GT(pointerdown_entry->interactionId(), 0u);
   EXPECT_EQ(pointerdown_entry->interactionId(),
             pointerup_entry->interactionId());
 
   // Scroll
-  pointerdown_entry = PerformanceEventTiming::Create(
-      event_type_names::kPointerdown, 0.0, 0.0, 0.0, false, nullptr);
+  pointerdown_entry =
+      CreatePerformanceEventTiming(event_type_names::kPointerdown);
   SimulateInteractionId(pointerdown_entry, absl::nullopt, 5);
-  PerformanceEventTiming* pointercancel_entry = PerformanceEventTiming::Create(
-      event_type_names::kPointercancel, 0.0, 0.0, 0.0, false, nullptr);
+  PerformanceEventTiming* pointercancel_entry =
+      CreatePerformanceEventTiming(event_type_names::kPointercancel);
   SimulateInteractionId(pointercancel_entry, absl::nullopt, 5);
   EXPECT_EQ(pointerdown_entry->interactionId(), 0u);
   EXPECT_EQ(pointercancel_entry->interactionId(), 0u);
+}
+
+class InteractionIdTest : public WindowPerformanceTest {
+ public:
+  struct EventForInteraction {
+    EventForInteraction(const AtomicString& name,
+                        absl::optional<int> key_code,
+                        absl::optional<PointerId> pointer_id)
+        : name_(name), key_code_(key_code), pointer_id_(pointer_id) {}
+
+    AtomicString name_;
+    absl::optional<int> key_code_;
+    absl::optional<PointerId> pointer_id_;
+  };
+
+  std::vector<uint32_t> SimulateInteractionIds(
+      const std::vector<EventForInteraction>& events) {
+    // Store the entries first and record interactionIds at the end.
+    HeapVector<Member<PerformanceEventTiming>> entries;
+    for (const auto& event : events) {
+      PerformanceEventTiming* entry = CreatePerformanceEventTiming(event.name_);
+      SimulateInteractionId(entry, event.key_code_, event.pointer_id_);
+      entries.push_back(entry);
+    }
+    std::vector<uint32_t> interaction_ids;
+    for (const auto& entry : entries) {
+      interaction_ids.push_back(entry->interactionId());
+    }
+    return interaction_ids;
+  }
+};
+
+// Tests English typing.
+TEST_F(InteractionIdTest, InputOutsideComposition) {
+  // Insert "a".
+  std::vector<EventForInteraction> events1 = {
+      {event_type_names::kKeydown, 65, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 65, absl::nullopt}};
+  std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
+  EXPECT_GT(ids1[0], 0u) << "Keydown interactionId was nonzero";
+  EXPECT_EQ(ids1[1], 0u) << "Input interactionId was zero";
+  EXPECT_EQ(ids1[0], ids1[2]) << "Keydown and keyup interactionId match";
+
+  // Insert "3".
+  std::vector<EventForInteraction> events2 = {
+      {event_type_names::kKeydown, 53, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 53, absl::nullopt}};
+  std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
+  EXPECT_GT(ids2[0], 0u) << "Second keydown has nonzero interactionId";
+  EXPECT_EQ(ids2[1], 0u) << "Second input interactionId was zero";
+  EXPECT_EQ(ids2[0], ids2[2]) << "Second keydown and keyup interactionId match";
+  EXPECT_NE(ids1[0], ids2[0])
+      << "First and second keydown have different interactionId";
+
+  // Backspace.
+  std::vector<EventForInteraction> events3 = {
+      {event_type_names::kKeydown, 8, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 8, absl::nullopt}};
+  std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
+  EXPECT_GT(ids3[0], 0u) << "Third keydown has nonzero interactionId";
+  EXPECT_EQ(ids3[1], 0u) << "Third input interactionId was zero";
+  EXPECT_EQ(ids3[0], ids3[2]) << "Third keydown and keyup interactionId match";
+  EXPECT_NE(ids1[0], ids3[0])
+      << "First and third keydown have different interactionId";
+  EXPECT_NE(ids2[0], ids3[0])
+      << "Second and third keydown have different interactionId";
+}
+
+// Tests Japanese on Mac.
+TEST_F(InteractionIdTest, CompositionSingleKeydown) {
+  // Insert "a".
+  std::vector<EventForInteraction> events1 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 65, absl::nullopt}};
+  std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
+  EXPECT_EQ(ids1[0], 0u) << "Keydown interactionId was zero";
+  EXPECT_EQ(ids1[1], 0u) << "Compositionstart interactionId was zero";
+  EXPECT_GT(ids1[2], 0u) << "Input interactionId was nonzero";
+  EXPECT_EQ(ids1[3], 0u) << "Keyup interactionId was zero";
+
+  // Insert "b" and finish composition.
+  std::vector<EventForInteraction> events2 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 66, absl::nullopt},
+      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+  std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
+  EXPECT_EQ(ids2[0], 0u) << "Second keydown interactionId was zero";
+  EXPECT_GT(ids2[1], 0u) << "Second input interactionId was nonzero";
+  EXPECT_EQ(ids2[2], 0u) << "Second keyup interactionId was zero";
+  EXPECT_EQ(ids2[3], 0u) << "Compositionend interactionId was zero";
+  EXPECT_NE(ids1[2], ids2[1])
+      << "First and second inputs have different interactionIds";
+}
+
+// Tests Chinese on Mac. Windows is similar, but has more keyups inside the
+// composition.
+TEST_F(InteractionIdTest, CompositionToFinalInput) {
+  // Insert "a".
+  std::vector<EventForInteraction> events1 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 65, absl::nullopt}};
+  std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
+  EXPECT_GT(ids1[2], 0u) << "First input nonzero";
+
+  // Insert "b".
+  std::vector<EventForInteraction> events2 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 66, absl::nullopt}};
+  std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
+  EXPECT_GT(ids2[1], 0u) << "Second input nonzero";
+  EXPECT_NE(ids1[2], ids2[1])
+      << "First and second input have different interactionIds";
+
+  // Select a composed input and finish.
+  std::vector<EventForInteraction> events3 = {
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+  std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
+  EXPECT_EQ(ids3[1], 0u) << "Compositionend has zero interactionId";
+  EXPECT_GT(ids3[0], 0u) << "Third input has nonzero interactionId";
+  EXPECT_NE(ids1[2], ids3[0])
+      << "First and third inputs have different interactionIds";
+  EXPECT_NE(ids2[1], ids3[0])
+      << "Second and third inputs have different interactionIds";
+}
+
+// Tests Chinese on Windows.
+TEST_F(InteractionIdTest, CompositionToFinalInputMultipleKeyUps) {
+  // Insert "a".
+  std::vector<EventForInteraction> events1 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 229, absl::nullopt},
+      {event_type_names::kKeyup, 65, absl::nullopt}};
+  std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
+  EXPECT_GT(ids1[2], 0u) << "First input nonzero";
+  EXPECT_EQ(ids1[3], 0u) << "First keyup has zero interactionId";
+  EXPECT_EQ(ids1[4], 0u) << "Second keyup has zero interactionId";
+
+  // Insert "b".
+  std::vector<EventForInteraction> events2 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 229, absl::nullopt},
+      {event_type_names::kKeyup, 66, absl::nullopt}};
+  std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
+  EXPECT_GT(ids2[1], 0u) << "Second input nonzero";
+  EXPECT_NE(ids1[2], ids2[1])
+      << "First and second input have different interactionIds";
+  EXPECT_EQ(ids2[2], 0u) << "Third keyup has zero interactionId";
+  EXPECT_EQ(ids2[3], 0u) << "Fourth keyup has zero interactionId";
+
+  // Select a composed input and finish.
+  std::vector<EventForInteraction> events3 = {
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+  std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
+  EXPECT_GT(ids3[0], 0u) << "Third input has nonzero interactionId";
+  EXPECT_NE(ids1[2], ids3[0])
+      << "First and third inputs have different interactionIds";
+  EXPECT_NE(ids2[1], ids3[0])
+      << "Second and third inputs have different interactionIds";
+}
+
+// Tests Android smart suggestions (similar to Android Chinese).
+TEST_F(InteractionIdTest, SmartSuggestion) {
+  // Insert "A".
+  std::vector<EventForInteraction> events1 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kCompositionstart, absl::nullopt, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 229, absl::nullopt}};
+  std::vector<uint32_t> ids1 = SimulateInteractionIds(events1);
+  EXPECT_GT(ids1[2], 0u) << "First input nonzero";
+
+  // Compose to "At".
+  std::vector<EventForInteraction> events2 = {
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kCompositionend, absl::nullopt, absl::nullopt}};
+  std::vector<uint32_t> ids2 = SimulateInteractionIds(events2);
+  EXPECT_GT(ids2[0], 0u) << "Second input nonzero";
+  EXPECT_NE(ids1[2], ids2[1])
+      << "First and second input have different interactionIds";
+
+  // Add "the". No composition so need to consider the keydown and keyup.
+  std::vector<EventForInteraction> events3 = {
+      {event_type_names::kKeydown, 229, absl::nullopt},
+      {event_type_names::kInput, absl::nullopt, absl::nullopt},
+      {event_type_names::kKeyup, 229, absl::nullopt}};
+  std::vector<uint32_t> ids3 = SimulateInteractionIds(events3);
+  EXPECT_GT(ids3[0], 0u) << "Keydown nonzero";
+  EXPECT_EQ(ids3[0], ids3[2]) << "Keydown and keyup have some id";
+  EXPECT_EQ(ids3[1], 0u) << "Third input has zero id";
 }
 
 }  // namespace blink
