@@ -239,6 +239,7 @@ class WebApp {
   bool IsPolicyInstalledApp() const;
   bool IsSystemApp() const;
   bool IsWebAppStoreInstalledApp() const;
+  bool IsSubAppInstalledApp() const;
   bool CanUserUninstallWebApp() const;
   bool WasInstalledByUser() const;
   // Returns the highest priority source. AppService assumes that every app has

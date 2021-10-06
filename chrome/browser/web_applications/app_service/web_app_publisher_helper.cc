@@ -133,6 +133,8 @@ apps::mojom::InstallReason GetHighestPriorityInstallReason(
       return apps::mojom::InstallReason::kSystem;
     case Source::kPolicy:
       return apps::mojom::InstallReason::kPolicy;
+    case Source::kSubApp:
+      return apps::mojom::InstallReason::kSubApp;
     case Source::kWebAppStore:
       return apps::mojom::InstallReason::kUser;
     case Source::kSync:
@@ -163,6 +165,7 @@ apps::mojom::InstallSource GetInstallSource(PrefService* prefs,
     case webapps::WebappInstallSource::EXTERNAL_POLICY:
     case webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON:
     case webapps::WebappInstallSource::MENU_CREATE_SHORTCUT:
+    case webapps::WebappInstallSource::SUB_APP:
       return apps::mojom::InstallSource::kBrowser;
     case webapps::WebappInstallSource::ARC:
       return apps::mojom::InstallSource::kPlayStore;

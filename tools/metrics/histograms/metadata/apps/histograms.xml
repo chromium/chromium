@@ -94,6 +94,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="Oem" summary="Installed by an OEM"/>
   <variant name="Policy" summary="Installed by policy"/>
   <variant name="Preload" summary="Preinstalled by default"/>
+  <variant name="SubApp" summary="Installed by SubApp API"/>
   <variant name="Sync" summary="Installed by sync"/>
   <variant name="System" summary="Installed with the system"/>
   <variant name="Unknown" summary="Installed with unknown source"/>

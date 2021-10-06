@@ -77,6 +77,9 @@ Source::Type InferSourceFromWebAppUninstallSource(
 
     case webapps::WebappUninstallSource::kArc:
       return Source::kWebAppStore;
+
+    case webapps::WebappUninstallSource::kSubApp:
+      return Source::kSubApp;
   }
 }
 
@@ -97,6 +100,9 @@ webapps::WebappUninstallSource ConvertSourceTypeToWebAppUninstallSource(
 
     case Source::kWebAppStore:
       return webapps::WebappUninstallSource::kArc;
+
+    case Source::kSubApp:
+      return webapps::WebappUninstallSource::kSubApp;
   }
 }
 

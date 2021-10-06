@@ -655,6 +655,9 @@ Source::Type InferSourceFromMetricsInstallSource(
     case webapps::WebappInstallSource::ARC:
       return Source::kWebAppStore;
 
+    case webapps::WebappInstallSource::SUB_APP:
+      return Source::kSubApp;
+
     case webapps::WebappInstallSource::COUNT:
       NOTREACHED();
       return Source::kSync;

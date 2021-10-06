@@ -71,6 +71,7 @@ constexpr char kInstallReasonOemHistogram[] = "Oem";
 constexpr char kInstallReasonPreloadHistogram[] = "Preload";
 constexpr char kInstallReasonSyncHistogram[] = "Sync";
 constexpr char kInstallReasonUserHistogram[] = "User";
+constexpr char kInstallReasonSubAppHistogram[] = "SubApp";
 
 constexpr base::TimeDelta kMinDuration = base::Seconds(1);
 constexpr base::TimeDelta kMaxDuration = base::Days(1);
@@ -205,6 +206,8 @@ std::string GetInstallReason(apps::mojom::InstallReason install_reason) {
       return kInstallReasonSyncHistogram;
     case apps::mojom::InstallReason::kUser:
       return kInstallReasonUserHistogram;
+    case apps::mojom::InstallReason::kSubApp:
+      return kInstallReasonSubAppHistogram;
   }
 }
 

@@ -22,22 +22,32 @@ void InstallableMetrics::TrackInstallEvent(WebappInstallSource source) {
 
 // static
 bool InstallableMetrics::IsReportableInstallSource(WebappInstallSource source) {
-  return source == WebappInstallSource::MENU_BROWSER_TAB ||
-         source == WebappInstallSource::MENU_CUSTOM_TAB ||
-         source == WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB ||
-         source == WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB ||
-         source == WebappInstallSource::API_BROWSER_TAB ||
-         source == WebappInstallSource::API_CUSTOM_TAB ||
-         source == WebappInstallSource::DEVTOOLS ||
-         source == WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB ||
-         source == WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB ||
-         source == WebappInstallSource::ARC ||
-         source == WebappInstallSource::INTERNAL_DEFAULT ||
-         source == WebappInstallSource::EXTERNAL_DEFAULT ||
-         source == WebappInstallSource::EXTERNAL_POLICY ||
-         source == WebappInstallSource::SYSTEM_DEFAULT ||
-         source == WebappInstallSource::OMNIBOX_INSTALL_ICON ||
-         source == WebappInstallSource::MENU_CREATE_SHORTCUT;
+  switch (source) {
+    case WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
+    case WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
+    case WebappInstallSource::API_BROWSER_TAB:
+    case WebappInstallSource::API_CUSTOM_TAB:
+    case WebappInstallSource::ARC:
+    case WebappInstallSource::AUTOMATIC_PROMPT_BROWSER_TAB:
+    case WebappInstallSource::AUTOMATIC_PROMPT_CUSTOM_TAB:
+    case WebappInstallSource::DEVTOOLS:
+    case WebappInstallSource::EXTERNAL_DEFAULT:
+    case WebappInstallSource::EXTERNAL_POLICY:
+    case WebappInstallSource::INTERNAL_DEFAULT:
+    case WebappInstallSource::MENU_BROWSER_TAB:
+    case WebappInstallSource::MENU_CREATE_SHORTCUT:
+    case WebappInstallSource::MENU_CUSTOM_TAB:
+    case WebappInstallSource::OMNIBOX_INSTALL_ICON:
+    case WebappInstallSource::SYSTEM_DEFAULT:
+      return true;
+    case WebappInstallSource::MANAGEMENT_API:
+    case WebappInstallSource::SUB_APP:
+    case WebappInstallSource::SYNC:
+      return false;
+    case WebappInstallSource::COUNT:
+      NOTREACHED();
+      return false;
+  }
 }
 
 // static
@@ -63,6 +73,7 @@ bool InstallableMetrics::IsUserInitiatedInstallSource(
     case WebappInstallSource::EXTERNAL_POLICY:
     case WebappInstallSource::SYSTEM_DEFAULT:
     case WebappInstallSource::SYNC:
+    case WebappInstallSource::SUB_APP:
       return false;
     case WebappInstallSource::COUNT:
       NOTREACHED();

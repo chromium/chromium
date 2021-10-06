@@ -51,6 +51,8 @@ std::ostream& operator<<(std::ostream& os, Source::Type type) {
       return os << "System";
     case Source::Type::kPolicy:
       return os << "Policy";
+    case Source::Type::kSubApp:
+      return os << "SubApp";
     case Source::Type::kWebAppStore:
       return os << "WebAppStore";
     case Source::Type::kSync:

@@ -96,6 +96,10 @@ bool WebApp::IsWebAppStoreInstalledApp() const {
   return sources_[Source::kWebAppStore];
 }
 
+bool WebApp::IsSubAppInstalledApp() const {
+  return sources_[Source::kSubApp];
+}
+
 bool WebApp::CanUserUninstallWebApp() const {
   Sources specified_sources;
   specified_sources[Source::kDefault] = true;

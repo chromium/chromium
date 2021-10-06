@@ -43545,6 +43545,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Preinstalled by default, but is not considered a system app"/>
   <int value="5" label="Installed by sync"/>
   <int value="6" label="Installed by user action"/>
+  <int value="7" label="Installed by SubApp API"/>
 </enum>
 
 <enum name="InstallSource">

@@ -51,7 +51,8 @@ namespace autotestPrivate {
     Oem,
     Default,
     Sync,
-    User
+    User,
+    SubApp
   };
 
   // A mapping of apps::mojom::Readiness

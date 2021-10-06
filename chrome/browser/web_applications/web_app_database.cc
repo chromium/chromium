@@ -236,6 +236,7 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
   local_data->mutable_sources()->set_sync(web_app.sources_[Source::kSync]);
   local_data->mutable_sources()->set_default_(
       web_app.sources_[Source::kDefault]);
+  local_data->mutable_sources()->set_sub_app(web_app.sources_[Source::kSubApp]);
 
   local_data->set_is_locally_installed(web_app.is_locally_installed());
 
@@ -528,6 +529,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   sources[Source::kWebAppStore] = local_data.sources().web_app_store();
   sources[Source::kSync] = local_data.sources().sync();
   sources[Source::kDefault] = local_data.sources().default_();
+  if (local_data.sources().has_sub_app()) {
+    sources[Source::kSubApp] = local_data.sources().sub_app();
+  }
   if (!sources.any()) {
     DLOG(ERROR) << "WebApp proto parse error: no any source in sources field";
     return nullptr;

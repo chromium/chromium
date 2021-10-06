@@ -25,6 +25,7 @@ enum Type {
   kMinValue = 0,
   kSystem = kMinValue,
   kPolicy,
+  kSubApp,
   kWebAppStore,
   // We sync only regular user-installed apps from the open web. For
   // user-installed apps without overlaps this is the only source that will be

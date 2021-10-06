@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module crosapi.mojom;
 
@@ -108,6 +108,7 @@ enum InstallReason {
   kDefault,    // Preinstalled by default, but is not considered a system app.
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
+  [MinVersion=7] kSubApp,     // Installed by the SubApp API call.
 };
 
 // Augments a bool to include an 'unknown' value.

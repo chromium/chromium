@@ -49,6 +49,7 @@ message SourcesProto {
   required bool web_app_store = 3;
   required bool sync = 4;
   required bool default = 5;
+  optional bool sub_app = 6;
 }
 
 // Properties for integrating with Chrome OS UI surfaces.

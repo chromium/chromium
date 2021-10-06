@@ -89,6 +89,9 @@ enum class WebappInstallSource {
   // Create shortcut item in menu
   MENU_CREATE_SHORTCUT = 17,
 
+  // Installed via the SubApps API.
+  SUB_APP = 18,
+
   // Add any new values above this one.
   COUNT,
 };
@@ -142,8 +145,11 @@ enum class WebappUninstallSource {
   // Externally managed Arc apps.
   kArc = 14,
 
+  // SubApp API.
+  kSubApp = 15,
+
   // Add any new values above this one.
-  kMaxValue = kArc,
+  kMaxValue = kSubApp,
 };
 
 // This is the result of the promotability check that is recorded in the

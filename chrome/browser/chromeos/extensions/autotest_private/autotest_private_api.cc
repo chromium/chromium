@@ -377,6 +377,8 @@ api::autotest_private::AppInstallSource GetAppInstallSource(
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SYNC;
     case apps::mojom::InstallReason::kUser:
       return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_USER;
+    case apps::mojom::InstallReason::kSubApp:
+      return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_SUBAPP;
   }
   NOTREACHED();
   return api::autotest_private::AppInstallSource::APP_INSTALL_SOURCE_NONE;
