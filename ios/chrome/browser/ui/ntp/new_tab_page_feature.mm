@@ -19,6 +19,19 @@ const base::Feature kEnableDiscoverFeedAppFlows{
 const base::Feature kEnableNTPMemoryEnhancement{
     "EnableNTPMemoryEnhancement", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kEnableDiscoverFeedDiscoFeedEndpoint{
+    "EnableDiscoFeedEndpoint", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableDiscoverFeedStaticResourceServing{
+    "EnableDiscoverFeedStaticResourceServing",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kDiscoverFeedSRSReconstructedTemplatesEnabled[] =
+    "DiscoverFeedSRSReconstructedTemplatesEnabled";
+
+const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
+    "DiscoverFeedSRSPreloadTemplatesEnabled";
+
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }

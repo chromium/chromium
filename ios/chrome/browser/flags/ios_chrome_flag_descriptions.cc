@@ -177,9 +177,20 @@ const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[] =
     "When enabled, UI indicating user's e-mail address will appear at the"
     "bottom of save card infobar.";
 
+const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
+    "Enable discover feed discofeed";
+const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
+    "Enable using the discofeed endpoint for the discover feed.";
+
 const char kEnableDiscoverFeedPreviewName[] = "Enable discover feed preview";
 const char kEnableDiscoverFeedPreviewDescription[] =
     "Enable showing a live preview for discover feed long-press menu.";
+
+const char kEnableDiscoverFeedStaticResourceServingName[] =
+    "Enable discover feed static resource serving";
+const char kEnableDiscoverFeedStaticResourceServingDescription[] =
+    "When enabled the discover feed will optimize the request of resources "
+    "coming from the server.";
 
 const char kEnableFREDefaultBrowserScreenName[] =
     "Enable FRE default browser screen";

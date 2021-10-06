@@ -1789,9 +1789,19 @@
     "expiry_milestone": 96
   },
   {
+    "name": "enable-disco-feed-endpoint",
+    "owners": [ "adamta", "sczs" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "enable-discover-feed-preview",
     "owners": [ "tinazwang", "sczs" ],
     "expiry_milestone": 99
+  },
+  {
+    "name": "enable-discover-feed-static-resource-serving",
+    "owners": [ "adamta", "sczs" ],
+    "expiry_milestone": 101
   },
   {
     "name": "enable-dns-proxy",

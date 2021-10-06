@@ -219,6 +219,18 @@ const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
     {"Native UI", kDiscoverFeedInNtpEnableNativeUI,
      base::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
 
+const FeatureEntry::FeatureParam kDiscoverFeedSRSReconstructedTemplates[] = {
+    {kDiscoverFeedSRSReconstructedTemplatesEnabled, "true"}};
+const FeatureEntry::FeatureParam kDiscoverFeedSRSPreloadTemplates[] = {
+    {kDiscoverFeedSRSPreloadTemplatesEnabled, "true"}};
+const FeatureEntry::FeatureVariation
+    kEnableDiscoverFeedStaticResourceServingVariations[] = {
+        {"Reconstruct Templates", kDiscoverFeedSRSReconstructedTemplates,
+         base::size(kDiscoverFeedSRSReconstructedTemplates), nullptr},
+        {"Preload Templates", kDiscoverFeedSRSPreloadTemplates,
+         base::size(kDiscoverFeedSRSPreloadTemplates), nullptr},
+};
+
 const FeatureEntry::FeatureParam kStartSurfaceTenSecondsShrinkLogo[] = {
     {kStartSurfaceShrinkLogoParam, "true"},
     {kReturnToStartSurfaceInactiveDurationInSeconds, "10"}};
@@ -734,7 +746,19 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"old-sync-string-fre", flag_descriptions::kOldSyncStringFREName,
      flag_descriptions::kOldSyncStringFREDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOldSyncStringFRE)},
-};
+    {"enable-discover-feed-static-resource-serving",
+     flag_descriptions::kEnableDiscoverFeedStaticResourceServingName,
+     flag_descriptions::kEnableDiscoverFeedStaticResourceServingDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kEnableDiscoverFeedStaticResourceServing,
+         kEnableDiscoverFeedStaticResourceServingVariations,
+         "IOSDiscoverFeedStaticResourceServing")},
+    {"enable-disco-feed-endpoint",
+     flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointName,
+     flag_descriptions::kEnableDiscoverFeedDiscoFeedEndpointDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableDiscoverFeedDiscoFeedEndpoint)}};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

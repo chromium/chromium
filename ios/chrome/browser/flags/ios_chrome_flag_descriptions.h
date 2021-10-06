@@ -153,10 +153,20 @@ extern const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[];
 extern const char
     kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[];
 
+// Title and description for the flag to enable the discover feed discofeed
+// endpoint.
+extern const char kEnableDiscoverFeedDiscoFeedEndpointName[];
+extern const char kEnableDiscoverFeedDiscoFeedEndpointDescription[];
+
 // Title and description for the flag to enable the discover feed live preview
 // in long-press feed context menu.
 extern const char kEnableDiscoverFeedPreviewName[];
 extern const char kEnableDiscoverFeedPreviewDescription[];
+
+// Title and description for the flag to enable the discover feed static
+// resource serving.
+extern const char kEnableDiscoverFeedStaticResourceServingName[];
+extern const char kEnableDiscoverFeedStaticResourceServingDescription[];
 
 // Title and description for the flag to enable FRE default browser screen.
 extern const char kEnableFREDefaultBrowserScreenName[];
