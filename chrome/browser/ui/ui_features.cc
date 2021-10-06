@@ -37,7 +37,7 @@ const base::Feature kChromeWhatsNewInMainMenuNewBadge{
     "ChromeWhatsNewInMainMenuNewBadge", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(ANDROID)
 // Enables "Enterprise Casting" UI.
 const base::Feature kEnterpriseCastingUI{"EnterpriseCastingUI",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

@@ -28155,6 +28155,59 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       If this policy is set to Enabled, the user is prompted to select a client certificate whenever the auto-selection policy matches multiple certificates.
       If this policy is set to Disabled or not set, the user may only be prompted when no certificate matches the auto-selection.''',
     },
+    {
+      'name': 'AccessCodeCastEnabled',
+      'owners': ['bmalcolm@chromium.org', 'bzielinski@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'User will be given the option in the <ph name="PRODUCT_NAME">Google Cast</ph> menu to select cast devices by using an access code or by scanning a QR code.',
+        },
+        {
+          'value': False,
+          'caption': 'User will not be given the option in the <ph name="PRODUCT_NAME">Google Cast</ph> menu to select cast devices by using an access code or by scanning a QR code.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 907,
+      'tags': [],
+      'caption': '''Allow users to select cast devices with an access code or QR code from within the <ph name="PRODUCT_NAME">Google Cast</ph> menu.''',
+      'desc': '''This policy controls whether a user will be presented with an option, within the <ph name="PRODUCT_NAME">Google Cast</ph> menu which allows them to cast to cast devices that do not appear in the <ph name="PRODUCT_NAME">Google Cast</ph> menu, using either the access code or QR code displayed on the cast devices's screen.
+      By default, a user must reenter the access code or rescan the QR code in order to initiate a subsequent casting session, but if the <ph name="ACCESS_CODE_CAST_DEVICE_DURATION_POLICY_NAME">AccessCodeCastDeviceDuration</ph> policy has been set to a non-zero value (the default is zero), then the cast device will remain in the list of available cast devices until the specified period of time has expired.
+      When this policy is set to Enabled, users will be presented with the option to select cast devices by using an access code or by scanning a QR code.
+      When this policy is set to Disabled or not set, users will not be given the option to select cast devices by using an access code or by scanning a QR code.''',
+    },
+    {
+      'name': 'AccessCodeCastDeviceDuration',
+      'owners': ['bmalcolm@chromium.org', 'gbj@google.com'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': 0 },
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'default': 0,
+      'example_value': 60,
+      'id': 908,
+      'tags': [],
+      'caption': '''Specifies how long (in seconds) a cast device selected with an access code or QR code stays in the <ph name="PRODUCT_NAME">Google Cast</ph> menu's list of cast devices.''',
+      'desc': '''This policy specifies how long (in seconds) a cast device that was previously selected via an access code or QR code can be seen within the <ph name="PRODUCT_NAME">Google Cast</ph> menu of cast devices.
+      The lifetime of an entry starts at the time the access code was first entered or the QR code was first scanned.
+      During this period the cast device will appear in the <ph name="PRODUCT_NAME">Google Cast</ph> menu's list of cast devices.
+      After this period, in order to use the cast device again the access code must be reentered or the QR code must be rescanned.
+      By default, the period is zero seconds, so cast devices will not stay in the <ph name="PRODUCT_NAME">Google Cast</ph> menu, and so the access code must be reentered, or the QR code rescanned, in order to initiate a new casting session.
+      Note that this policy only affects how long a cast devices appears in the <ph name="PRODUCT_NAME">Google Cast</ph> menu, and has no effect on any ongoing cast session which will continue even if the period expires.
+      This policy has no effect unless the <ph name="ACCESS_CODE_CAST_ENABLED_POLICY_NAME">AccessCodeCastEnabled</ph> policy is Enabled.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -29119,6 +29172,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 906,
+  'highest_id_currently_used': 908,
   'highest_atomic_group_id_currently_used': 41
 }

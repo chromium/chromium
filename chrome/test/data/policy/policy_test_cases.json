@@ -15941,5 +15941,57 @@
         }
       }
     ]
+  },
+  "AccessCodeCastEnabled": {
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "media_router.access_code_cast_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "AccessCodeCastEnabled": false },
+        "prefs": {
+          "media_router.access_code_cast_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": { "AccessCodeCastEnabled": true },
+        "prefs": {
+          "media_router.access_code_cast_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "AccessCodeCastDeviceDuration": {
+    "os": ["win", "linux", "mac", "chromeos_ash", "chromeos_lacros"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AccessCodeCastDeviceDuration": 10
+        },
+        "prefs": {
+          "media_router.access_code_cast_device_duration": {
+            "value": 10
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "media_router.access_code_cast_device_duration": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
   }
 }

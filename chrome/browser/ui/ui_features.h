@@ -36,7 +36,7 @@ extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;
 
 extern const base::Feature kCommander;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(ANDROID)
 extern const base::Feature kEnterpriseCastingUI;
 #endif
 

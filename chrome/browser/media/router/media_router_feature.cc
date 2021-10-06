@@ -92,6 +92,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // TODO(imcheng): Migrate existing Media Router prefs to here.
   registry->RegisterStringPref(prefs::kMediaRouterReceiverIdHashToken, "",
                                PrefRegistry::PUBLIC);
+  registry->RegisterBooleanPref(prefs::kAccessCodeCastEnabled, false,
+                                PrefRegistry::PUBLIC);
+  registry->RegisterIntegerPref(prefs::kAccessCodeCastDeviceDuration, 0,
+                                PrefRegistry::PUBLIC);
 }
 
 bool GetCastAllowAllIPsPref(PrefService* pref_service) {
@@ -124,6 +128,26 @@ std::string GetReceiverIdHashToken(PrefService* pref_service) {
 
 bool GlobalMediaControlsCastStartStopEnabled() {
   return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop);
+}
+
+bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
+#if !defined(OS_ANDROID)
+  return pref_service->GetBoolean(prefs::kAccessCodeCastEnabled);
+#else
+  return false;
+#endif  // !defined(OS_ANDROID)
+}
+
+base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
+#if !defined(OS_ANDROID)
+  if (!GetAccessCodeCastEnabledPref(pref_service)) {
+    return base::TimeDelta::FromSeconds(0);
+  }
+  return base::TimeDelta::FromSeconds(
+      pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
+#else
+  return base::TimeDelta::FromSeconds(0);
+#endif  // !defined(OS_ANDROID)
 }
 
 #endif  // !defined(OS_ANDROID)
