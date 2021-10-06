@@ -6,14 +6,12 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -33,15 +31,6 @@ ui::MouseEvent GetDummyEvent() {
 
 class TabSearchButtonBrowserTest : public InProcessBrowserTest {
  public:
-#if defined(OS_WIN)
-  // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kWin10TabSearchCaptionButton);
-    InProcessBrowserTest::SetUp();
-  }
-#endif  // defined(OS_WIN);
-
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
@@ -66,11 +55,6 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
     ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
   }
-
-#if defined(OS_WIN)
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // defined(OS_WIN);
 };
 
 IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, ButtonClickCreatesBubble) {
@@ -87,13 +71,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, ButtonClickCreatesBubble) {
 class TabSearchButtonBrowserUITest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
-#if defined(OS_WIN)
-  void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kWin10TabSearchCaptionButton);
-    DialogBrowserTest::SetUp();
-  }
-#endif  // defined(OS_WIN);
   void ShowUi(const std::string& name) override {
     AppendTab(chrome::kChromeUISettingsURL);
     AppendTab(chrome::kChromeUIHistoryURL);
@@ -107,11 +84,6 @@ class TabSearchButtonBrowserUITest : public DialogBrowserTest {
   void AppendTab(std::string url) {
     chrome::AddTabAt(browser(), GURL(url), -1, true);
   }
-
-#if defined(OS_WIN)
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // defined(OS_WIN);
 };
 
 // Invokes a tab search bubble.

@@ -2535,10 +2535,8 @@ IN_PROC_BROWSER_TEST_P(
 
   AddTabsAndResetBrowser(browser(), 1);
 
-  // We must ensure that we set the bounds of the browser window such that it is
-  // wide enough to allow the tab strip to expand to accommodate this tab.
   browser()->window()->SetBounds(
-      gfx::Rect(0, 0, TabStyle::GetStandardWidth() * 5, 400));
+      gfx::Rect(0, 0, TabStyle::GetStandardWidth() * 4, 400));
 
   const int tab_strip_width = tab_strip->width();
   const gfx::Point tab_1_center =
