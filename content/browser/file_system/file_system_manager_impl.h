@@ -27,6 +27,7 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 
 class GURL;
@@ -68,6 +69,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
   base::WeakPtr<FileSystemManagerImpl> GetWeakPtr();
 
   void BindReceiver(
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver);
 
   // blink::mojom::FileSystem
@@ -211,7 +213,8 @@ class CONTENT_EXPORT FileSystemManagerImpl
   const scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
   std::unique_ptr<storage::FileSystemOperationRunner> operation_runner_;
 
-  mojo::ReceiverSet<blink::mojom::FileSystemManager> receivers_;
+  mojo::ReceiverSet<blink::mojom::FileSystemManager, blink::StorageKey>
+      receivers_;
   mojo::UniqueReceiverSet<blink::mojom::FileSystemCancellableOperation>
       cancellable_operations_;
   mojo::UniqueReceiverSet<blink::mojom::ReceivedSnapshotListener>

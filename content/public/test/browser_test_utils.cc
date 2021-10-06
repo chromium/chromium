@@ -117,6 +117,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -3248,10 +3249,12 @@ mojo::Remote<blink::mojom::FileSystemManager> GetFileSystemManager(
   FileSystemManagerImpl* file_system = static_cast<RenderProcessHostImpl*>(rph)
                                            ->GetFileSystemManagerForTesting();
   mojo::Remote<blink::mojom::FileSystemManager> file_system_manager_remote;
+  // TODO(https://crbug.com/1243348): Pipe in the proper third-party StorageKey
+  // value for the LegacyFileSystem; replace the empty construction below.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&FileSystemManagerImpl::BindReceiver,
-                     base::Unretained(file_system),
+                     base::Unretained(file_system), blink::StorageKey(),
                      file_system_manager_remote.BindNewPipeAndPassReceiver()));
   return file_system_manager_remote;
 }

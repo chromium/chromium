@@ -9539,7 +9539,7 @@ void RenderFrameHostImpl::GetFileSystemManager(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemManagerImpl::BindReceiver,
                                 base::Unretained(file_system_manager_.get()),
-                                std::move(receiver)));
+                                storage_key(), std::move(receiver)));
 }
 
 void RenderFrameHostImpl::GetGeolocationService(

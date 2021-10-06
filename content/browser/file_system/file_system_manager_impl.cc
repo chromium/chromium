@@ -200,11 +200,12 @@ base::WeakPtr<FileSystemManagerImpl> FileSystemManagerImpl::GetWeakPtr() {
 }
 
 void FileSystemManagerImpl::BindReceiver(
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!operation_runner_)
     operation_runner_ = context_->CreateFileSystemOperationRunner();
-  receivers_.Add(this, std::move(receiver));
+  receivers_.Add(this, std::move(receiver), storage_key);
 }
 
 void FileSystemManagerImpl::Open(const url::Origin& origin,

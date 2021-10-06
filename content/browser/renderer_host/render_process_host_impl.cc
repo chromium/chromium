@@ -2122,12 +2122,11 @@ void RenderProcessHostImpl::BindFileSystemManager(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Note, the base::Unretained() is safe because the target object has an IO
   // thread deleter and the callback is also targeting the IO thread.
-  // TODO(https://crbug.com/873661): Pass origin to FileSystemManager.
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&FileSystemManagerImpl::BindReceiver,
                      base::Unretained(file_system_manager_impl_.get()),
-                     std::move(receiver)));
+                     storage_key, std::move(receiver)));
 }
 
 void RenderProcessHostImpl::BindFileSystemAccessManager(
@@ -2523,10 +2522,11 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
   // on the IO thread.
   //
   // TODO(https://crbug.com/873661): Make PepperFileSystemHost access this with
-  // the RenderFrameHost's registry, and remove this registration.
-  registry->AddInterface(
-      base::BindRepeating(&FileSystemManagerImpl::BindReceiver,
-                          base::Unretained(file_system_manager_impl_.get())));
+  // the RenderFrameHost's registry, and remove this registration. The empty
+  // construction of StorageKey will also be removed at that time.
+  registry->AddInterface(base::BindRepeating(
+      &FileSystemManagerImpl::BindReceiver,
+      base::Unretained(file_system_manager_impl_.get()), blink::StorageKey()));
 
   AddUIThreadInterface(
       registry.get(), base::BindRepeating(&viz::GpuClient::Add,
