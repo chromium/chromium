@@ -30,7 +30,7 @@ namespace ash {
 const char ZeroconfScannerDetector::kEsclServiceType[] = "_uscan._tcp.local";
 const char ZeroconfScannerDetector::kEsclsServiceType[] = "_uscans._tcp.local";
 const char ZeroconfScannerDetector::kGenericScannerServiceType[] =
-    "_scanner.tcp.local";
+    "_scanner._tcp.local";
 
 constexpr std::array<const char*, 3> kServiceTypes = {
     ZeroconfScannerDetector::kEsclsServiceType,
