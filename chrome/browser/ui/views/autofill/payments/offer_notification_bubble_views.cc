@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
@@ -136,11 +137,12 @@ void OfferNotificationBubbleViews::InitWithPromoCodeOfferContent() {
   DCHECK(offer);
   DCHECK(!offer->promo_code.empty());
 
-  AddChildView(std::make_unique<PromoCodeLabelButton>(
-      base::BindRepeating(
-          &OfferNotificationBubbleViews::CopyPromoCodeToClipboard,
-          base::Unretained(this)),
-      base::ASCIIToUTF16(offer->promo_code)));
+  promo_code_label_button_ =
+      AddChildView(std::make_unique<PromoCodeLabelButton>(
+          base::BindRepeating(
+              &OfferNotificationBubbleViews::OnPromoCodeButtonClicked,
+              base::Unretained(this)),
+          base::ASCIIToUTF16(offer->promo_code)));
 
   if (!offer->display_strings.value_prop_text.empty()) {
     auto* promo_code_value_prop = AddChildView(std::make_unique<views::Label>(
@@ -149,12 +151,29 @@ void OfferNotificationBubbleViews::InitWithPromoCodeOfferContent() {
     promo_code_value_prop->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     promo_code_value_prop->SetMultiLine(true);
   }
+  UpdateButtonTooltipsAndAccessibleNames();
 }
 
-void OfferNotificationBubbleViews::CopyPromoCodeToClipboard() {
+void OfferNotificationBubbleViews::OnPromoCodeButtonClicked() {
   // TODO(crbug.com/1248523): Log metrics for when when copy button is clicked.
+
+  // Copy clicked promo code to clipboard.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(base::ASCIIToUTF16(controller_->GetOffer()->promo_code));
+
+  // Update controller and tooltip.
+  controller_->OnPromoCodeButtonClicked();
+  UpdateButtonTooltipsAndAccessibleNames();
+}
+
+void OfferNotificationBubbleViews::UpdateButtonTooltipsAndAccessibleNames() {
+  if (!promo_code_label_button_)
+    return;
+
+  std::u16string tooltip = controller_->GetPromoCodeButtonTooltip();
+  promo_code_label_button_->SetTooltipText(tooltip);
+  promo_code_label_button_->SetAccessibleName(
+      base::StrCat({promo_code_label_button_->GetText(), u" ", tooltip}));
 }
 
 }  // namespace autofill

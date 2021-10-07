@@ -9,12 +9,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -395,6 +398,34 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       AutofillMetrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
       1);
+}
+
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       TooltipAndAccessibleName) {
+  // Applies to promo code offers only, as card-linked offers do not have a
+  // clickable promo code copy button.
+  if (test_offer_type_ == AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+    return;
+
+  ShowBubbleForOfferAndVerify();
+  ASSERT_TRUE(GetOfferNotificationBubbleViews());
+  ASSERT_TRUE(IsIconVisible());
+
+  std::u16string normal_button_tooltip = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_NORMAL);
+  std::u16string clicked_button_tooltip = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED);
+  auto* promo_code_label_button =
+      GetOfferNotificationBubbleViews()->promo_code_label_button_;
+  EXPECT_EQ(normal_button_tooltip, promo_code_label_button->GetTooltipText());
+  EXPECT_EQ(promo_code_label_button->GetText() + u" " + normal_button_tooltip,
+            promo_code_label_button->GetAccessibleName());
+
+  GetOfferNotificationBubbleViews()->OnPromoCodeButtonClicked();
+
+  EXPECT_EQ(clicked_button_tooltip, promo_code_label_button->GetTooltipText());
+  EXPECT_EQ(promo_code_label_button->GetText() + u" " + clicked_button_tooltip,
+            promo_code_label_button->GetAccessibleName());
 }
 
 }  // namespace autofill

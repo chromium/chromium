@@ -68,6 +68,14 @@ std::u16string OfferNotificationBubbleControllerImpl::GetOkButtonLabel() const {
       IDS_AUTOFILL_OFFERS_REMINDER_POSITIVE_BUTTON_LABEL);
 }
 
+std::u16string
+OfferNotificationBubbleControllerImpl::GetPromoCodeButtonTooltip() const {
+  return l10n_util::GetStringUTF16(
+      promo_code_button_clicked_
+          ? IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_CLICKED
+          : IDS_AUTOFILL_PROMO_CODE_OFFER_BUTTON_TOOLTIP_NORMAL);
+}
+
 AutofillBubbleBase*
 OfferNotificationBubbleControllerImpl::GetOfferNotificationBubbleView() const {
   return bubble_view();
@@ -92,6 +100,7 @@ bool OfferNotificationBubbleControllerImpl::IsIconVisible() const {
 void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
   set_bubble_view(nullptr);
+  promo_code_button_clicked_ = false;
   UpdatePageActionIcon();
 
   // Log bubble result according to the closed reason.
@@ -119,6 +128,10 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
   }
   AutofillMetrics::LogOfferNotificationBubbleResultMetric(
       offer_->GetOfferType(), metric, is_user_gesture_);
+}
+
+void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
+  promo_code_button_clicked_ = true;
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(

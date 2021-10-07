@@ -15,6 +15,8 @@ class WebContents;
 
 namespace autofill {
 
+class PromoCodeLabelButton;
+
 // This class implements the Desktop bubble that displays any eligible offers or
 // rewards linked to the current page domain. This can include card-linked
 // offers, for which "Pay with [card] at checkout" is shown, or merchant promo
@@ -32,6 +34,9 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
       delete;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
+                           TooltipAndAccessibleName);
+
   // AutofillBubbleBase:
   void Hide() override;
 
@@ -46,13 +51,18 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
   void InitWithPromoCodeOfferContent();
 
   // Called when the promo code LabelButton is clicked for a promo code offer.
-  // Copies the promo code to the clipboard.
-  void CopyPromoCodeToClipboard();
+  // Copies the promo code to the clipboard, logs metrics, and updates the
+  // button tooltip.
+  void OnPromoCodeButtonClicked();
+
+  void UpdateButtonTooltipsAndAccessibleNames();
 
   PaymentsBubbleClosedReason closed_reason_ =
       PaymentsBubbleClosedReason::kUnknown;
 
   OfferNotificationBubbleController* controller_;
+
+  PromoCodeLabelButton* promo_code_label_button_ = nullptr;
 };
 
 }  // namespace autofill

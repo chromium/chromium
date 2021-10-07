@@ -47,6 +47,10 @@ class OfferNotificationBubbleController {
   // Returns the label text for the Ok button.
   virtual std::u16string GetOkButtonLabel() const = 0;
 
+  // Returns the tooltip text for the promo code offer button, which can differ
+  // depending on whether it has been clicked yet or not.
+  virtual std::u16string GetPromoCodeButtonTooltip() const = 0;
+
   // Returns the reference to the offer notification bubble view.
   virtual AutofillBubbleBase* GetOfferNotificationBubbleView() const = 0;
 
@@ -61,6 +65,9 @@ class OfferNotificationBubbleController {
 
   // Removes the reference the controller has to the bubble.
   virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+
+  // Handles the event of clicking the promo code offer button.
+  virtual void OnPromoCodeButtonClicked() = 0;
 };
 
 }  // namespace autofill
