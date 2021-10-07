@@ -52,6 +52,7 @@ enum class UnmaskAuthFlowType {
   kMaxValue = kOtpFallbackFromFido,
 };
 
+// TODO(crbug.com/1249665): Remove this. This was added and never used.
 // The result of the attempt to fetch full information for a credit card.
 enum class CreditCardFetchResult {
   kNone = 0,
@@ -196,6 +197,11 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   FRIEND_TEST_ALL_PREFIXES(
       CreditCardAccessManagerTest,
       RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_FidoFailedFallBackToOtp);
+  FRIEND_TEST_ALL_PREFIXES(
+      CreditCardAccessManagerTest,
+      RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly_FidoNotOptedIn);
+  FRIEND_TEST_ALL_PREFIXES(CreditCardAccessManagerTest,
+                           RiskBasedVirtualCardUnmasking_Failure);
   friend class AutofillAssistantTest;
   friend class BrowserAutofillManagerTest;
   friend class AutofillMetricsTest;

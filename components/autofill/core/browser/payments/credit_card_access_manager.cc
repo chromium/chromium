@@ -391,8 +391,18 @@ void CreditCardAccessManager::GetAuthenticationTypeForVirtualCard(
     return;
   }
 
-  // Otherwise we should let users confirm the OTP auth, trigger selection
-  // dialog and wait for users' response.
+  // Otherwise, we first check if other options are provided. If not, end the
+  // session and return an error.
+  if (virtual_card_unmask_response_details_.card_unmask_challenge_options
+          .empty()) {
+    accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
+    client_->ShowVirtualCardErrorDialog(/*is_permanent_error=*/true);
+    Reset();
+    return;
+  }
+
+  // Then we should let users confirm the OTP auth, trigger the selection
+  // dialog and wait for user's response.
   // TODO(crbug.com/1243475): Trigger auth selection dialog.
 }
 
@@ -972,10 +982,13 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
   }
 
   // If RPC response contains any error, end the session and show the error
-  // dialog.
+  // dialog. If RPC result is kVcnRetrievalPermanentFailure we show VCN
+  // permanent error dialog, and for all other cases we show VCN temporary
+  // error dialog.
   accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError);
-  // TODO(crbug.com/1243475): Add error handling: Show VCN error dialog given
-  // the error type.
+  client_->ShowVirtualCardErrorDialog(
+      result ==
+      AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
   Reset();
 }
 

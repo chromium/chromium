@@ -32,6 +32,14 @@ class UnmaskCardRequest : public PaymentsRequest {
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
 
  private:
+  // Returns whether the response contains all the information of the virtual
+  // card to fill into the form.
+  bool IsAllCardInformationValidIncludingDcvv();
+
+  // Returns whether the response contains all the necessary information to
+  // perform an authentication for a virtual card.
+  bool CanPerformVirtualCardAuth();
+
   PaymentsClient::UnmaskRequestDetails request_details_;
   const bool full_sync_enabled_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,

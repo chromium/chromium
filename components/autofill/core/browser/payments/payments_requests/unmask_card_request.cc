@@ -267,18 +267,32 @@ bool UnmaskCardRequest::IsResponseComplete() {
       // When pan is returned, it has to contain pan + expiry + cvv.
       // When pan is not returned, it has to contain context token to indicate
       // success.
-      return (response_details_.real_pan.empty() &&
-              !response_details_.context_token.empty()) ||
-             (!response_details_.real_pan.empty() &&
-              !response_details_.expiration_month.empty() &&
-              !response_details_.expiration_year.empty() &&
-              !response_details_.dcvv.empty());
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableVirtualCardsRiskBasedAuthentication)) {
+        return IsAllCardInformationValidIncludingDcvv() ||
+               CanPerformVirtualCardAuth();
+      }
+      return IsAllCardInformationValidIncludingDcvv();
   }
 }
 
 void UnmaskCardRequest::RespondToDelegate(
     AutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, response_details_);
+}
+
+bool UnmaskCardRequest::IsAllCardInformationValidIncludingDcvv() {
+  return !response_details_.real_pan.empty() &&
+         !response_details_.expiration_month.empty() &&
+         !response_details_.expiration_year.empty() &&
+         !response_details_.dcvv.empty();
+}
+
+bool UnmaskCardRequest::CanPerformVirtualCardAuth() {
+  return !response_details_.context_token.empty() &&
+         (response_details_.fido_request_options.has_value() ||
+          !response_details_.card_unmask_challenge_options.empty() ||
+          !response_details_.flow_status.empty());
 }
 
 }  // namespace payments

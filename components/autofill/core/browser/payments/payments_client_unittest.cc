@@ -157,6 +157,8 @@ class PaymentsClientTest : public testing::Test {
     test_personal_data_.SetAccountInfoForPayments(
         identity_test_env_.MakePrimaryAccountAvailable(
             "example@gmail.com", signin::ConsentLevel::kSync));
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableVirtualCardsRiskBasedAuthentication);
   }
 
   void TearDown() override { client_.reset(); }
@@ -527,7 +529,8 @@ TEST_F(PaymentsClientTest, GetUnmaskDetailsSuccess) {
 }
 
 TEST_F(PaymentsClientTest, GetUnmaskDetailsIncludesChromeUserContext) {
-  scoped_feature_list_.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartGettingUnmaskDetails();
@@ -653,7 +656,7 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedGreenPathResponse) {
   EXPECT_TRUE(unmask_response_details_->card_unmask_challenge_options.empty());
 }
 
-TEST_F(PaymentsClientTest, VirtualCardRiskBasedRedPathResponse) {
+TEST_F(PaymentsClientTest, VirtualCardRiskBasedRedPathResponse_Error) {
   StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK,
@@ -661,6 +664,14 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedRedPathResponse) {
                  "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
             result_);
+}
+
+TEST_F(PaymentsClientTest,
+       VirtualCardRiskBasedRedPathResponse_NoOptionProvided) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{ \"context_token\": \"fake_context_token\" }");
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
 }
 
 TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
@@ -812,7 +823,8 @@ TEST_F(PaymentsClientTest, IncorrectOtp) {
 }
 
 TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
-  scoped_feature_list_.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartUnmasking(CardUnmaskOptions());
@@ -826,7 +838,8 @@ TEST_F(PaymentsClientTest, UnmaskIncludesChromeUserContext) {
 
 TEST_F(PaymentsClientTest,
        UnmaskIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartUnmasking(CardUnmaskOptions());
@@ -972,7 +985,8 @@ TEST_F(PaymentsClientTest, GetDetailsIncludesDetectedValuesInRequest) {
 }
 
 TEST_F(PaymentsClientTest, GetDetailsIncludesChromeUserContext) {
-  scoped_feature_list_.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartGettingUploadDetails();
@@ -984,7 +998,8 @@ TEST_F(PaymentsClientTest, GetDetailsIncludesChromeUserContext) {
 
 TEST_F(PaymentsClientTest,
        GetDetailsIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartGettingUploadDetails();
@@ -1227,7 +1242,8 @@ TEST_F(PaymentsClientTest, UploadIncludesCvcInRequestIfProvided) {
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesChromeUserContext) {
-  scoped_feature_list_.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartUploading(/*include_cvc=*/true);
@@ -1240,7 +1256,8 @@ TEST_F(PaymentsClientTest, UploadIncludesChromeUserContext) {
 
 TEST_F(PaymentsClientTest,
        UploadIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartUploading(/*include_cvc=*/true);
@@ -1486,7 +1503,8 @@ TEST_F(PaymentsClientTest,
 }
 
 TEST_F(PaymentsClientTest, MigrationRequestIncludesChromeUserContext) {
-  scoped_feature_list_.InitAndDisableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartMigrating(/*has_cardholder_name=*/true);
@@ -1499,7 +1517,8 @@ TEST_F(PaymentsClientTest, MigrationRequestIncludesChromeUserContext) {
 
 TEST_F(PaymentsClientTest,
        MigrationRequestIncludesChromeUserContextIfWalletStorageFlagEnabled) {
-  scoped_feature_list_.InitAndEnableFeature(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
       features::kAutofillEnableAccountWalletStorage);
 
   StartMigrating(/*has_cardholder_name=*/true);
