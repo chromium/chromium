@@ -57,6 +57,8 @@ class AppListColorProviderImpl : public AppListColorProvider {
   const bool is_dark_light_mode_enabled_;
   // Whether feature ProductivityLauncher is enabled. Cached for efficiency.
   const bool is_productivity_launcher_enabled_;
+  // Whether feature BackgroundBlur is enabled. Cached for efficiency.
+  const bool is_background_blur_enabled_;
 };
 
 }  // namespace ash

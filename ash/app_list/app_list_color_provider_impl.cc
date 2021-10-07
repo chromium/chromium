@@ -27,7 +27,8 @@ AppListColorProviderImpl::AppListColorProviderImpl()
     : ash_color_provider_(AshColorProvider::Get()),
       is_dark_light_mode_enabled_(features::IsDarkLightModeEnabled()),
       is_productivity_launcher_enabled_(
-          features::IsProductivityLauncherEnabled()) {}
+          features::IsProductivityLauncherEnabled()),
+      is_background_blur_enabled_(features::IsBackgroundBlurEnabled()) {}
 
 AppListColorProviderImpl::~AppListColorProviderImpl() = default;
 
@@ -62,7 +63,9 @@ SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
   if (ShouldUseDarkLightColors()) {
     if (IsTabletModeEnabled()) {
       return ash_color_provider_->GetBaseLayerColor(
-          AshColorProvider::BaseLayerType::kTransparent80);
+          is_background_blur_enabled_
+              ? AshColorProvider::BaseLayerType::kTransparent80
+              : AshColorProvider::BaseLayerType::kTransparent95);
     } else {
       return ash_color_provider_->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
@@ -74,7 +77,9 @@ SkColor AppListColorProviderImpl::GetSearchBoxBackgroundColor() const {
 SkColor AppListColorProviderImpl::GetSearchBoxCardBackgroundColor() const {
   if (ShouldUseDarkLightColors()) {
     return ash_color_provider_->GetBaseLayerColor(
-        AshColorProvider::BaseLayerType::kTransparent80);
+        is_background_blur_enabled_
+            ? AshColorProvider::BaseLayerType::kTransparent80
+            : AshColorProvider::BaseLayerType::kTransparent95);
   }
   return SK_ColorWHITE;  // default_color
 }
