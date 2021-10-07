@@ -4,6 +4,7 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-media-query/iron-media-query.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="cellular_setup_icons.html">
 
@@ -22,7 +23,7 @@
       }
 
       #profileTitleLabel {
-        color: var(--cr-primary-text-color);
+        color: var(--cros-text-color-primary);
       }
 
       .icon {
@@ -31,7 +32,7 @@
       }
 
       #checkmark {
-        --iron-icon-fill-color: var(--google-blue-600);
+        --iron-icon-fill-color: var(--cros-icon-color-prominent);
       }
 
       paper-spinner-lite {
@@ -42,10 +43,11 @@
     </style>
     <div class="two-line no-padding" selectable>
       <div class="flex layout horizontal center link-wrapper">
-        <!-- TODO(crbug.com/1093185): Update UI to new spec. -->
         <div id="details">
-          <!-- TODO(crbug.com/1093185): Update with real profile image. -->
-          <img id="profileImage" src="chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile.svg">
+          <iron-media-query query="(prefers-color-scheme: dark)"
+              query-matches="{{isDarkModeActive_}}">
+          </iron-media-query>
+          <img id="profileImage" src="[[getProfileImage_(isDarkModeActive_)]]">
           <!-- The item's aria properties are set in profile_discovery_list_page. -->
           <div class="flex settings-box-text">
             <div id="profileTitleLabel">

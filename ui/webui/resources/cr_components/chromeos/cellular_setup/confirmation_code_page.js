@@ -103,7 +103,6 @@ Polymer({
    * @private
    */
   getProfileImage_() {
-    // TODO(crbug.com/1093185): Update with real profile image.
     return this.isDarkModeActive_ ?
         'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile_dark.svg' :
         'chrome://resources/cr_components/chromeos/cellular_setup/default_esim_profile.svg';
