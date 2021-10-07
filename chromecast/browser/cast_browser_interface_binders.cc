@@ -7,12 +7,14 @@
 #include "base/bind.h"
 #include "chromecast/browser/application_media_capabilities.h"
 #include "chromecast/browser/application_media_info_manager.h"
+#include "chromecast/browser/audio_socket_broker.h"
 #include "chromecast/browser/cast_navigation_ui_data.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/common/mojom/accessibility.mojom.h"
 #include "chromecast/common/mojom/activity_window.mojom.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
 #include "chromecast/common/mojom/assistant_messenger.mojom.h"
+#include "chromecast/common/mojom/audio_socket.mojom.h"
 #include "chromecast/common/mojom/cast_demo.mojom.h"
 #include "chromecast/common/mojom/gesture.mojom.h"
 #include "chromecast/common/mojom/settings_ui.mojom.h"
@@ -63,6 +65,12 @@ void BindApplicationMediaInfoManager(
       /*mixer_audio_enabled=*/false, std::move(receiver));
 }
 
+void BindAudioSocketBroker(
+    content::RenderFrameHost* frame_host,
+    mojo::PendingReceiver<::chromecast::mojom::AudioSocketBroker> receiver) {
+  media::CreateAudioSocketBroker(frame_host, std::move(receiver));
+}
+
 // Some Cast internals still dynamically set up interface binders after
 // frame host initialization. This is used to generically forward incoming
 // interface receivers to those objects until they can be reworked as static
@@ -105,6 +113,8 @@ void PopulateCastFrameBinders(
       base::BindRepeating(&BindNetworkHintsHandler));
   binder_map->Add<::media::mojom::CastApplicationMediaInfoManager>(
       base::BindRepeating(&BindApplicationMediaInfoManager));
+  binder_map->Add<::chromecast::mojom::AudioSocketBroker>(
+      base::BindRepeating(&BindAudioSocketBroker));
 
   binder_map->Add(base::BindRepeating(
       &BindFromCastWebContents<mojom::ApplicationMediaCapabilities>));

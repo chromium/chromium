@@ -78,6 +78,18 @@ cast_source_set("connectivity_checker") {
   ]
 }
 
+cast_source_set("socket_util") {
+  sources = [
+    "socket_util.cc",
+    "socket_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
 cast_source_set("io_buffer_pool") {
   sources = [
     "io_buffer_pool.cc",
