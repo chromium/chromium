@@ -101,7 +101,7 @@ TEST_P(NotificationIconsControllerTest, DisplayChanged) {
   EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
 
   // Notification icons should not be shown in small screen size.
-  UpdateDisplay("600x600");
+  UpdateDisplay("600x500");
   EXPECT_FALSE(
       notification_icons_controller_->tray_items().front()->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());

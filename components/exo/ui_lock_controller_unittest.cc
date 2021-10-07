@@ -383,7 +383,7 @@ TEST_F(UILockControllerTest, EscNotificationIsReshown) {
 
 TEST_F(UILockControllerTest, EscNotificationShowsOnSecondaryDisplay) {
   // Create surface on secondary display.
-  UpdateDisplay("800x800,600x600");
+  UpdateDisplay("900x800,70x600");
   SurfaceTriplet test_surface = BuildSurface(gfx::Point(900, 100), 200, 200);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);

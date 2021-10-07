@@ -258,7 +258,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
   const std::string display_specs =
       "0+0-500x300,510+0-400x500,920+0-300x600,"
       "0+600-200x300,210+600-700x200,920+600-350x480,"
-      "0+1080-300x500,310+1080-600x600,920+1080-400x450";
+      "0+1080-300x500,310+1080-600x599,920+1080-400x450";
   UpdateDisplay(display_specs);
   display_manager()->SetUnifiedDesktopEnabled(true);
   display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
@@ -267,7 +267,7 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
   // Test a very general case of a 3 x 3 matrix.
   // 0:[500 x 300] 1:[400 x 500] 2:[300 x 600]
   // 3:[200 x 300] 4:[700 x 200] 5:[350 x 480]
-  // 6:[300 x 500] 7:[600 x 600] 8:[400 x 450]
+  // 6:[300 x 500] 7:[600 x 599] 8:[400 x 450]
   display::UnifiedDesktopLayoutMatrix matrix;
   matrix.resize(3u);
   matrix[0].emplace_back(list[0]);
@@ -313,14 +313,14 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
           "210,600 1x200",  // Left with display 3.
           "909,600 1x200",  // Right with display 5.
           "210,799 102x1",  // Bottom with display 6.
-          "312,799 392x1",  // Bottom with display 7.
-          "704,799 204x1",  // Bottom with display 8.
+          "312,799 393x1",  // Bottom with display 7.
+          "705,799 203x1",  // Bottom with display 8.
       },
       // Display 5 edges.
       {
           "920,600 350x1",   // Top with display 2.
           "920,600 1x480",   // Left with display 4.
-          "920,1079 348x1",  // Bottom with display 8.
+          "920,1079 350x1",  // Bottom with display 8.
       },
       // Display 6 edges.
       {
@@ -331,13 +331,13 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
       // Display 7 edges.
       {
           "310,1080 600x1",  // Top with display 4.
-          "310,1080 1x600",  // Left with display 6.
-          "909,1080 1x600",  // Right with display 8.
+          "310,1080 1x599",  // Left with display 6.
+          "909,1080 1x599",  // Right with display 8.
       },
       // Display 8 edges.
       {
-          "920,1080 234x1",   // Top with display 4.
-          "1154,1080 166x1",  // Top with display 5.
+          "920,1080 233x1",   // Top with display 4.
+          "1153,1080 167x1",  // Top with display 5.
           "920,1080 1x450",   // Left with display 7.
       },
   };
@@ -382,12 +382,12 @@ TEST_F(UnifiedMouseWarpControllerTest, BoundaryTestGrid) {
       {{299, 1200}, {214, 566}, list[7]},  // Display 6 --> 7.
 
       {{500, 1080}, {326, 480}, list[4]},  // Display 7 --> 4.
-      {{310, 1500}, {212, 730}, list[6]},  // Display 7 --> 6.
-      {{909, 1500}, {571, 730}, list[8]},  // Display 7 --> 8.
+      {{310, 1500}, {212, 731}, list[6]},  // Display 7 --> 6.
+      {{909, 1500}, {572, 731}, list[8]},  // Display 7 --> 8.
 
-      {{1000, 1080}, {633, 480}, list[4]},  // Display 8 --> 4.
-      {{1200, 1080}, {792, 481}, list[5]},  // Display 8 --> 5.
-      {{920, 1500}, {569, 814}, list[7]},   // Display 8 --> 7.
+      {{1000, 1080}, {634, 480}, list[4]},  // Display 8 --> 4.
+      {{1200, 1080}, {793, 481}, list[5]},  // Display 8 --> 5.
+      {{920, 1500}, {570, 814}, list[7]},   // Display 8 --> 7.
   };
   WarpTestBody(warp_groups);
 }

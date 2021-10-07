@@ -1815,7 +1815,7 @@ TEST_F(ClientControlledShellSurfaceTest, NoFrameOnModalContainer) {
 
 TEST_F(ClientControlledShellSurfaceTest,
        SetGeometryReparentsToDisplayOnFirstCommit) {
-  UpdateDisplay("100x100,100x100");
+  UpdateDisplay("100x200,100x200");
 
   gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(
@@ -1861,7 +1861,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 }
 
 TEST_F(ClientControlledShellSurfaceTest, SetBoundsReparentsToDisplay) {
-  UpdateDisplay("100x100,100+0-100x100");
+  UpdateDisplay("100x200,100x200");
 
   gfx::Size buffer_size(64, 64);
   std::unique_ptr<Buffer> buffer(

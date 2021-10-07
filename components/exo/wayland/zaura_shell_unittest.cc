@@ -335,7 +335,7 @@ TEST_F(ZAuraSurfaceTest,
 }
 
 TEST_F(ZAuraSurfaceTest, OcclusionIncludesOffScreenArea) {
-  UpdateDisplay("150x150");
+  UpdateDisplay("200x150");
 
   gfx::Size buffer_size(80, 100);
   std::unique_ptr<Buffer> buffer(

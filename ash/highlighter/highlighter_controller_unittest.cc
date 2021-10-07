@@ -434,11 +434,11 @@ TEST_F(HighlighterControllerTest, SelectionInsideScreen) {
   for (size_t i = 0; i < sizeof(display_scales) / sizeof(float); ++i) {
     // 2nd display is for offscreen test.
     std::string display_spec = base::StringPrintf(
-        "1000x1000*%.2f,500x1000*%.2f", display_scales[i], display_scales[i]);
+        "1000x999*%.2f,500x1000*%.2f", display_scales[i], display_scales[i]);
     SCOPED_TRACE(display_spec);
     UpdateDisplayAndWaitForCompositingEnded(display_spec);
 
-    const gfx::Rect screen(0, 0, 1000, 1000);
+    const gfx::Rect screen(0, 0, 1000, 999);
 
     // Rectangle completely offscreen.
     controller_test_api_->ResetSelection();

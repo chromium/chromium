@@ -13,6 +13,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
@@ -29,6 +30,7 @@ void AshTestSuite::Initialize() {
   // in its own process
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   cmd_line->AppendSwitch(switches::kOverrideUseSoftwareGLForTests);
+  cmd_line->AppendSwitch(switches::kRejectSquareDisplay);
 
   gl::GLSurfaceTestSupport::InitializeOneOff();
 

@@ -54,7 +54,7 @@ TEST_F(DeskActivationAnimationTest, EndSwipeBeforeStartingScreenshot) {
 TEST_F(DeskActivationAnimationTest, UpdateSwipeNewScreenshotCrash) {
   // Crash is only reproducible on different resolution widths and easier to
   // repro when the widths differ by a lot.
-  UpdateDisplay("600x600,601+0-2000x600");
+  UpdateDisplay("700x600,601+0-2000x600");
 
   // Crash repro requires three desks.
   auto* desks_controller = DesksController::Get();
