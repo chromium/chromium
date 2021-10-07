@@ -144,7 +144,7 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:reclient-config-deploy-check/tester",
+    name = "recipe:reclient_config_deploy_check/tester",
 )
 
 build_recipe(

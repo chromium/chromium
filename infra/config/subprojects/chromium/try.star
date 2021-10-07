@@ -2305,7 +2305,7 @@ try_.presubmit_builder(
 
 try_.presubmit_builder(
     name = "reclient-config-deployment-verifier",
-    executable = "recipe:reclient-config-deploy-check/tester",
+    executable = "recipe:reclient_config_deploy_check/tester",
     properties = {
         "fetch_script": "buildtools/reclient_cfgs/fetch_reclient_cfgs.py",
         "rbe_project": [
