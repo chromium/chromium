@@ -543,6 +543,7 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   headers[":authority"] = GetHostAndOptionalPort(url_);
   headers[":path"] = url_.PathForRequest();
   headers[":protocol"] = "webtransport";
+  headers["sec-webtransport-http3-draft02"] = "1";
   headers["origin"] = origin_.Serialize();
   stream->WriteHeaders(std::move(headers), /*fin=*/false, nullptr);
 
