@@ -32,7 +32,8 @@ namespace virtualKeyboard {
     // |restrictions|: the preferences to enabled/disabled virtual keyboard
     // features.
     // |callback|: Invoked with the values which were updated.
-    void restrictFeatures(FeatureRestrictions restrictions,
-                          optional RestrictFeaturesCallback callback);
+    [supportsPromises] void restrictFeatures(
+        FeatureRestrictions restrictions,
+        optional RestrictFeaturesCallback callback);
   };
 };
