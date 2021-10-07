@@ -1033,7 +1033,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Reauth.Password.Autofill" enum="ReauthenticationEvent"
-    expires_after="2022-02-20">
+    expires_after="2022-05-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>sarraf@google.com</owner>
   <summary>
@@ -1043,7 +1043,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Reauth.Password.ManualFallback"
-    enum="ReauthenticationEvent" expires_after="2022-02-20">
+    enum="ReauthenticationEvent" expires_after="2022-05-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>sarraf@google.com</owner>
   <summary>
@@ -1158,7 +1158,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntry"
-    enum="IOSShareExtensionReceivedEntryType" expires_after="2021-12-11">
+    enum="IOSShareExtensionReceivedEntryType" expires_after="2022-05-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>Type of the item received from the iOS share extension.</summary>
@@ -1175,7 +1175,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.Source"
-    enum="IOSShareExtensionReceivedEntrySource" expires_after="2021-12-11">
+    enum="IOSShareExtensionReceivedEntrySource" expires_after="2022-05-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -1218,7 +1218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="IOS.Snapshots.ImageSize" units="KB" expires_after="2021-11-28">
+<histogram name="IOS.Snapshots.ImageSize" units="KB" expires_after="2022-05-01">
   <owner>ajuma@chromium.org</owner>
   <owner>edchin@chromium.org</owner>
   <summary>
@@ -1344,7 +1344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.PageChangeInteraction"
-    enum="IOSTabSwitcherPageChangeInteraction" expires_after="M99">
+    enum="IOSTabSwitcherPageChangeInteraction" expires_after="2022-05-01">
   <owner>marq@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -1354,7 +1354,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpent" units="ms"
-    expires_after="2022-01-28">
+    expires_after="2022-05-01">
   <owner>mrefaat@chromium.org</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -1364,7 +1364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.Web.URLDidChangeToEmptyURL" enum="BooleanHit"
-    expires_after="2021-11-30">
+    expires_after="2022-05-01">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>

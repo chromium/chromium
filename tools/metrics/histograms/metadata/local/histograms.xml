@@ -280,7 +280,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="M97">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2022-05-01">
   <owner>mek@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

@@ -115,7 +115,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.AppsInstalledAtLogin" units="apps"
-    expires_after="2021-12-26">
+    expires_after="2022-05-01">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>

@@ -977,7 +977,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.Touch.AverageLagPresentation"
-    units="pixels" expires_after="M97">
+    units="pixels" expires_after="2022-05-01">
   <owner>flackr@chromium.org</owner>
   <owner>joalmei@microsoft.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -1129,7 +1129,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollBegin.Wheel.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-05-01">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

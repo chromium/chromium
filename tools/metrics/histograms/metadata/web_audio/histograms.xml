@@ -120,7 +120,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRateRatio" units="units"
-    expires_after="2021-12-31">
+    expires_after="2022-05-01">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The ratio of the user-selected sample rate to the hardware sample rate of an
@@ -178,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.BiquadFilter.Type" enum="BiquadFilterType"
-    expires_after="2022-01-06">
+    expires_after="2022-05-01">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The type of the BiquadFilterNode. Recorded each time the type is set. This

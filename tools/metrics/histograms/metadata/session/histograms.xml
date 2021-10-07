@@ -551,7 +551,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Session.WebStates.NavigationItem" units="KB"
-    expires_after="2021-11-07">
+    expires_after="2022-05-01">
   <owner>djean@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <summary>

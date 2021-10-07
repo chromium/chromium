@@ -68,7 +68,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AndroidSms.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2022-02-02">
+    enum="MultiDevice_FeatureState" expires_after="2022-05-01">
   <owner>azeemarshad@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1108,7 +1108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.DidUserManuallyUnlockPhone"
-    enum="EasyUnlockDidUserManuallyUnlockPhone" expires_after="2022-02-02">
+    enum="EasyUnlockDidUserManuallyUnlockPhone" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1132,7 +1132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.SignIn.Duration" units="ms"
-    expires_after="2022-02-02">
+    expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1154,7 +1154,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.Unlock.Duration" units="ms"
-    expires_after="2022-02-02">
+    expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1166,7 +1166,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthProximity.RemoteDeviceModelHash"
-    enum="EasyUnlockDeviceModelHash" expires_after="2022-02-02">
+    enum="EasyUnlockDeviceModelHash" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1179,7 +1179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthProximity.RollingRssi" units="dBm"
-    expires_after="2022-02-02">
+    expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1295,7 +1295,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="InstantTethering.ConnectionToHostResult.Failure.ClientConnection"
     enum="InstantTethering_ConnectionToHostResult_Failure_ClientConnection"
-    expires_after="2022-02-02">
+    expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1384,7 +1384,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.FeatureState"
-    enum="InstantTethering_FeatureState" expires_after="2022-02-02">
+    enum="InstantTethering_FeatureState" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1400,7 +1400,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.HostScanBatchDuration" units="ms"
-    expires_after="2022-02-02">
+    expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1477,7 +1477,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.Performance.ConnectTetheringResponseDuration"
-    units="ms" expires_after="2022-02-02">
+    units="ms" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1510,7 +1510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="InstantTethering.Performance.DisconnectTetheringRequestDuration"
-    units="ms" expires_after="2022-02-02">
+    units="ms" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1520,7 +1520,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.Performance.KeepAliveTickleResponseDuration"
-    units="ms" expires_after="2022-02-02">
+    units="ms" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1531,7 +1531,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="InstantTethering.Performance.TetherAvailabilityResponseDuration"
-    units="ms" expires_after="2022-02-02">
+    units="ms" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1541,7 +1541,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.SessionCompletionReason"
-    enum="InstantTethering_SessionCompletionReason" expires_after="2022-02-02">
+    enum="InstantTethering_SessionCompletionReason" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1553,7 +1553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.UserPreference.OnStartup"
-    enum="BooleanEnabled" expires_after="2022-02-02">
+    enum="BooleanEnabled" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1564,7 +1564,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.UserPreference.OnToggle"
-    enum="BooleanEnabled" expires_after="2022-02-02">
+    enum="BooleanEnabled" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1629,7 +1629,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2022-02-27">
+    expires_after="2022-05-01">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result for when ForceSyncNow is called.</summary>
@@ -1843,7 +1843,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.DisconnectionReason"
-    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2022-01-01">
+    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2022-05-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1874,7 +1874,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
-    enum="MultiDeviceNearbyMessageAction" expires_after="2022-02-27">
+    enum="MultiDeviceNearbyMessageAction" expires_after="2022-05-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2080,7 +2080,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.AuthMethodChoice.SignIn.PasswordState"
-    enum="SmartLockAuthEventPasswordState" expires_after="2022-02-01">
+    enum="SmartLockAuthEventPasswordState" expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2179,7 +2179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.EnabledDevicesCount" units="devices"
-    expires_after="2022-02-02">
+    expires_after="2022-05-01">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2369,7 +2369,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WifiSync.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2022-03-01">
+    enum="MultiDevice_FeatureState" expires_after="2022-05-01">
   <owner>cvandermerwe@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

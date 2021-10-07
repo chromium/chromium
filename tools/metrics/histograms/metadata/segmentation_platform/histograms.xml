@@ -410,7 +410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SegmentationPlatform.SignalDatabase.GetSamples.SampleCount"
-    units="samples" expires_after="2022-02-01">
+    units="samples" expires_after="2022-05-01">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>

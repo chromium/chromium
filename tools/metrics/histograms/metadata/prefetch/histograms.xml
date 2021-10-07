@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.Mainframe.CookieWaitTime" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-05-01">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>

@@ -54,7 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </variants>
 
 <histogram name="Assistant.BetterOnboarding.Click"
-    enum="AssistantBetterOnboardingType" expires_after="2022-01-23">
+    enum="AssistantBetterOnboardingType" expires_after="2022-05-01">
   <owner>xiaohuic@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -187,7 +187,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.QuerySource" enum="AssistantQuerySource"
-    expires_after="2022-02-20">
+    expires_after="2022-05-01">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -224,7 +224,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.SetDspHotwordLocale" enum="BooleanSuccess"
-    expires_after="2021-12-12">
+    expires_after="2022-05-01">
   <owner>meilinw@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
@@ -342,7 +342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Consent" units="impressions"
-    expires_after="2022-01-02">
+    expires_after="2022-05-01">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
@@ -459,7 +459,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.NetworkError.IntentType"
-    enum="QuickAnswersIntentType" expires_after="2022-01-02">
+    enum="QuickAnswersIntentType" expires_after="2022-05-01">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>
