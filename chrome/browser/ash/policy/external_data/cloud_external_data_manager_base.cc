@@ -47,6 +47,10 @@ const int kMaxParallelFetches = 2;
 // external data even if no |max_size| was specified in policy_templates.json.
 int g_max_external_data_size_for_testing = 0;
 
+// Keys for 'DictionaryValue' objects
+const char kUrlKey[] = "url";
+const char kHashKey[] = "hash";
+const char kCustomIconKey[] = "custom_icon";
 }  // namespace
 
 // Backend for the CloudExternalDataManagerBase that handles all data download,
@@ -427,8 +431,8 @@ void AddMetadataFromValue(CloudExternalDataManagerBase::Metadata* metadata,
   const base::DictionaryValue* dict = nullptr;
   if (!value || !value->GetAsDictionary(&dict))
     return;
-  const std::string* url = dict->FindStringKey("url");
-  const std::string* hex_hash = dict->FindStringKey("hash");
+  const std::string* url = dict->FindStringKey(kUrlKey);
+  const std::string* hex_hash = dict->FindStringKey(kHashKey);
   std::string hash;
   if (url && hex_hash && !url->empty() && !hex_hash->empty() &&
       base::HexStringToString(*hex_hash, &hash)) {
@@ -460,8 +464,8 @@ void CloudExternalDataManagerBase::OnPolicyStoreLoaded() {
       for (const auto& app : it.second.value()->GetList()) {
         const base::DictionaryValue* dict = nullptr;
         if (app.GetAsDictionary(&dict)) {
-          const base::Value* const icon = dict->FindKey("custom_icon");
-          const std::string* const url = dict->FindStringKey("url");
+          const base::Value* const icon = dict->FindKey(kCustomIconKey);
+          const std::string* const url = dict->FindStringKey(kUrlKey);
           if (icon && url) {
             AddMetadataFromValue(metadata.get(), it.first, *url, icon);
           }
