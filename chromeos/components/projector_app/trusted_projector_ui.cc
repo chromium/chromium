@@ -58,12 +58,11 @@ TrustedProjectorUI::TrustedProjectorUI(content::WebUI* web_ui, const GURL& url)
   // chrome-untrusted:// iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 
-  if (url == GURL(kChromeUITrustedAnnotatorUrl)) {
-    // Don't create another AnnotatorMessageHandler if one already exists.
-    if (!ash::ProjectorAnnotatorController::Get())
-      web_ui->AddMessageHandler(std::make_unique<AnnotatorMessageHandler>());
+  // RecordingOverlayViewImpl is responsible for creating the
+  // AnnotatorMessageHandler via a helper function in ProjectorClientImpl. Do
+  // nothing here.
+  if (url == GURL(kChromeUITrustedAnnotatorUrl))
     return;
-  }
 
   // The requested WebUI is hosting the Projector SWA.
   web_ui->AddMessageHandler(std::make_unique<ProjectorMessageHandler>());

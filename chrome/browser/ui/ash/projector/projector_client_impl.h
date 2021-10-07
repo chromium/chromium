@@ -16,6 +16,10 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 
+namespace views {
+class WebView;
+}  // namespace views
+
 class OnDeviceSpeechRecognizer;
 
 // The client implementation for the ProjectorController in ash/. This client is
@@ -24,6 +28,10 @@ class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
                             public speech::SodaInstaller::Observer {
  public:
+  // RecordingOverlayViewImpl calls this function to initialize the annotator
+  // tool.
+  static void InitForProjectorAnnotator(views::WebView* web_view);
+
   explicit ProjectorClientImpl(ash::ProjectorController* controller);
 
   ProjectorClientImpl();

@@ -17,6 +17,7 @@ ProjectorAnnotatorController* g_instance = nullptr;
 
 // static
 ProjectorAnnotatorController* ProjectorAnnotatorController::Get() {
+  DCHECK(g_instance);
   return g_instance;
 }
 

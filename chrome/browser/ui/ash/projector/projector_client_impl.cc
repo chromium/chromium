@@ -13,13 +13,19 @@
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
+#include "chromeos/components/projector_app/annotator_message_handler.h"
+#include "chromeos/components/projector_app/projector_app_constants.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/controls/webview/webview.h"
+#include "url/gurl.h"
 
 namespace {
 // On-device speech recognition is only available in US English.
@@ -30,6 +36,16 @@ bool ShouldUseWebSpeechFallback() {
 }
 
 }  // namespace
+
+// static
+void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
+  web_view->LoadInitialURL(GURL(chromeos::kChromeUITrustedAnnotatorUrl));
+
+  content::WebContents* web_contents = web_view->GetWebContents();
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  web_ui->AddMessageHandler(
+      std::make_unique<chromeos::AnnotatorMessageHandler>());
+}
 
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
     : controller_(controller) {

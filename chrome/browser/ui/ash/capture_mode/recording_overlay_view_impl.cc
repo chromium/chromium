@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/components/projector_app/projector_app_constants.h"
+#include "chrome/browser/ui/ash/projector/projector_client_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
@@ -22,7 +22,8 @@ RecordingOverlayViewImpl::RecordingOverlayViewImpl(Profile* profile)
   DCHECK(web_contents);
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       web_contents, SK_ColorTRANSPARENT);
-  web_view_->LoadInitialURL(GURL(chromeos::kChromeUITrustedAnnotatorUrl));
+
+  ProjectorClientImpl::InitForProjectorAnnotator(web_view_);
 }
 
 BEGIN_METADATA(RecordingOverlayViewImpl, ash::RecordingOverlayView)
