@@ -146,7 +146,7 @@ export class EmojiPicker extends PolymerElement {
 
     this.emojiGroupTabs = GROUP_TABS;
     this.emojiData = [];
-    this.history = {'group': 'Recently Used', 'emoji': []};
+    this.history = {'group': 'Recently used', 'emoji': []};
 
     this.preferenceMapping = {};
 
