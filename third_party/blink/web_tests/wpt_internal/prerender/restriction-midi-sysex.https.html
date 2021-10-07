@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <!--
 This file cannot be upstreamed to WPT until:
-* internals.setPermission() usage is replaced with a WebDriver API
 * The code that allows the test to pass when navigator.requestMIDIAccess()
   rejects in resources/midi.https.html is removed.
 -->
@@ -9,6 +8,8 @@ This file cannot be upstreamed to WPT until:
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/utils.js"></script>
 <body>
 <script>
@@ -21,9 +22,8 @@ promise_test(async t => {
   // navigator.requestMIDIAccess() waits until the permission is granted, which
   // is deferred during prerendering so the test would trivially pass without
   // the permission.
-  internals.setPermission(
-      {name: 'midi', sysex: true}, 'granted', location.origin,
-      location.origin);
+  await test_driver.set_permission(
+      {name: 'midi', sysex: true}, 'granted', true);
 
   const gotMessage = new Promise(resolve => {
     bc.addEventListener('message', e => {
