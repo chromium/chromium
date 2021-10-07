@@ -324,7 +324,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 
 // TODO(crbug.com/1255496): Flaky under TSan.
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
-       TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
+       DISABLED_TestLoggingWithNoPageEndWithNoFirstBackgroundTime) {
   // In the case that there is no page end time and the page has never
   // backgrounded, the observer falls back to using Now as the end point of
   // the time in foreground. So override what 'Now' means.
