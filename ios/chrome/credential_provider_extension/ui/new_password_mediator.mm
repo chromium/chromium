@@ -17,10 +17,11 @@
 #import "ios/chrome/common/credential_provider/credential_store.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
-#import "ios/chrome/credential_provider_extension/password_spec_fetcher.h"
+#include "ios/chrome/credential_provider_extension/password_spec_fetcher_buildflags.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/ui/new_password_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/ui_util.h"
+#import "ios/components/credential_provider_extension/password_spec_fetcher.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,7 +54,9 @@ using base::SysUTF16ToNSString;
     _userDefaults = userDefaults;
     _serviceIdentifier = serviceIdentifier;
     NSString* host = HostForServiceIdentifier(serviceIdentifier);
-    _fetcher = [[PasswordSpecFetcher alloc] initWithHost:host];
+    _fetcher =
+        [[PasswordSpecFetcher alloc] initWithHost:host
+                                           APIKey:BUILDFLAG(GOOGLE_API_KEY)];
     [_fetcher fetchSpecWithCompletion:nil];
   }
   return self;

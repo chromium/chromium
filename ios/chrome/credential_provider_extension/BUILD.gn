@@ -114,16 +114,11 @@ generate_localizable_strings("system_strings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "metrics_util_unittest.mm",
-    "password_spec_fetcher_unittest.mm",
-  ]
+  sources = [ "metrics_util_unittest.mm" ]
   deps = [
     ":metrics_util",
-    ":password_spec_fetcher",
     "//base",
     "//base/test:test_support",
-    "//components/autofill/core/browser/proto",
     "//ios/chrome/common/app_group",
     "//testing/gtest",
   ]
@@ -147,21 +142,6 @@ source_set("reauthentication_handler") {
 buildflag_header("password_spec_fetcher_buildflags") {
   header = "password_spec_fetcher_buildflags.h"
   flags = [ "GOOGLE_API_KEY=@\"$ios_credential_provider_extension_api_key\"" ]
-}
-
-source_set("password_spec_fetcher") {
-  sources = [
-    "password_spec_fetcher.h",
-    "password_spec_fetcher.mm",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [
-    ":password_spec_fetcher_buildflags",
-    "//base",
-    "//components/autofill/core/browser/proto",
-    "//components/password_manager/core/browser:password_generator",
-  ]
-  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("password_util") {

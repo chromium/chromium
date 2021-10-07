@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_SPEC_FETCHER_H_
-#define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_SPEC_FETCHER_H_
+#ifndef IOS_COMPONENTS_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_SPEC_FETCHER_H_
+#define IOS_COMPONENTS_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_SPEC_FETCHER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -19,7 +19,8 @@ using FetchSpecCompletionBlock =
 @interface PasswordSpecFetcher : NSObject
 
 // |host| indicates which spec should be fetched from the service.
-- (instancetype)initWithHost:(NSString*)host;
+// |APIKey| is the API key used to fetch the service.
+- (instancetype)initWithHost:(NSString*)host APIKey:(NSString*)APIKey;
 
 // Indicates if the spec has been fetched already.
 @property(nonatomic, readonly) BOOL didFetchSpec;
@@ -34,4 +35,4 @@ using FetchSpecCompletionBlock =
 
 @end
 
-#endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_SPEC_FETCHER_H_
+#endif  // IOS_COMPONENTS_CREDENTIAL_PROVIDER_EXTENSION_PASSWORD_SPEC_FETCHER_H_

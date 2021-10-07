@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/credential_provider_extension/password_spec_fetcher.h"
+#import "ios/components/credential_provider_extension/password_spec_fetcher.h"
 
 #include "base/base64.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "ios/chrome/credential_provider_extension/password_spec_fetcher_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,8 +19,6 @@ namespace {
 // URL of the fetching endpoint.
 NSString* const kPasswordSpecURL =
     @"https://content-autofill.googleapis.com/v1/domainSuggestions/";
-// API key to query the spec. Defined as a buildflag.
-NSString* const kApiKeyValue = BUILDFLAG(GOOGLE_API_KEY);
 // Header field name for the API key.
 NSString* const kApiKeyHeaderField = @"X-Goog-Api-Key";
 // Encoding requested from the server.
@@ -42,6 +39,9 @@ const NSTimeInterval kPasswordSpecTimeout = 10;
 // Host that identifies the spec to be fetched.
 @property(nonatomic, copy) NSString* host;
 
+// API key to query the spec.
+@property(nonatomic, copy) NSString* APIKey;
+
 // Data task for fetching the spec.
 @property(nonatomic, copy) NSURLSessionDataTask* task;
 
@@ -55,11 +55,12 @@ const NSTimeInterval kPasswordSpecTimeout = 10;
 
 @implementation PasswordSpecFetcher
 
-- (instancetype)initWithHost:(NSString*)host {
+- (instancetype)initWithHost:(NSString*)host APIKey:(NSString*)APIKey {
   self = [super init];
   if (self) {
     _host = [host stringByAddingPercentEncodingWithAllowedCharacters:
                       NSCharacterSet.URLQueryAllowedCharacterSet];
+    _APIKey = APIKey;
   }
   return self;
 }
@@ -84,7 +85,7 @@ const NSTimeInterval kPasswordSpecTimeout = 10;
       [NSMutableURLRequest requestWithURL:URLComponents.URL
                               cachePolicy:NSURLRequestUseProtocolCachePolicy
                           timeoutInterval:kPasswordSpecTimeout];
-  [request setValue:kApiKeyValue forHTTPHeaderField:kApiKeyHeaderField];
+  [request setValue:self.APIKey forHTTPHeaderField:kApiKeyHeaderField];
   [request setValue:kEncodeKeyValue forHTTPHeaderField:kEncodeKeyHeaderField];
 
   __weak __typeof__(self) weakSelf = self;

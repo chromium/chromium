@@ -57,10 +57,11 @@ source_set("ui") {
     "//ios/chrome/common/ui/resources:default_world_favicon",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/credential_provider_extension:metrics_util",
-    "//ios/chrome/credential_provider_extension:password_spec_fetcher",
+    "//ios/chrome/credential_provider_extension:password_spec_fetcher_buildflags",
     "//ios/chrome/credential_provider_extension:password_util",
     "//ios/chrome/credential_provider_extension:reauthentication_handler",
     "//ios/chrome/credential_provider_extension/ui/resources",
+    "//ios/components/credential_provider_extension:password_spec_fetcher",
   ]
   frameworks = [
     "UIKit.framework",

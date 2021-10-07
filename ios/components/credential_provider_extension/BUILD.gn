@@ -15,13 +15,31 @@ source_set("password_util") {
   ]
 }
 
+source_set("password_spec_fetcher") {
+  sources = [
+    "password_spec_fetcher.h",
+    "password_spec_fetcher.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser/proto",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("unit_tests") {
   testonly = true
-  sources = [ "password_util_unittest.mm" ]
+  sources = [
+    "password_spec_fetcher_unittest.mm",
+    "password_util_unittest.mm",
+  ]
   deps = [
+    ":password_spec_fetcher",
     ":password_util",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/browser/proto",
     "//testing/gtest",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]

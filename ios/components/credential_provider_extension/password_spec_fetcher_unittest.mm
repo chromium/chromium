@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/credential_provider_extension/password_spec_fetcher.h"
+#import "ios/components/credential_provider_extension/password_spec_fetcher.h"
 
 #include "base/base64.h"
 #include "base/strings/sys_string_conversions.h"
@@ -49,7 +49,8 @@ TEST_F(PasswordSpecFetcherTest, DomainSuggestionProtoIsParsed) {
 
 // Tests spec is a default one when fetching hasn't been done.
 TEST_F(PasswordSpecFetcherTest, DefaultSpecNoFetch) {
-  PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""];
+  PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""
+                                                                    APIKey:@""];
   PasswordRequirementsSpec spec;
   EXPECT_EQ(fetcher.spec.SerializeAsString(), spec.SerializeAsString());
 }
@@ -57,7 +58,8 @@ TEST_F(PasswordSpecFetcherTest, DefaultSpecNoFetch) {
 // Tests spec is a default one when fetching returns an invalid response.
 TEST_F(PasswordSpecFetcherTest, DefaultSpecInvalidFetch) {
   // The missing host will have and invalid response.
-  PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""];
+  PasswordSpecFetcher* fetcher = [[PasswordSpecFetcher alloc] initWithHost:@""
+                                                                    APIKey:@""];
   PasswordRequirementsSpec spec;
 
   __block bool block_ran = false;
