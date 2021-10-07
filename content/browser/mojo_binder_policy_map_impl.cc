@@ -12,6 +12,7 @@
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
+#include "third_party/blink/public/mojom/file/file_utilities.mojom.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_output_stream_factory.mojom.h"
@@ -45,6 +46,11 @@ void RegisterContentBinderPoliciesForSameOriginPrerendering(
   // do not have system focus nor user activation, which is required before
   // sending the request.
   map.SetPolicy<blink::mojom::ClipboardHost>(MojoBinderPolicy::kUnexpected);
+
+  // FileUtilitiesHost is only used by APIs that require user activations, being
+  // impossible for a prerendered document. For the reason, this is marked as
+  // kUnexpected.
+  map.SetPolicy<blink::mojom::FileUtilitiesHost>(MojoBinderPolicy::kUnexpected);
 
   map.SetPolicy<blink::mojom::CacheStorage>(MojoBinderPolicy::kGrant);
   map.SetPolicy<blink::mojom::IDBFactory>(MojoBinderPolicy::kGrant);
