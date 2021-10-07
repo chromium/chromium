@@ -362,16 +362,6 @@ class SettingsSyncAccountControlElement extends
       case StatusAction.REAUTHENTICATE:
         this.syncBrowserProxy_.startSignIn();
         break;
-      case StatusAction.SIGNOUT_AND_SIGNIN:
-        if (this.syncStatus.domain) {
-          router.navigateTo(routes.SIGN_OUT);
-        } else {
-          // Silently sign the user out without deleting their profile and
-          // prompt them to sign back in.
-          this.syncBrowserProxy_.signOut(false);
-          this.syncBrowserProxy_.startSignIn();
-        }
-        break;
       // </if>
       case StatusAction.UPGRADE_CLIENT:
         router.navigateTo(routes.ABOUT);

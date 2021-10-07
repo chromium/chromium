@@ -155,8 +155,6 @@ std::string GetSyncErrorAction(SyncStatusActionType action_type) {
   switch (action_type) {
     case SyncStatusActionType::kReauthenticate:
       return "reauthenticate";
-    case SyncStatusActionType::kSignoutAndSignin:
-      return "signOutAndSignIn";
     case SyncStatusActionType::kUpgradeClient:
       return "upgradeClient";
     case SyncStatusActionType::kEnterPassphrase:

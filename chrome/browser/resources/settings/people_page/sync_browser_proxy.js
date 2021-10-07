@@ -46,8 +46,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
   export const StatusAction = {
     NO_ACTION: 'noAction',             // No action to take.
     REAUTHENTICATE: 'reauthenticate',  // User needs to reauthenticate.
-    SIGNOUT_AND_SIGNIN:
-        'signOutAndSignIn',               // User needs to sign out and sign in.
     UPGRADE_CLIENT: 'upgradeClient',      // User needs to upgrade the client.
     ENTER_PASSPHRASE: 'enterPassphrase',  // User needs to enter passphrase.
     // User needs to go through key retrieval.
