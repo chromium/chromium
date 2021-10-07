@@ -2,7 +2,7 @@
 
 ## What is type safety?
 
-[Strongly-typed languages](https://en.wikipedia.org/wiki/Strong_and_weak_typing)
+[Statically-typed languages](https://en.wikipedia.org/wiki/Type_system#Static_type_checking)
 like C++ and Java have the notion of variable types.
 
 This is typically baked into how you declare variables:
@@ -24,12 +24,12 @@ you if there's no sane default action to take.
 Typing can also be manually annotated via mechanisms like `dynamic_cast` and
 `static_cast` or older C-style casts (i.e. `(Type)`).
 
-Using stongly-typed languages provide _some_ level of protection against
+Using statically-typed languages provides _some_ level of protection against
 accidentally using variables in the wrong context.
 
-JavaScript is weakly-typed and doesn't offer this safety by default. This makes
-writing JavaScript more error prone, and various type errors have resulted in
-real bugs seen by many users.
+JavaScript is dynamically-typed and doesn't offer this safety by default. This
+makes writing JavaScript more error prone, and various type errors have resulted
+in real bugs seen by many users.
 
 ## Chrome's solution to typechecking JavaScript
 
