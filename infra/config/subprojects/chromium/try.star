@@ -2300,6 +2300,29 @@ try_.presubmit_builder(
 )
 
 try_.presubmit_builder(
+    name = "reclient-config-deployment-verifier",
+    executable = "recipe:reclient-config-deploy-check/tester",
+    properties = {
+        "fetch_script": "buildtools/reclient_cfgs/fetch_reclient_cfgs.py",
+        "rbe_project": [
+            {
+                "name": "rbe-chromium-trusted",
+                "cfg_file": [
+                    "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg",
+                    "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg",
+                    "buildtools/reclient_cfgs/nacl/rewrapper_linux.cfg",
+                    "buildtools/reclient_cfgs/nacl/rewrapper_windows.cfg",
+                ],
+            },
+        ],
+    },
+    tryjob = try_.job(
+        experiment_percentage = 100,
+        location_regexp = [r".+/[+]/tools/clang/scripts/update.py"],
+    ),
+)
+
+try_.presubmit_builder(
     name = "chromium_presubmit",
     branch_selector = branches.ALL_BRANCHES,
     executable = "recipe:presubmit",

@@ -481,6 +481,12 @@ as required builders.
 * [linux_chromium_tsan_rel_ng_rts](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_tsan_rel_ng_rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_tsan_rel_ng_rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_tsan_rel_ng_rts))
   * Experiment percentage: 5.0
 
+* [reclient-config-deployment-verifier](https://ci.chromium.org/p/chromium/builders/try/reclient-config-deployment-verifier) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+reclient-config-deployment-verifier)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+reclient-config-deployment-verifier))
+  * Experiment percentage: 100.0
+
+  Path regular expressions:
+  * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=package:%5Echromium$+file:tools/clang/scripts/update.py)
+
 * [win10-rel-orchestrator](https://ci.chromium.org/p/chromium/builders/try/win10-rel-orchestrator) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win10-rel-orchestrator)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win10-rel-orchestrator))
   * Experiment percentage: 15.0
 

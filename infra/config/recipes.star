@@ -144,6 +144,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:reclient-config-deploy-check/tester",
+)
+
+build_recipe(
     name = "recipe:reclient_goma_comparison",
 )
 
