@@ -5136,8 +5136,8 @@ std::pair<int, int> AXPlatformNodeAuraLinux::GetSelectionOffsetsForAtk() {
 std::vector<ax::mojom::Action> AXPlatformNodeAuraLinux::GetSupportedActions()
     const {
   static const base::NoDestructor<std::vector<ax::mojom::Action>>
-      kActionsThatCanBeExposedViaAtkAction(
-          {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement});
+      kActionsThatCanBeExposedViaAtkAction{
+          {ax::mojom::Action::kDecrement, ax::mojom::Action::kIncrement}};
 
   // The default action is always included and exposed at the first index.
   std::vector<ax::mojom::Action> supported_actions = {
