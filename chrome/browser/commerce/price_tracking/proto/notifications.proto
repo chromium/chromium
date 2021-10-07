@@ -4,9 +4,11 @@
 
 syntax = "proto2";
 
-package org.chromium.chrome.browser.price_tracking.proto;
+package commerce.proto;
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.chrome.browser.price_tracking.proto";
+
+import "components/commerce/core/proto/price_tracking.proto";
 
 // Copied from
 // google3/java/com/google/chrome/memex/service/proto/shopping/notifications.proto,
@@ -47,4 +49,13 @@ message ExpandedView {
 message Action {
   optional string action_id = 1;
   optional string text = 2;
+}
+
+// Contains notification metadata for Chrome Price Drop notifications.
+message PriceDropNotificationPayload {
+  optional string product_name = 1;
+  optional uint64 offer_id = 2;
+  optional string destination_url = 3;
+  optional commerce.ProductPrice current_price = 4;
+  optional commerce.ProductPrice previous_price = 5;
 }
