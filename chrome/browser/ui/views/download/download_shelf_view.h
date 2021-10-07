@@ -23,6 +23,10 @@ class Browser;
 class BrowserView;
 class DownloadItemView;
 
+namespace base {
+class Time;
+}
+
 namespace views {
 class ImageButton;
 class MdTextButton;
@@ -71,7 +75,7 @@ class DownloadShelfView : public DownloadShelf,
 
   // Updates |button| according to the active theme.
   void ConfigureButtonForTheme(views::MdTextButton* button);
-                            
+
   DownloadItemView* GetViewOfLastDownloadItemForTesting();
 
  protected:
@@ -115,6 +119,16 @@ class DownloadShelfView : public DownloadShelf,
 
   // The window this shelf belongs to.
   BrowserView* parent_;
+
+  // Time since the last time the download shelf was opened.
+  base::Time last_opened_;
+
+  // Set the time when the download shelf becomes visible.
+  void SetLastOpened();
+
+  // Emits a histogram recording the time between the shelf being visible
+  // and it being closed.
+  void RecordShelfVisibleTime();
 
   views::MouseWatcher mouse_watcher_{
       std::make_unique<views::MouseWatcherViewHost>(this, gfx::Insets()), this};

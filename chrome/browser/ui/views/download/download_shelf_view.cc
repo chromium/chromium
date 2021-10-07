@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -343,11 +344,13 @@ void DownloadShelfView::DoShowDownload(
 void DownloadShelfView::DoOpen() {
   SetVisible(true);
   shelf_animation_.Show();
+  SetLastOpened();
 }
 
 void DownloadShelfView::DoClose() {
   parent_->SetDownloadShelfVisible(false);
   shelf_animation_.Hide();
+  RecordShelfVisibleTime();
 }
 
 void DownloadShelfView::DoHide() {
@@ -388,6 +391,19 @@ views::View* DownloadShelfView::GetDefaultFocusableChild() {
 
 DownloadItemView* DownloadShelfView::GetViewOfLastDownloadItemForTesting() {
   return download_views_.empty() ? nullptr : download_views_.back();
+}
+
+void DownloadShelfView::SetLastOpened() {
+  last_opened_ = base::Time::Now();
+}
+
+void DownloadShelfView::RecordShelfVisibleTime() {
+  if (!last_opened_.is_null()) {
+    base::UmaHistogramCustomTimes("Download.Shelf.VisibleTime",
+                                  base::Time::Now() - last_opened_,
+                                  base::Seconds(1), base::Days(1), 100);
+    last_opened_ = base::Time();
+  }
 }
 
 BEGIN_METADATA(DownloadShelfView, views::AccessiblePaneView)
