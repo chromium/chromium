@@ -61,10 +61,6 @@ class CoreTabHelper : public content::WebContentsObserver,
   void SearchByImageInNewTab(content::RenderFrameHost* render_frame_host,
                              const GURL& src_url);
 
-  // Performs an image search for the provided image.
-  void SearchByImageInNewTab(const gfx::Image& image,
-                             const gfx::Size& image_original_size);
-
   void set_new_tab_start_time(const base::TimeTicks& time) {
     new_tab_start_time_ = time;
   }
@@ -118,11 +114,7 @@ class CoreTabHelper : public content::WebContentsObserver,
                                  int thumbnail_min_size,
                                  int thumbnail_max_width,
                                  int thumbnail_max_height,
-                                 const std::string& additional_query_params,
-                                 bool use_side_panel);
-  void SearchByImageInNewTabImpl(const gfx::Image& image,
-                                 const gfx::Size& image_original_size,
-                                 const std::string& additional_query_params,
+                                 std::string additional_query_params,
                                  bool use_side_panel);
 
   // The time when we started to create the new tab page.  This time is from
