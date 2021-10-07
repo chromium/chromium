@@ -4173,7 +4173,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5463625433003343978">Recherche d'appareils…</translation>
 <translation id="5463856536939868464">Menu contenant des favoris masqués</translation>
 <translation id="5464632865477611176">Exécuter cette fois</translation>
-<translation id="5464660706533281090">Ce paramètre ne peut pas être modifié par un utilisateur mineur.</translation>
+<translation id="5464660706533281090">Ce paramètre ne peut pas être modifié par un enfant.</translation>
 <translation id="5466374726908360271">Coller et chercher "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Autorisations bloquées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Recherche de partages de fichiers…</translation>
