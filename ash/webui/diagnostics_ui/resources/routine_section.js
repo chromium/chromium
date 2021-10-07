@@ -15,6 +15,7 @@ import './strings.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PowerRoutineResult, RoutineType, StandardRoutineResult, SystemRoutineControllerInterface} from './diagnostics_types.js';
@@ -53,6 +54,16 @@ Polymer({
   systemRoutineController_: null,
 
   properties: {
+    /**
+     * Added to support testing of announce behavior.
+     * @private
+     * @type {string}
+     */
+    announcedText_: {
+      type: String,
+      value: '',
+    },
+
     /** @type {!Array<RoutineGroup|RoutineType>} */
     routines: {
       type: Array,
@@ -211,6 +222,11 @@ Polymer({
     'onActivePageChanged_(isActive)'
   ],
 
+  /** @override */
+  attached() {
+    IronA11yAnnouncer.requestAvailability();
+  },
+
   /**
    * @param {string} buttonText
    * @return {string}
@@ -327,6 +343,13 @@ Polymer({
     }
   },
 
+  /** @private */
+  announceRoutinesComplete_() {
+    this.announcedText_ =
+        loadTimeData.getString('testOnRoutinesCompletedText');
+    this.fire('iron-announce', {text: `${this.announcedText_}`});
+  },
+
   /** @param {!ExecutionProgress} status */
   handleRoutinesCompletedStatus_(status) {
     this.executionStatus_ = status;
@@ -343,6 +366,7 @@ Polymer({
       this.badgeText_ = this.failedTest_ ?
           loadTimeData.getString('testFailedBadgeText') :
           loadTimeData.getString('testSucceededBadgeText');
+      this.announceRoutinesComplete_();
     }
   },
 

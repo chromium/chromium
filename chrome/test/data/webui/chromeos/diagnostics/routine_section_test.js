@@ -179,6 +179,16 @@ export function routineSectionTestSuite() {
   }
 
   /**
+   * @suppress {visibility}
+   * @return {string}
+   */
+  function getAnnouncedText() {
+    assertTrue(!!routineSectionElement);
+
+    return routineSectionElement.announcedText_;
+  }
+
+  /**
    * Returns an array of the entries in the list.
    * @return {!NodeList<!RoutineResultEntryElement>}
    */
@@ -1231,6 +1241,120 @@ export function routineSectionTestSuite() {
           assertEquals(entries[0].item.progress, ExecutionProgress.kCompleted);
           // Failed test text should be set properly.
           assertEquals(entries[0].item.failedTest, RoutineType.kCaptivePortal);
+        });
+  });
+
+  test('AnnounceOnAllTestPassed', () => {
+    let groups = [new RoutineGroup(
+        [
+          createRoutine(RoutineType.kSignalStrength, /* blocking */ false),
+        ],
+        'wifiGroupLabel')];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kSignalStrength, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          assertEquals('', getAnnouncedText());
+
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          assertEquals(
+              routineSectionElement.testSuiteStatus,
+              TestSuiteStatus.kCompleted);
+          assertEquals('Diagnostics completed', getAnnouncedText());
+        });
+  });
+
+  test('AnnounceOnAllNonBlockingTestPassed', () => {
+    const groups = [
+      new RoutineGroup(
+          [
+            createRoutine(RoutineType.kCaptivePortal, false),
+          ],
+          'wifiGroupLabel'),
+      new RoutineGroup(
+          [
+            createRoutine(RoutineType.kDnsResolverPresent, true),
+          ],
+          'wifiGroupLabel')
+    ];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kCaptivePortal, StandardRoutineResult.kTestFailed);
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kDnsResolverPresent, StandardRoutineResult.kTestPassed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          assertEquals('', getAnnouncedText());
+
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          assertEquals('', getAnnouncedText());
+
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          assertEquals(
+              routineSectionElement.testSuiteStatus,
+              TestSuiteStatus.kCompleted);
+          assertEquals('Diagnostics completed', getAnnouncedText());
+        });
+  });
+
+  test('AnnounceOnBlockingTestFailed', () => {
+    let groups = [new RoutineGroup(
+        [
+          createRoutine(RoutineType.kSignalStrength, /* blocking */ true),
+        ],
+        'wifiGroupLabel')];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kSignalStrength, StandardRoutineResult.kTestFailed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          assertEquals('', getAnnouncedText());
+
+          return routineController.resolveRoutineForTesting();
+        })
+        .then(() => flushTasks())
+        .then(() => {
+          assertEquals(
+              routineSectionElement.testSuiteStatus,
+              TestSuiteStatus.kCompleted);
+          assertEquals('Diagnostics completed', getAnnouncedText());
+        });
+  });
+
+  test('NoAnnounceOnBlockingTestCancelled', () => {
+    let groups = [new RoutineGroup(
+        [
+          createRoutine(RoutineType.kSignalStrength, /* blocking */ true),
+        ],
+        'wifiGroupLabel')];
+    routineController.setFakeStandardRoutineResult(
+        RoutineType.kSignalStrength, StandardRoutineResult.kTestFailed);
+
+    return initializeRoutineSection(groups)
+        .then(() => clickRunTestsButton())
+        .then(() => {
+          assertEquals('', getAnnouncedText());
+
+          return clickStopTestsButton();
+        })
+        .then(() => {
+          assertEquals(
+              routineSectionElement.testSuiteStatus,
+              TestSuiteStatus.kNotRunning);
+          assertEquals('', getAnnouncedText());
         });
   });
 }

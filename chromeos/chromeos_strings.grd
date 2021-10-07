@@ -1836,6 +1836,9 @@ Try tapping the mic to ask me anything.
       <message translateable="false" name="IDS_NETWORK_DIAGNOSTICS_MAC_ADDRESS_LABEL" desc="Label for Mac Address.">
         MAC
       </message>
+      <message translateable="false" name="IDS_DIAGNOSTICS_TEST_ON_COMPLETED_TEXT" desc="Message annouced in aria-live when all test routines finished.">
+        Diagnostics completed
+      </message>
 
       <!-- Personalization App -->
       <message name="IDS_PERSONALIZATION_APP_TITLE" desc="Name of the system web app for personalizing ChromeOS.">
