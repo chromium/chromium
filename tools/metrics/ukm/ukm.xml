@@ -155,11 +155,25 @@ be describing additional metrics about the same event.
       Records an enum value representing which action in the accuracy tip was
       taken.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TimeSpent">
     <summary>
       The amount of time spent on the dialog until it was closed. In seconds.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -174,6 +188,13 @@ be describing additional metrics about the same event.
     <summary>
       The accuracy tip status that was determined for a pageload.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
