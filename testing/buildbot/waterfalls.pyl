@@ -4917,7 +4917,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win7_amd_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win_nvidia_amd_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_win7_nvidia_amd_release_telemetry_tests',
         },
       },
       'Win7 FYI Release (NVIDIA)': {
@@ -4929,7 +4929,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win7_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win_nvidia_amd_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_win7_nvidia_amd_release_telemetry_tests',
         },
       },
       'Win7 FYI x64 Release (NVIDIA)': {
@@ -4941,7 +4941,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win7_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win_nvidia_amd_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fyi_win7_nvidia_amd_release_telemetry_tests',
         },
         'use_multi_dimension_trigger_script': True,
         'alternate_swarming_dimensions': [
