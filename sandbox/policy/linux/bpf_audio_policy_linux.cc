@@ -85,7 +85,7 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
     {
       const Arg<int> op(1);
 #if defined(USE_PULSEAUDIO)
-      return Switch(op & ~FUTEX_PRIVATE_FLAG)
+      return Switch(op & ~(FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME))
           .SANDBOX_BPF_DSL_CASES(
               (FUTEX_CMP_REQUEUE, FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_WAIT,
                FUTEX_WAIT_BITSET, FUTEX_WAKE),
