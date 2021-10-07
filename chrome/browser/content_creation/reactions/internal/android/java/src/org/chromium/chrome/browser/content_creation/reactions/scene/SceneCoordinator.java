@@ -21,7 +21,8 @@ import java.util.Set;
  * Manages the scene UI and the reactions on the scene.
  */
 public class SceneCoordinator implements SceneEditorDelegate {
-    private static final int DEFAULT_REACTION_SIZE = 100;
+    private static final int DEFAULT_REACTION_SIZE_DP = 100;
+    private static final int REACTION_OFFSET_DP = 45;
     private static final int MAX_REACTION_COUNT = 10;
 
     private final Activity mActivity;
@@ -51,10 +52,11 @@ public class SceneCoordinator implements SceneEditorDelegate {
 
         ReactionLayout reactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
                 mActivity, R.layout.reaction_layout, null);
-        reactionLayout.setReaction(
-                AppCompatResources.getDrawable(mActivity, org.chromium.chrome.R.drawable.qr_code));
+        reactionLayout.init(
+                AppCompatResources.getDrawable(mActivity, org.chromium.chrome.R.drawable.qr_code),
+                this);
 
-        int reactionSizePx = ViewUtils.dpToPx(mActivity, DEFAULT_REACTION_SIZE);
+        int reactionSizePx = ViewUtils.dpToPx(mActivity, DEFAULT_REACTION_SIZE_DP);
         RelativeLayout.LayoutParams lp =
                 new RelativeLayout.LayoutParams(reactionSizePx, reactionSizePx);
         Resources res = mActivity.getResources();
@@ -75,11 +77,19 @@ public class SceneCoordinator implements SceneEditorDelegate {
 
     @Override
     public void duplicateReaction(ReactionLayout reactionLayout) {
-        // TODO(crbug/1257326): Finish implementing duplicateReaction(), including offsetting
         ReactionLayout newReactionLayout = (ReactionLayout) LayoutInflaterUtils.inflate(
                 mActivity, R.layout.reaction_layout, null);
-        newReactionLayout.setReaction(reactionLayout.getReaction());
-        newReactionLayout.setLayoutParams(reactionLayout.getLayoutParams());
+        newReactionLayout.init(reactionLayout.getReaction(), this);
+
+        // TODO(crbug/1257738): Make sure the reaction is within bounds.
+        RelativeLayout.LayoutParams oldLayoutParams =
+                (RelativeLayout.LayoutParams) reactionLayout.getLayoutParams();
+        RelativeLayout.LayoutParams newLayoutParams =
+                new RelativeLayout.LayoutParams(reactionLayout.getLayoutParams());
+        int offsetPx = ViewUtils.dpToPx(mActivity, REACTION_OFFSET_DP);
+        newLayoutParams.leftMargin = oldLayoutParams.leftMargin + offsetPx;
+        newLayoutParams.topMargin = oldLayoutParams.topMargin + offsetPx;
+        newReactionLayout.setLayoutParams(newLayoutParams);
 
         mSceneBackground.addView(newReactionLayout);
         mReactionLayouts.add(newReactionLayout);
