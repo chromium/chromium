@@ -121,6 +121,7 @@ constexpr int kUnifiedSliderViewSpacing = 12;
 constexpr int kUnifiedMenuPadding = 8;
 constexpr int kUnifiedMessageCenterBubbleSpacing = 8;
 constexpr int kUnifiedNotificationCenterSpacing = 16;
+constexpr int kUnifiedTrayBatteryIconSize = 20;
 constexpr int kUnifiedTrayIconSize = 18;
 constexpr int kUnifiedTraySubIconSize = 15;
 constexpr int kUnifiedTrayTextTopPadding = 1;

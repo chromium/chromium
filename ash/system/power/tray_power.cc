@@ -43,10 +43,9 @@ namespace ash {
 namespace tray {
 
 PowerTrayView::PowerTrayView(Shelf* shelf) : TrayItemView(shelf) {
-  SetBorder(
-      views::CreateEmptyBorder(0, 0, kUnifiedTrayBatteryBottomPadding, 0));
   CreateImageView();
   UpdateStatus();
+
   PowerStatus::Get()->AddObserver(this);
 }
 
@@ -126,7 +125,7 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
       AshColorProvider::Get()->GetBackgroundColor());
 
   image_view()->SetImage(PowerStatus::GetBatteryImage(
-      info, kUnifiedTrayIconSize, icon_bg_color, icon_fg_color));
+      info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color));
 }
 
 }  // namespace tray

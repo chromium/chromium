@@ -98,12 +98,11 @@ class PhoneHubBatteryImageSource : public BatteryImageSource {
     SkColor saver_color = AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kIconColorWarning);
 
-    gfx::ImageSkia icon = CreateVectorIcon(kBatteryIcon, saver_color);
-    // Draw the solid outline of the battery icon.
-    canvas->DrawImageInt(icon, 0, 0);
-
-    PaintVectorIcon(canvas, kPhoneHubBatterySaverOutlineIcon, bg_color_);
-    PaintVectorIcon(canvas, kPhoneHubBatterySaverIcon, saver_color);
+    PaintVectorIcon(canvas, kBatteryIcon, size().height(), saver_color);
+    PaintVectorIcon(canvas, kPhoneHubBatterySaverOutlineIcon, size().height(),
+                    bg_color_);
+    PaintVectorIcon(canvas, kPhoneHubBatterySaverIcon, size().height(),
+                    saver_color);
   }
 
  private:
@@ -267,9 +266,9 @@ void PhoneStatusView::UpdateBatteryStatus() {
   bool in_battery_saver_mode = phone_status.battery_saver_state() ==
                                PhoneStatusModel::BatterySaverState::kOn;
 
-  auto* source = new PhoneHubBatteryImageSource(info, kStatusIconSize.height(),
-                                                icon_bg_color, icon_fg_color,
-                                                in_battery_saver_mode);
+  auto* source = new PhoneHubBatteryImageSource(
+      info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color,
+      in_battery_saver_mode);
   battery_icon_->SetImage(
       gfx::ImageSkia(base::WrapUnique(source), source->size()));
   SetBatteryTooltipText();

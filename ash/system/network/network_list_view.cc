@@ -63,7 +63,7 @@ namespace ash {
 namespace tray {
 namespace {
 
-const int kMobileNetworkBatteryIconSize = 18;
+const int kMobileNetworkBatteryIconSize = 20;
 const int kPowerStatusPaddingRight = 10;
 const double kAlphaValueForInhibitedIconOpacity = 0.3;
 
