@@ -1,0 +1,92 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// Diagnostics routine verdict.
+enum RoutineVerdict {
+  ROUTINE_VERDICT_UNSPECIFIED = 0;
+  // Routine ran successfully and no connectivity problem found.
+  NO_PROBLEM = 1;
+  // Routine ran successfully and connectivity problem found.
+  PROBLEM = 2;
+  // Routine has not been run.
+  NOT_RUN = 3;
+}
+
+// Https latency problems.
+enum HttpsLatencyProblem {
+  HTTPS_LATENCY_PROBLEM_UNSPECIFIED = 0;
+  // One or more DNS resolutions resulted in a failure.
+  FAILED_DNS_RESOLUTIONS = 1;
+  // One or more HTTPS requests resulted in a failure.
+  FAILED_HTTPS_REQUESTS = 2;
+  // HTTPS request latency is high.
+  HIGH_LATENCY = 3;
+  // HTTPS request latency is very high.
+  VERY_HIGH_LATENCY = 4;
+}
+
+// Data that describe the result of the https latency diagnostics routine.
+message HttpsLatencyRoutineData {
+  // Https latency routine verdict.
+  optional RoutineVerdict verdict = 1;
+  // Https latency routine problem if a problem occurred.
+  optional HttpsLatencyProblem problem = 2;
+  // Https latency in milliseconds if routine succeeded or failed because of
+  // `HIGH_LATENCY` or `VERY_HIGH_LATENCY`.
+  optional int64 latency_ms = 3;
+}
+
+// Network connection state.
+enum NetworkConnectionState {
+  NETWORK_CONNECTION_STATE_UNSPECIFIED = 0;
+  // The network is connected and internet connectivity is available.
+  ONLINE = 1;
+  // The network is connected and not in a detected portal state, but
+  // internet connectivity may not be available.
+  CONNECTED = 2;
+  // The network is connected but a portal state was detected. Internet
+  // connectivity may be limited.
+  PORTAL = 3;
+  // The network is in the process of connecting.
+  CONNECTING = 4;
+  // The network is not connected.
+  NOT_CONNECTED = 5;
+}
+
+// A single network telemetry data collected at a specific point of time.
+message NetworkTelemetry {
+  // Unique identifier of the network.
+  optional string guid = 1;
+  // Current connection state of the network.
+  optional NetworkConnectionState connection_state = 2;
+  // Signal strength of the network provided only for wireless networks. Values
+  // are normalized between 0 to 100 inclusive.
+  optional int32 signal_strength = 3;
+}
+
+// Configured networks telemetry data.
+message NetworksTelemetry {
+  // List of each network telemetry.
+  repeated NetworkTelemetry network_telemetry = 1;
+  // Https latency diagnostics routine result.
+  optional HttpsLatencyRoutineData https_latency_data = 2;
+}
+
+// Data that is considered immutable, should only be reported on startup and
+// policy enablment.
+message InfoData {}
+
+// Data that can change over time, collected and reported every specific period
+// of time or when an event occur.
+message TelemetryData {
+  // At least one of the following telemetry should be present.
+  // Networks telemetry data.
+  optional NetworksTelemetry networks_telemetry = 1;
+}
