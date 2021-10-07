@@ -547,6 +547,37 @@ LogBufferSubmitter LogRationalization(LogManager* log_manager) {
   return submitter;
 }
 
+// Creates a unique name for the section that starts with |field|.
+//
+// The section is either named by the field's unique_name() or by a string of
+// the form "%s_%u_%u", where the first string is the field's name and the two
+// integers are the field's frame ID and its renderer ID.
+//
+// For the frame ID, we do not use LocalFrameTokens but instead map them to
+// consecutive integers using |frame_token_ids|, which uniquely identify a frame
+// within a given FormStructure. Since we do not intend to compare sections from
+// different FormStructures, this is sufficient.
+//
+// We intentionally do not include the LocalFrameToken in the section string
+// because frame tokens should not be sent to a renderer.
+//
+// TODO(crbug.com/896689): Remove unique_name.
+// TODO(crbug.com/1257141): Remove special handling of FrameTokens.
+std::u16string GetSectionName(
+    const AutofillField& field,
+    base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillNameSectionsWithRendererIds)) {
+    return field.unique_name();
+  }
+
+  size_t id = frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
+                  .first->second;
+  return base::StrCat(
+      {field.name, u"_", base::NumberToString16(id), u"_",
+       base::NumberToString16(field.unique_renderer_id.value())});
+}
+
 }  // namespace
 
 class FormStructure::SectionedFieldsIndexes {
@@ -2187,20 +2218,9 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
-  // Creates a unique name for the section that starts with |field|.
-  // TODO(crbug/896689): Cleanup once experiment is launched.
-  auto get_section_name = [](const AutofillField& field) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillNameSectionsWithRendererIds)) {
-      return base::StrCat(
-          {field.name, u"_", base::ASCIIToUTF16(field.host_frame.ToString()),
-           u"_", base::NumberToString16(field.unique_renderer_id.value())});
-    } else {
-      return field.unique_name();
-    }
-  };
-
-  std::u16string current_section = get_section_name(*fields_.front());
+  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+  std::u16string current_section =
+      GetSectionName(*fields_.front(), frame_token_ids);
 
   // Keep track of the types we've seen in this section.
   ServerFieldTypeSet seen_types;
@@ -2312,7 +2332,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
       }
 
       // The end of a section, so start a new section.
-      current_section = get_section_name(*field);
+      current_section = GetSectionName(*field, frame_token_ids);
 
       // The section described in the autocomplete section attribute
       // overrides the value determined by the heuristic.
@@ -2369,21 +2389,10 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
-  // Creates a unique name for the section that starts with |field|.
-  // TODO(crbug/896689): Cleanup once experiment is launched.
-  auto get_section_name = [](const AutofillField& field) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillNameSectionsWithRendererIds)) {
-      return base::StrCat(
-          {field.name, u"_", base::ASCIIToUTF16(field.host_frame.ToString()),
-           u"_", base::NumberToString16(field.unique_renderer_id.value())});
-    } else {
-      return field.unique_name();
-    }
-  };
-
   if (!has_author_specified_sections) {
-    std::u16string current_section = get_section_name(*fields_.front());
+    base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+    std::u16string current_section =
+        GetSectionName(*fields_.front(), frame_token_ids);
 
     // Keep track of the types we've seen in this section.
     ServerFieldTypeSet seen_types;
@@ -2463,7 +2472,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
           seen_types.clear();
 
         // The end of a section, so start a new section.
-        current_section = get_section_name(*field);
+        current_section = GetSectionName(*field, frame_token_ids);
       }
 
       // Only consider a type "seen" if it was not ignored. Some forms have

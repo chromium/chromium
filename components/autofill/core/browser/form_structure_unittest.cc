@@ -6232,12 +6232,9 @@ TEST_P(ParameterizedFormStructureTest,
                                        nullptr, nullptr);
 
   if (section_with_renderer_ids) {
-    EXPECT_FALSE(form_structure.phone_rationalized_
-                     ["fullName_00000000000000000000000000000000_11-default"]);
-    form_structure.RationalizePhoneNumbersInSection(
-        "fullName_00000000000000000000000000000000_11-default");
-    EXPECT_TRUE(form_structure.phone_rationalized_
-                    ["fullName_00000000000000000000000000000000_11-default"]);
+    EXPECT_FALSE(form_structure.phone_rationalized_["fullName_0_11-default"]);
+    form_structure.RationalizePhoneNumbersInSection("fullName_0_11-default");
+    EXPECT_TRUE(form_structure.phone_rationalized_["fullName_0_11-default"]);
   } else {
     EXPECT_FALSE(form_structure.phone_rationalized_["fullName_1-default"]);
     form_structure.RationalizePhoneNumbersInSection("fullName_1-default");
@@ -8113,18 +8110,12 @@ TEST_P(ParameterizedFormStructureTest, NoAutocompleteSectionNames) {
   ASSERT_EQ(6U, form_structure.field_count());
 
   if (section_with_renderer_ids) {
-    EXPECT_EQ("fullName_00000000000000000000000000000000_11-default",
-              form_structure.field(0)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_11-default",
-              form_structure.field(1)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_11-default",
-              form_structure.field(2)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_14-default",
-              form_structure.field(3)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_14-default",
-              form_structure.field(4)->section);
-    EXPECT_EQ("fullName_00000000000000000000000000000000_14-default",
-              form_structure.field(5)->section);
+    EXPECT_EQ("fullName_0_11-default", form_structure.field(0)->section);
+    EXPECT_EQ("fullName_0_11-default", form_structure.field(1)->section);
+    EXPECT_EQ("fullName_0_11-default", form_structure.field(2)->section);
+    EXPECT_EQ("fullName_0_14-default", form_structure.field(3)->section);
+    EXPECT_EQ("fullName_0_14-default", form_structure.field(4)->section);
+    EXPECT_EQ("fullName_0_14-default", form_structure.field(5)->section);
   } else {
     EXPECT_EQ("fullName_1-default", form_structure.field(0)->section);
     EXPECT_EQ("fullName_1-default", form_structure.field(1)->section);
@@ -8271,8 +8262,7 @@ TEST_P(ParameterizedFormStructureTest, SplitByRecurringFieldType) {
   EXPECT_EQ("blue-shipping-default", form_structure.field(1)->section);
   EXPECT_EQ("blue-shipping-default", form_structure.field(2)->section);
   if (section_with_renderer_ids) {
-    EXPECT_EQ("country_00000000000000000000000000000000_14-default",
-              form_structure.field(3)->section);
+    EXPECT_EQ("country_0_14-default", form_structure.field(3)->section);
   } else {
     EXPECT_EQ("country_2-default", form_structure.field(3)->section);
   }
@@ -8341,8 +8331,7 @@ TEST_P(ParameterizedFormStructureTest,
   EXPECT_EQ("blue-billing-default", form_structure.field(1)->section);
   EXPECT_EQ("blue-billing-default", form_structure.field(2)->section);
   if (section_with_renderer_ids) {
-    EXPECT_EQ("country_00000000000000000000000000000000_14-default",
-              form_structure.field(3)->section);
+    EXPECT_EQ("country_0_14-default", form_structure.field(3)->section);
   } else {
     EXPECT_EQ("country_2-default", form_structure.field(3)->section);
   }
