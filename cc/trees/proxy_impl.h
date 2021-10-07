@@ -64,12 +64,14 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void SetVisibleOnImpl(bool visible);
   void ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion);
   void FinishGLOnImpl(CompletionEvent* completion);
-  void NotifyReadyToCommitOnImpl(CompletionEvent* completion,
-                                 LayerTreeHost* layer_tree_host,
-                                 base::TimeTicks main_thread_start_time,
-                                 const viz::BeginFrameArgs& commit_args,
-                                 int source_frame_number,
-                                 bool hold_commit_for_activation);
+  void NotifyReadyToCommitOnImpl(
+      CompletionEvent* completion,
+      LayerTreeHost* layer_tree_host,
+      base::TimeTicks main_thread_start_time,
+      const viz::BeginFrameArgs& commit_args,
+      int source_frame_number,
+      std::vector<std::unique_ptr<SwapPromise>> swap_promises,
+      bool hold_commit_for_activation);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
@@ -170,6 +172,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   std::unique_ptr<Scheduler> scheduler_;
 
   int source_frame_number_ = -1;
+  std::vector<std::unique_ptr<SwapPromise>> swap_promises_;
 
   // Set when the main thread is waiting on a pending tree activation.
   bool commit_completion_waits_for_activation_;

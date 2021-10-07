@@ -348,7 +348,9 @@ void LayerTreeHost::RequestMainFrameUpdate(bool report_cc_metrics) {
 // code that is logically a main thread operation, e.g. deletion of a Layer,
 // should be delayed until the LayerTreeHost::CommitComplete, which will run
 // after the commit, but on the main thread.
-void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
+void LayerTreeHost::FinishCommitOnImplThread(
+    LayerTreeHostImpl* host_impl,
+    std::vector<std::unique_ptr<SwapPromise>> swap_promises) {
   DCHECK(task_runner_provider_->IsImplThread());
 
   TRACE_EVENT0("cc,benchmark", "LayerTreeHost::FinishCommitOnImplThread");
@@ -394,7 +396,7 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
     PushLayerTreePropertiesTo(sync_tree);
     PushLayerTreeHostPropertiesTo(host_impl);
 
-    sync_tree->PassSwapPromises(swap_promise_manager_.TakeSwapPromises());
+    sync_tree->PassSwapPromises(std::move(swap_promises));
     sync_tree->AppendEventsMetricsFromMainThread(
         events_metrics_manager_.TakeSavedEventsMetrics());
 

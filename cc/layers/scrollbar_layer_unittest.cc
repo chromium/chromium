@@ -358,7 +358,9 @@ TEST_F(ScrollbarLayerTest, ScrollElementIdPushedAcrossCommit) {
   {
     DebugScopedSetImplThread scoped_impl_thread(
         layer_tree_host_->GetTaskRunnerProvider());
-    layer_tree_host_->FinishCommitOnImplThread(layer_tree_host_->host_impl());
+    layer_tree_host_->FinishCommitOnImplThread(
+        layer_tree_host_->host_impl(),
+        layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises());
   }
 
   EXPECT_EQ(painted_scrollbar_layer_impl->scroll_element_id_,

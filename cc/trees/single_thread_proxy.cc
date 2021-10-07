@@ -209,7 +209,9 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
     if (host_impl_->EvictedUIResourcesExist())
       layer_tree_host_->GetUIResourceManager()->RecreateUIResources();
 
-    layer_tree_host_->FinishCommitOnImplThread(host_impl_.get());
+    layer_tree_host_->FinishCommitOnImplThread(
+        host_impl_.get(),
+        layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises());
 
     if (scheduler_on_impl_thread_) {
       scheduler_on_impl_thread_->DidCommit();

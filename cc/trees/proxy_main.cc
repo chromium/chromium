@@ -369,6 +369,9 @@ void ProxyMain::BeginMainFrame(
 
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
 
+    std::vector<std::unique_ptr<SwapPromise>> swap_promises =
+        layer_tree_host_->GetSwapPromiseManager()->TakeSwapPromises();
+
     bool hold_commit_for_activation = commit_waits_for_activation_;
     commit_waits_for_activation_ = false;
     ImplThreadTaskRunner()->PostTask(
@@ -377,7 +380,8 @@ void ProxyMain::BeginMainFrame(
                        base::Unretained(proxy_impl_.get()), completion_event,
                        layer_tree_host_, begin_main_frame_start_time,
                        begin_main_frame_state->begin_frame_args,
-                       source_frame_number, hold_commit_for_activation));
+                       source_frame_number, std::move(swap_promises),
+                       hold_commit_for_activation));
     layer_tree_host_->WaitForCommitCompletion();
   }
 

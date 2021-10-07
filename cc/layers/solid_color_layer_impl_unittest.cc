@@ -187,7 +187,8 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   EXPECT_TRUE(layer->contents_opaque());
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(host->host_impl());
+    host->FinishCommitOnImplThread(
+        host->host_impl(), host->GetSwapPromiseManager()->TakeSwapPromises());
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 
@@ -214,7 +215,8 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   EXPECT_FALSE(layer->contents_opaque());
   {
     DebugScopedSetImplThread scoped_impl_thread(host->GetTaskRunnerProvider());
-    host->FinishCommitOnImplThread(host->host_impl());
+    host->FinishCommitOnImplThread(
+        host->host_impl(), host->GetSwapPromiseManager()->TakeSwapPromises());
     LayerImpl* layer_impl =
         host->host_impl()->active_tree()->LayerById(layer->id());
 
