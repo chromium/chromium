@@ -5,6 +5,8 @@
 #include "cc/layers/painted_overlay_scrollbar_layer.h"
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "cc/base/math_util.h"
@@ -19,7 +21,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 

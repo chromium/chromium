@@ -4,7 +4,7 @@
 
 #include "device/vr/vr_gl_util.h"
 
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

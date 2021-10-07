@@ -16,8 +16,8 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 
 Windows10CaptionButton::Windows10CaptionButton(
     PressedCallback callback,

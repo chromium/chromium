@@ -43,7 +43,7 @@
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface_egl.h"

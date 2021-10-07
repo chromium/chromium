@@ -11,7 +11,7 @@
 #include "pdf/ppapi_migration/image.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
 

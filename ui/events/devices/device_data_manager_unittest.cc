@@ -12,7 +12,7 @@
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/devices/touchscreen_device.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 

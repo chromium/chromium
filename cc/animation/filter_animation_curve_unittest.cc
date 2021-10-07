@@ -11,8 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/transform_operations.h"
 #include "ui/gfx/test/gfx_util.h"
-#include "ui/gfx/transform_operations.h"
 
 namespace cc {
 namespace {

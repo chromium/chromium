@@ -22,9 +22,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 class Rect;

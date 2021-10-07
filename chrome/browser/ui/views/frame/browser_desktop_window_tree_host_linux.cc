@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"

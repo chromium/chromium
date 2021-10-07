@@ -31,7 +31,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 namespace {

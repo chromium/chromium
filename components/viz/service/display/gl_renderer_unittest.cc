@@ -49,7 +49,7 @@
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_transform.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/latency/latency_info.h"
 
 #if defined(OS_WIN)

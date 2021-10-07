@@ -9,7 +9,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace viz {
 

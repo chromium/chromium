@@ -34,8 +34,8 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace {
 

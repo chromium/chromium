@@ -29,7 +29,7 @@
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 

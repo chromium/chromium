@@ -14,7 +14,7 @@
 #include "cc/paint/clear_for_opaque_raster.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "skia/ext/legacy_display_globals.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {

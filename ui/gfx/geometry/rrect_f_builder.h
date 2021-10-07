@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_RRECT_F_BUILDER_H_
-#define UI_GFX_RRECT_F_BUILDER_H_
+#ifndef UI_GFX_GEOMETRY_RRECT_F_BUILDER_H_
+#define UI_GFX_GEOMETRY_RRECT_F_BUILDER_H_
 
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace gfx {
 
@@ -127,4 +127,4 @@ class GEOMETRY_SKIA_EXPORT RRectFBuilder {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_RRECT_F_BUILDER_H_
+#endif  // UI_GFX_GEOMETRY_RRECT_F_BUILDER_H_

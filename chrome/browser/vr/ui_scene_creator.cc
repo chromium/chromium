@@ -78,8 +78,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/transform_util.h"
 
 namespace vr {
 

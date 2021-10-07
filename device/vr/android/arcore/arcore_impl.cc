@@ -29,8 +29,8 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 using base::android::JavaRef;
 

@@ -7,7 +7,7 @@
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 #if defined(OS_ANDROID)
 #include <array>

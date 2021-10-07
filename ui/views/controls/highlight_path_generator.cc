@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "third_party/skia/include/core/SkRect.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 

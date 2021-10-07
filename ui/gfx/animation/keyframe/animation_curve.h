@@ -12,8 +12,8 @@
 #include "ui/gfx/animation/keyframe/keyframe_animation_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace gfx {
 class TransformOperations;

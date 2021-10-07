@@ -40,8 +40,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/wm/core/window_util.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::ScreenRotationAnimator*)

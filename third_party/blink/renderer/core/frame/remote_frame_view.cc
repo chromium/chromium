@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 // nogncheck because dependency on //printing is conditional upon

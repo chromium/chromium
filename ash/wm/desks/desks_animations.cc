@@ -20,7 +20,7 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 

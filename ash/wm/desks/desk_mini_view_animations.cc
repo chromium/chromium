@@ -18,7 +18,7 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace ash {
 

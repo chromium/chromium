@@ -21,8 +21,8 @@ component("codec") {
     "//base",
     "//skia",
     "//third_party/libpng",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx:gfx_export",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx/geometry",
   ]
 

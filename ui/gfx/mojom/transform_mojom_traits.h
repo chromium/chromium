@@ -6,8 +6,8 @@
 #define UI_GFX_MOJOM_TRANSFORM_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/array_traits.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mojom/transform.mojom-shared.h"
-#include "ui/gfx/transform.h"
 
 namespace mojo {
 

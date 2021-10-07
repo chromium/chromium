@@ -34,9 +34,9 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
 
 namespace viz {
 class CopyOutputRequest;

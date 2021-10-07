@@ -14,7 +14,7 @@
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace cc {
 

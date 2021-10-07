@@ -15,7 +15,7 @@
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 

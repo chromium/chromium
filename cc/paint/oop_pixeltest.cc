@@ -46,7 +46,7 @@
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_implementation.h"
 
 #if defined(OS_ANDROID)

@@ -16,7 +16,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_stats_tracker.h"
 #include "ui/gfx/codec/jpeg_codec.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 ThumbnailImage::Subscription::Subscription(
     scoped_refptr<ThumbnailImage> thumbnail)

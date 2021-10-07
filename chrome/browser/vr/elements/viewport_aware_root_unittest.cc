@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/quaternion.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

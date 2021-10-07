@@ -11,7 +11,7 @@
 #include "skia/ext/skia_utils_base.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ui {
 

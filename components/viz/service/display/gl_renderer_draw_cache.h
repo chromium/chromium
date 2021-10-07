@@ -11,7 +11,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/program_binding.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/mask_filter_info.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 
 namespace viz {
 

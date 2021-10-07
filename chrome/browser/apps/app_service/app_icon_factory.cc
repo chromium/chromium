@@ -41,7 +41,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #endif
 
 namespace {

@@ -26,7 +26,6 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gpu {
 namespace raster {

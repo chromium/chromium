@@ -11,7 +11,7 @@
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace vr {
 

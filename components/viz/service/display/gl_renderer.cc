@@ -78,11 +78,11 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/gpu_fence_handle.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/skia_util.h"
 
 #if defined(USE_X11)
 #include "ui/base/ui_base_features.h"

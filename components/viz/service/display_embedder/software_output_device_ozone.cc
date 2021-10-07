@@ -5,8 +5,9 @@
 #include "components/viz/service/display_embedder/software_output_device_ozone.h"
 
 #include <memory>
+#include <utility>
 
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/public/platform_window_surface.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"

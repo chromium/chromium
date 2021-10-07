@@ -11,7 +11,7 @@
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager_impl.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

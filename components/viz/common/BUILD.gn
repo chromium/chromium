@@ -319,8 +319,8 @@ viz_component("common") {
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gfx:color_space",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gl",
     "//ui/latency",
   ]

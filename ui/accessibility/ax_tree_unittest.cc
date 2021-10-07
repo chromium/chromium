@@ -24,7 +24,7 @@
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/test_ax_tree_manager.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 // Helper macro for testing selection values and maintain
 // correct stack tracing and failure causality.

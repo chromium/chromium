@@ -13,7 +13,7 @@
 #include "cc/paint/filter_operations.h"
 #include "cc/test/geometry_test_utils.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace gfx {
 class Vector2dF;

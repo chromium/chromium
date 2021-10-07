@@ -43,7 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/quaternion.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #if defined(ARCH_CPU_X86_64)
 #include <emmintrin.h>
@@ -576,9 +576,9 @@ static void V3Cross(const Vector3 a, const Vector3 b, Vector3 result) {
 }
 
 // TODO(crbug/937296): This implementation is virtually identical to the
-// implementation in ui/gfx/transform_util with the main difference being
-// the representation of the underlying matrix. These implementations should be
-// consolidated.
+// implementation in ui/gfx/geometry/transform_util with the main difference
+// being the representation of the underlying matrix. These implementations
+// should be consolidated.
 static bool Decompose(const TransformationMatrix::Matrix4& mat,
                       TransformationMatrix::DecomposedType& result) {
   // https://www.w3.org/TR/css-transforms-2/#decomposing-a-3d-matrix.

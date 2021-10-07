@@ -18,7 +18,7 @@
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"

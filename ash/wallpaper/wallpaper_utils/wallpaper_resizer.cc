@@ -14,8 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/skia_util.h"
 
 namespace ash {
 namespace {

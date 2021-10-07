@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_TRANSFORM_OPERATION_H_
-#define UI_GFX_TRANSFORM_OPERATION_H_
+#ifndef UI_GFX_GEOMETRY_TRANSFORM_OPERATION_H_
+#define UI_GFX_GEOMETRY_TRANSFORM_OPERATION_H_
 
-#include "ui/gfx/geometry_skia_export.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/geometry_skia_export.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class BoxF;
@@ -24,9 +24,7 @@ struct GEOMETRY_SKIA_EXPORT TransformOperation {
     TRANSFORM_OPERATION_IDENTITY
   };
 
-  TransformOperation() : type(TRANSFORM_OPERATION_IDENTITY) {}
-
-  Type type;
+  Type type = TRANSFORM_OPERATION_IDENTITY;
   gfx::Transform matrix;
 
   union {
@@ -76,4 +74,4 @@ struct GEOMETRY_SKIA_EXPORT TransformOperation {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_TRANSFORM_OPERATION_H_
+#endif  // UI_GFX_GEOMETRY_TRANSFORM_OPERATION_H_

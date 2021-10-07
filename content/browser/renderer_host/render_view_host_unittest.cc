@@ -31,8 +31,8 @@
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/skia_util.h"
 
 namespace content {
 

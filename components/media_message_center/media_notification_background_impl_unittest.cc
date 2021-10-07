@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 

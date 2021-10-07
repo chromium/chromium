@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"

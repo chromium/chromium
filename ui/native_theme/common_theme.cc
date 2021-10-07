@@ -18,8 +18,8 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme_utils.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 

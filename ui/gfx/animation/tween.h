@@ -11,8 +11,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace base {
 class TimeTicks;

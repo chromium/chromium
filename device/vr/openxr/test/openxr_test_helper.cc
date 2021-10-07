@@ -11,8 +11,8 @@
 #include "device/vr/openxr/openxr_util.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace {
 bool PathContainsString(const std::string& path, const std::string& s) {

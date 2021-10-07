@@ -8,10 +8,10 @@
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/mask_filter_info.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace base {
 namespace trace_event {

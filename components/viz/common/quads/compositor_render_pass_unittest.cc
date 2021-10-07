@@ -16,7 +16,7 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 namespace {

@@ -14,8 +14,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/transform.h"
 #include "ui/views/controls/image_view.h"
 
 namespace gfx {

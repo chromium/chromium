@@ -10,7 +10,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 

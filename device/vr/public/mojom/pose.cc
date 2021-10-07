@@ -4,7 +4,7 @@
 
 #include "device/vr/public/mojom/pose.h"
 
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 

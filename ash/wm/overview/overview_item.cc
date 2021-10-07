@@ -54,7 +54,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"

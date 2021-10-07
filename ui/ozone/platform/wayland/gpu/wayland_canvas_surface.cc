@@ -15,7 +15,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 

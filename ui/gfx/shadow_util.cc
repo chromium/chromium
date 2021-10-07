@@ -13,10 +13,10 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gfx {
 namespace {

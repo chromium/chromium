@@ -13,8 +13,8 @@
 #include "cc/paint/paint_canvas.h"
 #include "ui/aura/window.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace cursor {

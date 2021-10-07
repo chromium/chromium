@@ -10,15 +10,15 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mojom/accelerated_widget_mojom_traits.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom.h"
 #include "ui/gfx/mojom/presentation_feedback_mojom_traits.h"
 #include "ui/gfx/mojom/traits_test_service.mojom.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/rrect_f.h"
 #include "ui/gfx/selection_bound.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 

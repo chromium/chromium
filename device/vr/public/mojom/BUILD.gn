@@ -99,7 +99,7 @@ component("vr_public_typemaps") {
   deps = [
     "//base:base",
     "//skia",
-    "//ui/gfx:geometry_skia",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 }

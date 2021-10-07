@@ -30,7 +30,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/throughput_tracker.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"

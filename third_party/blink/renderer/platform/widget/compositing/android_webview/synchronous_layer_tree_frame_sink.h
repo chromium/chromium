@@ -33,7 +33,7 @@
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-forward.h"
 #include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_compositor_registry.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 class SkCanvas;
 

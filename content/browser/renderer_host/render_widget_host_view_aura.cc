@@ -91,7 +91,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"

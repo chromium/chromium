@@ -43,7 +43,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 // Skia internal format depends on a platform. On Android it is ABGR, on others
 // it's ARGB. YUV_MATRIX(), YUV_ORDER() conditionally remap YUV to YVU for ABGR.

@@ -10,7 +10,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gtk/gtk_color_mixers.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"

@@ -18,7 +18,7 @@
 #include "ash/wm/window_preview_view.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/wm/core/coordinate_conversion.h"
 

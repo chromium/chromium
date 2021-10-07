@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #include "base/check_op.h"
 #include "base/strings/stringprintf.h"
@@ -12,10 +12,10 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform_util.h"
 
 namespace gfx {
 
@@ -66,9 +66,7 @@ Transform::Transform(SkScalar col1row1,
                      SkScalar x_translation,
                      SkScalar y_translation)
     : matrix_(skia::Matrix44::kUninitialized_Constructor) {
-  matrix_.set4x4(col1row1, col1row2, 0, 0,
-                 col2row1, col2row2, 0, 0,
-                 0, 0, 1, 0,
+  matrix_.set4x4(col1row1, col1row2, 0, 0, col2row1, col2row2, 0, 0, 0, 0, 1, 0,
                  x_translation, y_translation, 0, 1);
 }
 
@@ -96,14 +94,10 @@ void Transform::RotateAboutXAxis(double degrees) {
   SkScalar cosTheta = SkDoubleToScalar(std::cos(radians));
   SkScalar sinTheta = SkDoubleToScalar(std::sin(radians));
   if (matrix_.isIdentity()) {
-      matrix_.set3x3(1, 0, 0,
-                     0, cosTheta, sinTheta,
-                     0, -sinTheta, cosTheta);
+    matrix_.set3x3(1, 0, 0, 0, cosTheta, sinTheta, 0, -sinTheta, cosTheta);
   } else {
     skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
-    rot.set3x3(1, 0, 0,
-               0, cosTheta, sinTheta,
-               0, -sinTheta, cosTheta);
+    rot.set3x3(1, 0, 0, 0, cosTheta, sinTheta, 0, -sinTheta, cosTheta);
     matrix_.preConcat(rot);
   }
 }
@@ -113,16 +107,12 @@ void Transform::RotateAboutYAxis(double degrees) {
   SkScalar cosTheta = SkDoubleToScalar(std::cos(radians));
   SkScalar sinTheta = SkDoubleToScalar(std::sin(radians));
   if (matrix_.isIdentity()) {
-      // Note carefully the placement of the -sinTheta for rotation about
-      // y-axis is different than rotation about x-axis or z-axis.
-      matrix_.set3x3(cosTheta, 0, -sinTheta,
-                     0, 1, 0,
-                     sinTheta, 0, cosTheta);
+    // Note carefully the placement of the -sinTheta for rotation about
+    // y-axis is different than rotation about x-axis or z-axis.
+    matrix_.set3x3(cosTheta, 0, -sinTheta, 0, 1, 0, sinTheta, 0, cosTheta);
   } else {
     skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
-    rot.set3x3(cosTheta, 0, -sinTheta,
-               0, 1, 0,
-               sinTheta, 0, cosTheta);
+    rot.set3x3(cosTheta, 0, -sinTheta, 0, 1, 0, sinTheta, 0, cosTheta);
     matrix_.preConcat(rot);
   }
 }
@@ -132,14 +122,10 @@ void Transform::RotateAboutZAxis(double degrees) {
   SkScalar cosTheta = SkDoubleToScalar(std::cos(radians));
   SkScalar sinTheta = SkDoubleToScalar(std::sin(radians));
   if (matrix_.isIdentity()) {
-      matrix_.set3x3(cosTheta, sinTheta, 0,
-                     -sinTheta, cosTheta, 0,
-                     0, 0, 1);
+    matrix_.set3x3(cosTheta, sinTheta, 0, -sinTheta, cosTheta, 0, 0, 0, 1);
   } else {
     skia::Matrix44 rot(skia::Matrix44::kUninitialized_Constructor);
-    rot.set3x3(cosTheta, sinTheta, 0,
-               -sinTheta, cosTheta, 0,
-               0, 0, 1);
+    rot.set3x3(cosTheta, sinTheta, 0, -sinTheta, cosTheta, 0, 0, 0, 1);
     matrix_.preConcat(rot);
   }
 }
@@ -226,20 +212,18 @@ void Transform::ConcatTransform(const Transform& transform) {
 
 bool Transform::IsApproximatelyIdentityOrTranslation(SkScalar tolerance) const {
   DCHECK_GE(tolerance, 0);
-  return
-      ApproximatelyOne(matrix_.get(0, 0), tolerance) &&
-      ApproximatelyZero(matrix_.get(1, 0), tolerance) &&
-      ApproximatelyZero(matrix_.get(2, 0), tolerance) &&
-      matrix_.get(3, 0) == 0 &&
-      ApproximatelyZero(matrix_.get(0, 1), tolerance) &&
-      ApproximatelyOne(matrix_.get(1, 1), tolerance) &&
-      ApproximatelyZero(matrix_.get(2, 1), tolerance) &&
-      matrix_.get(3, 1) == 0 &&
-      ApproximatelyZero(matrix_.get(0, 2), tolerance) &&
-      ApproximatelyZero(matrix_.get(1, 2), tolerance) &&
-      ApproximatelyOne(matrix_.get(2, 2), tolerance) &&
-      matrix_.get(3, 2) == 0 &&
-      matrix_.get(3, 3) == 1;
+  return ApproximatelyOne(matrix_.get(0, 0), tolerance) &&
+         ApproximatelyZero(matrix_.get(1, 0), tolerance) &&
+         ApproximatelyZero(matrix_.get(2, 0), tolerance) &&
+         matrix_.get(3, 0) == 0 &&
+         ApproximatelyZero(matrix_.get(0, 1), tolerance) &&
+         ApproximatelyOne(matrix_.get(1, 1), tolerance) &&
+         ApproximatelyZero(matrix_.get(2, 1), tolerance) &&
+         matrix_.get(3, 1) == 0 &&
+         ApproximatelyZero(matrix_.get(0, 2), tolerance) &&
+         ApproximatelyZero(matrix_.get(1, 2), tolerance) &&
+         ApproximatelyOne(matrix_.get(2, 2), tolerance) &&
+         matrix_.get(3, 2) == 0 && matrix_.get(3, 3) == 1;
 }
 
 bool Transform::IsApproximatelyIdentityOrIntegerTranslation(
@@ -311,13 +295,8 @@ bool Transform::IsBackFaceVisible() const {
   double cofactor_part_6 =
       matrix_.get(0, 3) * matrix_.get(1, 1) * matrix_.get(3, 0);
 
-  double cofactor33 =
-      cofactor_part_1 +
-      cofactor_part_2 +
-      cofactor_part_3 -
-      cofactor_part_4 -
-      cofactor_part_5 -
-      cofactor_part_6;
+  double cofactor33 = cofactor_part_1 + cofactor_part_2 + cofactor_part_3 -
+                      cofactor_part_4 - cofactor_part_5 - cofactor_part_6;
 
   // Technically the transformed z component is cofactor33 / determinant.  But
   // we can avoid the costly division because we only care about the resulting
@@ -383,12 +362,9 @@ bool Transform::Preserves2dAxisAlignment() const {
     num_non_zero_in_col_1++;
   }
 
-  return
-      num_non_zero_in_row_0 <= 1 &&
-      num_non_zero_in_row_1 <= 1 &&
-      num_non_zero_in_col_0 <= 1 &&
-      num_non_zero_in_col_1 <= 1 &&
-      !has_x_or_y_perspective;
+  return num_non_zero_in_row_0 <= 1 && num_non_zero_in_row_1 <= 1 &&
+         num_non_zero_in_col_0 <= 1 && num_non_zero_in_col_1 <= 1 &&
+         !has_x_or_y_perspective;
 }
 
 bool Transform::NonDegeneratePreserves2dAxisAlignment() const {
@@ -638,21 +614,11 @@ std::string Transform::ToString() const {
       "  %+0.4f %+0.4f %+0.4f %+0.4f  \n"
       "  %+0.4f %+0.4f %+0.4f %+0.4f  \n"
       "  %+0.4f %+0.4f %+0.4f %+0.4f ]\n",
-      matrix_.get(0, 0),
-      matrix_.get(0, 1),
-      matrix_.get(0, 2),
-      matrix_.get(0, 3),
-      matrix_.get(1, 0),
-      matrix_.get(1, 1),
-      matrix_.get(1, 2),
-      matrix_.get(1, 3),
-      matrix_.get(2, 0),
-      matrix_.get(2, 1),
-      matrix_.get(2, 2),
-      matrix_.get(2, 3),
-      matrix_.get(3, 0),
-      matrix_.get(3, 1),
-      matrix_.get(3, 2),
+      matrix_.get(0, 0), matrix_.get(0, 1), matrix_.get(0, 2),
+      matrix_.get(0, 3), matrix_.get(1, 0), matrix_.get(1, 1),
+      matrix_.get(1, 2), matrix_.get(1, 3), matrix_.get(2, 0),
+      matrix_.get(2, 1), matrix_.get(2, 2), matrix_.get(2, 3),
+      matrix_.get(3, 0), matrix_.get(3, 1), matrix_.get(3, 2),
       matrix_.get(3, 3));
 }
 

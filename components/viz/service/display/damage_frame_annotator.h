@@ -10,7 +10,7 @@
 #include "components/viz/service/display/surface_aggregator.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 

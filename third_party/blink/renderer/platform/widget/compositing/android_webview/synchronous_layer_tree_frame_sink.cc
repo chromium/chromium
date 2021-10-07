@@ -39,8 +39,8 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 

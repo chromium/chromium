@@ -19,7 +19,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"

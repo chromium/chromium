@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 #include <stddef.h>
 
@@ -222,9 +222,10 @@ TEST(TransformOperationTest, NoneAlwaysMatches) {
       GetIdentityOperations();
 
   TransformOperations none_operation;
-  for (size_t i = 0; i < operations.size(); ++i)
-    EXPECT_EQ(operations[i]->size(),
-              operations[i]->MatchingPrefixLength(none_operation));
+  for (const auto& operation : operations) {
+    EXPECT_EQ(operation->size(),
+              operation->MatchingPrefixLength(none_operation));
+  }
 }
 
 TEST(TransformOperationTest, ApplyTranslate) {
@@ -641,7 +642,7 @@ TEST(TransformOperationTest, BlendRotationFromIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendRotate(0, 0, 1, 90);
 
@@ -651,7 +652,7 @@ TEST(TransformOperationTest, BlendRotationFromIdentity) {
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 45);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
 
     progress = -0.5f;
 
@@ -659,7 +660,7 @@ TEST(TransformOperationTest, BlendRotationFromIdentity) {
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), -45);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
 
     progress = 1.5f;
 
@@ -667,7 +668,7 @@ TEST(TransformOperationTest, BlendRotationFromIdentity) {
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 135);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
   }
 }
 
@@ -675,7 +676,7 @@ TEST(TransformOperationTest, BlendTranslationFromIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendTranslate(2, 2, 2);
 
@@ -685,7 +686,7 @@ TEST(TransformOperationTest, BlendTranslationFromIdentity) {
     expected.Translate3d(1, 1, 1);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
 
     progress = -0.5f;
 
@@ -693,7 +694,7 @@ TEST(TransformOperationTest, BlendTranslationFromIdentity) {
     expected.Translate3d(-1, -1, -1);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
 
     progress = 1.5f;
 
@@ -701,7 +702,7 @@ TEST(TransformOperationTest, BlendTranslationFromIdentity) {
     expected.Translate3d(3, 3, 3);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
   }
 }
 
@@ -709,7 +710,7 @@ TEST(TransformOperationTest, BlendScaleFromIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendScale(3, 3, 3);
 
@@ -719,7 +720,7 @@ TEST(TransformOperationTest, BlendScaleFromIdentity) {
     expected.Scale3d(2, 2, 2);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
 
     progress = -0.5f;
 
@@ -727,7 +728,7 @@ TEST(TransformOperationTest, BlendScaleFromIdentity) {
     expected.Scale3d(0, 0, 0);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
 
     progress = 1.5f;
 
@@ -735,7 +736,7 @@ TEST(TransformOperationTest, BlendScaleFromIdentity) {
     expected.Scale3d(4, 4, 4);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
   }
 }
 
@@ -774,7 +775,7 @@ TEST(TransformOperationTest, BlendPerspectiveFromIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendPerspective(1000);
 
@@ -784,7 +785,7 @@ TEST(TransformOperationTest, BlendPerspectiveFromIdentity) {
     expected.ApplyPerspectiveDepth(2000);
 
     ExpectTransformationMatrixEq(
-        expected, operations.Blend(*identity_operations[i], progress).Apply());
+        expected, operations.Blend(*identity_operation, progress).Apply());
   }
 }
 
@@ -792,7 +793,7 @@ TEST(TransformOperationTest, BlendRotationToIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendRotate(0, 0, 1, 90);
 
@@ -802,7 +803,7 @@ TEST(TransformOperationTest, BlendRotationToIdentity) {
     expected.RotateAbout(gfx::Vector3dF(0, 0, 1), 45);
 
     ExpectTransformationMatrixEq(
-        expected, identity_operations[i]->Blend(operations, progress).Apply());
+        expected, identity_operation->Blend(operations, progress).Apply());
   }
 }
 
@@ -810,7 +811,7 @@ TEST(TransformOperationTest, BlendTranslationToIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendTranslate(2, 2, 2);
 
@@ -820,7 +821,7 @@ TEST(TransformOperationTest, BlendTranslationToIdentity) {
     expected.Translate3d(1, 1, 1);
 
     ExpectTransformationMatrixEq(
-        expected, identity_operations[i]->Blend(operations, progress).Apply());
+        expected, identity_operation->Blend(operations, progress).Apply());
   }
 }
 
@@ -828,7 +829,7 @@ TEST(TransformOperationTest, BlendScaleToIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendScale(3, 3, 3);
 
@@ -838,7 +839,7 @@ TEST(TransformOperationTest, BlendScaleToIdentity) {
     expected.Scale3d(2, 2, 2);
 
     ExpectTransformationMatrixEq(
-        expected, identity_operations[i]->Blend(operations, progress).Apply());
+        expected, identity_operation->Blend(operations, progress).Apply());
   }
 }
 
@@ -861,7 +862,7 @@ TEST(TransformOperationTest, BlendPerspectiveToIdentity) {
   std::vector<std::unique_ptr<TransformOperations>> identity_operations =
       GetIdentityOperations();
 
-  for (size_t i = 0; i < identity_operations.size(); ++i) {
+  for (const auto& identity_operation : identity_operations) {
     TransformOperations operations;
     operations.AppendPerspective(1000);
 
@@ -871,7 +872,7 @@ TEST(TransformOperationTest, BlendPerspectiveToIdentity) {
     expected.ApplyPerspectiveDepth(2000);
 
     ExpectTransformationMatrixEq(
-        expected, identity_operations[i]->Blend(operations, progress).Apply());
+        expected, identity_operation->Blend(operations, progress).Apply());
   }
 }
 
@@ -1086,8 +1087,8 @@ TEST(TransformOperationTest, BlendedBoundsForRotationTrivial) {
   // Since we're rotating 360 degrees, any box with dimensions between 0 and
   // 2 * sqrt(2) should give the same result.
   float sizes[] = {0.f, 0.1f, sqrt_2, 2.f * sqrt_2};
-  for (size_t i = 0; i < base::size(sizes); ++i) {
-    box.set_size(sizes[i], sizes[i], 0.f);
+  for (float size : sizes) {
+    box.set_size(size, size, 0.f);
     SkScalar min_progress = 0.f;
     SkScalar max_progress = 1.f;
     EXPECT_TRUE(operations_to.BlendedBoundsForBox(
@@ -1181,10 +1182,10 @@ TEST(TransformOperationTest, BlendedBoundsForRotationProblematicAxes) {
                {0.f, 1.f, 1.f, gfx::BoxF(-1.f, dim1, dim1, 2.f, dim2, dim2)},
                {1.f, 0.f, 1.f, gfx::BoxF(dim1, -1.f, dim1, dim2, 2.f, dim2)}};
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    float x = tests[i].x;
-    float y = tests[i].y;
-    float z = tests[i].z;
+  for (const auto& test : tests) {
+    float x = test.x;
+    float y = test.y;
+    float z = test.z;
     TransformOperations operations_from;
     operations_from.AppendRotate(x, y, z, 0.f);
     TransformOperations operations_to;
@@ -1194,7 +1195,7 @@ TEST(TransformOperationTest, BlendedBoundsForRotationProblematicAxes) {
 
     EXPECT_TRUE(operations_to.BlendedBoundsForBox(box, operations_from, 0.f,
                                                   1.f, &bounds));
-    EXPECT_EQ(tests[i].expected.ToString(), bounds.ToString());
+    EXPECT_EQ(test.expected.ToString(), bounds.ToString());
   }
 }
 
@@ -1297,24 +1298,24 @@ TEST(TransformOperationTest, BlendedBoundsForRotationEmpiricalTests) {
   struct {
     float min_progress;
     float max_progress;
-  } progress[] = {
+  } progresses[] = {
       {0.f, 1.f},
       {-.25f, 1.25f},
   };
 
-  for (size_t i = 0; i < base::size(axes); ++i) {
-    for (size_t j = 0; j < base::size(angles); ++j) {
-      for (size_t k = 0; k < base::size(progress); ++k) {
-        float x = axes[i].x;
-        float y = axes[i].y;
-        float z = axes[i].z;
+  for (const auto& axis : axes) {
+    for (const auto& angle : angles) {
+      for (const auto& progress : progresses) {
+        float x = axis.x;
+        float y = axis.y;
+        float z = axis.z;
         TransformOperations operations_from;
-        operations_from.AppendRotate(x, y, z, angles[j].theta_from);
+        operations_from.AppendRotate(x, y, z, angle.theta_from);
         TransformOperations operations_to;
-        operations_to.AppendRotate(x, y, z, angles[j].theta_to);
+        operations_to.AppendRotate(x, y, z, angle.theta_to);
         EmpiricallyTestBoundsContainment(operations_from, operations_to,
-                                         progress[k].min_progress,
-                                         progress[k].max_progress);
+                                         progress.min_progress,
+                                         progress.max_progress);
       }
     }
   }
@@ -1360,20 +1361,20 @@ TEST(TransformOperationTest, BlendedBoundsForPerspective) {
   struct {
     float min_progress;
     float max_progress;
-  } progress[] = {
+  } progresses[] = {
       {0.f, 1.f},
       {-0.1f, 1.1f},
   };
 
-  for (size_t i = 0; i < base::size(perspective_depths); ++i) {
-    for (size_t j = 0; j < base::size(progress); ++j) {
+  for (const auto& perspective_depth : perspective_depths) {
+    for (const auto& progress : progresses) {
       TransformOperations operations_from;
-      operations_from.AppendPerspective(perspective_depths[i].from_depth);
+      operations_from.AppendPerspective(perspective_depth.from_depth);
       TransformOperations operations_to;
-      operations_to.AppendPerspective(perspective_depths[i].to_depth);
+      operations_to.AppendPerspective(perspective_depth.to_depth);
       EmpiricallyTestBoundsEquality(operations_from, operations_to,
-                                    progress[j].min_progress,
-                                    progress[j].max_progress);
+                                    progress.min_progress,
+                                    progress.max_progress);
     }
   }
 }
@@ -1392,20 +1393,20 @@ TEST(TransformOperationTest, BlendedBoundsForSkew) {
   struct {
     float min_progress;
     float max_progress;
-  } progress[] = {
+  } progresses[] = {
       {0.f, 1.f},
       {-0.1f, 1.1f},
   };
 
-  for (size_t i = 0; i < base::size(skews); ++i) {
-    for (size_t j = 0; j < base::size(progress); ++j) {
+  for (const auto& skew : skews) {
+    for (const auto& progress : progresses) {
       TransformOperations operations_from;
-      operations_from.AppendSkew(skews[i].from_x, skews[i].from_y);
+      operations_from.AppendSkew(skew.from_x, skew.from_y);
       TransformOperations operations_to;
-      operations_to.AppendSkew(skews[i].to_x, skews[i].to_y);
+      operations_to.AppendSkew(skew.to_x, skew.to_y);
       EmpiricallyTestBoundsEquality(operations_from, operations_to,
-                                    progress[j].min_progress,
-                                    progress[j].max_progress);
+                                    progress.min_progress,
+                                    progress.max_progress);
     }
   }
 }

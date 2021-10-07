@@ -17,9 +17,9 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/mac/io_surface.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
 #include "ui/gfx/video_types.h"
 
 @class AVSampleBufferDisplayLayer;

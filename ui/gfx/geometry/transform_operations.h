@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_TRANSFORM_OPERATIONS_H_
-#define UI_GFX_TRANSFORM_OPERATIONS_H_
+#ifndef UI_GFX_GEOMETRY_TRANSFORM_OPERATIONS_H_
+#define UI_GFX_GEOMETRY_TRANSFORM_OPERATIONS_H_
 
 #include <memory>
 #include <unordered_map>
@@ -11,9 +11,9 @@
 
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
-#include "ui/gfx/geometry_skia_export.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operation.h"
+#include "ui/gfx/geometry/geometry_skia_export.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operation.h"
 
 namespace gfx {
 
@@ -137,4 +137,4 @@ class GEOMETRY_SKIA_EXPORT TransformOperations {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_TRANSFORM_OPERATIONS_H_
+#endif  // UI_GFX_GEOMETRY_TRANSFORM_OPERATIONS_H_

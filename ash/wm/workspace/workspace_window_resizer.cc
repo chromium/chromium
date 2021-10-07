@@ -47,7 +47,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
 

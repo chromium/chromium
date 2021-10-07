@@ -18,7 +18,7 @@
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gl {
 class GLFence;

@@ -5,7 +5,7 @@
 #include <limits>
 #include <utility>
 
-#include "ui/gfx/transform_operation.h"
+#include "ui/gfx/geometry/transform_operation.h"
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -13,9 +13,9 @@
 #include "base/numerics/ranges.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/transform_operations.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/transform_operations.h"
-#include "ui/gfx/transform_util.h"
 
 namespace {
 const SkScalar kAngleEpsilon = 1e-4f;

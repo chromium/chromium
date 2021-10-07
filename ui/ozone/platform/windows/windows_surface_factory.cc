@@ -13,7 +13,7 @@
 #include "base/task/post_task.h"
 #include "build/build_config.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/vsync_provider_win.h"

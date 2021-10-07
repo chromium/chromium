@@ -4,8 +4,8 @@
 
 #include "device/vr/util/transform_utils.h"
 
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 namespace vr_utils {

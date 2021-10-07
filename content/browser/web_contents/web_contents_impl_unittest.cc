@@ -78,7 +78,7 @@
 #include "third_party/blink/public/mojom/image_downloader/image_downloader.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

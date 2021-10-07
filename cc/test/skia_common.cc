@@ -20,7 +20,7 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {

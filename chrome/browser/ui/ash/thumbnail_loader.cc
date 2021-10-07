@@ -32,8 +32,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
 namespace ash {

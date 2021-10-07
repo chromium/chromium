@@ -15,7 +15,7 @@
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/mask_filter_info.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 
 namespace viz {
 namespace {

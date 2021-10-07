@@ -50,7 +50,7 @@
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/trace_util.h"
 

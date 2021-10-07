@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 #include <algorithm>
 #include <cmath>
@@ -556,7 +556,7 @@ bool SnapTransform(Transform* out,
   // Completely ignore the skew.
   skia::Matrix44 skew(skia::Matrix44::kIdentity_Constructor);
 
-  // Get full tranform
+  // Get full transform.
   Transform snapped =
       ComposeTransform(perspective, translation, rotation_matrix, skew, scale);
 

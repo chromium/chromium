@@ -36,8 +36,8 @@
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/transform.h"
 
 namespace viz {
 class ClientResourceProvider;

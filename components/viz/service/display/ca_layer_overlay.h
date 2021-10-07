@@ -17,7 +17,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 

@@ -5,7 +5,7 @@
 #include "cc/paint/paint_recorder.h"
 
 #include "cc/paint/display_item_list.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 

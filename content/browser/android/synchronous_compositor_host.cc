@@ -37,7 +37,7 @@
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "ui/events/blink/did_overscroll_params.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace content {
 

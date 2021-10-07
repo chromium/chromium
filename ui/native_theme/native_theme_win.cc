@@ -41,7 +41,7 @@
 #include "ui/gfx/gdi_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/native_theme/common_theme.h"
 
 // This was removed from Winvers.h but is still used.

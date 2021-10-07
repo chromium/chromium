@@ -47,7 +47,7 @@
 #include "ui/events/test/test_event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/wm/core/capture_controller.h"
 

@@ -11,8 +11,8 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/lottie/animation_observer.h"
 
 namespace lottie {

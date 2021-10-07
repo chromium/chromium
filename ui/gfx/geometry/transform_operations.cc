@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 #include <stddef.h>
 
@@ -11,12 +11,12 @@
 
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/transform_util.h"
 
 namespace gfx {
 
-TransformOperations::TransformOperations() {}
+TransformOperations::TransformOperations() = default;
 
 TransformOperations::TransformOperations(const TransformOperations& other) {
   operations_ = other.operations_;
@@ -304,7 +304,7 @@ void TransformOperations::AppendMatrix(const Transform& matrix) {
 }
 
 void TransformOperations::AppendIdentity() {
-  operations_.push_back(TransformOperation());
+  operations_.emplace_back();
 }
 
 void TransformOperations::Append(const TransformOperation& operation) {

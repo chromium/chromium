@@ -15,7 +15,7 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"

@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace blink {
 

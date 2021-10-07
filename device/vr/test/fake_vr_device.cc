@@ -5,7 +5,7 @@
 #include "device/vr/test/fake_vr_device.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 

@@ -18,8 +18,8 @@
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/animation_sequence_block.h"
 

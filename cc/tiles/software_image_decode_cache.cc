@@ -21,7 +21,7 @@
 #include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;

@@ -15,7 +15,7 @@
 #include "ui/events/gestures/gesture_provider_aura.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace aura {
 class Window;

@@ -32,7 +32,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/painter.h"

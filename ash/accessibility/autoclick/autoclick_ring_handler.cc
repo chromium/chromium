@@ -10,7 +10,7 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/view.h"
 
 namespace ash {

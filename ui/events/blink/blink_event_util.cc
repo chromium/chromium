@@ -27,8 +27,8 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/transform.h"
 
 using blink::WebGestureDevice;
 using blink::WebGestureEvent;

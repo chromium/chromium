@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 

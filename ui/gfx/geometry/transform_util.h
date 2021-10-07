@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_TRANSFORM_UTIL_H_
-#define UI_GFX_TRANSFORM_UTIL_H_
+#ifndef UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
+#define UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_
 
+#include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/quaternion.h"
-#include "ui/gfx/geometry_skia_export.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 
@@ -52,7 +52,7 @@ BlendDecomposedTransforms(const DecomposedTransform& to,
 GEOMETRY_SKIA_EXPORT bool DecomposeTransform(DecomposedTransform* out,
                                              const Transform& transform);
 
-// Composes a transform from the given translation, scale, skew, prespective,
+// Composes a transform from the given translation, scale, skew, perspective,
 // and rotation components following the routines detailed in this spec:
 // http://www.w3.org/TR/css3-3d-transforms/.
 GEOMETRY_SKIA_EXPORT Transform
@@ -62,7 +62,7 @@ GEOMETRY_SKIA_EXPORT bool SnapTransform(Transform* out,
                                         const Transform& transform,
                                         const Rect& viewport);
 
-// Calculates a transform with a transformed origin. The resulting tranform is
+// Calculates a transform with a transformed origin. The resulting transform is
 // created by composing P * T * P^-1 where P is a constant transform to the new
 // origin.
 GEOMETRY_SKIA_EXPORT Transform TransformAboutPivot(const Point& pivot,
@@ -96,4 +96,4 @@ float ComputeApproximateMaxScale(const Transform& transform);
 
 }  // namespace gfx
 
-#endif  // UI_GFX_TRANSFORM_UTIL_H_
+#endif  // UI_GFX_GEOMETRY_TRANSFORM_UTIL_H_

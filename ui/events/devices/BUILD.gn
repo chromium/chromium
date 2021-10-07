@@ -60,8 +60,8 @@ component("devices") {
     "//base/third_party/dynamic_annotations",
     "//skia",
     "//ui/events:platform_event",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   if (is_android) {

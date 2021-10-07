@@ -77,7 +77,7 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_surface.h"

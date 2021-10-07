@@ -17,9 +17,9 @@
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr_types.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/transform.h"
 
 namespace gfx {
 class Transform;

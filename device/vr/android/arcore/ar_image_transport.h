@@ -14,7 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "device/vr/android/arcore/ar_renderer.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gl {
 class SurfaceTexture;

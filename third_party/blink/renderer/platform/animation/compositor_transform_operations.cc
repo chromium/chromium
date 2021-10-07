@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 
 #include "skia/ext/skia_matrix_44.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace blink {
 

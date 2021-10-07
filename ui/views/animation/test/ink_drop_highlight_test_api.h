@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller.h"
 #include "ui/compositor/test/multi_layer_animator_test_controller_delegate.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ui {
 class LayerAnimator;

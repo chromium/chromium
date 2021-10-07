@@ -18,9 +18,9 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
 
 namespace device {
 

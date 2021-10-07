@@ -21,7 +21,6 @@
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 #include "ui/views/animation/ink_drop.h"

@@ -28,10 +28,10 @@
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/gfx/skia_util.h"
 
 namespace extensions {
 namespace {

@@ -84,7 +84,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/test/icc_profiles.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)

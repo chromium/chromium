@@ -6,7 +6,7 @@
 
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/controls/focus_ring.h"
 
 namespace media_message_center {

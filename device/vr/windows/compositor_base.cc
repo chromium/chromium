@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/geometry/angle_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 #if defined(OS_WIN)
 #include "device/vr/windows/d3d11_texture_helper.h"

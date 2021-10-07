@@ -55,9 +55,9 @@ cc_component("base") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//skia",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   defines = [ "CC_BASE_IMPLEMENTATION=1" ]

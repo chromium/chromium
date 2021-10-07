@@ -5,7 +5,7 @@
 #ifndef UI_GFX_GEOMETRY_TEST_TRANSFORM_TEST_UTIL_H_
 #define UI_GFX_GEOMETRY_TEST_TRANSFORM_TEST_UTIL_H_
 
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 

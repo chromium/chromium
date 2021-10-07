@@ -24,8 +24,8 @@
 #include "third_party/skia/include/core/SkBlendMode.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 namespace {

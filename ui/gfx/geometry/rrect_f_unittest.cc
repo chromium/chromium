@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
+
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/rrect_f_builder.h"
+#include "ui/gfx/geometry/rrect_f_builder.h"
 
 namespace gfx {
 
@@ -247,13 +248,11 @@ TEST(RRectFTest, Scale) {
        0.0f, 0.0f},
   };
 
-  for (size_t i = 0; i < base::size(tests); ++i) {
-    RRectF r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1,
-              tests[i].x_rad1, tests[i].y_rad1);
-    RRectF r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2,
-              tests[i].x_rad2, tests[i].y_rad2);
+  for (auto& test : tests) {
+    RRectF r1(test.x1, test.y1, test.w1, test.h1, test.x_rad1, test.y_rad1);
+    RRectF r2(test.x2, test.y2, test.w2, test.h2, test.x_rad2, test.y_rad2);
 
-    r1.Scale(tests[i].x_scale, tests[i].y_scale);
+    r1.Scale(test.x_scale, test.y_scale);
     ASSERT_TRUE(r1.GetType() <= RRectF::Type::kSimple);
     EXPECT_EQ(r1.rect().x(), r2.rect().x());
     EXPECT_EQ(r1.rect().y(), r2.rect().y());

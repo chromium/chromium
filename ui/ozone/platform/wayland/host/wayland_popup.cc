@@ -11,7 +11,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_object_factory.h"

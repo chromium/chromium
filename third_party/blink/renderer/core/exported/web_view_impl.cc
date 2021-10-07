@@ -173,7 +173,7 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 #if defined(OS_ANDROID)
 #include "components/viz/common/features.h"

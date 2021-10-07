@@ -38,8 +38,8 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 

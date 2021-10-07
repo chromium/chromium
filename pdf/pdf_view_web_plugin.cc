@@ -75,8 +75,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/range/range.h"
-#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 #include "v8/include/v8.h"
 

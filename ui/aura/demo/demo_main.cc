@@ -38,7 +38,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
 

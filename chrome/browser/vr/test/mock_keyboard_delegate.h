@@ -10,7 +10,7 @@
 #include "chrome/browser/vr/model/camera_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point3_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

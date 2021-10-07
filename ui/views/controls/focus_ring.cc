@@ -23,7 +23,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/highlight_path_generator.h"

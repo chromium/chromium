@@ -5,7 +5,7 @@
 #ifndef UI_GFX_MOJOM_MASK_FILTER_INFO_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_MASK_FILTER_INFO_MOJOM_TRAITS_H_
 
-#include "ui/gfx/mask_filter_info.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/mojom/mask_filter_info.mojom-shared.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 

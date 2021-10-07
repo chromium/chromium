@@ -56,8 +56,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
-#include "ui/gfx/skia_util.h"
 
 #if defined(OS_MAC)
 #include "base/mac/scoped_cftyperef.h"

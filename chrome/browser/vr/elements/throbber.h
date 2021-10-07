@@ -7,7 +7,7 @@
 
 #include "chrome/browser/vr/elements/rect.h"
 #include "chrome/browser/vr/vr_ui_export.h"
-#include "ui/gfx/transform_operation.h"
+#include "ui/gfx/geometry/transform_operation.h"
 
 namespace vr {
 

@@ -9,7 +9,7 @@
 #include "third_party/skia/include/effects/SkOverdrawColorFilter.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace viz {
 sk_sp<SkImage> SkiaHelper::ApplyImageFilter(GrRecordingContext* context,

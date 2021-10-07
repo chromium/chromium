@@ -18,7 +18,6 @@
 #include "third_party/zlib/zlib.h"
 #include "ui/gfx/codec/vector_wstream.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gfx {
 

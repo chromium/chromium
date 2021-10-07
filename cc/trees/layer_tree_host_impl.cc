@@ -133,9 +133,9 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/skia_util.h"
 
 using ScrollThread = cc::InputHandler::ScrollThread;
 

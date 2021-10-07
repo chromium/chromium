@@ -28,7 +28,7 @@
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/gpu/GrRecordingContext.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {

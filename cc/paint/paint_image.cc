@@ -17,7 +17,7 @@
 #include "cc/paint/paint_worklet_input.h"
 #include "cc/paint/skia_paint_image_generator.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {

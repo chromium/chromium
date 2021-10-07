@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace device {
 

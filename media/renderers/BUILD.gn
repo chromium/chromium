@@ -53,9 +53,9 @@ source_set("renderers") {
     "//media/filters",
     "//media/video",
     "//third_party/libyuv",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gl",
   ]
 
@@ -89,9 +89,7 @@ source_set("renderers") {
     ]
   }
 
-  configs += [
-    "//media:subcomponent_config",
-  ]
+  configs += [ "//media:subcomponent_config" ]
 }
 
 # Note: This is a roll-up only target; do not expand the visibility. DEPS should

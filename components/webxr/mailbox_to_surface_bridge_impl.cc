@@ -29,7 +29,7 @@
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gl/android/surface_texture.h"
 
 #include <android/native_window_jni.h>

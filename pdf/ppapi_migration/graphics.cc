@@ -26,8 +26,8 @@
 #include "ui/gfx/blit.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/skia_util.h"
 
 namespace chrome_pdf {
 

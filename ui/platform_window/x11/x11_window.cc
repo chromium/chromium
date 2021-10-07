@@ -35,7 +35,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/events/x/events_x_utils.h"
 #include "ui/events/x/x11_event_translation.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/x/x11_atom_cache.h"
 #include "ui/gfx/x/x11_path.h"
 #include "ui/gfx/x/x11_window_event_manager.h"

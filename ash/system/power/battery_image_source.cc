@@ -10,8 +10,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 
 namespace {
 

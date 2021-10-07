@@ -23,8 +23,8 @@
 #include "content/public/common/content_features.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/session_mode.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"

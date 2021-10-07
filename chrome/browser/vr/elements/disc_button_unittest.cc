@@ -12,8 +12,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/transform_operation.h"
-#include "ui/gfx/transform_operations.h"
+#include "ui/gfx/geometry/transform_operation.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace vr {
 

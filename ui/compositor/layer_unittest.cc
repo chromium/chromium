@@ -65,8 +65,8 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/interpolated_transform.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/test/gfx_util.h"
 
 using cc::MatchesPNGFile;

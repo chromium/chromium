@@ -24,7 +24,7 @@
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
 
 namespace policy {

@@ -29,7 +29,7 @@
 // Note that headers in third_party/skia/src are fragile.  This is
 // an experimental, fragile, and diagnostic-only document type.
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 #if defined(OS_MAC)
 #include "printing/pdf_metafile_cg_mac.h"

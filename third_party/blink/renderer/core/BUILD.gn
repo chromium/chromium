@@ -302,8 +302,8 @@ component("core") {
     "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
     "//ui/base/dragdrop/mojom:mojom_blink",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   if (is_mac) {

@@ -416,7 +416,6 @@ if (enable_pdf) {
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public/common:headers",
-      "//ui/gfx:geometry_skia",
       "//ui/gfx/range",
       "//ui/latency:latency",
     ]

@@ -20,8 +20,8 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 
 namespace ash {
 namespace {

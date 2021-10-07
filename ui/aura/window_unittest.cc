@@ -54,9 +54,9 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/overlay_transform_utils.h"
-#include "ui/gfx/skia_util.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(const char*)
 

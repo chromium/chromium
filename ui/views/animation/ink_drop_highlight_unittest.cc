@@ -16,7 +16,7 @@
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/views/animation/test/ink_drop_highlight_test_api.h"
 #include "ui/views/animation/test/test_ink_drop_highlight_observer.h"
 

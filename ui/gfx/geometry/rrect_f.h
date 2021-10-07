@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_RRECT_F_H_
-#define UI_GFX_RRECT_F_H_
+#ifndef UI_GFX_GEOMETRY_RRECT_F_H_
+#define UI_GFX_GEOMETRY_RRECT_F_H_
 
 #include <memory>
 #include <string>
@@ -11,7 +11,7 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace gfx {
 
@@ -198,4 +198,4 @@ inline RRectF operator-(const RRectF& a, const Vector2dF& b) {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_RRECT_F_H_
+#endif  // UI_GFX_GEOMETRY_RRECT_F_H_

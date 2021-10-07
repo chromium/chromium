@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 

@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/frame_background.h"
 

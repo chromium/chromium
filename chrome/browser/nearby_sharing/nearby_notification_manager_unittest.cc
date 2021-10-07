@@ -58,6 +58,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
 using ::testing::_;

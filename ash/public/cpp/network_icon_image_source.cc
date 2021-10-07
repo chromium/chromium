@@ -9,9 +9,9 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"
 

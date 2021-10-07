@@ -27,8 +27,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/common_theme.h"
 
 namespace {

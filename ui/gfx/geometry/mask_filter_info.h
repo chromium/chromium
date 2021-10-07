@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_MASK_FILTER_INFO_H_
-#define UI_GFX_MASK_FILTER_INFO_H_
+#ifndef UI_GFX_GEOMETRY_MASK_FILTER_INFO_H_
+#define UI_GFX_GEOMETRY_MASK_FILTER_INFO_H_
 
+#include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry_skia_export.h"
-#include "ui/gfx/rrect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace gfx {
 
@@ -61,4 +61,4 @@ inline bool operator!=(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {
 
 }  // namespace gfx
 
-#endif  // UI_GFX_MASK_FILTER_INFO_H_
+#endif  // UI_GFX_GEOMETRY_MASK_FILTER_INFO_H_

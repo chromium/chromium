@@ -43,7 +43,7 @@
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
 

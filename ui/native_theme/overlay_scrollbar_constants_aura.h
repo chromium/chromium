@@ -6,7 +6,7 @@
 #define UI_NATIVE_THEME_OVERLAY_SCROLLBAR_CONSTANTS_AURA_H_
 
 #include "base/time/time.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ui {
 

@@ -23,7 +23,7 @@ component("cursor_base") {
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/gfx/geometry",
   ]
-  deps = [ "//ui/gfx:geometry_skia" ]
+  deps = [ "//ui/gfx:gfx_skia" ]
 }
 
 component("theme_manager") {
@@ -62,7 +62,7 @@ if (use_aura) {
       "//skia",
       "//ui/base",
       "//ui/gfx",
-      "//ui/gfx:geometry_skia",
+      "//ui/gfx:gfx_skia",
       "//ui/gfx/geometry",
       "//ui/resources:ui_resources_grd",
     ]
@@ -104,7 +104,7 @@ source_set("unittests") {
     sources += [ "cursor_unittest.cc" ]
     deps += [
       "//skia",
-      "//ui/gfx:geometry_skia",
+      "//ui/gfx:gfx_skia",
       "//ui/gfx/geometry",
     ]
   }

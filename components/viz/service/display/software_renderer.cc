@@ -42,8 +42,8 @@
 #include "third_party/skia/include/effects/SkShaderMaskFilter.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 namespace {

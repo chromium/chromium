@@ -29,8 +29,8 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"                               // nogncheck

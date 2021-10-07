@@ -12,11 +12,11 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/mask_filter_info.h"
-#include "ui/gfx/rrect_f.h"
 
 namespace base {
 namespace trace_event {

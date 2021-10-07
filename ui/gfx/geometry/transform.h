@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_TRANSFORM_H_
-#define UI_GFX_TRANSFORM_H_
+#ifndef UI_GFX_GEOMETRY_TRANSFORM_H_
+#define UI_GFX_GEOMETRY_TRANSFORM_H_
 
 #include <iosfwd>
 #include <string>
@@ -11,8 +11,8 @@
 #include "base/compiler_specific.h"
 #include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-#include "ui/gfx/geometry_skia_export.h"
 
 namespace gfx {
 
@@ -29,16 +29,13 @@ class Vector3dF;
 // copy/assign.
 class GEOMETRY_SKIA_EXPORT Transform {
  public:
-
-  enum SkipInitialization {
-    kSkipInitialization
-  };
+  enum SkipInitialization { kSkipInitialization };
 
   constexpr Transform() : matrix_(skia::Matrix44::kIdentity_Constructor) {}
 
   // Skips initializing this matrix to avoid overhead, when we know it will be
   // initialized before use.
-  Transform(SkipInitialization)
+  explicit Transform(SkipInitialization)
       : matrix_(skia::Matrix44::kUninitialized_Constructor) {}
   Transform(const Transform& rhs) = default;
   Transform& operator=(const Transform& rhs) = default;
@@ -188,7 +185,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   bool HasPerspective() const { return matrix_.hasPerspective(); }
 
   // Returns true if this transform is non-singular.
-  bool IsInvertible() const { return matrix_.invert(NULL); }
+  bool IsInvertible() const { return matrix_.invert(nullptr); }
 
   // Returns true if a layer with a forward-facing normal of (0, 0, 1) would
   // have its back side facing frontwards after applying the transform.
@@ -201,7 +198,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Transposes this transform in place.
   void Transpose();
 
-  // Set 3rd row and 3rd colum to (0, 0, 1, 0). Note that this flattening
+  // Set 3rd row and 3rd column to (0, 0, 1, 0). Note that this flattening
   // operation is not quite the same as an orthographic projection and is
   // technically not a linear operation.
   //
@@ -329,4 +326,4 @@ void PrintTo(const Transform& transform, ::std::ostream* os);
 
 }  // namespace gfx
 
-#endif  // UI_GFX_TRANSFORM_H_
+#endif  // UI_GFX_GEOMETRY_TRANSFORM_H_

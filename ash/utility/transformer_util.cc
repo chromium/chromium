@@ -8,7 +8,7 @@
 
 #include "ui/display/display_transform.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace ash {
 namespace {

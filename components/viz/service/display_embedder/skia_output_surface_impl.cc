@@ -38,7 +38,7 @@
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 

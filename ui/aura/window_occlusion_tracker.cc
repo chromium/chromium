@@ -17,8 +17,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace aura {
 

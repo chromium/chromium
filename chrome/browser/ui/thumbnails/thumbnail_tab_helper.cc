@@ -32,8 +32,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scrollbar_size.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {

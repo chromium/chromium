@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_raster_invalidator.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 

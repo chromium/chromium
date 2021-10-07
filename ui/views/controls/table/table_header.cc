@@ -19,7 +19,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"

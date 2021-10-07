@@ -25,8 +25,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace viz {
 class AggregatedRenderPass;

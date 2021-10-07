@@ -17,7 +17,7 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace device {
 

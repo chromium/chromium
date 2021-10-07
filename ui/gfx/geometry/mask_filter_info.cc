@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gfx/mask_filter_info.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 
 #include <sstream>
 
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 

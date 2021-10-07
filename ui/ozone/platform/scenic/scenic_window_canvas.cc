@@ -11,7 +11,7 @@
 #include "base/memory/writable_shared_memory_region.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/platform/scenic/scenic_window.h"
 
