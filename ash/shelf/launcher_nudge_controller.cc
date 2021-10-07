@@ -9,9 +9,12 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/home_button_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
@@ -19,6 +22,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -89,6 +93,16 @@ LauncherNudgeController::~LauncherNudgeController() {
 void LauncherNudgeController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kShelfLauncherNudge);
+}
+
+// static
+HomeButton* LauncherNudgeController::GetHomeButtonForDisplay(
+    int64_t display_id) {
+  return Shell::Get()
+      ->GetRootWindowControllerWithDisplayId(display_id)
+      ->shelf()
+      ->navigation_widget()
+      ->GetHomeButton();
 }
 
 // static
@@ -184,9 +198,18 @@ void LauncherNudgeController::MaybeShowNudge() {
     return;
   }
 
-  // TODO(wcwang): Show nudge here. Only call the animation function on the
-  // home button which is on the same display with the cursor.
-  HandleNudgeShown();
+  // Don't run the nudge animation if the duration multiplier is 0 to prevent
+  // crashes that caused by showing the animation that immediately gets deleted.
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() != 0) {
+    // Only show the nudge on the home button which is on the same display with
+    // the cursor.
+    int64_t display_id_for_nudge =
+        Shell::Get()->cursor_manager()->GetDisplay().id();
+    HomeButton* home_button = GetHomeButtonForDisplay(display_id_for_nudge);
+    home_button->StartNudgeAnimation();
+    // Only update the prefs if the nudge animation is actually shown.
+    HandleNudgeShown();
+  }
 
   // Schedule the next attempt to show nudge if the shown count hasn't hit the
   // limit after showing a nudge.

@@ -25,6 +25,8 @@ class PrefService;
 
 namespace ash {
 
+class HomeButton;
+
 // Controls the launcher nudge which animates the home button to guide users to
 // open the launcher. The animation is implemented in HomeButton class.
 class ASH_EXPORT LauncherNudgeController : public SessionObserver,
@@ -41,6 +43,9 @@ class ASH_EXPORT LauncherNudgeController : public SessionObserver,
 
   // Registers profile prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // Gets the home button on the display with id `display_id`.
+  static HomeButton* GetHomeButtonForDisplay(int64_t display_id);
 
   // Gets the number of times that the nudge has been shown.
   static int GetShownCount(PrefService* prefs);

@@ -10,17 +10,63 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_controller.h"
-#include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/json/values_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
+
+class TestNudgeAnimationObserver : public HomeButton::NudgeAnimationObserver {
+ public:
+  explicit TestNudgeAnimationObserver(HomeButton* home_button)
+      : home_button_(home_button) {
+    home_button_->AddNudgeAnimationObserverForTest(this);
+  }
+  ~TestNudgeAnimationObserver() override {
+    home_button_->RemoveNudgeAnimationObserverForTest(this);
+  }
+
+  // HomeButton::NudgeAnimationObserver:
+  void NudgeAnimationStarted(HomeButton* home_button) override {
+    if (home_button != home_button_)
+      return;
+
+    ++started_animation_count_;
+  }
+  void NudgeAnimationEnded(HomeButton* home_button) override {
+    if (home_button != home_button_)
+      return;
+
+    DCHECK_EQ(started_animation_count_, ended_animation_count_ + 1);
+    ++ended_animation_count_;
+    run_loop_.Quit();
+  }
+
+  void WaitUntilAnimationEnded() {
+    DCHECK_GE(started_animation_count_, ended_animation_count_);
+    if (started_animation_count_ == ended_animation_count_)
+      return;
+
+    // Block the test to wait until the animation ended.
+    run_loop_.Run();
+  }
+
+  // Returns the number of finished animation on this home_button_.
+  int GetShownCount() { return ended_animation_count_; }
+
+ private:
+  base::RunLoop run_loop_;
+  HomeButton* const home_button_;
+
+  // Counts the number of started/ended animations.
+  int started_animation_count_ = 0;
+  int ended_animation_count_ = 0;
+};
 
 class LauncherNudgeControllerTest : public AshTestBase {
  public:
@@ -41,6 +87,13 @@ class LauncherNudgeControllerTest : public AshTestBase {
     nudge_controller_->SetClockForTesting(
         task_environment()->GetMockClock(),
         task_environment()->GetMockTickClock());
+
+    // After the app list is toggled and ExpandArrowView is shown, running the
+    // ExpandArrowView animation with the clock advanced will lead to msan
+    // crash. As a workaround, set the `short_animation_for_testing` in
+    // AppListView to true in order to disable the ExpandArrowView animation.
+    // See crbug.com/926038 for similar issue and fix.
+    AppListView::SetShortAnimationForTesting(true);
   }
 
   // Advances the mock clock in the task environment and wait until it is idle.
@@ -59,6 +112,7 @@ class LauncherNudgeControllerTest : public AshTestBase {
   }
 
   LauncherNudgeController* nudge_controller_;
+  std::unique_ptr<TestNudgeAnimationObserver> observer_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -69,12 +123,16 @@ TEST_F(LauncherNudgeControllerTest, DisableNudgeForExistingUser) {
   SimulateUserLogin("user@gmail.com");
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserFirstLogin());
 
-  // Do not show the nudge to an existing user
+  // Do not show the nudge to an existing user.
   EXPECT_FALSE(nudge_controller_->IsRecheckTimerRunningForTesting());
   EXPECT_EQ(0, GetNudgeShownCount());
 }
 
 TEST_F(LauncherNudgeControllerTest, BasicTest) {
+  // Set the animation duration mode to non-zero for the launcher nudge
+  // animation to actually run in the tests.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   SimulateNewUserFirstLogin("user@gmail.com");
   ASSERT_TRUE(Shell::Get()->session_controller()->IsUserFirstLogin());
   EXPECT_EQ(0, GetNudgeShownCount());
@@ -102,11 +160,10 @@ TEST_F(LauncherNudgeControllerTest, BasicTest) {
 }
 
 TEST_F(LauncherNudgeControllerTest, StopShowingNudgeAfterLauncherIsOpened) {
-  // Running the ExpandArrowView animation with the clock advanced will cause
-  // the msan crash. As a workaround, set the `short_animation_for_testing` in
-  // AppListView to true in order to disable the ExpandArrowView animation.
-  AppListView::SetShortAnimationForTesting(true);
-
+  // Set the animation duration mode to non-zero for the launcher nudge
+  // animation to actually run in the tests.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   SimulateNewUserFirstLogin("user@gmail.com");
   EXPECT_EQ(0, GetNudgeShownCount());
 
@@ -114,7 +171,7 @@ TEST_F(LauncherNudgeControllerTest, StopShowingNudgeAfterLauncherIsOpened) {
   AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/true));
   EXPECT_EQ(1, GetNudgeShownCount());
 
-  // Toggle the app list to show
+  // Toggle the app list to show.
   Shell::Get()->app_list_controller()->ToggleAppList(
       display::Screen::GetScreen()->GetPrimaryDisplay().id(),
       AppListShowSource::kShelfButton, base::TimeTicks());
@@ -128,6 +185,10 @@ TEST_F(LauncherNudgeControllerTest, StopShowingNudgeAfterLauncherIsOpened) {
 }
 
 TEST_F(LauncherNudgeControllerTest, DoNotShowNudgeInTabletMode) {
+  // Set the animation duration mode to non-zero for the launcher nudge
+  // animation to actually run in the tests.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   SimulateNewUserFirstLogin("user@gmail.com");
   EXPECT_EQ(0, GetNudgeShownCount());
 
@@ -140,6 +201,51 @@ TEST_F(LauncherNudgeControllerTest, DoNotShowNudgeInTabletMode) {
   // last nudge shown, show the nudge to the user immediately.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_EQ(1, GetNudgeShownCount());
+}
+
+TEST_F(LauncherNudgeControllerTest, ShowNudgeOnDisplayWhereCursorIsOn) {
+  // Set the animation duration mode to non-zero for the launcher nudge
+  // animation to actually run in the tests.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  SimulateNewUserFirstLogin("user@gmail.com");
+  EXPECT_EQ(0, GetNudgeShownCount());
+
+  // Create 2 displays for the test.
+  UpdateDisplay("800x600,800x600");
+  ASSERT_EQ(2u, Shell::Get()->display_manager()->GetNumDisplays());
+
+  HomeButton* primary_home_button =
+      LauncherNudgeController::GetHomeButtonForDisplay(
+          GetPrimaryDisplay().id());
+  HomeButton* secondary_home_button =
+      LauncherNudgeController::GetHomeButtonForDisplay(
+          GetSecondaryDisplay().id());
+
+  TestNudgeAnimationObserver waiter_primary(primary_home_button);
+  TestNudgeAnimationObserver waiter_secondary(secondary_home_button);
+
+  // Move the cursor to primary display. The nudge after advancing the clock
+  // should be shown on the primary display.
+  Shell::Get()->cursor_manager()->SetDisplay(GetPrimaryDisplay());
+  AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/true));
+
+  // Wait until the animation ends to count the finished animation.
+  waiter_primary.WaitUntilAnimationEnded();
+  EXPECT_EQ(1, GetNudgeShownCount());
+  EXPECT_EQ(1, waiter_primary.GetShownCount());
+  EXPECT_EQ(0, waiter_secondary.GetShownCount());
+
+  // Move the cursor to primary display. The nudge after advancing the clock
+  // should be shown on the primary display.
+  Shell::Get()->cursor_manager()->SetDisplay(GetSecondaryDisplay());
+  AdvanceClock(nudge_controller_->GetNudgeInterval(/*is_first_time=*/false));
+
+  // Wait until the animation ends to count the finished animation.
+  waiter_secondary.WaitUntilAnimationEnded();
+  EXPECT_EQ(2, GetNudgeShownCount());
+  EXPECT_EQ(1, waiter_primary.GetShownCount());
+  EXPECT_EQ(1, waiter_secondary.GetShownCount());
 }
 
 }  // namespace ash

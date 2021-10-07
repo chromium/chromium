@@ -20,6 +20,10 @@ namespace views {
 class CircleLayerDelegate;
 }  // namespace views
 
+namespace ui {
+class Layer;
+}
+
 namespace ash {
 
 class ShelfButtonDelegate;
@@ -46,6 +50,20 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
    private:
     ShelfNavigationWidget* const shelf_navigation_widget_;
     const gfx::Rect clip_rect_;
+  };
+
+  // An observer that can be used to track the nudge animation state. Currently
+  // used in testing.
+  class NudgeAnimationObserver : public base::CheckedObserver {
+   public:
+    NudgeAnimationObserver() = default;
+    NudgeAnimationObserver(const NudgeAnimationObserver&) = delete;
+    NudgeAnimationObserver& operator=(const NudgeAnimationObserver&) = delete;
+    ~NudgeAnimationObserver() override = default;
+
+    // Called when the nudge animation is started/ended.
+    virtual void NudgeAnimationStarted(HomeButton* home_button) = 0;
+    virtual void NudgeAnimationEnded(HomeButton* home_button) = 0;
   };
 
   static const char kViewClassName[];
@@ -87,6 +105,12 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   // returned ScopedNoClipRect.
   std::unique_ptr<ScopedNoClipRect> CreateScopedNoClipRect() WARN_UNUSED_RESULT;
 
+  // Starts the launcher nudge animation.
+  void StartNudgeAnimation();
+
+  void AddNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
+  void RemoveNudgeAnimationObserverForTest(NudgeAnimationObserver* observer);
+
  protected:
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -97,10 +121,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   bool DoesIntersectRect(const views::View* target,
                          const gfx::Rect& rect) const override;
 
-  // Starts the launcher nudge animation.
-  void StartNudgeAnimation();
-
   // Callback for the nudge animation.
+  void OnNudgeAnimationStarted();
   void OnNudgeAnimationEnded();
 
   // The controller used to determine the button's behavior.
@@ -115,6 +137,8 @@ class ASH_EXPORT HomeButton : public ShelfControlButton,
   std::unique_ptr<views::CircleLayerDelegate> ripple_layer_delegate_;
 
   std::unique_ptr<ScopedNoClipRect> scoped_no_clip_rect_;
+
+  base::ObserverList<NudgeAnimationObserver> observers_;
 
   base::WeakPtrFactory<HomeButton> weak_ptr_factory_{this};
 };
