@@ -882,11 +882,15 @@ void DisplayLockContext::NotifyWillDisconnect() {
 }
 
 void DisplayLockContext::ElementDisconnected() {
-  UpdateActivationObservationIfNeeded();
+  // We remove the style when disconnecting an element, so we should also unlock
+  // the context.
+  DCHECK(!element_->GetComputedStyle());
+  SetRequestedState(EContentVisibility::kVisible);
 }
 
 void DisplayLockContext::ElementConnected() {
-  UpdateActivationObservationIfNeeded();
+  // When connecting the element, we should not have a style.
+  DCHECK(!element_->GetComputedStyle());
   DetermineIfSubtreeHasFocus();
   DetermineIfSubtreeHasSelection();
 }

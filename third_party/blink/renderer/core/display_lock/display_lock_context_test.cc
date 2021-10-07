@@ -3550,4 +3550,26 @@ TEST_F(DisplayLockContextTest, CullRectUpdate) {
             target->FirstFragment().GetCullRect().Rect());
 }
 
+TEST_F(DisplayLockContextTest, DisconnectedElementIsUnlocked) {
+  ResizeAndFocus();
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    .locked { content-visibility: hidden; }
+    </style>
+    <div id="container" class="locked"></div>
+  )HTML");
+
+  // Check if the result is correct if we update the contents.
+  auto* container = GetDocument().getElementById("container");
+  auto* context = container->GetDisplayLockContext();
+  ASSERT_TRUE(context);
+  EXPECT_TRUE(context->IsLocked());
+  EXPECT_EQ(context->GetState(), EContentVisibility::kHidden);
+
+  container->remove();
+
+  EXPECT_FALSE(container->GetComputedStyle());
+  EXPECT_FALSE(context->IsLocked());
+  EXPECT_EQ(context->GetState(), EContentVisibility::kVisible);
+}
 }  // namespace blink
