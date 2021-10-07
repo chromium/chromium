@@ -1,7 +1,7 @@
 # Controlling Access to Powerful Web Platform Features
 
 _Author: [dominickn@chromium.org](mailto:dominickn@chromium.org)_
-_Contributors: [rorymcclelland@chromium.org](mailto:rorymcclelland@chromium.org)_
+_Contributors: [mgiuca@chromium.org](mailto:mgiuca@chromium.org), [rorymcclelland@chromium.org](mailto:rorymcclelland@chromium.org)_
 
 # Overview
 
