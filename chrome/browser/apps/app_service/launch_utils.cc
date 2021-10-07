@@ -183,6 +183,7 @@ apps::mojom::LaunchSource GetLaunchSource(
       return apps::mojom::LaunchSource::kFromArc;
     case apps::mojom::AppLaunchSource::kSourceIntentUrl:
     case apps::mojom::AppLaunchSource::kSourceRunOnOsLogin:
+    case apps::mojom::AppLaunchSource::kSourceProtocolHandler:
       return apps::mojom::LaunchSource::kFromChromeInternal;
   }
 }

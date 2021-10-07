@@ -521,6 +521,8 @@ void WebAppLaunchManager::LaunchApplication(
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
       command_line.HasSwitch(switches::kAppRunOnOsLoginMode)) {
     launch_source = apps::mojom::AppLaunchSource::kSourceRunOnOsLogin;
+  } else if (protocol_handler_launch_url.has_value()) {
+    launch_source = apps::mojom::AppLaunchSource::kSourceProtocolHandler;
   }
 
   apps::AppLaunchParams params(

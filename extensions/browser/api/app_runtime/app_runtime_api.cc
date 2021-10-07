@@ -115,14 +115,16 @@ app_runtime::LaunchSource GetLaunchSourceEnum(
   ASSERT_ENUM_EQUAL(kSourceIntentUrl, SOURCE_INTENT_URL);
 
   // We don't allow extensions to launch an app specifying RunOnOSLogin
-  // as the source. In this case we map it to SOURCE_CHROME_INTERNAL.
-  if (source == extensions::AppLaunchSource::kSourceRunOnOsLogin)
+  // or ProtocolHandler as the source. In this case we map it to
+  // SOURCE_CHROME_INTERNAL.
+  if (source == extensions::AppLaunchSource::kSourceRunOnOsLogin ||
+      source == extensions::AppLaunchSource::kSourceProtocolHandler)
     source = extensions::AppLaunchSource::kSourceChromeInternal;
 
-  // The +1 accounts for kSourceRunOnOsLogin not having a corresponding entry
-  // in app_runtime::LaunchSource.
+  // The +2 accounts for kSourceRunOnOsLogin and kSourceProtocolHandler not
+  // having a corresponding entry in app_runtime::LaunchSource.
   static_assert(static_cast<int>(extensions::AppLaunchSource::kMaxValue) ==
-                    app_runtime::LaunchSource::LAUNCH_SOURCE_LAST + 1,
+                    app_runtime::LaunchSource::LAUNCH_SOURCE_LAST + 2,
                 "");
 
   return static_cast<app_runtime::LaunchSource>(source);

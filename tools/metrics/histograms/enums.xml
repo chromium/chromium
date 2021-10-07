@@ -3056,6 +3056,7 @@ Unknown properties are collapsed to zero. -->
   <int value="22" label="LAUNCH_SOURCE_ARC"/>
   <int value="23" label="LAUNCH_SOURCE_INTENT_URL"/>
   <int value="24" label="LAUNCH_SOURCE_RUN_ON_OS_LOGIN"/>
+  <int value="25" label="LAUNCH_SOURCE_PROTOCOL_HANDLER"/>
 </enum>
 
 <enum name="AppleScriptCommandEvents">

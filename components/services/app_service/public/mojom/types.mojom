@@ -470,6 +470,7 @@ enum AppLaunchSource {
   kSourceArc = 22,
   kSourceIntentUrl = 23,  // App launch triggered by a URL.
   kSourceRunOnOsLogin = 24,  // App launched during OS login.
+  kSourceProtocolHandler = 25,  // App launch via protocol handler.
 };
 
 // Don't remove items or change the order of this enum.  It's used in
