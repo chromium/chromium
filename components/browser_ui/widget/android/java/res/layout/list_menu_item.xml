@@ -17,7 +17,7 @@
         android:id="@+id/menu_item_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:tint="@color/default_icon_color_secondary" />
+        app:tint="@color/default_icon_color_secondary_tint_list" />
 
     <TextView
         android:id="@+id/menu_item_text"
@@ -33,6 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:tint="@color/default_icon_color_secondary" />
+        app:tint="@color/default_icon_color_secondary_tint_list" />
 
 </LinearLayout>

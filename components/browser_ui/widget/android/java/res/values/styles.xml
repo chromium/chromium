@@ -23,7 +23,7 @@
     </style>
 
     <style name="TextAppearance.ListMenuItem">
-        <item name="android:textColor">@color/default_icon_color_tint_list</item>
+        <item name="android:textColor">@color/default_text_color_list</item>
         <item name="android:textSize">16sp</item>
     </style>
 
