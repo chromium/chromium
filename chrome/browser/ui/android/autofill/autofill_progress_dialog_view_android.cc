@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_progress_dialog_view_android.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillProgressDialogBridge_jni.h"
 #include "components/grit/components_scaled_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"

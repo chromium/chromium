@@ -7,6 +7,8 @@
 
 namespace autofill {
 
+class AutofillProgressDialogController;
+
 // The cross-platform view interface which helps show a progress bar (spinner)
 // for autofill flows.
 class AutofillProgressDialogView {

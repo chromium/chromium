@@ -1,0 +1,86 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "base/run_loop.h"
+#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
+#include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/autofill/payments/autofill_progress_dialog_views.h"
+#include "content/public/test/browser_test.h"
+
+namespace autofill {
+
+class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
+ public:
+  AutofillProgressDialogViewsBrowserTest() = default;
+  ~AutofillProgressDialogViewsBrowserTest() override = default;
+  AutofillProgressDialogViewsBrowserTest(
+      const AutofillProgressDialogViewsBrowserTest&) = delete;
+  AutofillProgressDialogViewsBrowserTest& operator=(
+      const AutofillProgressDialogViewsBrowserTest&) = delete;
+
+  // DialogBrowserTest:
+  void SetUpOnMainThread() override {
+    controller_ = std::make_unique<AutofillProgressDialogControllerImpl>(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
+  void ShowUi(const std::string& name) override { controller()->ShowDialog(); }
+
+  AutofillProgressDialogViews* GetDialogViews() {
+    DCHECK(controller());
+
+    AutofillProgressDialogView* dialog_view =
+        controller()->autofill_progress_dialog_view();
+    if (!dialog_view)
+      return nullptr;
+
+    return static_cast<AutofillProgressDialogViews*>(dialog_view);
+  }
+
+  AutofillProgressDialogControllerImpl* controller() {
+    return controller_.get();
+  }
+
+ private:
+  std::unique_ptr<AutofillProgressDialogControllerImpl> controller_;
+};
+
+IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest, InvokeUi) {
+  ShowAndVerifyUi();
+}
+
+// Ensures closing current tab while dialog being visible is correctly handle
+// and the browser won't crash.
+IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
+                       CloseTabWhileDialogShowing) {
+  ShowUi("");
+  VerifyUi();
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  base::RunLoop().RunUntilIdle();
+}
+
+// Ensures closing browser while dialog being visible is correctly handled and
+// the browser won't crash.
+IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
+                       CloseBrowserWhileDialogShowing) {
+  ShowUi("");
+  VerifyUi();
+  browser()->window()->Close();
+  base::RunLoop().RunUntilIdle();
+}
+
+// Ensures clicking on the cancel button is correctly handled.
+IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,
+                       ClickCancelButton) {
+  ShowUi("");
+  VerifyUi();
+  GetDialogViews()->CancelDialog();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetDialogViews());
+}
+
+}  // namespace autofill

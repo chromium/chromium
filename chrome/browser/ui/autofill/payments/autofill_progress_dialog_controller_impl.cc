@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {

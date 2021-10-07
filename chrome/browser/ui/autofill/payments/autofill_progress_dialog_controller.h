@@ -7,7 +7,9 @@
 
 #include <string>
 
-#include "content/public/browser/web_contents.h"
+namespace content {
+class WebContents;
+}
 
 namespace autofill {
 
