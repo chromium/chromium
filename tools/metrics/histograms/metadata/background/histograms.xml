@@ -270,7 +270,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BackgroundMode.OnStartup.IsBackgroundModePrefEnabled"
-    enum="BooleanEnabled" expires_after="2021-12-05">
+    enum="BooleanEnabled" expires_after="2022-04-17">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>

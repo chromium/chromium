@@ -179,7 +179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.DigitalGainApplied" units="dB"
-    expires_after="2021-12-31">
+    expires_after="2022-04-17">
   <owner>alessiob@chromium.org</owner>
   <summary>
     Logs adaptive digital compression gain that is applied by AgcManagerDirect.
@@ -211,7 +211,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.DigitalGainApplied" units="dB"
-    expires_after="2021-12-31">
+    expires_after="2022-04-17">
   <owner>alessiob@chromium.org</owner>
   <summary>
     Logs adaptive digital compression gain that is applied by
@@ -315,7 +315,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelPeakRms"
-    units="dBFS (negated)" expires_after="2021-12-31">
+    units="dBFS (negated)" expires_after="2022-04-17">
   <owner>hlundin@chromium.org</owner>
   <summary>
     This histogram reports the peak RMS of the signal coming in to WebRTC's
@@ -1147,7 +1147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingVideoRtpPacketsInSeconds" units="s"
-    expires_after="2022-02-13">
+    expires_after="2022-04-17">
   <owner>saza@chromium.org</owner>
   <summary>
     The amount of time between the arrival of the first and last video RTP
@@ -1416,7 +1416,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ConnectionState"
-    enum="IceConnectionStates" expires_after="2021-12-12">
+    enum="IceConnectionStates" expires_after="2022-04-17">
   <owner>qingsi@google.com</owner>
   <owner>jeroendb@google.com</owner>
   <summary>
@@ -1937,7 +1937,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.ReliableDataChannelMessageSize" units="bytes"
-    expires_after="2021-12-05">
+    expires_after="2022-04-17">
   <owner>perkj@chromium.org</owner>
   <summary>
     Sizes of messages sent over reliable data channels. The size of an
@@ -2065,7 +2065,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.UnreliableDataChannelMessageSize" units="bytes"
-    expires_after="2021-11-21">
+    expires_after="2022-04-17">
   <owner>perkj@chromium.org</owner>
   <summary>
     Sizes of messages sent over unreliable data channels. The size of an

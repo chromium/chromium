@@ -511,7 +511,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.TerminalSettingsChanged"
-    enum="CrostiniTerminalSetting" expires_after="2022-01-06">
+    enum="CrostiniTerminalSetting" expires_after="2022-04-17">
   <owner>joelhockey@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -597,7 +597,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Crostini.UnsupportedNotification.Reason"
-    enum="CrostiniUnsupportedNotificationReason" expires_after="2022-01-06">
+    enum="CrostiniUnsupportedNotificationReason" expires_after="2022-04-17">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>

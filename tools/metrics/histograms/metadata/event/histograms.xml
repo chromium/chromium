@@ -355,7 +355,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.DownEventCount.PerInputFormFactorDestinationCombination2"
-    enum="DownEventInputFormFactorDestinationCombination2" expires_after="M100">
+    enum="DownEventInputFormFactorDestinationCombination2"
+    expires_after="2022-04-17">
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The number of down events received per destination, input and form factor
@@ -1233,7 +1234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Event.Latency.ScrollInertial.Touch.BrowserNotifiedToBeforeGpuSwap2"
-    units="microseconds" expires_after="2021-12-01">
+    units="microseconds" expires_after="2022-04-17">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

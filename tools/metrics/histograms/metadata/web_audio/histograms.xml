@@ -31,7 +31,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.NumberOfChannels" units="units"
-    expires_after="2021-12-31">
+    expires_after="2022-04-17">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The number of channels requested by createBuffer(). Recorded for every call
@@ -69,7 +69,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.HardwareSampleRate" units="Hz"
-    expires_after="2021-12-31">
+    expires_after="2022-04-17">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The hardware sample rate (in Hz) used by an AudioContext. Recorded for every
@@ -279,7 +279,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.PushPullFIFO.UnderflowPercentage" units="%"
-    expires_after="2022-01-06">
+    expires_after="2022-04-17">
   <owner>hongchan@chromium.org</owner>
   <summary>
     Percentage of FIFO underflow happened due to the the missed deadline of

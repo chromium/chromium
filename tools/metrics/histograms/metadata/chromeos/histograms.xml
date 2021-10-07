@@ -671,7 +671,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.HardwareVerifier.TimeToFinish" units="ms"
-    expires_after="2021-11-21">
+    expires_after="2022-04-17">
   <owner>itspeter@chromium.org</owner>
   <owner>stimim@chromium.org</owner>
   <owner>chromeos-hw-checker@google.com</owner>
@@ -1437,7 +1437,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequests"
-    enum="OsSettingSearchRequestTypes" expires_after="2022-02-06">
+    enum="OsSettingSearchRequestTypes" expires_after="2022-04-17">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1462,7 +1462,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSectionSelected"
-    enum="OsSettingsSection" expires_after="2022-02-06">
+    enum="OsSettingsSection" expires_after="2022-04-17">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>

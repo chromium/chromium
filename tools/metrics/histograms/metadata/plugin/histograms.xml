@@ -125,7 +125,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.DlcUseResult" enum="PluginVmDlcUseResult"
-    expires_after="2021-12-26">
+    expires_after="2022-04-17">
   <owner>kimjae@google.com</owner>
   <owner>timloh@google.com</owner>
   <summary>Recorded at each time PluginVM DLC is installed.</summary>
@@ -164,7 +164,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Total" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-04-17">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>

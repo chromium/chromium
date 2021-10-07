@@ -644,7 +644,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.LocationPermissions.FirstRunModal.Interaction"
-    enum="LocationPermissionsFirstRunModalIOSEnum" expires_after="2021-12-05">
+    enum="LocationPermissionsFirstRunModalIOSEnum" expires_after="2022-04-17">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -1404,7 +1404,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.WindowIDInjection.ElapsedTime" units="ms"
-    expires_after="2021-12-11">
+    expires_after="2022-04-17">
   <owner>michaeldo@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>

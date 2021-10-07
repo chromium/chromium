@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Offline.Measurements.HttpProbeResult"
-    enum="OfflineMeasurementsHttpProbeResult" expires_after="M100">
+    enum="OfflineMeasurementsHttpProbeResult" expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -36,7 +36,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.IsAirplaneModeEnabled"
-    enum="BooleanEnabled" expires_after="M100">
+    enum="BooleanEnabled" expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -52,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.IsRoaming" enum="Boolean"
-    expires_after="M100">
+    expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -69,7 +69,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
-    expires_after="M100">
+    expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.TimeBetweenChecks" units="minutes"
-    expires_after="M100">
+    expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -91,7 +91,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.UserState"
-    enum="OfflineMeasurementsUserState" expires_after="M100">
+    enum="OfflineMeasurementsUserState" expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -157,7 +157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflineIndicator.ShownDurationV2" units="ms"
-    expires_after="2022-02-06">
+    expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -728,7 +728,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.DidNavigationThrottleCancelNavigation"
-    enum="Boolean" expires_after="M100">
+    enum="Boolean" expires_after="2022-04-17">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>

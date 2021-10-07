@@ -281,7 +281,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelIssueExpanded"
-    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2022-01-02">
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2022-04-17">
   <owner>yangguo@chromium.org</owner>
   <owner>jegarc@microsoft.com</owner>
   <summary>
@@ -299,7 +299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.IssuesPanelResourceOpened"
-    enum="DevToolsIssuesPanelResourceOpened" expires_after="2022-01-02">
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2022-04-17">
   <owner>yangguo@chromium.org</owner>
   <owner>jegarc@microsoft.com</owner>
   <summary>
@@ -363,7 +363,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DevTools.LinearMemoryInspector.Target"
-    enum="DevToolsLinearMemoryInspectorTarget" expires_after="M96">
+    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2022-04-17">
   <owner>sawallner@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>

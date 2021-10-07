@@ -299,7 +299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.MajorVersion" units="units"
-    expires_after="2021-12-12">
+    expires_after="2022-04-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -453,7 +453,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SoftwareReporter.RunningTimeWithoutSleep" units="ms"
-    expires_after="2022-01-21">
+    expires_after="2022-04-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

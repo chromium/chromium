@@ -114,7 +114,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.NumDetectedScannersAtLogin" units="scanners"
-    expires_after="M99">
+    expires_after="2022-04-17">
   <owner>gavinwill@chromium.org</owner>
   <owner>masonwilde@google.com</owner>
   <owner>cros-peripherals@google.com</owner>

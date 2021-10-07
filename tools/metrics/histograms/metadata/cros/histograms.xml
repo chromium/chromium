@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.Fuse.Archivemount" enum="ArchivemountError"
-    expires_after="2021-12-05">
+    expires_after="2022-04-17">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>

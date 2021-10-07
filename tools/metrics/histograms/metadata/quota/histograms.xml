@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2021-12-21">
+    expires_after="2022-04-17">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -75,7 +75,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2022-01-18">
+<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2022-04-17">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -187,13 +187,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfPersistentStorage" units="MB"
-    expires_after="2022-01-02">
+    expires_after="2022-04-17">
   <owner>jarrydg@chromium.org</owner>
   <summary>Global usage of persistent storage.</summary>
 </histogram>
 
 <histogram name="Quota.GlobalUsageOfTemporaryStorage" units="MB"
-    expires_after="2021-12-12">
+    expires_after="2022-04-17">
   <owner>jarrydg@chromium.org</owner>
   <summary>Global usage of temporary storage.</summary>
 </histogram>
@@ -233,7 +233,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable" units="%"
-    expires_after="2021-12-21">
+    expires_after="2022-04-17">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -263,7 +263,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Quota.PercentUsedForTemporaryStorage2" units="%"
-    expires_after="2021-11-29">
+    expires_after="2022-04-17">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2022-01-18">
+<histogram name="Quota.QuotaForOrigin" units="MB" expires_after="2022-04-17">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

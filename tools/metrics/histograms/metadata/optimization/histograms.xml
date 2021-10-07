@@ -43,7 +43,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="OptimizationGuide.ApplyDecisionAsync"
-    enum="OptimizationGuideOptimizationTypeDecision" expires_after="2022-01-02">
+    enum="OptimizationGuideOptimizationTypeDecision" expires_after="2022-04-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -116,7 +116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency"
-    units="ms" expires_after="2022-01-02">
+    units="ms" expires_after="2022-04-17">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -293,7 +293,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus"
     enum="OptimizationGuideRaceNavigationFetchAttemptStatus"
-    expires_after="2022-01-02">
+    expires_after="2022-04-17">
   <owner>mcrouse@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

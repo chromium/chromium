@@ -95,7 +95,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.InternalErrorCode"
-    enum="UpdateEngineErrorCode" expires_after="2021-12-29">
+    enum="UpdateEngineErrorCode" expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadBytesDownloadedMiB" units="MiB"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -136,7 +136,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadDownloadSpeedKBps" units="KBps"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -151,7 +151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadSizeMiB" units="MiB"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -164,7 +164,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadType"
-    enum="UpdateEnginePayloadFormat" expires_after="2021-12-29">
+    enum="UpdateEnginePayloadFormat" expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -267,7 +267,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Check.Reaction" enum="UpdateEngineCheckReaction"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Check.Result" enum="UpdateEngineCheckResult"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -377,7 +377,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.ConsecutiveUpdate.Failed" enum="BooleanHit"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>vyshu@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -390,7 +390,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Daily.OSAgeDays" units="days"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -439,7 +439,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.FailedUpdateCount" units="count"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -513,7 +513,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Rollback.Result" enum="BooleanSuccess"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -526,7 +526,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.AttemptCount" units="count"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -651,7 +651,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.PayloadSizeMiB" units="MiB"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -664,7 +664,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.PayloadType"
-    enum="UpdateEnginePayloadFormat" expires_after="2021-12-29">
+    enum="UpdateEnginePayloadFormat" expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -678,7 +678,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.RebootCount" units="count"
-    expires_after="2021-12-29">
+    expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -691,7 +691,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.TotalDurationMinutes"
-    units="minutes" expires_after="2021-12-29">
+    units="minutes" expires_after="2022-04-17">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
