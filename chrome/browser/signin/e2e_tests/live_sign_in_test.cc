@@ -726,23 +726,48 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest,
 IN_PROC_BROWSER_TEST_F(LiveSignInTest,
                        MANUAL_AccountCapabilities_FetchedOnSignIn) {
   EnableAccountCapabilitiesFetches(identity_manager());
-  AccountCapabilitiesObserver capabilities_observer(identity_manager());
 
-  TestAccount ta;
-  CHECK(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
-  TurnOnSync(ta, 0);
+  // Test primary adult account.
+  {
+    AccountCapabilitiesObserver capabilities_observer(identity_manager());
 
-  CoreAccountInfo core_account_info =
-      identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
-  EXPECT_TRUE(gaia::AreEmailsSame(core_account_info.email, ta.user));
+    TestAccount ta;
+    ASSERT_TRUE(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_1", ta));
+    SignInFromSettings(ta, 0);
 
-  capabilities_observer.WaitForAllCapabilitiesToBeKnown(
-      core_account_info.account_id);
-  AccountInfo account_info =
-      identity_manager()->FindExtendedAccountInfoByAccountId(
-          core_account_info.account_id);
-  EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
-            Tribool::kTrue);
+    CoreAccountInfo core_account_info =
+        identity_manager()->GetPrimaryAccountInfo(ConsentLevel::kSignin);
+    ASSERT_TRUE(gaia::AreEmailsSame(core_account_info.email, ta.user));
+
+    capabilities_observer.WaitForAllCapabilitiesToBeKnown(
+        core_account_info.account_id);
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfoByAccountId(
+            core_account_info.account_id);
+    EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
+              Tribool::kTrue);
+  }
+
+  // Test secondary minor account.
+  {
+    AccountCapabilitiesObserver capabilities_observer(identity_manager());
+
+    TestAccount ta;
+    ASSERT_TRUE(GetTestAccountsUtil()->GetAccount("TEST_ACCOUNT_MINOR", ta));
+    SignInFromWeb(ta, /*previously_signed_in_accounts=*/1);
+
+    CoreAccountInfo core_account_info =
+        identity_manager()->FindExtendedAccountInfoByEmailAddress(ta.user);
+    ASSERT_FALSE(core_account_info.IsEmpty());
+
+    capabilities_observer.WaitForAllCapabilitiesToBeKnown(
+        core_account_info.account_id);
+    AccountInfo account_info =
+        identity_manager()->FindExtendedAccountInfoByAccountId(
+            core_account_info.account_id);
+    EXPECT_EQ(account_info.capabilities.can_offer_extended_chrome_sync_promos(),
+              Tribool::kFalse);
+  }
 }
 
 }  // namespace test
