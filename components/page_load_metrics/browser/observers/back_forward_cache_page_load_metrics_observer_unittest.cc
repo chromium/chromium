@@ -333,7 +333,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
       base::ScopedMockClockOverride::NowTicks();
 
   base::TimeTicks navigation_start =
-      scoped_clock_start_time + base::TimeDelta::FromMilliseconds(100);
+      scoped_clock_start_time + base::Milliseconds(100);
   auto in_foreground_bf_state =
       PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
           /*was_in_foreground=*/true, navigation_start);
@@ -350,7 +350,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
       HistoryNavigation::kEntryName,
       HistoryNavigation::kForegroundDurationAfterBackForwardCacheRestoreName);
   EXPECT_EQ(0U, result_metrics.size());
-  clock_override.Advance(base::TimeDelta::FromMilliseconds(250));
+  clock_override.Advance(base::Milliseconds(250));
   // This time the app is entering the background, so a metric should be
   // logged.
   InvokeMeasureForegroundDuration(observer_with_fake_delegate_.get(),
@@ -448,8 +448,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
   // twenty seconds ago, because later in the test we'll need a page_end_time,
   // and we can use base::TimeTicks::Now for that.
   auto bf_state = PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
-      /*was_in_foreground=*/true,
-      base::TimeTicks::Now() - base::TimeDelta::FromSeconds(20));
+      /*was_in_foreground=*/true, base::TimeTicks::Now() - base::Seconds(20));
 
   fake_delegate_->AddBackForwardCacheRestore(bf_state);
   // 'END_NONE' is the default, but set it explicitly because this test needs to

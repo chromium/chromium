@@ -158,8 +158,8 @@ class AuctionV8Helper::ScriptTimeoutHelper {
     // Compute how much of the timeout is left, and clamp from below to 1us
     // to avoid weirdness if it rounds up to 0.
     remaining_delay_ -= (base::TimeTicks::Now() - last_start_);
-    if (remaining_delay_ < base::TimeDelta::FromMicroseconds(1))
-      remaining_delay_ = base::TimeDelta::FromMicroseconds(1);
+    if (remaining_delay_ < base::Microseconds(1))
+      remaining_delay_ = base::Microseconds(1);
   }
 
   // Actual implementation for AuctionV8Helper::ResumeTimeoutTimer.

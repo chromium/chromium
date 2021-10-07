@@ -123,13 +123,12 @@ void RecordCurrentTime(
                        false,  // interpret |now| as from UTC/GMT
                        raw_offset, dst_offset, status);
   base::TimeDelta time_zone_offset =
-      base::TimeDelta::FromMilliseconds(raw_offset + dst_offset);
+      base::Milliseconds(raw_offset + dst_offset);
   if (U_FAILURE(status)) {
     DVLOG(1) << "Failed to get time zone offset, error code: " << status;
     // The fallback case is to get the raw timezone offset ignoring the daylight
     // saving time.
-    time_zone_offset =
-        base::TimeDelta::FromMilliseconds(time_zone->getRawOffset());
+    time_zone_offset = base::Milliseconds(time_zone->getRawOffset());
   }
   time->set_time_zone_offset_from_gmt_sec(time_zone_offset.InSeconds());
 }

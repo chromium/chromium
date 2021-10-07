@@ -14,8 +14,7 @@ namespace blink {
 namespace {
 
 // TODO(https://crbug.com/1253787): Add base::FeatureParam<>s to control this.
-constexpr base::TimeDelta kMetronomeTick =
-    base::TimeDelta::FromMicroseconds(15625);  // 64 Hz
+constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
 
 }  // namespace
 

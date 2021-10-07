@@ -122,9 +122,9 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   static constexpr int kReportAfterEveryNTasksPersistentProcess = 2500;
   static constexpr int kReportAfterEveryNTasksOtherProcess = 1000;
   static constexpr base::TimeDelta kAvgCpuLoadReportInterval =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
   static constexpr base::TimeDelta kIdleCpuLoadReportInterval =
-      base::TimeDelta::FromSeconds(5);
+      base::Seconds(5);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   power_scheduler::PowerModeArbiter* const arbiter_;

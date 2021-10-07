@@ -75,7 +75,7 @@ constexpr const char kResourceFetchPriorityExperiment[] =
     "ResourceFetchPriorityExperiment";
 
 constexpr base::TimeDelta kPrioritizeCompositingAfterDelay =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 v8::RAILMode RAILModeToV8RAILMode(RAILMode rail_mode) {
   switch (rail_mode) {

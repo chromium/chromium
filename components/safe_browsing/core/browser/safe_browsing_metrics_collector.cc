@@ -119,9 +119,8 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
        event_type_int += 1) {
     EventType event_type = static_cast<EventType>(event_type_int);
     if (IsBypassEventType(event_type)) {
-      int bypass_count =
-          GetEventCountSince(user_state, event_type,
-                             base::Time::Now() - base::TimeDelta::FromDays(28));
+      int bypass_count = GetEventCountSince(user_state, event_type,
+                                            base::Time::Now() - base::Days(28));
       base::UmaHistogramCounts100("SafeBrowsing.Daily.BypassCountLast28Days." +
                                       GetUserStateMetricSuffix(user_state) +
                                       "." +
@@ -130,9 +129,8 @@ void SafeBrowsingMetricsCollector::LogDailyEventMetrics() {
       total_bypass_count += bypass_count;
     }
     if (IsSecuritySensitiveEventType(event_type)) {
-      int security_sensitive_event_count =
-          GetEventCountSince(user_state, event_type,
-                             base::Time::Now() - base::TimeDelta::FromDays(28));
+      int security_sensitive_event_count = GetEventCountSince(
+          user_state, event_type, base::Time::Now() - base::Days(28));
       base::UmaHistogramCounts100(
           "SafeBrowsing.Daily.SecuritySensitiveCountLast28Days." +
               GetUserStateMetricSuffix(user_state) + "." +

@@ -1041,8 +1041,7 @@ void LayerTreeTest::DispatchDeferringCommitsStatus(bool is_deferring_commits) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   if (is_deferring_commits) {
     layer_tree_host_->StartDeferringCommits(
-        base::TimeDelta::FromMilliseconds(1000),
-        PaintHoldingReason::kFirstContentfulPaint);
+        base::Milliseconds(1000), PaintHoldingReason::kFirstContentfulPaint);
   } else {
     layer_tree_host_->StopDeferringCommits(
         PaintHoldingCommitTrigger::kFirstContentfulPaint);

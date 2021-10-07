@@ -342,7 +342,7 @@ TEST(ScrollOffsetAnimationCurveTest, CurveWithLargeDelay) {
   std::unique_ptr<ScrollOffsetAnimationCurve> curve(
       ScrollOffsetAnimationCurveFactory::CreateEaseInOutAnimationForTesting(
           gfx::Vector2dF(0.f, 100.f), duration_hint));
-  curve->SetInitialValue(gfx::Vector2dF(), base::TimeDelta::FromSecondsD(0.2));
+  curve->SetInitialValue(gfx::Vector2dF(), base::Seconds(0.2));
   EXPECT_EQ(0.f, curve->Duration().InSecondsF());
 
   // Re-targeting when animation duration is 0.

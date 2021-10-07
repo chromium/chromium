@@ -76,7 +76,7 @@ void AutofillProgressDialogViews::ShowConfirmation() {
       FROM_HERE,
       base::BindOnce(&AutofillProgressDialogViews::Dismiss,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 }
 
 void AutofillProgressDialogViews::AddedToWidget() {

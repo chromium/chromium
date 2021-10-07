@@ -26,7 +26,7 @@ namespace {
 // cooldown happened.
 base::Time GetLastCooldownEndTime(PrefService* pref_service) {
   base::Time cooldown_start = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(pref_service->GetInt64(
+      base::Seconds(pref_service->GetInt64(
           prefs::kSafeBrowsingModuleLastCooldownStartAt)));
   // The field param is passed as a double, to allow manual testing using a
   // fraction of a day as cooldown.
@@ -34,9 +34,8 @@ base::Time GetLastCooldownEndTime(PrefService* pref_service) {
       ntp_features::kNtpSafeBrowsingModule,
       ntp_features::kNtpSafeBrowsingModuleCooldownPeriodDaysParam,
       /*default_value=*/30.0);
-  base::TimeDelta cooldown_period = base::TimeDelta::FromSeconds(
-      static_cast<int>(cooldown_days * base::Time::kHoursPerDay *
-                       base::Time::kSecondsPerHour));
+  base::TimeDelta cooldown_period = base::Seconds(static_cast<int>(
+      cooldown_days * base::Time::kHoursPerDay * base::Time::kSecondsPerHour));
   return cooldown_start + cooldown_period;
 }
 

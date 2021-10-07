@@ -82,7 +82,7 @@ TEST_F(AttributionStorageDelegateImplTest,
   // Set the impression to expire before the two day window.
   const AttributionReport report = GetReport(impression_time, conversion_time,
                                              /*expiry=*/base::Hours(2));
-  EXPECT_EQ(impression_time + base::TimeDelta::FromDays(2),
+  EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
                 report.impression, report.conversion_time));
 }

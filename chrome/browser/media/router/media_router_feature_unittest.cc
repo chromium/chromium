@@ -78,26 +78,26 @@ TEST(MediaRouterFeatureTest, GetAccessCodeDeviceDurationPref) {
                                std::make_unique<base::Value>(true));
 
   // Defaults to 0.
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0),
+  EXPECT_EQ(base::Seconds(0),
             GetAccessCodeDeviceDurationPref(pref_service.get()));
 
   // Setting to a non-zero value should cause the return value to match.
   pref_service->SetManagedPref(prefs::kAccessCodeCastDeviceDuration,
                                std::make_unique<base::Value>(non_default));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(non_default),
+  EXPECT_EQ(base::Seconds(non_default),
             GetAccessCodeDeviceDurationPref(pref_service.get()));
 
   // Disabling the feature overall in policy now makes this return 0.
   pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
                                std::make_unique<base::Value>(false));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0),
+  EXPECT_EQ(base::Seconds(0),
             GetAccessCodeDeviceDurationPref(pref_service.get()));
 
   pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
                                std::make_unique<base::Value>(true));
   // Removing the set value should return the default.
   pref_service->RemoveManagedPref(prefs::kAccessCodeCastDeviceDuration);
-  EXPECT_EQ(base::TimeDelta::FromSeconds(0),
+  EXPECT_EQ(base::Seconds(0),
             GetAccessCodeDeviceDurationPref(pref_service.get()));
 }
 

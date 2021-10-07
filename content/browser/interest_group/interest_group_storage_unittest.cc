@@ -365,7 +365,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
     // Allow time to pass so that they have different expiration times.
     // This makes which groups get removed deterministic as they are sorted by
     // expiration time.
-    task_environment().FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+    task_environment().FastForwardBy(base::Microseconds(1));
 
     storage->JoinInterestGroup(NewInterestGroup(test_origin, group_name),
                                test_origin.GetURL());
@@ -381,7 +381,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
 
   // Allow enough idle time to trigger maintenance.
   task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
-                                   base::TimeDelta::FromSeconds(1));
+                                   base::Seconds(1));
 
   interest_groups = storage->GetInterestGroupsForOwner(test_origin);
   ASSERT_EQ(InterestGroupStorage::kMaxOwnerInterestGroups,
@@ -411,7 +411,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
     // Allow time to pass so that they have different expiration times.
     // This makes which groups get removed deterministic as they are sorted by
     // expiration time.
-    task_environment().FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+    task_environment().FastForwardBy(base::Microseconds(1));
 
     storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
                                test_origin.GetURL());
@@ -423,7 +423,7 @@ TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
 
   // Allow enough idle time to trigger maintenance.
   task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
-                                   base::TimeDelta::FromSeconds(1));
+                                   base::Seconds(1));
 
   // The oldest few interest groups should have been cleared during maintenance.
   origins = storage->GetAllInterestGroupOwners();

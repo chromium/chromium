@@ -141,12 +141,12 @@ bool GetAccessCodeCastEnabledPref(PrefService* pref_service) {
 base::TimeDelta GetAccessCodeDeviceDurationPref(PrefService* pref_service) {
 #if !defined(OS_ANDROID)
   if (!GetAccessCodeCastEnabledPref(pref_service)) {
-    return base::TimeDelta::FromSeconds(0);
+    return base::Seconds(0);
   }
-  return base::TimeDelta::FromSeconds(
+  return base::Seconds(
       pref_service->GetInteger(prefs::kAccessCodeCastDeviceDuration));
 #else
-  return base::TimeDelta::FromSeconds(0);
+  return base::Seconds(0);
 #endif  // !defined(OS_ANDROID)
 }
 

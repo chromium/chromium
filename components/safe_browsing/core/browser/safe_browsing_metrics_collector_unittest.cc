@@ -436,11 +436,9 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
   FastForwardAndAddEvent(base::Hours(1),
                          EventType::REAL_TIME_INTERSTITIAL_BYPASS);
   FastForwardAndAddEvent(
-      base::TimeDelta::FromHours(1),
-      EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+      base::Hours(1), EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   FastForwardAndAddEvent(
-      base::TimeDelta::FromHours(1),
-      EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+      base::Hours(1), EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
 
   task_environment_.FastForwardBy(base::Days(1));
   histograms.ExpectTotalCount(
@@ -648,24 +646,23 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
   EXPECT_EQ(absl::nullopt,
             metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
   // Timestamps are rounded to second when stored in prefs.
-  base::Time rounded_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(
-          base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
+  base::Time rounded_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Seconds(base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds()));
 
   // Add one security sensitive event.
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::SECURITY_SENSITIVE_DOWNLOAD);
-  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(1),
+  EXPECT_EQ(rounded_time + base::Hours(1),
             metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
 
   // Add another security sensitive event.
-  FastForwardAndAddEvent(base::TimeDelta::FromHours(1),
+  FastForwardAndAddEvent(base::Hours(1),
                          EventType::SECURITY_SENSITIVE_PASSWORD_PROTECTION);
-  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(2),
+  EXPECT_EQ(rounded_time + base::Hours(2),
             metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
 
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
-  EXPECT_EQ(rounded_time + base::TimeDelta::FromHours(2),
+  task_environment_.FastForwardBy(base::Days(1));
+  EXPECT_EQ(rounded_time + base::Hours(2),
             metrics_collector_->GetLatestSecuritySensitiveEventTimestamp());
 }
 

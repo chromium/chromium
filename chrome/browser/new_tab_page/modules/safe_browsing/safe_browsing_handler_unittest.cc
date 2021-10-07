@@ -179,8 +179,7 @@ TEST_F(SafeBrowsingHandlerTest, Cooldown_DisablesModuleInBetween) {
   module_handler_->CanShowModule(callback.Get());
 
   // Jump forward in time.
-  task_environment_.FastForwardBy(
-      base::TimeDelta::FromDays(static_cast<int>(cooldown_days)));
+  task_environment_.FastForwardBy(base::Days(static_cast<int>(cooldown_days)));
 
   // Exit cooldown, but no new security sensitive event. Module is still not
   // shown.

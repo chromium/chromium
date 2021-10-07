@@ -129,7 +129,7 @@ TEST_P(PasswordStoreAndroidBackendTestForMetrics, GetAllLoginsAsyncMetrics) {
       PasswordStoreAndroidBackend::RemoteChangesReceived(),
       /*sync_enabled_or_disabled_cb=*/base::RepeatingClosure(),
       /*completion=*/base::DoNothing());
-  constexpr auto kLatencyDelta = base::TimeDelta::FromMilliseconds(123u);
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
   constexpr JobId kJobId{1337};
   const char kDurationMetric[] =
       "PasswordManager.PasswordStoreAndroidBackend.GetAllLoginsAsync.Latency";

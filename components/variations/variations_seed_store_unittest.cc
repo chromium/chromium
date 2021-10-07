@@ -145,7 +145,7 @@ std::string SerializeSeedBase64(const VariationsSeed& seed) {
 // pref values were cleared.
 void SetAllSeedPrefsToNonDefaultValues(PrefService* prefs) {
   const base::Time now = base::Time::Now();
-  const base::TimeDelta delta = base::TimeDelta::FromDays(1);
+  const base::TimeDelta delta = base::Days(1);
 
   // Regular seed prefs:
   prefs->SetString(prefs::kVariationsCompressedSeed, "coffee");

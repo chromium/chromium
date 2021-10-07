@@ -23,8 +23,7 @@ namespace {
 using ::testing::ElementsAre;
 using ::webrtc::TaskQueueTest;
 
-constexpr base::TimeDelta kMetronomeTick =
-    base::TimeDelta::FromMicroseconds(15625);  // 64 Hz
+constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
 
 // Wrapper needed for the TaskQueueTest suite.
 class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
@@ -75,7 +74,7 @@ TEST_F(MetronomeTaskQueueFactoryTest, PostTaskRunsPriorToTick) {
   task_queue->PostTask(webrtc::ToQueuedTask([&did_run]() { did_run = true; }));
 
   EXPECT_FALSE(did_run);
-  task_environment_.FastForwardBy(base::TimeDelta::FromNanoseconds(1));
+  task_environment_.FastForwardBy(base::Nanoseconds(1));
   EXPECT_TRUE(did_run);
 }
 
@@ -97,10 +96,9 @@ TEST_F(MetronomeTaskQueueFactoryTest, NormalPriorityDelayedTasksRunOnTicks) {
   task_queue->PostDelayedTask(
       webrtc::ToQueuedTask([&task_run_counter]() { ++task_run_counter; }),
       (kMetronomeTick / 2).InMilliseconds());
-  task_environment_.FastForwardBy(kMetronomeTick -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kMetronomeTick - base::Milliseconds(1));
   EXPECT_EQ(task_run_counter, 1);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_EQ(task_run_counter, 2);
 
   // Delay several ticks.
@@ -123,7 +121,7 @@ TEST_F(MetronomeTaskQueueFactoryTest, HighPriorityDelayedTasksRunOffTicks) {
       /*milliseconds=*/1);
 
   EXPECT_FALSE(did_run);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(did_run);
 }
 

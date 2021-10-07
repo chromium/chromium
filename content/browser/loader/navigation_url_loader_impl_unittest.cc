@@ -507,7 +507,7 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutTest) {
   std::unique_ptr<NavigationURLLoader> loader =
       CreateTestLoader(url, std::string(), "GET", &delegate);
   loader->Start();
-  loader->SetNavigationTimeout(base::TimeDelta::FromSeconds(3));
+  loader->SetNavigationTimeout(base::Seconds(3));
   delegate.WaitForRequestFailed();
   EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
 }
@@ -523,7 +523,7 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutRedirectTest) {
   std::unique_ptr<NavigationURLLoader> loader =
       CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
   loader->Start();
-  loader->SetNavigationTimeout(base::TimeDelta::FromSeconds(3));
+  loader->SetNavigationTimeout(base::Seconds(3));
   delegate.WaitForRequestRedirected();
   delegate.WaitForRequestFailed();
   EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());

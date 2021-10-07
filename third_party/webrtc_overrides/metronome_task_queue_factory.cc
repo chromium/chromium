@@ -124,8 +124,7 @@ void WebRtcMetronomeTaskQueue::PostDelayedTask(
     uint32_t milliseconds) {
   base::AutoLock auto_lock(lock_);
   delayed_tasks_.insert(std::make_pair(
-      DelayedTaskInfo(base::TimeTicks::Now() +
-                          base::TimeDelta::FromMilliseconds(milliseconds),
+      DelayedTaskInfo(base::TimeTicks::Now() + base::Milliseconds(milliseconds),
                       next_task_id_++),
       std::move(task)));
   UpdateWakeupTime();

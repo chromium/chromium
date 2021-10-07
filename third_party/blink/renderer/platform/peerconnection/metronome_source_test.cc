@@ -15,8 +15,7 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kMetronomeTick =
-    base::TimeDelta::FromMicroseconds(15625);  // 64 Hz
+constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
 
 class MetronomeSourceTest : public ::testing::Test {
  public:
@@ -117,11 +116,10 @@ TEST_F(MetronomeSourceTest, ListenerCalledOnEachTick) {
 
   EXPECT_EQ(callback_count, 0);
   // Fast-forward slightly less than a tick should not increment the counter.
-  task_environment_.FastForwardBy(kMetronomeTick -
-                                  base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(kMetronomeTick - base::Milliseconds(1));
   EXPECT_EQ(callback_count, 0);
   // Fast-forward to the first tick.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_EQ(callback_count, 1);
   // Fast-forward some more ticks.
   task_environment_.FastForwardBy(kMetronomeTick);
@@ -236,13 +234,13 @@ TEST_F(MetronomeSourceTest, SetWakeupTime) {
 
   // Wakeup slightly less than a tick from now.
   listener_handle->SetWakeupTime(base::TimeTicks::Now() + kMetronomeTick -
-                                 base::TimeDelta::FromMilliseconds(1));
+                                 base::Milliseconds(1));
   task_environment_.FastForwardBy(kMetronomeTick);
   EXPECT_EQ(callback_count, 3);
 
   // Wakeup slightly more than a tick from now.
   listener_handle->SetWakeupTime(base::TimeTicks::Now() + kMetronomeTick +
-                                 base::TimeDelta::FromMilliseconds(1));
+                                 base::Milliseconds(1));
   task_environment_.FastForwardBy(kMetronomeTick);
   EXPECT_EQ(callback_count, 3);
   task_environment_.FastForwardBy(kMetronomeTick);

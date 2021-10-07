@@ -26,8 +26,7 @@ const int kMinimumDropThresholdRelative = 10;
 const int kMicrosToTwoDecimalPlaces = 10000;
 const int kTwoDecimalPlacesMaximumThreshold = 10 * kUnitsToMicros;
 const int kStaleThresholdHours = 1;
-const base::TimeDelta kStaleDuration =
-    base::TimeDelta::FromHours(kStaleThresholdHours);
+const base::TimeDelta kStaleDuration = base::Hours(kStaleThresholdHours);
 
 // Returns true if a cached price drop has gone stale and should be
 // re-fetched from OptimizationGuide.

@@ -12,7 +12,7 @@ namespace {
 // Amount of time to wait before retriggering repeating timer.
 // Currently we define it as 5 hours to align our protocol with Omahas
 // device active reporting.
-constexpr base::TimeDelta kTimeToRepeat = base::TimeDelta::FromHours(5);
+constexpr base::TimeDelta kTimeToRepeat = base::Hours(5);
 
 }  // namespace
 

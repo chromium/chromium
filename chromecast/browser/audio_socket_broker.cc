@@ -28,7 +28,7 @@ namespace media {
 
 namespace {
 
-constexpr base::TimeDelta kConnectTimeout = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kConnectTimeout = base::Seconds(1);
 constexpr char kSocketMsg[] = "socket-handle";
 
 }  // namespace

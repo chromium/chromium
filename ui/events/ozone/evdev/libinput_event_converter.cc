@@ -441,7 +441,7 @@ void LibInputEventConverter::HandlePointerAxis(const LibInputEvent& evt) {
 base::TimeTicks LibInputEventConverter::Timestamp(const LibInputEvent& evt) {
   libinput_event_pointer* event = evt.PointerEvent();
   uint64_t time_usec = libinput_event_pointer_get_time_usec(event);
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(time_usec);
+  return base::TimeTicks() + base::Microseconds(time_usec);
 }
 
 }  // namespace ui
