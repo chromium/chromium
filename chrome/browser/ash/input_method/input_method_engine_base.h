@@ -205,6 +205,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   gfx::Range GetAutocorrectRange(int context_id, std::string* error);
 
   gfx::Rect GetAutocorrectCharacterBounds(int context_id, std::string* error);
+  gfx::Rect GetTextFieldBounds(int context_id, std::string* error);
 
   bool SetAutocorrectRange(int context_id,
                            const gfx::Range& range,
@@ -283,6 +284,7 @@ class InputMethodEngineBase : virtual public ui::IMEEngineHandlerInterface,
   virtual gfx::Range GetAutocorrectRange() = 0;
 
   virtual gfx::Rect GetAutocorrectCharacterBounds() = 0;
+  virtual gfx::Rect GetTextFieldBounds() = 0;
 
   // Notifies the InputContextHandler that the autocorrect range should
   // be updated and the autocorrect text has updated.

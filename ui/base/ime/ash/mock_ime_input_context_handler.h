@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
       const std::vector<ui::ImeTextSpan>& text_spans) override;
   gfx::Range GetAutocorrectRange() override;
   gfx::Rect GetAutocorrectCharacterBounds() override;
+  gfx::Rect GetTextFieldBounds() override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   absl::optional<GrammarFragment> GetGrammarFragment(

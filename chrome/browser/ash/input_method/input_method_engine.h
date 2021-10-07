@@ -191,7 +191,7 @@ class InputMethodEngine : public InputMethodEngineBase,
 
 
   gfx::Rect GetAutocorrectCharacterBounds() override;
-
+  gfx::Rect GetTextFieldBounds() override;
 
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
 

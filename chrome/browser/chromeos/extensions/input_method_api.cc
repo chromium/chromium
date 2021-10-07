@@ -85,6 +85,8 @@ namespace SetSelectionRange =
 namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
+namespace GetTextFieldBounds =
+    extensions::api::input_method_private::GetTextFieldBounds;
 
 using ::ash::input_method::InputMethodEngine;
 using ::ash::input_method::InputMethodEngineBase;
@@ -532,6 +534,30 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
   const gfx::Rect rect =
       engine->InputMethodEngineBase::GetAutocorrectCharacterBounds(
           params.context_id, &error);
+  if (rect.IsEmpty()) {
+    return RespondNow(Error(InformativeError(error, static_function_name())));
+  }
+  auto ret = std::make_unique<base::DictionaryValue>();
+  ret->SetInteger("x", rect.x());
+  ret->SetInteger("y", rect.y());
+  ret->SetInteger("width", rect.width());
+  ret->SetInteger("height", rect.height());
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
+}
+
+ExtensionFunction::ResponseAction
+InputMethodPrivateGetTextFieldBoundsFunction::Run() {
+  std::string error;
+  InputMethodEngine* engine =
+      GetEngineIfActive(browser_context(), extension_id(), &error);
+  if (!engine)
+    return RespondNow(Error(InformativeError(error, static_function_name())));
+
+  const auto parent_params = GetTextFieldBounds::Params::Create(args());
+  const auto& params = parent_params->parameters;
+  const gfx::Rect rect = engine->InputMethodEngineBase::GetTextFieldBounds(
+      params.context_id, &error);
   if (rect.IsEmpty()) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }

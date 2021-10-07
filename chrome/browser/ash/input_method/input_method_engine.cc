@@ -510,6 +510,14 @@ gfx::Rect InputMethodEngine::GetAutocorrectCharacterBounds() {
   return input_context->GetAutocorrectCharacterBounds();
 }
 
+gfx::Rect InputMethodEngine::GetTextFieldBounds() {
+  ui::IMEInputContextHandlerInterface* input_context =
+      ui::IMEBridge::Get()->GetInputContextHandler();
+  if (!input_context)
+    return gfx::Rect();
+  return input_context->GetTextFieldBounds();
+}
+
 bool InputMethodEngine::SetAutocorrectRange(const gfx::Range& range) {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();

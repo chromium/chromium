@@ -472,6 +472,21 @@ gfx::Rect InputMethodEngineBase::GetAutocorrectCharacterBounds(
   return GetAutocorrectCharacterBounds();
 }
 
+gfx::Rect InputMethodEngineBase::GetTextFieldBounds(int context_id,
+                                                    std::string* error) {
+  if (!IsActive()) {
+    *error = kErrorNotActive;
+    return gfx::Rect();
+  }
+  if (context_id != context_id_ || context_id_ == -1) {
+    *error = base::StringPrintf(
+        "%s request context id = %d, current context id = %d",
+        kErrorWrongContext, context_id, context_id_);
+    return gfx::Rect();
+  }
+  return GetTextFieldBounds();
+}
+
 bool InputMethodEngineBase::SetAutocorrectRange(int context_id,
                                                 const gfx::Range& range,
                                                 std::string* error) {

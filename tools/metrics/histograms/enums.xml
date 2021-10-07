@@ -29428,6 +29428,7 @@ Called by update_extension_histograms.py.-->
   <int value="1591" label="SPEECHRECOGNITIONPRIVATE_STOP"/>
   <int value="1592" label="FILEMANAGERPRIVATEINTERNAL_STARTIOTASK"/>
   <int value="1593" label="WALLPAPERPRIVATE_ISSWAENABLED"/>
+  <int value="1594" label="INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS"/>
 </enum>
 
 <enum name="ExtensionIconState">
