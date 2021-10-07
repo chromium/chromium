@@ -5535,12 +5535,14 @@ test("unit_tests") {
       "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
       "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc",
-      "../browser/ui/webui/signin/dice_turn_sync_on_helper_unittest.cc",
     ]
   }
 
-  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
-    sources += [ "../browser/ui/profile_picker_unittest.cc" ]
+  if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {
+    sources += [
+      "../browser/ui/profile_picker_unittest.cc",
+      "../browser/ui/webui/signin/dice_turn_sync_on_helper_unittest.cc",
+    ]
   }
 
   if (enable_offline_pages) {

@@ -21,13 +21,16 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
-#error "This file should only be included if DICE support is enabled"
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(ENABLE_MIRROR)
+#error "This file should only be included if DICE support / mirror is enabled"
 #endif
 
 class Browser;
-class DiceSignedInProfileCreator;
 class SigninUIError;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class DiceSignedInProfileCreator;
+#endif
 
 namespace signin {
 class IdentityManager;
@@ -40,6 +43,8 @@ class SyncSetupInProgressHandle;
 
 // Handles details of setting the primary account with IdentityManager and
 // turning on sync for an account for which there is already a refresh token.
+// TODO(crbug.com/1248047): Rename this to TurnSyncOnHelper to reflect this can
+// also be used with mirror.
 class DiceTurnSyncOnHelper
     : public SyncStartupTracker::Observer,
       public policy::PolicyService::ProviderUpdateObserver {
@@ -279,7 +284,9 @@ class DiceTurnSyncOnHelper
   base::ScopedClosureRunner scoped_callback_runner_;
 
   std::unique_ptr<SyncStartupTracker> sync_startup_tracker_;
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
+#endif
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
 
