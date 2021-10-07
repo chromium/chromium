@@ -161,7 +161,8 @@ public class ImplicitPriceDropSubscriptionsManager {
                 || (System.currentTimeMillis()
                                 - mSharedPreferencesManager.readLong(
                                         CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
-                        < CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds())) {
+                        < TimeUnit.SECONDS.toMillis(CommerceSubscriptionsServiceConfig
+                                                            .getStaleTabLowerBoundSeconds()))) {
             return false;
         }
         mSharedPreferencesManager.writeLong(
