@@ -83,11 +83,11 @@
       }
 
       #networkStateText[active] {
-        color: var(--google-green-500);
+        color: var(--cros-text-color-positive);
       }
 
       .warning {
-        color: var(--google-yellow-700);
+        color: var(--cros-text-color-warning);
       }
 
       cr-policy-indicator {
@@ -103,11 +103,11 @@
       }
 
       :host(:not([disabled_])) cr-button iron-icon {
-        --iron-icon-fill-color: #1A73E8;
+        --iron-icon-fill-color: var(--cros-tab-icon-color-active);
       }
 
       :host([disabled_]) cr-button iron-icon {
-        --iron-icon-fill-color: var(--google-grey-600);
+        --iron-icon-fill-color: var(--cros-icon-color-disabled);
       }
 
       paper-spinner-lite {
