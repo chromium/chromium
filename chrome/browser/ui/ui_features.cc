@@ -238,8 +238,17 @@ const base::Feature kWebUIDownloadShelf{"WebUIDownloadShelf",
 const base::Feature kWebUITabStrip{"WebUITabStrip",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The default value of this flag is aligned with platform behavior to handle
+// context menu with touch.
+// TODO(crbug.com/1257626): Enable this flag for all platforms after launch.
 const base::Feature kWebUITabStripContextMenuAfterTap{
-    "WebUITabStripContextMenuAfterTap", base::FEATURE_DISABLED_BY_DEFAULT};
+  "WebUITabStripContextMenuAfterTap",
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
 
 // Enables a WebUI Feedback UI, as opposed to the Chrome App UI. See
 // https://crbug.com/1167223.
