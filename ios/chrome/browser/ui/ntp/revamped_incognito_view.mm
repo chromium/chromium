@@ -9,6 +9,8 @@
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_url_loader_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
@@ -44,6 +46,14 @@ const CGFloat kLearnMoreHorizontalInnerMargin = 16.0;
 // Taken from ntp_resource_cache.cc.
 const char kLearnMoreIncognitoUrl[] =
     "https://support.google.com/chrome/?p=incognito";
+
+// Returns the appropriate learn more URL for the current language of the
+// application.
+GURL GetLearnMoreUrl() {
+  std::string locale = GetApplicationContext()->GetApplicationLocale();
+  return google_util::AppendGoogleLocaleParam(GURL(kLearnMoreIncognitoUrl),
+                                              locale);
+}
 
 // Returns a font, scaled to the current dynamic type settings, that is suitable
 // for the title of the incognito page.
@@ -134,14 +144,10 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
       [learnMoreText stringByReplacingOccurrencesOfString:@"</a>"
                                                withString:@"END_LINK"];
 
-  NSURL* URL = net::NSURLWithGURL(google_util::AppendGoogleLocaleParam(
-      GURL(kLearnMoreIncognitoUrl),
-      GetApplicationContext()->GetApplicationLocale()));
-
   NSDictionary* linkAttributes = @{
     NSForegroundColorAttributeName : linkTextColor,
     NSFontAttributeName : BodyFont(),
-    NSLinkAttributeName : URL,
+    NSLinkAttributeName : net::NSURLWithGURL(GetLearnMoreUrl()),
   };
 
   NSDictionary* textAttributes = @{
@@ -155,7 +161,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 
 }  // namespace
 
-@interface RevampedIncognitoView ()
+@interface RevampedIncognitoView () <URLDropDelegate, UITextViewDelegate>
 
 @property(nonatomic, strong) UIView* containerView;
 @property(nonatomic, strong) UIStackView* stackView;
@@ -165,10 +171,16 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
 @end
 
 @implementation RevampedIncognitoView {
+  // Handles drop interactions for this view.
+  URLDragDropHandler* _dragDropHandler;
 }
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    _dragDropHandler = [[URLDragDropHandler alloc] init];
+    _dragDropHandler.dropDelegate = self;
+    [self addInteraction:[[UIDropInteraction alloc]
+                             initWithDelegate:_dragDropHandler]];
     self.alwaysBounceVertical = YES;
 
     // Container to hold and vertically position the stack view.
@@ -262,6 +274,38 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   return self;
 }
 
+#pragma mark - URLDropDelegate
+
+- (BOOL)canHandleURLDropInView:(UIView*)view {
+  return YES;
+}
+
+- (void)view:(UIView*)view didDropURL:(const GURL&)URL atPoint:(CGPoint)point {
+  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreUrl()];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  [self.URLLoaderDelegate loadURLInTab:GetLearnMoreUrl()];
+
+  // The handler is already handling the tap.
+  return NO;
+}
+
+- (void)textViewDidChangeSelection:(UITextView*)textView {
+  // Always force the |selectedTextRange| to |nil| to prevent users from
+  // selecting text. Setting the |selectable| property to |NO| doesn't help
+  // since it makes links inside the text view untappable. Another solution is
+  // to subclass |UITextView| and override |canBecomeFirstResponder| to return
+  // NO, but that workaround only works on iOS 13.5+. This is the simplest
+  // approach that works well on iOS 12, 13 & 14.
+  textView.selectedTextRange = nil;
+}
+
 #pragma mark - Private
 
 // Adds views containing the text of the incognito page to |self.stackView|.
@@ -296,6 +340,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   UITextView* learnMore = [[UITextView alloc] initWithFrame:CGRectZero];
   learnMore.scrollEnabled = NO;
   learnMore.editable = NO;
+  learnMore.delegate = self;
   learnMore.attributedText = FormatHTMLForLearnMoreSection();
   learnMore.layer.masksToBounds = YES;
   learnMore.layer.cornerRadius = 17;

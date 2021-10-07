@@ -107,6 +107,7 @@ source_set("ntp_internal") {
     "incognito_view_controller.mm",
     "metrics.h",
     "metrics.mm",
+    "new_tab_page_url_loader_delegate.h",
     "new_tab_page_view_controller.h",
     "new_tab_page_view_controller.mm",
     "notification_promo_whats_new.h",
