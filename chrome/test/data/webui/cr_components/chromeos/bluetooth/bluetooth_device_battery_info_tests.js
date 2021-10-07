@@ -33,12 +33,12 @@ suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
    * @param {number} batteryPercentage
    */
   async function setBatteryPercentage(batteryPercentage) {
-    bluetoothDeviceBatteryInfo.device.deviceProperties.batteryInfo = {
+    bluetoothDeviceBatteryInfo.device.batteryInfo = {
       defaultProperties: {batteryPercentage: batteryPercentage}
     };
     bluetoothDeviceBatteryInfo.device =
         /**
-          @type {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+          @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
         */
         (Object.assign({}, bluetoothDeviceBatteryInfo.device));
     return flushAsync();
@@ -66,7 +66,7 @@ suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
   test('Battery text, icon and color', async function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true);
-    bluetoothDeviceBatteryInfo.device = device;
+    bluetoothDeviceBatteryInfo.device = device.deviceProperties;
 
     // Lower bound edge case.
     let batteryPercentage = 0;

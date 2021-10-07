@@ -50,7 +50,7 @@ export function getDeviceName(device) {
  * not exist, has no battery information, or the battery percentage is out of
  * bounds. Clients that call this method should explicitly check if the return
  * value is undefined to differentiate it from a return value of 0.
- * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+ * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
  *     device
  * @return {number|undefined}
  */
@@ -59,7 +59,7 @@ export function getBatteryPercentage(device) {
     return undefined;
   }
 
-  const batteryInfo = device.deviceProperties.batteryInfo;
+  const batteryInfo = device.batteryInfo;
   if (!batteryInfo || !batteryInfo.defaultProperties) {
     return undefined;
   }

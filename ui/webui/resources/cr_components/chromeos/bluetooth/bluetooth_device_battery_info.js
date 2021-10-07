@@ -56,7 +56,7 @@ export class BluetoothDeviceBatteryInfoElement extends
   static get properties() {
     return {
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+       * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
        */
       device: {
         type: Object,
@@ -72,7 +72,7 @@ export class BluetoothDeviceBatteryInfoElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
    * @return {boolean}
    * @private
@@ -86,7 +86,7 @@ export class BluetoothDeviceBatteryInfoElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
    * @return {string}
    * @private
@@ -102,7 +102,7 @@ export class BluetoothDeviceBatteryInfoElement extends
   }
 
   /**
-   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   * @param {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
    *     device
    * @return {string}
    * @private

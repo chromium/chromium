@@ -224,7 +224,8 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
       return '';
     }
 
-    const batteryPercentage = getBatteryPercentage(this.device_);
+    const batteryPercentage =
+        getBatteryPercentage(this.device_.deviceProperties);
     if (batteryPercentage === undefined) {
       return '';
     }
@@ -281,7 +282,7 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     if (!this.device_) {
       return false;
     }
-    return getBatteryPercentage(this.device_) !== undefined;
+    return getBatteryPercentage(this.device_.deviceProperties) !== undefined;
   }
 }
 

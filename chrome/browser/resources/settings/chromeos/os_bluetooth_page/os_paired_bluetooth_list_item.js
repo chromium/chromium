@@ -107,7 +107,7 @@ class SettingsPairedBluetoothListItemElement extends
    * @private
    */
   shouldShowBatteryInfo_(device) {
-    return getBatteryPercentage(device) !== undefined;
+    return getBatteryPercentage(device.deviceProperties) !== undefined;
   }
 
   /**
@@ -173,7 +173,7 @@ class SettingsPairedBluetoothListItemElement extends
           stringName, this.itemIndex + 1, this.listSize, deviceName);
     }
 
-    const batteryPercentage = getBatteryPercentage(device);
+    const batteryPercentage = getBatteryPercentage(device.deviceProperties);
     assert(batteryPercentage !== undefined);
     return this.i18n(
         stringName, this.itemIndex + 1, this.listSize, deviceName,

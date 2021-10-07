@@ -18,7 +18,7 @@
       <template is="dom-if"
           if="[[shouldShowBatteryInfo_(device)]]" restamp>
         <bluetooth-device-battery-info
-            device="[[device]]">
+            device="[[device.deviceProperties]]">
         </bluetooth-device-battery-info>
       </template>
     </div>

@@ -103,7 +103,9 @@ suite('OsPairedBluetoothListItemTest', function() {
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, nickname);
         assertTrue(!!getBatteryInfo());
-        assertEquals(getBatteryInfo().device, pairedBluetoothListItem.device);
+        assertEquals(
+            getBatteryInfo().device,
+            pairedBluetoothListItem.device.deviceProperties);
         assertEquals(
             getItemA11yLabel(),
             pairedBluetoothListItem.i18n(
