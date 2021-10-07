@@ -498,6 +498,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessHitTestBrowserTest,
                            ScrollOOPIFEditableElement);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest, OcclusionHidesTooltip);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostViewAuraTest,
+                           UpdateInsetsWithVirtualKeyboardEnabled);
 
   class WindowObserver;
   friend class WindowObserver;
@@ -530,6 +532,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // has already adjusted the origin of |rect| to conform to whatever coordinate
   // space is required by the aura::Window.
   void InternalSetBounds(const gfx::Rect& rect);
+
+  // Update the insets for bounds change when the virtual keyboard is shown.
+  void UpdateInsetsWithVirtualKeyboardEnabled();
 
 #if defined(OS_WIN)
   // Creates and/or updates the legacy dummy window which corresponds to
@@ -697,7 +702,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   gfx::SelectionBound selection_start_;
   gfx::SelectionBound selection_end_;
 
+  // The insets for the window bounds (not for screen) when the window is
+  // partially occluded.
   gfx::Insets insets_;
+
+  // Cache the occluded bounds in screen coordinate of the virtual keyboard.
+  gfx::Rect keyboard_occluded_bounds_;
 
   std::unique_ptr<wm::ScopedTooltipDisabler> tooltip_disabler_;
 

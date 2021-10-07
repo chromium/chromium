@@ -515,6 +515,8 @@ void RenderWidgetHostViewAura::HandleParentBoundsChanged() {
     else
       host_->SendScreenRects();
   }
+
+  UpdateInsetsWithVirtualKeyboardEnabled();
 }
 
 void RenderWidgetHostViewAura::ParentHierarchyChanged() {
@@ -1469,14 +1471,21 @@ void RenderWidgetHostViewAura::ExtendSelectionAndDelete(
 
 void RenderWidgetHostViewAura::EnsureCaretNotInRect(
     const gfx::Rect& rect_in_screen) {
+  keyboard_occluded_bounds_ = rect_in_screen;
+
+  // If keyboard is disabled, reset the insets_.
+  if (keyboard_occluded_bounds_.IsEmpty())
+    insets_ = gfx::Insets();
+
   aura::Window* top_level_window = window_->GetToplevelWindow();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  wm::EnsureWindowNotInRect(top_level_window, rect_in_screen);
+  wm::EnsureWindowNotInRect(top_level_window, keyboard_occluded_bounds_);
 #endif
 
   // Perform overscroll if the caret is still hidden by the keyboard.
   const gfx::Rect hidden_window_bounds_in_screen = gfx::IntersectRects(
-      rect_in_screen, top_level_window->GetBoundsInScreen());
+      keyboard_occluded_bounds_, top_level_window->GetBoundsInScreen());
+
   if (hidden_window_bounds_in_screen.IsEmpty())
     return;
 
@@ -1747,8 +1756,10 @@ void RenderWidgetHostViewAura::OnBoundsChanged(const gfx::Rect& old_bounds,
   // harmless.
   SetSize(new_bounds.size());
 
-  if (GetInputMethod())
+  if (GetInputMethod()) {
     GetInputMethod()->OnCaretBoundsChanged(this);
+    UpdateInsetsWithVirtualKeyboardEnabled();
+  }
 }
 
 gfx::NativeCursor RenderWidgetHostViewAura::GetCursor(const gfx::Point& point) {
@@ -2390,6 +2401,17 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
   if (IsMouseLocked())
     UpdateMouseLockRegion();
 #endif
+}
+
+void RenderWidgetHostViewAura::UpdateInsetsWithVirtualKeyboardEnabled() {
+  // Update insets if the keyboard is shown.
+  if (!keyboard_occluded_bounds_.IsEmpty()) {
+    insets_ = gfx::Insets(
+        0, 0,
+        gfx::IntersectRects(GetViewBounds(), keyboard_occluded_bounds_)
+            .height(),
+        0);
+  }
 }
 
 #if defined(OS_WIN)

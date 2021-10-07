@@ -4976,6 +4976,59 @@ TEST_F(RenderWidgetHostViewAuraTest, VirtualKeyboardFocusEnsureCaretInRect) {
   // Window should be restored.
   EXPECT_EQ(view_->GetNativeView()->bounds(), orig_view_bounds);
 }
+
+// Check that the window insets is updated with the bounds changed when the
+// virtual keyboard is shown.
+TEST_F(RenderWidgetHostViewAuraTest, UpdateInsetsWithVirtualKeyboardEnabled) {
+  InitViewForFrame(nullptr);
+  aura::Window* root_window = parent_view_->GetNativeView()->GetRootWindow();
+  aura::client::ParentWindowWithContext(view_->GetNativeView(), root_window,
+                                        gfx::Rect());
+
+  const gfx::Rect orig_view_bounds = gfx::Rect(0, 300, 400, 200);
+  const gfx::Rect shifted_view_bounds = gfx::Rect(0, 200, 400, 200);
+  const gfx::Rect moved_view_bounds = gfx::Rect(100, 250, 400, 200);
+  const gfx::Rect resized_view_bounds = gfx::Rect(100, 250, 300, 175);
+
+  const gfx::Insets origin_view_insets = gfx::Insets(0, 0, 100, 0);
+  const gfx::Insets shifted_view_insets = gfx::Insets(0, 0, 0, 0);
+  const gfx::Insets moved_view_insets = gfx::Insets(0, 0, 50, 0);
+  const gfx::Insets resized_view_insets = gfx::Insets(0, 0, 25, 0);
+
+  const gfx::Rect root_bounds = root_window->bounds();
+  const int keyboard_height = 200;
+  const gfx::Rect keyboard_view_bounds =
+      gfx::Rect(0, root_bounds.height() - keyboard_height, root_bounds.width(),
+                keyboard_height);
+
+  ui::InputMethod* input_method = root_window->GetHost()->GetInputMethod();
+
+  // Focus the window.
+  view_->SetBounds(orig_view_bounds);
+  input_method->SetFocusedTextInputClient(view_);
+  EXPECT_EQ(view_->GetNativeView()->bounds(), orig_view_bounds);
+
+  // Simulate virtual keyboard. For chrome browser window, the window insets
+  // will be changed.
+  view_->SetInsets(gfx::Insets(
+      0, 0,
+      gfx::IntersectRects(orig_view_bounds, keyboard_view_bounds).height(), 0));
+  EXPECT_EQ(view_->insets_, origin_view_insets);
+  input_method->SetOnScreenKeyboardBounds(keyboard_view_bounds);
+
+  // Window should be shifted. The insets will be updated.
+  EXPECT_EQ(view_->GetNativeView()->bounds(), shifted_view_bounds);
+  EXPECT_EQ(view_->insets_, shifted_view_insets);
+
+  // Move the view and the insets will be updated.
+  view_->SetBounds(moved_view_bounds);
+  EXPECT_EQ(view_->insets_, moved_view_insets);
+
+  // Resize the view and the insets will be updated.
+  view_->SetBounds(resized_view_bounds);
+  EXPECT_EQ(view_->insets_, resized_view_insets);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that invalid touch events are consumed and handled
