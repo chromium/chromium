@@ -90,12 +90,6 @@ class CORE_EXPORT Range final : public AbstractRange {
   void collapse(bool to_start);
   bool isPointInRange(Node* ref_node, unsigned offset, ExceptionState&) const;
   int16_t comparePoint(Node* ref_node, unsigned offset, ExceptionState&) const;
-  enum CompareResults {
-    NODE_BEFORE,
-    NODE_AFTER,
-    NODE_BEFORE_AND_AFTER,
-    NODE_INSIDE
-  };
   enum CompareHow { kStartToStart, kStartToEnd, kEndToEnd, kEndToStart };
   int16_t compareBoundaryPoints(unsigned how,
                                 const Range* source_range,
