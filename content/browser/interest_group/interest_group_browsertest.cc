@@ -84,45 +84,55 @@ class AllowlistedOriginContentBrowserClient : public TestContentBrowserClient {
   DISALLOW_COPY_AND_ASSIGN(AllowlistedOriginContentBrowserClient);
 };
 
-// Allows registering network responses to update requests.
-class UpdateResponder {
+// Allows registering responses to network requests.
+class NetworkResponder {
  public:
-  explicit UpdateResponder(net::EmbeddedTestServer& server) {
+  explicit NetworkResponder(net::EmbeddedTestServer& server) {
     server.RegisterRequestHandler(base::BindRepeating(
-        &UpdateResponder::RequestHandlerForUpdates, base::Unretained(this)));
+        &NetworkResponder::RequestHandler, base::Unretained(this)));
   }
 
-  void RegisterUpdateResponse(const std::string& url_path,
-                              const std::string& response) {
-    base::AutoLock auto_lock(json_update_map_lock_);
-    json_update_map_[url_path] = response;
+  void RegisterNetworkResponse(
+      const std::string& url_path,
+      const std::string& body,
+      const std::string& mime_type = "application/json") {
+    base::AutoLock auto_lock(response_map_lock_);
+    Response response;
+    response.body = body;
+    response.mime_type = mime_type;
+    response_map_[url_path] = response;
   }
 
  private:
-  std::unique_ptr<net::test_server::HttpResponse> RequestHandlerForUpdates(
+  struct Response {
+    std::string body;
+    std::string mime_type;
+  };
+
+  std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
-    base::AutoLock auto_lock(json_update_map_lock_);
-    const auto it = json_update_map_.find(request.GetURL().path());
-    if (it == json_update_map_.end())
+    base::AutoLock auto_lock(response_map_lock_);
+    const auto it = response_map_.find(request.GetURL().path());
+    if (it == response_map_.end())
       return nullptr;
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader("X-Allow-FLEDGE", "true");
     response->set_code(net::HTTP_OK);
-    response->set_content(it->second);
-    response->set_content_type("application/json");
+    response->set_content(it->second.body);
+    response->set_content_type(it->second.mime_type);
     return std::move(response);
   }
 
   // EmbeddedTestServer RequestHandlers can't be added after the server has
-  // started. Tests need to generate the test JSON since server port numbers
-  // aren't known until runtime. A handler is therefore registered that uses
-  // `json_update_map_` to serve update JSON.
-  base::Lock json_update_map_lock_;
+  // started, but tests may want to specify network responses after the server
+  // starts in the fixture. A handler is therefore registered that uses
+  // `response_map_` to serve network responses.
+  base::Lock response_map_lock_;
 
   // For each HTTPS request, we see if any path in the map matches the request
   // path. If so, the server returns the mapped value string as the response.
-  base::flat_map<std::string, std::string> json_update_map_
-      GUARDED_BY(json_update_map_lock_);
+  base::flat_map<std::string, Response> response_map_
+      GUARDED_BY(response_map_lock_);
 };
 
 class InterestGroupBrowserTest : public ContentBrowserTest {
@@ -153,7 +163,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     https_server_->RegisterRequestMonitor(base::BindRepeating(
         &InterestGroupBrowserTest::OnHttpsTestServerRequestMonitor,
         base::Unretained(this)));
-    update_responder_ = std::make_unique<UpdateResponder>(*https_server_);
+    network_responder_ = std::make_unique<NetworkResponder>(*https_server_);
     ASSERT_TRUE(https_server_->Start());
     manager_ =
         static_cast<StoragePartitionImpl*>(shell()
@@ -426,7 +436,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       GUARDED_BY(requests_lock_);
   std::unique_ptr<base::RunLoop> request_run_loop_;
   GURL wait_for_url_ GUARDED_BY(requests_lock_);
-  std::unique_ptr<UpdateResponder> update_responder_;
+  std::unique_ptr<NetworkResponder> network_responder_;
 };
 
 // At the moment, InterestGroups use URN urls when fenced frames are enabled,
@@ -2440,7 +2450,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
   // The server JSON updates all fields that can be updated.
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterNetworkResponse(
       kDailyUpdateUrlPath, base::StringPrintf(R"({
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
 "trustedBiddingSignalsUrl":
@@ -2516,7 +2526,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   // even though the page that started the update is gone.
   constexpr char kDailyUpdateUrlPath[] =
       "/interest_group/daily_update_partial.json";
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterNetworkResponse(
       kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
