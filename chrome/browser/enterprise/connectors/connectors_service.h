@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -88,9 +87,7 @@ class ConnectorsService : public KeyedService {
   // Returns the CBCM domain or profile domain that enables connector policies.
   // If both set Connector policies, the CBCM domain is returned as it has
   // precedence.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::string GetManagementDomain();
-#endif
 
   // Testing functions.
   ConnectorsManager* ConnectorsManagerForTesting();
@@ -114,7 +111,7 @@ class ConnectorsService : public KeyedService {
   // contain either POLICY_SCOPE_MACHINE or POLICY_SCOPE_USER.
   absl::optional<DmToken> GetDmToken(const char* scope_pref) const;
   absl::optional<DmToken> GetBrowserDmToken() const;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   absl::optional<DmToken> GetProfileDmToken() const;
 
   // Returns true if the browser isn't managed by CBCM, otherwise this checks if

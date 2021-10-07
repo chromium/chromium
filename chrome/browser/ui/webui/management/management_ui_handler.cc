@@ -811,13 +811,8 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
                                   kManagementOnPageVisitedVisibleData, &info);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string enterprise_manager = GetDeviceManager();
-  if (enterprise_manager.empty())
-    enterprise_manager = GetAccountManager(profile);
-#else
-  std::string enterprise_manager = connectors_service->GetManagementDomain();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  const std::string enterprise_manager =
+      connectors_service->GetManagementDomain();
 
   base::Value result(base::Value::Type::DICTIONARY);
   result.SetStringKey("description",

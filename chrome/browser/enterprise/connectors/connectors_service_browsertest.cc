@@ -106,10 +106,10 @@ class ConnectorsServiceProfileBrowserTest
       ManagementStatus management_status)
       : management_status_(management_status) {
     if (management_status_ != ManagementStatus::UNMANAGED) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
       policy::SetDMTokenForTesting(
           policy::DMToken::CreateValidTokenForTesting(kFakeBrowserDMToken));
-#elif !BUILDFLAG(IS_CHROMEOS_LACROS)
+#else
       browser_dm_token_storage_ =
           std::make_unique<policy::FakeBrowserDMTokenStorage>();
       browser_dm_token_storage_->SetEnrollmentToken(kFakeEnrollmentToken);
@@ -155,8 +155,10 @@ class ConnectorsServiceProfileBrowserTest
     profile_policy_data.set_request_token(kFakeProfileDMToken);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
-        std::move(profile_policy_data));
+    if (management_status_ != ManagementStatus::UNMANAGED) {
+      policy::PolicyLoaderLacros::set_main_user_policy_data_for_testing(
+          std::move(profile_policy_data));
+    }
 #else
     auto* profile_policy_manager =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -188,10 +190,12 @@ class ConnectorsServiceProfileBrowserTest
         base::WrapUnique(std::move(fake_user_manager)));
     AccountId account_id = AccountId::FromUserEmailGaiaId(
         browser()->profile()->GetProfileUserName(), "123");
-    fake_user_manager->AddUserWithAffiliation(
-        account_id, management_status() == ManagementStatus::AFFILIATED);
+    fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
+        account_id, management_status() == ManagementStatus::AFFILIATED,
+        user_manager::USER_TYPE_REGULAR,
+        static_cast<TestingProfile*>(browser()->profile()));
     fake_user_manager->LoginUser(account_id);
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#else
     auto* browser_policy_manager =
         g_browser_process->browser_policy_connector()
             ->machine_level_user_cloud_policy_manager();
@@ -271,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetReportingSettings(connector());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -295,16 +299,10 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // The main LaCrOS profile needs to be affiliated to use its token.
-      EXPECT_FALSE(settings.has_value());
-      ASSERT_TRUE(management_domain.empty());
-#else
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_EQ(kDomain1, management_domain);
-#endif
       break;
   }
 #endif
@@ -343,7 +341,7 @@ class ConnectorsServiceAnalysisProfileBrowserTest
 
   void ValidateClientMetadata(const ClientMetadata& metadata,
                               bool profile_reporting) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     bool includes_device_info =
         management_status() == ManagementStatus::AFFILIATED;
 #else
@@ -480,7 +478,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -508,11 +506,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // The main LaCrOS profile needs to be affiliated to use its token.
-      EXPECT_FALSE(settings.has_value());
-      ASSERT_TRUE(management_domain.empty());
-#else
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
@@ -520,7 +513,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ValidateClientMetadata(*settings.value().client_metadata,
                              /*profile_reporting*/ true);
       ASSERT_EQ(kDomain1, management_domain);
-#endif
       break;
   }
 #endif
@@ -534,7 +526,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -560,17 +552,11 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // The main LaCrOS profile needs to be affiliated to use its token.
-      EXPECT_FALSE(settings.has_value());
-      ASSERT_TRUE(management_domain.empty());
-#else
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_FALSE(settings.value().client_metadata);
       ASSERT_EQ(kDomain1, management_domain);
-#endif
       break;
   }
 #endif
@@ -601,7 +587,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAppliedRealTimeUrlCheck();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(maybe_dm_token.has_value());
     ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
@@ -629,18 +615,11 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
       ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNMANAGED:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // The main LaCrOS profile needs to be affiliated to use its token.
-      ASSERT_FALSE(maybe_dm_token.has_value());
-      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
-      ASSERT_TRUE(management_domain.empty());
-#else
       ASSERT_TRUE(maybe_dm_token.has_value());
       ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
       ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
                 url_check_pref);
       ASSERT_EQ(kDomain1, management_domain);
-#endif
       break;
   }
 #endif
