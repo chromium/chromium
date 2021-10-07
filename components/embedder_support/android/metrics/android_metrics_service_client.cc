@@ -477,6 +477,11 @@ std::string AndroidMetricsServiceClient::GetApplicationLocale() {
   return base::i18n::GetConfiguredLocale();
 }
 
+const network_time::NetworkTimeTracker*
+AndroidMetricsServiceClient::GetNetworkTimeTracker() {
+  return nullptr;
+}
+
 bool AndroidMetricsServiceClient::GetBrand(std::string* brand_code) {
   // AndroidMetricsServiceClients don't use brand codes.
   return false;

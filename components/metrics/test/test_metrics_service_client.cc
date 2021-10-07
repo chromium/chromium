@@ -46,6 +46,11 @@ bool TestMetricsServiceClient::GetBrand(std::string* brand_code) {
   return true;
 }
 
+const network_time::NetworkTimeTracker*
+TestMetricsServiceClient::GetNetworkTimeTracker() {
+  return nullptr;
+}
+
 SystemProfileProto::Channel TestMetricsServiceClient::GetChannel() {
   return SystemProfileProto::CHANNEL_BETA;
 }

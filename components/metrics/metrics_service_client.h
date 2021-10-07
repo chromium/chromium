@@ -26,6 +26,10 @@ namespace ukm {
 class UkmService;
 }
 
+namespace network_time {
+class NetworkTimeTracker;
+}
+
 namespace metrics {
 
 class MetricsLogUploader;
@@ -66,6 +70,9 @@ class MetricsServiceClient {
 
   // Returns the current application locale (e.g. "en-US").
   virtual std::string GetApplicationLocale() = 0;
+
+  // Return a NetworkTimeTracker for access to a server-provided clock.
+  virtual const network_time::NetworkTimeTracker* GetNetworkTimeTracker() = 0;
 
   // Retrieves the brand code string associated with the install, returning
   // false if no brand code is available.

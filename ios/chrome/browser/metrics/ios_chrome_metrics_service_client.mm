@@ -197,6 +197,11 @@ std::string IOSChromeMetricsServiceClient::GetApplicationLocale() {
   return GetApplicationContext()->GetApplicationLocale();
 }
 
+const network_time::NetworkTimeTracker*
+IOSChromeMetricsServiceClient::GetNetworkTimeTracker() {
+  return GetApplicationContext()->GetNetworkTimeTracker();
+}
+
 bool IOSChromeMetricsServiceClient::GetBrand(std::string* brand_code) {
   brand_code->assign(ios::provider::GetBrandCode());
   return true;

@@ -142,6 +142,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
   ukm::UkmService* GetUkmService() override;
   void SetMetricsClientId(const std::string& client_id) override;
   std::string GetApplicationLocale() override;
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
   SystemProfileProto::Channel GetChannel() override;
   bool IsExtendedStableChannel() override;

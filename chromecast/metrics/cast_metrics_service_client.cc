@@ -151,6 +151,11 @@ std::string CastMetricsServiceClient::GetApplicationLocale() {
   return base::i18n::GetConfiguredLocale();
 }
 
+const network_time::NetworkTimeTracker*
+CastMetricsServiceClient::GetNetworkTimeTracker() {
+  return nullptr;
+}
+
 bool CastMetricsServiceClient::GetBrand(std::string* brand_code) {
   return false;
 }

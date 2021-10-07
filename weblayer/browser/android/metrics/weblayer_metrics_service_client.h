@@ -53,6 +53,7 @@ class WebLayerMetricsServiceClient
   std::string GetUploadSigningKey() override;
 
   // metrics::AndroidMetricsServiceClient:
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   int GetSampleRatePerMille() const override;
   void OnMetricsStart() override;
   void OnMetricsNotStarted() override;

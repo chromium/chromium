@@ -24,6 +24,8 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -36,6 +38,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/hashing.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/metrics_proto/histogram_event.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/metrics_proto/user_action_event.pb.h"
@@ -97,6 +100,40 @@ static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
   return (time_ticks - base::TimeTicks()).InSeconds();
 }
 
+// Populates |time| with information about the current time and time zone.
+void RecordCurrentTime(
+    const base::Clock* clock,
+    const network_time::NetworkTimeTracker* network_time_tracker,
+    metrics::ChromeUserMetricsExtension::RealLocalTime* time) {
+  // Record the current time and the clock used to determine the time.
+  base::Time now;
+  // TODO(http://crbug.com/1257449): Enable network time on Android.
+  now = clock->Now();
+  time->set_time_source(
+      metrics::ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  time->set_time_sec(now.ToTimeT());
+
+  // Determine time zone offset from GMT and store it.
+  int32_t raw_offset, dst_offset;
+  UErrorCode status = U_ZERO_ERROR;
+  // Ask for a new time zone object each time; don't cache it, as time zones may
+  // change while Chrome is running.
+  std::unique_ptr<icu::TimeZone> time_zone(icu::TimeZone::createDefault());
+  time_zone->getOffset(now.ToDoubleT() * base::Time::kMillisecondsPerSecond,
+                       false,  // interpret |now| as from UTC/GMT
+                       raw_offset, dst_offset, status);
+  base::TimeDelta time_zone_offset =
+      base::TimeDelta::FromMilliseconds(raw_offset + dst_offset);
+  if (U_FAILURE(status)) {
+    DVLOG(1) << "Failed to get time zone offset, error code: " << status;
+    // The fallback case is to get the raw timezone offset ignoring the daylight
+    // saving time.
+    time_zone_offset =
+        base::TimeDelta::FromMilliseconds(time_zone->getRawOffset());
+  }
+  time->set_time_zone_offset_from_gmt_sec(time_zone_offset.InSeconds());
+}
+
 }  // namespace
 
 namespace internal {
@@ -135,13 +172,37 @@ MetricsLog::MetricsLog(const std::string& client_id,
                        int session_id,
                        LogType log_type,
                        MetricsServiceClient* client)
+    : MetricsLog(client_id,
+                 session_id,
+                 log_type,
+                 base::DefaultClock::GetInstance(),
+                 nullptr,
+                 client) {}
+
+MetricsLog::MetricsLog(
+    const std::string& client_id,
+    int session_id,
+    LogType log_type,
+    base::Clock* clock,
+    network_time::NetworkTimeTracker* network_clock_for_testing,
+    MetricsServiceClient* client)
     : closed_(false),
       log_type_(log_type),
       client_(client),
       creation_time_(base::TimeTicks::Now()),
-      has_environment_(false) {
+      has_environment_(false),
+      clock_(clock),
+      network_clock_for_testing_(network_clock_for_testing) {
   uma_proto_.set_client_id(Hash(client_id));
   uma_proto_.set_session_id(session_id);
+
+  if (log_type == MetricsLog::ONGOING_LOG) {
+    auto* network_clock = network_clock_for_testing_
+                              ? network_clock_for_testing_
+                              : client_->GetNetworkTimeTracker();
+    RecordCurrentTime(clock_, network_clock,
+                      uma_proto_.mutable_time_log_created());
+  }
 
   const int32_t product = client_->GetProduct();
   // Only set the product if it differs from the default value.
@@ -420,6 +481,13 @@ void MetricsLog::RecordLogWrittenByAppVersionIfNeeded() {
 
 void MetricsLog::CloseLog() {
   DCHECK(!closed_);
+  if (log_type_ == MetricsLog::ONGOING_LOG) {
+    auto* network_clock = network_clock_for_testing_
+                              ? network_clock_for_testing_
+                              : client_->GetNetworkTimeTracker();
+    RecordCurrentTime(clock_, network_clock,
+                      uma_proto_.mutable_time_log_closed());
+  }
   closed_ = true;
 }
 

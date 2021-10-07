@@ -527,6 +527,11 @@ std::string ChromeMetricsServiceClient::GetApplicationLocale() {
   return g_browser_process->GetApplicationLocale();
 }
 
+const network_time::NetworkTimeTracker*
+ChromeMetricsServiceClient::GetNetworkTimeTracker() {
+  return g_browser_process->network_time_tracker();
+}
+
 bool ChromeMetricsServiceClient::GetBrand(std::string* brand_code) {
   return google_brand::GetBrand(brand_code);
 }

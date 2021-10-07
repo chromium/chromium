@@ -128,6 +128,7 @@ static_library("metrics") {
     "//components/version_info:version_info",
     "//crypto",
     "//extensions/buildflags",
+    "//third_party/icu",
     "//url",
   ]
 
@@ -474,6 +475,7 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/component_updater:test_support",
     "//components/encrypted_messages:encrypted_message_proto",
+    "//components/network_time:network_time_test_support",
     "//components/prefs:test_support",
     "//components/sync/base",
     "//components/sync/driver:test_support",
