@@ -167,7 +167,13 @@ SharesheetBubbleView::SharesheetBubbleView(
   CreateBubble();
 }
 
-SharesheetBubbleView::~SharesheetBubbleView() = default;
+SharesheetBubbleView::~SharesheetBubbleView() {
+  // TODO(https://crbug.com/1249491): While this is harmless, it should not be
+  // necessary unless something fishy is happening with the behavior of layer
+  // animations around widget teardown.
+  if (close_callback_)
+    std::move(close_callback_).Run(views::Widget::ClosedReason::kUnspecified);
+}
 
 void SharesheetBubbleView::ShowBubble(
     std::vector<TargetInfo> targets,
