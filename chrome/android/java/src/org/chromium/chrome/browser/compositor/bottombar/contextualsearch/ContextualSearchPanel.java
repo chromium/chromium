@@ -495,6 +495,13 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         }
     }
 
+    @Override
+    protected void animatePanelToState(
+            @Nullable @PanelState Integer state, @StateChangeReason int reason, long duration) {
+        if (state == getPanelState()) return;
+        super.animatePanelToState(state, reason, duration);
+    }
+
     // ============================================================================================
     // Contextual Search Panel API
     // ============================================================================================
