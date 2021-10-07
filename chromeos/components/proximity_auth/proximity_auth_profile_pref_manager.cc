@@ -18,6 +18,11 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace proximity_auth {
+namespace {
+
+using chromeos::multidevice_setup::mojom::Feature;
+using chromeos::multidevice_setup::mojom::FeatureState;
+}  // namespace
 
 ProximityAuthProfilePrefManager::ProximityAuthProfilePrefManager(
     PrefService* pref_service,
@@ -88,6 +93,8 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
   user_prefs_dict->SetKey(
       chromeos::multidevice_setup::kSmartLockEnabledPrefName,
       base::Value(IsEasyUnlockEnabled()));
+  user_prefs_dict->SetKey(prefs::kSmartLockEligiblePrefName,
+                          base::Value(IsSmartLockEligible()));
   user_prefs_dict->SetKey(
       chromeos::multidevice_setup::kSmartLockSigninAllowedPrefName,
       base::Value(IsChromeOSLoginAllowed()));
@@ -125,9 +132,34 @@ bool ProximityAuthProfilePrefManager::IsEasyUnlockEnabled() const {
   // Note: if GetFeatureState() is called in the first few hundred milliseconds
   // of user session startup, it can incorrectly return a feature-default state
   // of kProhibitedByPolicy. See https://crbug.com/1154766 for more.
-  return multidevice_setup_client_->GetFeatureState(
-             chromeos::multidevice_setup::mojom::Feature::kSmartLock) ==
-         chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
+  return multidevice_setup_client_->GetFeatureState(Feature::kSmartLock) ==
+         FeatureState::kEnabledByUser;
+}
+
+bool ProximityAuthProfilePrefManager::IsSmartLockEligible() const {
+  switch (multidevice_setup_client_->GetFeatureState(Feature::kSmartLock)) {
+    case FeatureState::kUnavailableNoVerifiedHost:
+      FALLTHROUGH;
+    case FeatureState::kNotSupportedByChromebook:
+      FALLTHROUGH;
+    case FeatureState::kNotSupportedByPhone:
+      return false;
+
+    case FeatureState::kProhibitedByPolicy:
+      FALLTHROUGH;
+    case FeatureState::kDisabledByUser:
+      FALLTHROUGH;
+    case FeatureState::kEnabledByUser:
+      FALLTHROUGH;
+    case FeatureState::kUnavailableInsufficientSecurity:
+      FALLTHROUGH;
+    case FeatureState::kUnavailableSuiteDisabled:
+      FALLTHROUGH;
+    case FeatureState::kFurtherSetupRequired:
+      FALLTHROUGH;
+    case FeatureState::kUnavailableTopLevelFeatureDisabled:
+      return true;
+  }
 }
 
 void ProximityAuthProfilePrefManager::SetEasyUnlockEnabledStateSet() const {

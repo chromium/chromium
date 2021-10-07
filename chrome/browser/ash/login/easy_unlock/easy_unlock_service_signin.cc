@@ -336,6 +336,10 @@ bool EasyUnlockServiceSignin::IsEnabled() const {
   return pref_manager_ && pref_manager_->IsEasyUnlockEnabled();
 }
 
+bool EasyUnlockServiceSignin::IsEligible() const {
+  return pref_manager_ && pref_manager_->IsSmartLockEligible();
+}
+
 bool EasyUnlockServiceSignin::IsChromeOSLoginEnabled() const {
   return pref_manager_ && pref_manager_->IsChromeOSLoginEnabled();
 }

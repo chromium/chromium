@@ -55,6 +55,8 @@ class FakeProximityAuthPrefManager
   bool IsEasyUnlockEnabledStateSet() const override { return true; }
   void SetEasyUnlockEnabledStateSet() const override {}
 
+  bool IsSmartLockEligible() const override { return true; }
+
   bool IsChromeOSLoginAllowed() const override { return true; }
 
   bool IsChromeOSLoginEnabled() const override { return true; }

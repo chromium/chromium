@@ -117,6 +117,19 @@ bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginAllowed() const {
   return true;
 }
 
+bool ProximityAuthLocalStatePrefManager::IsSmartLockEligible() const {
+  const base::DictionaryValue* user_prefs = GetActiveUserPrefsDictionary();
+  if (user_prefs) {
+    absl::optional<bool> pref_value =
+        user_prefs->FindBoolKey(prefs::kSmartLockEligiblePrefName);
+    if (pref_value.has_value()) {
+      return pref_value.value();
+    }
+  }
+  PA_LOG(ERROR) << "Failed to get smart_lock_eligible.";
+  return true;
+}
+
 void ProximityAuthLocalStatePrefManager::SetIsChromeOSLoginEnabled(
     bool is_enabled) {
   NOTREACHED();
