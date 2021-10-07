@@ -103,7 +103,6 @@ public class DownloadSettingsTest {
         assertPreference(DownloadSettings.PREF_LOCATION_CHANGE);
         assertPreference(DownloadSettings.PREF_LOCATION_PROMPT_ENABLED);
         assertPreference(DownloadSettings.PREF_DOWNLOAD_LATER_PROMPT_ENABLED);
-        assertPreference(DownloadSettings.PREF_PREFETCHING_ENABLED);
         mSettingsActivityTestRule.getActivity().finish();
     }
 
@@ -116,7 +115,6 @@ public class DownloadSettingsTest {
         assertPreference(DownloadSettings.PREF_LOCATION_CHANGE);
         assertPreference(DownloadSettings.PREF_LOCATION_PROMPT_ENABLED);
         assertPreference(DownloadSettings.PREF_DOWNLOAD_LATER_PROMPT_ENABLED, Matchers.nullValue());
-        assertPreference(DownloadSettings.PREF_PREFETCHING_ENABLED);
         mSettingsActivityTestRule.getActivity().finish();
     }
 

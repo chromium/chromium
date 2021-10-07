@@ -1560,15 +1560,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_DOWNLOAD_LOCATION_INCOGNITO_WARNING" desc="Text that indicates to the user that downloaded files in Incognito are still saved on the device and are visible to other users of this device.">
         Files you download in Incognito mode are still visible to anyone who uses this device.
       </message>
-      <message name="IDS_DOWNLOAD_SETTINGS_ENABLE_PREFETCH_TITLE" desc="Title for preference that allows the user to enable or disable the prefetching of articles. Please ensure the words 'articles for you' match the 'articles for you' in New Tab Page. ">
-        Download articles for you on Wi-Fi
-      </message>
-      <message name="IDS_DOWNLOAD_SETTINGS_PREFETCH_UNAVAILABLE_DESCRIPTION" desc="Description explaining that the article prefetching feature is disabled because it is unavailable in the user's country.">
-        Not available in your location
-      </message>
-      <message name="IDS_DOWNLOAD_SETTINGS_PREFETCH_MAYBE_UNAVAILABLE_DESCRIPTION" desc="Description explaining that the article prefetching feature is disabled because Chrome has not yet determined whether it is available in the user's country.">
-        May not be available in your location
-      </message>
       <message name="IDS_RENAME" desc="Label for the option to rename items.">
         Rename
       </message>
