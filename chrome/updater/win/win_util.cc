@@ -5,6 +5,7 @@
 #include "chrome/updater/win/win_util.h"
 
 #include <aclapi.h>
+#include <shellapi.h>
 #include <shlobj.h>
 #include <windows.h>
 #include <wtsapi32.h>
@@ -27,6 +28,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/atl.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/updater/constants.h"
@@ -138,6 +140,29 @@ bool IsExplorerRunningAtMediumOrLower() {
     }
   }
   return false;
+}
+
+// Creates a WS_POPUP | WS_VISIBLE with zero
+// size, of the STATIC WNDCLASS. It uses the default running EXE module
+// handle for creation.
+//
+// A visible centered foreground window is needed as the parent in Windows 7 and
+// above, to allow the UAC prompt to come up in the foreground, centered.
+// Otherwise, the elevation prompt will be minimized on the taskbar. A zero size
+// window works. A plain vanilla WS_POPUP allows the window to be free of
+// adornments. WS_EX_TOOLWINDOW prevents the task bar from showing the
+// zero-sized window.
+//
+// Returns NULL on failure. Call ::GetLastError() to get extended error
+// information on failure.
+HWND CreateForegroundParentWindowForUAC() {
+  CWindow foreground_parent;
+  if (foreground_parent.Create(L"STATIC", NULL, NULL, NULL,
+                               WS_POPUP | WS_VISIBLE, WS_EX_TOOLWINDOW)) {
+    foreground_parent.CenterWindow(NULL);
+    ::SetForegroundWindow(foreground_parent);
+  }
+  return foreground_parent.Detach();
 }
 
 }  // namespace
@@ -572,6 +597,50 @@ std::wstring GetTaskDisplayName(UpdaterScope scope) {
 
 REGSAM Wow6432(REGSAM access) {
   return KEY_WOW64_32KEY | access;
+}
+
+HRESULT RunElevated(const base::FilePath& file_path,
+                    const std::wstring& parameters,
+                    DWORD* exit_code) {
+  VLOG(1) << "RunElevated:" << file_path << ":" << parameters;
+  DCHECK(!file_path.empty());
+  DCHECK(exit_code);
+
+  HWND hwnd = CreateForegroundParentWindowForUAC();
+  base::ScopedClosureRunner destroy_window(base::BindOnce(
+      [](HWND hwnd) {
+        if (hwnd)
+          ::DestroyWindow(hwnd);
+      },
+      hwnd));
+
+  SHELLEXECUTEINFO shell_execute_info = {};
+  shell_execute_info.cbSize = sizeof(SHELLEXECUTEINFO);
+  shell_execute_info.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS |
+                             SEE_MASK_NOZONECHECKS | SEE_MASK_NOASYNC;
+  shell_execute_info.hProcess = NULL;
+  shell_execute_info.hwnd = hwnd;
+  shell_execute_info.lpVerb = L"runas";
+  shell_execute_info.lpFile = file_path.value().c_str();
+  shell_execute_info.lpParameters = parameters.c_str();
+  shell_execute_info.lpDirectory = NULL;
+  shell_execute_info.nShow = SW_SHOW;
+  shell_execute_info.hInstApp = NULL;
+
+  if (!::ShellExecuteEx(&shell_execute_info))
+    return HRESULTFromLastError();
+
+  base::win::ScopedHandle process(shell_execute_info.hProcess);
+
+  if (::WaitForSingleObject(process.Get(), INFINITE) == WAIT_FAILED)
+    return HRESULTFromLastError();
+
+  DWORD ret_val = 0;
+  if (!::GetExitCodeProcess(process.Get(), &ret_val))
+    return HRESULTFromLastError();
+
+  *exit_code = ret_val;
+  return S_OK;
 }
 
 }  // namespace updater
