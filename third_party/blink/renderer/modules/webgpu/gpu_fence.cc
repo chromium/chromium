@@ -44,8 +44,8 @@ ScriptPromise GPUFence::onCompletion(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   auto* callback =
-      BindDawnCallback(&GPUFence::OnCompletionCallback, WrapPersistent(this),
-                       WrapPersistent(resolver));
+      BindDawnOnceCallback(&GPUFence::OnCompletionCallback,
+                           WrapPersistent(this), WrapPersistent(resolver));
 
   GetProcs().fenceOnCompletion(GetHandle(), value, callback->UnboundCallback(),
                                callback->AsUserdata());
