@@ -153,6 +153,7 @@ const char* const kAllocatorDumpNameAllowlist[] = {
     "malloc/partitions/aligned",
     "malloc/partitions/original",
     "malloc/partitions/nonscannable",
+    "malloc/partitions/nonquarantinable",
     "malloc/win_heap",
 #endif
     "media/webmediaplayer/audio/player_0x?",
