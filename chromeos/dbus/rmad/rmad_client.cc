@@ -63,7 +63,7 @@ class RmadClientImpl : public RmadClient {
                        bool success);
 
   dbus::ObjectProxy* rmad_proxy_ = nullptr;
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer, true, false>::Unchecked observers_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
