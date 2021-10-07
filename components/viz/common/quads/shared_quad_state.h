@@ -21,8 +21,6 @@ class TracedValue;
 
 namespace viz {
 
-// The priority for a quads to require being promoted to overlay.
-enum class OverlayPriority { kLow, kRegular, kRequired };
 
 // SharedQuadState holds a set of properties that are common across multiple
 // DrawQuads. It's purely an optimization - the properties behave in exactly the
@@ -77,8 +75,6 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   absl::optional<size_t> overlay_damage_index;
   // The amount to skew quads in this layer. For experimental de-jelly effect.
   float de_jelly_delta_y = 0.0f;
-  // The overlay promotion hint.
-  OverlayPriority overlay_priority_hint = OverlayPriority::kRegular;
 };
 
 }  // namespace viz

@@ -73,6 +73,39 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
 };
 
 template <>
+struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
+  static viz::mojom::OverlayPriority ToMojom(viz::OverlayPriority input) {
+    switch (input) {
+      case viz::OverlayPriority::kLow:
+        return viz::mojom::OverlayPriority::kLow;
+      case viz::OverlayPriority::kRegular:
+        return viz::mojom::OverlayPriority::kRegular;
+      case viz::OverlayPriority::kRequired:
+        return viz::mojom::OverlayPriority::kRequired;
+    }
+    NOTREACHED();
+    return viz::mojom::OverlayPriority::kLow;
+  }
+
+  static bool FromMojom(viz::mojom::OverlayPriority input,
+                        viz::OverlayPriority* out) {
+    switch (input) {
+      case viz::mojom::OverlayPriority::kLow:
+        *out = viz::OverlayPriority::kLow;
+        return true;
+      case viz::mojom::OverlayPriority::kRegular:
+        *out = viz::OverlayPriority::kRegular;
+        return true;
+      case viz::mojom::OverlayPriority::kRequired:
+        *out = viz::OverlayPriority::kRequired;
+        return true;
+    }
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
 struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
   static viz::mojom::DrawQuadStateDataView::Tag GetTag(
       const viz::DrawQuad& quad) {
@@ -429,6 +462,13 @@ struct StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad> {
     const viz::TextureDrawQuad* quad =
         viz::TextureDrawQuad::MaterialCast(&input);
     return quad->protected_video_type;
+  }
+
+  static viz::OverlayPriority overlay_priority_hint(
+      const viz::DrawQuad& input) {
+    const viz::TextureDrawQuad* quad =
+        viz::TextureDrawQuad::MaterialCast(&input);
+    return quad->overlay_priority_hint;
   }
 
   static uint32_t hw_protected_validation_id(const viz::DrawQuad& input) {

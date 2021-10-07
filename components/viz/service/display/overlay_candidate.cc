@@ -150,12 +150,6 @@ bool OverlayCandidate::FromDrawQuad(
 
   const SharedQuadState* sqs = quad->shared_quad_state;
 
-  if (sqs->overlay_priority_hint == OverlayPriority::kLow) {
-    // For current implementation low priority means do not promote to overlay.
-    // Not creating candidate.
-    return false;
-  }
-
   // We don't support an opacity value different than one for an overlay plane.
   // Render pass quads should have their |sqs| opacity integrated directly into
   // their final output buffers.
@@ -174,7 +168,6 @@ bool OverlayCandidate::FromDrawQuad(
   }
 
   candidate->requires_overlay =
-      (sqs->overlay_priority_hint == OverlayPriority::kRequired) ||
       OverlayCandidate::RequiresOverlay(quad);
   candidate->overlay_damage_index =
       sqs->overlay_damage_index.value_or(kInvalidDamageIndex);
@@ -289,7 +282,9 @@ bool OverlayCandidate::RequiresOverlay(const DrawQuad* quad) {
   switch (quad->material) {
     case DrawQuad::Material::kTextureContent:
       return TextureDrawQuad::MaterialCast(quad)->protected_video_type ==
-             gfx::ProtectedVideoType::kHardwareProtected;
+                 gfx::ProtectedVideoType::kHardwareProtected ||
+             TextureDrawQuad::MaterialCast(quad)->overlay_priority_hint ==
+                 OverlayPriority::kRequired;
     case DrawQuad::Material::kVideoHole:
       return true;
     case DrawQuad::Material::kYuvVideoContent:
@@ -475,6 +470,12 @@ bool OverlayCandidate::FromTextureQuad(
     const gfx::RectF& primary_rect,
     OverlayCandidate* candidate,
     bool is_delegated_context) {
+  if (quad->overlay_priority_hint == OverlayPriority::kLow) {
+    // For current implementation low priority means this does not promote to
+    // overlay.
+    return false;
+  }
+
   if (quad->nearest_neighbor)
     return false;
   if (quad->background_color != SK_ColorTRANSPARENT &&

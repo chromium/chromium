@@ -16,6 +16,9 @@
 
 namespace viz {
 
+// The priority for a quads to require being promoted to overlay.
+enum class OverlayPriority { kLow, kRegular, kRequired };
+
 class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
  public:
   static const size_t kResourceIdIndex = 0;
@@ -76,6 +79,8 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // regular display path. They need either a protected output or a protected
   // hardware overlay.
   gfx::ProtectedVideoType protected_video_type : 2;
+  // The overlay promotion hint.
+  OverlayPriority overlay_priority_hint = OverlayPriority::kRegular;
 
   // This optional damage is in target render pass coordinate space.
   absl::optional<gfx::Rect> damage_rect;

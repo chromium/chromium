@@ -2202,6 +2202,89 @@ TEST_F(SingleOverlayOnTopTest, RejectTransparentColorOnTopWithoutBlending) {
   EXPECT_EQ(0U, candidate_list.size());
 }
 
+// Test makes sure promotion hint (|overlay_priority_hint| in |TextureDrawQuad|)
+// feature functions. The (current) expectation is that |kLow| will not promote
+// and that |kRequired| will be promoted in preference to |kRegular| candidates.
+TEST_F(SingleOverlayOnTopTest, CheckPromotionHintBasic) {
+  // Test has two passes:
+  // Pass 1 checks kLow and kRegular values.
+  constexpr size_t kTestRegularAtFrame = 3;
+  // Pass 2 checks kRequired against kRegular values.
+  constexpr size_t kTestRequiredAtFrame = 6;
+  AddExpectedRectToOverlayProcessor(gfx::RectF(kOverlayTopLeftRect));
+  for (size_t i = 0; i <= kTestRequiredAtFrame; ++i) {
+    auto pass = CreateRenderPass();
+    SurfaceDamageRectList surface_damage_rect_list;
+    SharedQuadState* sqs_partial =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    auto* tex_quad_partial = CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), sqs_partial, pass.get(), kOverlayTopLeftRect);
+    auto inset_rect_cpy = kOverlayTopLeftRect;
+    // This 'Inset' makes sure the damage is a partial fraction of the
+    // |display_rect|.
+    inset_rect_cpy.Inset(8);
+
+    sqs_partial->overlay_damage_index = surface_damage_rect_list.size();
+    surface_damage_rect_list.push_back(inset_rect_cpy);
+    tex_quad_partial->overlay_priority_hint = i > kTestRegularAtFrame
+                                                  ? OverlayPriority::kRequired
+                                                  : OverlayPriority::kRegular;
+
+    // Full damaged quad with a different rect; specifically
+    // |kOverlayBottomRightRect|.
+    SharedQuadState* sqs_full =
+        pass->shared_quad_state_list.AllocateAndCopyFrom(
+            pass->shared_quad_state_list.back());
+    auto* tex_quad_full = CreateCandidateQuadAt(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), sqs_full, pass.get(), kOverlayBottomRightRect);
+    sqs_partial->overlay_damage_index = surface_damage_rect_list.size();
+    tex_quad_full->overlay_priority_hint = i > kTestRegularAtFrame
+                                               ? OverlayPriority::kRegular
+                                               : OverlayPriority::kLow;
+    // Damage is 100% of |display_rect|.
+    surface_damage_rect_list.push_back(kOverlayBottomRightRect);
+
+    // Add something behind it.
+    CreateFullscreenOpaqueQuad(resource_provider_.get(),
+                               pass->shared_quad_state_list.back(), pass.get());
+
+    // Check for potential candidates.
+    OverlayCandidateList candidate_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    overlay_processor_->SetFrameSequenceNumber(static_cast<int64_t>(i));
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+
+    if (i == kTestRegularAtFrame) {
+      EXPECT_EQ(1U, candidate_list.size());
+      if (!candidate_list.empty()) {
+        // Check that it was the partial damaged one that got promoted.
+        EXPECT_EQ(kOverlayTopLeftRect,
+                  gfx::ToRoundedRect(candidate_list.back().display_rect));
+      }
+    } else if (i == kTestRequiredAtFrame) {
+      EXPECT_EQ(1U, candidate_list.size());
+      if (!candidate_list.empty()) {
+        // Check that it was the partial damaged one that got promoted.
+        EXPECT_EQ(kOverlayTopLeftRect,
+                  gfx::ToRoundedRect(candidate_list.back().display_rect));
+        // Also check that the required flag is set.
+        EXPECT_TRUE(candidate_list.back().requires_overlay);
+      }
+    }
+  }
+}
+
 TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
   // Resource ID for the repeated quads. Value should be equivalent to
   // OverlayStrategySingleOnTop::kMaxFrameCandidateWithSameResourceId.

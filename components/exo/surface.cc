@@ -1349,17 +1349,6 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
                      /*opacity=*/state_.basic_state.alpha,
                      /*blend_mode=*/SkBlendMode::kSrcOver,
                      /*sorting_context_id=*/0);
-  switch (state_.overlay_priority_hint) {
-    case OverlayPriority::LOW:
-      quad_state->overlay_priority_hint = viz::OverlayPriority::kLow;
-      break;
-    case OverlayPriority::REQUIRED:
-      quad_state->overlay_priority_hint = viz::OverlayPriority::kRequired;
-      break;
-    case OverlayPriority::REGULAR:
-      quad_state->overlay_priority_hint = viz::OverlayPriority::kRegular;
-      break;
-  }
 
   if (current_resource_.id) {
     gfx::RectF uv_crop(gfx::SizeF(1, 1));
@@ -1424,6 +1413,18 @@ void Surface::AppendContentsToFrame(const gfx::Point& origin,
           gfx::ProtectedVideoType::kClear);
       if (current_resource_.is_overlay_candidate)
         texture_quad->set_resource_size_in_pixels(current_resource_.size);
+
+      switch (state_.overlay_priority_hint) {
+        case OverlayPriority::LOW:
+          texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
+          break;
+        case OverlayPriority::REQUIRED:
+          texture_quad->overlay_priority_hint = viz::OverlayPriority::kRequired;
+          break;
+        case OverlayPriority::REGULAR:
+          texture_quad->overlay_priority_hint = viz::OverlayPriority::kRegular;
+          break;
+      }
 
       frame->resource_list.push_back(current_resource_);
 

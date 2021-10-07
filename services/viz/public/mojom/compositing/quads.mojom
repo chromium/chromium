@@ -20,6 +20,12 @@ enum ProtectedVideoState {
   kHardwareProtected,
 };
 
+enum OverlayPriority {
+  kLow,
+  kRegular,
+  kRequired
+};
+
 struct DebugBorderQuadState {
   // Debug border color.
   uint32 color;
@@ -92,6 +98,7 @@ struct TextureQuadState {
   ProtectedVideoState protected_video_type;
   uint32 hw_protected_validation_id;
   gfx.mojom.Rect? damage_rect;
+  OverlayPriority overlay_priority_hint;
 };
 
 struct TileQuadState {
