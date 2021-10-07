@@ -376,9 +376,9 @@ bool NavigationEarlyHintsManager::WasPreloadLinkHeaderReceived() const {
   // the field trial.
   // TODO(crbug.com/1197989): Consider renaming this method.
   if (base::FeatureList::IsEnabled(features::kEarlyHintsPreloadForNavigation))
-    return was_preload_link_header_received_;
-  return was_preload_link_header_received_ &&
-         !was_preload_triggered_by_origin_trial_;
+    return was_resource_hints_received_;
+  return was_resource_hints_received_ &&
+         !was_resource_hints_triggered_by_origin_trial_;
 }
 
 std::vector<GURL> NavigationEarlyHintsManager::TakePreloadedResourceURLs() {
@@ -440,6 +440,8 @@ bool NavigationEarlyHintsManager::IsPreloadForNavigationEnabledByOriginTrial(
 void NavigationEarlyHintsManager::MaybePreconnect(
     const network::mojom::LinkHeaderPtr& link,
     bool enabled_by_origin_trial) {
+  was_resource_hints_received_ = true;
+
   if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
     return;
 
@@ -457,6 +459,9 @@ void NavigationEarlyHintsManager::MaybePreconnect(
                                      allow_credentials,
                                      isolation_info_.network_isolation_key());
   preconnect_entries_.insert(std::move(entry));
+
+  if (enabled_by_origin_trial)
+    was_resource_hints_triggered_by_origin_trial_ = true;
 }
 
 void NavigationEarlyHintsManager::MaybePreloadHintedResource(
@@ -466,7 +471,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   DCHECK(navigation_request.is_main_frame);
   DCHECK(navigation_request.url.SchemeIsHTTPOrHTTPS());
 
-  was_preload_link_header_received_ = true;
+  was_resource_hints_received_ = true;
 
   if (!ShouldHandleResourceHints(link, enabled_by_origin_trial))
     return;
@@ -517,7 +522,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   preloaded_urls_.push_back(request.url);
 
   if (enabled_by_origin_trial)
-    was_preload_triggered_by_origin_trial_ = true;
+    was_resource_hints_triggered_by_origin_trial_ = true;
 }
 
 bool NavigationEarlyHintsManager::ShouldHandleResourceHints(

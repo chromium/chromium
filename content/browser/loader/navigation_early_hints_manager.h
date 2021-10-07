@@ -104,8 +104,10 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   void HandleEarlyHints(network::mojom::EarlyHintsPtr early_hints,
                         const network::ResourceRequest& navigation_request);
 
-  // True when at least one preload Link header was received via Early Hints
-  // responses for main frame navigation.
+  // True when at least one preload or preconnect Link header was received via
+  // Early Hints responses for main frame navigation.
+  // TODO(crbug.com/1197989): Rename. Now this also returns true when preconnect
+  // headers are received.
   bool WasPreloadLinkHeaderReceived() const;
 
   std::vector<GURL> TakePreloadedResourceURLs();
@@ -177,8 +179,12 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   std::vector<GURL> preloaded_urls_;
 
-  bool was_preload_link_header_received_ = false;
-  bool was_preload_triggered_by_origin_trial_ = false;
+  // Set to true when preload or preconnect Link headers are received. Used for
+  // metrics recording.
+  bool was_resource_hints_received_ = false;
+  // Set to true when preload or preconnect are triggered by using origin trial
+  // tokens. Used for metrics recording.
+  bool was_resource_hints_triggered_by_origin_trial_ = false;
 
   blink::TrialTokenValidator const trial_token_validator_;
 
