@@ -102,7 +102,7 @@ public abstract class SyncConsentFragmentBase
     private ConsentTextTracker mConsentTextTracker;
 
     private final ProfileDataCache.Observer mProfileDataCacheObserver;
-    private @Nullable String mSelectedAccountName;
+    protected @Nullable String mSelectedAccountName;
     private ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
     private boolean mIsSigninInProgress;
@@ -331,16 +331,6 @@ public abstract class SyncConsentFragmentBase
         }
     }
 
-    /** Implements {@link SigninManager.SignInStateObserver}. */
-    @Override
-    public void onSignedOut() {
-        if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
-            mIsSignedInWithoutSync = false;
-            mSelectedAccountName = null;
-            mAccountManagerFacade.getAccounts().then(this::updateAccounts);
-        }
-    }
-
     /**
      * Account picker is hidden if there are no accounts on the device. Also, accept button
      * becomes "Add account" button in this case.
@@ -561,7 +551,7 @@ public abstract class SyncConsentFragmentBase
         updateProfileData(mSelectedAccountName);
     }
 
-    private void updateAccounts(List<Account> accounts) {
+    protected void updateAccounts(List<Account> accounts) {
         if (!isResumed() || !mCanUseGooglePlayServices) {
             return;
         }

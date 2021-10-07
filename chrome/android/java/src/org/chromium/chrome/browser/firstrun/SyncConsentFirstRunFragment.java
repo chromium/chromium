@@ -14,6 +14,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.cards.SignInPromo;
 import org.chromium.chrome.browser.signin.SyncConsentFragmentBase;
+import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ChildAccountStatus;
@@ -77,5 +78,19 @@ public class SyncConsentFirstRunFragment
 
         final View title = getView().findViewById(R.id.signin_title);
         title.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    @Override
+    protected void updateAccounts(List<Account> accounts) {
+        final boolean selectedAccountDoesNotExist = (mSelectedAccountName != null
+                && AccountUtils.findAccountByName(accounts, mSelectedAccountName) == null);
+        if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && selectedAccountDoesNotExist) {
+            // With MICe, there's no account picker and the sync consent is fixed for the signed
+            // in account on welcome screen. If the signed-in account is removed, this page
+            // no longer makes sense, so we abort the FRE here to allow users to restart FRE.
+            getPageDelegate().abortFirstRunExperience();
+            return;
+        }
+        super.updateAccounts(accounts);
     }
 }

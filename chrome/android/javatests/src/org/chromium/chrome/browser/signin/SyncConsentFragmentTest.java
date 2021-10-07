@@ -13,8 +13,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.accounts.Account;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.lifecycle.Stage;
@@ -72,6 +74,7 @@ import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Render tests for sync consent fragment.
@@ -87,6 +90,7 @@ public class SyncConsentFragmentTest {
      */
     public static class CustomSyncConsentFirstRunFragment extends SyncConsentFirstRunFragment {
         private FirstRunPageDelegate mFirstRunPageDelegate;
+        private boolean mIsUpdateAccountCalled;
 
         @Override
         public FirstRunPageDelegate getPageDelegate() {
@@ -95,6 +99,12 @@ public class SyncConsentFragmentTest {
 
         private void setPageDelegate(FirstRunPageDelegate delegate) {
             mFirstRunPageDelegate = delegate;
+        }
+
+        @Override
+        protected void updateAccounts(List<Account> accounts) {
+            super.updateAccounts(accounts);
+            mIsUpdateAccountCalled = true;
         }
     }
 
@@ -371,7 +381,7 @@ public class SyncConsentFragmentTest {
 
     @Test
     @MediumTest
-    public void testFRESyncConsentScreenWhenSigningOutFromWelcomeScreen() {
+    public void testFRESyncConsentScreenWhenSelectedAccountIsRemoved() {
         final CoreAccountInfo defaultAccount =
                 mAccountManagerTestRule.addAccount("test.default.account@gmail.com");
         final CoreAccountInfo primaryAccount = mAccountManagerTestRule.addTestAccountThenSignin();
@@ -385,14 +395,10 @@ public class SyncConsentFragmentTest {
         fragment.setPageDelegate(mFirstRunPageDelegateMock);
         launchActivityWithFragment(fragment);
 
-        mAccountManagerTestRule.signOut();
+        mAccountManagerTestRule.removeAccount(primaryAccount.getEmail());
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mActivityTestRule.getActivity()
-                    .findViewById(R.id.signin_account_picker)
-                    .isShown();
-        });
-        onView(withText(defaultAccount.getEmail())).check(matches(isDisplayed()));
+        CriteriaHelper.pollUiThread(() -> fragment.mIsUpdateAccountCalled);
+        verify(mFirstRunPageDelegateMock).abortFirstRunExperience();
     }
 
     @Test
