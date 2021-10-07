@@ -258,7 +258,6 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
   SymbolMap map;
 
   int module_id = 0;
-  *os << "{{{reset}}}\n";
   for (const SymbolMap::Module& entry : map.GetModules()) {
     *os << "{{{module:" << module_id << ":" << entry.name
         << ":elf:" << entry.build_id << "}}}\n";
@@ -280,6 +279,8 @@ void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
 
   for (size_t i = 0; i < count_; ++i)
     *os << "{{{bt:" << i << ":" << trace_[i] << "}}}\n";
+
+  *os << "{{{reset}}}\n";
 }
 
 }  // namespace debug
