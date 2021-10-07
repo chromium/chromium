@@ -26,7 +26,6 @@
 #elif defined(USE_OZONE)
 #include "components/viz/service/display/overlay_processor_delegated.h"
 #include "components/viz/service/display/overlay_processor_ozone.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -117,9 +116,6 @@ OverlayProcessorInterface::CreateOverlayProcessor(
                               ? 2
                               : 1));
 #elif defined(USE_OZONE)
-  if (!features::IsUsingOzonePlatform())
-    return std::make_unique<OverlayProcessorStub>();
-
 #if !BUILDFLAG(IS_CHROMECAST)
   // In tests and Ozone/X11, we do not expect surfaceless surface support.
   // For chromecast, we always need OverlayProcessorOzone.

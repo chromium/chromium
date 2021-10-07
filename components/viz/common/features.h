@@ -36,9 +36,6 @@ VIZ_COMMON_EXPORT extern const base::Feature kWebRtcLogCapturePipeline;
 #if defined(OS_WIN)
 VIZ_COMMON_EXPORT extern const base::Feature kUseSetPresentDuration;
 #endif  // OS_WIN
-#if defined(USE_X11)
-VIZ_COMMON_EXPORT extern const base::Feature kUseX11Present;
-#endif
 VIZ_COMMON_EXPORT extern const base::Feature kWebViewVulkanIntermediateBuffer;
 VIZ_COMMON_EXPORT extern const base::Feature kUsePlatformDelegatedInk;
 #if defined(OS_ANDROID)

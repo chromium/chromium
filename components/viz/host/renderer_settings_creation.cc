@@ -23,7 +23,6 @@
 #endif
 
 #if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -88,7 +87,6 @@ RendererSettings CreateRendererSettings() {
   }
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     if (command_line->HasSwitch(switches::kEnableHardwareOverlays)) {
       renderer_settings.overlay_strategies = ParseOverlayStrategies(
           command_line->GetSwitchValueASCII(switches::kEnableHardwareOverlays));
@@ -101,7 +99,6 @@ RendererSettings CreateRendererSettings() {
                                                 OverlayStrategy::kUnderlay};
       }
     }
-  }
 #endif
 
   return renderer_settings;

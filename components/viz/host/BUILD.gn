@@ -96,10 +96,6 @@ viz_source_set("unit_tests") {
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
-
-  if (use_x11 || use_ozone) {
-    deps += [ "//ui/base:features" ]
-  }
 }
 
 fuzzer_test("hit_test_query_fuzzer") {

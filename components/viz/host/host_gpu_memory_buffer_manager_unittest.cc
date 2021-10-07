@@ -22,10 +22,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 
-#if defined(USE_OZONE) || defined(USE_X11)
-#include "ui/base/ui_base_features.h"  // nogncheck
-#endif
-
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -40,18 +36,11 @@ namespace {
 
 bool MustSignalGmbConfigReadyForTest() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     // Some Ozone platforms (Ozone/X11) require GPU process initialization to
     // determine GMB support.
     return ui::OzonePlatform::GetInstance()
         ->GetPlatformProperties()
         .fetch_buffer_formats_for_gmb_on_gpu;
-  }
-#endif
-#if defined(USE_X11)
-  // X11 requires GPU process initialization to determine GMB support.
-  DCHECK(!features::IsUsingOzonePlatform());
-  return true;
 #else
   return false;
 #endif
@@ -288,11 +277,9 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
   bool IsNativePixmapConfigSupported() {
     bool native_pixmap_supported = false;
 #if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform()) {
       native_pixmap_supported =
           ui::OzonePlatform::GetInstance()->IsNativePixmapConfigSupported(
               gfx::BufferFormat::RGBA_8888, gfx::BufferUsage::GPU_READ);
-    }
 #elif defined(OS_ANDROID)
     native_pixmap_supported =
         base::AndroidHardwareBufferCompat::IsSupportAvailable();

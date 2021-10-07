@@ -25,7 +25,6 @@
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -147,11 +146,9 @@ TestGpuServiceHolder::TestGpuServiceHolder(
     : gpu_thread_("GPUMainThread"), io_thread_("GPUIOThread") {
   base::Thread::Options gpu_thread_options;
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     gpu_thread_options.message_pump_type = ui::OzonePlatform::GetInstance()
                                                ->GetPlatformProperties()
                                                .message_pump_type_for_gpu;
-  }
 #endif
 
   CHECK(gpu_thread_.StartWithOptions(std::move(gpu_thread_options)));

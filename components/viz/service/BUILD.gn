@@ -260,14 +260,6 @@ viz_component("service") {
     "//ui/latency",
   ]
 
-  if (use_x11) {
-    sources += [
-      "display_embedder/software_output_device_x11.cc",
-      "display_embedder/software_output_device_x11.h",
-    ]
-    deps += [ "//ui/gfx/x" ]
-  }
-
   if (is_chromeos_ash) {
     sources += [
       "display_embedder/gl_output_surface_chromeos.cc",
@@ -483,10 +475,10 @@ viz_source_set("gpu_service_dependencies") {
       ]
     }
 
-    if (use_x11 || ozone_platform_x11) {
+    # TODO(1239521): ideally, ozone_platform_x11 should not be used outside
+    # ui/ozone.
+    if (ozone_platform_x11) {
       sources += [
-        "display_embedder/output_presenter_x11.cc",
-        "display_embedder/output_presenter_x11.h",
         "display_embedder/skia_output_device_x11.cc",
         "display_embedder/skia_output_device_x11.h",
       ]

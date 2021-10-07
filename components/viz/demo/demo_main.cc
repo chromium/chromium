@@ -37,10 +37,6 @@
 #include "ui/platform_window/win/win_window.h"
 #endif
 
-#if defined(USE_X11)
-#include "ui/platform_window/x11/x11_window.h"  // nogncheck
-#endif
-
 namespace {
 
 // Initializes and owns the components from base necessary to run the app.
@@ -124,20 +120,9 @@ class DemoWindow : public ui::PlatformWindowDelegate {
   std::unique_ptr<ui::PlatformWindow> CreatePlatformWindow(
       const gfx::Rect& bounds) {
     ui::PlatformWindowInitProperties props(bounds);
-#if defined(USE_X11) || defined(USE_OZONE)
 #if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform()) {
       return ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
           this, std::move(props));
-    }
-#endif
-#if defined(USE_X11)
-    auto x11_window = std::make_unique<ui::X11Window>(this);
-    x11_window->Initialize(std::move(props));
-    return x11_window;
-#endif
-    NOTREACHED();
-    return nullptr;
 #elif defined(OS_WIN)
     return std::make_unique<ui::WinWindow>(this, props.bounds);
 #else

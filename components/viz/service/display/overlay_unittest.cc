@@ -3679,14 +3679,6 @@ class GLRendererWithOverlaysTest : public testing::Test {
     child_resource_provider_->ShutdownAndReleaseAllResources();
   }
 
-  void SetUp() override {
-#if defined(USE_X11)
-    // TODO(1096425): non-Ozone/X11 doesn't seem to support overlays.
-    if (!features::IsUsingOzonePlatform())
-      GTEST_SKIP();
-#endif
-  }
-
   void Init(bool use_overlay_processor) {
     if (use_overlay_processor)
       owned_overlay_processor_ = std::make_unique<SingleOverlayProcessor>();

@@ -2886,11 +2886,6 @@ class MockOverlayScheduler {
 };
 
 TEST_F(GLRendererTest, OverlaySyncTokensAreProcessed) {
-#if defined(USE_X11)
-  // TODO(1096425): Remove this.
-  if (!features::IsUsingOzonePlatform())
-    GTEST_SKIP();
-#endif
   auto gl_owned = std::make_unique<WaitSyncTokenCountingGLES2Interface>();
   WaitSyncTokenCountingGLES2Interface* gl = gl_owned.get();
 
@@ -5145,11 +5140,6 @@ TEST_F(GLRendererWithGpuFenceTest, GpuFenceIdIsUsedWithRootRenderPassOverlay) {
 
 TEST_F(GLRendererWithGpuFenceTest,
        GpuFenceIdIsUsedOnlyForRootRenderPassOverlay) {
-#if defined(USE_X11)
-  // TODO(1096425): Remove this.
-  if (!features::IsUsingOzonePlatform())
-    GTEST_SKIP();
-#endif
   gfx::Size viewport_size(100, 100);
   AggregatedRenderPass* root_pass = cc::AddRenderPass(
       &render_passes_in_draw_order_, AggregatedRenderPassId{1},

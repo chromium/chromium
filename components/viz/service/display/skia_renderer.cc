@@ -76,10 +76,6 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
-
 namespace viz {
 
 namespace {
@@ -2361,13 +2357,6 @@ void SkiaRenderer::ScheduleOverlays() {
     DCHECK(!ca_layer_overlay.mailbox.IsZero());
   }
 #elif defined(USE_OZONE)
-  // For platforms that don't support overlays, the
-  // current_frame()->overlay_list should be empty, and this code should not be
-  // reached.
-  if (!features::IsUsingOzonePlatform()) {
-    NOTREACHED();
-    return;
-  }
   // Only Wayland uses this code path.
   auto& locks = pending_overlay_locks_.back();
   for (auto& overlay : current_frame()->overlay_list) {

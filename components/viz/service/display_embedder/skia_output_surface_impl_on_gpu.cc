@@ -73,7 +73,7 @@
 #endif
 
 #if (BUILDFLAG(ENABLE_VULKAN) || BUILDFLAG(SKIA_USE_DAWN)) && \
-    (defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11))
+    defined(USE_OZONE_PLATFORM_X11)
 #include "components/viz/service/display_embedder/skia_output_device_x11.h"
 #endif
 
@@ -84,16 +84,8 @@
 #endif
 #endif
 
-#if defined(USE_OZONE) || defined(USE_X11)
-#include "ui/base/ui_base_features.h"
-#endif
-
 #if defined(OS_FUCHSIA)
 #include "components/viz/service/display_embedder/output_presenter_fuchsia.h"
-#endif
-
-#if defined(USE_X11)
-#include "components/viz/service/display_embedder/output_presenter_x11.h"
 #endif
 
 namespace viz {
@@ -123,17 +115,12 @@ base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
 // Returns whether SkiaOutputDeviceX11 can be instantiated on this platform.
 bool MayFallBackToSkiaOutputDeviceX11() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .skia_can_fall_back_to_x11;
-  }
-#endif
-#if defined(USE_X11)
-  return true;
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .skia_can_fall_back_to_x11;
 #else
   return false;
-#endif  // defined(USE_X11)
+#endif  // defined(USE_OZONE)
 }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
@@ -1072,14 +1059,12 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
                "is_using_vulkan", is_using_vulkan());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     gpu::SurfaceHandle surface_handle = dependency_->GetSurfaceHandle();
     if (surface_handle != gpu::kNullSurfaceHandle) {
       window_surface_ = ui::OzonePlatform::GetInstance()
                             ->GetSurfaceFactoryOzone()
                             ->CreatePlatformWindowSurface(surface_handle);
     }
-  }
 #endif
 
   context_state_ = dependency_->GetSharedContextState();
@@ -1208,10 +1193,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
 #endif
 
 #if defined(USE_OZONE)
-  bool needs_background_image =
-      features::IsUsingOzonePlatform() && ui::OzonePlatform::GetInstance()
-                                              ->GetPlatformProperties()
-                                              .needs_background_image;
+  bool needs_background_image = ui::OzonePlatform::GetInstance()
+                                    ->GetPlatformProperties()
+                                    .needs_background_image;
 #else   // defined(USE_OZONE)
   bool needs_background_image = false;
 #endif  // !defined(USE_OZONE)
@@ -1221,15 +1205,6 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   auto output_presenter = OutputPresenterFuchsia::Create(
       window_surface_.get(), dependency_, shared_image_factory_.get(),
       shared_image_representation_factory_.get());
-#elif defined(USE_X11)
-  const bool use_x11_present =
-      base::FeatureList::IsEnabled(features::kUseX11Present) &&
-      !features::IsUsingOzonePlatform();
-  auto output_presenter = use_x11_present
-                              ? OutputPresenterX11::Create(
-                                    dependency_, shared_image_factory_.get(),
-                                    shared_image_representation_factory_.get())
-                              : nullptr;
 #else
   auto output_presenter =
       OutputPresenterGL::Create(dependency_, shared_image_factory_.get(),
@@ -1258,7 +1233,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
         GetDidSwapBuffersCompleteCallback());
   }
   if (MayFallBackToSkiaOutputDeviceX11()) {
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
     if (output_device) {
       output_device_ = std::move(output_device);
     } else {
@@ -1269,7 +1244,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     }
     if (output_device_)
       return true;
-#endif  // defined(USE_X11) || BUILDFLAG(OZONE_PLATFORM_X11)
+#endif  // BUILDFLAG(OZONE_PLATFORM_X11)
   }
   if (!output_device)
     return false;
@@ -1299,7 +1274,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-#if defined(USE_X11) || defined(USE_OZONE_PLATFORM_X11)
+#if defined(USE_OZONE_PLATFORM_X11)
     // TODO(rivr): Set up a Vulkan swapchain so that Linux can also use
     // SkiaOutputDeviceDawn.
     if (MayFallBackToSkiaOutputDeviceX11()) {

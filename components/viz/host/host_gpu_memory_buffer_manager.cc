@@ -38,21 +38,13 @@ void OnGpuMemoryBufferDestroyed(
 
 bool WillGetGmbConfigFromGpu() {
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    // Ozone/X11 (same as non-Ozone/X11) cannot get buffer formats in the
-    // browser process and requires gpu initialization to be done before it can
-    // determine what formats gmb can use. This limitation comes from the
-    // requirement to have GLX bindings initialized. The buffer formats will be
-    // passed through gpu extra info.
-    return ui::OzonePlatform::GetInstance()
-        ->GetPlatformProperties()
-        .fetch_buffer_formats_for_gmb_on_gpu;
-  }
-#endif
-#if defined(USE_X11)
-  // non-Ozone/X11 must always get native configs on gpu.
-  DCHECK(!features::IsUsingOzonePlatform());
-  return true;
+  // Ozone/X11 cannot get buffer formats in the browser process and requires gpu
+  // initialization to be done before it can determine what formats gmb can use.
+  // This limitation comes from the requirement to have GLX bindings
+  // initialized. The buffer formats will be passed through gpu extra info.
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformProperties()
+      .fetch_buffer_formats_for_gmb_on_gpu;
 #else
   return false;
 #endif

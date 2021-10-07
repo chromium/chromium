@@ -23,7 +23,6 @@
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/host/shader_disk_cache.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_render_params.h"
 
 #if defined(OS_ANDROID)
@@ -136,8 +135,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
       GetFontRenderParams().Get()->subpixel_rendering);
 
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform())
-    InitOzone();
+  InitOzone();
 #endif  // defined(USE_OZONE)
 }
 
@@ -338,7 +336,6 @@ mojom::InfoCollectionGpuService* GpuHostImpl::info_collection_gpu_service() {
 #if defined(USE_OZONE)
 
 void GpuHostImpl::InitOzone() {
-  DCHECK(features::IsUsingOzonePlatform());
   // Ozone needs to send the primary DRM device to GPU service as early as
   // possible to ensure the latter always has a valid device.
   // https://crbug.com/608839

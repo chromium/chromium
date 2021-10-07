@@ -34,7 +34,7 @@ class FakeDisplayClient : public mojom::DisplayClient {
       mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) override;
 #endif
 
-#if defined(USE_X11)
+#if defined(OS_LINUX)
   void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif
 
