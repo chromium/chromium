@@ -2029,7 +2029,7 @@ def ParseSsargs(lines):
 
 
 def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
-                      ignore_linker_map, on_config_error):
+                      ignore_linker_map, tool_prefix, on_config_error):
   apk_so_path = None
   if apk_path:
     with zipfile.ZipFile(apk_path) as z:
@@ -2060,7 +2060,7 @@ def _DeduceNativeInfo(tentative_output_dir, apk_path, elf_path, map_path,
       on_config_error('Found unexpected _partition.so: ' + elf_path)
 
     if not ignore_linker_map:
-      if _ElfIsMainPartition(elf_path, ''):
+      if _ElfIsMainPartition(elf_path, tool_prefix):
         map_path = elf_path.replace('.so', '__combined.so') + '.map'
       else:
         map_path = elf_path + '.map'
@@ -2144,12 +2144,17 @@ def _ProcessContainerArgs(top_args, sub_args, container_name, on_config_error):
     if not is_base_module:
       opts.analyze_native = False
     else:
+      tool_prefix_finder = path_util.ToolPrefixFinder(
+          value=sub_args.tool_prefix,
+          output_directory=top_args.output_directory,
+          linker_name='lld')
       sub_args.elf_file, sub_args.map_file, apk_so_path = _DeduceNativeInfo(
           tentative_output_dir=top_args.output_directory,
           apk_path=sub_args.apk_file,
           elf_path=sub_args.elf_file or sub_args.aux_elf_file,
           map_path=sub_args.map_file,
           ignore_linker_map=sub_args.ignore_linker_map,
+          tool_prefix=tool_prefix_finder.Finalized(),
           on_config_error=on_config_error)
 
     if sub_args.ignore_linker_map:
