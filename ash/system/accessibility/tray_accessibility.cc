@@ -99,8 +99,15 @@ AccessibilityDetailedView::AccessibilityDetailedView(
 }
 
 AccessibilityDetailedView::~AccessibilityDetailedView() {
-  if (features::IsDictationOfflineAvailableAndEnabled())
-    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  if (!features::IsDictationOfflineAvailableAndEnabled())
+    return;
+
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (soda_installer) {
+    // `soda_installer` is not guaranteed to be valid, since it's possible for
+    // this class to out-live it.
+    soda_installer->RemoveObserver(this);
+  }
 }
 
 void AccessibilityDetailedView::OnAccessibilityStatusChanged() {
@@ -579,16 +586,19 @@ void AccessibilityDetailedView::UpdateSodaInstallerObserverStatus() {
   if (!features::IsDictationOfflineAvailableAndEnabled())
     return;
 
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  if (!soda_installer)
+    return;
+
   bool dictation_enabled =
       Shell::Get()->accessibility_controller()->dictation().enabled();
-  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
-  if (!dictation_enabled)
+  if (!dictation_enabled) {
     soda_installer->RemoveObserver(this);
+    return;
+  }
 
-  if (dictation_enabled &&
-      !soda_installer->IsSodaInstalled(GetDictationLocale())) {
-    // Make sure this view observes SODA installation. We only want to update
-    // the user of the installation status if dictation is enabled.
+  if (!soda_installer->IsSodaInstalled(GetDictationLocale())) {
+    // Make sure this view observes SODA installation.
     soda_installer->AddObserver(this);
   }
 }

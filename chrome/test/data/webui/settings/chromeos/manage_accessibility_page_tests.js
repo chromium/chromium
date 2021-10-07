@@ -304,7 +304,7 @@ suite('ManageAccessibilityPageTests', function() {
     assertTrue(dictationSetting.checked);
     assertEquals('Enable dictation (speak to type)', dictationSetting.label);
     assertEquals(
-        'Send your voice to Google to allow dictation into any text field.',
+        'Type with your voice. Press Search + D, then start speaking.',
         dictationSetting.subLabel);
 
     // Dictation locale menu.
@@ -325,7 +325,7 @@ suite('ManageAccessibilityPageTests', function() {
     // Only the dictation locale subtitle should have changed.
     assertEquals('Enable dictation (speak to type)', dictationSetting.label);
     assertEquals(
-        'Send your voice to Google to allow dictation into any text field.',
+        'Type with your voice. Press Search + D, then start speaking.',
         dictationSetting.subLabel);
     assertEquals('Language', dictationLocaleMenuLabel.innerText);
     assertEquals('Testing', dictationLocaleMenuSubtitle.innerText);

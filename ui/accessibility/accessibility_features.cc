@@ -119,7 +119,7 @@ bool IsMagnifierContinuousMouseFollowingModeSettingEnabled() {
 
 const base::Feature kExperimentalAccessibilityDictationOffline{
     "ExperimentalAccessibilityDictationOffline",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsExperimentalAccessibilityDictationOfflineEnabled() {
   return base::FeatureList::IsEnabled(
