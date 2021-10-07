@@ -17,6 +17,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/util/status.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "url/gurl.h"
 
 namespace policy {
@@ -75,6 +77,30 @@ DlpRulesManager::Restriction DlpEventRestriction2DlpRulesManagerRestriction(
   }
 }
 
+DlpPolicyEvent_UserType GetCurrentUserType() {
+  // Could be not initialized in tests.
+  if (!user_manager::UserManager::IsInitialized() ||
+      !user_manager::UserManager::Get()->GetPrimaryUser()) {
+    return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
+  }
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(user);
+  switch (user->GetType()) {
+    case user_manager::USER_TYPE_REGULAR:
+      return DlpPolicyEvent_UserType_REGULAR;
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+      return DlpPolicyEvent_UserType_MANAGED_GUEST;
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      return DlpPolicyEvent_UserType_KIOSK;
+    default:
+      NOTREACHED();
+      return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
+  }
+}
+
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
                                     DlpRulesManager::Restriction restriction,
                                     DlpRulesManager::Level level) {
@@ -88,6 +114,7 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
       DlpRulesManagerRestriction2DlpEventRestriction(restriction));
   event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
   event.set_timestamp_micro(base::Time::Now().ToTimeT());
+  event.set_user_type(GetCurrentUserType());
 
   return event;
 }

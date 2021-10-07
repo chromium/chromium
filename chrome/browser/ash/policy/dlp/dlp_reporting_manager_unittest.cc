@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/ash/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/reporting/util/status.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -95,6 +99,43 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
   histogram_tester.ExpectUniqueSample(
       GetDlpHistogramPrefix() + dlp::kReportedReportLevelRestriction,
       DlpRulesManager::Restriction::kScreenshot, 1);
+}
+
+TEST_F(DlpReportingManagerTest, UserType) {
+  auto* user_manager = new ash::FakeChromeUserManager();
+  user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
+
+  AccountId regular_account_id = AccountId::FromUserEmail("user@example.com");
+  const auto* regular_user = user_manager->AddUser(regular_account_id);
+  AccountId mgs_account_id =
+      AccountId::FromUserEmail("managed-guest-session@example.com");
+  const auto* mgs_user = user_manager->AddPublicAccountUser(mgs_account_id);
+  AccountId kiosk_account_id = AccountId::FromUserEmail("kiosk@example.com");
+  const auto* kiosk_user = user_manager->AddKioskAppUser(kiosk_account_id);
+
+  user_manager->UserLoggedIn(regular_account_id, regular_user->username_hash(),
+                             /*browser_restart=*/false, /*is_child=*/false);
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock);
+  EXPECT_EQ(events_.size(), 1);
+  EXPECT_EQ(events_[0].user_type(), DlpPolicyEvent_UserType_REGULAR);
+  user_manager->RemoveUserFromList(regular_account_id);
+
+  user_manager->UserLoggedIn(mgs_account_id, mgs_user->username_hash(),
+                             /*browser_restart=*/false, /*is_child=*/false);
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock);
+  EXPECT_EQ(events_.size(), 2);
+  EXPECT_EQ(events_[1].user_type(), DlpPolicyEvent_UserType_MANAGED_GUEST);
+  user_manager->RemoveUserFromList(mgs_account_id);
+
+  user_manager->UserLoggedIn(kiosk_account_id, kiosk_user->username_hash(),
+                             /*browser_restart=*/false, /*is_child=*/false);
+  manager_.ReportEvent(kCompanyPattern, DlpRulesManager::Restriction::kPrinting,
+                       DlpRulesManager::Level::kBlock);
+  EXPECT_EQ(events_.size(), 3);
+  EXPECT_EQ(events_[2].user_type(), DlpPolicyEvent_UserType_KIOSK);
+  user_manager->RemoveUserFromList(kiosk_account_id);
 }
 
 }  // namespace policy

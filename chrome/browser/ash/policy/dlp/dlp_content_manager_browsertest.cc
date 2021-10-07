@@ -36,6 +36,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/reporting/client/report_queue_impl.h"
 #include "components/reporting/storage/test_storage_module.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -719,7 +720,12 @@ class DlpContentManagerReportingBrowserTest
         .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
             [=](reporting::Record record,
                 base::OnceCallback<void(reporting::Status)> callback) {
-              CheckRecord(restriction, level, std::move(record));
+              content::GetUIThreadTaskRunner({})->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      &DlpContentManagerReportingBrowserTest::CheckRecord,
+                      base::Unretained(this), restriction, level,
+                      std::move(record)));
               std::move(callback).Run(reporting::Status::StatusOK());
             })));
   }

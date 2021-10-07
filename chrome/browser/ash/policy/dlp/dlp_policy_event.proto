@@ -43,6 +43,14 @@ message DlpPolicyEvent {
     REPORT = 2;
   }
 
+  // Type of user session from which the event is reported.
+  enum UserType {
+    UNDEFINED_USER_TYPE = 0;
+    REGULAR = 1;
+    MANAGED_GUEST = 2;
+    KIOSK = 3;
+  }
+
   optional DlpPolicyEventSource source = 1;
   optional DlpPolicyEventDestination destination = 2;
   optional Restriction restriction = 3;
@@ -50,4 +58,5 @@ message DlpPolicyEvent {
   // Whether the restriction was enforced or not. Valuable for WARN.
   optional bool restriction_enforced = 5;
   optional int64 timestamp_micro = 6;
+  optional UserType user_type = 7;
 }
