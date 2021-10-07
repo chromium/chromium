@@ -98,7 +98,7 @@ void AddSupervisionHandler::GetOAuthToken(GetOAuthTokenCallback callback) {
 
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
           "add_supervision", scopes,
           base::BindOnce(&AddSupervisionHandler::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),

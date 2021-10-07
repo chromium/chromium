@@ -160,7 +160,7 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
               &EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched,
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          signin::ConsentLevel::kSignin);
+          signin::ConsentLevel::kSync);
 }
 
 EduCoexistenceLoginHandler::~EduCoexistenceLoginHandler() {

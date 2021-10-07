@@ -18,6 +18,7 @@
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -29,7 +30,6 @@
 
 const char kGetFamilyProfileApiPath[] = "families/mine?alt=json";
 const char kGetFamilyMembersApiPath[] = "families/mine/members?alt=json";
-const char kScope[] = "https://www.googleapis.com/auth/kid.family.readonly";
 const int kNumFamilyInfoFetcherRetries = 1;
 
 const char kIdFamily[] = "family";
@@ -89,9 +89,8 @@ FamilyInfoFetcher::FamilyInfoFetcher(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : consumer_(consumer),
-      // This feature doesn't care about browser sync consent.
       primary_account_id_(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)),
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       access_token_expired_(false) {}
@@ -127,15 +126,15 @@ void FamilyInfoFetcher::StartGetFamilyMembers() {
 }
 
 void FamilyInfoFetcher::StartFetchingAccessToken() {
-  OAuth2AccessTokenManager::ScopeSet scopes{kScope};
+  OAuth2AccessTokenManager::ScopeSet scopes{
+      GaiaConstants::kKidFamilyReadonlyOAuth2Scope};
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           "family_info_fetcher", identity_manager_, scopes,
           base::BindOnce(&FamilyInfoFetcher::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          // This feature doesn't care about browser sync consent.
-          signin::ConsentLevel::kSignin);
+          signin::ConsentLevel::kSync);
 }
 
 void FamilyInfoFetcher::OnAccessTokenFetchComplete(
@@ -222,7 +221,7 @@ void FamilyInfoFetcher::OnSimpleLoaderCompleteInternal(
     DVLOG(1) << "Access token expired, retrying";
     access_token_expired_ = true;
     OAuth2AccessTokenManager::ScopeSet scopes;
-    scopes.insert(kScope);
+    scopes.insert(GaiaConstants::kKidFamilyReadonlyOAuth2Scope);
     identity_manager_->RemoveAccessTokenFromCache(primary_account_id_, scopes,
                                                   access_token_);
     StartFetchingAccessToken();

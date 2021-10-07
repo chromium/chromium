@@ -148,7 +148,7 @@ class FamilyInfoFetcherTest
   CoreAccountInfo SetPrimaryAccount() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return identity_test_env_.SetPrimaryAccount(kAccountId,
-                                                signin::ConsentLevel::kSignin);
+                                                signin::ConsentLevel::kSync);
 #elif defined(OS_ANDROID)
     // TODO(https://crbug.com/1046746): Change to ConsentLevel::kSignin
     // when Android supports the concept of an unconsented primary account that
@@ -162,8 +162,8 @@ class FamilyInfoFetcherTest
 
   void IssueRefreshToken() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    identity_test_env_.MakePrimaryAccountAvailable(
-        kAccountId, signin::ConsentLevel::kSignin);
+    identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
+                                                   signin::ConsentLevel::kSync);
 #elif defined(OS_ANDROID)
     // TODO(https://crbug.com/1046746): Change to ConsentLevel::kSignin
     // when Android supports the concept of an unconsented primary account that

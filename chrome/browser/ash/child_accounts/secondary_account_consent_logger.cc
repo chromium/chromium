@@ -110,7 +110,7 @@ SecondaryAccountConsentLogger::SecondaryAccountConsentLogger(
     const std::string& re_auth_proof_token,
     base::OnceCallback<void(Result)> callback)
     : primary_account_id_(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)),
+          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync)),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
       pref_service_(pref_service),
@@ -133,7 +133,7 @@ void SecondaryAccountConsentLogger::StartLogging() {
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::
               kWaitUntilAvailable /*mode*/,
-          signin::ConsentLevel::kSignin /*consent*/);
+          signin::ConsentLevel::kSync /*consent*/);
 }
 
 void SecondaryAccountConsentLogger::OnAccessTokenFetchComplete(
