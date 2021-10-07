@@ -259,7 +259,8 @@ void LoadDisplayProperties(PrefService* local_state) {
     double refresh_rate = 60.0;
     bool is_interlaced = false;
     if (display::features::IsListAllDisplayModesEnabled()) {
-      dict_value->GetDouble("refresh-rate", &refresh_rate);
+      refresh_rate =
+          dict_value->FindDoubleKey("refresh-rate").value_or(refresh_rate);
       dict_value->GetBoolean("interlaced", &is_interlaced);
     }
 
@@ -267,8 +268,7 @@ void LoadDisplayProperties(PrefService* local_state) {
     if (ValueToInsets(*dict_value, &insets))
       insets_to_set = &insets;
 
-    double display_zoom = 1.0;
-    dict_value->GetDouble(kDisplayZoom, &display_zoom);
+    double display_zoom = dict_value->FindDoubleKey(kDisplayZoom).value_or(1.0);
 
     GetDisplayManager()->RegisterDisplayProperty(
         id, rotation, insets_to_set, resolution_in_pixels, device_scale_factor,

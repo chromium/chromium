@@ -238,11 +238,7 @@ double AudioDevicesPrefHandlerImpl::GetOutputVolumePrefValue(
   std::string device_id_str = GetDeviceIdString(device);
   if (!device_volume_settings_->HasKey(device_id_str))
     MigrateDeviceVolumeGainSettings(device_id_str, device);
-
-  double value;
-  device_volume_settings_->GetDouble(device_id_str, &value);
-
-  return value;
+  return *device_volume_settings_->FindDoubleKey(device_id_str);
 }
 
 double AudioDevicesPrefHandlerImpl::GetInputGainPrefValue(
@@ -251,11 +247,7 @@ double AudioDevicesPrefHandlerImpl::GetInputGainPrefValue(
   std::string device_id_str = GetDeviceIdString(device);
   if (!device_gain_settings_->HasKey(device_id_str))
     SetInputGainPrefValue(device, kDefaultInputGainPercent);
-
-  double value;
-  device_gain_settings_->GetDouble(device_id_str, &value);
-
-  return value;
+  return *device_gain_settings_->FindDoubleKey(device_id_str);
 }
 
 double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(
