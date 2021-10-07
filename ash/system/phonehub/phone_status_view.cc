@@ -14,7 +14,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
-#include "ash/system/power/battery_image_source.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -74,41 +73,10 @@ int GetSignalStrengthAsInt(PhoneStatusModel::SignalStrength signal_strength) {
   }
 }
 
-// ImageSource for the battery icon.
-class PhoneHubBatteryImageSource : public BatteryImageSource {
- public:
-  PhoneHubBatteryImageSource(const PowerStatus::BatteryImageInfo& info,
-                             int height,
-                             SkColor bg_color,
-                             SkColor fg_color,
-                             bool in_battery_saver_mode)
-      : BatteryImageSource(info, height, bg_color, fg_color),
-        bg_color_(bg_color),
-        in_battery_saver_mode_(in_battery_saver_mode) {}
-
-  ~PhoneHubBatteryImageSource() override = default;
-
-  // BatteryImageSource:
-  void Draw(gfx::Canvas* canvas) override {
-    BatteryImageSource::Draw(canvas);
-
-    if (!in_battery_saver_mode_)
-      return;
-
-    SkColor saver_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorWarning);
-
-    PaintVectorIcon(canvas, kBatteryIcon, size().height(), saver_color);
-    PaintVectorIcon(canvas, kPhoneHubBatterySaverOutlineIcon, size().height(),
-                    bg_color_);
-    PaintVectorIcon(canvas, kPhoneHubBatterySaverIcon, size().height(),
-                    saver_color);
-  }
-
- private:
-  const SkColor bg_color_;
-  bool in_battery_saver_mode_ = false;
-};
+bool IsBatterySaverModeOn(const PhoneStatusModel& phone_status) {
+  return phone_status.battery_saver_state() ==
+         PhoneStatusModel::BatterySaverState::kOn;
+}
 
 }  // namespace
 
@@ -261,16 +229,12 @@ void PhoneStatusView::UpdateBatteryStatus() {
       ShelfConfig::Get()->GetShelfControlButtonColor(),
       AshColorProvider::Get()->GetBackgroundColor());
   const SkColor icon_fg_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
+      IsBatterySaverModeOn(phone_status)
+          ? AshColorProvider::ContentLayerType::kIconColorWarning
+          : AshColorProvider::ContentLayerType::kIconColorPrimary);
 
-  bool in_battery_saver_mode = phone_status.battery_saver_state() ==
-                               PhoneStatusModel::BatterySaverState::kOn;
-
-  auto* source = new PhoneHubBatteryImageSource(
-      info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color,
-      in_battery_saver_mode);
-  battery_icon_->SetImage(
-      gfx::ImageSkia(base::WrapUnique(source), source->size()));
+  battery_icon_->SetImage(PowerStatus::GetBatteryImage(
+      info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color));
   SetBatteryTooltipText();
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
@@ -286,6 +250,12 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
       phone_model_->phone_status_model().value();
 
   info.charge_percent = phone_status.battery_percentage();
+
+  if (IsBatterySaverModeOn(phone_status)) {
+    info.icon_badge = &kPhoneHubBatterySaverIcon;
+    info.badge_outline = &kPhoneHubBatterySaverOutlineIcon;
+    return info;
+  }
 
   switch (phone_status.charging_state()) {
     case PhoneStatusModel::ChargingState::kNotCharging:
