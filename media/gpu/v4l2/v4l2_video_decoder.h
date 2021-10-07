@@ -146,12 +146,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
                                 const gfx::Rect& visible_rect,
                                 const size_t num_output_frames);
 
-  // Change the |state_| and check the state transition is valid.
+  // Change the state and check the state transition is valid.
   void SetState(State new_state);
-
-  // Tell SetState() to change the |state_| to kError and send |message| to
-  // MediaLog and to LOG(ERROR).
-  void SetErrorState(const std::string& message);
 
   // Continue backend initialization. Decoder will not take a hardware context
   // until InitializeBackend() is called.
