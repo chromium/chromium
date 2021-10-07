@@ -228,30 +228,38 @@ void RemoveClientHintHeader(WebClientHintsType client_hint_type,
   headers->RemoveHeader(network::GetClientHintToNameMap().at(client_hint_type));
 }
 
-void AddDeviceMemoryHeader(net::HttpRequestHeaders* headers) {
+void AddDeviceMemoryHeader(net::HttpRequestHeaders* headers,
+                           bool use_deprecated_version = false) {
   DCHECK(headers);
   blink::ApproximatedDeviceMemory::Initialize();
   const float device_memory =
       blink::ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
   DCHECK_LT(0.0, device_memory);
-  SetHeaderToDouble(headers, WebClientHintsType::kDeviceMemory_DEPRECATED,
+  SetHeaderToDouble(headers,
+                    use_deprecated_version
+                        ? WebClientHintsType::kDeviceMemory_DEPRECATED
+                        : WebClientHintsType::kDeviceMemory,
                     device_memory);
 }
 
 void AddDPRHeader(net::HttpRequestHeaders* headers,
                   BrowserContext* context,
-                  const GURL& url) {
+                  const GURL& url,
+                  bool use_deprecated_version = false) {
   DCHECK(headers);
   DCHECK(context);
   double device_scale_factor = GetDeviceScaleFactor();
   double zoom_factor = GetZoomFactor(context, url);
-  SetHeaderToDouble(headers, WebClientHintsType::kDpr_DEPRECATED,
+  SetHeaderToDouble(headers,
+                    use_deprecated_version ? WebClientHintsType::kDpr_DEPRECATED
+                                           : WebClientHintsType::kDpr,
                     device_scale_factor * zoom_factor);
 }
 
 void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
                             BrowserContext* context,
-                            const GURL& url) {
+                            const GURL& url,
+                            bool use_deprecated_version = false) {
   DCHECK(headers);
   DCHECK(context);
   // The default value on Android. See
@@ -262,7 +270,10 @@ void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
   // On Android, use the default value when the AccessibilityPageZoom
   // feature is not enabled.
   if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
-    SetHeaderToInt(headers, WebClientHintsType::kViewportWidth_DEPRECATED,
+    SetHeaderToInt(headers,
+                   use_deprecated_version
+                       ? WebClientHintsType::kViewportWidth_DEPRECATED
+                       : WebClientHintsType::kViewportWidth,
                    viewport_width);
     return;
   }
@@ -277,7 +288,11 @@ void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
   DCHECK_LT(0, viewport_width);
   // TODO(yoav): Find out why this 0 check is needed...
   if (viewport_width > 0) {
-    SetHeaderToInt(headers, WebClientHintsType::kViewportWidth_DEPRECATED, viewport_width);
+    SetHeaderToInt(headers,
+                   use_deprecated_version
+                       ? WebClientHintsType::kViewportWidth_DEPRECATED
+                       : WebClientHintsType::kViewportWidth,
+                   viewport_width);
   }
 }
 
@@ -664,12 +679,22 @@ void AddRequestClientHintsHeaders(
 
   // Add Headers
   if (ShouldAddClientHint(data, WebClientHintsType::kDeviceMemory_DEPRECATED)) {
+    AddDeviceMemoryHeader(headers, /*use_deprecated_version*/ true);
+  }
+  if (ShouldAddClientHint(data, WebClientHintsType::kDeviceMemory)) {
     AddDeviceMemoryHeader(headers);
   }
   if (ShouldAddClientHint(data, WebClientHintsType::kDpr_DEPRECATED)) {
+    AddDPRHeader(headers, context, url, /*use_deprecated_version*/ true);
+  }
+  if (ShouldAddClientHint(data, WebClientHintsType::kDpr)) {
     AddDPRHeader(headers, context, url);
   }
   if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth_DEPRECATED)) {
+    AddViewportWidthHeader(headers, context, url,
+                           /*use_deprecated_version*/ true);
+  }
+  if (ShouldAddClientHint(data, WebClientHintsType::kViewportWidth)) {
     AddViewportWidthHeader(headers, context, url);
   }
   if (ShouldAddClientHint(

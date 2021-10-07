@@ -381,10 +381,13 @@ static void ConfigureRequest(
   }
 
   auto* html_image_element = DynamicTo<HTMLImageElement>(element);
-  if (client_hints_preferences.ShouldSend(
-          network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED) &&
-      html_image_element)
+  if ((client_hints_preferences.ShouldSend(
+           network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED) ||
+       client_hints_preferences.ShouldSend(
+           network::mojom::WebClientHintsType::kResourceWidth)) &&
+      html_image_element) {
     params.SetResourceWidth(html_image_element->GetResourceWidth());
+  }
 }
 
 inline void ImageLoader::DispatchErrorEvent() {

@@ -203,6 +203,18 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             ApproximatedDeviceMemory::GetApproximatedDeviceMemory())));
   }
 
+  if (ShouldSendClientHint(
+          ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
+          network::mojom::blink::WebClientHintsType::kDeviceMemory,
+          hints_preferences)) {
+    request.SetHttpHeaderField(
+        network::GetClientHintToNameMap()
+            .at(network::mojom::blink::WebClientHintsType::kDeviceMemory)
+            .c_str(),
+        AtomicString(String::Number(
+            ApproximatedDeviceMemory::GetApproximatedDeviceMemory())));
+  }
+
   // These hints only make sense if the image info is available
   if (image_info) {
     if (ShouldSendClientHint(
@@ -215,12 +227,35 @@ void BaseFetchContext::AddClientHintsIfNecessary(
 
     if (ShouldSendClientHint(ClientHintsMode::kLegacy, policy, resource_origin,
                              is_1p_origin,
+                             network::mojom::blink::WebClientHintsType::kDpr,
+                             hints_preferences)) {
+      request.SetHttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kDpr)
+              .c_str(),
+          AtomicString(String::Number(image_info->dpr)));
+    }
+
+    if (ShouldSendClientHint(ClientHintsMode::kLegacy, policy, resource_origin,
+                             is_1p_origin,
                              network::mojom::blink::WebClientHintsType::
                                  kViewportWidth_DEPRECATED,
                              hints_preferences) &&
         image_info->viewport_width) {
       request.SetHttpHeaderField(
           "Viewport-Width",
+          AtomicString(String::Number(image_info->viewport_width.value())));
+    }
+
+    if (ShouldSendClientHint(
+            ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kViewportWidth,
+            hints_preferences) &&
+        image_info->viewport_width) {
+      request.SetHttpHeaderField(
+          network::GetClientHintToNameMap()
+              .at(network::mojom::blink::WebClientHintsType::kViewportWidth)
+              .c_str(),
           AtomicString(String::Number(image_info->viewport_width.value())));
     }
 
@@ -246,6 +281,21 @@ void BaseFetchContext::AddClientHintsIfNecessary(
             image_info->resource_width.width * image_info->dpr;
         request.SetHttpHeaderField(
             "Width", AtomicString(String::Number(ceil(physical_width))));
+      }
+    }
+
+    if (ShouldSendClientHint(
+            ClientHintsMode::kLegacy, policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kResourceWidth,
+            hints_preferences)) {
+      if (image_info->resource_width.is_set) {
+        float physical_width =
+            image_info->resource_width.width * image_info->dpr;
+        request.SetHttpHeaderField(
+            network::GetClientHintToNameMap()
+                .at(network::mojom::blink::WebClientHintsType::kResourceWidth)
+                .c_str(),
+            AtomicString(String::Number(ceil(physical_width))));
       }
     }
   }

@@ -20,7 +20,11 @@ class ClientHintsPreferencesTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kUserAgentClientHint,
                               blink::features::
-                                  kPrefersColorSchemeClientHintHeader},
+                                  kPrefersColorSchemeClientHintHeader,
+                              blink::features::kClientHintsDeviceMemory,
+                              blink::features::kClientHintsResourceWidth,
+                              blink::features::kClientHintsDPR,
+                              blink::features::kClientHintsViewportWidth},
         /*disabled_features=*/{});
   }
 
@@ -31,8 +35,11 @@ class ClientHintsPreferencesTest : public testing::Test {
 TEST_F(ClientHintsPreferencesTest, BasicSecure) {
   struct TestCase {
     const char* header_value;
+    bool expectation_resource_width_DEPRECATED;
     bool expectation_resource_width;
+    bool expectation_dpr_DEPRECATED;
     bool expectation_dpr;
+    bool expectation_viewport_width_DEPRECATED;
     bool expectation_viewport_width;
     bool expectation_rtt;
     bool expectation_downlink;
@@ -44,35 +51,38 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     bool expectation_ua_full_version;
     bool expectation_prefers_color_scheme;
   } cases[] = {
-      {"width, dpr, viewportWidth", true, true, false, false, false, false,
-       false, false, false, false, false, false},
-      {"WiDtH, dPr, viewport-width, rtt, downlink, ect, "
+      {"width, sec-ch-width, dpr, sec-ch-dpr, viewportWidth, "
+       "sec-ch-viewportWidth",
+       true, true, true, true, false, false, false, false, false, false, false,
+       false, false, false, false},
+      {"WiDtH, sEc-ch-WiDtH, dPr, sec-cH-dPr, viewport-width, "
+       "sec-ch-viewport-width, rtt, downlink, ect, "
        "sec-ch-prefers-color-scheme",
-       true, true, true, true, true, true, false, false, false, false, false,
-       true},
+       true, true, true, true, true, true, true, true, true, false, false,
+       false, false, false, true},
       {"WiDtH, dPr, viewport-width, rtt, downlink, effective-connection-type",
-       true, true, true, true, true, false, false, false, false, false, false,
-       false},
-      {"WIDTH, DPR, VIWEPROT-Width", true, true, false, false, false, false,
-       false, false, false, false, false, false},
-      {"VIewporT-Width, wutwut, width", true, false, true, false, false, false,
-       false, false, false, false, false, false},
+       true, false, true, false, true, false, true, true, false, false, false,
+       false, false, false, false},
+      {"sec-ch-WIDTH, DPR, VIWEPROT-Width", false, true, true, false, false,
+       false, false, false, false, false, false, false, false, false, false},
+      {"sec-ch-VIewporT-Width, wutwut, width", true, false, false, false, false,
+       true, false, false, false, false, false, false, false, false, false},
       {"dprw", false, false, false, false, false, false, false, false, false,
-       false, false, false},
+       false, false, false, false, false, false},
       {"DPRW", false, false, false, false, false, false, false, false, false,
-       false, false, false},
-      {"sec-ch-ua", false, false, false, false, false, false, true, false,
-       false, false, false, false},
-      {"sec-ch-ua-arch", false, false, false, false, false, false, false, true,
-       false, false, false, false},
+       false, false, false, false, false, false},
+      {"sec-ch-ua", false, false, false, false, false, false, false, false,
+       false, true, false, false, false, false, false},
+      {"sec-ch-ua-arch", false, false, false, false, false, false, false, false,
+       false, false, true, false, false, false, false},
       {"sec-ch-ua-platform", false, false, false, false, false, false, false,
-       false, true, false, false, false},
+       false, false, false, false, true, false, false, false},
       {"sec-ch-ua-model", false, false, false, false, false, false, false,
-       false, false, true, false, false},
+       false, false, false, false, false, true, false, false},
       {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
        "sec-ch-ua-full-version",
-       false, false, false, false, false, false, true, true, true, true, true,
-       false},
+       false, false, false, false, false, false, false, false, false, true,
+       true, true, true, true, false},
   };
 
   for (const auto& test_case : cases) {
@@ -82,16 +92,24 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     preferences.UpdateFromHttpEquivAcceptCH(test_case.header_value, kurl,
                                             nullptr);
     EXPECT_EQ(
-        test_case.expectation_resource_width,
+        test_case.expectation_resource_width_DEPRECATED,
         preferences.ShouldSend(
             network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
-    EXPECT_EQ(test_case.expectation_dpr,
+    EXPECT_EQ(test_case.expectation_resource_width,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kResourceWidth));
+    EXPECT_EQ(test_case.expectation_dpr_DEPRECATED,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_dpr,
+              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
     EXPECT_EQ(
-        test_case.expectation_viewport_width,
+        test_case.expectation_viewport_width_DEPRECATED,
         preferences.ShouldSend(
             network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_viewport_width,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kViewportWidth));
     EXPECT_EQ(test_case.expectation_rtt,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kRtt_DEPRECATED));
@@ -120,32 +138,48 @@ TEST_F(ClientHintsPreferencesTest, BasicSecure) {
     // have no impact on client hint preferences.
     preferences.UpdateFromHttpEquivAcceptCH("1, 42,", kurl, nullptr);
     EXPECT_EQ(
-        test_case.expectation_resource_width,
+        test_case.expectation_resource_width_DEPRECATED,
         preferences.ShouldSend(
             network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
-    EXPECT_EQ(test_case.expectation_dpr,
+    EXPECT_EQ(test_case.expectation_resource_width,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kResourceWidth));
+    EXPECT_EQ(test_case.expectation_dpr_DEPRECATED,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_dpr,
+              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
     EXPECT_EQ(
-        test_case.expectation_viewport_width,
+        test_case.expectation_viewport_width_DEPRECATED,
         preferences.ShouldSend(
             network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_viewport_width,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kViewportWidth));
 
     // Calling UpdateFromHttpEquivAcceptCH with empty header is also a
     // no-op, since ClientHintsPreferences only deals with http-equiv, and
     // hence merge.
     preferences.UpdateFromHttpEquivAcceptCH("", kurl, nullptr);
     EXPECT_EQ(
-        test_case.expectation_resource_width,
+        test_case.expectation_resource_width_DEPRECATED,
         preferences.ShouldSend(
             network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
-    EXPECT_EQ(test_case.expectation_dpr,
+    EXPECT_EQ(test_case.expectation_resource_width,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kResourceWidth));
+    EXPECT_EQ(test_case.expectation_dpr_DEPRECATED,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_dpr,
+              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
     EXPECT_EQ(
-        test_case.expectation_viewport_width,
+        test_case.expectation_viewport_width_DEPRECATED,
         preferences.ShouldSend(
             network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_EQ(test_case.expectation_viewport_width,
+              preferences.ShouldSend(
+                  network::mojom::WebClientHintsType::kViewportWidth));
   }
 }
 
@@ -159,9 +193,15 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
   EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kResourceWidth));
+  EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+  EXPECT_FALSE(
+      preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kViewportWidth));
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kRtt_DEPRECATED));
   EXPECT_TRUE(preferences.ShouldSend(
@@ -183,6 +223,8 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   preferences.UpdateFromHttpEquivAcceptCH("1,,42", kurl, nullptr);
   EXPECT_FALSE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+  EXPECT_FALSE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kResourceWidth));
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kRtt_DEPRECATED));
   EXPECT_TRUE(preferences.ShouldSend(
@@ -201,9 +243,11 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
 
   // Calling UpdateFromHttpEquivAcceptCH with "width" header should
   // replace add width to preferences
-  preferences.UpdateFromHttpEquivAcceptCH("width", kurl, nullptr);
+  preferences.UpdateFromHttpEquivAcceptCH("width,sec-ch-width", kurl, nullptr);
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kResourceWidth));
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kRtt_DEPRECATED));
   EXPECT_TRUE(preferences.ShouldSend(
@@ -225,6 +269,8 @@ TEST_F(ClientHintsPreferencesTest, SecureEnabledTypesMerge) {
   preferences.UpdateFromHttpEquivAcceptCH("", kurl, nullptr);
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+  EXPECT_TRUE(preferences.ShouldSend(
+      network::mojom::WebClientHintsType::kResourceWidth));
   EXPECT_TRUE(preferences.ShouldSend(
       network::mojom::WebClientHintsType::kRtt_DEPRECATED));
   EXPECT_TRUE(preferences.ShouldSend(
@@ -249,9 +295,12 @@ TEST_F(ClientHintsPreferencesTest, Insecure) {
                           ? KURL(String::FromUTF8("https://www.google.com/"))
                           : KURL(String::FromUTF8("http://www.google.com/"));
     preferences.UpdateFromHttpEquivAcceptCH("dpr", kurl, nullptr);
+    preferences.UpdateFromHttpEquivAcceptCH("sec-ch-dpr", kurl, nullptr);
     EXPECT_EQ(use_secure_url,
               preferences.ShouldSend(
                   network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(use_secure_url,
+              preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr));
   }
 }
 
@@ -260,9 +309,13 @@ TEST_F(ClientHintsPreferencesTest, Insecure) {
 TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
   struct TestCase {
     const char* accept_ch_header_value;
+    bool expect_device_memory_DEPRECATED;
     bool expect_device_memory;
+    bool expect_width_DEPRECATED;
     bool expect_width;
+    bool expect_dpr_DEPRECATED;
     bool expect_dpr;
+    bool expect_viewport_width_DEPRECATED;
     bool expect_viewport_width;
     bool expect_rtt;
     bool expect_downlink;
@@ -274,25 +327,30 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     bool expect_ua_full_version;
     bool expect_prefers_color_scheme;
   } test_cases[] = {
-      {"width, dpr, viewportWidth, sec-ch-prefers-color-scheme", false, true,
-       true, false, false, false, false, false, false, false, false, false,
-       true},
-      {"width, dpr, viewportWidth", false, true, true, false, false, false,
-       false, false, false, false, false, false, false},
-      {"width, dpr, viewportWidth", false, true, true, false, false, false,
-       false, false, false, false, false, false, false},
-      {"width, dpr, viewportWidth", false, true, true, false, false, false,
-       false, false, false, false, false, false, false},
-      {"width, dpr, rtt, downlink, ect", false, true, true, false, true, true,
-       true, false, false, false, false, false, false},
-      {"device-memory", true, false, false, false, false, false, false, false,
-       false, false, false, false, false},
-      {"dpr rtt", false, false, false, false, false, false, false, false, false,
+      {"width, sec-ch-width, dpr, sec-ch-dpr, viewportWidth, "
+       "sec-ch-viewportWidth, sec-ch-prefers-color-scheme",
+       false, false, true, true, true, true, false, false, false, false, false,
+       false, false, false, false, false, true},
+      {"width, dpr, viewportWidth", false, false, true, false, true, false,
+       false, false, false, false, false, false, false, false, false, false,
+       false},
+      {"width, sec-ch-width, dpr, sec-ch-dpr, viewportWidth", false, false,
+       true, true, true, true, false, false, false, false, false, false, false,
        false, false, false, false},
+      {"width, sec-ch-dpr, viewportWidth", false, false, true, false, false,
+       true, false, false, false, false, false, false, false, false, false,
+       false, false},
+      {"sec-ch-width, dpr, rtt, downlink, ect", false, false, false, true, true,
+       false, false, false, true, true, true, false, false, false, false, false,
+       false},
+      {"device-memory", true, false, false, false, false, false, false, false,
+       false, false, false, false, false, false, false, false, false},
+      {"sec-ch-dpr rtt", false, false, false, false, false, false, false, false,
+       false, false, false, false, false, false, false, false, false},
       {"sec-ch-ua, sec-ch-ua-arch, sec-ch-ua-platform, sec-ch-ua-model, "
        "sec-ch-ua-full-version",
-       false, false, false, false, false, false, false, true, true, true, true,
-       true, false},
+       false, false, false, false, false, false, false, false, false, false,
+       false, true, true, true, true, true, false},
   };
 
   for (const auto& test : test_cases) {
@@ -301,11 +359,19 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED));
     EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kDeviceMemory));
+    EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_FALSE(
+        enabled_types.IsEnabled(network::mojom::WebClientHintsType::kDpr));
     EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
     EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kResourceWidth));
+    EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_FALSE(enabled_types.IsEnabled(
+        network::mojom::WebClientHintsType::kViewportWidth));
     EXPECT_FALSE(enabled_types.IsEnabled(
         network::mojom::WebClientHintsType::kRtt_DEPRECATED));
     EXPECT_FALSE(enabled_types.IsEnabled(
@@ -330,20 +396,31 @@ TEST_F(ClientHintsPreferencesTest, ParseHeaders) {
     enabled_types = preferences.GetEnabledClientHints();
 
     EXPECT_EQ(
-        test.expect_device_memory,
+        test.expect_device_memory_DEPRECATED,
         enabled_types.IsEnabled(
             network::mojom::WebClientHintsType::kDeviceMemory_DEPRECATED));
-    EXPECT_EQ(test.expect_dpr,
+    EXPECT_EQ(test.expect_device_memory,
+              enabled_types.IsEnabled(
+                  network::mojom::WebClientHintsType::kDeviceMemory));
+    EXPECT_EQ(test.expect_dpr_DEPRECATED,
               enabled_types.IsEnabled(
                   network::mojom::WebClientHintsType::kDpr_DEPRECATED));
+    EXPECT_EQ(test.expect_dpr, enabled_types.IsEnabled(
+                                   network::mojom::WebClientHintsType::kDpr));
     EXPECT_EQ(
-        test.expect_width,
+        test.expect_width_DEPRECATED,
         enabled_types.IsEnabled(
             network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+    EXPECT_EQ(test.expect_width,
+              enabled_types.IsEnabled(
+                  network::mojom::WebClientHintsType::kResourceWidth));
     EXPECT_EQ(
-        test.expect_viewport_width,
+        test.expect_viewport_width_DEPRECATED,
         enabled_types.IsEnabled(
             network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+    EXPECT_EQ(test.expect_viewport_width,
+              enabled_types.IsEnabled(
+                  network::mojom::WebClientHintsType::kViewportWidth));
     EXPECT_EQ(test.expect_rtt,
               enabled_types.IsEnabled(
                   network::mojom::WebClientHintsType::kRtt_DEPRECATED));

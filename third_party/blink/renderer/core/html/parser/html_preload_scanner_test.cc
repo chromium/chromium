@@ -116,15 +116,27 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
                 preload_request_->Preferences().ShouldSend(
                     network::mojom::WebClientHintsType::kDpr_DEPRECATED));
       EXPECT_EQ(
+          preferences.ShouldSend(network::mojom::WebClientHintsType::kDpr),
+          preload_request_->Preferences().ShouldSend(
+              network::mojom::WebClientHintsType::kDpr));
+      EXPECT_EQ(
           preferences.ShouldSend(
               network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED),
           preload_request_->Preferences().ShouldSend(
               network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED));
+      EXPECT_EQ(preferences.ShouldSend(
+                    network::mojom::WebClientHintsType::kResourceWidth),
+                preload_request_->Preferences().ShouldSend(
+                    network::mojom::WebClientHintsType::kResourceWidth));
       EXPECT_EQ(
           preferences.ShouldSend(
               network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED),
           preload_request_->Preferences().ShouldSend(
               network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED));
+      EXPECT_EQ(preferences.ShouldSend(
+                    network::mojom::WebClientHintsType::kViewportWidth),
+                preload_request_->Preferences().ShouldSend(
+                    network::mojom::WebClientHintsType::kViewportWidth));
     }
   }
 
@@ -614,20 +626,32 @@ TEST_F(HTMLPreloadScannerTest, testViewportNoContent) {
 }
 
 TEST_F(HTMLPreloadScannerTest, testMetaAcceptCH) {
+  ClientHintsPreferences dpr_DEPRECATED;
   ClientHintsPreferences dpr;
+  ClientHintsPreferences resource_width_DEPRECATED;
   ClientHintsPreferences resource_width;
   ClientHintsPreferences all;
+  ClientHintsPreferences viewport_width_DEPRECATED;
   ClientHintsPreferences viewport_width;
-  dpr.SetShouldSend(network::mojom::WebClientHintsType::kDpr_DEPRECATED);
+  dpr_DEPRECATED.SetShouldSend(
+      network::mojom::WebClientHintsType::kDpr_DEPRECATED);
+  dpr.SetShouldSend(network::mojom::WebClientHintsType::kDpr);
   all.SetShouldSend(network::mojom::WebClientHintsType::kDpr_DEPRECATED);
+  all.SetShouldSend(network::mojom::WebClientHintsType::kDpr);
+  resource_width_DEPRECATED.SetShouldSend(
+      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED);
   resource_width.SetShouldSend(
-      network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED);
+      network::mojom::WebClientHintsType::kResourceWidth);
   all.SetShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED);
+  all.SetShouldSend(network::mojom::WebClientHintsType::kResourceWidth);
+  viewport_width_DEPRECATED.SetShouldSend(
+      network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED);
   viewport_width.SetShouldSend(
-      network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED);
+      network::mojom::WebClientHintsType::kViewportWidth);
   all.SetShouldSend(
       network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED);
+  all.SetShouldSend(network::mojom::WebClientHintsType::kViewportWidth);
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",
        "<meta http-equiv='accept-ch' content='bla'><img srcset='bla.gif 320w, "
@@ -644,18 +668,38 @@ TEST_F(HTMLPreloadScannerTest, testMetaAcceptCH) {
       {"http://example.test",
        "<meta http-equiv='accept-ch' content='dpr  '><img srcset='bla.gif "
        "320w, blabla.gif 640w'>",
+       "blabla.gif", "http://example.test/", ResourceType::kImage, 0,
+       dpr_DEPRECATED},
+      {"http://example.test",
+       "<meta http-equiv='accept-ch' content='sec-ch-dpr  '><img "
+       "srcset='bla.gif 320w, blabla.gif 640w'>",
        "blabla.gif", "http://example.test/", ResourceType::kImage, 0, dpr},
       {"http://example.test",
        "<meta http-equiv='accept-ch' content='bla,dpr  '><img srcset='bla.gif "
        "320w, blabla.gif 640w'>",
+       "blabla.gif", "http://example.test/", ResourceType::kImage, 0,
+       dpr_DEPRECATED},
+      {"http://example.test",
+       "<meta http-equiv='accept-ch' content='bla,sec-ch-dpr  '><img "
+       "srcset='bla.gif 320w, blabla.gif 640w'>",
        "blabla.gif", "http://example.test/", ResourceType::kImage, 0, dpr},
       {"http://example.test",
        "<meta http-equiv='accept-ch' content='  width  '><img sizes='100vw' "
        "srcset='bla.gif 320w, blabla.gif 640w'>",
        "blabla.gif", "http://example.test/", ResourceType::kImage, 500,
+       resource_width_DEPRECATED},
+      {"http://example.test",
+       "<meta http-equiv='accept-ch' content='  sec-ch-width  '><img "
+       "sizes='100vw' srcset='bla.gif 320w, blabla.gif 640w'>",
+       "blabla.gif", "http://example.test/", ResourceType::kImage, 500,
        resource_width},
       {"http://example.test",
        "<meta http-equiv='accept-ch' content='  width  , wutever'><img "
+       "sizes='300px' srcset='bla.gif 320w, blabla.gif 640w'>",
+       "blabla.gif", "http://example.test/", ResourceType::kImage, 300,
+       resource_width_DEPRECATED},
+      {"http://example.test",
+       "<meta http-equiv='accept-ch' content='  sec-ch-width  , wutever'><img "
        "sizes='300px' srcset='bla.gif 320w, blabla.gif 640w'>",
        "blabla.gif", "http://example.test/", ResourceType::kImage, 300,
        resource_width},
@@ -663,16 +707,26 @@ TEST_F(HTMLPreloadScannerTest, testMetaAcceptCH) {
        "<meta http-equiv='accept-ch' content='  viewport-width  '><img "
        "srcset='bla.gif 320w, blabla.gif 640w'>",
        "blabla.gif", "http://example.test/", ResourceType::kImage, 0,
+       viewport_width_DEPRECATED},
+      {"http://example.test",
+       "<meta http-equiv='accept-ch' content='  sec-ch-viewport-width  '><img "
+       "srcset='bla.gif 320w, blabla.gif 640w'>",
+       "blabla.gif", "http://example.test/", ResourceType::kImage, 0,
        viewport_width},
       {"http://example.test",
        "<meta http-equiv='accept-ch' content='  viewport-width  , "
        "wutever'><img srcset='bla.gif 320w, blabla.gif 640w'>",
        "blabla.gif", "http://example.test/", ResourceType::kImage, 0,
+       viewport_width_DEPRECATED},
+      {"http://example.test",
+       "<meta http-equiv='accept-ch' content='  sec-ch-viewport-width  , "
+       "wutever'><img srcset='bla.gif 320w, blabla.gif 640w'>",
+       "blabla.gif", "http://example.test/", ResourceType::kImage, 0,
        viewport_width},
       {"http://example.test",
        "<meta http-equiv='accept-ch' content='  viewport-width  ,width, "
-       "wutever, dpr  '><img sizes='90vw' srcset='bla.gif 320w, blabla.gif "
-       "640w'>",
+       "wutever, dpr , sec-ch-dpr,sec-ch-viewport-width,   sec-ch-width '><img "
+       "sizes='90vw' srcset='bla.gif 320w, blabla.gif 640w'>",
        "blabla.gif", "http://example.test/", ResourceType::kImage, 450, all},
   };
 
@@ -687,10 +741,13 @@ TEST_F(HTMLPreloadScannerTest, testMetaAcceptCH) {
 TEST_F(HTMLPreloadScannerTest, testMetaAcceptCHInsecureDocument) {
   ClientHintsPreferences all;
   all.SetShouldSend(network::mojom::WebClientHintsType::kDpr_DEPRECATED);
+  all.SetShouldSend(network::mojom::WebClientHintsType::kDpr);
   all.SetShouldSend(
       network::mojom::WebClientHintsType::kResourceWidth_DEPRECATED);
+  all.SetShouldSend(network::mojom::WebClientHintsType::kResourceWidth);
   all.SetShouldSend(
       network::mojom::WebClientHintsType::kViewportWidth_DEPRECATED);
+  all.SetShouldSend(network::mojom::WebClientHintsType::kViewportWidth);
 
   const PreloadScannerTestCase expect_no_client_hint = {
       "http://example.test",
@@ -705,8 +762,8 @@ TEST_F(HTMLPreloadScannerTest, testMetaAcceptCHInsecureDocument) {
   const PreloadScannerTestCase expect_client_hint = {
       "http://example.test",
       "<meta http-equiv='accept-ch' content='  viewport-width  ,width, "
-      "wutever, dpr  '><img sizes='90vw' srcset='bla.gif 320w, blabla.gif "
-      "640w'>",
+      "wutever, dpr,   sec-ch-viewport-width  ,sec-ch-width, wutever2, "
+      "sec-ch-dpr  '><img sizes='90vw' srcset='bla.gif 320w, blabla.gif 640w'>",
       "blabla.gif",
       "http://example.test/",
       ResourceType::kImage,
