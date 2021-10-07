@@ -428,6 +428,37 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (!element)
     return kDefaultBehavior;
 
+  if (IsA<SVGElement>(node)) {
+    // The symbol element is used to define graphical templates which can be
+    // instantiated by a use element but which are not rendered directly. We
+    // don't want to include these template objects, or their subtrees, where
+    // they appear in the DOM. Any associated semantic information (e.g. the
+    // title child of a symbol) may participate in the text alternative
+    // computation where it is instantiated by the use element.
+    // https://svgwg.org/svg2-draft/struct.html#SymbolElement
+    if (Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node))
+      return kIgnoreObject;
+
+    // The SVG-AAM states that user agents MUST provide an accessible object
+    // for rendered SVG elements that have at least one direct child title or
+    // desc element that is not empty after trimming whitespace. But it also
+    // says, "User agents MAY include elements with these child elements without
+    // checking for valid text content." So just check for their existence in
+    // order to be performant. https://w3c.github.io/svg-aam/#include_elements
+    if (ElementTraversal::FirstChild(
+            *To<ContainerNode>(node), [](auto& element) {
+              return element.HasTagName(svg_names::kTitleTag) ||
+                     element.HasTagName(svg_names::kDescTag);
+            })) {
+      return kIncludeObject;
+    }
+
+    // If we return kDefaultBehavior here, the logic related to inclusion of
+    // clickable objects, links, controls, etc. will not be reached. We handle
+    // SVG elements early to ensure properties in a <symbol> subtree do not
+    // result in inclusion.
+  }
+
   if (IsTableLikeRole() || IsTableRowLikeRole() || IsTableCellLikeRole())
     return kIncludeObject;
 
@@ -549,34 +580,7 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (HasAriaAttribute() || !GetAttribute(kTitleAttr).IsEmpty())
     return kIncludeObject;
 
-  if (IsA<SVGElement>(node)) {
-    // The symbol element is used to define graphical templates which can be
-    // instantiated by a use element but which are not rendered directly. We
-    // don't want to include these template objects, or their subtrees, where
-    // they appear in the DOM. Any associated semantic information (e.g. the
-    // title child of a symbol) may participate in the text alternative
-    // computation where it is instantiated by the use element.
-    // https://svgwg.org/svg2-draft/struct.html#SymbolElement
-    if (Traversal<SVGSymbolElement>::FirstAncestorOrSelf(*node))
-      return kIgnoreObject;
-
-    // The SVG-AAM states that user agents MUST provide an accessible object
-    // for rendered SVG elements that have at least one direct child title or
-    // desc element that is not empty after trimming whitespace. But it also
-    // says, "User agents MAY include elements with these child elements without
-    // checking for valid text content." So just check for their existence in
-    // order to be performant. https://w3c.github.io/svg-aam/#include_elements
-    if (ElementTraversal::FirstChild(
-            *To<ContainerNode>(node), [](auto& element) {
-              return element.HasTagName(svg_names::kTitleTag) ||
-                     element.HasTagName(svg_names::kDescTag);
-            })) {
-      return kIncludeObject;
-    }
-
-    return kDefaultBehavior;
-  }
-  if (IsImage()) {
+  if (IsImage() && !IsA<SVGElement>(node)) {
     String alt = GetAttribute(kAltAttr);
     // A null alt attribute means the attribute is not present. We assume this
     // is a mistake, and expose the image so that it can be repaired.
