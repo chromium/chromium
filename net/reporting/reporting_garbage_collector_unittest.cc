@@ -9,6 +9,8 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "net/base/isolation_info.h"
+#include "net/base/network_isolation_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_report.h"
@@ -30,6 +32,7 @@ class ReportingGarbageCollectorTest : public ReportingTestBase {
   const absl::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
   const NetworkIsolationKey kNik_;
+  const IsolationInfo kIsolationInfo_;
   const GURL kUrl_ = GURL("https://origin/path");
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";
@@ -94,7 +97,8 @@ TEST_F(ReportingGarbageCollectorTest, FailedReport) {
 TEST_F(ReportingGarbageCollectorTest, ExpiredSource) {
   ReportingEndpointGroupKey group_key(kNik_, kReportingSource_,
                                       url::Origin::Create(kUrl_), kGroup_);
-  cache()->SetV1EndpointForTesting(group_key, *kReportingSource_, kUrl_);
+  cache()->SetV1EndpointForTesting(group_key, *kReportingSource_,
+                                   kIsolationInfo_, kUrl_);
 
   // Mark the source as expired. The source should be removed as soon as
   // garbage collection runs, as there are no queued reports for it.
@@ -113,7 +117,8 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredSource) {
 TEST_F(ReportingGarbageCollectorTest, ExpiredSourceWithPendingReports) {
   ReportingEndpointGroupKey group_key(kNik_, kReportingSource_,
                                       url::Origin::Create(kUrl_), kGroup_);
-  cache()->SetV1EndpointForTesting(group_key, *kReportingSource_, kUrl_);
+  cache()->SetV1EndpointForTesting(group_key, *kReportingSource_,
+                                   kIsolationInfo_, kUrl_);
   cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
                      kType_, std::make_unique<base::DictionaryValue>(), 0,
                      tick_clock()->NowTicks(), 0);

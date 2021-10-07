@@ -13,6 +13,7 @@
 #include "base/time/tick_clock.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
@@ -61,6 +62,11 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
       ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_);
   const ReportingEndpointGroupKey kGroupKey2_ =
       ReportingEndpointGroupKey(kNik2_, kOrigin2_, kGroup_);
+  const IsolationInfo kIsolationInfo_ =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                            kOrigin_,
+                            kOrigin_,
+                            SiteForCookies::FromOrigin(kOrigin_));
 
   ReportingServiceTest() {
     feature_list_.InitAndEnableFeature(
@@ -196,8 +202,8 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
   ASSERT_TRUE(parsed_header.has_value());
-  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
-                                           *parsed_header);
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
+                                           kIsolationInfo_, *parsed_header);
   FinishLoading(true /* load_success */);
 
   // Endpoint should not be part of the persistent store.
@@ -214,8 +220,8 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
   ASSERT_TRUE(parsed_header.has_value());
-  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
-                                           *parsed_header);
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
+                                           kIsolationInfo_, *parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
   service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
                          kType_, std::make_unique<base::DictionaryValue>(), 0);
@@ -249,8 +255,8 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSourceWithPendingReports) {
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
   ASSERT_TRUE(parsed_header.has_value());
-  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
-                                           *parsed_header);
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
+                                           kIsolationInfo_, *parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
   service()->QueueReport(kUrl_, kReportingSource_, kNik_, kUserAgent_, kGroup_,
                          kType_, std::make_unique<base::DictionaryValue>(), 0);
@@ -291,8 +297,8 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
   feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header = ParseReportingEndpoints(kGroup_ + "=\"/path-absolute\"");
   ASSERT_TRUE(parsed_header.has_value());
-  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_, kNik_,
-                                           *parsed_header);
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
+                                           kIsolationInfo_, *parsed_header);
   FinishLoading(true /* load_success */);
 
   // Endpoint should not be part of the persistent store.

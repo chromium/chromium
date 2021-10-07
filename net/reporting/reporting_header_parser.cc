@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/reporting/reporting_cache.h"
@@ -222,14 +223,14 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
 bool ProcessV1Endpoint(ReportingDelegate* delegate,
                        ReportingCache* cache,
                        const base::UnguessableToken& reporting_source,
-                       const NetworkIsolationKey& network_isolation_key,
+                       const IsolationInfo& isolation_info,
                        const url::Origin& origin,
                        const std::string& endpoint_name,
                        const std::string& endpoint_url_string,
                        ReportingEndpoint& parsed_endpoint_out) {
   DCHECK(!reporting_source.is_empty());
-  ReportingEndpointGroupKey group_key(network_isolation_key, reporting_source,
-                                      origin, endpoint_name);
+  ReportingEndpointGroupKey group_key(isolation_info.network_isolation_key(),
+                                      reporting_source, origin, endpoint_name);
   parsed_endpoint_out.group_key = group_key;
 
   ReportingEndpoint::EndpointInfo parsed_endpoint;
@@ -324,7 +325,7 @@ void ReportingHeaderParser::ParseReportToHeader(
 void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
     ReportingContext* context,
     const base::UnguessableToken& reporting_source,
-    const NetworkIsolationKey& network_isolation_key,
+    const IsolationInfo& isolation_info,
     const url::Origin& origin,
     base::flat_map<std::string, std::string> header) {
   DCHECK(base::FeatureList::IsEnabled(net::features::kDocumentReporting));
@@ -338,9 +339,9 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
 
   for (const auto& member : header) {
     ReportingEndpoint parsed_endpoint;
-    if (ProcessV1Endpoint(delegate, cache, reporting_source,
-                          network_isolation_key, origin, member.first,
-                          member.second, parsed_endpoint)) {
+    if (ProcessV1Endpoint(delegate, cache, reporting_source, isolation_info,
+                          origin, member.first, member.second,
+                          parsed_endpoint)) {
       parsed_header.push_back(std::move(parsed_endpoint));
     }
   }
@@ -351,7 +352,7 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
   }
 
   RecordReportingHeaderType(ReportingHeaderType::kReportingEndpoints);
-  cache->OnParsedReportingEndpointsHeader(reporting_source,
+  cache->OnParsedReportingEndpointsHeader(reporting_source, isolation_info,
                                           std::move(parsed_header));
 }
 

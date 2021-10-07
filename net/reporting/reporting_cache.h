@@ -27,6 +27,7 @@
 namespace net {
 
 class ReportingContext;
+class IsolationInfo;
 
 // The cache holds undelivered reports and clients (per-origin endpoint
 // configurations) in memory. (It is not responsible for persisting them.)
@@ -173,13 +174,11 @@ class NET_EXPORT ReportingCache {
   // received Reporting-Endpoints header.
   // |reporting_source| is the token identifying the document or worker with
   // which this header was received, and may not be empty.
-  // |origin| is the origin of the document or worker represented by
-  // |reporting_source|, and |network_isolation_key| is the appropriate NIK for
-  // that source. These two parameters are currently needed because the new
-  // Reporting API currently shares the cache, delivery agent and
-  // ReportingEndpoint struct with the old API.
+  // |isolation_info| is the appropriate network isolation info struct for that
+  // source, and is used for determining credentials to send with reports.
   virtual void OnParsedReportingEndpointsHeader(
       const base::UnguessableToken& reporting_source,
+      const IsolationInfo& isolation_info,
       std::vector<ReportingEndpoint> parsed_header) = 0;
 
   // Gets all the origins of clients in the cache.
@@ -304,13 +303,23 @@ class NET_EXPORT ReportingCache {
                                      int priority,
                                      int weight) = 0;
 
-  // Sets a V1 named endpoint with the given key for |reporting_source|,
+  // Sets a V1 named endpoint with the given key for `reporting_source`,
   // bypassing header parsing. This method inserts a single endpoint while
-  // leaving the existing configuration for that source intact.
+  // leaving the existing configuration for that source intact. If any
+  // endpoints already exist for this source, then `isolation_info` must
+  // match the value that was previously associated with it.
   virtual void SetV1EndpointForTesting(
       const ReportingEndpointGroupKey& group_key,
       const base::UnguessableToken& reporting_source,
+      const IsolationInfo& isolation_info,
       const GURL& url) = 0;
+
+  // Gets the isolation info associated with `reporting_source`, used when
+  // determining which credentials to send for a given report. If
+  // `reporting_source` is nullopt, as when a report is being delivered to a V0
+  // reporting endpoint group, this always will return an empty site.
+  virtual IsolationInfo GetIsolationInfoForEndpoint(
+      const ReportingEndpoint& endpoint) const = 0;
 };
 
 // Persistent storage for Reporting reports and clients.

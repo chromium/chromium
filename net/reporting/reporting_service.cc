@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/http/structured_headers.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
 #include "net/reporting/reporting_cache.h"
@@ -62,14 +63,13 @@ class ReportingServiceImpl : public ReportingService {
   void SetDocumentReportingEndpoints(
       const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {
     DCHECK(!reporting_source.is_empty());
     DoOrBacklogTask(
         base::BindOnce(&ReportingServiceImpl::DoSetDocumentReportingEndpoints,
-                       base::Unretained(this), reporting_source,
-                       FixupNetworkIsolationKey(network_isolation_key), origin,
-                       std::move(endpoints)));
+                       base::Unretained(this), reporting_source, isolation_info,
+                       origin, std::move(endpoints)));
   }
 
   void SendReportsAndRemoveSource(
@@ -221,12 +221,12 @@ class ReportingServiceImpl : public ReportingService {
 
   void DoSetDocumentReportingEndpoints(
       const base::UnguessableToken& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> header_value) {
     DCHECK(initialized_);
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-        context_.get(), reporting_source, network_isolation_key, origin,
+        context_.get(), reporting_source, isolation_info, origin,
         std::move(header_value));
   }
 

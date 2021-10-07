@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
+#include "net/base/isolation_info.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_endpoint.h"
@@ -85,6 +86,7 @@ class ReportingCacheImpl : public ReportingCache {
       std::vector<ReportingEndpointGroup> parsed_header) override;
   void OnParsedReportingEndpointsHeader(
       const base::UnguessableToken& reporting_source,
+      const IsolationInfo& isolation_info,
       std::vector<ReportingEndpoint> parsed_header) override;
   std::set<url::Origin> GetAllOrigins() const override;
   void RemoveClient(const NetworkIsolationKey& network_isolation_key,
@@ -126,7 +128,10 @@ class ReportingCacheImpl : public ReportingCache {
                              int weight) override;
   void SetV1EndpointForTesting(const ReportingEndpointGroupKey& group_key,
                                const base::UnguessableToken& reporting_source,
+                               const IsolationInfo& isolation_info,
                                const GURL& url) override;
+  IsolationInfo GetIsolationInfoForEndpoint(
+      const ReportingEndpoint& endpoint) const override;
 
  private:
   // Represents the entire Report-To configuration for a (NIK, origin) pair.
@@ -366,7 +371,7 @@ class ReportingCacheImpl : public ReportingCache {
   std::multimap<GURL, EndpointMap::iterator> endpoint_its_by_url_;
 
   // Reporting API V1 Cache:
-  // The |document_endpoints_| member holds endpoint configuration for the V1
+  // The `document_endpoints_` member holds endpoint configuration for the V1
   // API, configured through the Reporting-Endpoints HTTP header. These
   // endpoints are strongly associated with the resource which configured them,
   // and are only used for document reports.
@@ -376,9 +381,14 @@ class ReportingCacheImpl : public ReportingCache {
   std::map<base::UnguessableToken, std::vector<ReportingEndpoint>>
       document_endpoints_;
 
+  // Isolation info for each reporting source. Used for determining credentials
+  // to send when delivering reports. This contains only V1 document endpoints.
+  std::map<base::UnguessableToken, IsolationInfo> isolation_info_;
+
   // Reporting source tokens representing sources which have been destroyed.
-  // The configuration in `document_endpoints_` for these sources can be
-  // removed once all outstanding reports are delivered (or expired).
+  // The configuration in `document_endpoints_` and `isolation_info_` for these
+  // sources can be removed once all outstanding reports are delivered (or
+  // expired).
   base::flat_set<base::UnguessableToken> expired_sources_;
 
   SEQUENCE_CHECKER(sequence_checker_);

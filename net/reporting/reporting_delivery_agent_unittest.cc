@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/reporting_cache.h"
@@ -88,10 +89,10 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   // has matching reporting_source.
   void UploadFirstDocumentReportAndStartTimer() {
     ReportingEndpointGroupKey dummy_group(
-        NetworkIsolationKey(), kDocumentReportingSource_,
+        kNik_, kDocumentReportingSource_,
         url::Origin::Create(GURL("https://dummy.test")), "dummy");
     SetV1EndpointInCache(dummy_group, kDocumentReportingSource_,
-                         GURL("https://dummy.test/upload"));
+                         kIsolationInfo_, GURL("https://dummy.test/upload"));
     AddReport(kDocumentReportingSource_, dummy_group.network_isolation_key,
               dummy_group.origin.GetURL(), dummy_group.group_name);
 
@@ -123,6 +124,16 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   const NetworkIsolationKey kOtherNik_ =
       NetworkIsolationKey(SchemefulSite(kOtherOrigin_),
                           SchemefulSite(kOtherOrigin_));
+  const IsolationInfo kIsolationInfo_ =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                            kOrigin_,
+                            kOrigin_,
+                            SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kOtherIsolationInfo_ =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                            kOtherOrigin_,
+                            kOtherOrigin_,
+                            SiteForCookies::FromOrigin(kOtherOrigin_));
   const GURL kEndpoint_ = GURL("https://endpoint/");
   const std::string kUserAgent_ = "Mozilla/1.0";
   const std::string kGroup_ = "group";
@@ -186,11 +197,33 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
   // TODO(dcreager): Check that BackoffEntry was informed of success.
 }
 
+TEST_F(ReportingDeliveryAgentTest, ReportToHeaderCountedCorrectly) {
+  base::HistogramTester histograms;
+
+  // Set an endpoint with no reporting source (as if configured with the
+  // Report-To header).
+  ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
+
+  // Add and upload a report with an associated source.
+  AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
+  pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
+
+  // Successful upload should count this as a Report-To delivery, even though
+  // the report itself had a reporting source.
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportTo, 1);
+  histograms.ExpectBucketCount(
+      kReportingUploadHeaderTypeHistogram,
+      ReportingDeliveryAgent::ReportingUploadHeaderType::kReportingEndpoints,
+      0);
+}
+
 TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
   base::HistogramTester histograms;
 
   SetV1EndpointInCache(kDocumentGroupKey_, kDocumentReportingSource_,
-                       kEndpoint_);
+                       kIsolationInfo_, kEndpoint_);
   AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
 
   // Upload is automatically started when cache is modified.
@@ -242,7 +275,7 @@ TEST_F(ReportingDeliveryAgentTest, UploadHeaderTypeEnumCountPerReport) {
   base::HistogramTester histograms;
 
   SetV1EndpointInCache(kDocumentGroupKey_, kDocumentReportingSource_,
-                       kEndpoint_);
+                       kIsolationInfo_, kEndpoint_);
   AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
   AddReport(kDocumentReportingSource_, kNik_, kUrl_, kGroup_);
 
@@ -767,6 +800,16 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForSource) {
   const base::UnguessableToken kReportingSource3 =
       base::UnguessableToken::Create();
 
+  const IsolationInfo kIsolationInfo1 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo2 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo3 = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, kOtherOrigin_, kOtherOrigin_,
+      SiteForCookies::FromOrigin(kOtherOrigin_));
+
   // Set up identical endpoint configuration for kReportingSource1 and
   // kReportingSource2. kReportingSource3 is independent.
   const ReportingEndpointGroupKey kGroup1Key1(kNik_, kReportingSource1,
@@ -780,11 +823,12 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForSource) {
   const ReportingEndpointGroupKey kOtherGroupKey(kOtherNik_, kReportingSource3,
                                                  kOtherOrigin_, kGroup_);
 
-  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kUrl_);
-  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kUrl_);
-  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kUrl_);
-  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kUrl_);
-  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kOtherUrl_);
+  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kIsolationInfo3,
+                       kOtherUrl_);
 
   UploadFirstReportAndStartTimer();
 
@@ -826,6 +870,16 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
   const base::UnguessableToken kReportingSource3 =
       base::UnguessableToken::Create();
 
+  const IsolationInfo kIsolationInfo1 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo2 =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther, kOrigin_,
+                            kOrigin_, SiteForCookies::FromOrigin(kOrigin_));
+  const IsolationInfo kIsolationInfo3 = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, kOtherOrigin_, kOtherOrigin_,
+      SiteForCookies::FromOrigin(kOtherOrigin_));
+
   // Set up identical endpoint configuration for kReportingSource1 and
   // kReportingSource2. kReportingSource3 is independent.
   const ReportingEndpointGroupKey kGroup1Key1(kNik_, kReportingSource1,
@@ -839,11 +893,12 @@ TEST_F(ReportingDeliveryAgentTest, SendReportsForMultipleSources) {
   const ReportingEndpointGroupKey kOtherGroupKey(kOtherNik_, kReportingSource3,
                                                  kOtherOrigin_, kGroup_);
 
-  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kUrl_);
-  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kUrl_);
-  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kUrl_);
-  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kUrl_);
-  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kOtherUrl_);
+  SetV1EndpointInCache(kGroup1Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup2Key1, kReportingSource1, kIsolationInfo1, kUrl_);
+  SetV1EndpointInCache(kGroup1Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kGroup2Key2, kReportingSource2, kIsolationInfo2, kUrl_);
+  SetV1EndpointInCache(kOtherGroupKey, kReportingSource3, kIsolationInfo3,
+                       kOtherUrl_);
 
   UploadFirstReportAndStartTimer();
 

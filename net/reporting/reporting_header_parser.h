@@ -21,6 +21,7 @@ class Value;
 
 namespace net {
 
+class IsolationInfo;
 class NetworkIsolationKey;
 class ReportingContext;
 
@@ -58,7 +59,7 @@ class NET_EXPORT ReportingHeaderParser {
   static void ProcessParsedReportingEndpointsHeader(
       ReportingContext* context,
       const base::UnguessableToken& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const url::Origin& origin,
       base::flat_map<std::string, std::string> parsed_header);
 

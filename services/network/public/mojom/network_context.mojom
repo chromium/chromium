@@ -941,18 +941,19 @@ interface NetworkContext {
   // |reporting_source| is a token which identifies the document or worker with
   // which the header was received. The endpoints configured by this method are
   // only used to deliver reports which are queued by that same source.
-  // |network_isolation_key| is used when creating the endpoints in the
-  // ReportingCache, and will need to match the key sent when reports are queued
-  // in order for these reporting endpoints to be considered for delivery,
-  // although this should always be the case when reports are queued by the
-  // same source which configured the endpoints.
+  // |isolation_info| is used when creating the endpoints in the ReportingCache
+  // and when determining which credentials to send with uploaded reports. Its
+  // network isolation key will need to match the key sent when reports are
+  // queued, in order for these reporting endpoints to be considered for
+  // delivery, although this should always be the case when reports are queued
+  // by the same source which configured the endpoints.
   // |endpoints| is a mapping of endpoint name to URL (URLs here are represented
   // as strings, and will be rejected if they fail to parse or are not secure).
   //
   // Spec: https://w3c.github.io/reporting/#header
   SetDocumentReportingEndpoints(
       mojo_base.mojom.UnguessableToken reporting_source,
-      url.mojom.Origin origin, NetworkIsolationKey network_isolation_key,
+      url.mojom.Origin origin, IsolationInfo isolation_info,
       map<string,string> endpoints);
 
   // Queues any outstanding reports for a single |reporting_source| (which

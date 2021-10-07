@@ -3560,8 +3560,8 @@ void RenderFrameHostImpl::DidNavigate(
   // reporting cache.
   if (!reporting_endpoints_.empty()) {
     GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(
-        GetReportingSource(), params.origin,
-        isolation_info_.network_isolation_key(), reporting_endpoints_);
+        GetReportingSource(), params.origin, isolation_info_,
+        reporting_endpoints_);
   }
 
   // When the frame hosts a different document, its state must be replicated

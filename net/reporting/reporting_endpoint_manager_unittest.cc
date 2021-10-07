@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/backoff_entry.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/reporting_cache.h"
@@ -140,6 +141,7 @@ class TestReportingCache : public ReportingCache {
   }
   void OnParsedReportingEndpointsHeader(
       const base::UnguessableToken& reporting_source,
+      const IsolationInfo& isolation_info,
       std::vector<ReportingEndpoint> endpoints) override {
     NOTREACHED();
   }
@@ -224,8 +226,14 @@ class TestReportingCache : public ReportingCache {
   }
   void SetV1EndpointForTesting(const ReportingEndpointGroupKey& group_key,
                                const base::UnguessableToken& reporting_source,
+                               const IsolationInfo& isolation_info,
                                const GURL& url) override {
     NOTREACHED();
+  }
+  IsolationInfo GetIsolationInfoForEndpoint(
+      const ReportingEndpoint& endpoint) const override {
+    NOTREACHED();
+    return IsolationInfo();
   }
 
  private:

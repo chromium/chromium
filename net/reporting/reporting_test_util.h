@@ -40,7 +40,7 @@ class Origin;
 
 namespace net {
 
-class NetworkIsolationKey;
+class IsolationInfo;
 struct ReportingEndpoint;
 class ReportingGarbageCollector;
 
@@ -89,9 +89,10 @@ class TestReportingUploader : public ReportingUploader {
 
   void StartUpload(const url::Origin& report_origin,
                    const GURL& url,
-                   const NetworkIsolationKey& network_isolation_key,
+                   const IsolationInfo& isolation_info,
                    const std::string& json,
                    int max_depth,
+                   bool eligible_for_credentials,
                    UploadCallback callback) override;
 
   void OnShutdown() override;
@@ -218,6 +219,7 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   // endpoints map using |reporting_source| as key.
   void SetV1EndpointInCache(const ReportingEndpointGroupKey& group_key,
                             const base::UnguessableToken& reporting_source,
+                            const IsolationInfo& isolation_info,
                             const GURL& url);
 
   // Returns whether an endpoint with the given properties exists in the cache.
@@ -333,7 +335,7 @@ class TestReportingService : public ReportingService {
   void SetDocumentReportingEndpoints(
       const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {}
 
   void SendReportsAndRemoveSource(

@@ -6856,9 +6856,6 @@ crbug.com/1241860 http/tests/inspector-protocol/issues/content-security-policy-i
 crbug.com/1241860 http/tests/inspector-protocol/issues/cors-issues.js [ Skip ]
 crbug.com/1241860 http/tests/inspector-protocol/issues/renderer-cors-issues.js [ Skip ]
 
-# Credentials in same-origin Reporting-API reports are currently not implemented.
-crbug.com/1163645 external/wpt/reporting/same-origin-report-credentials.https.sub.html [ Failure ]
-
 # [CompositeClipPathAnimations] failing test
 crbug.com/1249071 virtual/composite-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-filter.html [ Crash Failure Pass ]
 

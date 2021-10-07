@@ -206,8 +206,9 @@ TEST_F(URLRequestContextBuilderTest, ShutDownNELAndReportingWithPendingUpload) {
   // Queue a pending upload.
   GURL url("https://www.foo.test");
   context->reporting_service()->GetContextForTesting()->uploader()->StartUpload(
-      url::Origin::Create(url), url, NetworkIsolationKey(), "report body", 0,
-      base::DoNothing());
+      url::Origin::Create(url), url, IsolationInfo::CreateTransient(),
+      "report body", 0,
+      /*eligible_for_credentials=*/false, base::DoNothing());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1, context->reporting_service()
                    ->GetContextForTesting()

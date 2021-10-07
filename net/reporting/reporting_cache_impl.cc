@@ -392,16 +392,21 @@ void ReportingCacheImpl::RemoveSourceAndEndpoints(
                report->status != ReportingReport::Status::SUCCESS;
       }));
   document_endpoints_.erase(reporting_source);
+  isolation_info_.erase(reporting_source);
   expired_sources_.erase(reporting_source);
   context_->NotifyEndpointsUpdated();
 }
 
 void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
     const base::UnguessableToken& reporting_source,
+    const IsolationInfo& isolation_info,
     std::vector<ReportingEndpoint> endpoints) {
   DCHECK(!reporting_source.is_empty());
   DCHECK(!endpoints.empty());
+  DCHECK_EQ(0u, document_endpoints_.count(reporting_source));
+  DCHECK_EQ(0u, isolation_info_.count(reporting_source));
   document_endpoints_.insert({reporting_source, std::move(endpoints)});
+  isolation_info_.insert({reporting_source, isolation_info});
   context_->NotifyEndpointsUpdated();
 }
 
@@ -787,10 +792,14 @@ size_t ReportingCacheImpl::GetReportingSourceCountForTesting() const {
 void ReportingCacheImpl::SetV1EndpointForTesting(
     const ReportingEndpointGroupKey& group_key,
     const base::UnguessableToken& reporting_source,
+    const IsolationInfo& isolation_info,
     const GURL& url) {
   DCHECK(!reporting_source.is_empty());
   DCHECK(group_key.IsDocumentEndpoint());
   DCHECK_EQ(reporting_source, group_key.reporting_source.value());
+  DCHECK_EQ(group_key.network_isolation_key,
+            isolation_info.network_isolation_key());
+
   ReportingEndpoint::EndpointInfo info;
   info.url = url;
   ReportingEndpoint new_endpoint(group_key, info);
@@ -803,6 +812,15 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
     document_endpoints_.insert({reporting_source, std::move(endpoints)});
   } else {
     document_endpoints_.insert({reporting_source, {std::move(new_endpoint)}});
+  }
+  // If this is the first time we've used this reporting_source, then add the
+  // isolation info. Otherwise, ensure that it is the same as what was used
+  // previously.
+  if (isolation_info_.count(reporting_source) == 0) {
+    isolation_info_.insert({reporting_source, isolation_info});
+  } else {
+    DCHECK(isolation_info_.at(reporting_source)
+               .IsEqualForTesting(isolation_info));  // IN-TEST
   }
   context_->NotifyEndpointsUpdated();
 }
@@ -863,6 +881,20 @@ void ReportingCacheImpl::SetEndpointForTesting(
   EnforcePerClientAndGlobalEndpointLimits(client_it);
   ConsistencyCheckClients();
   context_->NotifyCachedClientsUpdated();
+}
+
+IsolationInfo ReportingCacheImpl::GetIsolationInfoForEndpoint(
+    const ReportingEndpoint& endpoint) const {
+  // V0 endpoint groups do not support credentials.
+  if (!endpoint.group_key.reporting_source.has_value()) {
+    return IsolationInfo::CreatePartial(
+        IsolationInfo::RequestType::kOther,
+        endpoint.group_key.network_isolation_key);
+  }
+  const auto it =
+      isolation_info_.find(endpoint.group_key.reporting_source.value());
+  DCHECK(it != isolation_info_.end());
+  return it->second;
 }
 
 ReportingCacheImpl::Client::Client(

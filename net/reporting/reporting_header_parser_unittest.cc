@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_cache.h"
@@ -74,6 +75,11 @@ class ReportingHeaderParserTestBase
       NetworkIsolationKey(SchemefulSite(kOrigin1_), SchemefulSite(kOrigin1_));
   const NetworkIsolationKey kOtherNik_ =
       NetworkIsolationKey(SchemefulSite(kOrigin2_), SchemefulSite(kOrigin2_));
+  const IsolationInfo kIsolationInfo_ =
+      IsolationInfo::Create(IsolationInfo::RequestType::kOther,
+                            kOrigin1_,
+                            kOrigin1_,
+                            SiteForCookies::FromOrigin(kOrigin1_));
   const GURL kUrlEtld_ = GURL("https://co.uk/foo.html/");
   const url::Origin kOriginEtld_ = url::Origin::Create(kUrlEtld_);
   const GURL kEndpoint1_ = GURL("https://endpoint1.test/");
@@ -1771,7 +1777,7 @@ class ReportingHeaderParserStructuredHeaderTest
   }
 
   void ParseHeader(const base::UnguessableToken& reporting_source,
-                   const NetworkIsolationKey& network_isolation_key,
+                   const IsolationInfo& isolation_info,
                    const url::Origin& origin,
                    const std::string& header_string) {
     absl::optional<base::flat_map<std::string, std::string>> header_map =
@@ -1779,19 +1785,17 @@ class ReportingHeaderParserStructuredHeaderTest
 
     if (header_map) {
       ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-          context(), reporting_source, network_isolation_key, origin,
-          *header_map);
+          context(), reporting_source, isolation_info, origin, *header_map);
     }
   }
   void ProcessParsedHeader(
       const base::UnguessableToken& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const url::Origin& origin,
       const absl::optional<base::flat_map<std::string, std::string>>&
           header_map) {
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-        context(), reporting_source, network_isolation_key, origin,
-        *header_map);
+        context(), reporting_source, isolation_info, origin, *header_map);
   }
 
   const base::UnguessableToken kReportingSource_ =
@@ -1835,7 +1839,8 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ProcessInvalid) {
         << "Syntactically valid Reporting-Endpoints header (\""
         << test_case.description << ": \"" << test_case.header_value
         << "\") parsed as invalid.";
-    ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
+    ProcessParsedHeader(kReportingSource_, kIsolationInfo_, kOrigin1_,
+                        parsed_result);
 
     invalid_case_count++;
     histograms.ExpectBucketCount(
@@ -1874,7 +1879,8 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
   std::string header =
       ConstructHeaderGroupString(MakeEndpointGroup(kGroup1_, endpoints));
   auto parsed_result = ParseReportingEndpoints(header);
-  ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
+  ProcessParsedHeader(kReportingSource_, kIsolationInfo_, kOrigin1_,
+                      parsed_result);
 
   // Ensure that the endpoint was not inserted into the persistent endpoint
   // groups used for v0 reporting.
@@ -1883,6 +1889,9 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, Basic) {
   ReportingEndpoint endpoint =
       cache()->GetV1EndpointForTesting(kReportingSource_, kGroup1_);
   EXPECT_TRUE(endpoint);
+
+  IsolationInfo isolation_info = cache()->GetIsolationInfoForEndpoint(endpoint);
+  EXPECT_TRUE(isolation_info.IsEqualForTesting(kIsolationInfo_));
 
   EXPECT_EQ(kOrigin1_, endpoint.group_key.origin);
   EXPECT_EQ(kGroup1_, endpoint.group_key.group_name);
@@ -1907,7 +1916,8 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, PathAbsoluteURLEndpoint) {
   base::HistogramTester histograms;
   std::string header = "group1=\"/path-absolute-url\"";
   auto parsed_result = ParseReportingEndpoints(header);
-  ProcessParsedHeader(kReportingSource_, kNik_, kOrigin1_, parsed_result);
+  ProcessParsedHeader(kReportingSource_, kIsolationInfo_, kOrigin1_,
+                      parsed_result);
 
   // Ensure that the endpoint was not inserted into the persistent endpoint
   // groups used for v0 reporting.

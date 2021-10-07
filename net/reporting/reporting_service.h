@@ -25,6 +25,7 @@ class Value;
 
 namespace net {
 
+class IsolationInfo;
 class NetworkIsolationKey;
 class ReportingContext;
 struct ReportingPolicy;
@@ -90,15 +91,11 @@ class NET_EXPORT ReportingService {
   // this header was received, and must not be empty.
   // |endpoints| is a mapping of endpoint names to URLs.
   // |origin| is the origin of the reporting source, and
-  // |network_isolation_key| is the appropriate NIK for that source.
-  // (The isolation provided by Reporting-Endpoints is stronger than that
-  // provided by Report-To, so the origin and NIK aren't strictly necessary,
-  // but are currently required here because of shared infrastructure between
-  // the two versions of the reporting API.)
+  // |isolation_info| is the appropriate IsolationInfo struct for that source.
   virtual void SetDocumentReportingEndpoints(
       const base::UnguessableToken& reporting_source,
       const url::Origin& origin,
-      const NetworkIsolationKey& network_isolation_key,
+      const IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) = 0;
 
   // Attempts to send any queued reports and removes all associated
