@@ -12,53 +12,54 @@ from unexpected_passes_common import queries as queries_module
 # values = more parallelization overhead and more issues with rate limit errors.
 TARGET_RESULTS_PER_QUERY = 20000
 
-# Largely written by nodir@ and modified by bsheedy@
 # This query gets us all results for tests that have had results with a
-# RetryOnFailure or Failure expectation in the past |@num_samples| builds on
-# |@builder_name| for the test |suite| type we're looking at. Whether these are
-# CI or try results depends on whether |builder_type| is "ci" or "try".
+# RetryOnFailure or Failure expectation in the past |@num_builds| builds on
+# |@builder_name| for the test |suite| (contained within |test_filter_clause|)
+# type we're looking at. Whether these are CI or try results depends on whether
+# |builder_type| is "ci" or "try".
 GPU_BQ_QUERY_TEMPLATE = """\
 WITH
   builds AS (
     SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
+    WHERE
+      exported.realm = "chromium:{builder_type}"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+    ORDER BY partition_time DESC
+    LIMIT @num_builds
+  ),
+  results AS (
+    SELECT
       exported.id,
-      ARRAY_AGG(STRUCT(
-          exported.id,
-          test_id,
-          status,
-          (
-            SELECT value
-            FROM tr.tags
-            WHERE key = "step_name") as step_name,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "typ_tag") as typ_tags,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "raw_typ_expectation") as typ_expectations
-      )) as test_results,
-      FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
-      WHERE
-        status != "SKIP"
-        AND exported.realm = "chromium:{builder_type}"
-        AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-        {test_filter_clause}
-      GROUP BY exported.id
-      ORDER BY ANY_VALUE(partition_time) DESC
-      LIMIT @num_builds
-    ),
-    tests AS (
-      SELECT ARRAY_AGG(tr) test_results
-      FROM builds b, b.test_results tr
-      WHERE
-        "RetryOnFailure" IN UNNEST(typ_expectations)
-        OR "Failure" IN UNNEST(typ_expectations)
-      GROUP BY test_id, step_name
-    )
-SELECT tr.*
-FROM tests t, t.test_results tr
+      test_id,
+      status,
+      (
+        SELECT value
+        FROM tr.tags
+        WHERE key = "step_name") as step_name,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations
+    FROM
+      `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      {test_filter_clause}
+  )
+SELECT *
+FROM results
+WHERE
+  "Failure" IN UNNEST(typ_expectations)
+  OR "RetryOnFailure" IN UNNEST(typ_expectations)
 """
 
 # Very similar to above, but used for getting the names of tests that are of
@@ -67,47 +68,44 @@ TEST_FILTER_QUERY_TEMPLATE = """\
 WITH
   builds AS (
     SELECT
+      DISTINCT exported.id build_inv_id,
+      partition_time
+    FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
+    WHERE
+      exported.realm = "chromium:{builder_type}"
+      AND STRUCT("builder", @builder_name) IN UNNEST(variant)
+    ORDER BY partition_time DESC
+    LIMIT 50
+  ),
+  results AS (
+    SELECT
       exported.id,
-      ARRAY_AGG(STRUCT(
-          exported.id,
-          test_id,
-          status,
-          (
-            SELECT value
-            FROM tr.tags
-            WHERE key = "step_name") as step_name,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "typ_tag") as typ_tags,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "raw_typ_expectation") as typ_expectations
-      )) as test_results,
-      FROM `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr
-      WHERE
-        status != "SKIP"
-        AND exported.realm = "chromium:{builder_type}"
-        AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-        AND REGEXP_CONTAINS(
-          test_id,
-          r"gpu_tests\.{suite}\.")
-      GROUP BY exported.id
-      ORDER BY ANY_VALUE(partition_time) DESC
-      LIMIT 50
-    ),
-    tests AS (
-      SELECT ARRAY_AGG(tr) test_results
-      FROM builds b, b.test_results tr
-      WHERE
-        "RetryOnFailure" IN UNNEST(typ_expectations)
-        OR "Failure" IN UNNEST(typ_expectations)
-        {suite_filter_clause}
-      GROUP BY test_id, step_name
-    )
-SELECT DISTINCT tr.test_id
-FROM tests t, t.test_results tr
+      test_id,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "typ_tag") as typ_tags,
+      ARRAY(
+        SELECT value
+        FROM tr.tags
+        WHERE key = "raw_typ_expectation") as typ_expectations
+    FROM
+      `chrome-luci-data.chromium.gpu_{builder_type}_test_results` tr,
+      builds b
+    WHERE
+      exported.id = build_inv_id
+      AND status != "SKIP"
+      AND REGEXP_CONTAINS(
+        test_id,
+        r"gpu_tests\.{suite}\.")
+  )
+SELECT DISTINCT r.test_id
+FROM results r
+WHERE
+  (
+    "Failure" IN UNNEST(typ_expectations)
+    OR "RetryOnFailure" IN UNNEST(typ_expectations))
+  {suite_filter_clause}
 """
 
 # The suite reported to Telemetry for selecting which suite to run is not
