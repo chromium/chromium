@@ -20025,9 +20025,10 @@ regressions. -->
   <summary>
     Records load events for the What's New page when a load event occurs. This
     tracks how many times loading remote content is attempted, and whether it
-    succeeds, fails and results in an error page, or fails and redirects to the
-    New Tab Page. Load is attempted when the page is first opened, and success
-    or failure will occur when the network request completes. Desktop only.
+    succeeds, fails and results in an error page, fails and redirects to the New
+    Tab Page, or fails and closes the tab. Load is attempted when the page is
+    first opened, and success or failure will occur when the network request
+    completes. Desktop only.
   </summary>
 </histogram>
 

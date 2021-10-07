@@ -90186,6 +90186,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1" label="Load succeeded"/>
   <int value="2" label="Load failed and error page whas shown"/>
   <int value="3" label="Load failed and was redirected to NTP"/>
+  <int value="4" label="Load failed and tab was closed"/>
 </enum>
 
 <enum name="WhitelistedDownloadType">
