@@ -101,6 +101,7 @@ class EnrollmentScreenHandler
   void ShowOtherError(
       EnterpriseEnrollmentHelper::OtherError error_code) override;
   void Shutdown() override;
+  void SetIsBrandedBuild(bool is_branded) override;
 
   // Implements BaseScreenHandler:
   void Initialize() override;

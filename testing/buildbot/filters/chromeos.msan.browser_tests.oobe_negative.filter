@@ -14,6 +14,7 @@
 -All/OobeInteractiveUITest.*
 -All/OobeLocalizationTest.*
 -All/OobeZeroTouchInteractiveUITest.*
+-All/OsInstallScreenStringsTest.*
 -All/ParameterizedArcTermsOfServiceScreenTest.*
 -All/PendingUpdateScreenTest.*
 -All/PublicSessionOobeTest.*

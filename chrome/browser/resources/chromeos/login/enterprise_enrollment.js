@@ -61,8 +61,10 @@ Polymer({
     'setAdJoinConfiguration',
     'setAdJoinParams',
     'setEnterpriseDomainInfo',
+    'setIsBrandedBuild',
     'showAttributePromptStep',
     'showError',
+    'showOSNotInstalledError',
     'showStep',
   ],
 
@@ -165,6 +167,11 @@ Polymer({
             (loadTimeData.getString('flowType') == 'meet');
       },
       readOnly: true,
+    },
+
+    isBranded: {
+      type: Boolean,
+      value: true,
     },
   },
 
@@ -529,6 +536,15 @@ Polymer({
     }
   },
 
+  showOSNotInstalledError() {
+    this.canRetryAfterError_ = false;
+    this.errorText_ = this.i18nDynamic(
+        this.locale, 'oauthOSNotInstalledError',
+        this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
+                         loadTimeData.getString('osInstallChromiumOS'));
+    this.showStep(ENROLLMENT_STEP.ERROR);
+  },
+
   /**
    *  Provides the label for the generic cancel button (Skip / Enroll Manually)
    *
@@ -587,6 +603,13 @@ Polymer({
    */
   onTPMCheckCanceled_() {
     this.userActed('cancel-tpm-check');
+  },
+
+  /**
+   * @param {boolean} is_branded
+   */
+  setIsBrandedBuild(is_branded) {
+    this.isBranded = is_branded;
   },
 });
 })();

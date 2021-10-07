@@ -294,7 +294,7 @@ void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
 
 void EnrollmentScreenHandler::ShowEnrollmentCloudReadyNotAllowedError() {
   ShowScreen(EnrollmentScreenView::kScreenId);
-  ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED, false);
+  CallJS("login.OAuthEnrollmentScreen.showOSNotInstalledError");
 }
 
 void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
@@ -460,6 +460,10 @@ void EnrollmentScreenHandler::ShowOtherError(
 
 void EnrollmentScreenHandler::Shutdown() {
   shutdown_ = true;
+}
+
+void EnrollmentScreenHandler::SetIsBrandedBuild(bool is_branded) {
+  CallJS("login.OAuthEnrollmentScreen.setIsBrandedBuild", is_branded);
 }
 
 void EnrollmentScreenHandler::ShowEnrollmentStatus(
@@ -652,6 +656,8 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("oauthEnrollSuccessTitle",
                IDS_ENTERPRISE_ENROLLMENT_SUCCESS_TITLE);
   builder->Add("oauthEnrollErrorTitle", IDS_ENTERPRISE_ENROLLMENT_ERROR_TITLE);
+  builder->Add("oauthOSNotInstalledError",
+               IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED);
   builder->Add("oauthEnrollDeviceInformation",
                IDS_ENTERPRISE_ENROLLMENT_DEVICE_INFORMATION);
   builder->Add("oauthEnrollExplainAttributeLink",
@@ -696,6 +702,10 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("selectEncryption", IDS_AD_ENCRYPTION_SELECTION_SELECT);
   builder->Add("selectConfiguration", IDS_AD_CONFIG_SELECTION_SELECT);
   /* End of Active Directory strings */
+
+  // OS names
+  builder->Add("osInstallChromiumOS", IDS_CHROMIUM_OS_NAME);
+  builder->Add("osInstallCloudReadyOS", IDS_CLOUD_READY_OS_NAME);
 }
 
 void EnrollmentScreenHandler::GetAdditionalParameters(

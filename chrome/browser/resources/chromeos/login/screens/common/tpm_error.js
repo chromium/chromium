@@ -36,11 +36,23 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
   /* #html_template_placeholder */
 
   static get properties() {
-    return {};
+    return {
+      osName_: {
+        type: String,
+        computed: 'updateOSName_(isBranded)',
+      },
+
+      isBranded: {
+        type: Boolean,
+        value: false,
+      },
+    };
   }
 
   constructor() {
     super();
+    this.isBranded = false;
+    this.osName_ = this.updateOSName_();
   }
 
   ready() {
@@ -52,10 +64,10 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /** @override */
   get EXTERNAL_API() {
-    return ['setStep'];
+    return ['setStep', 'setIsBrandedBuild'];
   }
 
-  static get UI_STEPS() {
+  get UI_STEPS() {
     return tpmUIState;
   }
 
@@ -75,11 +87,12 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
 
   /**
    * @param {string} locale
+   * @param {string} osName
    * @return {string}
    * @private
    */
-  getTPMOwnedFailureContent_(locale) {
-    return this.i18nAdvanced('errorTPMOwnedContent');
+  getTPMOwnedFailureContent_(locale, osName) {
+    return this.i18nAdvanced('errorTPMOwnedContent', {substitutions: [osName]});
   }
 
   onRestartTap_() {
@@ -92,6 +105,21 @@ class TPMErrorMessage extends TPMErrorMessageElementBase {
    */
   get defaultControl() {
     return this.$.errorDialog;
+  }
+
+  /**
+   * @param {boolean} is_branded
+   */
+  setIsBrandedBuild(is_branded) {
+    this.isBranded = is_branded;
+  }
+
+  /**
+   * @return {string} OS name
+   */
+  updateOSName_() {
+    return this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
+                            loadTimeData.getString('osInstallChromiumOS');
   }
 }
 

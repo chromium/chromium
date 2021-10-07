@@ -116,6 +116,10 @@ class EnrollmentScreenView {
   virtual void ShowEnrollmentStatus(policy::EnrollmentStatus status) = 0;
 
   virtual void Shutdown() = 0;
+
+  // Sets if build is branded or not to show correct error message when OS is
+  // not installed on the device.
+  virtual void SetIsBrandedBuild(bool is_branded) = 0;
 };
 
 }  // namespace ash

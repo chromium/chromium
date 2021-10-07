@@ -29,6 +29,7 @@ Polymer({
     'showStep',
     'setServiceLogs',
     'updateCountdownString',
+    'setIsBrandedBuild',
   ],
 
   properties: {
@@ -38,7 +39,17 @@ Polymer({
     osInstallDialogSuccessSubtitile_: {
       type: String,
       value: '',
-    }
+    },
+
+    osName_: {
+      type: String,
+      computed: 'updateOSName_(isBranded)',
+    },
+
+    isBranded: {
+      type: Boolean,
+      value: true,
+    },
   },
 
   UI_STEPS: UIState,
@@ -104,15 +115,6 @@ Polymer({
    * @return {string}
    * @private
    */
-  getIntroBodyHtml_(locale) {
-    return this.i18nAdvanced('osInstallDialogIntroBody');
-  },
-
-  /**
-   * @param {string} locale
-   * @return {string}
-   * @private
-   */
   getConfirmBodyHtml_(locale) {
     return this.i18nAdvanced('osInstallDialogConfirmBody');
   },
@@ -129,12 +131,14 @@ Polymer({
 
   /**
    * @param {string} locale
+   * @param {string} osName
    * @return {string}
    * @private
    */
-  getErrorFailedSubtitleHtml_(locale) {
+  getErrorFailedSubtitleHtml_(locale, osName) {
     return this.i18nAdvanced(
-        'osInstallDialogErrorFailedSubtitle', {tags: ['p']});
+        'osInstallDialogErrorFailedSubtitle',
+        {tags: ['p'], substitutions: [osName]});
   },
 
   /**
@@ -152,15 +156,20 @@ Polymer({
    */
   hideServiceLogsDialog_() {
     this.$.serviceLogsDialog.hideDialog();
-    this.focusServiceLogsLink_();
+    this.focusLogsLink_();
   },
 
   /**
    * @private
    */
-  focusServiceLogsLink_() {
-    Polymer.RenderStatus.afterNextRender(
-        this, () => this.$.serviceLogsLink.focus());
+  focusLogsLink_() {
+    if (this.uiStep == UIState.NO_DESTINATION_DEVICE_FOUND) {
+      Polymer.RenderStatus.afterNextRender(
+          this, () => this.$.noDestLogsLink.focus());
+    } else if (this.uiStep == UIState.FAILED) {
+      Polymer.RenderStatus.afterNextRender(
+          this, () => this.$.serviceLogsLink.focus());
+    }
   },
 
   /**
@@ -196,7 +205,24 @@ Polymer({
    * @param {string} timeLeftMessage Countdown message on success step.
    */
   updateCountdownString(timeLeftMessage) {
-    this.osInstallDialogSuccessSubtitile_ = timeLeftMessage;
+    this.osInstallDialogSuccessSubtitile_ = this.i18nDynamic(
+        this.locale, 'osInstallDialogSuccessSubtitle', this.osName_,
+        timeLeftMessage);
+  },
+
+  /**
+   * @param {boolean} is_branded
+   */
+  setIsBrandedBuild(is_branded) {
+    this.isBranded = is_branded;
+  },
+
+  /**
+   * @return {string} OS name
+   */
+  updateOSName_() {
+    return this.isBranded ? loadTimeData.getString('osInstallCloudReadyOS') :
+                            loadTimeData.getString('osInstallChromiumOS');
   },
 });
 })();

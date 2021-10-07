@@ -43,9 +43,10 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
   builder->Add("osInstallDialogIntroTitle", IDS_OS_INSTALL_SCREEN_INTRO_TITLE);
   builder->Add("osInstallDialogIntroSubtitle",
                IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE);
-  builder->Add("osInstallDialogIntroBody", IDS_OS_INSTALL_SCREEN_INTRO_BODY);
-  builder->Add("osInstallDialogIntroLearnMore",
-               IDS_OS_INSTALL_SCREEN_INTRO_LEARN_MORE);
+  builder->Add("osInstallDialogIntroBody0",
+               IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_0);
+  builder->Add("osInstallDialogIntroBody1",
+               IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_1);
   builder->Add("osInstallDialogIntroFooter",
                IDS_OS_INSTALL_SCREEN_INTRO_FOOTER);
   builder->Add("osInstallDialogIntroNextButton",
@@ -70,13 +71,15 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
                IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE);
   builder->Add("osInstallDialogErrorNoDestContent",
                IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT);
-  builder->Add("osInstallDialogErrorServiceLogsLink",
-               IDS_OS_INSTALL_SCREEN_ERROR_SERVICE_LOGS_LINK_TEXT);
   builder->Add("osInstallDialogServiceLogsTitle",
                IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE);
+  builder->Add("osInstallDialogErrorViewLogs",
+               IDS_OS_INSTALL_SCREEN_ERROR_VIEW_LOGS);
 
   builder->Add("osInstallDialogSuccessTitle",
                IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
+  builder->Add("osInstallDialogSuccessSubtitle",
+               IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE);
   builder->Add("osInstallDialogSuccessRestartButton",
                IDS_OS_INSTALL_SCREEN_RESTART_BUTTON);
 
@@ -84,6 +87,10 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
                IDS_OS_INSTALL_SCREEN_SEND_FEEDBACK);
   builder->Add("osInstallDialogShutdownButton",
                IDS_OS_INSTALL_SCREEN_SHUTDOWN_BUTTON);
+
+  // OS names
+  builder->Add("osInstallChromiumOS", IDS_CHROMIUM_OS_NAME);
+  builder->Add("osInstallCloudReadyOS", IDS_CLOUD_READY_OS_NAME);
 }
 
 void OsInstallScreenHandler::Initialize() {}
@@ -129,9 +136,11 @@ void OsInstallScreenHandler::SetServiceLogs(const std::string& service_log) {
 
 void OsInstallScreenHandler::UpdateCountdownStringWithTime(int64_t time_left) {
   CallJS("login.OsInstallScreen.updateCountdownString",
-         l10n_util::GetStringFUTF16(
-             IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
-             l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left)));
+         l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left));
+}
+
+void OsInstallScreenHandler::SetIsBrandedBuild(bool is_branded) {
+  CallJS("login.OsInstallScreen.setIsBrandedBuild", is_branded);
 }
 
 }  // namespace chromeos

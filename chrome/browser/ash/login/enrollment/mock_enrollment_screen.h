@@ -70,6 +70,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, ShowOtherError, (EnterpriseEnrollmentHelper::OtherError));
   MOCK_METHOD(void, ShowEnrollmentStatus, (policy::EnrollmentStatus status));
   MOCK_METHOD(void, Shutdown, ());
+  MOCK_METHOD(void, SetIsBrandedBuild, (bool is_branded));
 
  private:
   EnrollmentScreen* screen_ = nullptr;

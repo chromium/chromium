@@ -206,6 +206,16 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'os-install',
       kind: ScreenKind.OTHER,
+      handledSteps: 'success',
+      states: [
+        {
+          id: 'success',
+          trigger: (screen) => {
+            screen.updateCountdownString('60 seconds');
+            screen.showStep('success');
+          },
+        },
+      ],
     },
     {
       id: 'os-trial',

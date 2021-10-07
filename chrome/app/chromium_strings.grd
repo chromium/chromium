@@ -1127,43 +1127,6 @@ Chromium is unable to recover your settings.
         <message name="IDS_EULA_SCREEN_ACCESSIBLE_TITLE" desc="Title to be spoken on opening the OOBE EULA screen">
           Chromium OS terms
         </message>
-
-        <!-- OS install screen -->
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen">
-          Install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" desc="Subtitle text of the OS install screen's introduction step">
-          Installing Chromium OS will overwrite all data on your device.
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_BODY" translateable="false" desc="Body text of the OS install screen's introduction step">
-          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before getting started, please ensure that you have an up-to-date backup of your data. Installing Chromium OS will overwrite your hard drive.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>If you are ready to proceed, click "Install Chromium OS" and we'll guide you through the installation in just a couple easy steps. You'll have another chance to confirm before we make any changes to your computer.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_LEARN_MORE" translateable="false" desc="Learn more text of the OS install screen's introduction step">
-          Learn more about install Chromium OS and data erasure.
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_FOOTER" translateable="false" desc="Footer text of the OS install screen's introduction step">
-          Google is not responsible for any data loss, and makes no guarantee that Chromium OS will work on uncertified models. Please visit [TBD link] to learn more about certified models.
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
-          Install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation dialog of the OS install screen">
-          Install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation dialog">
-          <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>One last reminder: installation <ph name="BEGIN_BOLD">&lt;b&gt;</ph>will erase your entire hard drive<ph name="END_BOLD">&lt;/b&gt;</ph>. Please make sure you have any data you care about backed up.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-          <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Once installation starts it cannot be canceled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON" desc="Text of the next button on the confirmation dialog of the OS install screen">
-          Install Chromium OS
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
-          Chromium OS installation in progress
-        </message>
-        <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE" desc="Subtitle of the in-progress page of the OS install screen">
-          Installation is in progress. Don't turn off the device. Install should take no longer than twenty minutes. The machine will automatically shut down after installing.
-        </message>
       </if>
 
       <!-- Welcome page (chrome://welcome) strings -->

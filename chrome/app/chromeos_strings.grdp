@@ -1077,62 +1077,105 @@
     Please retry. If you see this error again please contact your support representative.
   </message>
 
+  <!-- Different OS names -->
+  <message translateable="false" name="IDS_CHROMIUM_OS_NAME" desc="The device operational system name for Chromium OS">
+    Chromium OS
+  </message>
+  <message translateable="false" name="IDS_CLOUD_READY_OS_NAME" desc="The device operational system name for CloudReady 2.0 OS">
+    CloudReady 2.0
+  </message>
+
   <!-- Strings for OS trial screen-->
   <message name="IDS_OS_TRIAL_TITLE" desc="Title of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    Welcome to CloudReady 2.0
+    Welcome to <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
   </message>
   <message name="IDS_OS_TRIAL_SUBTITLE" desc="Subtitle of the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>For the best experience, install CloudReady 2.0 to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>For the best experience, install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_OS_TRIAL_INSTALL_TITLE" desc="Title of the try option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow.">
-    Install CloudReady 2.0
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
   </message>
   <message name="IDS_OS_TRIAL_INSTALL_SUBTITLE" desc="Subtitle of the try option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    Convert this device into a CloudReady 2.0 device.
+    Convert this device into a <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> device.
   </message>
   <message name="IDS_OS_TRIAL_TRY_TITLE" desc="Title of the install option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
     Try it first
   </message>
   <message name="IDS_OS_TRIAL_TRY_SUBTITLE" desc="Subtitle of the install option in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
-    Keep your OS and run CloudReady 2.0 from USB.
+    Keep your OS and run <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> from USB.
   </message>
   <message name="IDS_OS_TRIAL_NEXT_BUTTON" desc="Text of the next button in the install or try screen, the first screen of the CloudReady 2.0 Installation flow">
     Next
   </message>
 
   <!-- Strings for OS install -->
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_TITLE" desc="Title of the error page of the OS install screen">
-    Installation failed
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_TITLE" desc="Title of the introduction page in the OS install screen.">
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure" translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Sorry, something went wrong and we were unable to install CloudReady.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Please visit [TBD LINK] for additional information or view logs for details.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_SUBTITLE" desc="Subtitle text of the OS install screen's introduction step.">
+    Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite all data on your device.
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE" desc="Subtitle of the error page of the OS install screen when no valid destination for installation was found" translateable="false">
-    The installer could not find a valid destination to install CloudReady. Please visit [TBD LINK] for additional information.
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_0" desc="First part of body text of the OS install screen's introduction step.">
+    Before starting, make sure you have a backup of your data. Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> will overwrite your hard drive. Learn more at g.co/TBD.
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT" desc="Content of the error page of the OS install screen when no valid destination for installation was found" translateable="false">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Check that your device contains working internal storage such as a HDD, SDD, or eMMC.
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_CONTENT_1" desc="Second part of body text of the OS install screen's introduction step.">
+    Installation takes a few easy steps. You’ll have another chance to confirm before changes are made to your computer.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_FOOTER" desc="Footer text of the OS install screen's introduction step.">
+    Google isn’t responsible for any data loss, and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> may not work on uncertified models. Learn more at g.co/TBD.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_INTRO_NEXT_BUTTON" desc="Text of the next button on the introduction page of the OS install screen">
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE" desc="Title of the confirmation dialog of the OS install screen">
+    Install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> and erase hard drive?
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_BODY" desc="Body text of the OS install screen's confirmation dialog">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Installation <ph name="BEGIN_BOLD">&lt;b&gt;</ph>will erase your entire hard drive<ph name="END_BOLD">&lt;/b&gt;</ph>. Make sure your data is backed up.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>Once installation starts it can’t be canceled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_CONFIRM_NEXT_BUTTON" desc="Text of the next button on the confirmation dialog of the OS install screen">
+    Install
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE" desc="Title of the in-progress page of the OS install screen">
+    Installing <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_IN_PROGRESS_SUBTITLE" desc="Subtitle of the in-progress page of the OS install screen">
+    Make sure your device is plugged in, and don’t turn it off. Installation may take up to 20 minutes. Your device will automatically shut down when installation is complete.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_TITLE" desc="Title of the error page of the OS install screen.">
+    Couldn’t complete installation
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_FAILED_SUBTITLE" desc="Subtitle of the error page of the OS install screen for general failure.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Something went wrong and <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> couldn’t be installed.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help visit: g.co/xxxxx<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_VIEW_LOGS" desc="Label for an actionable link that opens dialog with installation logs.">
+    View logs
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE" desc="Subtitle of the error page of the OS install screen when no valid destination for installation was found.">
+    The installer couldn’t find a valid destination to install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT" desc="Content of the error page of the OS install screen when no valid destination for installation was found.">
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Try these troubleshooting steps:
     <ph name="BEGIN_LIST">&lt;ul&gt;</ph>
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check that your internal storage device is greater than 16GB.
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check the connection to the internal storage, if physically accessible.
-    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure you're using a certified model, and if so check all install notes for this model.
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure your device contains working internal storage such as a HDD, SSD, or eMMC
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check that your internal storage device is greater than 16GB
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Check the connection to the internal storage, if physically accessible
+    <ph name="LIST_ITEM">&lt;li&gt;</ph>Make sure you're using a certified model and check install notes
     <ph name="END_LIST">&lt;/ul&gt;</ph>
     <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>View logs for additional details.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_ERROR_SERVICE_LOGS_LINK_TEXT" desc="Text of the link to service logs dialog of the OS install screen">
-    Show service logs
-  </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE" desc="Title of service logs dialog of the OS install screen">
-    Service logs
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>For more help, visit: g.co/xxxxx<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
     Installation complete
   </message>
-  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE" translateable="false" desc="Subtitle of the success page of the OS install screen">
-    Installation is completed! Please remove the USB and click Restart to boot into the installed OS. Otherwise, your device will shut down in <ph name="TIME_LEFT">$1<ex>60 seconds</ex></ph>.
+  <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE" desc="Subtitle of the success page of the OS install screen">
+    Remove the USB and restart your device to start using <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. Otherwise your device will shut down in <ph name="TIME_LEFT">$2<ex>60 seconds</ex></ph>.
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE" desc="Title of service logs dialog of the OS install screen">
+    Service logs
   </message>
   <message name="IDS_OS_INSTALL_SCREEN_RESTART_BUTTON" translateable="false" desc="Text of the restart button on the OS install screen">
     Restart
@@ -2197,12 +2240,12 @@
     Trusted Platform Module (TPM) detected
   </message>
   <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_SUBTITLE" desc="Subtitile of the screen notifying user about TPM ownership error.">
-    CloudReady 2.0 detected an active TPM which can store your data more securely.
+    <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> detected an active TPM which can store your data more securely.
   </message>
   <message name="IDS_LOGIN_ERROR_ENROLLMENT_TPM_FAILURE_CONTENT" desc="Steps that can help users to properly setup TPM manually.">
-    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before enrolling you need to clear the TPM so CloudReady 2.0 can take ownership of the device.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Before enrolling you need to clear the TPM so <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> can take ownership of the device.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can also turn off the TPM device entirely. Your data will still be stored safely with software encryption, but certain security features such as hardware-backed certificates will be disabled.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the CloudReady 2.0 documentation on a separate device before you reboot: [URL link]<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH3">&lt;p&gt;</ph>You can change your TPM settings by rebooting and entering the system BIOS/UEFI settings. Steps vary based on the device model. For more info, open the <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> documentation on a separate device before you reboot: [URL link]<ph name="END_PARAGRAPH3">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_LOGIN_ERROR_TPM_FAILURE_REBOOT_BUTTON" desc="Label on button that restarts device.">
     Restart
@@ -2790,8 +2833,8 @@
   </message>
 
   <!-- Strings for the enterprise enrollment page -->
-  <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED" desc="Error message shown on the enrollment screen if enrollment is not allowed because of CloudReady.">
-    Enrollment is only supported after installation. To manage this device, install CloudReady first.
+  <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED" desc="Error message shown on the enrollment screen if enrollment is not allowed because of OS installation flow.">
+    Enrollment is only supported after you install <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>.
   </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_FAILED" desc="Error message shown on the enrollment screen upon failed device registration.">
     Error when registering the device with the server: <ph name="CLIENT_ERROR">$1<ex>Failed to connect to the server</ex></ph>.

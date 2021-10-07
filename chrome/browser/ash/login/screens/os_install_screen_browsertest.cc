@@ -52,14 +52,33 @@ const test::UIPath kOsInstallDialogError = {"os-install",
 const test::UIPath kOsInstallDialogSuccess = {"os-install",
                                               "osInstallDialogSuccess"};
 
+// Paths to test strings
+const test::UIPath kOsInstallDialogIntroTitle = {
+    "os-install", "osInstallDialogIntroTitleId"};
+const test::UIPath kOsInstallDialogConfirmTitle = {
+    "os-install", "osInstallDialogConfirmTitleId"};
+const test::UIPath kOsInstallDialogProgressTitle = {
+    "os-install", "osInstallDialogInProgressTitleId"};
+const test::UIPath kOsInstallDialogErrorNoDestSubtitle = {
+    "os-install", "osInstallDialogErrorNoDestSubtitleId"};
 const test::UIPath kOsInstallDialogSuccessSubtitile = {
     "os-install", "osInstallDialogSuccessSubtitile"};
 
-std::string GetExpectedCountdownMessage(int time_left) {
+std::u16string GetDeviceOSName(bool is_branded) {
+  return l10n_util::GetStringUTF16(is_branded ? IDS_CLOUD_READY_OS_NAME
+                                              : IDS_CHROMIUM_OS_NAME);
+}
+
+std::string GetExpectedCountdownMessage(int time_left, bool is_branded) {
   return l10n_util::GetStringFUTF8(
-      IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE,
+      IDS_OS_INSTALL_SCREEN_SUCCESS_SUBTITLE, GetDeviceOSName(is_branded),
       l10n_util::GetPluralStringFUTF16(IDS_TIME_LONG_SECS, time_left));
 }
+
+std::string GetExpectedMessageWithBrand(int message_id, bool is_branded) {
+  return l10n_util::GetStringFUTF8(message_id, GetDeviceOSName(is_branded));
+}
+
 }  // namespace
 
 class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
@@ -248,13 +267,50 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccessAutoShutdown) {
   test::OobeJS().ExpectVisiblePath(kOsInstallDialogSuccess);
 
   auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
+  bool is_branded =
+      LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build;
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
   mocked_task_runner->FastForwardBy(base::Seconds(20));
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 0);
-  test::OobeJS().ExpectElementText(GetExpectedCountdownMessage(40),
+  test::OobeJS().ExpectElementText(GetExpectedCountdownMessage(40, is_branded),
                                    kOsInstallDialogSuccessSubtitile);
   mocked_task_runner->FastForwardBy(base::Seconds(41));
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }
+
+// Param determines whether the build is branded or not.
+class OsInstallScreenStringsTest : public OsInstallScreenTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUpOnMainThread() override {
+    OsInstallScreenTest::SetUpOnMainThread();
+    is_branded_ = GetParam();
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        is_branded_;
+  }
+  bool is_branded_ = false;
+};
+
+IN_PROC_BROWSER_TEST_P(OsInstallScreenStringsTest, OsInstallStrings) {
+  AdvanceToOsInstallScreen();
+  test::OobeJS().ExpectElementText(
+      GetExpectedMessageWithBrand(IDS_OS_INSTALL_SCREEN_INTRO_TITLE,
+                                  is_branded_),
+      kOsInstallDialogIntroTitle);
+  test::OobeJS().ExpectElementText(
+      GetExpectedMessageWithBrand(IDS_OS_INSTALL_SCREEN_CONFIRM_TITLE,
+                                  is_branded_),
+      kOsInstallDialogConfirmTitle);
+  test::OobeJS().ExpectElementText(
+      GetExpectedMessageWithBrand(IDS_OS_INSTALL_SCREEN_IN_PROGRESS_TITLE,
+                                  is_branded_),
+      kOsInstallDialogProgressTitle);
+  test::OobeJS().ExpectElementText(
+      GetExpectedMessageWithBrand(IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE,
+                                  is_branded_),
+      kOsInstallDialogErrorNoDestSubtitle);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, OsInstallScreenStringsTest, ::testing::Bool());
 
 }  // namespace ash
