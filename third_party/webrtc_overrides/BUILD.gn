@@ -234,6 +234,11 @@ source_set("task_queue_factory") {
     "metronome_source.h",
 
     # Tested in
+    # third_party/blink/renderer/platform/peerconnection/metronome_task_queue_factory_test.cc
+    "metronome_task_queue_factory.cc",
+    "metronome_task_queue_factory.h",
+
+    # Tested in
     # third_party/blink/renderer/platform/peerconnection/task_queue_factory_test.cc
     "task_queue_factory.cc",
     "task_queue_factory.h",
@@ -244,6 +249,11 @@ source_set("task_queue_factory") {
     "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/rtc_base/system:rtc_export",
   ]
+
+  # If you want to use a WebRTC task queue you may want to have access to
+  # webrtc::ToQueuedTask, but it has limited visibility within WebRTC so we
+  # depend on it publically here.
+  public_deps = [ "//third_party/webrtc/rtc_base/task_utils:to_queued_task" ]
 }
 
 source_set("system_time") {

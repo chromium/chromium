@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_WEBRTC_OVERRIDES_METRONOME_TASK_QUEUE_FACTORY_H_
+#define THIRD_PARTY_WEBRTC_OVERRIDES_METRONOME_TASK_QUEUE_FACTORY_H_
+
+#include <memory>
+
+#include "base/memory/scoped_refptr.h"
+#include "third_party/webrtc/api/task_queue/task_queue_factory.h"
+#include "third_party/webrtc/rtc_base/system/rtc_export.h"
+#include "third_party/webrtc_overrides/metronome_source.h"
+
+// Creates a factory for webrtc::TaskQueueBase that is backed by a
+// blink::MetronomeSource. Tested by
+// /third_party/blink/renderer/platform/peerconnection/metronome_task_queue_factory_test.cc
+RTC_EXPORT std::unique_ptr<webrtc::TaskQueueFactory>
+CreateWebRtcMetronomeTaskQueueFactory(
+    scoped_refptr<blink::MetronomeSource> metronome_source);
+
+#endif  // THIRD_PARTY_WEBRTC_OVERRIDES_METRONOME_TASK_QUEUE_FACTORY_H_
