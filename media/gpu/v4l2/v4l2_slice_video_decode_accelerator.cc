@@ -2240,7 +2240,36 @@ bool V4L2SliceVideoDecodeAccelerator::ProcessFrame(
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
 
   scoped_refptr<VideoFrame> input_frame = buffer->GetVideoFrame();
-  DCHECK(input_frame);
+  if (!input_frame) {
+    VLOGF(1) << "Could not get the input frame for the image processor!";
+    return false;
+  }
+
+  // The |input_frame| has a potentially incorrect visible rectangle and natural
+  // size: that frame gets created by V4L2Buffer::CreateVideoFrame() which uses
+  // v4l2_format::fmt.pix_mp.width and v4l2_format::fmt.pix_mp.height as the
+  // visible rectangle and natural size. However, those dimensions actually
+  // correspond to the coded size. Therefore, we should wrap |input_frame| into
+  // another frame with the right visible rectangle and natural size.
+  DCHECK(input_frame->visible_rect().origin().IsOrigin());
+  const gfx::Rect visible_rect = image_processor_->input_config().visible_rect;
+  const gfx::Size natural_size = visible_rect.size();
+  if (!gfx::Rect(input_frame->coded_size()).Contains(visible_rect) ||
+      !input_frame->visible_rect().Contains(visible_rect)) {
+    VLOGF(1) << "The visible rectangle is invalid!";
+    return false;
+  }
+  if (!gfx::Rect(input_frame->natural_size())
+           .Contains(gfx::Rect(natural_size))) {
+    VLOGF(1) << "The natural size is too large!";
+    return false;
+  }
+  scoped_refptr<VideoFrame> cropped_input_frame = VideoFrame::WrapVideoFrame(
+      input_frame, input_frame->format(), visible_rect, natural_size);
+  if (!cropped_input_frame) {
+    VLOGF(1) << "Could not wrap the input frame for the image processor!";
+    return false;
+  }
 
   if (image_processor_->output_mode() == ImageProcessor::OutputMode::IMPORT) {
     // In IMPORT mode we can decide ourselves which IP buffer to use, so choose
@@ -2256,14 +2285,14 @@ bool V4L2SliceVideoDecodeAccelerator::ProcessFrame(
     DCHECK(wrapped_frame);
 
     image_processor_->Process(
-        std::move(input_frame), std::move(wrapped_frame),
+        std::move(cropped_input_frame), std::move(wrapped_frame),
         base::BindOnce(&V4L2SliceVideoDecodeAccelerator::FrameProcessed,
                        base::Unretained(this), surface, buffer->BufferId()));
   } else {
     // In ALLOCATE mode we cannot choose which IP buffer to use. We will get
     // the surprise when FrameProcessed() is invoked...
     if (!image_processor_->Process(
-            std::move(input_frame),
+            std::move(cropped_input_frame),
             base::BindOnce(&V4L2SliceVideoDecodeAccelerator::FrameProcessed,
                            base::Unretained(this), surface)))
       return false;
