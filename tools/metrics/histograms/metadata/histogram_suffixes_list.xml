@@ -6951,6 +6951,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="LegacyTLS" separator=".">
+  <obsolete>
+    No longer is use as of 2021-10.
+  </obsolete>
   <suffix name="LegacyTLS_NotTriggered"
       label="Page didn't trigger legacy TLS warning"/>
   <suffix name="LegacyTLS_Triggered" label="Page triggered legacy TLS warning"/>

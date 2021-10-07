@@ -196,6 +196,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.LegacyTLS.DownloadStarted" enum="Boolean"
     expires_after="2021-08-09">
+  <obsolete>
+    Expired after 2021-08. No longer in use.
+  </obsolete>
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -210,6 +213,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.LegacyTLS.FormSubmission" enum="Boolean"
     expires_after="2021-08-09">
+  <obsolete>
+    Expired after 2021-08. No longer in use.
+  </obsolete>
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -222,6 +228,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.LegacyTLS.OnCommit" enum="Boolean"
     expires_after="2021-08-09">
+  <obsolete>
+    Expired after 2021-08. No longer in use.
+  </obsolete>
   <owner>cthomp@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
@@ -233,6 +242,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.LegacyTLS.PageInfo.Action"
     enum="WebsiteSettingsAction" expires_after="M92">
+  <obsolete>
+    Expired after M92. No longer in use.
+  </obsolete>
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -253,7 +265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Security.PageEndReason" enum="PageEndReason"
-    expires_after="2021-10-10">
+    expires_after="2022-04-10">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -349,7 +361,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen" units="units"
-    expires_after="2022-02-01">
+    expires_after="2022-04-10">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -369,7 +381,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.PageInfo.TimeOpen.NoAction" units="units"
-    expires_after="2021-10-10">
+    expires_after="2022-04-10">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -380,6 +392,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.PasswordEntry.SiteEngagementLevel"
     enum="SiteEngagementLevel" expires_after="2021-10-31">
+  <obsolete>
+    Expired after 2021-10. No longer in use.
+  </obsolete>
   <owner>meacer@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -391,6 +406,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.PasswordFocus.SiteEngagementLevel"
     enum="SiteEngagementLevel" expires_after="2021-01-31">
+  <obsolete>
+    Expired after 2021-01. No longer in use.
+  </obsolete>
   <owner>meacer@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -709,6 +727,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.SecurityLevel.CryptographicScheme"
     enum="SecurityLevel" expires_after="2021-09-01">
+  <obsolete>
+    Expired after 2021-09. No longer in use.
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -768,6 +789,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.SecurityLevel.InsecureMainFrameNonFormNavigation"
     enum="SecurityLevel" expires_after="2021-09-01">
+  <obsolete>
+    Expired after 2021-09. No longer in use.
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
   <summary>
@@ -779,6 +803,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Security.SecurityLevel.NoncryptographicScheme"
     enum="SecurityLevel" expires_after="2021-09-01">
+  <obsolete>
+    Expired after 2021-09. No longer in use.
+  </obsolete>
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
