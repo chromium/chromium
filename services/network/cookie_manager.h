@@ -62,9 +62,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   void GetAllCookies(GetAllCookiesCallback callback) override;
   void GetAllCookiesWithAccessSemantics(
       GetAllCookiesWithAccessSemanticsCallback callback) override;
-  void GetCookieList(const GURL& url,
-                     const net::CookieOptions& cookie_options,
-                     GetCookieListCallback callback) override;
+  void GetCookieList(
+      const GURL& url,
+      const net::CookieOptions& cookie_options,
+      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      GetCookieListCallback callback) override;
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& source_url,
                           const net::CookieOptions& cookie_options,

@@ -20,6 +20,8 @@ namespace net {
 //
 // It can also represent a finite number of cookie partition keys, including
 // zero.
+// TODO(crbug.com/1225444): Consider changing the name of this class since the
+// term "keychain" has a certain meaning for iOS and macOS.
 class NET_EXPORT CookiePartitionKeychain {
  public:
   // Creates an empty keychain.
@@ -47,6 +49,12 @@ class NET_EXPORT CookiePartitionKeychain {
 
   // Temporary method used to record where we need to decide how to build the
   // CookiePartitionKeychain.
+  //
+  // Returns an empty keychain, so no partitioned cookies will be returned at
+  // callsites this is used.
+  //
+  // TODO(crbug.com/1225444): Remove this method and update callsites to use
+  // appropriate constructor.
   static CookiePartitionKeychain Todo() { return CookiePartitionKeychain(); }
 
   // CookieMonster can check if the keychain is empty to avoid searching the
@@ -58,7 +66,7 @@ class NET_EXPORT CookiePartitionKeychain {
 
   // Iterate over all keys in the keychain, do not call this method if
   // `contains_all_keys` is true.
-  const std::set<CookiePartitionKey>& PartitionKeys() const {
+  const std::vector<CookiePartitionKey>& PartitionKeys() const {
     DCHECK(!contains_all_keys_);
     return keys_;
   }
@@ -69,7 +77,7 @@ class NET_EXPORT CookiePartitionKeychain {
   bool contains_all_keys_ = false;
   // If `contains_all_keys_` is true, `keys_` must be empty.
   // If `keys_` is not empty, then `contains_all_keys_` must be false.
-  std::set<CookiePartitionKey> keys_;
+  std::vector<CookiePartitionKey> keys_;
 };
 
 }  // namespace net

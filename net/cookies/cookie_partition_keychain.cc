@@ -16,15 +16,12 @@ CookiePartitionKeychain::CookiePartitionKeychain(
 
 CookiePartitionKeychain::CookiePartitionKeychain(
     const CookiePartitionKey& key) {
-  keys_.insert(key);
+  keys_.push_back(key);
 }
 
 CookiePartitionKeychain::CookiePartitionKeychain(
-    const std::vector<CookiePartitionKey>& keys) {
-  for (const auto& key : keys) {
-    keys_.insert(key);
-  }
-}
+    const std::vector<CookiePartitionKey>& keys)
+    : keys_(keys) {}
 
 CookiePartitionKeychain::CookiePartitionKeychain(bool contains_all_keys_)
     : contains_all_keys_(contains_all_keys_) {}

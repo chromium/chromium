@@ -275,6 +275,7 @@ class RemoveCookieTester {
     base::RunLoop run_loop;
     cookie_manager_->GetCookieList(
         cookie_url_, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeychain(),
         base::BindLambdaForTesting(
             [&](const net::CookieAccessResultList& cookie_list,
                 const net::CookieAccessResultList& excluded_cookies) {

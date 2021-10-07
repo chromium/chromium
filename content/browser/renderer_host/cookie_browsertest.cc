@@ -89,7 +89,7 @@ std::string GetCookiesDirect(WebContentsImpl* tab, const GURL& url) {
       ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetCookieList(
-          url, options,
+          url, options, net::CookiePartitionKeychain(),
           base::BindLambdaForTesting(
               [&](const net::CookieAccessResultList& cookie_list,
                   const net::CookieAccessResultList& excluded_cookies) {

@@ -49,6 +49,7 @@ bool AndroidSmsPairingStateTrackerImpl::IsAndroidSmsPairingComplete() {
 void AndroidSmsPairingStateTrackerImpl::AttemptFetchMessagesPairingState() {
   GetCookieManager()->GetCookieList(
       GetPairingUrl(), net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeychain::Todo(),
       base::BindOnce(&AndroidSmsPairingStateTrackerImpl::OnCookiesRetrieved,
                      base::Unretained(this)));
 }

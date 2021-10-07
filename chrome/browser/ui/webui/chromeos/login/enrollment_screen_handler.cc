@@ -924,6 +924,7 @@ void EnrollmentScreenHandler::ContinueAuthenticationWhenCookiesAvailable(
   cookie_manager->GetCookieList(
       GaiaUrls::GetInstance()->gaia_url(),
       net::CookieOptions::MakeAllInclusive(),
+      net::CookiePartitionKeychain::Todo(),
       base::BindOnce(&EnrollmentScreenHandler::OnGetCookiesForCompleteLogin,
                      weak_ptr_factory_.GetWeakPtr(), user));
 }

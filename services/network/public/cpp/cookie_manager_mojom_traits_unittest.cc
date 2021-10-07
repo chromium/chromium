@@ -12,6 +12,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -384,6 +385,65 @@ TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CanonicalCookie>(
       *original, copied));
   EXPECT_EQ(original->PartitionKey(), copied.PartitionKey());
+}
+
+TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeychain) {
+  {
+    net::CookiePartitionKeychain original;
+    net::CookiePartitionKeychain copied;
+
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
+            original, copied));
+    EXPECT_FALSE(copied.ContainsAllKeys());
+    EXPECT_EQ(0u, copied.PartitionKeys().size());
+  }
+
+  {
+    net::CookiePartitionKeychain original(
+        net::CookiePartitionKey::FromURLForTesting(
+            GURL("https://www.example.com")));
+    net::CookiePartitionKeychain copied;
+
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
+            original, copied));
+    EXPECT_FALSE(copied.ContainsAllKeys());
+    EXPECT_THAT(copied.PartitionKeys(),
+                testing::UnorderedElementsAre(
+                    net::CookiePartitionKey::FromURLForTesting(
+                        GURL("https://www.example.com"))));
+  }
+
+  {
+    net::CookiePartitionKeychain original({
+        net::CookiePartitionKey::FromURLForTesting(GURL("https://a.foo.com")),
+        net::CookiePartitionKey::FromURLForTesting(GURL("https://b.bar.com")),
+    });
+    net::CookiePartitionKeychain copied;
+
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
+            original, copied));
+    EXPECT_FALSE(copied.ContainsAllKeys());
+    EXPECT_THAT(copied.PartitionKeys(),
+                testing::UnorderedElementsAre(
+                    net::CookiePartitionKey::FromURLForTesting(
+                        GURL("https://b.foo.com")),
+                    net::CookiePartitionKey::FromURLForTesting(
+                        GURL("https://a.bar.com"))));
+  }
+
+  {
+    net::CookiePartitionKeychain original =
+        net::CookiePartitionKeychain::ContainsAll();
+    net::CookiePartitionKeychain copied;
+
+    EXPECT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
+            original, copied));
+    EXPECT_TRUE(copied.ContainsAllKeys());
+  }
 }
 
 TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {

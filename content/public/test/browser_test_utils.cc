@@ -1951,7 +1951,7 @@ std::string GetCookies(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_same_site_cookie_context(context);
   cookie_manager->GetCookieList(
-      url, options,
+      url, options, net::CookiePartitionKeychain(),
       base::BindOnce(
           [](std::string* cookies_out, base::RunLoop* run_loop,
              const net::CookieAccessResultList& cookies,
@@ -1978,7 +1978,7 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
   cookie_manager->GetCookieList(
-      url, options,
+      url, options, net::CookiePartitionKeychain(),
       base::BindOnce(
           [](base::RunLoop* run_loop,
              std::vector<net::CanonicalCookie>* cookies_out,

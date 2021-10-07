@@ -153,6 +153,11 @@ struct CookiePartitionKey {
   SchemefulSite site;
 };
 
+struct CookiePartitionKeychain {
+  bool contains_all_partitions = false;
+  array<CookiePartitionKey> keys;
+};
+
 // See net/cookies/canonical_cookie.{h,cc} for documentation.
 // Keep defaults here in sync with those files.
 struct CanonicalCookie {
@@ -345,12 +350,16 @@ interface CookieManager {
           array<CookieAccessSemantics> access_semantics_list);
 
   // Get all cookies for the specified URL and cookie options.
+  // Will also return any partitioned cookies whose partition key are in
+  // |cookie_partition_keychain|.
   // Returned cookie list is sorted first by path length (longest first)
   // and second by creation time. If the |return_excluded_cookies| option is set
   // in the options, |excluded_cookies| with be a list of cookies that were
   // blocked from being sent along with the reason each cookie was blocked. By
   // default, that option is not set and |excluded_cookies| is an empty list.
-  GetCookieList(url.mojom.Url url, CookieOptions cookie_options)
+  GetCookieList(url.mojom.Url url,
+                CookieOptions cookie_options,
+                CookiePartitionKeychain cookie_partition_keychain)
       => (array<CookieWithAccessResult> cookies,
           array<CookieWithAccessResult> excluded_cookies);
 

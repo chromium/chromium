@@ -89,17 +89,18 @@ void CookieManager::GetAllCookiesWithAccessSemantics(
   cookie_store_->GetAllCookiesWithAccessSemanticsAsync(std::move(callback));
 }
 
-void CookieManager::GetCookieList(const GURL& url,
-                                  const net::CookieOptions& cookie_options,
-                                  GetCookieListCallback callback) {
+void CookieManager::GetCookieList(
+    const GURL& url,
+    const net::CookieOptions& cookie_options,
+    const net::CookiePartitionKeychain& cookie_partition_keychain,
+    GetCookieListCallback callback) {
 #if !defined(OS_IOS)
   if (g_crash_on_get_cookie_list)
     base::Process::TerminateCurrentProcessImmediately(1);
 #endif
 
   cookie_store_->GetCookieListWithOptionsAsync(
-      url, cookie_options, net::CookiePartitionKeychain::Todo(),
-      std::move(callback));
+      url, cookie_options, cookie_partition_keychain, std::move(callback));
 }
 
 void CookieManager::SetCanonicalCookie(const net::CanonicalCookie& cookie,

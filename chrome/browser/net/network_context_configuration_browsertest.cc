@@ -652,6 +652,7 @@ class NetworkContextConfigurationBrowserTest
         ->GetCookieManager(cookie_manager.BindNewPipeAndPassReceiver());
     cookie_manager->GetCookieList(
         url, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeychain(),
         base::BindOnce(
             [](std::string* cookies_out, base::RunLoop* run_loop,
                const net::CookieAccessResultList& cookies,

@@ -366,6 +366,7 @@ BOOL AccountConsistencyService::RestoreGaiaCookies(
     cookie_manager->GetCookieList(
         GaiaUrls::GetInstance()->secure_google_url(),
         net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeychain::Todo(),
         base::BindOnce(
             &AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted,
             base::Unretained(this), std::move(cookies_restored_callback)));

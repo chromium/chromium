@@ -205,7 +205,7 @@ class CookieRetrieverNetworkService
     net::CookieOptions cookie_options = net::CookieOptions::MakeAllInclusive();
     for (const auto& url : urls) {
       cookie_manager->GetCookieList(
-          url, cookie_options,
+          url, cookie_options, net::CookiePartitionKeychain::Todo(),
           base::BindOnce(&CookieRetrieverNetworkService::GotCookies, self));
     }
   }

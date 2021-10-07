@@ -474,6 +474,33 @@ bool StructTraits<network::mojom::CookiePartitionKeyDataView,
   return true;
 }
 
+const std::vector<net::CookiePartitionKey> StructTraits<
+    network::mojom::CookiePartitionKeychainDataView,
+    net::CookiePartitionKeychain>::keys(const net::CookiePartitionKeychain&
+                                            keychain) {
+  std::vector<net::CookiePartitionKey> result;
+  if (keychain.ContainsAllKeys() || keychain.IsEmpty())
+    return result;
+  result.insert(result.begin(), keychain.PartitionKeys().begin(),
+                keychain.PartitionKeys().end());
+  return result;
+}
+
+bool StructTraits<network::mojom::CookiePartitionKeychainDataView,
+                  net::CookiePartitionKeychain>::
+    Read(network::mojom::CookiePartitionKeychainDataView keychain,
+         net::CookiePartitionKeychain* out) {
+  if (keychain.contains_all_partitions()) {
+    *out = net::CookiePartitionKeychain::ContainsAll();
+    return true;
+  }
+  std::vector<net::CookiePartitionKey> keys;
+  if (!keychain.ReadKeys(&keys))
+    return false;
+  *out = net::CookiePartitionKeychain(keys);
+  return true;
+}
+
 bool StructTraits<
     network::mojom::CanonicalCookieDataView,
     net::CanonicalCookie>::Read(network::mojom::CanonicalCookieDataView cookie,

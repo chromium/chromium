@@ -1325,7 +1325,9 @@ void InterceptionJob::FetchCookies(
           request.request_initiator, is_main_frame_navigation,
           should_treat_as_first_party));
 
-  cookie_manager_->GetCookieList(request.url, options, std::move(callback));
+  cookie_manager_->GetCookieList(request.url, options,
+                                 net::CookiePartitionKeychain::Todo(),
+                                 std::move(callback));
 }
 
 void InterceptionJob::NotifyClient(

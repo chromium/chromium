@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_COOKIE_MANAGER_MOJOM_TRAITS_H_
 
 #include <bitset>
+#include <vector>
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/cookies/canonical_cookie.h"
@@ -14,7 +15,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_partition_keychain.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -186,6 +187,20 @@ struct StructTraits<network::mojom::CookiePartitionKeyDataView,
   }
   static bool Read(network::mojom::CookiePartitionKeyDataView partition_key,
                    net::CookiePartitionKey* out);
+};
+
+template <>
+struct StructTraits<network::mojom::CookiePartitionKeychainDataView,
+                    net::CookiePartitionKeychain> {
+  static bool contains_all_partitions(
+      const net::CookiePartitionKeychain& keychain) {
+    return keychain.ContainsAllKeys();
+  }
+  static const std::vector<net::CookiePartitionKey> keys(
+      const net::CookiePartitionKeychain& keychain);
+
+  static bool Read(network::mojom::CookiePartitionKeychainDataView keychain,
+                   net::CookiePartitionKeychain* out);
 };
 
 template <>

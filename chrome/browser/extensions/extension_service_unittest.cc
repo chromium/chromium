@@ -5338,6 +5338,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
     std::vector<net::CanonicalCookie> cookies_result;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeychain(),
         base::BindOnce(&GetCookiesSaveData, &cookies_result,
                        run_loop.QuitClosure()));
     run_loop.Run();
@@ -5407,6 +5408,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
     std::vector<net::CanonicalCookie> cookies_result;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeychain(),
         base::BindOnce(&GetCookiesSaveData, &cookies_result,
                        run_loop.QuitClosure()));
     run_loop.Run();
@@ -5426,6 +5428,7 @@ TEST_F(ExtensionServiceTest, ClearAppData) {
     std::vector<net::CanonicalCookie> cookies_result;
     cookie_manager_remote->GetCookieList(
         origin1, net::CookieOptions::MakeAllInclusive(),
+        net::CookiePartitionKeychain(),
         base::BindOnce(&GetCookiesSaveData, &cookies_result,
                        run_loop.QuitClosure()));
     run_loop.Run();
