@@ -241,8 +241,20 @@ void CheckInstallation(UpdaterScope scope,
 
   std::unique_ptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance();
-  EXPECT_EQ(is_installed,
-            task_scheduler->IsTaskRegistered(GetTaskName(scope).c_str()));
+  const std::wstring task_name = GetTaskName(scope);
+  EXPECT_EQ(is_installed, task_scheduler->IsTaskRegistered(task_name.c_str()));
+  if (is_installed) {
+    TaskScheduler::TaskInfo task_info;
+    ASSERT_TRUE(task_scheduler->GetTaskInfo(task_name.c_str(), &task_info));
+    ASSERT_EQ(task_info.exec_actions.size(), 1u);
+    EXPECT_STREQ(
+        task_info.exec_actions[0].arguments.c_str(),
+        base::StrCat(
+            {L"--wake ", scope == UpdaterScope::kSystem ? L"--system " : L"",
+             L"--enable-logging "
+             L"--vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2"})
+            .c_str());
+  }
 
   const absl::optional<base::FilePath> product_version_path =
       GetProductVersionPath(scope);
