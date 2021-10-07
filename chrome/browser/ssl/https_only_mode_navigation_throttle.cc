@@ -72,29 +72,9 @@ HttpsOnlyModeNavigationThrottle::HttpsOnlyModeNavigationThrottle(
 
 HttpsOnlyModeNavigationThrottle::~HttpsOnlyModeNavigationThrottle() = default;
 
-content::NavigationThrottle::ThrottleCheckResult
-HttpsOnlyModeNavigationThrottle::WillStartRequest() {
-  // If the navigation was upgraded by the Interceptor, start the timeout timer.
-  // Which navigations to upgrade is determined by the Interceptor not the
-  // Throttle.
-  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
-                        navigation_handle()->GetWebContents());
-  if (tab_helper->is_navigation_upgraded()) {
-    RecordHttpsFirstModeNavigation(Event::kUpgradeAttempted);
-    timer_.Start(FROM_HERE, g_fallback_delay, this,
-                 &HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout);
-  }
-
-  return content::NavigationThrottle::PROCEED;
-}
-
 // Called if there is a non-OK net::Error in the completion status.
 content::NavigationThrottle::ThrottleCheckResult
 HttpsOnlyModeNavigationThrottle::WillFailRequest() {
-  // Cancel the request, stop the timer, and trigger the HTTPS-Only Mode
-  // interstitial in case of SSL errors or other net errors.
-  timer_.Stop();
-
   auto* handle = navigation_handle();
 
   // If there was no certificate error, SSLInfo will be empty.
@@ -116,8 +96,6 @@ HttpsOnlyModeNavigationThrottle::WillFailRequest() {
     if (net::IsCertificateError(handle->GetNetErrorCode())) {
       RecordHttpsFirstModeNavigation(Event::kUpgradeCertError);
     } else if (handle->GetNetErrorCode() == net::ERR_TIMED_OUT) {
-      // TODO(crbug.com/1218526): Move this to the fast timeout code once
-      // that is implemented.
       RecordHttpsFirstModeNavigation(Event::kUpgradeTimedOut);
     } else {
       RecordHttpsFirstModeNavigation(Event::kUpgradeNetError);
@@ -139,24 +117,38 @@ HttpsOnlyModeNavigationThrottle::WillFailRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 HttpsOnlyModeNavigationThrottle::WillRedirectRequest() {
+  // If the navigation was upgraded by the Interceptor, then the Throttle's
+  // WillRedirectRequest() will get triggered by the artificial redirect to
+  // HTTPS. The HTTPS upgrade will always happen after the Throttle's
+  // WillStartRequest() (which is just a no-op PROCEED), so tracking upgraded
+  // requests is deferred to WillRedirectRequest() here. Which navigations to
+  // upgrade is determined by the Interceptor, not the Throttle.
+  //
+  // The navigation may get upgraded at various points during redirects:
+  //   1. The Interceptor serves an artificial redirect to HTTPS if the
+  //      navigation is upgraded. This means the Throttle will see the upgraded
+  //      navigation state for the first time here in WillRedirectRequest().
+  //   2. HTTPS->HTTP downgrades can occur later in the lifecycle of a
+  //      navigation, and will also result in the Interceptor serving an
+  //      artificial redirect to upgrade the navigation.
+  //
   // HTTPS->HTTP downgrades may result in net::ERR_TOO_MANY_REDIRECTS, but these
   // redirect loops should hit the cache and not cost too much. If they go too
   // long, the fallback timer will kick in. ERR_TOO_MANY_REDIRECTS should result
-  // in the request failing and triggering fallback.
-  //
-  // Alternately, the Interceptor could log URLs seen and bail if it encounters
-  // a redirect loop, but it is simpler to rely on existing handling unless
-  // the optimization is needed.
-
-  // If the timer is not yet started and this is now an upgraded navigation,
-  // then start the timer here. This can happen if the initial request is to
-  // HTTPS but then redirects to HTTP.
+  // in the request failing and triggering fallback. Alternately, the
+  // Interceptor could log URLs seen and bail if it encounters a redirect loop,
+  // but it is simpler to rely on existing handling unless the optimization is
+  // needed.
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
                         navigation_handle()->GetWebContents());
-  if (tab_helper->is_navigation_upgraded() && !timer_.IsRunning()) {
-    RecordHttpsFirstModeNavigation(Event::kUpgradeAttempted);
-    timer_.Start(FROM_HERE, g_fallback_delay, this,
-                 &HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout);
+  if (tab_helper->is_navigation_upgraded()) {
+    // Check if the timer is already started, as there may be additional
+    // redirects on the navigation after the artificial upgrade redirect.
+    bool timer_started =
+        navigation_handle()->SetNavigationTimeout(g_fallback_delay);
+    if (timer_started) {
+      RecordHttpsFirstModeNavigation(Event::kUpgradeAttempted);
+    }
   }
 
   return content::NavigationThrottle::PROCEED;
@@ -164,9 +156,6 @@ HttpsOnlyModeNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 HttpsOnlyModeNavigationThrottle::WillProcessResponse() {
-  // The HTTPS load succeeded. Stop the timer.
-  timer_.Stop();
-
   // Clear the status for this navigation as it will successfully commit.
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(
                         navigation_handle()->GetWebContents());
@@ -186,8 +175,4 @@ const char* HttpsOnlyModeNavigationThrottle::GetNameForLogging() {
 void HttpsOnlyModeNavigationThrottle::set_timeout_for_testing(
     int timeout_in_seconds) {
   g_fallback_delay = base::Seconds(timeout_in_seconds);
-}
-
-void HttpsOnlyModeNavigationThrottle::OnHttpsLoadTimeout() {
-  // TODO(crbug.com/1226232): Trigger WillFailResponse.
 }

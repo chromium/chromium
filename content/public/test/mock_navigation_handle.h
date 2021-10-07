@@ -182,6 +182,7 @@ class MockNavigationHandle : public NavigationHandle {
   void WriteIntoTrace(perfetto::TracedValue context) override {
     auto dict = std::move(context).WriteDictionary();
   }
+  MOCK_METHOD(bool, SetNavigationTimeout, (base::TimeDelta));
 
   void set_url(const GURL& url) { url_ = url; }
   void set_previous_main_frame_url(const GURL& previous_main_frame_url) {

@@ -149,7 +149,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
  public:
   NavigationURLLoaderImplTest()
       : task_environment_(std::make_unique<BrowserTaskEnvironment>(
-            base::test::TaskEnvironment::MainThreadType::IO)),
+            base::test::TaskEnvironment::MainThreadType::IO,
+            content::BrowserTaskEnvironment::TimeSource::MOCK_TIME)),
         network_change_notifier_(
             net::test::MockNetworkChangeNotifier::Create()) {
     browser_context_ = std::make_unique<TestBrowserContext>();
@@ -495,6 +496,37 @@ TEST_F(NavigationURLLoaderImplTest, UpgradeIfInsecureTest) {
   // Same as above, but validating the URL is upgraded to https.
   EXPECT_TRUE(redirect_info.insecure_scheme_was_upgraded);
   EXPECT_EQ(expected_url, redirect_info.new_url);
+}
+
+// Tests that when a navigation timeout is set and the navigation takes longer
+// than that timeout, then the navigation load fails with ERR_TIMED_OUT.
+TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutTest) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL url = http_test_server_.GetURL("/hung");
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader =
+      CreateTestLoader(url, std::string(), "GET", &delegate);
+  loader->Start();
+  loader->SetNavigationTimeout(base::TimeDelta::FromSeconds(3));
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+}
+
+// Like NavigationTimeoutTest but the navigation initially results in a redirect
+// before hanging, to test a slightly more complicated navigation.
+TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutRedirectTest) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL hang_url = http_test_server_.GetURL("/hung");
+  const GURL redirect_url =
+      http_test_server_.GetURL("/server-redirect?" + hang_url.spec());
+  TestNavigationURLLoaderDelegate delegate;
+  std::unique_ptr<NavigationURLLoader> loader =
+      CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
+  loader->Start();
+  loader->SetNavigationTimeout(base::TimeDelta::FromSeconds(3));
+  delegate.WaitForRequestRedirected();
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
 }
 
 }  // namespace content

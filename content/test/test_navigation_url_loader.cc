@@ -44,6 +44,11 @@ void TestNavigationURLLoader::FollowRedirect(
   redirect_count_++;
 }
 
+bool TestNavigationURLLoader::SetNavigationTimeout(base::TimeDelta timeout) {
+  // Do nothing. `false` here means no timeout was started.
+  return false;
+}
+
 void TestNavigationURLLoader::SimulateServerRedirect(const GURL& redirect_url) {
   DCHECK_EQ(loader_type_, NavigationURLLoader::LoaderType::kRegular);
   net::RedirectInfo redirect_info;

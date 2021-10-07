@@ -1421,6 +1421,21 @@ void NavigationURLLoaderImpl::FollowRedirect(
   Restart();
 }
 
+bool NavigationURLLoaderImpl::SetNavigationTimeout(base::TimeDelta timeout) {
+  // If the timer has already been started, don't change it.
+  if (timeout_timer_.IsRunning())
+    return false;
+
+  // Fail the navigation with error code ERR_TIMED_OUT if the timer triggers
+  // before the navigation commits.
+  timeout_timer_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&NavigationURLLoaderImpl::NotifyRequestFailed,
+                     base::Unretained(this),
+                     network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT)));
+  return true;
+}
+
 void NavigationURLLoaderImpl::NotifyResponseStarted(
     network::mojom::URLResponseHeadPtr response_head,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,

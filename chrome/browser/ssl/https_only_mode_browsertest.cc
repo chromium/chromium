@@ -349,9 +349,7 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
 // Tests that a navigation to the HTTP version of a site with an HTTPS version
 // that is slow to respond gets upgraded to HTTPS but times out and shows the
 // HTTPS-Only Mode interstitial.
-// TODO(crbug.com/1218526): Re-enable once fast-timeout is working.
-IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
-                       DISABLED_SlowHttps_ShouldInterstitial) {
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, SlowHttps_ShouldInterstitial) {
   // Set timeout to zero so that HTTPS upgrades immediately timeout.
   HttpsOnlyModeNavigationThrottle::set_timeout_for_testing(0);
 

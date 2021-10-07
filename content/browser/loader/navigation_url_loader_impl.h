@@ -216,6 +216,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       blink::PreviewsState new_previews_state) override;
+  bool SetNavigationTimeout(base::TimeDelta timeout) override;
 
   NavigationURLLoaderDelegate* delegate_;
   BrowserContext* browser_context_;
@@ -329,6 +330,9 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // cloned instead of being destroyed.
   mojo::ReceiverSet<network::mojom::AcceptCHFrameObserver>
       accept_ch_frame_observers_;
+
+  // Timer used for triggering (optional) early timeout on the navigation.
+  base::OneShotTimer timeout_timer_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };

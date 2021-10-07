@@ -497,6 +497,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Write a representation of this object into a trace.
   virtual void WriteIntoTrace(perfetto::TracedValue context) = 0;
 
+  // Sets an overall request timeout for this navigation, which will cause the
+  // navigation to fail if it expires before the navigation commits. This is
+  // separate from any //net level timeouts. This can only be set at the
+  // NavigationThrottle::WillRedirectRequest() stage of the navigation. Returns
+  // `true` if the timeout is being started for the first time. Repeated calls
+  // will be ignored (they won't reset the timeout) and will return `false`.
+  virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
+
   // Testing methods ----------------------------------------------------------
   //
   // The following methods should be used exclusively for writing unit tests.

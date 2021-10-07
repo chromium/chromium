@@ -106,6 +106,13 @@ class CONTENT_EXPORT NavigationURLLoader {
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       blink::PreviewsState new_previews_state) = 0;
 
+  // Sets an overall request timeout for this navigation, which will cause the
+  // navigation to fail if it expires before the navigation commits. This is
+  // separate from any //net level timeouts. Returns `true` if the timeout was
+  // started successfully. Repeated calls will be ignored (they won't reset the
+  // timeout) and will return `false`.
+  virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
+
  protected:
   NavigationURLLoader() {}
 };

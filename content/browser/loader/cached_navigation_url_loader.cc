@@ -89,4 +89,9 @@ void CachedNavigationURLLoader::FollowRedirect(
   NOTREACHED();
 }
 
+bool CachedNavigationURLLoader::SetNavigationTimeout(base::TimeDelta timeout) {
+  // `false` here means that no timeout was started.
+  return false;
+}
+
 }  // namespace content

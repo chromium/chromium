@@ -5831,6 +5831,20 @@ void NavigationRequest::WriteIntoTrace(perfetto::TracedValue context) {
     dict.Add("render_frame_host", GetRenderFrameHost());
 }
 
+bool NavigationRequest::SetNavigationTimeout(base::TimeDelta timeout) {
+  // Setting a navigation-level timeout isn't implemented yet for other states,
+  // as the `loader_` must already be created. This means that callers like
+  // NavigationThrottles should only call SetNavigationTimeout from
+  // WillRedirectRequest(). If other use cases come up that need to set this
+  // timeout at other points in the NavigationRequest lifecycle, one possible
+  // solution could be to have the NavigationRequest hold the timeout value
+  // temporarily until it creates the `loader_` in OnStartChecksCompleted().
+  DCHECK_EQ(state_, WILL_REDIRECT_REQUEST);
+  if (loader_)
+    return loader_->SetNavigationTimeout(timeout);
+  return false;
+}
+
 void NavigationRequest::RenderProcessBlockedStateChanged(bool blocked) {
   if (blocked)
     StopCommitTimeout();

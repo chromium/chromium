@@ -353,6 +353,7 @@ class CONTENT_EXPORT NavigationRequest
   bool IsWaitingToCommit() override;
   bool WasEarlyHintsPreloadLinkHeaderReceived() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
+  bool SetNavigationTimeout(base::TimeDelta timeout) override;
 
   void RegisterCommitDeferringConditionForTesting(
       std::unique_ptr<CommitDeferringCondition> condition);

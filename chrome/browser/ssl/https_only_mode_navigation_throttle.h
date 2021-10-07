@@ -71,7 +71,6 @@ class HttpsOnlyModeNavigationThrottle : public content::NavigationThrottle {
       const HttpsOnlyModeNavigationThrottle&) = delete;
 
   // content::NavigationThrottle:
-  content::NavigationThrottle::ThrottleCheckResult WillStartRequest() override;
   content::NavigationThrottle::ThrottleCheckResult WillRedirectRequest()
       override;
   content::NavigationThrottle::ThrottleCheckResult WillFailRequest() override;
@@ -82,10 +81,6 @@ class HttpsOnlyModeNavigationThrottle : public content::NavigationThrottle {
   static void set_timeout_for_testing(int timeout_in_seconds);
 
  private:
-  void OnHttpsLoadTimeout();
-
-  base::OneShotTimer timer_;
-
   std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory_;
 };
 
