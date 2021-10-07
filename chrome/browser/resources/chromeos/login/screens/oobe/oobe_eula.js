@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+/* #js_imports_placeholder */
 
 // Enum that describes the current state of the Terms Of Service screen
-const UIState = {
+const EulaScreenState = {
   LOADING: 'loading',
   EULA: 'eula',
   SECURITY: 'security',
 };
 
-const CLEAR_ANCHORS_CONTENT_SCRIPT = {
+const EULA_CLEAR_ANCHORS_CONTENT_SCRIPT = {
   code: 'A=Array.from(document.getElementsByTagName("a"));' +
       'for(var i = 0; i < A.length; ++i) {' +
       '  const el = A[i];' +
@@ -49,7 +49,7 @@ const ONLINE_EULA_RETRY_BACKOFF_TIMEOUT_IN_MS = 1000;
  * URL to use when online page is not available.
  * @type {string}
  */
-const TERMS_URL = 'chrome://terms';
+const EULA_TERMS_URL = 'chrome://terms';
 
 // EulaLoader assists on the process of loading an URL into a webview.
 // It listens for events from the webRequest API for the given URL and
@@ -81,15 +81,15 @@ class EulaLoader {
     this.url_ = '';
 
     if (clear_anchors) {
-      // Add the CLEAR_ANCHORS_CONTENT_SCRIPT that will clear <a><\a>
+      // Add the EULA_CLEAR_ANCHORS_CONTENT_SCRIPT that will clear <a><\a>
       // (anchors) in order to prevent any navigation in the webview itself.
       webview.addContentScripts([{
         name: 'clearAnchors',
         matches: ['<all_urls>'],
-        js: CLEAR_ANCHORS_CONTENT_SCRIPT,
+        js: EULA_CLEAR_ANCHORS_CONTENT_SCRIPT,
       }]);
       webview.addEventListener('contentload', () => {
-        webview.executeScript(CLEAR_ANCHORS_CONTENT_SCRIPT);
+        webview.executeScript(EULA_CLEAR_ANCHORS_CONTENT_SCRIPT);
       });
     }
     webview.addEventListener('contentload', () => {
@@ -236,75 +236,90 @@ EulaLoader.instances = {};
  * screen.
  */
 
-Polymer({
-  is: 'oobe-eula-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+ const EulaScreenBase = Polymer.mixinBehaviors(
+  [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+  Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+class EulaScreen extends EulaScreenBase {
 
-  EXTERNAL_API: [
-    'setUsageStats',
-    'showAdditionalTosDialog',
-    'showSecuritySettingsDialog',
-    'setTpmDesc',
-  ],
+  static get is() { return 'oobe-eula-element'; }
 
-  properties: {
-    /**
-     * "Accepot and continue" button is disabled until content is loaded.
-     */
-    acceptButtonDisabled: {
-      type: Boolean,
-      value: true,
-    },
+  /* #html_template_placeholder */
 
-    /**
-     * If "Report anonymous usage stats" checkbox is checked.
-     */
-    usageStatsChecked: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      /**
+       * "Accept and continue" button is disabled until content is loaded.
+       */
+      acceptButtonDisabled: {
+        type: Boolean,
+      },
 
-    /*
-     * @type {string}
-     */
-    tpmDescription_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * If "Report anonymous usage stats" checkbox is checked.
+       */
+      usageStatsChecked: {
+        type: Boolean,
+      },
 
-  /**
-   * Flag that ensures that eula screen set up once.
-   * @private {boolean}
-   */
-  initialized_: false,
+      tpmDescription_: {
+        type: String,
+      },
+
+      /**
+       * Flag that ensures that eula screen set up once.
+       * @private
+       */
+      initialized_: {
+        type: Boolean,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    this.UI_STEPS = EulaScreenState;
+    this.acceptButtonDisabled = true;
+    this.usageStatsChecked = false;
+    this.tpmDescription_ = '';
+    this.initialized_ = false;
+  }
+
+  get EXTERNAL_API() {
+    return ['setUsageStats',
+            'showAdditionalTosDialog',
+            'showSecuritySettingsDialog',
+            'setTpmDesc'];
+  }
 
   defaultUIStep() {
-    return UIState.LOADING;
-  },
-
-  UI_STEPS: UIState,
+    return EulaScreenState.LOADING;
+  }
 
   /** Called just before the dialog is shown */
   onBeforeShow() {
     window.setTimeout(this.initializeScreen_.bind(this), 0);
     this.updateLocalizedContent();
-  },
+  }
 
   ready() {
+    super.ready();
     this.initializeLoginScreen('EulaScreen', {
       resetAllowed: true,
     });
-  },
+  }
 
   /**
    * Set up dialog before shown it for the first time.
    * @private
+   * @suppress {missingProperties}
    */
   initializeScreen_() {
     if (this.initialized_)
@@ -312,7 +327,7 @@ Polymer({
     this.$.eulaDialog.scrollToBottom();
     this.applyOobeConfiguration_();
     this.initialized_ = true;
-  },
+  }
 
   /**
    * Called when dialog is shown for the first time.
@@ -328,17 +343,18 @@ Polymer({
     if (configuration.eulaAutoAccept) {
       this.eulaAccepted_();
     }
-  },
+  }
 
   /**
    * Event handler that is invoked when EULA is loaded. Either online version or
    * 'chrome://terms' fallback.
+   * @suppress {missingProperties}
    */
   onFrameLoad_() {
     this.acceptButtonDisabled = false;
-    this.setUIStep(UIState.EULA);
+    this.setUIStep(EulaScreenState.EULA);
     this.$.eulaDialog.scrollToBottom();
-  },
+  }
 
   /**
    * Load Eula into the given webview. Online version is attempted first with
@@ -358,7 +374,7 @@ Polymer({
 
     var loadBundledEula = function() {
       WebViewHelper.loadUrlContentToWebView(
-          webview, TERMS_URL, WebViewHelper.ContentType.HTML);
+          webview, EULA_TERMS_URL, WebViewHelper.ContentType.HTML);
     };
 
     // Load online Eula with a timeout to fallback to the offline version.
@@ -367,16 +383,17 @@ Polymer({
         webview, ONLINE_EULA_LOAD_TIMEOUT_IN_MS, loadBundledEula,
         clear_anchors);
     eulaLoader.setUrl(onlineEulaUrl);
-  },
+  }
 
   /**
    * This is called when strings are updated.
+   * @suppress {missingProperties}
    */
   updateLocalizedContent() {
     // This forces frame to reload.
     const onlineEulaUrl = loadTimeData.getString('eulaOnlineUrl');
 
-    this.setUIStep(UIState.LOADING);
+    this.setUIStep(EulaScreenState.LOADING);
     this.loadEulaToWebview_(
         this.$.crosEulaFrame, onlineEulaUrl, false /* clear_anchors */);
 
@@ -386,7 +403,7 @@ Polymer({
         this.$.additionalChromeToSFrame, additionalToSUrl,
         true /* clear_anchors */);
     this.i18nUpdateLocale();
-  },
+  }
 
   /**
    * This is 'on-tap' event handler for 'Accept' button.
@@ -395,7 +412,7 @@ Polymer({
    */
   eulaAccepted_() {
     this.userActed('accept-button');
-  },
+  }
 
   /**
    * On-change event handler for usageStats.
@@ -408,40 +425,43 @@ Polymer({
     } else {
       this.userActed('unselect-stats-usage');
     }
-  },
+  }
 
   /**
    * @private
    */
   onAdditionalTermsClicked_() {
     this.userActed('show-additional-tos');
-  },
+  }
 
   /**
    * Shows additional terms of service dialog.
+   * @suppress {missingProperties}
    */
   showAdditionalTosDialog() {
     this.$.additionalToS.showDialog();
     this.$.closeAdditionalTos.focus();
-  },
+  }
 
   /**
    * On-click event handler for close button of the additional ToS dialog.
    *
    * @private
+   * @suppress {missingProperties}
    */
   hideToSDialog_() {
     this.$.additionalToS.hideDialog();
     this.focusAdditionalTermsLink_();
-  },
+  }
 
   /**
    * @private
+   * @suppress {missingProperties}
    */
   focusAdditionalTermsLink_() {
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$.additionalTerms.focus());
-  },
+  }
 
   /**
    * On-tap event handler for securitySettings.
@@ -450,43 +470,45 @@ Polymer({
    */
   onSecuritySettingsClicked_() {
     this.userActed('show-security-settings');
-  },
+  }
 
   /**
    * Shows system security settings dialog.
    */
   showSecuritySettingsDialog() {
-    this.setUIStep(UIState.SECURITY);
-  },
+    this.setUIStep(EulaScreenState.SECURITY);
+  }
 
   /**
    * Sets TPM description message.
    */
   setTpmDesc(description) {
     this.tpmDescription_ = description;
-  },
+  }
 
   /**
    * On-tap event handler for the close button on security settings page.
    *
    * @private
+   * @suppress {missingProperties}
    */
   onSecuritySettingsCloseClicked_() {
-    this.setUIStep(UIState.EULA);
+    this.setUIStep(EulaScreenState.EULA);
     Polymer.RenderStatus.afterNextRender(
         this, () => this.$.securitySettings.focus());
-  },
+  }
 
   /**
    * On-tap event handler for stats-help-link.
    *
    * @private
+   * @suppress {missingProperties}
    */
   onUsageStatsHelpLinkClicked_(e) {
     this.userActed('show-stats-usage-learn-more');
     this.$.learnMore.focus();
     e.stopPropagation();
-  },
+  }
 
   /**
    * On-tap event handler for back button.
@@ -495,7 +517,7 @@ Polymer({
    */
   onEulaBackButtonPressed_() {
     this.userActed('back-button');
-  },
+  }
 
   /**
    * Sets usage statistics checkbox.
@@ -503,6 +525,7 @@ Polymer({
    */
   setUsageStats(checked) {
     this.usageStatsChecked = checked;
-  },
-});
-})();
+  }
+}
+
+customElements.define(EulaScreen.is, EulaScreen);
