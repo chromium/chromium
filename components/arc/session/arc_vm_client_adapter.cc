@@ -329,6 +329,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     uint32_t cpus,
     const base::FilePath& demo_session_apps_path,
     const FileSystemStatus& file_system_status,
+    bool use_per_vm_core_scheduling,
     std::vector<std::string> kernel_cmdline,
     base::OnceCallback<bool(base::SystemMemoryInfoKB*)>
         get_system_memory_info_cb) {
@@ -336,6 +337,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
   request.set_name(kArcVmName);
   request.set_owner_id(kArcVmDefaultOwner);
+  request.set_use_per_vm_core_scheduling(use_per_vm_core_scheduling);
 
   request.add_params("root=/dev/vda");
   if (file_system_status.is_host_rootfs_writable() &&
@@ -880,15 +882,20 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                              FileSystemStatus file_system_status) {
     const base::FilePath demo_session_apps_path =
         demo_mode_delegate_->GetDemoAppsPath();
+    const bool use_per_vm_core_scheduling =
+        base::FeatureList::IsEnabled(kEnablePerVmCoreScheduling);
 
-    // When the CPU has MDS or L1TF vulnerabilities, crosvm won't be allowed to
-    // run two vCPUs on the same physical core at the same time. This
-    // effectively disables SMT on crosvm. Because of this restriction, when the
-    // CPU has the vulnerabilities, set |cpus| to the number of physical cores.
-    // Otherwise, set the variable to the number of logical cores minus the ones
-    // disabled by chrome://flags/#scheduler-configuration.
+    // When the CPU has MDS or L1TF vulnerabilities, and per-VM core scheduling
+    // is not enabled via |kEnablePerVmCoreScheduling|, crosvm won't be allowed
+    // to run two vCPUs on the same physical core at the same time. This mode is
+    // called per-vCPU core scheduling, and it effectively disables SMT on
+    // crosvm. Because of this restriction, when per-vCPU core scheduling is in
+    // use, set |cpus| to the number of physical cores. Otherwise, set the
+    // variable to the number of logical cores minus the ones disabled by
+    // chrome://flags/#scheduler-configuration.
     const int32_t cpus =
-        chromeos::system::IsCoreSchedulingAvailable()
+        (chromeos::system::IsCoreSchedulingAvailable() &&
+         !use_per_vm_core_scheduling)
             ? chromeos::system::NumberOfProcessorsForCoreScheduling()
             : base::SysInfo::NumberOfProcessors() -
                   start_params_.num_cores_disabled;
@@ -899,7 +906,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         GetChromeOsChannelFromLsbRelease());
     auto start_request = CreateStartArcVmRequest(
         cpus, demo_session_apps_path, file_system_status,
-        std::move(kernel_cmdline),
+        use_per_vm_core_scheduling, std::move(kernel_cmdline),
         base::BindOnce(&ArcVmClientAdapterDelegate::GetSystemMemoryInfo,
                        // Unretained is safe because CreateStartArcVmRequest is
                        // a synchronous function.

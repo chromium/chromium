@@ -29,6 +29,19 @@ const base::Feature kDocumentsProviderUnknownSizeFeature{
 const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether crosvm for ARCVM does per-VM core scheduling on devices with
+// MDS/L1TF vulnerabilities. When this feature is disabled, crosvm does per-vCPU
+// core scheduling which is more secure.
+//
+// How to safely disable this feature for security (or other) reasons:
+//
+// 1) Visit go/stainless and verify arc.Boot.vm_with_per_vcpu_core_scheduling is
+//    green (it should always be because arc.Boot is a critical test.)
+// 2) Change the default value of this feature to FEATURE_DISABLED_BY_DEFAULT.
+// 3) Monitor arc.Boot.vm at go/stainless after Chrome is rolled.
+const base::Feature kEnablePerVmCoreScheduling{
+    "ArcEnablePerVmCoreScheduling", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls whether to pass throttling notifications to Android side.
 const base::Feature kEnableThrottlingNotification{
     "ArcEnableThrottlingNotification", base::FEATURE_ENABLED_BY_DEFAULT};

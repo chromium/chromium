@@ -672,6 +672,18 @@ TEST_F(ArcVmClientAdapterTest, StartMiniArc) {
   StopArcInstance(/*arc_upgraded=*/false);
 }
 
+// Tests that StartMiniArc() still succeeds without the feature.
+TEST_F(ArcVmClientAdapterTest, StartMiniArc_WithPerVCpuCoreScheduling) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(kEnablePerVmCoreScheduling,
+                                    false /* use */);
+
+  StartMiniArc();
+  EXPECT_GE(GetTestConciergeClient()->start_arc_vm_call_count(), 1);
+
+  StopArcInstance(/*arc_upgraded=*/false);
+}
+
 // Tests that StartMiniArc() still succeeds even when Upstart fails to stop
 // the arcvm-post-login-services job.
 TEST_F(ArcVmClientAdapterTest, StartMiniArc_StopArcVmPostLoginServicesJobFail) {

@@ -17,6 +17,7 @@ extern const base::Feature kBootCompletedBroadcastFeature;
 extern const base::Feature kCustomTabsExperimentFeature;
 extern const base::Feature kDocumentsProviderUnknownSizeFeature;
 extern const base::Feature kEnableArcNearbyShare;
+extern const base::Feature kEnablePerVmCoreScheduling;
 extern const base::Feature kEnableThrottlingNotification;
 extern const base::Feature kEnableUnifiedAudioFocusFeature;
 extern const base::Feature kEnableUnmanagedToManagedTransitionFeature;
