@@ -32,6 +32,7 @@ generate_grd("build_grdp") {
       "chromeos/cellular_setup/final_page_success_1x.png",
       "chromeos/cellular_setup/final_page_success_2x.png",
       "chromeos/cellular_setup/default_esim_profile.svg",
+      "chromeos/cellular_setup/default_esim_profile_dark.svg",
       "chromeos/network/cellular_0_with_x.svg",
       "chromeos/network/cellular_0.svg",
       "chromeos/network/cellular_1.svg",
