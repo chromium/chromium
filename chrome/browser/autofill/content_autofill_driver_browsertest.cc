@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_controller.h"
@@ -305,6 +307,50 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 
   // No corresponding form field.
   GetElementFormAndFieldData("#whatever", /*expected_form_size=*/0u);
+}
+
+class ContentAutofillDriverPrerenderBrowserTest
+    : public ContentAutofillDriverBrowserTest {
+ public:
+  ContentAutofillDriverPrerenderBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        features::kAutofillProbableFormSubmissionInBrowser);
+  }
+  ~ContentAutofillDriverPrerenderBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
+                       PrerenderingDoesNotSubmitForm) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Set a dummy form data to simulate to submit a form. And, OnFormSubmitted
+  // method will be called upon navigation.
+  ContentAutofillDriverFactory::FromWebContents(web_contents())
+      ->DriverForFrame(web_contents()->GetMainFrame())
+      ->SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
+
+  base::HistogramTester histogram_tester;
+
+  // Load a page in the prerendering.
+  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  // TODO(crbug.com/1200511): use a mock AutofillManager and
+  // EXPECT_CALL(manager, OnFormSubmitted(_, _, _)).
+  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
+                                    0);
+
+  // Activate the page from the prerendering.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
+                                    1);
 }
 
 }  // namespace autofill
