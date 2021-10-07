@@ -606,9 +606,15 @@ class ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest
       test_cert_verifier_service_factory_;
 };
 
+// https://crbug.com/1257679 -- This test is failing on several Mac builders.
+#if defined(OS_MAC)
+#define MAYBE_Test DISABLED_Test
+#else
+#define MAYBE_Test Test
+#endif
 IN_PROC_BROWSER_TEST_P(
     ProfileNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
-    Test) {
+    MAYBE_Test) {
   {
     CreateNewProfile()->GetDefaultStoragePartition()->GetNetworkContext();
 
