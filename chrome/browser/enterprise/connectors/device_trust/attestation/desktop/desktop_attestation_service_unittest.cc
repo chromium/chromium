@@ -44,7 +44,7 @@ class DesktopAttestationServiceTest : public testing::Test {
 
     // Make sure a signing key exists for the tests. This won't actual require
     // admin rights because of MemorySigningKeyPair.
-    auto key_pair = test::MemorySigningKeyPair::Create();
+    auto key_pair = test::CreateInMemorySigningKeyPair(nullptr, nullptr);
     ASSERT_TRUE(key_pair->RotateWithAdminRights("fake_dm_token"));
 
     attestation_service_ =

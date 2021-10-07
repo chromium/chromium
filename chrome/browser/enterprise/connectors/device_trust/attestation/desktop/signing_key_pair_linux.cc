@@ -11,39 +11,29 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 namespace enterprise_connectors {
 
-namespace {
-class SigningKeyPairLinux : public SigningKeyPair {
- public:
-  // SigningKeyPair:
-  std::unique_ptr<crypto::UnexportableKeyProvider> GetTpmBackedKeyProvider()
-      override;
-  bool StoreKeyPair(KeyTrustLevel trust_level,
-                    std::vector<uint8_t> wrapped) override;
-  KeyInfo LoadKeyPair() override;
-};
-
-std::unique_ptr<crypto::UnexportableKeyProvider>
-SigningKeyPairLinux::GetTpmBackedKeyProvider() {
-  return crypto::GetUnexportableKeyProvider();
-}
-
-bool SigningKeyPairLinux::StoreKeyPair(KeyTrustLevel trust_level,
-                                       std::vector<uint8_t> wrapped) {
+bool SigningKeyPair::PersistenceDelegate::StoreKeyPair(
+    KeyTrustLevel trust_level,
+    std::vector<uint8_t> wrapped) {
   NOTIMPLEMENTED();
   return false;
 }
 
-SigningKeyPair::KeyInfo SigningKeyPairLinux::LoadKeyPair() {
+SigningKeyPair::KeyInfo SigningKeyPair::PersistenceDelegate::LoadKeyPair() {
   NOTIMPLEMENTED();
   return {BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()};
 }
 
-}  // namespace
+std::string SigningKeyPair::NetworkDelegate::SendPublicKeyToDmServerSync(
+    const std::string& url,
+    const std::string& dm_token,
+    const std::string& body) {
+  NOTIMPLEMENTED();
+  return std::string();
+}
 
-// static
-std::unique_ptr<SigningKeyPair> SigningKeyPair::CreatePlatformKeyPair() {
-  // TODO(b/194891140): Take care of the NOTIMPLEMENTED above.
-  return std::make_unique<SigningKeyPairLinux>();
+std::unique_ptr<crypto::UnexportableKeyProvider>
+SigningKeyPair::GetTpmBackedKeyProvider() {
+  return nullptr;
 }
 
 }  // namespace enterprise_connectors

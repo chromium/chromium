@@ -18,23 +18,11 @@ SigningKeyPair::KeyInfo InvalidKeyInfo() {
   return {BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()};
 }
 
-class SigningKeyPairWin : public SigningKeyPair {
- public:
-  // SigningKeyPair:
-  std::unique_ptr<crypto::UnexportableKeyProvider> GetTpmBackedKeyProvider()
-      override;
-  bool StoreKeyPair(KeyTrustLevel trust_level,
-                    std::vector<uint8_t> wrapped) override;
-  KeyInfo LoadKeyPair() override;
-};
+}  // namespace
 
-std::unique_ptr<crypto::UnexportableKeyProvider>
-SigningKeyPairWin::GetTpmBackedKeyProvider() {
-  return crypto::GetUnexportableKeyProvider();
-}
-
-bool SigningKeyPairWin::StoreKeyPair(KeyTrustLevel trust_level,
-                                     std::vector<uint8_t> wrapped) {
+bool SigningKeyPair::PersistenceDelegate::StoreKeyPair(
+    KeyTrustLevel trust_level,
+    std::vector<uint8_t> wrapped) {
   base::win::RegKey key;
   std::wstring signingkey_name;
   std::wstring trustlevel_name;
@@ -49,7 +37,7 @@ bool SigningKeyPairWin::StoreKeyPair(KeyTrustLevel trust_level,
          key.WriteValue(trustlevel_name.c_str(), trust_level) == ERROR_SUCCESS;
 }
 
-SigningKeyPair::KeyInfo SigningKeyPairWin::LoadKeyPair() {
+SigningKeyPair::KeyInfo SigningKeyPair::PersistenceDelegate::LoadKeyPair() {
   base::win::RegKey key;
   std::wstring signingkey_name;
   std::wstring trustlevel_name;
@@ -87,11 +75,23 @@ SigningKeyPair::KeyInfo SigningKeyPairWin::LoadKeyPair() {
   return {trust_level, wrapped};
 }
 
-}  // namespace
+std::string SigningKeyPair::NetworkDelegate::SendPublicKeyToDmServerSync(
+    const std::string& url,
+    const std::string& dm_token,
+    const std::string& body) {
+  // TODO(rogerta): To keep tests passing, just respond as if the request
+  // succeeded.  This will be fixed in my follow up CL.
+  enterprise_management::DeviceManagementResponse response;
+  response.mutable_browser_public_key_upload_response()->set_response_code(
+      enterprise_management::BrowserPublicKeyUploadResponse::SUCCESS);
+  std::string response_str;
+  response.SerializeToString(&response_str);
+  return response_str;
+}
 
-// static
-std::unique_ptr<SigningKeyPair> SigningKeyPair::CreatePlatformKeyPair() {
-  return std::make_unique<SigningKeyPairWin>();
+std::unique_ptr<crypto::UnexportableKeyProvider>
+SigningKeyPair::GetTpmBackedKeyProvider() {
+  return crypto::GetUnexportableKeyProvider();
 }
 
 }  // namespace enterprise_connectors

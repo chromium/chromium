@@ -16,29 +16,64 @@ namespace enterprise_connectors {
 
 namespace test {
 
-// A SigningKeyPair that persists signing keys in memory only.  All instances
-// share the same underlying persistence.
-class MemorySigningKeyPair : public SigningKeyPair {
+// A persistence delegate that keeps keys in memory and allows the owner to
+// control whether the persistence will fail or not.  This is useful in
+// implementing MemorySigningKeyPair but can also be used in other test code
+// that wants to avoid real persistence.
+class InMemorySigningKeyPairPersistenceDelegate
+    : public SigningKeyPair::PersistenceDelegate {
  public:
-  static std::unique_ptr<MemorySigningKeyPair> Create();
-
-  // SigningKeyPair:
-  bool StoreKeyPair(KeyTrustLevel trust_level,
+  bool StoreKeyPair(SigningKeyPair::KeyTrustLevel trust_level,
                     std::vector<uint8_t> wrapped) override;
-  KeyInfo LoadKeyPair() override;
+  SigningKeyPair::KeyInfo LoadKeyPair() override;
 
-  // Determines whether calls to StoreKeyPair() fail or not.
   void set_force_store_to_fail(bool force_store_to_fail) {
     force_store_to_fail_ = force_store_to_fail;
   }
 
  private:
-  MemorySigningKeyPair();
-
   bool force_store_to_fail_ = false;
 };
 
-// Makes sure to clear the memory used to by MemorySigningKeyPair instances.
+// A network delegate that sends keys to the bit bucket but allows the owner
+// to simulate whether the network request fails or not.  This is useful in
+// implementing MemorySigningKeyPair but can also be used in other test code
+// that wants to avoid real networking.
+class InMemorySigningKeyPairNetworkDelegate
+    : public SigningKeyPair::NetworkDelegate {
+ public:
+  InMemorySigningKeyPairNetworkDelegate();
+  ~InMemorySigningKeyPairNetworkDelegate() override;
+
+  std::string SendPublicKeyToDmServerSync(const std::string& url,
+                                          const std::string& dm_token,
+                                          const std::string& body) override;
+
+  void set_force_network_to_fail(bool force_network_to_fail) {
+    force_network_to_fail_ = force_network_to_fail;
+  }
+
+  const std::string& url() { return url_; }
+  const std::string& dm_token() { return dm_token_; }
+  const std::string& body() { return body_; }
+
+ private:
+  bool force_network_to_fail_ = false;
+  std::string url_;
+  std::string dm_token_;
+  std::string body_;
+};
+
+// Creates a SigningKeyPair that stored keys in memory and that
+// simulates network requests to DM server.  The output arguments are
+// optional and return interfaces to control the behaviour of the delegates.
+// The lifetime of the control interfaces is the same as the returned
+// signing key pair.
+std::unique_ptr<SigningKeyPair> CreateInMemorySigningKeyPair(
+    InMemorySigningKeyPairPersistenceDelegate** pdelegate_ptr,
+    InMemorySigningKeyPairNetworkDelegate** nelegate_ptr);
+
+// Makes sure to clear the memory used to by InMemorySigningKeyPair*Delegates.
 // The memory is clear at both constructor and destructor time.
 class ScopedMemorySigningKeyPairPersistence {
  public:

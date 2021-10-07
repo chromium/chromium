@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/ec_signing_key.h"
@@ -31,7 +32,16 @@ absl::optional<std::vector<uint8_t>>& GetForcedTpmKeyStorage() {
 
 // static
 std::unique_ptr<SigningKeyPair> SigningKeyPair::Create() {
-  auto key_pair = CreatePlatformKeyPair();
+  return CreateWithDelegates(std::make_unique<PersistenceDelegate>(),
+                             std::make_unique<NetworkDelegate>());
+}
+
+// static
+std::unique_ptr<SigningKeyPair> SigningKeyPair::CreateWithDelegates(
+    std::unique_ptr<PersistenceDelegate> persistence_delegate,
+    std::unique_ptr<NetworkDelegate> network_delegate) {
+  auto key_pair = base::WrapUnique(new SigningKeyPair(
+      std::move(persistence_delegate), std::move(network_delegate)));
   if (key_pair)
     key_pair->Init();
 
@@ -49,7 +59,14 @@ void SigningKeyPair::ClearTpmKeyWrappedForTesting() {
   GetForcedTpmKeyStorage().reset();
 }
 
-SigningKeyPair::SigningKeyPair() = default;
+SigningKeyPair::SigningKeyPair(
+    std::unique_ptr<PersistenceDelegate> persistence_delegate,
+    std::unique_ptr<NetworkDelegate> network_delegate)
+    : persistence_delegate_(std::move(persistence_delegate)),
+      network_delegate_(std::move(network_delegate)) {
+  DCHECK(persistence_delegate_);
+  DCHECK(network_delegate_);
+}
 
 SigningKeyPair::~SigningKeyPair() = default;
 
@@ -64,7 +81,7 @@ void SigningKeyPair::Init() {
     trust_level = BPKUR::CHROME_BROWSER_TPM_KEY;
     wrapped = forced_tpm_key_wrapped.value();
   } else {
-    std::tie(trust_level, wrapped) = LoadKeyPair();
+    std::tie(trust_level, wrapped) = persistence_delegate_->LoadKeyPair();
   }
 
   if (wrapped.empty()) {
@@ -117,6 +134,10 @@ bool SigningKeyPair::ExportPublicKey(std::vector<uint8_t>* public_key) {
 }
 
 bool SigningKeyPair::RotateWithAdminRights(const std::string& dm_token) {
+  // TODO: In followup CL, these will arguments to the function.
+  std::string dm_server_url;
+  std::string nonce;
+
   // Create a new key pair.  First try creating a TPM-backed key.  If that does
   // not work, try a less secure type.
   KeyTrustLevel new_trust_level = BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED;
@@ -141,25 +162,35 @@ bool SigningKeyPair::RotateWithAdminRights(const std::string& dm_token) {
   if (!new_key_pair)
     return false;
 
-  // Get the pubkey of the new key pair.
-  std::vector<uint8_t> pubkey = new_key_pair->GetSubjectPublicKeyInfo();
-
-  // If there is an existing key, sign the new pubkey.  Otherwise send an
-  // empty signature to DM server.
-  absl::optional<std::vector<uint8_t>> signature;
-  if (key_pair_) {
-    signature = key_pair_->SignSlowly(pubkey);
-    if (!signature.has_value())
-      return false;
+  if (!persistence_delegate_->StoreKeyPair(new_trust_level,
+                                           new_key_pair->GetWrappedKey())) {
+    return false;
   }
 
-  if (!StoreKeyPair(new_trust_level, new_key_pair->GetWrappedKey()))
+  enterprise_management::DeviceManagementRequest request;
+  if (!BuildUploadPublicKeyRequest(
+          new_trust_level, new_key_pair, nonce,
+          request.mutable_browser_public_key_upload_request())) {
     return false;
+  }
 
-  // TODO(b/195447899): send pubkey and signature to DM server.  If this fails
-  // restore the old key and return false:
-  //   StoreKeyPair(trust_level_, key_pair_->GetWrappedKey())
-  //   return false;
+  std::string request_str;
+  request.SerializeToString(&request_str);
+  std::string response_str = network_delegate_->SendPublicKeyToDmServerSync(
+      dm_server_url, dm_token, request_str);
+  enterprise_management::DeviceManagementResponse response;
+  if (response_str.empty() || !response.ParseFromString(response_str) ||
+      !response.has_browser_public_key_upload_response() ||
+      !response.browser_public_key_upload_response().has_response_code() ||
+      response.browser_public_key_upload_response().response_code() !=
+          enterprise_management::BrowserPublicKeyUploadResponse::SUCCESS) {
+    // Unable to send to DM server, so restore the old key if there was one.
+    if (key_pair_) {
+      persistence_delegate_->StoreKeyPair(trust_level_,
+                                          key_pair_->GetWrappedKey());
+    }
+    return false;
+  }
 
   key_pair_ = std::move(new_key_pair);
   trust_level_ = new_trust_level;
@@ -167,10 +198,31 @@ bool SigningKeyPair::RotateWithAdminRights(const std::string& dm_token) {
   return true;
 }
 
-// Derived classes are expected to provide an implementation if possible.
-std::unique_ptr<crypto::UnexportableKeyProvider>
-SigningKeyPair::GetTpmBackedKeyProvider() {
-  return nullptr;
+bool SigningKeyPair::BuildUploadPublicKeyRequest(
+    KeyTrustLevel new_trust_level,
+    const std::unique_ptr<crypto::UnexportableSigningKey>& new_key_pair,
+    const std::string& nonce,
+    enterprise_management::BrowserPublicKeyUploadRequest* request) {
+  std::vector<uint8_t> pubkey = new_key_pair->GetSubjectPublicKeyInfo();
+
+  // Build the buffer to sign.  It consists of the public key of the new key
+  // pair followed by the nonce.  The nonce vector may be empty.
+  std::vector<uint8_t> buffer = pubkey;
+  buffer.insert(buffer.end(), nonce.begin(), nonce.end());
+
+  // If there is an existing key, sign the new pubkey with it.  Otherwise sign
+  // it with the new key itself (i.e. the public key is self-signed).
+  absl::optional<std::vector<uint8_t>> signature =
+      key_pair_ ? key_pair_->SignSlowly(buffer)
+                : new_key_pair->SignSlowly(buffer);
+  if (!signature.has_value())
+    return false;
+
+  request->set_public_key(pubkey.data(), pubkey.size());
+  request->set_signature(signature->data(), signature->size());
+  request->set_key_trust_level(new_trust_level);
+
+  return true;
 }
 
 }  // namespace enterprise_connectors

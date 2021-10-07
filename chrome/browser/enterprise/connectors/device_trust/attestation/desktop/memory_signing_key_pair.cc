@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
@@ -28,17 +29,9 @@ std::vector<uint8_t>* GetWrappedKeyStorage() {
 
 }  // namespace
 
-MemorySigningKeyPair::MemorySigningKeyPair() = default;
-
-// static
-std::unique_ptr<MemorySigningKeyPair> MemorySigningKeyPair::Create() {
-  auto key_pair = base::WrapUnique(new MemorySigningKeyPair);
-  key_pair->Init();
-  return key_pair;
-}
-
-bool MemorySigningKeyPair::StoreKeyPair(KeyTrustLevel trust_level,
-                                        std::vector<uint8_t> wrapped) {
+bool InMemorySigningKeyPairPersistenceDelegate::StoreKeyPair(
+    SigningKeyPair::KeyTrustLevel trust_level,
+    std::vector<uint8_t> wrapped) {
   if (force_store_to_fail_)
     return false;
 
@@ -47,8 +40,50 @@ bool MemorySigningKeyPair::StoreKeyPair(KeyTrustLevel trust_level,
   return true;
 }
 
-MemorySigningKeyPair::KeyInfo MemorySigningKeyPair::LoadKeyPair() {
+SigningKeyPair::KeyInfo
+InMemorySigningKeyPairPersistenceDelegate::LoadKeyPair() {
   return {g_trust_level, *GetWrappedKeyStorage()};
+}
+
+InMemorySigningKeyPairNetworkDelegate::InMemorySigningKeyPairNetworkDelegate() =
+    default;
+InMemorySigningKeyPairNetworkDelegate::
+    ~InMemorySigningKeyPairNetworkDelegate() = default;
+
+std::string InMemorySigningKeyPairNetworkDelegate::SendPublicKeyToDmServerSync(
+    const std::string& url,
+    const std::string& dm_token,
+    const std::string& body) {
+  url_ = url;
+  dm_token_ = dm_token;
+  body_ = body;
+
+  enterprise_management::DeviceManagementResponse response;
+  response.mutable_browser_public_key_upload_response()->set_response_code(
+      force_network_to_fail_
+          ? enterprise_management::BrowserPublicKeyUploadResponse::
+                INVALID_SIGNATURE
+          : enterprise_management::BrowserPublicKeyUploadResponse::SUCCESS);
+  std::string response_str;
+  response.SerializeToString(&response_str);
+  return response_str;
+}
+
+// static
+std::unique_ptr<SigningKeyPair> CreateInMemorySigningKeyPair(
+    InMemorySigningKeyPairPersistenceDelegate** pdelegate_ptr,
+    InMemorySigningKeyPairNetworkDelegate** ndelegate_ptr) {
+  auto pdelegate =
+      std::make_unique<InMemorySigningKeyPairPersistenceDelegate>();
+  auto ndelegate = std::make_unique<InMemorySigningKeyPairNetworkDelegate>();
+
+  if (pdelegate_ptr)
+    *pdelegate_ptr = pdelegate.get();
+  if (ndelegate_ptr)
+    *ndelegate_ptr = ndelegate.get();
+
+  return SigningKeyPair::CreateWithDelegates(std::move(pdelegate),
+                                             std::move(ndelegate));
 }
 
 ScopedMemorySigningKeyPairPersistence::ScopedMemorySigningKeyPairPersistence() {

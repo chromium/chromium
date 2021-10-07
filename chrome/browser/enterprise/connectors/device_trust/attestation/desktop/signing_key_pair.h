@@ -42,7 +42,48 @@ class SigningKeyPair {
 
   using KeyInfo = std::pair<KeyTrustLevel, std::vector<uint8_t>>;
 
+  // A delegate class that handles persistence of the key pair.  There is an
+  // implementation for each platform and also for tests.
+  class PersistenceDelegate {
+   public:
+    virtual ~PersistenceDelegate() = default;
+
+    // Stores the trust level and wrapped key in a platform specific location.
+    // This method requires elevation since it writes to a location that is
+    // shared by all OS users of the device.  Returns true on success.
+    virtual bool StoreKeyPair(KeyTrustLevel trust_level,
+                              std::vector<uint8_t> wrapped);
+
+    // Loads the key from a platform specific location.  Returns
+    // BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED and an empty vector if the trust level
+    // or wrapped bits could not be loaded.
+    virtual KeyInfo LoadKeyPair();
+  };
+
+  // A delegate class that handles network requests to DM server.  There is an
+  // implementation for each platform and also for tests.
+  class NetworkDelegate {
+   public:
+    virtual ~NetworkDelegate() = default;
+
+    // Sends `body`, which is a serialized DeviceManagementRequest, to DM
+    // server at `url`.  `dm_token` authn the local machine.  Only the
+    // BrowserPublicKeyUploadRequest member is expected to be initialized.
+    //
+    // The return // value is a string that can be parsed into
+    // DeviceManagementResponse.
+    virtual std::string SendPublicKeyToDmServerSync(const std::string& url,
+                                                    const std::string& dm_token,
+                                                    const std::string& body);
+  };
+
   static std::unique_ptr<SigningKeyPair> Create();
+
+  // Factory function that creates a SigningKeyPair with specific delegates
+  // used in some tests to control SigningKeyPair behaviour.
+  static std::unique_ptr<SigningKeyPair> CreateWithDelegates(
+      std::unique_ptr<PersistenceDelegate> persistence_delegate,
+      std::unique_ptr<NetworkDelegate> network_delegate);
 
   SigningKeyPair(const SigningKeyPair&) = delete;
   SigningKeyPair& operator=(const SigningKeyPair&) = delete;
@@ -61,7 +102,8 @@ class SigningKeyPair {
   bool RotateWithAdminRights(const std::string& dm_token) WARN_UNUSED_RESULT;
 
  protected:
-  SigningKeyPair();
+  SigningKeyPair(std::unique_ptr<PersistenceDelegate> persistence_delegate,
+                 std::unique_ptr<NetworkDelegate> network_delegate);
 
   // Initialize the key pair by loading from persistent storage.
   void Init();
@@ -75,27 +117,24 @@ class SigningKeyPair {
   // Clears any previously stored wrapped TPM key.
   static void ClearTpmKeyWrappedForTesting();
 
-  // Creates a signing key pair that is specific to the platform.
-  static std::unique_ptr<SigningKeyPair> CreatePlatformKeyPair();
-
   // Returns the TPM-backed signing key provider for the platform if available.
-  virtual std::unique_ptr<crypto::UnexportableKeyProvider>
-  GetTpmBackedKeyProvider();
+  std::unique_ptr<crypto::UnexportableKeyProvider> GetTpmBackedKeyProvider();
 
-  // Stores the trust level and wrapped key in a platform specific location.
-  // This method requires elevation since it writes to a location that is
-  // shared by all OS users of the device.  Returns true on success.
-  virtual bool StoreKeyPair(KeyTrustLevel trust_level,
-                            std::vector<uint8_t> wrapped) = 0;
-
-  // Loads the key from a platform specific location.  Returns
-  // BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED and an empty vector if the trust level
-  // or wrapped bits could not be loaded.
-  virtual KeyInfo LoadKeyPair() = 0;
+  // Builds the protobuf message needed to tell DM server about the new public
+  // for this device.  `nonce` is an opaque binary blob and should not be
+  // treated as an ASCII or UTF-8 string.
+  bool BuildUploadPublicKeyRequest(
+      KeyTrustLevel new_trust_level,
+      const std::unique_ptr<crypto::UnexportableSigningKey>& new_key_pair,
+      const std::string& nonce,
+      enterprise_management::BrowserPublicKeyUploadRequest* request);
 
   std::unique_ptr<crypto::UnexportableSigningKey> key_pair_;
   KeyTrustLevel trust_level_ = enterprise_management::
       BrowserPublicKeyUploadRequest::KEY_TRUST_LEVEL_UNSPECIFIED;
+
+  std::unique_ptr<PersistenceDelegate> persistence_delegate_;
+  std::unique_ptr<NetworkDelegate> network_delegate_;
 };
 
 }  // namespace enterprise_connectors
