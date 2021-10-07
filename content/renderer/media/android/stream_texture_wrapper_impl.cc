@@ -38,6 +38,12 @@ StreamTextureWrapperImpl::StreamTextureWrapperImpl(
 
 StreamTextureWrapperImpl::~StreamTextureWrapperImpl() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // Clears create video frame callback so it couldn't be called from compositor
+  // thread after |this| is being destroyed.
+  if (stream_texture_proxy_)
+    stream_texture_proxy_->ClearCreateVideoFrameCB();
+
   SetCurrentFrameInternal(nullptr);
 }
 
