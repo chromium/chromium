@@ -4429,6 +4429,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "pwa-uninstall-in-windows-os",
+    "owners": ["dmurph", "desktop-pwas-team@google.com"],
+    "expiry_milestone": 101
+  },
+  {
     "name": "pwa-update-dialog-for-name-and-icon",
     "owners": [ "finnur", "beverloo" ],
     "expiry_milestone": 99

@@ -2209,6 +2209,9 @@ extern const char kEnableMediaFoundationVideoCaptureDescription[];
 extern const char kHardwareSecureDecryptionName[];
 extern const char kHardwareSecureDecryptionDescription[];
 
+extern const char kPwaUninstallInWindowsOsName[];
+extern const char kPwaUninstallInWindowsOsDescription[];
+
 extern const char kRawAudioCaptureName[];
 extern const char kRawAudioCaptureDescription[];
 

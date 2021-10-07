@@ -3866,6 +3866,14 @@ const char kHardwareSecureDecryptionDescription[] =
     "Enable/Disable the use of hardware secure Content Decryption Module (CDM) "
     "for protected content playback.";
 
+const char kPwaUninstallInWindowsOsName[] =
+    "Enable PWAs to register as an uninstallable app in Windows on "
+    "installation.";
+const char kPwaUninstallInWindowsOsDescription[] =
+    "This allows the PWA to show up in Windows Control Panel (and other OS "
+    "surfaces), and be uninstallable from those surfaces. For example, "
+    "uninstalling by right-clicking on the app in the Start Menu.";
+
 const char kRawAudioCaptureName[] = "Raw audio capture";
 const char kRawAudioCaptureDescription[] =
     "Enable/Disable the usage of WASAPI raw audio capture. When enabled, the "
