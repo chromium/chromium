@@ -5,6 +5,9 @@
 #include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
 
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #include "base/files/scoped_file.h"
 #include "base/strings/stringprintf.h"
@@ -17,6 +20,7 @@ namespace {
 constexpr char kDriRenderNodeTemplate[] = "/dev/dri/renderD%u";
 
 // Number of files to look for when discovering DRM devices.
+constexpr uint32_t kDrmMajor = 226;
 constexpr uint32_t kDrmMaxMinor = 15;
 constexpr uint32_t kRenderNodeStart = 128;
 constexpr uint32_t kRenderNodeEnd = kRenderNodeStart + kDrmMaxMinor + 1;
@@ -35,6 +39,18 @@ base::FilePath DrmRenderNodePathFinder::GetDrmRenderNodePath() const {
 
 void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
   for (uint32_t i = kRenderNodeStart; i < kRenderNodeEnd; i++) {
+    /* First,  look in sysfs and skip if this is the vgem render node. */
+    std::string node_link(
+        base::StringPrintf("/sys/dev/char/%d:%d/device", kDrmMajor, i));
+    char device_link[256];
+    ssize_t len = readlink(node_link.c_str(), device_link, sizeof(device_link));
+    if (len < 0 || len == sizeof(device_link))
+      continue;
+
+    /* readlink does not place a nul byte at the end of the string. */
+    if (len >= 4 && memcmp(device_link + len - 4, "vgem", 4) == 0)
+      continue;
+
     std::string dri_render_node(base::StringPrintf(kDriRenderNodeTemplate, i));
     base::ScopedFD drm_fd(open(dri_render_node.c_str(), O_RDWR));
     if (drm_fd.get() < 0)
