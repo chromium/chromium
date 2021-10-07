@@ -212,11 +212,13 @@ action("gen_devtools_client_api") {
 if (headless_fontconfig_utils && !is_fuchsia) {
   static_library("headless_fontconfig_utils") {
     sources = [
+      "public/headless_export.h",
       "public/util/fontconfig.cc",
       "public/util/fontconfig.h",
     ]
 
     deps = [
+      "//base",
       "//build/config/freetype",
       "//third_party/fontconfig",
     ]
