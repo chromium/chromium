@@ -56,8 +56,7 @@ class Starter : public content::WebContentsObserver {
   void Start(std::unique_ptr<TriggerContext> trigger_context);
 
   // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   // Invoked when the tab interactability has changed.
   void OnTabInteractabilityChanged(bool is_interactable);
