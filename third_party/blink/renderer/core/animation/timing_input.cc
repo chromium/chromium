@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_animation_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -30,7 +30,7 @@ Timing::PlaybackDirection ConvertPlaybackDirection(const String& direction) {
 }
 
 absl::optional<AnimationTimeDelta> ConvertIterationDuration(
-    const V8UnionStringOrUnrestrictedDouble* duration) {
+    const V8UnionCSSNumericValueOrStringOrUnrestrictedDouble* duration) {
   if (duration->IsUnrestrictedDouble()) {
     return AnimationTimeDelta::FromMillisecondsD(
         duration->GetAsUnrestrictedDouble());
@@ -81,7 +81,8 @@ Timing TimingInput::Convert(
       //   their default values and duration set to options.
       EffectTiming* timing_input = EffectTiming::Create();
       timing_input->setDuration(
-          MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
+          MakeGarbageCollected<
+              V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
               options->GetAsUnrestrictedDouble()));
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
@@ -111,7 +112,8 @@ Timing TimingInput::Convert(
       //   their default values and duration set to options.
       EffectTiming* timing_input = EffectTiming::Create();
       timing_input->setDuration(
-          MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
+          MakeGarbageCollected<
+              V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
               options->GetAsUnrestrictedDouble()));
       return ConvertEffectTiming(timing_input, document, exception_state);
     }
@@ -148,13 +150,19 @@ bool TimingInput::Update(Timing& timing,
   if (input->hasDuration()) {
     const char* error_message = "duration must be non-negative or auto";
     switch (input->duration()->GetContentType()) {
-      case V8UnionStringOrUnrestrictedDouble::ContentType::kString:
+      case V8UnionCSSNumericValueOrStringOrUnrestrictedDouble::ContentType::
+          kCSSNumericValue:
+        exception_state.ThrowTypeError(
+            "Setting duration using CSSNumericValue is not supported.");
+        return false;
+      case V8UnionCSSNumericValueOrStringOrUnrestrictedDouble::ContentType::
+          kString:
         if (input->duration()->GetAsString() != "auto") {
           exception_state.ThrowTypeError(error_message);
           return false;
         }
         break;
-      case V8UnionStringOrUnrestrictedDouble::ContentType::
+      case V8UnionCSSNumericValueOrStringOrUnrestrictedDouble::ContentType::
           kUnrestrictedDouble: {
         double duration = input->duration()->GetAsUnrestrictedDouble();
         if (std::isnan(duration) || duration < 0) {

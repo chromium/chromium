@@ -245,8 +245,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'progress when animation is finished');
-  assert_equals(anim.effect.getComputedTiming().duration, 100,
-                'duration when animation is finished');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 100,
+                        'duration when animation is finished');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
                 'current iteration when animation is finished');
 
@@ -254,8 +254,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'progress after adding an iteration');
-  assert_equals(anim.effect.getComputedTiming().duration, 50,
-                'duration after adding an iteration');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 50,
+                        'duration after adding an iteration');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 1,
                 'current iteration after adding an iteration');
 
@@ -263,8 +263,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'progress after setting iterations to 4');
-  assert_equals(anim.effect.getComputedTiming().duration, 25,
-                'duration after setting iterations to 4');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 25,
+                        'duration after setting iterations to 4');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 3,
                 'current iteration after setting iterations to 4');
 
@@ -272,8 +272,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 0,
                 'progress after setting iterations to zero');
-  assert_equals(anim.effect.getComputedTiming().duration, 0,
-                'duration after setting iterations to zero');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 0,
+                        'duration after setting iterations to zero');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
                 'current iteration after setting iterations to zero');
 }, 'Allows setting the iterations of an animation in progress');
@@ -286,8 +286,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'progress when animation is finished');
-  assert_equals(anim.effect.getComputedTiming().duration, 100,
-                'duration when animation is finished');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 100,
+                        'duration when animation is finished');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
                 'current iteration when animation is finished');
 
@@ -295,8 +295,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'progress after adding an iteration');
-  assert_equals(anim.effect.getComputedTiming().duration, 50,
-                'duration after adding an iteration');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 50,
+                        'duration after adding an iteration');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 1,
                 'current iteration after adding an iteration');
 
@@ -304,8 +304,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 1,
                 'progress after setting iterations to 4');
-  assert_equals(anim.effect.getComputedTiming().duration, 25,
-                'duration after setting iterations to 4');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 25,
+                        'duration after setting iterations to 4');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 3,
                 'current iteration after setting iterations to 4');
 
@@ -313,8 +313,8 @@ test(t => {
 
   assert_equals(anim.effect.getComputedTiming().progress, 0,
                 'progress after setting iterations to zero');
-  assert_equals(anim.effect.getComputedTiming().duration, 0,
-                'duration after setting iterations to zero');
+  assert_percents_equal(anim.effect.getComputedTiming().duration, 0,
+                        'duration after setting iterations to zero');
   assert_equals(anim.effect.getComputedTiming().currentIteration, 0,
                 'current iteration after setting iterations to zero');
 }, 'Allows setting the iterations of an animation in progress with duration "auto"');
@@ -344,9 +344,9 @@ for (const duration of gGoodDurationValuesForProgressBased) {
       assert_equals(anim.effect.getTiming().duration, duration.specified,
                     'Updates specified duration');
     }
-    assert_time_equals_literal(anim.effect.getComputedTiming().duration,
-                               duration.computed,
-                               'Updates computed duration');
+    assert_percents_equal(anim.effect.getComputedTiming().duration,
+                          duration.computed,
+                          'Updates computed duration');
   }, `Allows setting the duration to ${duration.specified}`);
 }
 
@@ -388,14 +388,14 @@ promise_test(t => {
   return anim.ready.then(() => {
     const originalStartTime   = anim.startTime;
     const originalCurrentTime = anim.currentTime;
-    assert_time_equals_literal(
+    assert_percents_equal(
       anim.effect.getComputedTiming().duration,
       100,
       'Initial duration should be as set on KeyframeEffect'
     );
 
     anim.effect.updateTiming({ duration: 200000 });
-    assert_time_equals_literal(
+    assert_percents_equal(
       anim.effect.getComputedTiming().duration,
       100,
       'Effect duration should remain at 100% for progress based animations'

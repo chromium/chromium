@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 
@@ -77,12 +77,14 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
   effect_timing->setFill(FillModeString(fill_mode));
   effect_timing->setIterationStart(iteration_start);
   effect_timing->setIterations(iteration_count);
-  V8UnionStringOrUnrestrictedDouble* duration;
+  V8UnionCSSNumericValueOrStringOrUnrestrictedDouble* duration;
   if (iteration_duration) {
-    duration = MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
+    duration = MakeGarbageCollected<
+        V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
         iteration_duration->InMillisecondsF());
   } else {
-    duration = MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>("auto");
+    duration = MakeGarbageCollected<
+        V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>("auto");
   }
   effect_timing->setDuration(duration);
   effect_timing->setDirection(PlaybackDirectionString(direction));
@@ -149,20 +151,20 @@ ComputedEffectTiming* Timing::getComputedTiming(
   computed_timing->setIterationStart(iteration_start);
   computed_timing->setIterations(iteration_count);
 
-  // TODO(crbug.com/1219008): Animation effect computed iteration_duration
-  // should return CSSNumberish, which will simplify this logic.
   V8CSSNumberish* computed_duration =
       ToComputedValue(normalized_timing.iteration_duration,
                       normalized_timing.timeline_duration);
   if (computed_duration->IsCSSNumericValue()) {
-    computed_timing->setDuration(
-        MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
-            computed_duration->GetAsCSSNumericValue()
-                ->to(CSSPrimitiveValue::UnitType::kPercentage)
-                ->value()));
+    if (normalized_timing.timeline_duration) {
+      computed_timing->setDuration(
+          MakeGarbageCollected<
+              V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
+              computed_duration->GetAsCSSNumericValue()));
+    }
   } else {
     computed_timing->setDuration(
-        MakeGarbageCollected<V8UnionStringOrUnrestrictedDouble>(
+        MakeGarbageCollected<
+            V8UnionCSSNumericValueOrStringOrUnrestrictedDouble>(
             computed_duration->GetAsDouble()));
   }
 
