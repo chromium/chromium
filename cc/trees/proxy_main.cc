@@ -350,6 +350,7 @@ void ProxyMain::BeginMainFrame(
     // Although the commit is internally aborted, this is because it has been
     // detected to be a no-op.  From the perspective of an embedder, this commit
     // went through, and input should no longer be throttled, etc.
+    layer_tree_host_->SetImplCommitFinishTime(base::TimeTicks::Now());
     layer_tree_host_->CommitComplete();
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,

@@ -623,7 +623,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // WidgetBaseClient overrides.
   void BeginCommitCompositorFrame() override;
-  void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
+  void EndCommitCompositorFrame(base::TimeTicks commit_start_time,
+                                base::TimeTicks commit_finish_time) override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
   void RecordDispatchRafAlignedInputTime(
       base::TimeTicks raf_aligned_input_start_time) override;

@@ -699,7 +699,7 @@ void Compositor::DidFailToInitializeLayerTreeFrameSink() {
                      context_creation_weak_ptr_factory_.GetWeakPtr()));
 }
 
-void Compositor::DidCommit(base::TimeTicks) {
+void Compositor::DidCommit(base::TimeTicks, base::TimeTicks) {
   DCHECK(!IsLocked());
   for (auto& observer : observer_list_)
     observer.OnCompositingDidCommit(this);

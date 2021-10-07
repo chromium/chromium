@@ -93,7 +93,8 @@ class PLATFORM_EXPORT LayerTreeView
   void DidInitializeLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
   void WillCommit() override;
-  void DidCommit(base::TimeTicks commit_start_time) override;
+  void DidCommit(base::TimeTicks commit_start_time,
+                 base::TimeTicks commit_finish_time) override;
   void DidCommitAndDrawFrame() override;
   void DidReceiveCompositorFrameAck() override {}
   void DidCompletePageScaleAnimation() override;

@@ -438,6 +438,8 @@ void LayerTreeHost::FinishCommitOnImplThread(LayerTreeHostImpl* host_impl) {
   micro_benchmark_controller_.ScheduleImplBenchmarks(host_impl);
   property_trees_.ResetAllChangeTracking();
 
+  SetImplCommitFinishTime(base::TimeTicks::Now());
+
   // Dump property trees and layers if run with:
   //   --vmodule=layer_tree_host=3
   if (VLOG_IS_ON(3)) {
@@ -530,8 +532,8 @@ void LayerTreeHost::CommitComplete() {
   DCHECK(!in_commit());
   WaitForCommitCompletion();
   source_frame_number_++;
-  client_->DidCommit(impl_commit_start_time_);
-  impl_commit_start_time_ = base::TimeTicks();
+  client_->DidCommit(impl_commit_start_time_, impl_commit_finish_time_);
+  impl_commit_start_time_ = impl_commit_finish_time_ = base::TimeTicks();
   if (did_complete_scale_animation_) {
     client_->DidCompletePageScaleAnimation();
     did_complete_scale_animation_ = false;

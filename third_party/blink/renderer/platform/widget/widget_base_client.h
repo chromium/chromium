@@ -90,7 +90,8 @@ class WidgetBaseClient {
   // UMA and UKM. That is, when RecordStartOfFrameMetrics has been called, and
   // before RecordEndOfFrameMetrics has been called.
   virtual void BeginCommitCompositorFrame() {}
-  virtual void EndCommitCompositorFrame(base::TimeTicks commit_start_time) {}
+  virtual void EndCommitCompositorFrame(base::TimeTicks commit_start_time,
+                                        base::TimeTicks commit_finish_time) {}
 
   // Applies viewport related properties during a commit from the compositor
   // thread.

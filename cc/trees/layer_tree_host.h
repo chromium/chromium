@@ -764,6 +764,9 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void SetImplCommitStartTime(base::TimeTicks commit_start_time) {
     impl_commit_start_time_ = commit_start_time;
   }
+  void SetImplCommitFinishTime(base::TimeTicks commit_finish_time) {
+    impl_commit_finish_time_ = commit_finish_time;
+  }
 
   void SetDelegatedInkMetadata(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
@@ -1008,6 +1011,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // sent from the main thread. Zero if the most recent BeginMainFrame did not
   // result in a commit (due to no change in content).
   base::TimeTicks impl_commit_start_time_;
+  base::TimeTicks impl_commit_finish_time_;
 
   std::unique_ptr<CompletionEvent> commit_completion_event_;
 

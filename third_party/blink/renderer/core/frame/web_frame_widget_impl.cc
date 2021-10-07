@@ -2081,7 +2081,8 @@ void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
 }
 
 void WebFrameWidgetImpl::EndCommitCompositorFrame(
-    base::TimeTicks commit_start_time) {
+    base::TimeTicks commit_start_time,
+    base::TimeTicks commit_finish_time) {
   DCHECK(commit_compositor_frame_start_time_.has_value());
   if (ForTopMostMainFrame()) {
     Document* doc = local_root_->GetFrame()->GetDocument();
@@ -2109,7 +2110,7 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
       ->View()
       ->EnsureUkmAggregator()
       .RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
-                                  commit_start_time, base::TimeTicks::Now());
+                                  commit_start_time, commit_finish_time);
   commit_compositor_frame_start_time_.reset();
 }
 

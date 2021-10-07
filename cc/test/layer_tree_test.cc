@@ -458,7 +458,9 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
 
   void WillCommit() override { test_hooks_->WillCommit(); }
 
-  void DidCommit(const base::TimeTicks) override { test_hooks_->DidCommit(); }
+  void DidCommit(const base::TimeTicks, const base::TimeTicks) override {
+    test_hooks_->DidCommit();
+  }
 
   void DidCommitAndDrawFrame() override {
     test_hooks_->DidCommitAndDrawFrame();

@@ -711,8 +711,9 @@ void WidgetBase::WillCommitCompositorFrame() {
   client_->BeginCommitCompositorFrame();
 }
 
-void WidgetBase::DidCommitCompositorFrame(base::TimeTicks commit_start_time) {
-  client_->EndCommitCompositorFrame(commit_start_time);
+void WidgetBase::DidCommitCompositorFrame(base::TimeTicks commit_start_time,
+                                          base::TimeTicks commit_finish_time) {
+  client_->EndCommitCompositorFrame(commit_start_time, commit_finish_time);
 }
 
 void WidgetBase::DidCompletePageScaleAnimation() {
