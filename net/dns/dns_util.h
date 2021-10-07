@@ -64,9 +64,9 @@ NET_EXPORT_PRIVATE bool IsValidUnrestrictedDNSDomain(
 // service records (initial _), and non-compliant but attested hostnames that
 // include _. These looser rules also allow Punycode and hence IDN.
 //
-// TODO(palmer): In the future, when we can remove support for invalid names,
-// this can be a private implementation detail of |DNSDomainFromDot|, and need
-// not be NET_EXPORT_PRIVATE.
+// TODO(crbug.com/1065133): In the future, when we can remove support for
+// invalid names, this can be a private implementation detail of
+// |DNSDomainFromDot|, and need not be NET_EXPORT_PRIVATE.
 NET_EXPORT_PRIVATE bool IsValidHostLabelCharacter(char c, bool is_first_char);
 
 // Converts a domain in DNS format to a dotted string. Excludes the dot at the
