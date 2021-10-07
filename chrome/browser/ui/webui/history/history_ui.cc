@@ -48,6 +48,8 @@
 
 namespace {
 
+constexpr char kIsHistoryClustersVisibleKey[] = "isHistoryClustersVisible";
+
 constexpr char kIsUserSignedInKey[] = "isUserSignedIn";
 
 bool IsUserSignedIn(Profile* profile) {
@@ -128,7 +130,7 @@ content::WebUIDataSource* CreateHistoryUIHTMLSource(Profile* profile) {
   source->AddBoolean("isHistoryClustersEnabled",
                      base::FeatureList::IsEnabled(history_clusters::kJourneys));
   source->AddBoolean(
-      "isHistoryClustersVisible",
+      kIsHistoryClustersVisibleKey,
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
   source->AddBoolean(
       "isHistoryClustersDebug",
@@ -168,6 +170,11 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
   content::WebUIDataSource* data_source = CreateHistoryUIHTMLSource(profile);
   ManagedUIHandler::Initialize(web_ui, data_source);
   content::WebUIDataSource::Add(profile, data_source);
+
+  pref_change_registrar_.Init(profile->GetPrefs());
+  pref_change_registrar_.Add(history_clusters::prefs::kVisible,
+                             base::BindRepeating(&HistoryUI::UpdateDataSource,
+                                                 base::Unretained(this)));
 
   web_ui->AddMessageHandler(std::make_unique<webui::NavigationHandler>());
   auto browsing_history_handler = std::make_unique<BrowsingHistoryHandler>();
@@ -214,8 +221,12 @@ void HistoryUI::UpdateDataSource() {
 
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
+  std::unique_ptr<base::DictionaryValue> update =
+      std::make_unique<base::DictionaryValue>();
   update->SetBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
+  update->SetBoolean(
+      kIsHistoryClustersVisibleKey,
+      profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
 
   content::WebUIDataSource::Update(profile, chrome::kChromeUIHistoryHost,
                                    std::move(update));
