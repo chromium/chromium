@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
@@ -32,13 +33,16 @@ import {BookmarksStoreClientInterface, StoreClient} from './store_client.js';
 import {BookmarksToolbarElement} from './toolbar.js';
 import {BookmarksPageState, FolderOpenState} from './types.js';
 import {createEmptyState, normalizeNodes} from './util.js';
+import {IronScrollTargetBehavior} from 'chrome://resources/polymer/v3_0/iron-scroll-target-behavior/iron-scroll-target-behavior.js';
 
-const BookmarksAppElementBase = mixinBehaviors(
-                                    [StoreClient, FindShortcutBehavior],
-                                    MouseFocusMixin(PolymerElement)) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-  StoreObserver<BookmarksPageState>& FindShortcutBehavior
-};
+const BookmarksAppElementBase =
+    mixinBehaviors(
+        [StoreClient, FindShortcutBehavior, IronScrollTargetBehavior],
+        MouseFocusMixin(PolymerElement)) as {
+      new (): PolymerElement & BookmarksStoreClientInterface &
+      StoreObserver<BookmarksPageState> & FindShortcutBehavior &
+      IronScrollTargetBehavior
+    };
 
 export interface BookmarksAppElement {
   $: {
@@ -65,6 +69,11 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
       },
 
       sidebarWidth_: String,
+
+      toolbarShadow_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -73,6 +82,7 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
   private folderOpenState_: FolderOpenState;
   private searchTerm_: string;
   private sidebarWidth_: string;
+  private toolbarShadow_: boolean;
 
   constructor() {
     super();
@@ -124,6 +134,8 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
 
     this.dndManager_ = new DNDManager();
     this.dndManager_.init();
+
+    this.scrollTarget = this.shadowRoot!.querySelector('bookmarks-list');
   }
 
   disconnectedCallback() {
@@ -215,6 +227,12 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
     this.dispatchEvent(
         new CustomEvent('command-undo', {bubbles: true, composed: true}));
   }
+
+  /** Overridden from IronScrollTargetBehavior */
+  _scrollHandler() {
+    this.toolbarShadow_ = this.scrollTarget!.scrollTop !== 0;
+  }
+
 
   static get template() {
     return html`{__html_template__}`;
