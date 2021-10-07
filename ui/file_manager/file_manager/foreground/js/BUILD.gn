@@ -1105,6 +1105,7 @@ js_library("quick_view_controller") {
     "//ui/file_manager/image_loader:load_image_request",
     "//ui/webui/resources/js:assert.m",
   ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
 
 js_library("quick_view_model") {

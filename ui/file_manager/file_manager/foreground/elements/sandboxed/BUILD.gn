@@ -5,9 +5,9 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("files_media_content") {
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
 
-group("closure_compile") {
-  visibility = [ "//ui/file_manager:closure_compile" ]
+js_type_check("closure_compile") {
   deps = [ ":files_media_content" ]
 }

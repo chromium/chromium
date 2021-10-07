@@ -235,6 +235,7 @@ js_library("quick_view") {
     "//ui/file_manager/file_manager/common/js:dialog_type",
     "//ui/file_manager/integration_tests:testcase",
   ]
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
 
 js_library("recents") {

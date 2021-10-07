@@ -545,10 +545,6 @@ export class QuickViewController {
       filePath: label,
       hasTask: tasks.length > 0,
       canDelete: canDelete,
-      sourceContent: {
-        data: null,
-        dataType: '',
-      },
     };
 
     const volumeInfo = this.volumeManager_.getVolumeInfo(entry);
@@ -788,19 +784,3 @@ QuickViewController.LOCAL_VOLUME_TYPES_ = [
 QuickViewController.UNSUPPORTED_IMAGE_SUBTYPES_ = [
   'TIFF',  // crbug.com/624109
 ];
-
-/**
- * @typedef {{
- *   type: string,
- *   subtype: string,
- *   filePath: string,
- *   hasTask: boolean,
- *   canDelete: boolean,
- *   sourceContent: Object,
- *   videoPoster: (Object|undefined),
- *   audioArtwork: (Object|undefined),
- *   autoplay: (boolean|undefined),
- *   browsable: (boolean|undefined),
- * }}
- */
-let QuickViewParams;

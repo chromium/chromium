@@ -71,9 +71,10 @@ const FilesSafeMedia = Polymer({
       webview.addEventListener('contentload', () => this.onSrcChange_());
       webview.src = this.sourceFile_();
     } else if (hasContent && this.webview_.contentWindow) {
+      /** @type {!UntrustedPreviewData} */
       const data = {
         type: this.type,
-        sourceContent: this.src,
+        sourceContent: /** @type {!FilePreviewContent} */ (this.src),
       };
       window.setTimeout(() => {
         this.webview_.contentWindow.postMessage(data, FILES_APP_ORIGIN);

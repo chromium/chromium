@@ -20,21 +20,25 @@ window.onload = () => {
     URL.revokeObjectURL(contentUrl);
     contentUrl = '';
 
+    /** @type {!UntrustedPreviewData} */
+    const data = event.data;
+
     messageSource = event.source;
 
-    const sourceContent = event.data.sourceContent;
+    const sourceContent = data.sourceContent;
     switch (sourceContent.dataType) {
       case 'url':
-        contentUrl = sourceContent.data;
+        contentUrl = /** @type {string} */ (sourceContent.data);
         break;
       case 'blob':
-        contentUrl = URL.createObjectURL(sourceContent.data);
+        contentUrl =
+            URL.createObjectURL(/** @type {!Blob} */ (sourceContent.data));
         break;
       default:
         contentUrl = '';
     }
 
-    switch (event.data.type) {
+    switch (data.type) {
       case 'html':
         content.textContent = '';
         contentChanged(null);

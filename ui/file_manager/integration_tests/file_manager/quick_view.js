@@ -1582,8 +1582,7 @@ testcase.openQuickViewImageRawWithOrientation = async () => {
   };
 
   const sourceContent =
-      /** @type {{data:string, dataType:string}} */ (
-          JSON.parse(element.attributes.src));
+      /** @type {FilePreviewContent} */ (JSON.parse(element.attributes.src));
   assert(sourceContent.data);
   image.src = sourceContent.data;
 
