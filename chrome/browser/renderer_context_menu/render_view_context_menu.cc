@@ -402,13 +402,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, 113},
        {IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, 114},
        {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 115},
+       {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 116},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 116}});
+       {0, 117}});
 
   // These UMA values are for the the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -436,13 +437,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 20},
        {IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, 21},
        {IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, 22},
+       {IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH, 23},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the ContextMenuOptionDesktop enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 23}});
+       {0, 24}});
 
   return *(type == UmaEnumIdLookupType::GeneralEnumId ? kGeneralMap
                                                       : kSpecificMap);
@@ -1662,8 +1664,8 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendMediaRouterItem();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (IsLensRegionSearchEnabled()) {
-    AppendLensRegionSearchItem();
+  if (IsRegionSearchEnabled()) {
+    AppendRegionSearchItem();
   }
 #endif
 
@@ -2122,7 +2124,7 @@ void RenderViewContextMenu::AppendSharedClipboardItem() {
   shared_clipboard_context_menu_observer_->InitMenu(params_);
 }
 
-void RenderViewContextMenu::AppendLensRegionSearchItem() {
+void RenderViewContextMenu::AppendRegionSearchItem() {
   int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
   if (lens::features::kRegionSearchUseMenuItemAltText1.Get()) {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
@@ -2134,11 +2136,24 @@ void RenderViewContextMenu::AppendLensRegionSearchItem() {
     resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT4;
   }
 
-  // TODO(crbug.com/1234592): When support is added for non-Google default
-  // search providers, set the name here using the provider |short_name|.
-  menu_model_.AddItem(
-      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-      l10n_util::GetStringFUTF16(resource_id, std::u16string(kGoogleLens)));
+  if (search::DefaultSearchProviderIsGoogle(GetProfile())) {
+    menu_model_.AddItem(
+        IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
+        l10n_util::GetStringFUTF16(resource_id, std::u16string(kGoogleLens)));
+  } else {
+    TemplateURLService* service =
+        TemplateURLServiceFactory::GetForProfile(GetProfile());
+    const TemplateURL* provider = service->GetDefaultSearchProvider();
+    // GetDefaultSearchProvider can return null in unit tests or when the
+    // default search provider is disabled by policy. In these cases, we align
+    // with the search web for image menu item by not adding the region search
+    // menu item.
+    if (provider) {
+      menu_model_.AddItem(
+          IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH,
+          l10n_util::GetStringFUTF16(resource_id, provider->short_name()));
+    }
+  }
 }
 
 // Menu delegate functions -----------------------------------------------------
@@ -2338,7 +2353,12 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
     case IDC_SEND_TAB_TO_SELF:
     case IDC_SEND_TAB_TO_SELF_SINGLE_TARGET:
+      return true;
+
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
+    case IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH:
+      // These region search items will not be added if there is no default
+      // search provider available.
       return true;
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE:
@@ -2530,7 +2550,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
-      ExecLensRegionSearch(event_flags);
+      ExecRegionSearch(event_flags, true);
+      break;
+    case IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH:
+      ExecRegionSearch(event_flags, false);
       break;
 
     case IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB:
@@ -3060,14 +3083,23 @@ bool RenderViewContextMenu::IsQRCodeGeneratorEnabled() const {
       IsGeneratorAvailable(entry->GetURL());
 }
 
-bool RenderViewContextMenu::IsLensRegionSearchEnabled() const {
+bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const Browser* browser = GetBrowser();
   const bool in_app =
       browser && (browser->is_type_app() || browser->is_type_app_popup());
+  TemplateURLService* service =
+      TemplateURLServiceFactory::GetForProfile(GetProfile());
+  if (!service)
+    return false;
+
+  const TemplateURL* provider = service->GetDefaultSearchProvider();
+  const bool provider_supports_image_search =
+      provider && !provider->image_url().empty() &&
+      provider->image_url_ref().IsValid(service->search_terms_data());
   return base::FeatureList::IsEnabled(lens::features::kLensRegionSearch) &&
-         search::DefaultSearchProviderIsGoogle(GetProfile()) &&
          !IsPdfExtensionOrigin(url::Origin::Create(GetDocumentURL(params_))) &&
+         provider_supports_image_search &&
          !GetDocumentURL(params_).SchemeIs(content::kChromeUIScheme) &&
          !in_app &&
          GetPrefs(browser_context_)
@@ -3318,7 +3350,9 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
       lens::features::kEnableSidePanelForLensImageSearch.Get());
 }
 
-void RenderViewContextMenu::ExecLensRegionSearch(int event_flags) {
+void RenderViewContextMenu::ExecRegionSearch(
+    int event_flags,
+    bool is_google_default_search_provider) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!lens_region_search_controller_)
     lens_region_search_controller_ =
@@ -3326,7 +3360,8 @@ void RenderViewContextMenu::ExecLensRegionSearch(int event_flags) {
                                                            GetBrowser());
   bool use_fullscreen_capture =
       GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD;
-  lens_region_search_controller_->Start(use_fullscreen_capture);
+  lens_region_search_controller_->Start(use_fullscreen_capture,
+                                        is_google_default_search_provider);
 #endif
 }
 

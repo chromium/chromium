@@ -14502,7 +14502,8 @@ Called by update_net_error_codes.py.-->
   <int value="19" label="Go to URL"/>
   <int value="20" label="Copy link to text"/>
   <int value="21" label="Search Image with Google Lens"/>
-  <int value="22" label="Search part of page with Google Lens"/>
+  <int value="22" label="Search Images with Google Lens"/>
+  <int value="23" label="Search Images with non-Google visual search provider"/>
 </enum>
 
 <enum name="ContextMenuOptionIOS">
@@ -72696,6 +72697,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="113" label="IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE"/>
   <int value="114" label="IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT"/>
   <int value="115" label="IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH"/>
+  <int value="116" label="IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH"/>
 </enum>
 
 <enum name="ReopenTabPromoStepAtDismissal">

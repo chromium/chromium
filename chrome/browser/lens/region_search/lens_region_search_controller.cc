@@ -37,7 +37,9 @@ LensRegionSearchController::~LensRegionSearchController() {
   CloseWithReason(views::Widget::ClosedReason::kLostFocus);
 }
 
-void LensRegionSearchController::Start(bool use_fullscreen_capture) {
+void LensRegionSearchController::Start(bool use_fullscreen_capture,
+                                       bool is_google_default_search_provider) {
+  is_google_default_search_provider_ = is_google_default_search_provider;
   if (!web_contents() || !browser_)
     return;
 
@@ -170,10 +172,16 @@ void LensRegionSearchController::OnCaptureCompleted(
         lens::LensRegionSearchCaptureResult::FAILED_TO_OPEN_TAB);
     return;
   }
-  core_tab_helper->SearchWithLensInNewTab(
-      image, captured_image.Size(),
-      lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM,
-      lens::features::kEnableSidePanelForLensRegionSearch.Get());
+
+  if (is_google_default_search_provider_) {
+    core_tab_helper->SearchWithLensInNewTab(
+        image, captured_image.Size(),
+        lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM,
+        lens::features::kEnableSidePanelForLensRegionSearch.Get());
+  } else {
+    core_tab_helper->SearchByImageInNewTab(image, captured_image.Size());
+  }
+
   RecordCaptureResult(lens::LensRegionSearchCaptureResult::SUCCESS);
 }
 
