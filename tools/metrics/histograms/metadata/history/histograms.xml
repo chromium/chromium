@@ -454,6 +454,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="History.Clusters.Backend.BatchEntityLookupSize" units="count"
+    expires_after="M101">
+  <owner>mcrouse@chromium.org</owner>
+  <owner>chrome-memories@google.com</owner>
+  <summary>
+    Logs the number of entities to be queried for their metadata when preparing
+    to start clustering. The number of entities is the size of the entire batch
+    which is over all visits provided to the backend for clustering. Logged when
+    clusters are requested based on any request to cluster visits, which could
+    be triggered from several things, including loading the journeys UI, putting
+    a query in the journeys page, etc..
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.Backend.ClusterSize.{ClusterStatistic}"
     units="number visits" expires_after="M101">
   <owner>mcrouse@chromium.org</owner>
