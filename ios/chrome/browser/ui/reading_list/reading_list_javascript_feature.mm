@@ -24,7 +24,6 @@
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/web_state.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -148,25 +147,6 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
       "IOS.ReadingList.Javascript.LongPageDistillabilityScore",
       (long_score + 1) * 100, 0, 400, 50);
 
-  ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state);
-  if (sourceID != ukm::kInvalidSourceId) {
-    // Round to the nearest tenth, and additionally round to a .5 level of
-    // granularity if <0.5 or > 1.5. Get accuracy to the tenth digit in UKM by
-    // multiplying by 10.
-    int score_minimization = (int)(round(score * 10));
-    int long_score_minimization = (int)(round(long_score * 10));
-    if (score_minimization > 15 || score_minimization < 5) {
-      score_minimization = ((score_minimization + 2.5) / 5) * 5;
-    }
-    if (long_score_minimization > 15 || long_score_minimization < 5) {
-      long_score_minimization = ((long_score_minimization + 2.5) / 5) * 5;
-    }
-    ukm::builders::IOS_PageReadability(sourceID)
-        .SetDistilibilityScore(score_minimization)
-        .SetDistilibilityLongScore(long_score_minimization)
-        .Record(ukm::UkmRecorder::Get());
-  }
-
   // Calculate Time to Read
   absl::optional<double> opt_word_count =
       message.body()->FindDoubleKey("wordCount");
@@ -215,7 +195,8 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
     SaveReadingListMessagesShownTime();
     auto delegate = std::make_unique<IOSAddToReadingListInfobarDelegate>(
         web_state->GetVisibleURL(), web_state->GetTitle(),
-        static_cast<int>(estimated_read_time), model, web_state);
+        static_cast<int>(estimated_read_time), score, long_score, model,
+        web_state);
     std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeAddToReadingList, std::move(delegate), false);
     manager->AddInfoBar(std::move(infobar), true);

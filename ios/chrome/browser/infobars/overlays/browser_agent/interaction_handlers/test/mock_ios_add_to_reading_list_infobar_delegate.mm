@@ -16,6 +16,8 @@ MockIOSAddToReadingListInfobarDelegate::MockIOSAddToReadingListInfobarDelegate(
     : IOSAddToReadingListInfobarDelegate(GURL("http://www.test.com"),
                                          std::u16string(),
                                          0,
+                                         0,
+                                         0,
                                          model,
                                          web_state) {}
 

@@ -19,6 +19,8 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   IOSAddToReadingListInfobarDelegate(const GURL& URL,
                                      const std::u16string& title,
                                      int estimated_read_time_,
+                                     double score,
+                                     double long_score,
                                      ReadingListModel* model,
                                      web::WebState* web_state);
   ~IOSAddToReadingListInfobarDelegate() override;
@@ -41,6 +43,7 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   // InfoBarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
   std::u16string GetMessageText() const override;
+  void InfoBarDismissed() override;
 
   // ConfirmInfoBarDelegate implementation.
   bool Accept() override;
@@ -55,6 +58,11 @@ class IOSAddToReadingListInfobarDelegate : public ConfirmInfoBarDelegate {
   const std::u16string& title_;
   // The estimated time to read of the page.
   int estimated_read_time_;
+  // The score of the page measuring distilibility, a proxy for whether the
+  // page is likely an article.
+  double distilibility_score_;
+  // The score of the page measuring length of the page.
+  double length_score_;
   // Reference to save |url_| to Reading List.
   ReadingListModel* model_ = nullptr;
   // WebState pointer that is showing |url_|.
