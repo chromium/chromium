@@ -3092,6 +3092,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="AutofillStrikeDatabase"/>
     <variant name="BlobStorage"/>
     <variant name="Bookmarks"/>
+    <variant name="BrowserDataMigrator"/>
     <variant name="BudgetDatabase"/>
     <variant name="Cache"/>
     <variant name="CodeCache"/>

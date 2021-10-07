@@ -106,6 +106,7 @@ constexpr PathNamePair kPathNamePairs[] = {
     {"arc.apps", "ArcApps"},
     {"autobrightness", "Autobrightness"},
     {"blob_storage", "BlobStorage"},
+    {"browser_data_migrator", "BrowserDataMigrator"},
     {"crostini.icons", "CrostiniIcons"},
     {"data_reduction_proxy_leveldb", "DataReductionProxyLeveldb"},
     {"databases", "Databases"},
