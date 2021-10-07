@@ -62,7 +62,6 @@ class CORE_EXPORT SystemClipboard final
   String ReadRTF();
 
   mojo_base::BigBuffer ReadPng(mojom::blink::ClipboardBuffer);
-  SkBitmap ReadImage(mojom::ClipboardBuffer);
   String ReadImageAsImageMarkup(mojom::blink::ClipboardBuffer);
 
   // Write the image and its associated tag (bookmark/HTML types).

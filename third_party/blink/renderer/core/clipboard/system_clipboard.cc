@@ -184,14 +184,6 @@ mojo_base::BigBuffer SystemClipboard::ReadPng(
   return png;
 }
 
-SkBitmap SystemClipboard::ReadImage(mojom::ClipboardBuffer buffer) {
-  if (!IsValidBufferType(buffer) || !clipboard_.is_bound())
-    return SkBitmap();
-  SkBitmap image;
-  clipboard_->ReadImage(buffer, &image);
-  return image;
-}
-
 String SystemClipboard::ReadImageAsImageMarkup(
     mojom::blink::ClipboardBuffer buffer) {
   mojo_base::BigBuffer png_data = ReadPng(buffer);

@@ -29,7 +29,6 @@ void MockClipboardHost::Reset() {
   svg_text_ = g_empty_string;
   url_ = KURL();
   png_.clear();
-  image_.reset();
   custom_data_.clear();
   write_smart_paste_ = false;
   needs_reset_ = false;
@@ -51,7 +50,7 @@ void MockClipboardHost::ReadAvailableTypes(
     types.push_back("text/html");
   if (!svg_text_.IsEmpty())
     types.push_back("image/svg+xml");
-  if (!png_.IsEmpty() || !image_.isNull())
+  if (!png_.IsEmpty())
     types.push_back("image/png");
   for (auto& it : custom_data_) {
     CHECK(!base::Contains(types, it.key));
@@ -107,11 +106,6 @@ void MockClipboardHost::ReadPng(mojom::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(mojo_base::BigBuffer(png_));
 }
 
-void MockClipboardHost::ReadImage(mojom::ClipboardBuffer clipboard_buffer,
-                                  ReadImageCallback callback) {
-  std::move(callback).Run(image_);
-}
-
 void MockClipboardHost::ReadFiles(mojom::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
   std::move(callback).Run(mojom::blink::ClipboardFiles::New());
@@ -162,10 +156,6 @@ void MockClipboardHost::WriteBookmark(const String& url, const String& title) {}
 void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
   if (needs_reset_)
     Reset();
-  // TODO(crbug.com/1223254): Consider removing `image_` in favor of `png_`.
-  // For now, write to each.
-  image_ = bitmap;
-
   SkPixmap pixmap;
   bitmap.peekPixels(&pixmap);
   // Set encoding options to favor speed over size.

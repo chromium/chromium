@@ -350,12 +350,6 @@ void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
           std::move(data), std::move(callback)));
 }
 
-// TODO(crbug.com/1223849): Remove this method.
-void ClipboardHostImpl::ReadImage(ui::ClipboardBuffer clipboard_buffer,
-                                  ReadImageCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
   blink::mojom::ClipboardFilesPtr result = blink::mojom::ClipboardFiles::New();

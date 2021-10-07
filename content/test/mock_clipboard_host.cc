@@ -106,12 +106,6 @@ void MockClipboardHost::ReadPng(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(mojo_base::BigBuffer(png_));
 }
 
-// TODO(crbug.com/1223849): Remove this method.
-void MockClipboardHost::ReadImage(ui::ClipboardBuffer clipboard_buffer,
-                                  ReadImageCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 void MockClipboardHost::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                                   ReadFilesCallback callback) {
   std::move(callback).Run(blink::mojom::ClipboardFiles::New());
