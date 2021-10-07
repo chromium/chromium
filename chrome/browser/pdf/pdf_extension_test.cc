@@ -1544,6 +1544,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
               MatchesRegex("this is some text\r?\nsome more text"));
 }
 
+// TODO(crbug.com/1253714): Add tests for using space and shift+space shortcuts
+// for scrolling PDFs.
+
 #if BUILDFLAG(ENABLE_PRINTING)
 namespace {
 

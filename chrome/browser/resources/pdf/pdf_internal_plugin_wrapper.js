@@ -46,7 +46,7 @@ for (const type of ['pinchstart', 'pinchupdate', 'pinchend']) {
 
 document.addEventListener('keydown', e => {
   // Only forward potential shortcut keys.
-  if (!e.ctrlKey && !e.metaKey) {
+  if (!e.ctrlKey && !e.metaKey && e.key !== ' ') {
     return;
   }
 

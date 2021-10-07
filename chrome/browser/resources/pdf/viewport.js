@@ -1056,7 +1056,10 @@ export class Viewport {
     } else if (
         /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
             .fromScriptingAPI) {
-      this.position.y += direction * this.size.height;
+      this.position = {
+        x: this.position.x,
+        y: this.position.y + direction * this.size.height,
+      };
     }
   }
 
