@@ -553,7 +553,10 @@ void WebTransport::OnConnected(
       client_.BindNewPipeAndPassReceiver(), std::move(response_headers));
 
   handshake_client_.reset();
-  client_.set_disconnect_handler(
+  // We set the disconnect handler for `receiver_`, not `client_`, in order
+  // to make the closing sequence consistent: The client calls Close() and
+  // then resets the mojo endpoints.
+  receiver_.set_disconnect_handler(
       base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
 }
 
