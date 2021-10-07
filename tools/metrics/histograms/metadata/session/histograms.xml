@@ -668,7 +668,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SessionRestore.UnrecoverableWriteErrorCount"
-    units="operations" expires_after="2022-01-23">
+    units="operations" expires_after="2022-04-03">
   <owner>sky@chromium.org</owner>
   <owner>davidbienvenu@chromium.org</owner>
   <summary>

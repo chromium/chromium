@@ -944,7 +944,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OptimizationGuide.RemoteFetchingEnabled"
-    units="BooleanEnabled" expires_after="2022-01-02">
+    units="BooleanEnabled" expires_after="2022-04-03">
   <owner>sophiechang@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

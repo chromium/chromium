@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.BrowserShutdownTime" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-04-03">
   <owner>xiyuan@chromium.org</owner>
   <summary>
     Tracks the browser process shutdown time from when SIGTERM is sent to the
@@ -295,7 +295,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.UsersActiveDaily" units="users"
-    expires_after="2022-01-09">
+    expires_after="2022-04-03">
   <owner>alemate@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <summary>

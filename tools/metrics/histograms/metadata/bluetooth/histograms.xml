@@ -419,7 +419,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bluetooth.Linux.ConnectToServiceInsecurelyResult"
     enum="BluetoothAdapterConnectToServiceInsecurelyResult"
-    expires_after="2022-01-01">
+    expires_after="2022-04-03">
   <owner>alainm@chromium.org</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>

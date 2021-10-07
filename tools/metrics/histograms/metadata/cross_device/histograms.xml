@@ -1367,7 +1367,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="InstantTethering.ConnectionToHostResult.SuccessRate.Background"
     enum="InstantTethering_ConnectionToHostResult_SuccessRate"
-    expires_after="2022-02-02">
+    expires_after="2022-04-03">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1858,7 +1858,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
-    enum="BooleanSuccess" expires_after="2022-01-30">
+    enum="BooleanSuccess" expires_after="2022-04-03">
   <owner>khorimoto@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1931,7 +1931,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
-    enum="BooleanDuplicate" expires_after="2021-12-26">
+    enum="BooleanDuplicate" expires_after="2022-04-03">
   <owner>nohle@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2107,7 +2107,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.AuthResult" enum="BooleanSuccess"
-    expires_after="2022-02-01">
+    expires_after="2022-04-03">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2147,7 +2147,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock" enum="BooleanSuccess"
-    expires_after="2022-02-01">
+    expires_after="2022-04-03">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2255,7 +2255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SmartLock.GetRemoteStatus.Unlock.Failure"
     enum="SmartLockGetRemoteStatusResultFailureReason"
-    expires_after="2022-02-02">
+    expires_after="2022-04-03">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

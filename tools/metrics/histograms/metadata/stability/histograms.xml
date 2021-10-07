@@ -173,7 +173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.BadMessageTerminated.Extensions"
-    enum="BadMessageReasonExtensions" expires_after="2021-11-14">
+    enum="BadMessageReasonExtensions" expires_after="2022-04-03">
   <owner>jamescook@chromium.org</owner>
   <owner>karandeepb@chromium.org</owner>
   <summary>

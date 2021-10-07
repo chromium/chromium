@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.Action.All" enum="HoldingSpaceItemAction"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -164,7 +164,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Pod.Action.All" enum="HoldingSpacePodAction"
-    expires_after="2022-01-30">
+    expires_after="2022-04-03">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>

@@ -63,7 +63,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.DeprecatedApiCalled"
-    enum="CryptohomeDeprecatedApiCalled" expires_after="2021-12-12">
+    enum="CryptohomeDeprecatedApiCalled" expires_after="2022-04-03">
   <owner>apronin@chromium.org</owner>
   <owner>louiscollard@chromium.org</owner>
   <owner>zuan@chromium.org</owner>
@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="2021-12-26">
+    enum="CryptohomeDiskCleanupProgress" expires_after="2022-04-03">
   <owner>dlunev@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -455,7 +455,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.TimeSessionUnlock" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-04-03">
   <owner>kerrnel@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
   <summary>
@@ -591,7 +591,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.UserSubdirHasCorrectGroup" enum="BooleanCorrect"
-    expires_after="2022-02-01">
+    expires_after="2022-04-03">
   <owner>austinct@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

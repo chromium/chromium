@@ -194,7 +194,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason"
-    enum="MainThreadScrollingReason" expires_after="M97">
+    enum="MainThreadScrollingReason" expires_after="2022-04-03">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>

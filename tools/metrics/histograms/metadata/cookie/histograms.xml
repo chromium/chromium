@@ -577,7 +577,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SamePartyCookieSameSiteAttributeValue"
-    enum="CookieSameSiteString" expires_after="2022-01-02">
+    enum="CookieSameSiteString" expires_after="2022-04-03">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -588,7 +588,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SamePartyReadIncluded.InclusionUnderSameSite"
-    enum="BooleanIncluded" expires_after="2022-01-05">
+    enum="BooleanIncluded" expires_after="2022-04-03">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -609,7 +609,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SamePartyReadIncluded.PartyContextSize"
-    units="registrable domains" expires_after="2022-01-05">
+    units="registrable domains" expires_after="2022-04-03">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
@@ -646,7 +646,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SamePartySetIncluded.PartyContextSize"
-    units="registrable domains" expires_after="2022-01-05">
+    units="registrable domains" expires_after="2022-04-03">
   <owner>cfredric@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>

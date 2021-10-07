@@ -32,7 +32,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Webapp.AddToHomescreenMediator.AppTypeToMenuEntry"
-    enum="AppTypeToMenuEntry" expires_after="2022-01-02">
+    enum="AppTypeToMenuEntry" expires_after="2022-04-03">
   <owner>finnur@chromium.org</owner>
   <owner>beverloo@chromium.org</owner>
   <summary>
@@ -142,7 +142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Webapp.Install.InstallBounce" enum="WebappInstallSource"
-    expires_after="2021-12-26">
+    expires_after="2022-04-03">
   <owner>dominickn@chromium.org</owner>
   <owner>alancutter@chromium.org</owner>
   <summary>
@@ -297,7 +297,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.ConfigErrorCount" units="apps"
-    expires_after="2021-12-12">
+    expires_after="2022-04-03">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

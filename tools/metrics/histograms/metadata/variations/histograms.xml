@@ -52,7 +52,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.GotVariationsFileContents"
-    enum="BooleanSuccess" expires_after="2022-01-22">
+    enum="BooleanSuccess" expires_after="2022-04-03">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
@@ -66,7 +66,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.WritePrefsTime"
-    units="microseconds" expires_after="2022-01-22">
+    units="microseconds" expires_after="2022-04-03">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>

@@ -575,7 +575,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules"
-    units="resource loads" expires_after="2021-12-19">
+    units="resource loads" expires_after="2022-04-03">
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

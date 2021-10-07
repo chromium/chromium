@@ -58,7 +58,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.DiscoveryEvent"
-    enum="WebAuthenticationCableV2DiscoveryEvent" expires_after="2021-11-19">
+    enum="WebAuthenticationCableV2DiscoveryEvent" expires_after="2022-04-03">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -67,7 +67,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.MobileEvent"
-    enum="WebAuthenticationCableV2MobileEvent" expires_after="2021-11-19">
+    enum="WebAuthenticationCableV2MobileEvent" expires_after="2022-04-03">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.MobileResult"
-    enum="WebAuthenticationCableV2MobileResult" expires_after="2021-11-19">
+    enum="WebAuthenticationCableV2MobileResult" expires_after="2022-04-03">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>Records the outcome of caBLEv2 transactions.</summary>

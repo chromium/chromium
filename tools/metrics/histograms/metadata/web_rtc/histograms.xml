@@ -133,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.ClippingPredictor.F1Score" units="%"
-    expires_after="2021-12-31">
+    expires_after="2022-04-03">
   <owner>alessiob@chromium.org</owner>
   <owner>silen@chromium.org</owner>
   <summary>
@@ -155,7 +155,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.ClippingPredictor.PredictionInterval"
-    units="frames" expires_after="2021-12-31">
+    units="frames" expires_after="2022-04-03">
   <owner>alessiob@chromium.org</owner>
   <owner>silen@chromium.org</owner>
   <summary>
@@ -199,7 +199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.InputClippingRate" units="%"
-    expires_after="2021-12-31">
+    expires_after="2022-04-03">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <owner>minyue@chromium.org</owner>
@@ -279,7 +279,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.AgcClippingAdjustmentAllowed" enum="Boolean"
-    expires_after="2021-12-31">
+    expires_after="2022-04-03">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The automatic gain control (AGC) in WebRTC tries to adjust the microphone
@@ -292,7 +292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.AgcSetLevel" units="level"
-    expires_after="2021-12-31">
+    expires_after="2022-04-03">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The automatic gain control (AGC) in WebRTC tries to adjust the microphone
