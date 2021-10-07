@@ -116,9 +116,12 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   }
 
   // CompositorAnimationDelegate implementation.
-  void NotifyAnimationStarted(double monotonic_time, int group) override {}
-  void NotifyAnimationFinished(double monotonic_time, int group) override {}
-  void NotifyAnimationAborted(double monotonic_time, int group) override {}
+  void NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                              int group) override {}
+  void NotifyAnimationFinished(base::TimeDelta monotonic_time,
+                               int group) override {}
+  void NotifyAnimationAborted(base::TimeDelta monotonic_time,
+                              int group) override {}
   void NotifyLocalTimeUpdated(
       absl::optional<base::TimeDelta> local_time) override;
 

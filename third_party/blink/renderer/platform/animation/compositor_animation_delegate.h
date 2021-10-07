@@ -17,9 +17,12 @@ class PLATFORM_EXPORT CompositorAnimationDelegate {
  public:
   virtual ~CompositorAnimationDelegate() = default;
 
-  virtual void NotifyAnimationStarted(double monotonic_time, int group) = 0;
-  virtual void NotifyAnimationFinished(double monotonic_time, int group) = 0;
-  virtual void NotifyAnimationAborted(double monotonic_time, int group) = 0;
+  virtual void NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                                      int group) = 0;
+  virtual void NotifyAnimationFinished(base::TimeDelta monotonic_time,
+                                       int group) = 0;
+  virtual void NotifyAnimationAborted(base::TimeDelta monotonic_time,
+                                      int group) = 0;
   // In the current state of things, notifyAnimationTakeover only applies to
   // scroll offset animations since main thread scrolling reasons can be added
   // while the compositor is animating. Keeping this non-pure virtual since

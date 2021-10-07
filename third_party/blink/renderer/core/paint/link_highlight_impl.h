@@ -59,9 +59,12 @@ class CORE_EXPORT LinkHighlightImpl final : public CompositorAnimationDelegate,
   void StartHighlightAnimationIfNeeded();
 
   // CompositorAnimationDelegate implementation.
-  void NotifyAnimationStarted(double monotonic_time, int group) override {}
-  void NotifyAnimationFinished(double monotonic_time, int group) override;
-  void NotifyAnimationAborted(double monotonic_time, int group) override {}
+  void NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                              int group) override {}
+  void NotifyAnimationFinished(base::TimeDelta monotonic_time,
+                               int group) override;
+  void NotifyAnimationAborted(base::TimeDelta monotonic_time,
+                              int group) override {}
 
   // CompositorAnimationClient implementation.
   CompositorAnimation* GetCompositorAnimation() const override;

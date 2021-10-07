@@ -149,9 +149,12 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   bool ReattachCompositorAnimationIfNeeded(CompositorAnimationTimeline*);
 
   // CompositorAnimationDelegate implementation.
-  void NotifyAnimationStarted(double monotonic_time, int group) override;
-  void NotifyAnimationFinished(double monotonic_time, int group) override;
-  void NotifyAnimationAborted(double monotonic_time, int group) override;
+  void NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                              int group) override;
+  void NotifyAnimationFinished(base::TimeDelta monotonic_time,
+                               int group) override;
+  void NotifyAnimationAborted(base::TimeDelta monotonic_time,
+                              int group) override;
   void NotifyAnimationTakeover(double monotonic_time,
                                double animation_start_time,
                                std::unique_ptr<gfx::AnimationCurve>) override {}

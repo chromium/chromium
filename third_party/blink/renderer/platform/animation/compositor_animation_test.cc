@@ -28,9 +28,15 @@ class CompositorAnimationDelegateForTesting
     aborted_ = false;
   }
 
-  void NotifyAnimationStarted(double, int) override { started_ = true; }
-  void NotifyAnimationFinished(double, int) override { finished_ = true; }
-  void NotifyAnimationAborted(double, int) override { aborted_ = true; }
+  void NotifyAnimationStarted(base::TimeDelta, int) override {
+    started_ = true;
+  }
+  void NotifyAnimationFinished(base::TimeDelta, int) override {
+    finished_ = true;
+  }
+  void NotifyAnimationAborted(base::TimeDelta, int) override {
+    aborted_ = true;
+  }
 
   bool started_;
   bool finished_;

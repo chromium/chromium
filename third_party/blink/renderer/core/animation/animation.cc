@@ -2461,9 +2461,10 @@ void Animation::DetachCompositedLayers() {
     compositor_animation_->GetAnimation()->DetachElement();
 }
 
-void Animation::NotifyAnimationStarted(double monotonic_time, int group) {
+void Animation::NotifyAnimationStarted(base::TimeDelta monotonic_time,
+                                       int group) {
   document_->GetPendingAnimations().NotifyCompositorAnimationStarted(
-      monotonic_time, group);
+      monotonic_time.InSecondsF(), group);
 }
 
 void Animation::AddedEventListener(

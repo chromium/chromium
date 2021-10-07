@@ -297,7 +297,7 @@ TEST_P(LinkHighlightImplTest, HighlightLayerEffectNode) {
   EXPECT_EQ(0.f, highlight->Effect().Opacity());
   EXPECT_TRUE(highlight->Effect().HasActiveOpacityAnimation());
 
-  highlight->NotifyAnimationFinished(0, 0);
+  highlight->NotifyAnimationFinished(base::TimeDelta(), 0);
   EXPECT_TRUE(web_view_impl->MainFrameImpl()
                   ->GetFrameView()
                   ->VisualViewportOrOverlayNeedsRepaintForTesting());

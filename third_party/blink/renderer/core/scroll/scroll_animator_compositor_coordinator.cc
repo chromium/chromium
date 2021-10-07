@@ -213,17 +213,17 @@ bool ScrollAnimatorCompositorCoordinator::ReattachCompositorAnimationIfNeeded(
 }
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationStarted(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {}
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationFinished(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {
   NotifyCompositorAnimationFinished(group);
 }
 
 void ScrollAnimatorCompositorCoordinator::NotifyAnimationAborted(
-    double monotonic_time,
+    base::TimeDelta monotonic_time,
     int group) {
   // An animation aborted by the compositor is treated as a finished
   // animation.

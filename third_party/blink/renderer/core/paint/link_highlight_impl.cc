@@ -224,7 +224,7 @@ void LinkHighlightImpl::StartHighlightAnimationIfNeeded() {
   compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
 }
 
-void LinkHighlightImpl::NotifyAnimationFinished(double, int) {
+void LinkHighlightImpl::NotifyAnimationFinished(base::TimeDelta, int) {
   // Since WebViewImpl may hang on to us for a while, make sure we
   // release resources as soon as possible.
   ReleaseResources();

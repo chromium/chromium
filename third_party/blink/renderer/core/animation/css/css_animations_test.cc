@@ -60,7 +60,7 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
 
   void StartAnimationOnCompositor(Animation* animation) {
     static_cast<CompositorAnimationDelegate*>(animation)
-        ->NotifyAnimationStarted(TimelineTime().since_origin().InSecondsF(),
+        ->NotifyAnimationStarted(TimelineTime().since_origin(),
                                  animation->CompositorGroup());
   }
 
@@ -728,7 +728,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     cc::KeyframeModel* keyframe_model = GetCompositorKeyframeForOpacity();
     base::TimeTicks start_time = keyframe_model->start_time();
     static_cast<CompositorAnimationDelegate*>(animation)
-        ->NotifyAnimationStarted(start_time.since_origin().InSecondsF(),
+        ->NotifyAnimationStarted(start_time.since_origin(),
                                  animation->CompositorGroup());
   }
 

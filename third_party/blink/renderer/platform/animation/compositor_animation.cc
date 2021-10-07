@@ -92,8 +92,8 @@ void CompositorAnimation::NotifyAnimationStarted(base::TimeTicks monotonic_time,
                                                  int target_property,
                                                  int group) {
   if (delegate_) {
-    delegate_->NotifyAnimationStarted(
-        (monotonic_time - base::TimeTicks()).InSecondsF(), group);
+    delegate_->NotifyAnimationStarted(monotonic_time - base::TimeTicks(),
+                                      group);
   }
 }
 
@@ -102,8 +102,8 @@ void CompositorAnimation::NotifyAnimationFinished(
     int target_property,
     int group) {
   if (delegate_) {
-    delegate_->NotifyAnimationFinished(
-        (monotonic_time - base::TimeTicks()).InSecondsF(), group);
+    delegate_->NotifyAnimationFinished(monotonic_time - base::TimeTicks(),
+                                       group);
   }
 }
 
@@ -111,8 +111,8 @@ void CompositorAnimation::NotifyAnimationAborted(base::TimeTicks monotonic_time,
                                                  int target_property,
                                                  int group) {
   if (delegate_) {
-    delegate_->NotifyAnimationAborted(
-        (monotonic_time - base::TimeTicks()).InSecondsF(), group);
+    delegate_->NotifyAnimationAborted(monotonic_time - base::TimeTicks(),
+                                      group);
   }
 }
 
