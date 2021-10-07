@@ -530,6 +530,9 @@
   <message name="IDS_SETTINGS_PASSWORD_ADD_FOOTNOTE" desc="A footnote for the dialog which allows the user to add a new password.">
     Make sure you're saving your current password for this site
   </message>
+  <message name="IDS_SETTINGS_PASSWORD_ADD_STORE_OPTION_ACCOUNT" desc="An option of the store picker shown in the add password dialog if saving to the account">
+    Save in your Google Account (<ph name="EMAIL">$1<ex>username@gmail.com</ex></ph>)
+  </message>
   <message name="IDS_SETTINGS_PASSWORD_COPY" desc="Label for a context menu item that allows to copy the selected password into clipboard.">
     Copy password
   </message>

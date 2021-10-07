@@ -173,6 +173,7 @@ function assertEditDialogParts(passwordDialog) {
   assertFalse(passwordDialog.$.usernameInput.readonly);
   assertFalse(passwordDialog.$.passwordInput.readonly);
   assertTrue(passwordDialog.$.passwordInput.required);
+  assertFalse(isElementVisible(passwordDialog.$.storePicker));
   assertTrue(!!passwordDialog.shadowRoot.querySelector('#showPasswordButton'));
   assertTrue(isElementVisible(passwordDialog.$.footnote));
   assertTrue(isElementVisible(passwordDialog.$.cancel));
@@ -193,6 +194,7 @@ function assertDetailsDialogParts(passwordDialog) {
   assertTrue(passwordDialog.$.usernameInput.readonly);
   assertTrue(passwordDialog.$.passwordInput.readonly);
   assertFalse(passwordDialog.$.passwordInput.required);
+  assertFalse(isElementVisible(passwordDialog.$.storePicker));
   assertFalse(!!passwordDialog.shadowRoot.querySelector('#showPasswordButton'));
   assertFalse(isElementVisible(passwordDialog.$.footnote));
   assertFalse(isElementVisible(passwordDialog.$.cancel));
@@ -2167,4 +2169,24 @@ suite('PasswordsSection', function() {
         addDialog.i18n('addPasswordFootnote'),
         addDialog.$.footnote.innerText.trim());
   });
+
+  test(
+      'editDialogWhenAddPasswordShowsStorePickerForAccountStoreUser',
+      function() {
+        const addDialog = elementFactory.createPasswordEditDialog();
+        addDialog.accountEmail = 'username@gmail.com';
+        const picker = addDialog.$.storePicker;
+        assertFalse(isElementVisible(picker));
+
+        addDialog.isAccountStoreUser = true;
+        flush();
+        assertTrue(isElementVisible(picker));
+        assertEquals(
+            addDialog.i18n(
+                'addPasswordStoreOptionAccount', addDialog.accountEmail),
+            picker.options[0].textContent.trim());
+        assertEquals(
+            addDialog.i18n('addPasswordStoreOptionDevice'),
+            picker.options[1].textContent.trim());
+      });
 });

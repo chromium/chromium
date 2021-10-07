@@ -68,6 +68,8 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
       isAccountStoreUser: {type: Boolean, value: false},
 
+      accountEmail: {stype: String, value: null},
+
       /**
        * Saved passwords after deduplicating versions that are repeated in the
        * account and on the device.
@@ -132,6 +134,7 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   existingEntry: MultiStorePasswordUiEntry|null;
   isAccountStoreUser: boolean;
+  accountEmail: string|null;
   savedPasswords: Array<MultiStorePasswordUiEntry>;
   private usernamesForSameOrigin_: Set<string>|null;
   private dialogMode_: PasswordDialogMode;
@@ -319,6 +322,15 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
         this.i18n('passwordStoredOnDevice');
   }
 
+  private getStoreOptionAccountText_(): string {
+    if (this.dialogMode_ !== PasswordDialogMode.ADD) {
+      // Store picker is only shown in the ADD mode.
+      return '';
+    }
+
+    return this.i18n('addPasswordStoreOptionAccount', this.accountEmail!);
+  }
+
   private getTitle_(): string {
     switch (this.dialogMode_) {
       case PasswordDialogMode.ADD:
@@ -335,6 +347,11 @@ class PasswordEditDialogElement extends PasswordEditDialogElementBase {
 
   private shouldShowStorageDetails_(): boolean {
     return this.dialogMode_ !== PasswordDialogMode.ADD &&
+        this.isAccountStoreUser;
+  }
+
+  private shouldShowStorePicker_(): boolean {
+    return this.dialogMode_ === PasswordDialogMode.ADD &&
         this.isAccountStoreUser;
   }
 
