@@ -36,7 +36,6 @@
     "@webcomponents/shadycss": "1.9.1"
   },
   "devDependencies": {
-    "acorn": "6.1.1",
-    "rollup": "1.12.4"
+    "acorn": "6.1.1"
   }
 }
