@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/app_management/app_management.mojom.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -253,6 +254,10 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
   base::flat_set<std::string> app_ids =
       preferred_apps_list_.FindPreferredAppsForFilters(intent_filters);
   app_ids.erase(app_id);
+  // Remove the use_browser app ID as it's mainly used inside the intent system and is not an app
+  // in app management. This prevents an overlap dialog from being shown when there are no "real"
+  // apps that overlap.
+  app_ids.erase(apps::kUseBrowserForLink);
   std::move(callback).Run(std::move(app_ids).extract());
 }
 
