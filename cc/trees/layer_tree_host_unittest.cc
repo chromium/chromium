@@ -4268,8 +4268,10 @@ class LayerTreeHostTestAbortedCommitDoesntStall : public LayerTreeHostTest {
     }
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* host_impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     commit_abort_count_++;
     // Initiate another abortable commit.
     host_impl->SetNeedsCommit();
@@ -6199,8 +6201,10 @@ class LayerTreeHostTestKeepSwapPromiseMFBA : public LayerTreeHostTest {
                        base::Unretained(this)));
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* host_impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     base::AutoLock lock(swap_promise_result_.lock);
     EXPECT_FALSE(swap_promise_result_.did_not_swap_called);
     EXPECT_FALSE(swap_promise_result_.did_activate_called);
@@ -6306,8 +6310,10 @@ class LayerTreeHostTestDeferSwapPromiseForVisibility
     }
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* host_impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     MainThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&LayerTreeHostTestDeferSwapPromiseForVisibility::
@@ -9355,8 +9361,10 @@ class LayerTreeHostTestKeepEventsMetricsForVisibility
     PostSetLayerTreeHostVisible(false);
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     EXPECT_EQ(reason, CommitEarlyOutReason::ABORTED_NOT_VISIBLE);
 
     // Since the main frame is aborted due to invisibility, events metrics
@@ -9422,8 +9430,10 @@ class LayerTreeHostTestKeepEventsMetricsForDeferredMainFrameUpdate
     PostDeferMainFrameUpdate();
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     EXPECT_EQ(reason, CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE);
 
     // Since the main frame is aborted due to deferred main frame updates,
@@ -9503,8 +9513,10 @@ class LayerTreeHostTestKeepEventsMetricsForDeferredCommit
     PostDeferCommit();
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     EXPECT_EQ(reason, CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT);
 
     // Since the main frame is aborted due to deferred commits, events metrics
@@ -9580,8 +9592,10 @@ class LayerTreeHostTestIgnoreEventsMetricsForNoUpdate
     PostSimulateEvent();
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     EXPECT_EQ(reason, CommitEarlyOutReason::FINISHED_NO_UPDATES);
 
     // We should reach here only for the second frame.

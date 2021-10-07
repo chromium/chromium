@@ -59,7 +59,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void BeginMainFrameAbortedOnImpl(
       CommitEarlyOutReason reason,
       base::TimeTicks main_thread_start_time,
-      std::vector<std::unique_ptr<SwapPromise>> swap_promises);
+      std::vector<std::unique_ptr<SwapPromise>> swap_promises,
+      bool scroll_and_viewport_changes_synced);
   void SetVisibleOnImpl(bool visible);
   void ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion);
   void FinishGLOnImpl(CompletionEvent* completion);

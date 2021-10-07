@@ -159,11 +159,13 @@ void ProxyMain::BeginMainFrame(
     // commit happens in the future.
     std::vector<std::unique_ptr<SwapPromise>> empty_swap_promises;
     ImplThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
-                                  base::Unretained(proxy_impl_.get()),
-                                  CommitEarlyOutReason::ABORTED_NOT_VISIBLE,
-                                  begin_main_frame_start_time,
-                                  std::move(empty_swap_promises)));
+        FROM_HERE,
+        base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
+                       base::Unretained(proxy_impl_.get()),
+                       CommitEarlyOutReason::ABORTED_NOT_VISIBLE,
+                       begin_main_frame_start_time,
+                       std::move(empty_swap_promises),
+                       false /* scroll_and_viewport_changes_synced */));
     return;
   }
 
@@ -184,7 +186,8 @@ void ProxyMain::BeginMainFrame(
                        base::Unretained(proxy_impl_.get()),
                        CommitEarlyOutReason::ABORTED_DEFERRED_MAIN_FRAME_UPDATE,
                        begin_main_frame_start_time,
-                       std::move(empty_swap_promises)));
+                       std::move(empty_swap_promises),
+                       false /* scroll_and_viewport_changes_synced */));
     // When we stop deferring main frame updates, we should resume any
     // previously requested pipeline stages.
     deferred_final_pipeline_stage_ =
@@ -204,6 +207,7 @@ void ProxyMain::BeginMainFrame(
   if (IsDeferringCommits() && base::TimeTicks::Now() > commits_restart_time_)
     StopDeferringCommits(ReasonToTimeoutTrigger(*paint_holding_reason_));
   bool skip_commit = IsDeferringCommits();
+  bool scroll_and_viewport_changes_synced = false;
 
   if (!skip_commit) {
     // Synchronizes scroll offsets and page scale deltas (for pinch zoom) from
@@ -212,6 +216,7 @@ void ProxyMain::BeginMainFrame(
     // layer tree, to prevent scroll offsets getting out of sync.
     layer_tree_host_->ApplyCompositorChanges(
         begin_main_frame_state->commit_data.get());
+    scroll_and_viewport_changes_synced = true;
   }
 
   layer_tree_host_->ApplyMutatorEvents(
@@ -275,7 +280,8 @@ void ProxyMain::BeginMainFrame(
                                   base::Unretained(proxy_impl_.get()),
                                   CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT,
                                   begin_main_frame_start_time,
-                                  std::move(empty_swap_promises)));
+                                  std::move(empty_swap_promises),
+                                  scroll_and_viewport_changes_synced));
     // We intentionally don't report CommitComplete() here since it was aborted
     // prematurely and we're waiting to do another commit in the future.
     // When we stop deferring commits, we should resume any previously requested
@@ -326,12 +332,15 @@ void ProxyMain::BeginMainFrame(
     // such events.
     layer_tree_host_->ClearEventsMetrics();
 
+    // We can only be here if !skip_commits, so we did do a scroll and
+    // viewport sync.
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::BeginMainFrameAbortedOnImpl,
                        base::Unretained(proxy_impl_.get()),
                        CommitEarlyOutReason::FINISHED_NO_UPDATES,
-                       begin_main_frame_start_time, std::move(swap_promises)));
+                       begin_main_frame_start_time, std::move(swap_promises),
+                       true /* scroll_and_viewport_changes_synced */));
 
     // Although the commit is internally aborted, this is because it has been
     // detected to be a no-op.  From the perspective of an embedder, this commit

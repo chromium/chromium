@@ -900,12 +900,15 @@ void SingleThreadProxy::DoBeginMainFrame(
     std::unique_ptr<CompositorCommitData> commit_data =
         host_impl_->ProcessCompositorDeltas();
     layer_tree_host_->ApplyCompositorChanges(commit_data.get());
+    did_apply_compositor_deltas_ = true;
   }
   layer_tree_host_->ApplyMutatorEvents(host_impl_->TakeMutatorEvents());
   layer_tree_host_->WillBeginMainFrame();
   layer_tree_host_->BeginMainFrame(begin_frame_args);
   layer_tree_host_->AnimateLayers(begin_frame_args.frame_time);
   layer_tree_host_->RequestMainFrameUpdate(false /* record_cc_metrics */);
+  // Reset the flag for the next time around. It has been used for this frame.
+  did_apply_compositor_deltas_ = false;
 }
 
 void SingleThreadProxy::DoPainting() {
@@ -930,7 +933,8 @@ void SingleThreadProxy::BeginMainFrameAbortedOnImplThread(
   std::vector<std::unique_ptr<SwapPromise>> empty_swap_promises;
   host_impl_->BeginMainFrameAborted(
       reason, std::move(empty_swap_promises),
-      scheduler_on_impl_thread_->last_dispatched_begin_main_frame_args());
+      scheduler_on_impl_thread_->last_dispatched_begin_main_frame_args(),
+      did_apply_compositor_deltas_);
   scheduler_on_impl_thread_->BeginMainFrameAborted(reason);
 }
 

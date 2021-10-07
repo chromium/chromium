@@ -43,8 +43,10 @@ class TestHooks : public AnimationDelegate {
   virtual void DidFinishImplFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void DidSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) {}
-  virtual void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* host_impl,
-                                             CommitEarlyOutReason reason) {}
+  virtual void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool scroll_and_viewport_changes_synced) {}
   virtual void ReadyToCommitOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void WillPrepareTilesOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void BeginCommitOnThread(LayerTreeHostImpl* host_impl) {}

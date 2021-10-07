@@ -102,6 +102,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void PostReturnDeferMainFrameUpdateToMainThread(
       std::unique_ptr<ScopedDeferMainFrameUpdate>
           scoped_defer_main_frame_update);
+  void PostDeferringCommitsStatusToMainThread(bool is_deferring_commits);
   void PostSetNeedsCommitToMainThread();
   void PostSetNeedsUpdateLayersToMainThread();
   void PostSetNeedsRedrawToMainThread();
@@ -250,6 +251,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
   void DispatchReturnDeferMainFrameUpdate(
       std::unique_ptr<ScopedDeferMainFrameUpdate>
           scoped_defer_main_frame_update);
+  void DispatchDeferringCommitsStatus(bool is_deferring_commits);
   void DispatchSetNeedsCommit();
   void DispatchSetNeedsUpdateLayers();
   void DispatchSetNeedsRedraw();

@@ -206,8 +206,11 @@ BrowserControlsState BrowserControlsOffsetManager::PullConstraintForMainThread(
     bool* out_changed_since_commit) {
   DCHECK(out_changed_since_commit);
   *out_changed_since_commit = constraint_changed_since_commit_;
-  constraint_changed_since_commit_ = false;
   return permitted_state_;
+}
+
+void BrowserControlsOffsetManager::NotifyConstraintSyncedToMainThread() {
+  constraint_changed_since_commit_ = false;
 }
 
 void BrowserControlsOffsetManager::OnBrowserControlsParamsChanged(

@@ -535,7 +535,8 @@ void LayerTreeHostImpl::DidSendBeginMainFrame(const viz::BeginFrameArgs& args) {
 void LayerTreeHostImpl::BeginMainFrameAborted(
     CommitEarlyOutReason reason,
     std::vector<std::unique_ptr<SwapPromise>> swap_promises,
-    const viz::BeginFrameArgs& args) {
+    const viz::BeginFrameArgs& args,
+    bool scroll_and_viewport_changes_synced) {
   if (reason == CommitEarlyOutReason::ABORTED_NOT_VISIBLE ||
       reason == CommitEarlyOutReason::FINISHED_NO_UPDATES) {
     frame_trackers_.NotifyMainFrameCausedNoDamage(args);
@@ -555,6 +556,12 @@ void LayerTreeHostImpl::BeginMainFrameAborted(
         swap_promise->DidNotSwap(SwapPromise::COMMIT_NO_UPDATE);
     }
   }
+
+  // Notify the browser controls manager that we have processed any
+  // controls constraint update.
+  if (scroll_and_viewport_changes_synced && browser_controls_manager()) {
+    browser_controls_manager()->NotifyConstraintSyncedToMainThread();
+  }
 }
 
 void LayerTreeHostImpl::ReadyToCommit(
@@ -566,6 +573,11 @@ void LayerTreeHostImpl::ReadyToCommit(
     is_measuring_smoothness_ = true;
     total_frame_counter_.Reset();
     dropped_frame_counter_.OnFcpReceived();
+  }
+  // Notify the browser controls manager that we have processed any
+  // controls constraint update.
+  if (browser_controls_manager()) {
+    browser_controls_manager()->NotifyConstraintSyncedToMainThread();
   }
 }
 

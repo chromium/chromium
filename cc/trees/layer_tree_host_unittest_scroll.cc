@@ -2099,8 +2099,10 @@ class LayerTreeHostScrollTestScrollAbortedCommitMFBA
     num_impl_commits_++;
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     switch (num_aborted_commits_) {
       case 0:
         EXPECT_EQ(2, num_impl_commits_);
@@ -2278,8 +2280,10 @@ class LayerTreeHostScrollTestElasticOverscroll
 
   void WillBeginMainFrame() override { num_begin_main_frames_main_thread_++; }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* host_impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     VerifyBeginMainFrameResultOnImplThread(host_impl, true);
   }
 
@@ -2547,8 +2551,10 @@ class LayerTreeHostScrollTestImplSideInvalidation
     }
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl* host_impl,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     EXPECT_EQ(CommitEarlyOutReason::FINISHED_NO_UPDATES, reason);
     EXPECT_EQ(3, num_of_main_frames_);
     EXPECT_EQ(
@@ -2813,6 +2819,82 @@ class UnifiedScrollingRepaintOnScroll : public LayerTreeTest {
 };
 
 MULTI_THREAD_TEST_F(UnifiedScrollingRepaintOnScroll);
+
+// Regression test for crbug.com/1248211 where the viewport was not updated
+// when the browser controls were changed on an aborted commit.
+//
+class LayerTreeHostScrollTestViewportAbortedCommit
+    : public LayerTreeHostScrollTest {
+ public:
+  LayerTreeHostScrollTestViewportAbortedCommit() = default;
+
+  void BeginTest() override {
+    PostDeferringCommitsStatusToMainThread(true);
+    PostSetNeedsCommitToMainThread();
+  }
+
+  void SetupTree() override {
+    LayerTreeHostScrollTest::SetupTree();
+    layer_tree_host()->SetPageScaleFactorAndLimits(1.f, 0.01f, 100.f);
+  }
+
+  void WillSendBeginMainFrameOnThread(LayerTreeHostImpl* host_impl) override {
+    if (is_first_frame_) {
+      host_impl->browser_controls_manager()->UpdateBrowserControlsState(
+          BrowserControlsState::kHidden, BrowserControlsState::kHidden, true);
+      bool changed_since_last_sync = false;
+      BrowserControlsState permitted_constraint =
+          host_impl->browser_controls_manager()->PullConstraintForMainThread(
+              &changed_since_last_sync);
+      EXPECT_EQ(BrowserControlsState::kHidden, permitted_constraint);
+      EXPECT_TRUE(changed_since_last_sync);
+    }
+  }
+
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl* host_impl,
+      CommitEarlyOutReason reason,
+      bool scroll_and_viewport_changes_synced) override {
+    EXPECT_EQ(CommitEarlyOutReason::ABORTED_DEFERRED_COMMIT, reason);
+    EXPECT_FALSE(scroll_and_viewport_changes_synced);
+    bool changed_since_last_sync = false;
+    BrowserControlsState permitted_constraint =
+        host_impl->browser_controls_manager()->PullConstraintForMainThread(
+            &changed_since_last_sync);
+    EXPECT_EQ(BrowserControlsState::kHidden, permitted_constraint);
+    EXPECT_TRUE(changed_since_last_sync);
+
+    // We do another frame because we deferred, but turn off deferral now
+    PostDeferringCommitsStatusToMainThread(false);
+
+    is_first_frame_ = false;
+    num_aborted_frames_++;
+  }
+
+  void ReadyToCommitOnThread(LayerTreeHostImpl* host_impl) override {
+    EXPECT_FALSE(is_first_frame_);
+    bool changed_since_last_sync = false;
+    BrowserControlsState permitted_constraint =
+        host_impl->browser_controls_manager()->PullConstraintForMainThread(
+            &changed_since_last_sync);
+    EXPECT_EQ(BrowserControlsState::kHidden, permitted_constraint);
+    EXPECT_FALSE(changed_since_last_sync);
+    num_committed_frames_++;
+    EndTest();
+  }
+
+  void AfterTest() override {
+    EXPECT_EQ(1, num_aborted_frames_);
+    EXPECT_EQ(1, num_committed_frames_);
+  }
+
+ private:
+  bool is_first_frame_ = true;
+  int num_aborted_frames_ = 0;
+  int num_committed_frames_ = 0;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostScrollTestViewportAbortedCommit);
 
 }  // namespace
 }  // namespace cc

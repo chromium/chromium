@@ -558,8 +558,10 @@ class LayerTreeHostProxyTestDelayedCommitDueToVisibility
     }
   }
 
-  void BeginMainFrameAbortedOnThread(LayerTreeHostImpl*,
-                                     CommitEarlyOutReason reason) override {
+  void BeginMainFrameAbortedOnThread(
+      LayerTreeHostImpl*,
+      CommitEarlyOutReason reason,
+      bool /* did_sync_scroll_and_viewport */) override {
     EXPECT_EQ(CommitEarlyOutReason::ABORTED_NOT_VISIBLE, reason);
     PostSetVisibleToMainThread(true);
   }

@@ -196,7 +196,8 @@ void ProxyImpl::SetTargetLocalSurfaceIdOnImpl(
 void ProxyImpl::BeginMainFrameAbortedOnImpl(
     CommitEarlyOutReason reason,
     base::TimeTicks main_thread_start_time,
-    std::vector<std::unique_ptr<SwapPromise>> swap_promises) {
+    std::vector<std::unique_ptr<SwapPromise>> swap_promises,
+    bool scroll_and_viewport_changes_synced) {
   TRACE_EVENT1("cc", "ProxyImpl::BeginMainFrameAbortedOnImplThread", "reason",
                CommitEarlyOutReasonToString(reason));
   DCHECK(IsImplThread());
@@ -204,7 +205,8 @@ void ProxyImpl::BeginMainFrameAbortedOnImpl(
 
   host_impl_->BeginMainFrameAborted(
       reason, std::move(swap_promises),
-      scheduler_->last_dispatched_begin_main_frame_args());
+      scheduler_->last_dispatched_begin_main_frame_args(),
+      scroll_and_viewport_changes_synced);
   scheduler_->NotifyBeginMainFrameStarted(main_thread_start_time);
   scheduler_->BeginMainFrameAborted(reason);
 }
