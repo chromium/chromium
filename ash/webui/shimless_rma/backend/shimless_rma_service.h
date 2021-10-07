@@ -129,7 +129,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   // RmadClient::Observer interface.
   void Error(rmad::RmadErrorCode error) override;
   void CalibrationProgress(
-      const rmad::CalibrationComponentStatus& componentStatus) override;
+      const rmad::CalibrationComponentStatus& component_status) override;
   void CalibrationOverallProgress(
       rmad::CalibrationOverallStatus status) override;
   void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
@@ -137,7 +137,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void HardwareWriteProtectionState(bool enabled) override;
   void PowerCableState(bool plugged_in) override;
   void HardwareVerificationResult(const rmad::HardwareVerificationResult&
-                                      hardwareVerificationResult) override;
+                                      hardware_verification_result) override;
 
   void OsUpdateProgress(update_engine::Operation operation, double progress);
 

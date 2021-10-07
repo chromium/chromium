@@ -658,9 +658,9 @@ void ShimlessRmaService::OsUpdateProgress(update_engine::Operation operation,
 }
 
 void ShimlessRmaService::CalibrationProgress(
-    const rmad::CalibrationComponentStatus& componentStatus) {
+    const rmad::CalibrationComponentStatus& component_status) {
   if (calibration_observer_.is_bound()) {
-    calibration_observer_->OnCalibrationUpdated(componentStatus);
+    calibration_observer_->OnCalibrationUpdated(component_status);
   }
 }
 
@@ -692,11 +692,11 @@ void ShimlessRmaService::PowerCableState(bool plugged_in) {
 }
 
 void ShimlessRmaService::HardwareVerificationResult(
-    const rmad::HardwareVerificationResult& hardwareVerificationResult) {
+    const rmad::HardwareVerificationResult& hardware_verification_result) {
   if (finalization_observer_.is_bound()) {
     finalization_observer_->OnHardwareVerificationResult(
-        hardwareVerificationResult.is_compliant(),
-        hardwareVerificationResult.error_str());
+        hardware_verification_result.is_compliant(),
+        hardware_verification_result.error_str());
   }
 }
 

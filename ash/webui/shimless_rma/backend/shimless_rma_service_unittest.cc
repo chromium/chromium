@@ -2369,17 +2369,17 @@ TEST_F(ShimlessRmaServiceTest, ObserveError) {
 class FakeCalibrationObserver : public mojom::CalibrationObserver {
  public:
   void OnCalibrationUpdated(
-      const rmad::CalibrationComponentStatus& componentStatus) override {
-    componentObservations.push_back(componentStatus);
+      const rmad::CalibrationComponentStatus& component_status) override {
+    component_observations.push_back(component_status);
   }
 
   void OnCalibrationStepComplete(
       rmad::CalibrationOverallStatus status) override {
-    overallObservations.push_back(status);
+    overall_observations.push_back(status);
   }
 
-  std::vector<rmad::CalibrationComponentStatus> componentObservations;
-  std::vector<rmad::CalibrationOverallStatus> overallObservations;
+  std::vector<rmad::CalibrationComponentStatus> component_observations;
+  std::vector<rmad::CalibrationOverallStatus> overall_observations;
   mojo::Receiver<mojom::CalibrationObserver> receiver{this};
 };
 
@@ -2392,12 +2392,12 @@ TEST_F(ShimlessRmaServiceTest, ObserveCalibration) {
       rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER,
       rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS, 0.25);
   run_loop.RunUntilIdle();
-  EXPECT_EQ(fake_observer.componentObservations.size(), 1UL);
-  EXPECT_EQ(fake_observer.componentObservations[0].component(),
+  EXPECT_EQ(fake_observer.component_observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.component_observations[0].component(),
             rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER);
-  EXPECT_EQ(fake_observer.componentObservations[0].status(),
+  EXPECT_EQ(fake_observer.component_observations[0].status(),
             rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS);
-  EXPECT_EQ(fake_observer.componentObservations[0].progress(), 0.25);
+  EXPECT_EQ(fake_observer.component_observations[0].progress(), 0.25);
 }
 
 TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibration) {
@@ -2409,8 +2409,8 @@ TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibration) {
       rmad::CalibrationOverallStatus::
           RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
   run_loop.RunUntilIdle();
-  EXPECT_EQ(fake_observer.overallObservations.size(), 1UL);
-  EXPECT_EQ(fake_observer.overallObservations[0],
+  EXPECT_EQ(fake_observer.overall_observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.overall_observations[0],
             rmad::CalibrationOverallStatus::
                 RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
 }
@@ -2493,10 +2493,10 @@ class FakeFinalizationObserver : public mojom::FinalizationObserver {
     Observation observation;
     observation.is_compliant = is_compliant;
     observation.error_message = error_message;
-    hardwareVerificationResultObservations.push_back(observation);
+    observations.push_back(observation);
   }
 
-  std::vector<Observation> hardwareVerificationResultObservations;
+  std::vector<Observation> observations;
   mojo::Receiver<mojom::FinalizationObserver> receiver{this};
 };
 
@@ -2507,13 +2507,9 @@ TEST_F(ShimlessRmaServiceTest, ObserveFinalization) {
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
   run_loop.RunUntilIdle();
-  EXPECT_EQ(fake_observer.hardwareVerificationResultObservations.size(), 1UL);
-  EXPECT_EQ(
-      fake_observer.hardwareVerificationResultObservations[0].is_compliant,
-      true);
-  EXPECT_EQ(
-      fake_observer.hardwareVerificationResultObservations[0].error_message,
-      "ok");
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
+  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
 }
 
 }  // namespace shimless_rma
