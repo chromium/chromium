@@ -6,6 +6,7 @@
 #include <initializer_list>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/bind.h"
@@ -644,12 +645,15 @@ class DOMDragEventCounter {
 
 const char kTestPagePath[] = "/drag_and_drop/page.html";
 
+// bool use_cross_site_subframe, double device_scale_factor.
+using TestParam = std::tuple<bool, double>;
+
 }  // namespace
 
 // Note: Tests that require OS events need to be added to
 // ozone-linux.interactive_ui_tests_wayland.filter.
 class DragAndDropBrowserTest : public InProcessBrowserTest,
-                               public testing::WithParamInterface<bool> {
+                               public testing::WithParamInterface<TestParam> {
  public:
   DragAndDropBrowserTest() = default;
 
@@ -675,6 +679,13 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
   void CrossTabDrag_Step3(CrossTabDrag_TestState*);
 
  protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        "force-device-scale-factor",
+        base::NumberToString(std::get<1>(GetParam())));
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
@@ -689,7 +700,7 @@ class DragAndDropBrowserTest : public InProcessBrowserTest,
 
   bool use_cross_site_subframe() {
     // This is controlled by gtest's test param from INSTANTIATE_TEST_SUITE_P.
-    return GetParam();
+    return std::get<0>(GetParam());
   }
 
   content::RenderFrameHost* GetLeftFrame(
@@ -1935,12 +1946,25 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
 // of a drag operation, and cross-site drags should be allowed across a
 // navigation.
 
-INSTANTIATE_TEST_SUITE_P(SameSiteSubframe,
-                         DragAndDropBrowserTest,
-                         ::testing::Values(false));
+// Injecting input with scaling works as expected on Chromeos.
+#if defined(OS_CHROMEOS)
+constexpr std::initializer_list<double> ui_scaling_factors = {1.0, 1.25, 2.0};
+#else
+// Injecting input with non-1x scaling doesn't work correctly with x11 ozone or
+// Windows 7.
+constexpr std::initializer_list<double> ui_scaling_factors = {1.0};
+#endif
 
-INSTANTIATE_TEST_SUITE_P(CrossSiteSubframe,
-                         DragAndDropBrowserTest,
-                         ::testing::Values(true));
+INSTANTIATE_TEST_SUITE_P(
+    SameSiteSubframe,
+    DragAndDropBrowserTest,
+    ::testing::Combine(::testing::Values(false),
+                       ::testing::ValuesIn(ui_scaling_factors)));
+
+INSTANTIATE_TEST_SUITE_P(
+    CrossSiteSubframe,
+    DragAndDropBrowserTest,
+    ::testing::Combine(::testing::Values(true),
+                       ::testing::ValuesIn(ui_scaling_factors)));
 
 }  // namespace chrome

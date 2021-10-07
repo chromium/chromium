@@ -1932,8 +1932,9 @@ void RenderWidgetHostImpl::DragTargetDragEnterWithMetaData(
         base::BindOnce(&RenderWidgetHostImpl::OnUpdateDragCursor,
                        base::Unretained(this), std::move(callback));
     blink_frame_widget_->DragTargetDragEnter(
-        DropMetaDataToDragData(metadata), client_pt, screen_pt,
-        operations_allowed, key_modifiers, std::move(callback_wrapper));
+        DropMetaDataToDragData(metadata),
+        ConvertWindowPointToViewport(client_pt), screen_pt, operations_allowed,
+        key_modifiers, std::move(callback_wrapper));
   }
 }
 
@@ -1958,10 +1959,8 @@ void RenderWidgetHostImpl::DragTargetDragLeave(
     const gfx::PointF& screen_point) {
   // TODO(https://crbug.com/1102769): Replace with a for_frame() check.
   if (blink_frame_widget_) {
-    gfx::PointF viewport_point = client_point;
-    if (ShouldUseZoomForDSF())
-      viewport_point.Scale(GetScaleFactorForView(GetView()));
-    blink_frame_widget_->DragTargetDragLeave(viewport_point, screen_point);
+    blink_frame_widget_->DragTargetDragLeave(
+        ConvertWindowPointToViewport(client_point), screen_point);
   }
 }
 
