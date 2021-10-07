@@ -1517,7 +1517,7 @@
   {
     "name": "enable-commerce-merchant-viewer",
     "owners": [ "chrome-shopping@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 102
   },
   {
     "name": "enable-commerce-price-tracking",
@@ -4237,6 +4237,11 @@
     "name": "page-info-history",
     "owners": [ "eokoyomon", "dullweber" ],
     "expiry_milestone": 97
+  },
+  {
+    "name": "page-info-store-info",
+    "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 102
   },
   {
     "name": "page-info-version-2-desktop",

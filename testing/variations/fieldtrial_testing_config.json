@@ -5607,6 +5607,44 @@
             ]
         }
     ],
+    "PageInfoStoreInfo": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageInfoStoreInfo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PageInfoStoreInfoIPH": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "availability": ">=0",
+                        "event_1": "name:page_info_store_info_row_clicked;comparator:==0;window:90;storage:90",
+                        "event_trigger": "name:page_info_store_info_iph_triggered;comparator:==0;window:90;storage:90",
+                        "event_used": "name:page_info_opened;comparator:any;window:90;storage:90",
+                        "session_rate": "<1"
+                    },
+                    "enable_features": [
+                        "IPH_PageInfoStoreInfo"
+                    ],
+                    "disable_features": []
+                }
+            ]
+        }
+    ],
     "PageInfoV2Desktop": [
         {
             "platforms": [

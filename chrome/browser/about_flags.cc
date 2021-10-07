@@ -6443,6 +6443,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"page-info-history", flag_descriptions::kPageInfoHistoryName,
      flag_descriptions::kPageInfoHistoryDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(page_info::kPageInfoHistory)},
+    {"page-info-store-info", flag_descriptions::kPageInfoStoreInfoName,
+     flag_descriptions::kPageInfoStoreInfoDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(page_info::kPageInfoStoreInfo)},
 #endif  // !defined(OS_ANDROID)
 
 #if !defined(OS_ANDROID)

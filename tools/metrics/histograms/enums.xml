@@ -47738,6 +47738,7 @@ from previous Chrome versions.
   <int value="-2099457894" label="Mash:enabled"/>
   <int value="-2099035488" label="enable-data-reduction-proxy-bypass-warning"/>
   <int value="-2098610409" label="disable-lcd-text"/>
+  <int value="-2098294029" label="PageInfoStoreInfo:enabled"/>
   <int value="-2098243118" label="OmniboxTailSuggestions:disabled"/>
   <int value="-2097906903" label="ArcNearbySharing:disabled"/>
   <int value="-2097895488" label="NotificationScrollBar:enabled"/>
@@ -51529,6 +51530,7 @@ from previous Chrome versions.
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>
   <int value="787385958" label="RegionalLocalesAsDisplayUI:enabled"/>
   <int value="788130042" label="PrivacySandboxSettings2:enabled"/>
+  <int value="790411499" label="PageInfoStoreInfo:disabled"/>
   <int value="791541863" label="NtpPhotosModule:disabled"/>
   <int value="792307132"
       label="KeyboardBasedDisplayArrangementInSettings:enabled"/>

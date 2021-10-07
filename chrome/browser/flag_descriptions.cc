@@ -3317,6 +3317,10 @@ const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "
     "a site, removing all preferences and history.";
 
+const char kPageInfoStoreInfoName[] = "Page info store info";
+const char kPageInfoStoreInfoDescription[] =
+    "Enable a store info row to the page info menu on eligible pages.";
+
 extern const char kPageInfoV2DesktopName[];
 extern const char kPageInfoV2DesktopDescription[];
 
