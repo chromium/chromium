@@ -6,6 +6,8 @@
 
 #include <numeric>
 
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -104,10 +106,18 @@ void GetURLsAndFoldersForOpenTabs(
 }
 #endif
 
-void OpenAllHelper(content::PageNavigator* navigator,
-                   std::vector<GURL> bookmark_urls,
-                   WindowOpenDisposition initial_disposition,
-                   content::BrowserContext* browser_context) {
+// Represents a reference set of web contents opened by OpenAllHelper() so that
+// the actual web contents and what browsers they are located in can be
+// determined (if necessary).
+using OpenedWebContentsSet = base::flat_set<const content::WebContents*>;
+
+// Opens all of the URLs in `bookmark_urls` using `navigator` and
+// `initial_disposition` as a starting point. Returns a reference set of the
+// WebContents created; see OpenedWebContentsSet.
+OpenedWebContentsSet OpenAllHelper(content::PageNavigator* navigator,
+                                   std::vector<GURL> bookmark_urls,
+                                   WindowOpenDisposition initial_disposition) {
+  OpenedWebContentsSet::container_type opened_tabs;
   WindowOpenDisposition disposition = initial_disposition;
   for (std::vector<GURL>::const_iterator url_it = bookmark_urls.begin();
        url_it != bookmark_urls.end(); ++url_it) {
@@ -122,7 +132,13 @@ void OpenAllHelper(content::PageNavigator* navigator,
         navigator = opened_tab;
       disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
     }
+
+    if (opened_tab)
+      opened_tabs.push_back(opened_tab);
   }
+
+  // Constructing the return value in this way is significantly more efficient.
+  return OpenedWebContentsSet(std::move(opened_tabs));
 }
 
 }  // namespace
@@ -151,28 +167,35 @@ void OpenAllIfAllowed(
     content::PageNavigator* navigator = std::move(get_navigator).Run();
     if (!navigator)
       return;
-    int count = urls.size();
-    OpenAllHelper(navigator, std::move(urls), initial_disposition,
-                  browser->profile());
+    const auto opened_web_contents =
+        OpenAllHelper(navigator, std::move(urls), initial_disposition);
     if (folder_title.has_value()) {
       TabStripModel* model = browser->tab_strip_model();
-      std::vector<int> tab_indicies(count);
 
-      for (auto i = 0; i < count; i++)
-        tab_indicies[i] = model->count() - count + i;
+      // Figure out which tabs we actually opened in this browser that aren't
+      // already in groups.
+      std::vector<int> tab_indices;
+      for (int i = 0; i < model->count(); ++i) {
+        if (base::Contains(opened_web_contents, model->GetWebContentsAt(i)) &&
+            !model->GetTabGroupForTab(i).has_value()) {
+          tab_indices.push_back(i);
+        }
+      }
 
-      tab_groups::TabGroupId newGroupId = model->AddToNewGroup(tab_indicies);
+      if (!tab_indices.empty()) {
+        tab_groups::TabGroupId newGroupId = model->AddToNewGroup(tab_indices);
 
-      // Use the bookmark folder's title as the group's title.
-      TabGroup* group = model->group_model()->GetTabGroup(newGroupId);
-      const tab_groups::TabGroupVisualData* current_visual_data =
-          group->visual_data();
-      tab_groups::TabGroupVisualData new_visual_data(
-          folder_title.value(), current_visual_data->color(),
-          current_visual_data->is_collapsed());
-      group->SetVisualData(new_visual_data);
+        // Use the bookmark folder's title as the group's title.
+        TabGroup* group = model->group_model()->GetTabGroup(newGroupId);
+        const tab_groups::TabGroupVisualData* current_visual_data =
+            group->visual_data();
+        tab_groups::TabGroupVisualData new_visual_data(
+            folder_title.value(), current_visual_data->color(),
+            current_visual_data->is_collapsed());
+        group->SetVisualData(new_visual_data);
 
-      model->OpenTabGroupEditor(newGroupId);
+        model->OpenTabGroupEditor(newGroupId);
+      }
     }
   };
 
@@ -218,8 +241,7 @@ void OpenAllNow(content::PageNavigator* navigator,
       nodes, browser_context,
       initial_disposition == WindowOpenDisposition::OFF_THE_RECORD);
 
-  OpenAllHelper(navigator, std::move(urls), initial_disposition,
-                browser_context);
+  OpenAllHelper(navigator, std::move(urls), initial_disposition);
 }
 
 int OpenCount(gfx::NativeWindow parent,

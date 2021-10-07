@@ -21,10 +21,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
+#include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -232,6 +234,47 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, IncognitoPersistence) {
   urls.clear();
   bookmark_model->GetBookmarks(&urls);
   ASSERT_EQ(1u, urls.size());
+}
+
+// Regression for crash caused by opening folder as a group in an incognito
+// window when the folder contains URLs that cannot be displayed in incognito.
+// See discussion starting at crbug.com/1242351#c15
+IN_PROC_BROWSER_TEST_F(
+    BookmarkBrowsertest,
+    OpenFolderAsGroupInIncognitoWhenBookmarksCantOpenInIncognito) {
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(browser()->profile());
+  const BookmarkNode* const folder = bookmark_model->AddFolder(
+      bookmark_model->bookmark_bar_node(), 0, u"Folder");
+  const BookmarkNode* const page1 = bookmark_model->AddURL(
+      folder, 0, u"BookmarkManager", GURL(chrome::kChromeUIBookmarksURL));
+  const BookmarkNode* const page2 = bookmark_model->AddURL(
+      folder, 1, u"Settings", GURL(chrome::kChromeUISettingsURL));
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  BookmarkModel* incognito_model =
+      WaitForBookmarkModel(incognito_browser->profile());
+  ASSERT_FALSE(incognito_model->root_node()->children().empty());
+  ASSERT_TRUE(incognito_model->root_node()->children()[0]->is_folder());
+  BookmarkNode* const incognito_folder =
+      incognito_model->bookmark_bar_node()->children()[0].get();
+  ASSERT_EQ(2U, incognito_folder->children().size());
+  EXPECT_EQ(page1->url(), incognito_folder->children()[0]->url());
+  EXPECT_EQ(page2->url(), incognito_folder->children()[1]->url());
+
+  const int browser_tabs = browser()->tab_strip_model()->GetTabCount();
+  const int incognito_tabs =
+      incognito_browser->tab_strip_model()->GetTabCount();
+
+  chrome::OpenAllIfAllowed(
+      incognito_browser, base::BindLambdaForTesting([=]() {
+        return static_cast<content::PageNavigator*>(incognito_browser);
+      }),
+      {incognito_folder}, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      /* add_to_group =*/true);
+
+  EXPECT_EQ(incognito_tabs,
+            incognito_browser->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(browser_tabs + 2, browser()->tab_strip_model()->GetTabCount());
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest,
