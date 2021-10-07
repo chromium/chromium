@@ -18,6 +18,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/renderer/cart/commerce_renderer_feature_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
@@ -168,7 +169,9 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ntp_features::kNtpChromeCartModule,
-          {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}}}},
+          {{"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
+           // Extend timeout to avoid flakiness.
+           {"cart-extraction-timeout", "1m"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -372,6 +375,19 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
 
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
+  void WaitForUmaBucketCount(base::HistogramTester& tester,
+                             base::StringPiece name,
+                             base::HistogramBase::Sample sample,
+                             base::HistogramBase::Count expected_count) {
+    while (true) {
+      metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+      auto count = tester.GetBucketCount(name, sample);
+      if (count == expected_count)
+        break;
+      base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+    }
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   CartService* service_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -429,10 +445,27 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
 }
 
 IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart) {
+  base::HistogramTester histogram_tester;
+
   // This page has three products.
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
   WaitForProductCount(kExpectedExampleWithProducts);
+
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionExecutionTime",
+                                    1);
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionLongestTaskTime",
+                                    1);
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionTotalTasksTime",
+                                    1);
+  histogram_tester.ExpectTotalCount("Commerce.Carts.ExtractionElapsedTime", 1);
+  histogram_tester.ExpectBucketCount("Commerce.Carts.ExtractionTimedOut", 0, 1);
+
+  SendXHR("/add-to-cart", "product: 123");
+
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 2);
 }
 
 class CommerceHintNoRateControlTest : public CommerceHintAgentTest {
@@ -620,7 +653,9 @@ class CommerceHintProductInfoTest : public CommerceHintAgentTest {
                 {"www.ccc.com": "products-(\\w+)",
                  "www.guitarcenter.com": "products-(\\w+)"}
               }
-            )###"}}},
+            )###"},
+           // Extend timeout to avoid flakiness.
+           {"cart-extraction-timeout", "1m"}}},
          {commerce_renderer_feature::kRetailCoupons,
           {{"coupon-partner-merchant-pattern", "(eee.com)"},
            {"coupon-product-id-pattern-mapping",
@@ -753,7 +788,13 @@ class CommerceHintImprovementTest : public CommerceHintAgentTest {
         {{ntp_features::kNtpChromeCartModule,
           {{ntp_features::kNtpChromeCartModuleHeuristicsImprovementParam,
             "true"},
-           {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"}}}},
+           {"product-skip-pattern", "(^|\\W)(?i)(skipped)(\\W|$)"},
+           // These two are for manual testing only.
+           // Use --vmodule='commerce_*=2'.
+           {"cart-extraction-min-task-time", "1s"},
+           {"cart-extraction-duty-cycle", "0.5"},
+           // Extend timeout to avoid flakiness.
+           {"cart-extraction-timeout", "1m"}}}},
         {optimization_guide::features::kOptimizationHints});
   }
 
@@ -767,6 +808,64 @@ IN_PROC_BROWSER_TEST_F(CommerceHintImprovementTest, ExtractCart) {
   NavigateToURL("https://www.guitarcenter.com/cart.html");
 
   WaitForProductCount(kExpectedExampleWithProductsWithoutSaved);
+}
+
+// Product extraction would always timeout and return empty results.
+class CommerceHintTimeoutTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"cart-extraction-timeout", "0"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintTimeoutTest, ExtractCart) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        1, 1);
+  WaitForCartCount(kEmptyExpected);
+}
+
+class CommerceHintMaxCountTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"cart-extraction-max-count", "1"},
+           // Extend timeout to avoid flakiness.
+           {"cart-extraction-timeout", "1m"}}}},
+        {optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintMaxCountTest, ExtractCart) {
+  base::HistogramTester histogram_tester;
+
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 1);
+
+  // This would have triggered another extraction if not limited by max count
+  // per navigation.
+  SendXHR("/add-to-cart", "product: 123");
+
+  // Navigation resets count, so can do another extraction.
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 2);
 }
 
 class CommerceHintSkippAddToCartTest : public CommerceHintAgentTest {

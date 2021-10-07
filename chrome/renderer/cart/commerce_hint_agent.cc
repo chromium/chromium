@@ -7,8 +7,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -74,8 +75,21 @@ constexpr base::FeatureParam<std::string> kPurchaseButtonPatternMapping{
 
 constexpr base::FeatureParam<base::TimeDelta> kCartExtractionGapTime{
     &ntp_features::kNtpChromeCartModule, "cart-extraction-gap-time",
-    // Gap time is 0.5s by default.
-    base::Seconds(0.5)};
+    base::Seconds(2)};
+
+constexpr base::FeatureParam<int> kCartExtractionMaxCount{
+    &ntp_features::kNtpChromeCartModule, "cart-extraction-max-count", 20};
+
+constexpr base::FeatureParam<base::TimeDelta> kCartExtractionMinTaskTime{
+    &ntp_features::kNtpChromeCartModule, "cart-extraction-min-task-time",
+    base::Seconds(0.01)};
+
+constexpr base::FeatureParam<double> kCartExtractionDutyCycle{
+    &ntp_features::kNtpChromeCartModule, "cart-extraction-duty-cycle", 0.05};
+
+constexpr base::FeatureParam<base::TimeDelta> kCartExtractionTimeout{
+    &ntp_features::kNtpChromeCartModule, "cart-extraction-timeout",
+    base::Seconds(0.25)};
 
 constexpr base::FeatureParam<std::string> kProductIdPatternMapping{
     &ntp_features::kNtpChromeCartModule, "product-id-pattern-mapping",
@@ -542,6 +556,18 @@ const WebString& GetProductExtractionScript() {
     if (IsCartHeuristicsImprovementEnabled()) {
       script_string = "var isImprovementEnabled = true;\n" + script_string;
     }
+    const std::string config =
+        "var kSleeperMinTaskTimeMs = " +
+        base::NumberToString(
+            kCartExtractionMinTaskTime.Get().InMillisecondsF()) +
+        ";\n" + "var kSleeperDutyCycle = " +
+        base::NumberToString(kCartExtractionDutyCycle.Get()) + ";\n" +
+        "var kTimeoutMs = " +
+        base::NumberToString(kCartExtractionTimeout.Get().InMillisecondsF()) +
+        ";\n";
+    DVLOG(2) << config;
+    script_string = config + script_string;
+
     const std::string id_extraction_map =
         kProductIdPatternMapping.Get().empty()
             ? std::string(
@@ -667,31 +693,50 @@ const std::vector<std::string> CommerceHintAgent::ExtractButtonTexts(
 void CommerceHintAgent::MaybeExtractProducts() {
   // TODO(crbug/1241582): Add a test for rate control based on whether the
   // histogram is recorded.
-  static base::TimeDelta gap_time = kCartExtractionGapTime.Get();
-  if (!last_extraction_time_.is_null() &&
-      base::TimeTicks::Now() - last_extraction_time_ < gap_time) {
+  if (is_extraction_pending_) {
+    DVLOG(1) << "Extraction is scheduled. Skip this request.";
     return;
   }
-  last_extraction_time_ = base::TimeTicks::Now();
+  if (extraction_count_ >= kCartExtractionMaxCount.Get()) {
+    DVLOG(1) << "Extraction exceeds quota. Skip until navigation.";
+    return;
+  }
+  is_extraction_pending_ = true;
+  DVLOG(1) << "Scheduled extraction";
   base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&CommerceHintAgent::ExtractProducts,
                      weak_factory_.GetWeakPtr()),
-      gap_time);
+      kCartExtractionGapTime.Get());
 }
 
 void CommerceHintAgent::ExtractProducts() {
+  is_extraction_pending_ = false;
+  if (is_extraction_running_) {
+    DVLOG(1) << "Extraction is running. Try again later.";
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&CommerceHintAgent::MaybeExtractProducts,
+                       weak_factory_.GetWeakPtr()),
+        kCartExtractionGapTime.Get());
+    return;
+  }
+  is_extraction_running_ = true;
+  DVLOG(2) << "is_extraction_running_ = " << is_extraction_running_;
+
   blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   blink::WebScriptSource source =
       blink::WebScriptSource(GetProductExtractionScript());
 
-  JavaScriptRequest* request =
-      new JavaScriptRequest(weak_factory_.GetWeakPtr());
-  main_frame->RequestExecuteScript(ISOLATED_WORLD_ID_CHROME_INTERNAL,
-                                   base::make_span(&source, 1), false,
-                                   blink::WebLocalFrame::kAsynchronous, request,
-                                   blink::BackForwardCacheAware::kAllow);
+  if (!javascript_request_) {
+    // This singleton never gets deleted, and will out-live CommerceHintAgen.
+    javascript_request_ = new JavaScriptRequest(weak_factory_.GetWeakPtr());
+  }
+  main_frame->RequestExecuteScript(
+      ISOLATED_WORLD_ID_CHROME_INTERNAL, base::make_span(&source, 1), false,
+      blink::WebLocalFrame::kAsynchronous, javascript_request_,
+      blink::BackForwardCacheAware::kAllow);
 }
 
 CommerceHintAgent::JavaScriptRequest::JavaScriptRequest(
@@ -707,17 +752,51 @@ void CommerceHintAgent::JavaScriptRequest::WillExecute() {
 void CommerceHintAgent::JavaScriptRequest::Completed(
     const blink::WebVector<v8::Local<v8::Value>>& result) {
   // Only record when the start time is correctly captured.
+  DCHECK(!start_time_.is_null());
   if (!start_time_.is_null()) {
-    UMA_HISTOGRAM_TIMES("Commerce.Carts.ExtractionExecutionTime",
-                        base::TimeTicks::Now() - start_time_);
+    base::UmaHistogramTimes("Commerce.Carts.ExtractionExecutionTime",
+                            base::TimeTicks::Now() - start_time_);
   }
   if (!agent_)
     return;
   blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
   if (result.empty() || result.begin()->IsEmpty())
     return;
-  agent_->OnProductsExtracted(content::V8ValueConverter::Create()->FromV8Value(
-      result[0], main_frame->MainWorldScriptContext()));
+  if (!result[0]->IsPromise()) {
+    DLOG(ERROR) << "JavaScriptRequest::Completed() got non-Promise";
+    return;
+  }
+  v8::Local<v8::Promise> promise = result[0].As<v8::Promise>();
+  v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
+  auto callback = [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+    // The JavaScriptRequest object is never deleted, so we know the
+    // pointer we curried into the v8::Function is still valid. We forward
+    // the request to the instance, so that it can check the validity of the
+    // CommerceHintAgent, and process the results as appropriate.
+    DCHECK(info.Data()->IsExternal());
+    auto* javascript_request = static_cast<JavaScriptRequest*>(
+        info.Data().As<v8::External>()->Value());
+    javascript_request->HandlePromiseResults(info);
+  };
+  // Curry in the JavaScriptRequest instance into the callback.
+  v8::Local<v8::External> external =
+      v8::External::New(context->GetIsolate(), this);
+  v8::Local<v8::Function> function =
+      v8::Function::New(context, callback, external).ToLocalChecked();
+
+  v8::MaybeLocal<v8::Promise> result_maybe;
+  result_maybe = promise->Then(context, function);
+}
+
+void CommerceHintAgent::JavaScriptRequest::HandlePromiseResults(
+    const v8::FunctionCallbackInfo<v8::Value>& info) {
+  if (!agent_)
+    return;
+  blink::WebLocalFrame* main_frame = agent_->render_frame()->GetWebFrame();
+  v8::Local<v8::Context> context = main_frame->MainWorldScriptContext();
+
+  agent_->OnProductsExtracted(
+      content::V8ValueConverter::Create()->FromV8Value(info[0], context));
 }
 
 void CommerceHintAgent::OnProductsExtracted(
@@ -727,14 +806,43 @@ void CommerceHintAgent::OnProductsExtracted(
     return;
   }
   DVLOG(2) << "OnProductsExtracted: " << *results;
+  if (!results->is_dict()) {
+    DLOG(ERROR) << "OnProductsExtracted() result is not dict";
+    return;
+  }
+
+  auto record_time = [&](const std::string& key,
+                         const std::string& histograme_name) {
+    auto* value = results->FindKey(key);
+    if (!value)
+      return;
+    if (value->is_int() || value->is_double()) {
+      base::UmaHistogramTimes(
+          histograme_name,
+          base::TimeDelta::FromMillisecondsD(value->GetDouble()));
+    }
+  };
+  record_time("longest_task_ms", "Commerce.Carts.ExtractionLongestTaskTime");
+  record_time("total_tasks_ms", "Commerce.Carts.ExtractionTotalTasksTime");
+  record_time("elapsed_ms", "Commerce.Carts.ExtractionElapsedTime");
+
+  auto* timedout = results->FindKey("timedout");
+  if (timedout && timedout->is_bool()) {
+    base::UmaHistogramBoolean("Commerce.Carts.ExtractionTimedOut",
+                              timedout->GetBool());
+  }
+
+  auto* extracted_products = results->FindKey("products");
+  if (!extracted_products)
+    return;
   // Don't update cart when the return value is not a list. This could be due to
   // that the cart is not loaded.
-  if (!results->is_list())
+  if (!extracted_products->is_list())
     return;
   bool is_partner = commerce_renderer_feature::IsPartnerMerchant(
       GURL(render_frame()->GetWebFrame()->GetDocument().Url()));
   std::vector<mojom::ProductPtr> products;
-  for (const auto& product : results->GetList()) {
+  for (const auto& product : extracted_products->GetList()) {
     if (!product.is_dict())
       continue;
     const auto* image_url = product.FindKey("imageUrl");
@@ -761,6 +869,10 @@ void CommerceHintAgent::OnProductsExtracted(
     products.push_back(std::move(product_ptr));
   }
   OnCartProductUpdated(render_frame(), std::move(products));
+
+  is_extraction_running_ = false;
+  extraction_count_++;
+  DVLOG(2) << "is_extraction_running_ = " << is_extraction_running_;
 }
 
 void CommerceHintAgent::OnDestruct() {
@@ -805,6 +917,7 @@ void CommerceHintAgent::DidStartNavigation(
   if (!url.SchemeIsHTTPOrHTTPS())
     return;
   starting_url_ = url;
+  has_finished_loading_ = false;
 }
 
 void CommerceHintAgent::DidCommitProvisionalLoad(
@@ -835,6 +948,8 @@ void CommerceHintAgent::DidFinishLoad() {
   const GURL& url(frame->GetDocument().Url());
   if (!url.SchemeIs(url::kHttpsScheme))
     return;
+  has_finished_loading_ = true;
+  extraction_count_ = 0;
 
   // Some URLs might satisfy the patterns for both cart and checkout (e.g.
   // https://www.foo.com/cart/checkout). In those cases, cart has higher
@@ -842,6 +957,7 @@ void CommerceHintAgent::DidFinishLoad() {
   if (IsVisitCart(url)) {
     RecordCommerceEvent(CommerceEvent::kVisitCart);
     OnVisitCart(render_frame());
+    DVLOG(1) << "Extract products after loading";
     MaybeExtractProducts();
   } else if (IsVisitCheckout(url)) {
     RecordCommerceEvent(CommerceEvent::kVisitCheckout);
@@ -869,6 +985,8 @@ void CommerceHintAgent::WillSubmitForm(const blink::WebFormElement& form) {
 
 // TODO(crbug/1164236): use MutationObserver on cart instead.
 void CommerceHintAgent::ExtractCartFromCurrentFrame() {
+  if (!has_finished_loading_)
+    return;
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
   // Don't do anything for subframes.
   if (frame->Parent())
@@ -878,17 +996,22 @@ void CommerceHintAgent::ExtractCartFromCurrentFrame() {
     return;
 
   if (IsVisitCart(url)) {
+    DVLOG(1) << "Extract products due to layout shift or intersection change";
     MaybeExtractProducts();
   }
 }
 
 void CommerceHintAgent::DidObserveLayoutShift(double score,
                                               bool after_input_or_scroll) {
+  DVLOG(1) << "Layout shift " << score << " " << after_input_or_scroll;
   ExtractCartFromCurrentFrame();
 }
 
 void CommerceHintAgent::OnMainFrameIntersectionChanged(
     const gfx::Rect& intersect_rect) {
+  DVLOG(1) << "Intersection changed " << intersect_rect.x() << " "
+           << intersect_rect.y() << " " << intersect_rect.width() << " "
+           << intersect_rect.height();
   ExtractCartFromCurrentFrame();
 }
 

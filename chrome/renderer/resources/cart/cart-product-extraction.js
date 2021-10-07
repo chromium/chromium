@@ -700,29 +700,39 @@ function isCartItem(item) {
 
 function extractOneItem(item, extracted_items, processed, output,
   savedForLaterSection) {
-  if (!isCartItem(item))
-    return;
-  if (verbose > 1)
+  if (verbose > 1) {
     console.log('trying', item);
+  }
   if (item.childElementCount == 0 && item.parentElement.tagName != 'BODY') {
     // Amazone store page uses overlay <a>.
     item = item.parentElement;
     if (item == null)
       return;
   }
-  // scrollHeight could be 0 while getBoundingClientRect().height > 0.
-  if (item.getBoundingClientRect().height < 50) {
+  if (processed.has(item)) {
     if (verbose > 0)
-      console.log('too short', item);
+      console.log('processed', item);
     return;
   }
+  processed.add(item);
   if (item.scrollHeight > 1000) {
     if (verbose > 0)
       console.log('too tall', item);
     return;
   }
-  if (item.getBoundingClientRect().height * item.getBoundingClientRect().width >
-      800 * window.innerWidth) {
+  if (hasOverlap(item, extracted_items)) {
+    if (verbose > 0)
+      console.log('overlap', item);
+    return;
+  }
+  // scrollHeight could be 0 while getBoundingClientRect().height > 0.
+  const bounding_rect = item.getBoundingClientRect();
+  if (bounding_rect.height < 50) {
+    if (verbose > 0)
+      console.log('too short', item);
+    return;
+  }
+  if (bounding_rect.height * bounding_rect.width > 800 * window.innerWidth) {
     if (verbose > 0)
       console.log('too tall', item);
     return;
@@ -737,25 +747,25 @@ function extractOneItem(item, extracted_items, processed, output,
       console.log('no price', item);
     return;
   }
-  if (hasOverlap(item, extracted_items)) {
+  if (bounding_rect.top <= 10 &&
+      (document.URL.includes('partycity.com') ||
+       document.URL.includes('chewy.com'))) {
     if (verbose > 0)
-      console.log('overlap', item);
+      console.log('likely cart page header', item);
     return;
   }
-  if (item.getBoundingClientRect().top <= 10 &&
-      (document.URL.includes("partycity.com")
-      || document.URL.includes("chewy.com"))) {
+  if (isInSavedForLater(item, savedForLaterSection)) {
     if (verbose > 0)
-        console.log('likely cart page header', item);
+      console.log('in save for later', item);
     return;
   }
-  if (processed.has(item))
+  if (!isCartItem(item)) {
+    if (verbose > 0)
+      console.log('not cart item', item);
     return;
-  if (isInSavedForLater(item, savedForLaterSection))
-    return;
-  processed.add(item);
+  }
   if (verbose > 0)
-    console.log('trying', item);
+    console.log('try extracting', item);
   const extraction = extractItem(item);
   if (extraction != null) {
     output.set(item, extraction);
@@ -771,6 +781,13 @@ function isInSavedForLater(item, savedForLaterSection) {
 }
 
 function getSavedForLaterSection() {
+  // This regex should match the XPath pattern below.
+  const shortCutRegex = new RegExp(
+      '(your saved items)|(saved for later)|(my saved items)|(wishlist items)',
+      'i');
+  if (!document.body.innerText.match(shortCutRegex))
+    return null;
+
   const nodes = document.evaluate(
     "//*[contains(translate(" +
     "text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'), " +
@@ -836,8 +853,74 @@ function deduplicateResults(output) {
   return filteredOutput;
 }
 
-function extractAllItems(root) {
+if (typeof Sleeper === 'undefined') {
+  var Sleeper = class {
+    constructor() {
+      // 99.9th percentile of the individual task execution times should be
+      // < 50ms.
+      // The task time is defined as exclusive CPU usage, from last time
+      // sleeping is done to the beginning of the next sleep.
+      let min_task_time = 10;
+      if (typeof kSleeperMinTaskTimeMs !== 'undefined') {
+        min_task_time = kSleeperMinTaskTimeMs;
+      }
+      this.min_task_time = min_task_time;
+
+      // Avoid monopolizing JavaScript main thread execution time.
+      let duty_cycle = 0.05;
+      if (typeof kSleeperDutyCycle !== 'undefined') {
+        duty_cycle = kSleeperDutyCycle;
+      }
+      this.duty_cycle = Math.max(0.01, Math.min(duty_cycle, 1));
+
+      this.last_sleep = performance.now();
+      this.start = performance.now();
+      this.longest_task = 0;
+      this.total_tasks_time = 0;
+    }
+
+    async maybeSleep() {
+      const elapsed = performance.now() - this.last_sleep;
+      if (elapsed <= this.min_task_time)
+        return;
+      this.longest_task = Math.max(this.longest_task, elapsed);
+      this.total_tasks_time += elapsed;
+      if (verbose > 1) {
+        console.log('longest task', this.longest_task);
+      }
+
+      // Calculate the delay aiming for the target duty cycle.
+      // duty_cycle = (working time) / (working time + sleeping time)
+      //            = elapsed / (elapsed + delay)
+      const delay = elapsed * (1 - this.duty_cycle) / this.duty_cycle;
+      await new Promise(r => setTimeout(r, delay));
+      this.last_sleep = performance.now();
+    }
+
+    get longestTask() {
+      const elapsed = performance.now() - this.last_sleep;
+      return Math.max(this.longest_task, elapsed);
+    }
+
+    get totalTasksTime() {
+      const elapsed = performance.now() - this.last_sleep;
+      return this.total_tasks_time + elapsed;
+    }
+
+    get elapsed() {
+      return performance.now() - this.start;
+    }
+  }
+}
+
+async function extractAllItems(root) {
+  let timeout = 250;
+  if (typeof kTimeoutMs !== 'undefined') {
+    timeout = kTimeoutMs;
+  }
+
   let items = [];
+  const sleeper = new Sleeper();
   // Root element being null could be due to the
   // fact that the cart is emptied, or the cart
   // element has not been loaded yet.
@@ -895,6 +978,7 @@ function extractAllItems(root) {
     }
     items = Array.from(ancestors);
   }
+  await sleeper.maybeSleep();
 
   if (verbose > 0)
     console.log(items);
@@ -906,18 +990,41 @@ function extractAllItems(root) {
     savedForLaterSection = getSavedForLaterSection();
     if (verbose > 0)
       console.log(savedForLaterSection);
+    await sleeper.maybeSleep();
   }
+
+  let i = 0;
+  let early_abort = false;
   for (const item of items) {
     extractOneItem(item, extracted_items, processed, outputMap,
       savedForLaterSection);
+    // Checking for every item is too slow.
+    if (i++ % 10 == 0) {
+      await sleeper.maybeSleep();
+      if (sleeper.totalTasksTime > timeout) {
+        if (verbose > 0) {
+          console.log('aborted due to timeout');
+        }
+        early_abort = true;
+        break;
+      }
+    }
   }
+
   const keysInDocOrder =
       Array.from(outputMap.keys()).sort(documentPositionComparator);
   const output = [];
   for (const key of keysInDocOrder) {
     output.push(outputMap.get(key));
   }
-  return deduplicateResults(output);
+  await sleeper.maybeSleep();
+  return {
+    'products': deduplicateResults(output),
+    'longest_task_ms': sleeper.longestTask,
+    'total_tasks_ms': sleeper.totalTasksTime,
+    'elapsed_ms': sleeper.elapsed,
+    'timedout': early_abort,
+  };
 }
 
-extracted_results = extractAllItems(document);
+extracted_results_promise = extractAllItems(document);
