@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "components/performance_manager/v8_memory/web_memory_stress_tester.h"
 
@@ -45,6 +46,8 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
     Install<FrameNodeImplDescriber>(graph);
   if (flags_.frame_visibility_decorator)
     Install<FrameVisibilityDecorator>(graph);
+  if (flags_.metrics_collector)
+    Install<MetricsCollector>(graph);
   if (flags_.freezing_vote_decorator)
     Install<FreezingVoteDecorator>(graph);
   if (flags_.page_live_state_decorator)

@@ -18,8 +18,6 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
-#include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -90,11 +88,6 @@
 namespace weblayer {
 
 namespace {
-
-void CreatePerformanceManagerAddOns(performance_manager::Graph* graph) {
-  // Reports performance-related UMA/UKM.
-  graph->PassToGraph(std::make_unique<performance_manager::MetricsCollector>());
-}
 
 // Indexes and publishes the subresource filter ruleset data from resources in
 // the resource bundle.
@@ -218,8 +211,10 @@ int BrowserMainPartsImpl::PreEarlyInitialization() {
 void BrowserMainPartsImpl::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
-          performance_manager::GraphFeatures::WithMinimal(),
-          base::BindOnce(&CreatePerformanceManagerAddOns));
+          performance_manager::GraphFeatures::WithMinimal()
+              // Reports performance-related UMA/UKM.
+              .EnableMetricsCollector(),
+          base::DoNothing());
 
   translate::TranslateDownloadManager* download_manager =
       translate::TranslateDownloadManager::GetInstance();

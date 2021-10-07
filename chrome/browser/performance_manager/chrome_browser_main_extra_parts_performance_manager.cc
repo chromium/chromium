@@ -31,7 +31,6 @@
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 
@@ -89,7 +88,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
       std::make_unique<performance_manager::FrozenFrameAggregator>());
   graph->PassToGraph(
       std::make_unique<performance_manager::IsolationContextMetrics>());
-  graph->PassToGraph(std::make_unique<performance_manager::MetricsCollector>());
   graph->PassToGraph(
       std::make_unique<performance_manager::ProcessMetricsDecorator>());
 
