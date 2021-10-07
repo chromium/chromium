@@ -5534,7 +5534,7 @@ static_library("browser") {
     }
   }
 
-  if (is_win || is_linux || is_android) {
+  if (is_win || is_linux || is_android || is_chromeos) {
     deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
   }
 

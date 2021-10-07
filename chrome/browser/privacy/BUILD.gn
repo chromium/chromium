@@ -72,7 +72,7 @@ if (is_android) {
   }
 }
 
-if (is_win || is_linux || is_android) {
+if (is_win || is_linux || is_android || is_chromeos) {
   import("//third_party/protobuf/proto_library.gni")
 
   # Generate Python bindings for traffic_annotation.proto, for use with
