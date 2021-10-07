@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -144,12 +145,11 @@ bool ImageLayerBridge::PrepareTransferableResource(
   if (!gpu_compositing && gpu_image)
     return false;
 
-  // If the texture comes from a software image then it does not need to be
-  // flipped, unless it has been artificially flipped during construction.
-  const bool image_flipped = image_->CurrentFrameOrientation() ==
-                             ImageOrientationEnum::kOriginBottomLeft;
-  const bool flip_layer = gpu_image ? !image_flipped : image_flipped;
-  layer_->SetFlipped(flip_layer);
+  const ImageOrientation origin = image_->IsOriginTopLeft()
+                                      ? ImageOrientationEnum::kOriginTopLeft
+                                      : ImageOrientationEnum::kOriginBottomLeft;
+  const bool image_flipped = image_->CurrentFrameOrientation() != origin;
+  layer_->SetFlipped(image_flipped);
 
   if (gpu_compositing) {
     scoped_refptr<StaticBitmapImage> image_for_compositor =
