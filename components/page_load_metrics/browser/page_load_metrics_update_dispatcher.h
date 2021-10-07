@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 
 namespace blink {
@@ -204,6 +205,11 @@ class PageLoadMetricsUpdateDispatcher {
                ? layout_shift_normalization_for_bfcache_.normalized_cls_data()
                : layout_shift_normalization_.normalized_cls_data();
   }
+  const NormalizedResponsivenessMetrics& normalized_responsiveness_metrics()
+      const {
+    return responsiveness_metrics_normalization_
+        .GetNormalizedResponsivenessMetrics();
+  }
   const PageRenderData& main_frame_render_data() const {
     return main_frame_render_data_;
   }
@@ -330,6 +336,10 @@ class PageLoadMetricsUpdateDispatcher {
   // and most input types (but not mousemove or pinch zoom). More comments in
   // UpdateHasSeenInputOrScroll.
   bool has_seen_input_or_scroll_ = false;
+
+  // Where we receive user interaction latencies from all renderer frames and
+  // calculate a few normalized responsiveness metrics.
+  ResponsivenessMetricsNormalization responsiveness_metrics_normalization_;
 };
 
 }  // namespace page_load_metrics

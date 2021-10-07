@@ -48,6 +48,8 @@ source_set("browser") {
     "protocol_util.h",
     "resource_tracker.cc",
     "resource_tracker.h",
+    "responsiveness_metrics_normalization.cc",
+    "responsiveness_metrics_normalization.h",
   ]
   deps = [
     "//build:chromeos_buildflags",
@@ -112,6 +114,7 @@ source_set("unit_tests") {
     "page_load_metrics_memory_tracker_unittest.cc",
     "page_load_metrics_util_unittest.cc",
     "resource_tracker_unittest.cc",
+    "responsiveness_metrics_normalization_unittest.cc",
   ]
   deps = [
     ":browser",

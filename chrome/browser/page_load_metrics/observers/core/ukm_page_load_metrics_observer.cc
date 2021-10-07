@@ -52,6 +52,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "ui/events/blink/blink_features.h"
@@ -662,6 +663,59 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
         timing.interactive_timing->longest_input_timestamp.value();
     builder.SetInteractiveTiming_LongestInputTimestamp4(
         longest_input_timestamp.InMilliseconds());
+  }
+
+  if (GetDelegate()
+          .GetNormalizedResponsivenessMetrics()
+          .num_user_interactions) {
+    const page_load_metrics::NormalizedResponsivenessMetrics&
+        normalized_responsiveness_metrics =
+            GetDelegate().GetNormalizedResponsivenessMetrics();
+    builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
+        normalized_responsiveness_metrics.normalized_max_event_durations
+            .worst_latency.InMilliseconds());
+    builder.SetInteractiveTiming_WorstUserInteractionLatency_TotalEventDuration(
+        normalized_responsiveness_metrics.normalized_total_event_durations
+            .worst_latency.InMilliseconds());
+    if (base::FeatureList::IsEnabled(
+            blink::features::kSendAllUserInteractionLatencies)) {
+      // When the flag is disabled, we don't know the type of user interactions
+      // and can't calculate the worst over budget.
+      builder
+          .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_MaxEventDuration(
+              normalized_responsiveness_metrics.normalized_max_event_durations
+                  .worst_latency_over_budget.InMilliseconds());
+      builder
+          .SetInteractiveTiming_WorstUserInteractionLatencyOverBudget_TotalEventDuration(
+              normalized_responsiveness_metrics.normalized_total_event_durations
+                  .worst_latency_over_budget.InMilliseconds());
+      builder
+          .SetInteractiveTiming_TotalUserInteractionLatencyOverBudget_MaxEventDuration(
+              normalized_responsiveness_metrics.normalized_max_event_durations
+                  .total_latency_over_budget.InMilliseconds());
+      builder
+          .SetInteractiveTiming_TotalUserInteractionLatencyOverBudget_TotalEventDuration(
+              normalized_responsiveness_metrics.normalized_total_event_durations
+                  .total_latency_over_budget.InMilliseconds());
+      builder
+          .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
+              normalized_responsiveness_metrics.normalized_max_event_durations
+                  .total_latency_over_budget.InMilliseconds() /
+              normalized_responsiveness_metrics.num_user_interactions);
+      builder
+          .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_TotalEventDuration(
+              normalized_responsiveness_metrics.normalized_total_event_durations
+                  .total_latency_over_budget.InMilliseconds() /
+              normalized_responsiveness_metrics.num_user_interactions);
+      builder
+          .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_MaxEventDuration(
+              normalized_responsiveness_metrics.normalized_max_event_durations
+                  .high_percentile_latency_over_budget.InMilliseconds());
+      builder
+          .SetInteractiveTiming_SlowUserInteractionLatencyOverBudget_HighPercentile_TotalEventDuration(
+              normalized_responsiveness_metrics.normalized_total_event_durations
+                  .high_percentile_latency_over_budget.InMilliseconds());
+    }
   }
   if (timing.interactive_timing->first_scroll_delay &&
       WasStartedInForegroundOptionalEventInForeground(

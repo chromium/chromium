@@ -244,6 +244,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const PageRenderData& GetPageRenderData() const override;
   const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const override;
+  const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
+      const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const blink::MobileFriendliness& GetMobileFriendliness() const override;
   const PageRenderData& GetMainFrameRenderData() const override;

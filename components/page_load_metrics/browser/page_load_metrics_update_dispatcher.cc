@@ -750,6 +750,18 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageInputTiming(
   page_input_timing_->total_input_delay += input_timing_delta.total_input_delay;
   page_input_timing_->total_adjusted_input_delay +=
       input_timing_delta.total_adjusted_input_delay;
+  // On the sending side, we ensure input_timing_delta.max_event_duration and
+  // input_timing_delta.total_event_durations are not null pointers otherwise
+  // VALIDATION_ERROR_UNEXPECTED_NULL_POINTER will be triggered on the receiving
+  // side. But in some tests where the whole input_timing_delta is set as the
+  // default state, input_timing_delta.max_event_durations or
+  // input_timing_delta.total_event_durations can be null.
+  if (input_timing_delta.num_interactions) {
+    responsiveness_metrics_normalization_.AddNewUserInteractionLatencies(
+        input_timing_delta.num_interactions,
+        *(input_timing_delta.max_event_durations),
+        *(input_timing_delta.total_event_durations));
+  }
 }
 
 void PageLoadMetricsUpdateDispatcher::UpdatePageRenderData(

@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/resource_tracker.h"
+#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -146,6 +147,11 @@ class PageLoadMetricsObserverDelegate {
   virtual const PageRenderData& GetPageRenderData() const = 0;
   virtual const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const = 0;
+  // Returns normalized responsiveness metrics data. Currently we normalize
+  // user interaction latencies from all renderer frames in a few different
+  // ways.
+  virtual const NormalizedResponsivenessMetrics&
+  GetNormalizedResponsivenessMetrics() const = 0;
   // InputTiming data accumulated across all frames.
   virtual const mojom::InputTiming& GetPageInputTiming() const = 0;
   virtual const blink::MobileFriendliness& GetMobileFriendliness() const = 0;

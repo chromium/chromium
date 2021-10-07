@@ -977,6 +977,11 @@ const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData(
   return metrics_update_dispatcher_.normalized_cls_data(bfcache_strategy);
 }
 
+const NormalizedResponsivenessMetrics&
+PageLoadTracker::GetNormalizedResponsivenessMetrics() const {
+  return metrics_update_dispatcher_.normalized_responsiveness_metrics();
+}
+
 const mojom::InputTiming& PageLoadTracker::GetPageInputTiming() const {
   return metrics_update_dispatcher_.page_input_timing();
 }

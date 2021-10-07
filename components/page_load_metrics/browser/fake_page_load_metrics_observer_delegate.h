@@ -56,6 +56,8 @@ class FakePageLoadMetricsObserverDelegate
   // returned.
   const NormalizedCLSData& GetNormalizedCLSData(
       BfcacheStrategy bfcache_strategy) const override;
+  const NormalizedResponsivenessMetrics& GetNormalizedResponsivenessMetrics()
+      const override;
   const mojom::InputTiming& GetPageInputTiming() const override;
   const blink::MobileFriendliness& GetMobileFriendliness() const override;
   const PageRenderData& GetMainFrameRenderData() const override;
@@ -86,6 +88,7 @@ class FakePageLoadMetricsObserverDelegate
   mojom::FrameMetadata subframe_metadata_;
   PageRenderData page_render_data_;
   NormalizedCLSData normalized_cls_data_;
+  NormalizedResponsivenessMetrics normalized_responsiveness_metrics_;
   mojom::InputTiming page_input_timing_;
   blink::MobileFriendliness mobile_friendliness_;
   PageRenderData main_frame_render_data_;

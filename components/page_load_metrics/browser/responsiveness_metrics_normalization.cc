@@ -1,0 +1,126 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/page_load_metrics/browser/responsiveness_metrics_normalization.h"
+
+namespace page_load_metrics {
+// Budget for each type of user interaction, including keyboard, click or tap,
+// drag.
+constexpr base::TimeDelta kBudgetForKeyboard =
+    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kBudgetForClickOrTap =
+    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kBudgetForDrag =
+    base::TimeDelta::FromMilliseconds(100);
+constexpr uint64_t kHighPercentileUpdateFrequnecy = 50;
+
+namespace {
+
+base::TimeDelta LatencyOverBudget(
+    const mojom::UserInteractionLatencyPtr& user_interaction) {
+  base::TimeDelta latency = user_interaction->interaction_latency;
+  switch (user_interaction->interaction_type) {
+    case mojom::UserInteractionType::kKeyboard:
+      return std::max(latency - kBudgetForKeyboard,
+                      base::TimeDelta::FromMilliseconds(0));
+    case mojom::UserInteractionType::kTapOrClick:
+      return std::max(latency - kBudgetForClickOrTap,
+                      base::TimeDelta::FromMilliseconds(0));
+    case mojom::UserInteractionType::kDrag:
+      return std::max(latency - kBudgetForDrag,
+                      base::TimeDelta::FromMilliseconds(0));
+  }
+  NOTREACHED();
+  return latency;
+}
+
+}  // namespace
+
+NormalizedResponsivenessMetrics::NormalizedResponsivenessMetrics() = default;
+NormalizedResponsivenessMetrics::~NormalizedResponsivenessMetrics() = default;
+ResponsivenessMetricsNormalization::ResponsivenessMetricsNormalization() =
+    default;
+ResponsivenessMetricsNormalization::~ResponsivenessMetricsNormalization() =
+    default;
+
+void ResponsivenessMetricsNormalization::AddNewUserInteractionLatencies(
+    uint64_t num_new_interactions,
+    const mojom::UserInteractionLatencies& max_event_durations,
+    const mojom::UserInteractionLatencies& total_event_durations) {
+  uint64_t last_num_user_interactions =
+      normalized_responsiveness_metrics_.num_user_interactions;
+  normalized_responsiveness_metrics_.num_user_interactions +=
+      num_new_interactions;
+  DCHECK(max_event_durations.is_user_interaction_latencies() ||
+         max_event_durations.is_worst_interaction_latency());
+  // Normalize max event durations.
+  NormalizeUserInteractionLatencies(
+      max_event_durations,
+      normalized_responsiveness_metrics_.normalized_max_event_durations,
+      last_num_user_interactions,
+      normalized_responsiveness_metrics_.num_user_interactions);
+
+  DCHECK(total_event_durations.is_user_interaction_latencies() ||
+         total_event_durations.is_worst_interaction_latency());
+  // Normalize total event durations.
+  NormalizeUserInteractionLatencies(
+      total_event_durations,
+      normalized_responsiveness_metrics_.normalized_total_event_durations,
+      last_num_user_interactions,
+      normalized_responsiveness_metrics_.num_user_interactions);
+}
+
+void ResponsivenessMetricsNormalization::NormalizeUserInteractionLatencies(
+    const mojom::UserInteractionLatencies& user_interaction_latencies,
+    NormalizedInteractionLatencies& normalized_event_durations,
+    uint64_t last_num_user_interactions,
+    uint64_t current_num_user_interactions) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSendAllUserInteractionLatencies)) {
+    DCHECK(user_interaction_latencies.is_worst_interaction_latency());
+    normalized_event_durations.worst_latency =
+        std::max(normalized_event_durations.worst_latency,
+                 user_interaction_latencies.get_worst_interaction_latency());
+    return;
+  }
+  DCHECK(user_interaction_latencies.is_user_interaction_latencies());
+  for (const mojom::UserInteractionLatencyPtr& user_interaction :
+       user_interaction_latencies.get_user_interaction_latencies()) {
+    normalized_event_durations.worst_latency =
+        std::max(normalized_event_durations.worst_latency,
+                 user_interaction->interaction_latency);
+    base::TimeDelta latency_over_budget = LatencyOverBudget(user_interaction);
+    normalized_event_durations.worst_latency_over_budget =
+        std::max(normalized_event_durations.worst_latency_over_budget,
+                 latency_over_budget);
+    normalized_event_durations.total_latency_over_budget += latency_over_budget;
+    if (latency_over_budget >=
+        normalized_event_durations.high_percentile_latency_over_budget) {
+      normalized_event_durations.pseudo_second_worst_latency_over_budget =
+          normalized_event_durations.high_percentile_latency_over_budget;
+      normalized_event_durations.high_percentile_latency_over_budget =
+          latency_over_budget;
+    } else {
+      normalized_event_durations
+          .pseudo_second_worst_latency_over_budget = std::max(
+          normalized_event_durations.pseudo_second_worst_latency_over_budget,
+          latency_over_budget);
+    }
+  }
+  // If the number of user interactions is below
+  // kHighPercentileUpdateFrequnecy the high_percentile_latency_over_budget
+  // will be same as worst_latency_over_budget. But if there are more
+  // interactions, we replace it with second_worst_latency_over_budget every
+  // kHighPercentileUpdateFrequnecy interactions.
+  if ((current_num_user_interactions / kHighPercentileUpdateFrequnecy) -
+          (last_num_user_interactions / kHighPercentileUpdateFrequnecy) >=
+      1) {
+    normalized_event_durations.high_percentile_latency_over_budget =
+        normalized_event_durations.pseudo_second_worst_latency_over_budget;
+    normalized_event_durations.pseudo_second_worst_latency_over_budget =
+        base::TimeDelta();
+  }
+}
+
+}  // namespace page_load_metrics
