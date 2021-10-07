@@ -41,14 +41,6 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
       public QuicChromiumPacketReader::Visitor,
       public QuicChromiumPacketWriter::Delegate {
  public:
-  // QUIC protocol versions that are used in the origin trial.
-  static quic::ParsedQuicVersionVector
-  QuicVersionsForWebTransportOriginTrial() {
-    return quic::ParsedQuicVersionVector{
-        quic::ParsedQuicVersion::Draft29(),
-    };
-  }
-
   // |visitor| and |context| must outlive this object.
   DedicatedWebTransportHttp3Client(const GURL& url,
                                    const url::Origin& origin,

@@ -340,9 +340,10 @@ int DedicatedWebTransportHttp3Client::DoInit() {
 
   // TODO(vasilvv): check if QUIC is disabled by policy.
 
-  // Ensure that for the duration of the origin trial, a fixed QUIC transport
-  // version is available.
-  supported_versions_ = QuicVersionsForWebTransportOriginTrial();
+  // Ensure that RFC 9000 is always supported.
+  supported_versions_ = quic::ParsedQuicVersionVector{
+      quic::ParsedQuicVersion::RFCv1(),
+  };
   // Add other supported versions if available.
   for (quic::ParsedQuicVersion& version :
        quic_context_->params()->supported_versions) {

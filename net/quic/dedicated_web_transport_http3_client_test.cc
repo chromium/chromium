@@ -97,11 +97,7 @@ class TestConnectionHelper : public quic::QuicConnectionHelperInterface {
 class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
  public:
   DedicatedWebTransportHttp3Test() {
-    for (const quic::ParsedQuicVersion& version :
-         DedicatedWebTransportHttp3Client::
-             QuicVersionsForWebTransportOriginTrial()) {
-      quic::QuicEnableVersion(version);
-    }
+    quic::QuicEnableVersion(quic::ParsedQuicVersion::RFCv1());
     origin_ = url::Origin::Create(GURL{"https://example.org"});
     isolation_key_ =
         NetworkIsolationKey(SchemefulSite(origin_), SchemefulSite(origin_));
