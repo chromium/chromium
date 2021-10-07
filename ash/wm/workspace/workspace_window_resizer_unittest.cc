@@ -1261,6 +1261,22 @@ TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_TOP) {
   EXPECT_EQ("100,199 20x31", window_->bounds().ToString());
 }
 
+// Resize window to the top edge of display should not trigger maximize nor
+// the maximize dwell timer (crbug.com/1251859)
+TEST_F(WorkspaceWindowResizerTest, ResizeTopShouldNotTriggerMaximize) {
+  window_->SetBounds(gfx::Rect(100, 200, 20, 30));
+  AllowSnap(window_.get());
+  std::unique_ptr<WindowResizer> resizer =
+      CreateResizerForTest(window_.get(), gfx::Point(), HTTOP);
+  ASSERT_TRUE(resizer.get());
+  resizer->Drag(CalculateDragPoint(*resizer, 50, -195), 0);
+  resizer->Drag(CalculateDragPoint(*resizer, 50, -200), 0);
+  ASSERT_TRUE(WindowState::Get(window_.get())->IsNormalStateType());
+  EXPECT_EQ("100,0 20x230", window_->bounds().ToString());
+  EXPECT_FALSE(snap_phantom_window_controller());
+  EXPECT_FALSE(IsDwellCountdownTimerRunning());
+}
+
 TEST_F(WorkspaceWindowResizerTest, MagneticallyResize_TOPLEFT) {
   window_->SetBounds(gfx::Rect(100, 200, 20, 30));
   window2_->SetBounds(gfx::Rect(99, 179, 10, 20));

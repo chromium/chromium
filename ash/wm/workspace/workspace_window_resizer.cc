@@ -715,6 +715,27 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
       return;
   }
 
+  if (tab_dragging_recorder_) {
+    // The recorder only works with a single ui::Compositor. ui::Compositor is
+    // per display so the recorder does not work correctly across different
+    // displays. Thus, we give up tab dragging latency data collection if the
+    // drag touches a different display, i.e. not inside the current parent's
+    // bounds.
+    if (!gfx::Rect(GetTarget()->parent()->bounds().size())
+             .Contains(gfx::ToRoundedPoint(location_in_parent))) {
+      tab_dragging_recorder_.reset();
+    } else {
+      tab_dragging_recorder_->RequestNext();
+    }
+  }
+
+  // In case of non-dragging action such as resizing, we do not want to
+  // continue performing any snap or maximize logic. Otherwise, resize top edge
+  // to the top of display will fire maximize |dwell_countdown_timer_|
+  // (crbug.com/1251859).
+  if (details().window_component != HTCAPTION)
+    return;
+
   gfx::PointF location_in_screen = location_in_parent;
   ::wm::ConvertPointToScreen(GetTarget()->parent(), &location_in_screen);
   if (!can_snap_to_maximize_) {
@@ -742,7 +763,10 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
           !snap_phantom_window_controller_ &&
           snap_type != SnapType::kMaximize) {
         UpdateSnapPhantomWindow(snap_type);
-        snap_phantom_window_controller_->ShowMaximizeCue();
+        // TODO(crbug.com/1257240): Move maximize cue logic into
+        // `UpdateSnapPhantomWindow()` to handle the cue if needed.
+        if (snap_phantom_window_controller_)
+          snap_phantom_window_controller_->ShowMaximizeCue();
       }
 
       // Start maximize phantom window dwell time if it is not already running
@@ -774,20 +798,6 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
       dwell_countdown_timer_.Stop();
     }
     dwell_location_in_screen_ = gfx::PointF();
-  }
-
-  if (tab_dragging_recorder_) {
-    // The recorder only works with a single ui::Compositor. ui::Compositor is
-    // per display so the recorder does not work correctly across different
-    // displays. Thus, we give up tab dragging latency data collection if the
-    // drag touches a different display, i.e. not inside the current parent's
-    // bounds.
-    if (!gfx::Rect(GetTarget()->parent()->bounds().size())
-             .Contains(gfx::ToRoundedPoint(location_in_parent))) {
-      tab_dragging_recorder_.reset();
-      return;
-    }
-    tab_dragging_recorder_->RequestNext();
   }
 }
 
@@ -1639,7 +1649,8 @@ void WorkspaceWindowResizer::EndDragForAttachedWindows(bool revert_drag) {
 
 void WorkspaceWindowResizer::ShowMaximizePhantom() {
   UpdateSnapPhantomWindow(SnapType::kMaximize);
-  snap_phantom_window_controller_->HideMaximizeCue();
+  if (snap_phantom_window_controller_)
+    snap_phantom_window_controller_->HideMaximizeCue();
 }
 
 display::Display WorkspaceWindowResizer::GetDisplay() const {
