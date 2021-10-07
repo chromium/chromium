@@ -49,7 +49,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
-    enum="WebAuthenticationAOADiscoveryEvent" expires_after="2021-11-19">
+    enum="WebAuthenticationAOADiscoveryEvent" expires_after="2022-04-10">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -84,7 +84,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.RendezvousTime" units="ms"
-    expires_after="2021-11-19">
+    expires_after="2022-04-10">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -95,7 +95,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelEvent"
-    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2021-11-19">
+    enum="WebAuthenticationCableV2TunnelEvent" expires_after="2022-04-10">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -104,7 +104,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelServerError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-02-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-04-10">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

@@ -108,7 +108,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApk.Install.PathToInstall" enum="PwaInstallPath"
-    expires_after="2021-11-18">
+    expires_after="2022-04-10">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>

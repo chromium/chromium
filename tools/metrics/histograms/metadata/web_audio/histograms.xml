@@ -100,7 +100,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.MaxChannelsAvailable" units="units"
-    expires_after="2022-01-06">
+    expires_after="2022-04-10">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The maximum number of (hardware) channels available in an AudioContext.

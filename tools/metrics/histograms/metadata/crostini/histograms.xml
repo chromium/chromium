@@ -45,7 +45,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.AppLaunchResult" enum="CrostiniResult"
-    expires_after="2022-03-13">
+    expires_after="2022-04-10">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
-    expires_after="2022-01-06">
+    expires_after="2022-04-10">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
@@ -296,7 +296,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.InstallSource" enum="CrostiniInstallSource"
-    expires_after="2022-01-06">
+    expires_after="2022-04-10">
   <owner>clumptini@google.com</owner>
   <owner>sidereal@google.com</owner>
   <summary>

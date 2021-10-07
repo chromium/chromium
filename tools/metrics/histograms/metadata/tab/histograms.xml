@@ -127,7 +127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tab.Count.Incognito" units="units" expires_after="2022-02-06">
+<histogram name="Tab.Count.Incognito" units="units" expires_after="2022-04-10">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -144,7 +144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.ExternalApplicationOpened" enum="ExternalLauncherOption"
-    expires_after="2022-01-23">
+    expires_after="2022-04-10">
   <owner>mrefaat@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -474,7 +474,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tab.Screenshot.ScreenshotsPerPage" units="screenshots"
-    expires_after="2021-12-26">
+    expires_after="2022-04-10">
   <owner>skare@chromium.org</owner>
   <summary>
     Records the number of screenshots taken of a specific page. It is recorded
@@ -1614,7 +1614,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
-<histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2021-12-12">
+<histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2022-04-10">
   <owner>gogerald@chromium.org</owner>
   <owner>nasims@google.com</owner>
   <summary>
@@ -1623,7 +1623,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.NTPCountAtStartup" units="tabs"
-    expires_after="2021-12-12">
+    expires_after="2022-04-10">
   <owner>gogerald@chromium.org</owner>
   <owner>nasims@google.com</owner>
   <summary>[iOS] The number of NTP tabs open at cold launch.</summary>
@@ -1985,7 +1985,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation"
-    enum="FoundBuyableProductAnnotation" expires_after="2022-02-06">
+    enum="FoundBuyableProductAnnotation" expires_after="2022-04-10">
   <owner>yusufo@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>davidjm@chromium.org</owner>
@@ -2207,7 +2207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2021-12-05">
+<histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2022-04-10">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <owner>sbirch@google.com</owner>
@@ -2223,7 +2223,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.TabCountPerWindow" units="tabs"
-    expires_after="2021-12-05">
+    expires_after="2022-04-10">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -2282,7 +2282,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.TabSearch.CloseAction" enum="TabSearchCloseActions"
-    expires_after="2022-01-23">
+    expires_after="2022-04-10">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -2549,7 +2549,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.TabSearch.WindowTimeToShowCachedWebView" units="ms"
-    expires_after="2022-01-23">
+    expires_after="2022-04-10">
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
@@ -2947,7 +2947,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabStrip.TabCountOnPageLoad" units="tabs"
-    expires_after="2021-12-12">
+    expires_after="2022-04-10">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>

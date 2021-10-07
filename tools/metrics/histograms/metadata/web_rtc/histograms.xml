@@ -303,7 +303,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ApmCaptureInputLevelAverageRms"
-    units="dBFS (negated)" expires_after="2021-12-31">
+    units="dBFS (negated)" expires_after="2022-04-10">
   <owner>hlundin@chromium.org</owner>
   <summary>
     This histogram reports the average RMS of the signal coming in to WebRTC's
@@ -361,7 +361,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.AudioInterruptionMs" units="ms"
-    expires_after="2022-01-23">
+    expires_after="2022-04-10">
   <owner>hlundin@chromium.org</owner>
   <owner>ivoc@chromium.org</owner>
   <summary>
@@ -915,7 +915,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.AudioOutputSampleRate" enum="AudioSampleRate"
-    expires_after="2022-01-09">
+    expires_after="2022-04-10">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>Audio output sample rate for WebRTC (in Hz).</summary>
@@ -1135,7 +1135,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Call.TimeReceivingAudioRtpPacketsInSeconds" units="s"
-    expires_after="2022-02-06">
+    expires_after="2022-04-10">
   <owner>saza@chromium.org</owner>
   <summary>
     The amount of time between the arrival of the first and last audio RTP

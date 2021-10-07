@@ -74,7 +74,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisks.Fuse.FuseZip" enum="FuseZipError"
-    expires_after="2022-02-06">
+    expires_after="2022-04-10">
   <owner>fdegros@chromium.org</owner>
   <owner>chromeos-files-app@google.com</owner>
   <summary>

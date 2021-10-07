@@ -32,7 +32,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.CheckinRequestStatus" enum="GCMCheckinRequestStatus"
-    expires_after="M98">
+    expires_after="2022-04-10">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>Status code of the outcome of a GCM checkin request.</summary>
@@ -390,7 +390,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GCM.SendWebPushMessageResult" enum="SendWebPushMessageResult"
-    expires_after="2021-12-12">
+    expires_after="2022-04-10">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

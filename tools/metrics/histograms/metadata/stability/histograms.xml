@@ -64,7 +64,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2021-11-23">
+    enum="AndroidProcessedMinidumps" expires_after="2022-04-10">
   <owner>mheikal@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
@@ -351,7 +351,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2022-01-16">
+    expires_after="2022-04-10">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

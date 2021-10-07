@@ -132,7 +132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Scanning.NumPagesScanned" units="pages"
-    expires_after="2022-02-06">
+    expires_after="2022-04-10">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the number of pages scanned in a successful scan.</summary>

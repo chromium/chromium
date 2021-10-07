@@ -25,7 +25,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="NoteCreation.CreationStatus" enum="BooleanCreated"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -45,14 +45,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NoteCreation.NoteShared" enum="BooleanShared"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>Records whether the created note was shared or not.</summary>
 </histogram>
 
 <histogram name="NoteCreation.NumberOfTemplateChanges"
-    units="Number of changes" expires_after="2021-12-01">
+    units="Number of changes" expires_after="2022-04-10">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NoteCreation.SelectedTemplate" enum="NoteTemplate"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -70,7 +70,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NoteCreation.ShareDestination" enum="NoteShareDestination"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>sebsg@chromium.org</owner>
   <owner>chrome-creation@google.com</owner>
   <summary>
@@ -163,7 +163,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2021-12-01">
+    enum="LinkGenerationError" expires_after="2022-04-10">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -173,7 +173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.TimeToGenerate"
-    units="ms" expires_after="2021-12-01">
+    units="ms" expires_after="2022-04-10">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -193,7 +193,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.ParamLength" units="characters"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -225,7 +225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.StateAtRequest"
-    enum="LinkGenerationState" expires_after="2021-12-01">
+    enum="LinkGenerationState" expires_after="2022-04-10">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>

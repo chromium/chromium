@@ -112,7 +112,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.AccessibilityWithTalkBack" enum="BooleanEnabled"
-    expires_after="2022-01-09">
+    expires_after="2022-04-10">
   <owner>hirokisato@chromium.org</owner>
   <owner>sarakato@chromium.org</owner>
   <summary>
@@ -553,7 +553,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.CompanionLibraryApisCounter"
-    enum="CompanionLibraryApisList" expires_after="2022-01-23">
+    enum="CompanionLibraryApisList" expires_after="2022-04-10">
   <owner>sstan@google.com</owner>
   <owner>bartfab@chromium.org</owner>
   <owner>giovax@google.com</owner>
@@ -1504,7 +1504,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.Generic.FrameTime" units="ms"
-    expires_after="2022-01-30">
+    expires_after="2022-04-10">
   <owner>camurcu@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>

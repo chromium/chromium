@@ -78,7 +78,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="WebApp.Engagement"
-    enum="SiteEngagementServiceEngagementType" expires_after="2022-01-16">
+    enum="SiteEngagementServiceEngagementType" expires_after="2022-04-10">
   <owner>calamity@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
   <owner>loyso@chromium.org</owner>
@@ -130,7 +130,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
-    expires_after="2022-01-02">
+    expires_after="2022-04-10">
   <owner>ericwilligers@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

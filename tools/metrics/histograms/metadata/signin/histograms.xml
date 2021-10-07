@@ -21,7 +21,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram name="Signin" enum="SigninHelperFlow" expires_after="M85">
+<histogram name="Signin" enum="SigninHelperFlow" expires_after="2022-04-10">
   <owner>mlerman@chromium.org</owner>
   <summary>
     Tracks user interactions as they sign in through a flow. The suffix of the
@@ -47,7 +47,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Signin.AccountCapabilities.FetchResult"
-    enum="AccountCapabilitiesFetchResult" expires_after="2021-11-01">
+    enum="AccountCapabilitiesFetchResult" expires_after="2022-04-10">
   <owner>alexilin@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -104,7 +104,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Signin.AccountConsistencyPromoAction.Shown.Count"
-    units="counts" expires_after="2022-01-02">
+    units="counts" expires_after="2022-04-10">
   <owner>aliceywang@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -172,7 +172,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
-    expires_after="2021-12-16">
+    expires_after="2022-04-10">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -329,7 +329,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidNumberOfDeviceAccounts" units="accounts"
-    expires_after="2022-01-02">
+    expires_after="2022-04-10">
   <owner>triploblastic@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <summary>
@@ -756,7 +756,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSGaiaCookieStateOnSignedInNavigation"
-    enum="GaiaCookieStateOnSignedInNavigation" expires_after="2022-02-06">
+    enum="GaiaCookieStateOnSignedInNavigation" expires_after="2022-04-10">
   <owner>jebel@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1571,7 +1571,7 @@ name="TransactionalReauthEntryPoint" -->
 </histogram>
 
 <histogram name="Signin.TransactionalReauthUserAction"
-    enum="SigninReauthUserAction" expires_after="2022-01-02">
+    enum="SigninReauthUserAction" expires_after="2022-04-10">
 <!-- Name completed by histogram_suffixes
 name="TransactionalReauthEntryPoint" -->
 

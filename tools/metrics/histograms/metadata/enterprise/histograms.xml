@@ -203,7 +203,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime"
-    units="ms" expires_after="2022-01-02">
+    units="ms" expires_after="2022-04-10">
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
@@ -1199,7 +1199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Success" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-04-10">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1208,7 +1208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnterCriticalPolicySectionDelay.Total" units="ms"
-    expires_after="2021-12-31">
+    expires_after="2022-04-10">
   <owner>grt@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -1239,7 +1239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnterCriticalPolicySectionError"
-    enum="WinGetLastError" expires_after="2021-12-31">
+    enum="WinGetLastError" expires_after="2022-04-10">
   <owner>grt@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>

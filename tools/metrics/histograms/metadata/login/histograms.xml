@@ -179,7 +179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.PasswordNotChanged.ReauthReason"
-    enum="LoginReauthReasons" expires_after="2022-01-23">
+    enum="LoginReauthReasons" expires_after="2022-04-10">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -217,7 +217,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2022-01-23">
+<histogram name="Login.PromptToLoginTime" units="ms" expires_after="2022-04-10">
   <owner>elijahtaylor@google.com</owner>
   <owner>yusukes@chromium.org</owner>
   <owner>rsorokin@chromium.org</owner>
@@ -250,7 +250,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.SwitchToFeatureFlagMappingStatus"
-    enum="LoginFeatureFlagMappingStatus" expires_after="2021-11-30">
+    enum="LoginFeatureFlagMappingStatus" expires_after="2022-04-10">
   <owner>mnissler@chromium.org</owner>
   <owner>xiyuan@chromium.org</owner>
   <summary>
@@ -285,7 +285,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.UsersActive28Days" units="users"
-    expires_after="2022-01-09">
+    expires_after="2022-04-10">
   <owner>alemate@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <summary>

@@ -101,7 +101,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount"
-    units="count" expires_after="2022-01-31">
+    units="count" expires_after="2022-04-10">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -114,7 +114,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.CnameAlias.Renderer.HadAliases"
-    units="BooleanHadAliases" expires_after="2022-01-31">
+    units="BooleanHadAliases" expires_after="2022-04-10">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -168,7 +168,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias"
-    units="BooleanTagged" expires_after="2022-01-31">
+    units="BooleanTagged" expires_after="2022-04-10">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -181,7 +181,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias"
-    units="BooleanBlocked" expires_after="2022-01-31">
+    units="BooleanBlocked" expires_after="2022-04-10">
   <owner>cammie@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -333,7 +333,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2"
-    enum="Boolean" expires_after="2022-01-12">
+    enum="Boolean" expires_after="2022-04-10">
   <owner>alexmt@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>

@@ -99,7 +99,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.HomePageEngineType" enum="OmniboxSearchEngineType"
-    expires_after="2022-01-02">
+    expires_after="2022-04-10">
   <owner>mpearson@chromium.org</owner>
   <owner>csharp@chromium.org</owner>
   <summary>
@@ -177,7 +177,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.PinUnlockSetup" enum="LockScreenProgress"
-    expires_after="M97">
+    expires_after="2022-04-10">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -198,7 +198,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.PrivacyElementInteractions"
-    enum="SettingsPrivacyElementInteractions" expires_after="2021-12-26">
+    enum="SettingsPrivacyElementInteractions" expires_after="2022-04-10">
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
   <owner>sauski@chromium.org</owner>
@@ -262,7 +262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.PasswordsResult"
-    enum="SafetyCheckPasswordsStatus" expires_after="2021-12-26">
+    enum="SafetyCheckPasswordsStatus" expires_after="2022-04-10">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check password check.</summary>
@@ -276,7 +276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.SafetyCheck.UpdatesResult"
-    enum="SafetyCheckUpdateStatus" expires_after="2021-12-26">
+    enum="SafetyCheckUpdateStatus" expires_after="2022-04-10">
   <owner>andzaytsev@google.com</owner>
   <owner>msramek@chromium.org</owner>
   <summary>Resulting state of the safety check updates check.</summary>
@@ -414,7 +414,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.StartupPageLoadSettings" enum="SessionStartupPref"
-    expires_after="2022-01-16">
+    expires_after="2022-04-10">
   <owner>mpearson@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

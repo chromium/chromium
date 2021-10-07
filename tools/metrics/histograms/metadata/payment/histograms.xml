@@ -51,7 +51,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PaymentRequest.Events" units="bitfield value"
-    expires_after="2021-12-31">
+    expires_after="2022-04-10">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>

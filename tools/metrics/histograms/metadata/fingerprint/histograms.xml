@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="Fingerprint.Auth.ScanResult" enum="FingerprintScanResult"
-    expires_after="2022-01-02">
+    expires_after="2022-04-10">
   <owner>rsorokin@chromium.org</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -35,7 +35,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Enroll.ScanResult" enum="FingerprintScanResult"
-    expires_after="2022-01-02">
+    expires_after="2022-04-10">
   <owner>rsorokin@chromium.org</owner>
   <owner>tomhughes@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -245,7 +245,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Reason" enum="FingerprintUpdaterReason"
-    expires_after="2022-01-02">
+    expires_after="2022-04-10">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Updater.Status" enum="FingerprintUpdaterStatus"
-    expires_after="2022-01-02">
+    expires_after="2022-04-10">
   <owner>tomhughes@chromium.org</owner>
   <owner>hesling@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>

@@ -133,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Renderer4.ImageDecodeTaskDurationUs"
-    units="microseconds" expires_after="2021-12-12">
+    units="microseconds" expires_after="2022-04-10">
 <!-- Name completed by histogram_suffixes name="DecodedImageType" -->
 
 <!-- Name completed by histogram_suffixes name="OutOfRaster" -->
@@ -179,7 +179,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason"
-    enum="MainThreadScrollingReason" expires_after="M97">
+    enum="MainThreadScrollingReason" expires_after="2022-04-10">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -246,7 +246,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
-    units="microseconds" expires_after="2022-02-06">
+    units="microseconds" expires_after="2022-04-10">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu@google.com</owner>
   <summary>

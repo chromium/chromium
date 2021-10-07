@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
-    expires_after="2022-01-28">
+    expires_after="2022-04-10">
   <owner>rohitrao@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -150,7 +150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.DisplayCount" units="count"
-    expires_after="2021-12-11">
+    expires_after="2022-04-10">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -216,7 +216,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2021-12-11">
+    expires_after="2022-04-10">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -260,7 +260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SearchCount" units="count"
-    expires_after="2021-12-11">
+    expires_after="2022-04-10">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -336,7 +336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromoRemindMe"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-01-16">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-04-10">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -346,7 +346,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromoRemindMeSecondPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2021-12-19">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2022-04-10">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -929,7 +929,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.PageLoadCount.Counts"
-    enum="IOSPageLoadCountNavigationType" expires_after="2021-12-19">
+    enum="IOSPageLoadCountNavigationType" expires_after="2022-04-10">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>The number of navigation started events by navigation type.</summary>

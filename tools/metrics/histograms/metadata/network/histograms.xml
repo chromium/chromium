@@ -792,7 +792,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Radio.PossibleWakeupTrigger.ResolveHostPurpose"
-    enum="ResolveHostPurpose" expires_after="2022-02-01">
+    enum="ResolveHostPurpose" expires_after="2022-04-10">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -803,7 +803,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Radio.PossibleWakeupTrigger.URLLoaderAnnotationId"
-    enum="TrafficAnnotationUniqueIdHash" expires_after="2022-02-01">
+    enum="TrafficAnnotationUniqueIdHash" expires_after="2022-04-10">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -1053,7 +1053,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToPortal" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>ejcaruso@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1063,7 +1063,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToRedirectFound" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1085,7 +1085,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.ConnectionDiagnosticsIssue"
-    enum="ConnectionDiagnosticsIssue" expires_after="2021-12-01">
+    enum="ConnectionDiagnosticsIssue" expires_after="2022-04-10">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1122,7 +1122,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenFractionOnline.Cellular" units="%"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1150,7 +1150,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Any" units="seconds"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1178,7 +1178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.DailyChosenTimeOnline.Wifi" units="seconds"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -1655,7 +1655,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.Driver" enum="VPNDriver"
-    expires_after="2022-01-30">
+    expires_after="2022-04-10">
   <owner>akhouderchah@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1813,7 +1813,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.ApChannelSwitch" enum="WiFiApChannelSwitch"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>matthewmwang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2286,7 +2286,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.PortalResult" enum="NetworkPortalResult"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>matthewmwang@chromium.org</owner>
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2373,7 +2373,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.ScanResult" enum="WiFiScanResult"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2393,7 +2393,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.Security" enum="NetworkSecurityType"
-    expires_after="2022-01-30">
+    expires_after="2022-04-10">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2652,7 +2652,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.Wifi.TimeToScanAndConnect" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-04-10">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2720,7 +2720,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.WakeOnWiFiFeaturesEnabledState"
-    enum="WakeOnWiFiFeaturesEnabledState" expires_after="2021-12-01">
+    enum="WakeOnWiFiFeaturesEnabledState" expires_after="2022-04-10">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2752,7 +2752,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.WiFiConnectionStatusAfterWake"
-    enum="WiFiConnectionStatusAfterWake" expires_after="2021-12-01">
+    enum="WiFiConnectionStatusAfterWake" expires_after="2022-04-10">
   <owner>norvez@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -3028,7 +3028,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="NetworkService.GrantSandboxToCacheResult"
-    enum="NetworkServiceSandboxGrantResult" expires_after="M97">
+    enum="NetworkServiceSandboxGrantResult" expires_after="2022-04-10">
   <owner>wfh@chromium.org</owner>
   <owner>mmenke@chromium.org</owner>
   <summary>
@@ -3148,7 +3148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility"
-    enum="RequestInitiatorOriginLockCompatibility" expires_after="2022-01-09">
+    enum="RequestInitiatorOriginLockCompatibility" expires_after="2022-04-10">
   <owner>lukasza@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>jam@chromium.org</owner>

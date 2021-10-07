@@ -67,7 +67,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.DurationMinutes" units="minutes"
-    expires_after="2021-12-29">
+    expires_after="2022-04-10">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -180,7 +180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.Result" enum="UpdateEngineAttemptResult"
-    expires_after="2021-12-29">
+    expires_after="2022-04-10">
   <owner>ahassani@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -364,7 +364,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UpdateEngine.ConsecutiveUpdate.Count" units="updates"
-    expires_after="2021-12-29">
+    expires_after="2022-04-10">
   <owner>vyshu@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
