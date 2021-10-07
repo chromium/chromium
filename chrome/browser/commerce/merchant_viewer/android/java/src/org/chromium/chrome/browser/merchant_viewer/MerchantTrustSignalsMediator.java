@@ -12,15 +12,18 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.NavigationHandle;
 
-/** Responsible for detecting candidate events for publishing the merchant trust message. */
+/**
+ * Responsible for detecting candidate events for fetching the merchant trust signal and publishing
+ * the merchant trust message.
+ */
 class MerchantTrustSignalsMediator {
     /** Callback interface to communicate with the owning object. */
     interface MerchantTrustSignalsCallback {
         /**
-         * Called when the mediator has detected a candidate event for displaying the merchant
-         * trust message.
+         * Called when the mediator has detected a candidate event for fetching the merchant
+         * trust signal and scheduling the merchant trust message.
          */
-        void maybeDisplayMessage(MerchantTrustMessageContext item);
+        void onFinishEligibleNavigation(MerchantTrustMessageContext item);
     }
 
     private final CurrentTabObserver mCurrentTabObserver;
@@ -38,7 +41,7 @@ class MerchantTrustSignalsMediator {
                     return;
                 }
 
-                delegate.maybeDisplayMessage(
+                delegate.onFinishEligibleNavigation(
                         new MerchantTrustMessageContext(navigation, tab.getWebContents()));
             }
         });

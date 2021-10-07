@@ -17,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -25,6 +24,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMessageViewModel.MessageActionsHandler;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
@@ -63,10 +63,7 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
     }
 
     @Mock
-    private Callback<Integer> mMockOnDismissed;
-
-    @Mock
-    private Callback<MerchantTrustSignals> mMockOnPrimaryAction;
+    private MessageActionsHandler mMockActionHandler;
 
     private Activity mActivity;
     private MessageBannerView mMessageBannerView;
@@ -96,7 +93,7 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
 
     private void createModelAndSetView() {
         PropertyModel propertyModel = MerchantTrustMessageViewModel.create(
-                mActivity, mMerchantTrustSignals, mMockOnDismissed, mMockOnPrimaryAction);
+                mActivity, mMerchantTrustSignals, "fake_url", mMockActionHandler);
         PropertyModelChangeProcessor.create(
                 propertyModel, mMessageBannerView, MessageBannerViewBinder::bind);
         TestThreadUtils.runOnUiThreadBlocking(

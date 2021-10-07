@@ -237,7 +237,8 @@ public class MerchantTrustBottomSheetMediator {
     // whether we want to use a Google icon if no favicon found for the url. When the definition of
     // "valid" url changes, update the favicon rule if needed.
     private boolean isValidUrl(GURL url) {
-        return UrlUtilitiesJni.get().isGoogleDomainUrl(url.getSpec(), true);
+        return UrlUtilitiesJni.get().isGoogleDomainUrl(url.getSpec(), true)
+                || UrlUtilitiesJni.get().isGoogleSubDomainUrl(url.getSpec());
     }
 
     @VisibleForTesting

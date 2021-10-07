@@ -14,7 +14,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -30,9 +29,12 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.site_engagement.SiteEngagementService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -43,7 +45,8 @@ import java.util.concurrent.TimeUnit;
  * Coordinator for managing merchant trust signals experience.
  */
 public class MerchantTrustSignalsCoordinator
-        implements PageInfoStoreInfoController.StoreInfoActionHandler {
+        implements PageInfoStoreInfoController.StoreInfoActionHandler,
+                   MerchantTrustMessageViewModel.MessageActionsHandler {
     /** Interface to control the omnibox store icon and the related IPH. */
     public interface OmniboxIconController {
         /**
@@ -67,7 +70,6 @@ public class MerchantTrustSignalsCoordinator
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final WindowAndroid mWindowAndroid;
     private OmniboxIconController mOmniboxIconController;
-    private MerchantTrustMessageContext mCurrentMessageContext;
 
     /** Creates a new instance. */
     public MerchantTrustSignalsCoordinator(Context context, WindowAndroid windowAndroid,
@@ -97,7 +99,7 @@ public class MerchantTrustSignalsCoordinator
         mProfileSupplier = profileSupplier;
         mWindowAndroid = windowAndroid;
 
-        mMediator = new MerchantTrustSignalsMediator(tabSupplier, this::maybeDisplayMessage);
+        mMediator = new MerchantTrustSignalsMediator(tabSupplier, this::onFinishEligibleNavigation);
         mMessageScheduler = messageScheduler;
         mDetailsTabCoordinator = detailsTabCoordinator;
     }
@@ -116,31 +118,65 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    void maybeDisplayMessage(MerchantTrustMessageContext item) {
-        // TODO(zhiyuancai): Pass item to maybeShowStoreIcon() directly instead of using
-        // mCurrentMessageContext.
-        mCurrentMessageContext = item;
+    void onFinishEligibleNavigation(MerchantTrustMessageContext item) {
+        NavigationHandle navigationHandle = item.getNavigationHandle();
+        if (navigationHandle == null || navigationHandle.getUrl() == null) {
+            return;
+        }
+        boolean shouldExpediteMessage;
         MerchantTrustMessageContext scheduledMessage =
                 mMessageScheduler.getScheduledMessageContext();
         if (scheduledMessage != null && scheduledMessage.getHostName() != null
                 && scheduledMessage.getHostName().equals(item.getHostName())
                 && !scheduledMessage.getUrl().equals(item.getUrl())) {
-            mMessageScheduler.expedite(this::onMessageEnqueued);
+            // When user enters PageInfo, we fetch data based on url which is less reliable than the
+            // navigation-based one. Thus, to make sure the "Store info" row is visible, we still
+            // need to fetch data based on this navigation before showing the message, rather than
+            // using the scheduled message directly.
+            mMessageScheduler.clear(MessageClearReason.NAVIGATE_TO_SAME_DOMAIN);
+            shouldExpediteMessage = true;
         } else {
             mMessageScheduler.clear(MessageClearReason.NAVIGATE_TO_DIFFERENT_DOMAIN);
-
-            getDataForUnfamiliarMerchant(item.getNavigationHandle(), (trustSignals) -> {
-                if (trustSignals == null) {
-                    return;
-                }
-
-                mMessageScheduler.schedule(
-                        MerchantTrustMessageViewModel.create(mContext, trustSignals,
-                                this::onMessageDismissed, this::onMessagePrimaryAction),
-                        item, MerchantViewerConfig.getDefaultTrustSignalsMessageDelay(),
-                        this::onMessageEnqueued);
-            });
+            shouldExpediteMessage = false;
         }
+        mDataProvider.getDataForNavigationHandle(navigationHandle,
+                (trustSignal) -> maybeDisplayMessage(trustSignal, item, shouldExpediteMessage));
+    }
+
+    @VisibleForTesting
+    void maybeDisplayMessage(MerchantTrustSignals trustSignals, MerchantTrustMessageContext item,
+            boolean shouldExpediteMessage) {
+        if (trustSignals == null) return;
+        NavigationHandle navigationHandle = item.getNavigationHandle();
+        MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
+        if (navigationHandle == null || navigationHandle.getUrl() == null || storage == null
+                || isFamiliarMerchant(navigationHandle.getUrl().getSpec())
+                || hasReachedMaxAllowedMessageNumberInGivenTime()
+                || !isOnSecureWebsite(item.getWebContents())) {
+            return;
+        }
+
+        storage.load(navigationHandle.getUrl().getHost(), (event) -> {
+            if (event == null) {
+                scheduleMessage(trustSignals, item, shouldExpediteMessage);
+            } else if (System.currentTimeMillis() - event.getTimestamp()
+                    > TimeUnit.SECONDS.toMillis(
+                            MerchantViewerConfig.getTrustSignalsMessageWindowDurationSeconds())) {
+                storage.delete(event);
+                scheduleMessage(trustSignals, item, shouldExpediteMessage);
+            }
+        });
+    }
+
+    private void scheduleMessage(MerchantTrustSignals trustSignals,
+            MerchantTrustMessageContext item, boolean shouldExpediteMessage) {
+        assert (trustSignals != null) && (item != null);
+        mMessageScheduler.schedule(
+                MerchantTrustMessageViewModel.create(mContext, trustSignals, item.getUrl(), this),
+                item,
+                shouldExpediteMessage ? MerchantTrustMessageScheduler.MESSAGE_ENQUEUE_NO_DELAY
+                                      : MerchantViewerConfig.getDefaultTrustSignalsMessageDelay(),
+                this::onMessageEnqueued);
     }
 
     private boolean isFamiliarMerchant(String url) {
@@ -161,6 +197,12 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
+    boolean isOnSecureWebsite(WebContents webContents) {
+        return SecurityStateModel.getSecurityLevelForWebContents(webContents)
+                == ConnectionSecurityLevel.SECURE;
+    }
+
+    @VisibleForTesting
     void onMessageEnqueued(MerchantTrustMessageContext messageContext) {
         if (messageContext == null) {
             return;
@@ -176,43 +218,22 @@ public class MerchantTrustSignalsCoordinator
                 messageContext.getHostName(), System.currentTimeMillis()));
     }
 
-    private void getDataForUnfamiliarMerchant(
-            NavigationHandle navigationHandle, Callback<MerchantTrustSignals> callback) {
-        MerchantTrustSignalsEventStorage storage = mStorageFactory.getForLastUsedProfile();
-        if (storage == null || navigationHandle == null || navigationHandle.getUrl() == null
-                || isFamiliarMerchant(navigationHandle.getUrl().getSpec())
-                || hasReachedMaxAllowedMessageNumberInGivenTime()) {
-            return;
-        }
-
-        storage.load(navigationHandle.getUrl().getHost(), (event) -> {
-            if (event == null) {
-                mDataProvider.getDataForNavigationHandle(navigationHandle, callback);
-            } else if (System.currentTimeMillis() - event.getTimestamp()
-                    > TimeUnit.SECONDS.toMillis(
-                            MerchantViewerConfig.getTrustSignalsMessageWindowDurationSeconds())) {
-                storage.delete(event);
-                mDataProvider.getDataForNavigationHandle(navigationHandle, callback);
-            } else {
-                callback.onResult(null);
-            }
-        });
-    }
-
-    @VisibleForTesting
-    void onMessageDismissed(@DismissReason int dismissReason) {
+    // MerchantTrustMessageViewModel.MessageActionsHandler implementations.
+    @Override
+    public void onMessageDismissed(@DismissReason int dismissReason, String messageAssociatedUrl) {
         mMetrics.recordMetricsForMessageDismissed(dismissReason);
         if (dismissReason == DismissReason.TIMER || dismissReason == DismissReason.GESTURE) {
-            maybeShowStoreIcon();
+            maybeShowStoreIcon(messageAssociatedUrl);
         }
     }
 
-    @VisibleForTesting
-    void onMessagePrimaryAction(MerchantTrustSignals trustSignals) {
+    @Override
+    public void onMessagePrimaryAction(MerchantTrustSignals trustSignals) {
         mMetrics.recordMetricsForMessageTapped();
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
     }
 
+    // PageInfoStoreInfoController.StoreInfoActionHandler implementation.
     @Override
     public void onStoreInfoClicked(MerchantTrustSignals trustSignals) {
         launchDetailsPage(new GURL(trustSignals.getMerchantDetailsPageUrl()));
@@ -288,10 +309,10 @@ public class MerchantTrustSignalsCoordinator
     }
 
     @VisibleForTesting
-    void maybeShowStoreIcon() {
+    void maybeShowStoreIcon(String messageAssociatedUrl) {
         if (isStoreInfoFeatureEnabled() && mOmniboxIconController != null
-                && mCurrentMessageContext != null && mCurrentMessageContext.getUrl() != null) {
-            mOmniboxIconController.showStoreIcon(mWindowAndroid, mCurrentMessageContext.getUrl(),
+                && messageAssociatedUrl != null) {
+            mOmniboxIconController.showStoreIcon(mWindowAndroid, messageAssociatedUrl,
                     getStoreIconDrawable(), R.string.merchant_viewer_omnibox_icon_iph);
         }
     }

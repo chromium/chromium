@@ -149,6 +149,7 @@ public class MerchantTrustBottomSheetMediatorTest {
         doReturn(mMockDestinationGurl).when(mMockWebContents).getVisibleUrl();
         doReturn(mMockNavigationController).when(mMockWebContents).getNavigationController();
         when(mUrlUtilitiesJniMock.isGoogleDomainUrl(anyString(), anyBoolean())).thenReturn(true);
+        when(mUrlUtilitiesJniMock.isGoogleSubDomainUrl(anyString())).thenReturn(true);
         when(mSecurityStateMocks.getSecurityLevelForWebContents(any(WebContents.class)))
                 .thenReturn(ConnectionSecurityLevel.SECURE);
         doReturn(true).when(mMockNavigationHandle).isInPrimaryMainFrame();
@@ -199,6 +200,7 @@ public class MerchantTrustBottomSheetMediatorTest {
     @Test(expected = java.lang.AssertionError.class)
     public void testNavigateToNonGoogleUrl() {
         doReturn(false).when(mUrlUtilitiesJniMock).isGoogleDomainUrl(anyString(), anyBoolean());
+        doReturn(false).when(mUrlUtilitiesJniMock).isGoogleSubDomainUrl(anyString());
         mMediator.navigateToUrl(mMockDestinationGurl, DUMMY_SHEET_TITLE);
     }
 
