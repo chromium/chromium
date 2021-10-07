@@ -195,7 +195,8 @@ class WaylandWindowTest : public WaylandTest {
     properties.parent_widget = parent_widget;
 
     auto window = WaylandWindow::Create(delegate, connection_.get(),
-                                        std::move(properties));
+                                        std::move(properties), true, true);
+
     if (window)
       window->Show(false);
     return window;
@@ -319,6 +320,40 @@ TEST_P(WaylandWindowTest, UpdateVisualSizeConfiguresWaylandWindow) {
   EXPECT_CALL(*mock_surface, SetOpaqueRegion(_));
   EXPECT_CALL(*mock_surface, SetInputRegion(_));
   window_->UpdateVisualSize(kNormalBounds.size());
+}
+
+// WaylandSurface state changes are sent to wayland compositor when
+// ApplyPendingState() is called.
+TEST_P(WaylandWindowTest, ApplyPendingStatesAndCommit) {
+  window_->set_update_visual_size_immediately(false);
+  window_->set_apply_pending_state_on_update_visual_size(false);
+
+  auto* mock_surface = server_.GetObject<wl::MockSurface>(
+      window_->root_surface()->GetSurfaceId());
+
+  // Set*() calls do not send wl_surface requests.
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(0);
+  EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(0);
+  EXPECT_CALL(*mock_surface, SetBufferScale(2)).Times(0);
+
+  std::vector<gfx::Rect> region_px = {gfx::Rect{0, 0, 500, 300}};
+  window_->root_surface()->SetOpaqueRegion(region_px);
+  window_->root_surface()->SetInputRegion(region_px.back());
+  window_->root_surface()->SetSurfaceBufferScale(2);
+
+  Sync();
+
+  // ApplyPendingState() generates wl_surface requests and Commit() causes a
+  // wayland connection flush.
+  EXPECT_CALL(*mock_surface, SetOpaqueRegion(_)).Times(1);
+  EXPECT_CALL(*mock_surface, SetInputRegion(_)).Times(1);
+  EXPECT_CALL(*mock_surface, SetBufferScale(2)).Times(1);
+  EXPECT_CALL(*mock_surface, Commit()).Times(1);
+
+  window_->root_surface()->ApplyPendingState();
+  window_->root_surface()->Commit();
+
+  Sync();
 }
 
 // Checks that decoration insets do not change final bounds and that
@@ -682,7 +717,7 @@ TEST_P(WaylandWindowTest, StartWithFullscreen) {
   // cannot process them and set a pending state instead, because ShellSurface
   // is not created by that moment.
   auto window = WaylandWindow::Create(&delegate, connection_.get(),
-                                      std::move(properties));
+                                      std::move(properties), true, true);
 
   Sync();
 
@@ -727,7 +762,7 @@ TEST_P(WaylandWindowTest, StartMaximized) {
   // cannot process them and set a pending state instead, because ShellSurface
   // is not created by that moment.
   auto window = WaylandWindow::Create(&delegate, connection_.get(),
-                                      std::move(properties));
+                                      std::move(properties), true, true);
 
   Sync();
 
@@ -2649,7 +2684,7 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
 
   MockPlatformWindowDelegate delegate;
   auto window = WaylandWindow::Create(&delegate, connection_.get(),
-                                      std::move(properties));
+                                      std::move(properties), true, true);
   DCHECK(window);
   window->Show(false);
 
@@ -3018,8 +3053,6 @@ TEST_P(WaylandWindowTest, RepositionPopups) {
       &delegate_);
   EXPECT_TRUE(menu_window);
   EXPECT_TRUE(menu_window->IsVisible());
-
-  menu_window->set_update_visual_size_immediately(true);
 
   Sync();
 
