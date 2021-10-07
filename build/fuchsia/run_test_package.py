@@ -194,6 +194,7 @@ def RunTestPackage(output_dir, target, package_paths, package_name,
         if args.test_realm_label:
           command += ['--realm-label=%s' % args.test_realm_label]
         command.append(_GetComponentUri(package_name))
+        command.append('--')
       else:
         command = ['run', _GetComponentUri(package_name)]
 

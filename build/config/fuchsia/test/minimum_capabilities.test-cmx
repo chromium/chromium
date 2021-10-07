@@ -5,7 +5,8 @@
         "fuchsia.intl.PropertyProvider": "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cmx"
       },
       "system-services": [
-        "fuchsia.boot.ReadOnlyLog"
+        "fuchsia.boot.ReadOnlyLog",
+        "fuchsia.media.ProfileProvider"
       ]
     }
   },

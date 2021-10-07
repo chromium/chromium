@@ -3,13 +3,16 @@
 This directory contains the cmx fragments that are required for running
 Fuchsia tests hermetically. Tests start from `minimum_capabilities.test-cmx`
 and add additional capabilities as necessary by providing the
-`additional_manifest_fragments` argument. Some fragments are explained in detail
-below:
+`additional_manifest_fragments` argument. Some of these fragments have
+extraneous `injected-services`. These are used when tests are run with
+`run-test-component` as they are required by some of the injected services.
+Some fragments are explained in detail below:
 
 ### General Purpose Fragments
 
 #### font_capabilities.test-cmx
-For tests that test fonts by providing `fuchsia.fonts.Provider`.
+For tests that test fonts by providing `fuchsia.fonts.Provider`. The injected `fonts.cmx` requires
+`fuchsia.tracing.provider.Registry`.
 
 #### jit_capabilities.test-cmx
 Required by tests that execute JavaScript. Should only be required in a small
@@ -40,7 +43,7 @@ Corresponds to the `AUDIO` flag. Required for enabling audio input and output.
 Corresponds to the `NETWORK` flag. Required for enabling network access. Note
 that access to the root SSL certificates is not needed if ContextProvider is
 used to launch the `Context`. The `fuchsia.device.NameProvider` dependency comes
-from fdio.
+from fdio. The injected `netstack.cmx` requires `fuchsia.stash.SecureStore`.
 
 #### present_view_capabilities.test-cmx
 Services that are needed to render web content in a Scenic view and present it.
