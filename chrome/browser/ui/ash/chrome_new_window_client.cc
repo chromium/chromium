@@ -13,6 +13,8 @@
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -79,6 +81,7 @@
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
@@ -334,6 +337,17 @@ void ChromeNewWindowClient::NewWindow(bool is_incognito,
       is_incognito ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
                    : profile,
       should_trigger_session_restore);
+}
+
+void ChromeNewWindowClient::NewWindowForWebUITabDrop(
+    aura::Window* source_window,
+    const ui::OSExchangeData& drop_data,
+    NewWindowForWebUITabDropCallback closure) {
+  aura::Window* const new_window =
+      ash::Shell::Get()->shell_delegate()->CreateBrowserForTabDrop(
+          source_window, drop_data);
+  DCHECK(new_window);
+  std::move(closure).Run(new_window);
 }
 
 void ChromeNewWindowClient::OpenUrl(const GURL& url,

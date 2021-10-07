@@ -70,6 +70,11 @@ class ASH_EXPORT TabDragDropDelegate {
   // Puts the source window back into its original position.
   void RestoreSourceWindowBounds();
 
+  // Effectively handles the new window creation in Drop(). This method can be
+  // called asynchronously in case of Lacros.
+  void OnNewBrowserWindowCreated(const gfx::Point& location_in_screen,
+                                 aura::Window* new_window);
+
   aura::Window* const root_window_;
   aura::Window* const source_window_;
   const gfx::Point start_location_in_screen_;

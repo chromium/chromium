@@ -8,8 +8,17 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/bind.h"
 
 class GURL;
+
+namespace aura {
+class Window;
+}
+
+namespace ui {
+class OSExchangeData;
+}
 
 namespace ash {
 
@@ -43,6 +52,16 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // startup URLs, etc.). Otherwise, don't restore the session.
   virtual void NewWindow(bool incognito,
                          bool should_trigger_session_restore) = 0;
+
+  using NewWindowForWebUITabDropCallback =
+      base::OnceCallback<void(aura::Window*)>;
+
+  // Opens a new Browser window in response to a drag'n drop operation performed
+  // by the user while in "tablet mode".
+  virtual void NewWindowForWebUITabDrop(
+      aura::Window* source_window,
+      const ui::OSExchangeData& drop_data,
+      NewWindowForWebUITabDropCallback closure) = 0;
 
   // Opens the specified URL in a new tab. If the |from_user_interaction|
   // is true then the page will load with a user activation. This means the

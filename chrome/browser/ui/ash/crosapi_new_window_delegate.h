@@ -23,6 +23,10 @@ class CrosapiNewWindowDelegate : public ash::NewWindowDelegate {
   // Overridden from ash::NewWindowDelegate:
   void NewTab() override;
   void NewWindow(bool incognito, bool should_trigger_session_restore) override;
+  void NewWindowForWebUITabDrop(
+      aura::Window* source_window,
+      const ui::OSExchangeData& drop_data,
+      NewWindowForWebUITabDropCallback closure) override;
   void OpenUrl(const GURL& url, bool from_user_interaction) override;
   void OpenCalculator() override;
   void OpenFileManager() override;

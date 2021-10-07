@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 
 CrosapiNewWindowDelegate::CrosapiNewWindowDelegate(
     ash::NewWindowDelegate* delegate)
@@ -21,6 +22,14 @@ void CrosapiNewWindowDelegate::NewTab() {
 void CrosapiNewWindowDelegate::NewWindow(bool incognito,
                                          bool should_trigger_session_restore) {
   crosapi::BrowserManager::Get()->NewWindow(incognito);
+}
+
+void CrosapiNewWindowDelegate::NewWindowForWebUITabDrop(
+    aura::Window* source_window,
+    const ui::OSExchangeData& drop_data,
+    NewWindowForWebUITabDropCallback closure) {
+  delegate_->NewWindowForWebUITabDrop(source_window, drop_data,
+                                      std::move(closure));
 }
 
 void CrosapiNewWindowDelegate::OpenUrl(const GURL& url,
