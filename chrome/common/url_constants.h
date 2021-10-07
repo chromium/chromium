@@ -442,6 +442,9 @@ extern const char kChromeSyncLearnMoreURL[];
 extern const char kOutdatedPluginLearnMoreURL[];
 #endif
 
+// "Learn more" URL for the phone hub notifications and apps access setup.
+extern const char kPhoneHubPermissionLearnMoreURL[];
+
 // Please do not append entries here. See the comments at the top of the file.
 
 }  // namespace chrome

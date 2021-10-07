@@ -415,6 +415,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/multidevice_page/multidevice_feature_toggle.m.js",
     "chromeos/multidevice_page/multidevice_notification_access_setup_dialog.m.js",
     "chromeos/multidevice_page/multidevice_page.m.js",
+    "chromeos/multidevice_page/multidevice_permissions_setup_dialog.m.js",
     "chromeos/multidevice_page/multidevice_radio_button.m.js",
     "chromeos/multidevice_page/multidevice_smartlock_subpage.m.js",
     "chromeos/multidevice_page/multidevice_subpage.m.js",

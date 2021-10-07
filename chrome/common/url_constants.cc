@@ -478,4 +478,8 @@ const char kOutdatedPluginLearnMoreURL[] =
     "https://support.google.com/chrome/?p=ib_outdated_plugin";
 #endif
 
+// TODO (b/184137843): Use real link to phone hub notifications and apps access.
+const char kPhoneHubPermissionLearnMoreURL[] =
+    "https://support.google.com/chromebook/?p=multidevice";
+
 }  // namespace chrome

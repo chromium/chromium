@@ -104,6 +104,7 @@ js_modulizer("modulize") {
     "multidevice_feature_toggle_tests.js",
     "multidevice_notification_access_setup_dialog_tests.js",
     "multidevice_page_tests.js",
+    "multidevice_permissions_setup_dialog_tests.js",
     "multidevice_smartlock_item_test.js",
     "multidevice_smartlock_subpage_test.js",
     "multidevice_subpage_tests.js",

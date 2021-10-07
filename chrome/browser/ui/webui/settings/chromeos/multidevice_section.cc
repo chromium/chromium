@@ -382,6 +382,7 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE},
       {"multidevicePhoneHubAppsAndNotificationsItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE},
+      {"multideviceLearnMoreWithoutURL", IDS_SETTINGS_LEARN_MORE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -490,6 +491,9 @@ void MultiDeviceSection::AddLoadTimeData(
       "multidevicePhoneHubAppsAndNotificationsItemSummary",
       ui::SubstituteChromeOSDeviceType(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY));
+  html_source->AddString(
+      "multidevicePhoneHubPermissionsLearnMoreURL",
+      GetHelpUrlWithBoard(chrome::kPhoneHubPermissionLearnMoreURL));
 
   AddEasyUnlockStrings(html_source);
 
