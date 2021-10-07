@@ -25,8 +25,8 @@
   self.secondaryActionAvailable = YES;
   self.showDismissBarButton = NO;
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
-  self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT);
+  self.subtitleString = l10n_util::GetNSString(
+      IDS_IOS_ENTERPRISE_RESTRICTED_ACCOUNTS_TO_PATTERNS_MESSAGE);
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
