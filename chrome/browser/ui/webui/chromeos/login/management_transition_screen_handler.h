@@ -74,6 +74,9 @@ class ManagementTransitionScreenHandler
   // BaseScreenHandler:
   void Initialize() override;
 
+  // Shows a given step.
+  void ShowStep(const char* step);
+
   // Called when the max wait timeout is reached.
   void OnManagementTransitionFailed();
 

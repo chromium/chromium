@@ -10,6 +10,7 @@ import("../../oobe_auto_imports.gni")
 group("polymer3_elements") {
   public_deps = [
     ":active_directory_password_change_module",
+    ":management_transition_module",
   ]
 }
 
@@ -23,7 +24,6 @@ js_type_check("closure_compile_local") {
     ":encryption_migration",
     ":gaia_password_changed",
     ":lacros_data_migration",
-    ":management_transition",
     ":offline_login",
     ":update_required_card",
   ]
@@ -34,6 +34,7 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":active_directory_password_change.m",
+    ":management_transition.m",
   ]
 }
 
@@ -84,16 +85,6 @@ js_library("offline_login") {
   ]
 }
 
-js_library("management_transition") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-  ]
-}
-
 js_library("update_required_card") {
   deps = [
     "../../components/behaviors:login_screen_behavior",
@@ -108,9 +99,9 @@ js_library("update_required_card") {
 js_library("active_directory_password_change.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/active_directory_password_change.m.js" ]
   deps = [
-    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
     "../../components/buttons:oobe_next_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_modal_dialog.m",
@@ -118,9 +109,30 @@ js_library("active_directory_password_change.m") {
   extra_deps = [ ":active_directory_password_change_module" ]
 }
 
+js_library("management_transition.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/management_transition.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+  ]
+  extra_deps = [ ":management_transition_module" ]
+}
+
 polymer_modulizer("active_directory_password_change") {
   js_file = "active_directory_password_change.js"
   html_file = "active_directory_password_change.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("management_transition") {
+  js_file = "management_transition.js"
+  html_file = "management_transition.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites
