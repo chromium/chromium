@@ -72,18 +72,6 @@ using ::ash::input_method::InputMethodUtil;
 // Number of IMEs that are needed to automatically enable the IME menu option.
 const size_t kNumImesToAutoEnableImeMenu = 2;
 
-// Returns the set of IDs of all enabled IMEs.
-base::flat_set<std::string> GetEnabledIMEs(
-    scoped_refptr<InputMethodManager::State> ime_state) {
-  return ime_state->GetEnabledInputMethodIds();
-}
-
-// Returns the set of IDs of all allowed IMEs.
-base::flat_set<std::string> GetAllowedIMEs(
-    scoped_refptr<InputMethodManager::State> ime_state) {
-  return ime_state->GetAllowedInputMethodIds();
-}
-
 // Returns the set of IDs of enabled IMEs for the given pref.
 base::flat_set<std::string> GetIMEsFromPref(PrefService* prefs,
                                             const char* pref_name) {
@@ -728,8 +716,10 @@ void PopulateInputMethodListFromDescriptors(
   if (!ime_state.get())
     return;
 
-  const base::flat_set<std::string> active_ids(GetEnabledIMEs(ime_state));
-  const base::flat_set<std::string> allowed_ids(GetAllowedIMEs(ime_state));
+  const base::flat_set<std::string> enabled_ids(
+      ime_state->GetEnabledInputMethodIds());
+  const base::flat_set<std::string> allowed_ids(
+      ime_state->GetAllowedInputMethodIds());
 
   // Collator used to sort display names in the given locale.
   UErrorCode error = U_ZERO_ERROR;
@@ -751,7 +741,7 @@ void PopulateInputMethodListFromDescriptors(
     input_method.display_name = util->GetLocalizedDisplayName(descriptor);
     input_method.language_codes = descriptor.language_codes();
     input_method.tags = GetInputMethodTags(&input_method);
-    if (base::Contains(active_ids, input_method.id))
+    if (base::Contains(enabled_ids, input_method.id))
       input_method.enabled = std::make_unique<bool>(true);
     if (descriptor.options_page_url().is_valid())
       input_method.has_options_page = std::make_unique<bool>(true);
