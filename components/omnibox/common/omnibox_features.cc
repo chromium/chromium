@@ -183,11 +183,33 @@ const base::Feature kHistoryQuickProviderAblateInMemoryURLIndexCacheFile{
 const base::Feature kDisableCGIParamMatching{"OmniboxDisableCGIParamMatching",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Features used to enable matching short inputs to bookmarks for suggestions.
+// By default, if both of the following are disabled, input words shorter than 3
+//   characters won't prefix match bookmarks. E.g., the inputs 'abc x' or 'x'
+//   won't match bookmark text 'abc xyz'.
+// If |kShortBookmarkSuggestions()| is enabled, this limitation is lifted and
+//   both inputs 'abc x' and 'x' can match bookmark text 'abc xyz'.
+// If |kShortBookmarkSuggestionsByTotalInputLength()| is enabled, matching is
+//   limited by input length rather than input word length. Input 'abc x' can
+//   but input 'x' can't match bookmark text 'abc xyz'.
+const base::Feature kShortBookmarkSuggestions{
+    "OmniboxShortBookmarkSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kShortBookmarkSuggestionsByTotalInputLength{
+    "OmniboxShortBookmarkSuggestionsByTotalInputLength",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If disabled, updating shortcuts truncates their text to the user input. If
 // enabled, they preserve up to 3 additional chars. See `GetShortcutText()` in
 // shortcuts_backend.cc for details.
 const base::Feature kPreserveLongerShortcutsText{
     "OmniboxPreserveLongerShortcutsText", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// If enabled, inputs may match bookmark paths. These path matches won't
+// contribute to scoring. E.g. 'planets jupiter' can suggest a bookmark titled
+// 'Jupiter' with URL 'en.wikipedia.org/wiki/Jupiter' located in a path
+// containing 'planet.'
+const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
+                                   base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to fetch document suggestions.
 const base::Feature kDocumentProvider{"OmniboxDocumentProvider",

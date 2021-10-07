@@ -4145,6 +4145,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "omnibox-bookmark-paths",
+    "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "omnibox-bubble-url-suggestions",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
@@ -4328,6 +4333,11 @@
     "name": "omnibox-search-ready-incognito",
     "owners": [ "fgorski", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 90
+  },
+  {
+    "name": "omnibox-short-bookmark-suggestions",
+    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "omnibox-spare-renderer",
