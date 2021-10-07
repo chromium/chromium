@@ -8,12 +8,22 @@
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace cr_fuchsia {
 
-// Loads and parses configuration data from the environment.
-// Returns a null value if the file(s) do not exist.
-// CHECK-fails if the file(s) are present but not parseable.
+// Return a JSON dictionary read from the calling Component's config-data.
+// All *.json files in the config-data directory are read, parsed, and merged
+// into a single JSON dictionary value.
+// Null is returned if no config-data exists for the Component.
+// CHECK()s if one or more config files are malformed, or there are duplicate
+// non-dictionary fields in different config files.
 const absl::optional<base::Value>& LoadPackageConfig();
+
+// Used to test the implementation of LoadPackageConfig().
+absl::optional<base::Value> LoadConfigFromDirForTest(const base::FilePath& dir);
 
 }  // namespace cr_fuchsia
 

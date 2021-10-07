@@ -33,6 +33,10 @@ class AccumulatingTestInterfaceImpl : public base::testfidl::TestInterface {
  public:
   AccumulatingTestInterfaceImpl() = default;
 
+  AccumulatingTestInterfaceImpl(const AccumulatingTestInterfaceImpl&) = delete;
+  AccumulatingTestInterfaceImpl& operator=(
+      const AccumulatingTestInterfaceImpl&) = delete;
+
   // TestInterface implementation:
   void Add(int32_t a, int32_t b, AddCallback callback) override {
     accumulated_ += a + b;
@@ -41,8 +45,6 @@ class AccumulatingTestInterfaceImpl : public base::testfidl::TestInterface {
 
  private:
   int32_t accumulated_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AccumulatingTestInterfaceImpl);
 };
 
 class AccumulatorComponentState : public AgentImpl::ComponentStateBase {
@@ -79,6 +81,9 @@ class AgentImplTest : public ::testing::Test {
     services_client_ =
         std::make_unique<sys::ServiceDirectory>(std::move(directory));
   }
+
+  AgentImplTest(const AgentImplTest&) = delete;
+  AgentImplTest& operator=(const AgentImplTest&) = delete;
 
   fuchsia::modular::AgentPtr CreateAgentAndConnect() {
     DCHECK(!agent_impl_);
@@ -123,8 +128,6 @@ class AgentImplTest : public ::testing::Test {
   // Set only if a keep-alive component was connected, to allow the test to
   // forcibly teardown the ComponentState for it.
   base::OnceClosure disconnect_clients_and_teardown_;
-
-  DISALLOW_COPY_AND_ASSIGN(AgentImplTest);
 };
 
 }  // namespace
