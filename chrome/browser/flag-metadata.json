@@ -2192,7 +2192,7 @@
   {
     "name": "enable-media-foundation-video-capture",
     "owners": [ "agpalak", "guidou" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 99
   },
   {
     "name": "enable-media-internals",
@@ -4658,7 +4658,7 @@
   {
     "name": "run-video-capture-service-in-browser",
     "owners": [ "agpalak", "guidou" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 99
   },
   {
     "name": "safe-browsing-enhanced-protection-promo-android",
