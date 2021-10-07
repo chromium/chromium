@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_callbacks.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_error.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"

@@ -8,6 +8,11 @@
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace WTF {
+class AtomicString;
+}  // namespace WTF
 
 namespace blink {
 
