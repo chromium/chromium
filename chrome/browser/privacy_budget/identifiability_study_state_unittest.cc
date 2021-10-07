@@ -748,6 +748,35 @@ TEST(IdentifiabilityStudyStateStandaloneTest, SomeSetOfGroups) {
   EXPECT_EQ(0u, state.seen_surfaces().size());
 }
 
+// Regression test for the problem solved by https://crrev.com/c/3211286
+TEST(IdentifiabilityStudyStateStandaloneTest,
+     SomeSetOfGroupsWithRhoEqualToZero) {
+  // Number of test groups. Arbitrary.
+  constexpr unsigned kTestGroupCount = 200;
+
+  // Number of surfaces in a single group. The groups don't need to be the same
+  // size.
+  constexpr unsigned kSurfacesInGroup = 40;
+
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  for (unsigned group_index = 0; group_index < kTestGroupCount; ++group_index) {
+    parameters.blocks.emplace_back(
+        CreateSurfaceList(kSurfacesInGroup, kSurfacesInGroup * group_index));
+  }
+  parameters.active_surface_budget = kSurfacesInGroup;
+  parameters.expected_surface_count = 0;
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+
+  EXPECT_TRUE(state.is_using_assigned_block_sampling());
+
+  // Any single selected group contributes kSurfacesInGroup surfaces.
+  EXPECT_EQ(kSurfacesInGroup, state.active_surfaces().Size());
+}
+
 TEST(IdentifiabilityStudyStateStandaloneTest, SingleGroup) {
   constexpr unsigned kSurfacesInGroup = 40;
 
