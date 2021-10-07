@@ -18486,44 +18486,6 @@
       }
     ]
   },
-  "arm-upload-perfetto": {
-    "additional_compile_targets": [
-      "trace_processor_shell"
-    ],
-    "isolated_scripts": [
-      {
-        "isolate_name": "upload_trace_processor",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "upload_trace_processor",
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
-        "test_id_prefix": "ninja://tools/perf/core/perfetto_binary_roller:upload_trace_processor/"
-      }
-    ]
-  },
-  "arm64-upload-perfetto": {
-    "additional_compile_targets": [
-      "trace_processor_shell"
-    ],
-    "isolated_scripts": [
-      {
-        "isolate_name": "upload_trace_processor",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "upload_trace_processor",
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
-        "test_id_prefix": "ninja://tools/perf/core/perfetto_binary_roller:upload_trace_processor/"
-      }
-    ]
-  },
   "chromeos-amd64-generic-rel (goma cache silo)": {
     "additional_compile_targets": [
       "chromiumos_preflight"

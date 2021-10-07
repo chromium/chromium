@@ -2855,20 +2855,6 @@
         'use_swarming': True,
         'os_type': 'android',
       },
-      'arm-upload-perfetto': {
-        'additional_compile_targets': [ 'trace_processor_shell' ],
-        'test_suites': {
-          'isolated_scripts': 'upload_perfetto',
-        },
-        'use_swarming': False,
-      },
-      'arm64-upload-perfetto': {
-        'additional_compile_targets': [ 'trace_processor_shell' ],
-        'test_suites': {
-          'isolated_scripts': 'upload_perfetto',
-        },
-        'use_swarming': False,
-      },
       'chromeos-amd64-generic-rel (goma cache silo)': {
         'additional_compile_targets': [
           'chromiumos_preflight',

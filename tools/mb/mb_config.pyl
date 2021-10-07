@@ -318,8 +318,6 @@
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage',
       'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm',
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64',
-      'arm-upload-perfetto': 'release_bot_arm_chromeos',
-      'arm64-upload-perfetto': 'release_bot_arm64_chromeos',
       'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
       # TODO(crbug.com/1235218): remove after the migration.
@@ -2789,14 +2787,6 @@
 
     'release_bot': [
       'release_bot',
-    ],
-
-    'release_bot_arm_chromeos': [
-      'release_bot', 'chromeos', 'arm',
-    ],
-
-    'release_bot_arm64_chromeos': [
-      'release_bot', 'chromeos', 'arm64',
     ],
 
     'release_bot_blink': [

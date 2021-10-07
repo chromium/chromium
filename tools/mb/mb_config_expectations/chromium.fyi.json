@@ -546,26 +546,6 @@
       "use_static_angle": true
     }
   },
-  "arm-upload-perfetto": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "arm",
-      "target_os": "chromeos",
-      "use_goma": true
-    }
-  },
-  "arm64-upload-perfetto": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "target_cpu": "arm64",
-      "target_os": "chromeos",
-      "use_goma": true
-    }
-  },
   "chromeos-amd64-generic-rel (goma cache silo)": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {

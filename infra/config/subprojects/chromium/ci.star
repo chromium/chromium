@@ -4012,24 +4012,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "arm-upload-perfetto",
-    console_view_entry = consoles.console_view_entry(
-        category = "perfetto",
-        short_name = "arm",
-    ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.fyi_builder(
-    name = "arm64-upload-perfetto",
-    console_view_entry = consoles.console_view_entry(
-        category = "perfetto",
-        short_name = "arm64",
-    ),
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-ci.fyi_builder(
     name = "linux-upload-perfetto",
     console_view_entry = consoles.console_view_entry(
         category = "perfetto",
