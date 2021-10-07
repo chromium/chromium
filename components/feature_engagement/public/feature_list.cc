@@ -21,6 +21,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAdaptiveButtonInTopToolbarCustomizationVoiceSearchFeature,
     &kIPHAddToHomescreenMessageFeature,
     &kIPHAddToHomescreenTextBubbleFeature,
+    &kIPHAutoDarkOptOutFeature,
     &kIPHAutoDarkUserEducationMessageFeature,
     &kIPHDataSaverDetailFeature,
     &kIPHDataSaverMilestonePromoFeature,

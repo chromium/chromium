@@ -43,8 +43,9 @@ public class NightModeMetrics {
     public @interface ThemeSettingsEntry {
         int SETTINGS = 0;
         int AUTO_DARK_MODE_MESSAGE = 1;
+        int AUTO_DARK_MODE_DIALOG = 2;
 
-        int NUM_ENTRIES = 2;
+        int NUM_ENTRIES = 3;
     }
 
     /**

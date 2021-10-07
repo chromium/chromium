@@ -32,6 +32,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/feature_engagement/public:public_java",
@@ -134,6 +135,7 @@ android_library("junit") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
+    "//ui/android:ui_junit_test_support",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]

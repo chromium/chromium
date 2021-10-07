@@ -137,6 +137,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
+import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorController;
@@ -2531,6 +2532,13 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // Flip auto dark state.
             boolean isEnabled = WebContentsDarkModeController.isEnabledForUrl(profile, url);
             WebContentsDarkModeController.setEnabledForUrl(profile, url, !isEnabled);
+
+            // Show dialog informing user how to disable the feature globally and give feedback if
+            // disabling through the app menu for the nth time (determined by feature engagement).
+            if (isEnabled) {
+                WebContentsDarkModeMessageController.attemptToShowDialog(
+                        this, profile, getModalDialogManager(), new SettingsLauncherImpl());
+            }
 
             // TODO(crbug.com/1250800): Update UMA ExceptionCounts and mark UMA SettingStateChanges
             // from app menu item.

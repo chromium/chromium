@@ -5,10 +5,15 @@
 package org.chromium.chrome.browser.night_mode;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.text.style.ClickableSpan;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
@@ -24,7 +29,15 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /**
  * A controller class for the messages that will educate the user about the auto-dark web contents
@@ -59,6 +72,8 @@ public class WebContentsDarkModeMessageController {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.notifyEvent(EventConstants.AUTO_DARK_SETTINGS_OPENED);
     }
+
+    // User education message implementation.
 
     /**
      * Checks if the auto-dark theming is enabled and the feature engagement system requirements are
@@ -117,5 +132,93 @@ public class WebContentsDarkModeMessageController {
     static void onMessageDismissed(Profile profile, @DismissReason int dismissReason) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.dismissed(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE);
+    }
+
+    // User feedback dialog implementation.
+
+    /**
+     * Record in the feature engagement system when a site is blocked. If the feature has been
+     * disabled enough times (determined by the feature engagement system), show dialog informing
+     * user how to disable the feature globally and how to give feedback.
+     *
+     * @param context The context from which to launch theme settings.
+     * @param modalDialogManager Manager that triggers the dialog.
+     * @param settingsLauncher Launcher for theme settings.
+     */
+    public static void attemptToShowDialog(Context context, Profile profile,
+            ModalDialogManager modalDialogManager, SettingsLauncher settingsLauncher) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        tracker.notifyEvent(EventConstants.AUTO_DARK_DISABLED_IN_APP_MENU);
+        if (!tracker.shouldTriggerHelpUI(FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE)) return;
+
+        // Set the properties (icon, text, etc.) for the dialog.
+        Resources resources = context.getResources();
+        Controller controller = new Controller() {
+            @Override
+            public void onClick(PropertyModel model, int buttonType) {
+                // TODO(crbug.com/1257260): Set clickable to false for title icon.
+                if (buttonType == ButtonType.TITLE_ICON) return;
+                if (buttonType == ButtonType.POSITIVE) {
+                    // TODO(1255301): Implement feedback logic
+                }
+
+                modalDialogManager.dismissDialog(model,
+                        buttonType == ButtonType.POSITIVE
+                                ? DialogDismissalCause.POSITIVE_BUTTON_CLICKED
+                                : DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
+            }
+
+            @Override
+            public void onDismiss(PropertyModel model, int dismissalCause) {
+                tracker.dismissed(FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE);
+            }
+        };
+        PropertyModel dialog = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                                       .with(ModalDialogProperties.CONTROLLER, controller)
+                                       .with(ModalDialogProperties.TITLE, resources,
+                                               R.string.auto_dark_dialog_title)
+                                       .with(ModalDialogProperties.TITLE_ICON,
+                                               AppCompatResources.getDrawable(context,
+                                                       R.drawable.ic_brightness_medium_24dp))
+                                       .with(ModalDialogProperties.MESSAGE,
+                                               getFormattedMessageText(context, settingsLauncher))
+                                       .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
+                                               R.string.auto_dark_dialog_positive_button)
+                                       .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                                               R.string.cancel)
+                                       .build();
+
+        modalDialogManager.showDialog(dialog, ModalDialogType.TAB);
+    }
+
+    /**
+     * Returns link-formatted message text for the auto dark dialog.
+     */
+    private static CharSequence getFormattedMessageText(
+            Context context, SettingsLauncher settingsLauncher) {
+        Resources resources = context.getResources();
+        String messageText = resources.getString(R.string.auto_dark_dialog_message);
+        return SpanApplier.applySpans(messageText,
+                new SpanInfo(
+                        "<link>", "</link>", new AutoDarkClickableSpan(context, settingsLauncher)));
+    }
+
+    @VisibleForTesting
+    static class AutoDarkClickableSpan extends ClickableSpan {
+        private Context mContext;
+        private SettingsLauncher mSettingsLauncher;
+
+        AutoDarkClickableSpan(Context context, SettingsLauncher settingsLauncher) {
+            mContext = context;
+            mSettingsLauncher = settingsLauncher;
+        }
+
+        @Override
+        public void onClick(@NonNull View view) {
+            Bundle args = new Bundle();
+            args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
+                    ThemeSettingsEntry.AUTO_DARK_MODE_DIALOG);
+            mSettingsLauncher.launchSettingsActivity(mContext, ThemeSettingsFragment.class, args);
+        }
     }
 }

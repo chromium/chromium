@@ -396,6 +396,24 @@ java_group("ui_full_java") {
   ]
 }
 
+android_library("ui_junit_test_support") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/ui/shadows/ShadowAnimatedStateListDrawable.java",
+    "junit/src/org/chromium/ui/shadows/ShadowAppCompatResources.java",
+    "junit/src/org/chromium/ui/shadows/ShadowAsyncLayoutInflater.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_asynclayoutinflater_asynclayoutinflater_java",
+  ]
+}
+
 android_library("ui_java_test_support") {
   testonly = true
   sources = [
@@ -463,10 +481,7 @@ junit_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/modelutil/SimpleRecyclerViewAdapterTest.java",
     "junit/src/org/chromium/ui/resources/dynamics/BitmapDynamicResourceTest.java",
     "junit/src/org/chromium/ui/resources/dynamics/ViewResourceAdapterTest.java",
-    "junit/src/org/chromium/ui/shadows/ShadowAnimatedStateListDrawable.java",
-    "junit/src/org/chromium/ui/shadows/ShadowAppCompatResources.java",
     "junit/src/org/chromium/ui/shadows/ShadowAppCompatResourcesTest.java",
-    "junit/src/org/chromium/ui/shadows/ShadowAsyncLayoutInflater.java",
     "junit/src/org/chromium/ui/text/SpanApplierTest.java",
     "junit/src/org/chromium/ui/util/TokenHolderTest.java",
     "junit/src/org/chromium/ui/widget/AnchoredPopupWindowTest.java",
@@ -477,6 +492,7 @@ junit_binary("ui_junit_tests") {
     ":ui_java",
     ":ui_java_test_support",
     ":ui_javatest_resources",
+    ":ui_junit_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

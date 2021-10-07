@@ -5162,6 +5162,15 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_AUTO_DARK_MESSAGE_BUTTON" desc="The label for the button to enter theme settings.">
         Open settings
       </message>
+      <message name="IDS_AUTO_DARK_DIALOG_TITLE" desc="Title of dialog that asks the user to give feedback on auto dark theming.">
+        Share feedback on dark theme for sites?
+      </message>
+      <message name="IDS_AUTO_DARK_DIALOG_MESSAGE" desc="Description of dialog that asks the user to give feedback on auto dark theming.">
+        Tell us about your experience. Or <ph name="BEGIN_LINK">&lt;link&gt;</ph>change your settings<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_AUTO_DARK_DIALOG_POSITIVE_BUTTON" desc="The label for the button to give feedback.">
+        Share feedback
+      </message>
 
       <!-- Profile Management strings -->
       <message name="IDS_MANAGEMENT" desc="Title of the chrome://management page, which shows whether the account is managed.">

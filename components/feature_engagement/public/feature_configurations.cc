@@ -440,6 +440,28 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAutoDarkOptOutFeature.name == feature->name) {
+    // A config that allows the auto dark dialog to be shown when a user
+    // disables the feature for a site in the app menu when:
+    // * They have not yet opened auto dark settings.
+    // * The dialog has been shown 0 times before.
+    // * They have done so more than 5 times.
+    // TODO(crbug.com/1251737): Update this config from test values; Will
+    // likely depend on giving feedback instead of opening settings, since the
+    // primary purpose  of the dialog has changed.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used =
+        EventConfig("auto_dark_settings_opened", Comparator(EQUAL, 0), 90, 90);
+    config->trigger = EventConfig("auto_dark_opt_out_iph_trigger",
+                                  Comparator(EQUAL, 0), 90, 90);
+    config->event_configs.insert(EventConfig(
+        "auto_dark_disabled_in_app_menu", Comparator(GREATER_THAN, 5), 90, 90));
+    return config;
+  }
+
   if (kIPHAutoDarkUserEducationMessageFeature.name == feature->name) {
     // A config that allows the auto dark message to be shown:
     // * Until the user opens auto dark settings

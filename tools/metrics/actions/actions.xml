@@ -29402,6 +29402,7 @@ should be able to be added at any place in this file.
       label="For AddToHomescreen IPH feature."/>
   <suffix name="AddToHomescreenTextBubble"
       label="For AddToHomescreen IPH feature."/>
+  <suffix name="AutoDarkOptOut" label="For AutoDarkOptOut dialog feature."/>
   <suffix name="AutoDarkUserEducationMessage"
       label="For AutoDarkUserEducationMessage feature."/>
   <suffix name="BadgedReadingList" label="For BadgedReadingList feature."/>
