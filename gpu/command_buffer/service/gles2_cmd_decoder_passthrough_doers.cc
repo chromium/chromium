@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gl/ca_renderer_layer_params.h"
 #include "ui/gl/dc_renderer_layer_params.h"
@@ -4860,11 +4861,13 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleOverlayPlaneCHROMIUM(
   }
 
   if (!surface_->ScheduleOverlayPlane(
-          plane_z_order, transform, image,
-          gfx::Rect(bounds_x, bounds_y, bounds_width, bounds_height),
-          gfx::RectF(uv_x, uv_y, uv_width, uv_height), enable_blend,
-          /*damage_rect=*/gfx::Rect(), /*opacity=*/1.0f, std::move(gpu_fence),
-          gfx::OverlayPriorityHint::kNone)) {
+          image, std::move(gpu_fence),
+          gfx::OverlayPlaneData(
+              plane_z_order, transform,
+              gfx::Rect(bounds_x, bounds_y, bounds_width, bounds_height),
+              gfx::RectF(uv_x, uv_y, uv_width, uv_height), enable_blend,
+              /*damage_rect=*/gfx::Rect(), /*opacity=*/1.0f,
+              gfx::OverlayPriorityHint::kNone))) {
     InsertError(GL_INVALID_OPERATION, "failed to schedule overlay");
     return error::kNoError;
   }

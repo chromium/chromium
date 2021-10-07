@@ -2093,23 +2093,15 @@ void NativeViewGLSurfaceEGL::SetVSyncEnabled(bool enabled) {
 }
 
 bool NativeViewGLSurfaceEGL::ScheduleOverlayPlane(
-    int z_order,
-    gfx::OverlayTransform transform,
     GLImage* image,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    const gfx::Rect& damage_rect,
-    float opacity,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
-    gfx::OverlayPriorityHint priority_hint) {
+    const gfx::OverlayPlaneData& overlay_plane_data) {
 #if !defined(OS_ANDROID)
   NOTIMPLEMENTED();
   return false;
 #else
-  pending_overlays_.push_back(GLSurfaceOverlay(
-      z_order, transform, image, bounds_rect, crop_rect, true, damage_rect,
-      opacity, std::move(gpu_fence), priority_hint));
+  pending_overlays_.push_back(
+      GLSurfaceOverlay(image, std::move(gpu_fence), overlay_plane_data));
   return true;
 #endif
 }

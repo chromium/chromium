@@ -87,16 +87,10 @@ class ImageTransportSurfaceOverlayMacBase : public BaseClass,
   void* GetHandle() override;
   gl::GLSurfaceFormat GetFormat() override;
   bool OnMakeCurrent(gl::GLContext* context) override;
-  bool ScheduleOverlayPlane(int z_order,
-                            gfx::OverlayTransform transform,
-                            gl::GLImage* image,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            const gfx::Rect& damage_rect,
-                            float opacity,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence,
-                            gfx::OverlayPriorityHint priority_hint) override;
+  bool ScheduleOverlayPlane(
+      gl::GLImage* image,
+      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool ScheduleCALayer(const ui::CARendererLayerParams& params) override;
   void ScheduleCALayerInUseQuery(
       std::vector<gl::GLSurface::CALayerInUseQuery> queries) override;

@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/ozone/platform/scenic/scenic_surface.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
 
@@ -89,14 +90,7 @@ uint32_t SysmemNativePixmap::GetUniqueId() const {
 
 bool SysmemNativePixmap::ScheduleOverlayPlane(
     gfx::AcceleratedWidget widget,
-    int plane_z_order,
-    gfx::OverlayTransform plane_transform,
-    const gfx::Rect& display_bounds,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    const gfx::Rect& damage_rect,
-    float opacity,
-    gfx::OverlayPriorityHint priority_hint,
+    const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
   DCHECK(collection_->surface_factory());
@@ -122,11 +116,12 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
   for (auto& fence : release_fences)
     release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
 
-  surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
-                                     display_bounds, crop_rect, plane_transform,
-                                     DuplicateZxEvents(acquire_events));
+  surface->UpdateOverlayViewPosition(
+      buffer_collection_id, overlay_plane_data.z_order,
+      overlay_plane_data.display_bounds, overlay_plane_data.crop_rect,
+      overlay_plane_data.plane_transform, DuplicateZxEvents(acquire_events));
 
-  overlay_view->SetBlendMode(enable_blend);
+  overlay_view->SetBlendMode(overlay_plane_data.enable_blend);
   overlay_view->PresentImage(handle_.buffer_index, std::move(acquire_events),
                              std::move(release_events));
 

@@ -18,6 +18,7 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_fence.h"
@@ -266,21 +267,22 @@ void SurfacelessGlRenderer::RenderFrame() {
         use_gpu_fences_ ? gl::GLFence::CreateForGpuFence() : nullptr;
 
     gl_surface_->ScheduleOverlayPlane(
-        0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
-        primary_plane_rect_, unity_rect, false,
-        gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
+        buffers_[back_buffer_]->image(),
         gl_fence ? gl_fence->GetGpuFence() : nullptr,
-        gfx::OverlayPriorityHint::kNone);
+        gfx::OverlayPlaneData(0, gfx::OVERLAY_TRANSFORM_NONE,
+                              primary_plane_rect_, unity_rect, false,
+                              gfx::Rect(buffers_[back_buffer_]->size()), 1.0f,
+                              gfx::OverlayPriorityHint::kNone));
   }
 
   for (size_t i = 0; i < overlay_cnt_; ++i) {
     if (overlay_list.back().overlay_handled) {
       gl_surface_->ScheduleOverlayPlane(
-          1, gfx::OVERLAY_TRANSFORM_NONE,
-          overlay_buffers_[i][back_buffer_]->image(), overlay_rect[i],
-          unity_rect, false,
-          gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
-          /* gpu_fence */ nullptr, gfx::OverlayPriorityHint::kNone);
+          overlay_buffers_[i][back_buffer_]->image(), /* gpu_fence */ nullptr,
+          gfx::OverlayPlaneData(
+              1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect[i], unity_rect,
+              false, gfx::Rect(overlay_buffers_[i][back_buffer_]->size()), 1.0f,
+              gfx::OverlayPriorityHint::kNone));
     }
   }
 

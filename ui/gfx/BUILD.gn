@@ -107,6 +107,8 @@ component("gfx") {
     "interpolated_transform.h",
     "nine_image_painter.cc",
     "nine_image_painter.h",
+    "overlay_plane_data.cc",
+    "overlay_plane_data.h",
     "overlay_transform_utils.cc",
     "overlay_transform_utils.h",
     "platform_font.h",

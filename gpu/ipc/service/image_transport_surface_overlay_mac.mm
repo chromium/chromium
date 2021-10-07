@@ -295,21 +295,14 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::OnMakeCurrent(
 
 template <typename BaseClass>
 bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
-    int z_order,
-    gfx::OverlayTransform transform,
     gl::GLImage* image,
-    const gfx::Rect& pixel_frame_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    const gfx::Rect& damage_rect,
-    float opacity,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
-    gfx::OverlayPriorityHint priority_hint) {
-  if (transform != gfx::OVERLAY_TRANSFORM_NONE) {
+    const gfx::OverlayPlaneData& overlay_plane_data) {
+  if (overlay_plane_data.plane_transform != gfx::OVERLAY_TRANSFORM_NONE) {
     DLOG(ERROR) << "Invalid overlay plane transform.";
     return false;
   }
-  if (z_order) {
+  if (overlay_plane_data.z_order) {
     DLOG(ERROR) << "Invalid non-zero Z order.";
     return false;
   }
@@ -325,8 +318,8 @@ bool ImageTransportSurfaceOverlayMacBase<BaseClass>::ScheduleOverlayPlane(
       gfx::RRectF(),  // rounded_corner_bounds
       0,              // sorting_context_id
       gfx::Transform(), image,
-      crop_rect,                         // contents_rect
-      pixel_frame_rect,                  // rect
+      overlay_plane_data.crop_rect,      // contents_rect
+      overlay_plane_data.damage_rect,    // rect
       SK_ColorTRANSPARENT,               // background_color
       0,                                 // edge_aa_mask
       1.f,                               // opacity

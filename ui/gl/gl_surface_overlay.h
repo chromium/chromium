@@ -7,11 +7,9 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
 
@@ -24,16 +22,9 @@ namespace gl {
 // For saving the properties of a GLImage overlay plane and scheduling it later.
 class GL_EXPORT GLSurfaceOverlay {
  public:
-  GLSurfaceOverlay(int z_order,
-                   gfx::OverlayTransform transform,
-                   GLImage* image,
-                   const gfx::Rect& bounds_rect,
-                   const gfx::RectF& crop_rect,
-                   bool enable_blend,
-                   const gfx::Rect& damage_rect,
-                   float opacity,
+  GLSurfaceOverlay(GLImage* image,
                    std::unique_ptr<gfx::GpuFence> gpu_fence,
-                   gfx::OverlayPriorityHint priority_hint);
+                   const gfx::OverlayPlaneData& overlay_plane_data);
   GLSurfaceOverlay(GLSurfaceOverlay&& other);
   ~GLSurfaceOverlay();
 
@@ -46,19 +37,12 @@ class GL_EXPORT GLSurfaceOverlay {
   void Flush() const;
 
   gfx::GpuFence* gpu_fence() const { return gpu_fence_.get(); }
-  int z_order() const { return z_order_; }
+  int z_order() const { return overlay_plane_data_.z_order; }
 
  private:
-  int z_order_;
-  gfx::OverlayTransform transform_;
   scoped_refptr<GLImage> image_;
-  gfx::Rect bounds_rect_;
-  gfx::RectF crop_rect_;
-  bool enable_blend_;
-  gfx::Rect damage_rect_;
-  float opacity_;
   std::unique_ptr<gfx::GpuFence> gpu_fence_;
-  gfx::OverlayPriorityHint priority_hint_;
+  gfx::OverlayPlaneData overlay_plane_data_;
 };
 
 }  // namespace gl

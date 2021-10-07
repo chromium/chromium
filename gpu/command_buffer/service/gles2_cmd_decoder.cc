@@ -95,6 +95,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/ca_renderer_layer_params.h"
@@ -13765,11 +13766,15 @@ error::Error GLES2DecoderImpl::HandleScheduleOverlayPlaneCHROMIUM(
     }
   }
   if (!surface_->ScheduleOverlayPlane(
-          c.plane_z_order, transform, image,
-          gfx::Rect(c.bounds_x, c.bounds_y, c.bounds_width, c.bounds_height),
-          gfx::RectF(c.uv_x, c.uv_y, c.uv_width, c.uv_height), c.enable_blend,
-          /*damage_rect=*/gfx::Rect(), /*opacity*/ 1.0f, std::move(gpu_fence),
-          gfx::OverlayPriorityHint::kNone)) {
+          image, std::move(gpu_fence),
+          gfx::OverlayPlaneData(
+              c.plane_z_order, transform,
+              gfx::Rect(c.bounds_x, c.bounds_y, c.bounds_width,
+                        c.bounds_height),
+              gfx::RectF(c.uv_x, c.uv_y, c.uv_width, c.uv_height),
+              c.enable_blend,
+              /*damage_rect=*/gfx::Rect(), /*opacity*/ 1.0f,
+              gfx::OverlayPriorityHint::kNone))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
                        "glScheduleOverlayPlaneCHROMIUM",
                        "failed to schedule overlay");

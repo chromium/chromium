@@ -23,6 +23,7 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image.h"
@@ -249,18 +250,20 @@ void SurfacelessSkiaGlRenderer::RenderFrame() {
   if (!disable_primary_plane_) {
     CHECK(overlay_list.front().overlay_handled);
     gl_surface_->ScheduleOverlayPlane(
-        0, gfx::OVERLAY_TRANSFORM_NONE, buffers_[back_buffer_]->image(),
-        primary_plane_rect_, unity_rect, /* enable_blend */ true,
-        gfx::Rect(buffers_[back_buffer_]->size()), /* opacity */ 1.0f,
-        /* gpu_fence */ nullptr, gfx::OverlayPriorityHint::kNone);
+        buffers_[back_buffer_]->image(), /* gpu_fence */ nullptr,
+        gfx::OverlayPlaneData(
+            0, gfx::OVERLAY_TRANSFORM_NONE, primary_plane_rect_, unity_rect,
+            /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
+            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone));
   }
 
   if (overlay_buffer_[0] && overlay_list.back().overlay_handled) {
     gl_surface_->ScheduleOverlayPlane(
-        1, gfx::OVERLAY_TRANSFORM_NONE, overlay_buffer_[back_buffer_]->image(),
-        overlay_rect, unity_rect, /* enable_blend */ true,
-        gfx::Rect(buffers_[back_buffer_]->size()), /* opacity */ 1.0f,
-        /* gpu_fence */ nullptr, gfx::OverlayPriorityHint::kNone);
+        overlay_buffer_[back_buffer_]->image(), /* gpu_fence */ nullptr,
+        gfx::OverlayPlaneData(
+            1, gfx::OVERLAY_TRANSFORM_NONE, overlay_rect, unity_rect,
+            /* enable_blend */ true, gfx::Rect(buffers_[back_buffer_]->size()),
+            /* opacity */ 1.0f, gfx::OverlayPriorityHint::kNone));
   }
 
   back_buffer_ ^= 1;

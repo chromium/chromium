@@ -19,6 +19,7 @@
 #include "ui/display/types/display_snapshot.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
@@ -380,10 +381,11 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   // overlays, damage should be added to OutputSurfaceOverlayPlane and passed in
   // here.
   gl_surface_->ScheduleOverlayPlane(
-      kPlaneZOrder, plane.transform, gl_image,
-      ToNearestRect(plane.display_rect), plane.uv_rect, plane.enable_blending,
-      gfx::Rect(plane.resource_size), plane.opacity, std::move(fence),
-      plane.priority_hint);
+      gl_image, std::move(fence),
+      gfx::OverlayPlaneData(
+          kPlaneZOrder, plane.transform, ToNearestRect(plane.display_rect),
+          plane.uv_rect, plane.enable_blending, gfx::Rect(plane.resource_size),
+          plane.opacity, plane.priority_hint));
 }
 
 void OutputPresenterGL::ScheduleBackground(Image* image) {
@@ -397,11 +399,12 @@ void OutputPresenterGL::ScheduleBackground(Image* image) {
   // Background always uses the full texture.
   constexpr gfx::RectF kUVRect(0.f, 0.f, 1.0f, 1.0f);
   gl_surface_->ScheduleOverlayPlane(
-      kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE, gl_image, gfx::Rect(),
-      /*crop_rect=*/kUVRect,
-      /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
-      /*opacity=*/1.0f,
-      /*gpu_fence=*/nullptr, gfx::OverlayPriorityHint::kNone);
+      gl_image, /*gpu_fence=*/nullptr,
+      gfx::OverlayPlaneData(kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE,
+                            gfx::Rect(),
+                            /*crop_rect=*/kUVRect,
+                            /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
+                            /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone));
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(
@@ -433,11 +436,12 @@ void OutputPresenterGL::ScheduleOverlays(
     if (gl_image) {
       DCHECK(!overlay.gpu_fence_id);
       gl_surface_->ScheduleOverlayPlane(
-          overlay.plane_z_order, overlay.transform, gl_image,
-          ToNearestRect(overlay.display_rect), overlay.uv_rect,
-          !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
-          overlay.opacity, TakeGpuFence(accesses[i]->TakeAcquireFences()),
-          overlay.priority_hint);
+          gl_image, TakeGpuFence(accesses[i]->TakeAcquireFences()),
+          gfx::OverlayPlaneData(overlay.plane_z_order, overlay.transform,
+                                ToNearestRect(overlay.display_rect),
+                                overlay.uv_rect, !overlay.is_opaque,
+                                ToEnclosingRect(overlay.damage_rect),
+                                overlay.opacity, overlay.priority_hint));
     }
 #elif defined(OS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied

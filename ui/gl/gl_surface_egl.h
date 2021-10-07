@@ -180,16 +180,10 @@ class GL_EXPORT NativeViewGLSurfaceEGL : public GLSurfaceEGL,
   bool OnMakeCurrent(GLContext* context) override;
   gfx::VSyncProvider* GetVSyncProvider() override;
   void SetVSyncEnabled(bool enabled) override;
-  bool ScheduleOverlayPlane(int z_order,
-                            gfx::OverlayTransform transform,
-                            GLImage* image,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            const gfx::Rect& damage_rect,
-                            float opacity,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence,
-                            gfx::OverlayPriorityHint priority_hint) override;
+  bool ScheduleOverlayPlane(
+      GLImage* image,
+      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      const gfx::OverlayPlaneData& overlay_plane_data) override;
   gfx::SurfaceOrigin GetOrigin() const override;
   EGLTimestampClient* GetEGLTimestampClient() override;
 

@@ -148,16 +148,10 @@ gfx::VSyncProvider* GLSurface::GetVSyncProvider() {
 
 void GLSurface::SetVSyncEnabled(bool enabled) {}
 
-bool GLSurface::ScheduleOverlayPlane(int z_order,
-                                     gfx::OverlayTransform transform,
-                                     GLImage* image,
-                                     const gfx::Rect& bounds_rect,
-                                     const gfx::RectF& crop_rect,
-                                     bool enable_blend,
-                                     const gfx::Rect& damage_rect,
-                                     float opacity,
-                                     std::unique_ptr<gfx::GpuFence> gpu_fence,
-                                     gfx::OverlayPriorityHint priority_hint) {
+bool GLSurface::ScheduleOverlayPlane(
+    GLImage* image,
+    std::unique_ptr<gfx::GpuFence> gpu_fence,
+    const gfx::OverlayPlaneData& overlay_plane_data) {
   NOTIMPLEMENTED();
   return false;
 }
@@ -452,19 +446,11 @@ void GLSurfaceAdapter::SetVSyncEnabled(bool enabled) {
 }
 
 bool GLSurfaceAdapter::ScheduleOverlayPlane(
-    int z_order,
-    gfx::OverlayTransform transform,
     GLImage* image,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    const gfx::Rect& damage_rect,
-    float opacity,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
-    gfx::OverlayPriorityHint priority_hint) {
-  return surface_->ScheduleOverlayPlane(
-      z_order, transform, image, bounds_rect, crop_rect, enable_blend,
-      damage_rect, opacity, std::move(gpu_fence), priority_hint);
+    const gfx::OverlayPlaneData& overlay_plane_data) {
+  return surface_->ScheduleOverlayPlane(image, std::move(gpu_fence),
+                                        overlay_plane_data);
 }
 
 bool GLSurfaceAdapter::ScheduleDCLayer(

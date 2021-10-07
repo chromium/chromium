@@ -209,16 +209,10 @@ class MockGLSurfaceAsync : public gl::GLSurfaceStub {
     presentation_callbacks_.push_back(std::move(presentation_callback));
   }
 
-  bool ScheduleOverlayPlane(int z_order,
-                            gfx::OverlayTransform transform,
-                            gl::GLImage* image,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            const gfx::Rect& damage_rect,
-                            float opacity,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence,
-                            gfx::OverlayPriorityHint priority_hint) override {
+  bool ScheduleOverlayPlane(
+      gl::GLImage* image,
+      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      const gfx::OverlayPlaneData& overlay_plane_data) override {
     return true;
   }
 

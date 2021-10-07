@@ -12,12 +12,9 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/gfx/overlay_priority_hint.h"
-#include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
-class Rect;
-class RectF;
+struct OverlayPlaneData;
 class GpuFence;
 
 // This represents a buffer that can be directly imported via GL for
@@ -53,33 +50,16 @@ class NativePixmap : public base::RefCountedThreadSafe<NativePixmap> {
 
   // Sets the overlay plane to switch to at the next page flip.
   // |widget| specifies the screen to display this overlay plane on.
-  // |plane_z_order| specifies the stacking order of the plane relative to the
-  // main framebuffer located at index 0.
-  // |plane_transform| specifies how the buffer is to be transformed during
-  // composition.
-  // |display_bounds| specify where it is supposed to be on the screen.
-  // |crop_rect| specifies the region within the buffer to be placed
-  // inside |display_bounds|. This is specified in texture coordinates, in the
-  // range of [0,1].
-  // |enable_blend| specifies if the plane should be alpha blended, with premul
-  // apha, when scanned out.
   // |acquire_fences| specifies gpu fences to wait on before the pixmap is ready
   // to be displayed. These fence are fired when the gpu has finished writing to
   // the pixmap.
   // |release_fences| specifies gpu fences that are signalled when the pixmap
   // has been displayed and is ready for reuse.
-  // |priority_hint| specifies overlay priority that delegated compositor can
-  // use as a hint for overlay prioritization.
+  // |overlay_plane_data| specifies overlay data such as opacity, z_order, size,
+  // etc.
   virtual bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
-      int plane_z_order,
-      gfx::OverlayTransform plane_transform,
-      const gfx::Rect& display_bounds,
-      const gfx::RectF& crop_rect,
-      bool enable_blend,
-      const gfx::Rect& damage_rect,
-      float opacity,
-      gfx::OverlayPriorityHint priority_hint,
+      const gfx::OverlayPlaneData& overlay_plane_data,
       std::vector<gfx::GpuFence> acquire_fences,
       std::vector<gfx::GpuFence> release_fences) = 0;
 

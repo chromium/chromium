@@ -69,14 +69,7 @@ class CastPixmap : public gfx::NativePixmap {
 
   bool ScheduleOverlayPlane(
       gfx::AcceleratedWidget widget,
-      int plane_z_order,
-      gfx::OverlayTransform plane_transform,
-      const gfx::Rect& display_bounds,
-      const gfx::RectF& crop_rect,
-      bool enable_blend,
-      const gfx::Rect& damage_rect,
-      float opacity,
-      gfx::OverlayPriorityHint priority_hint,
+      const gfx::OverlayPlaneData& overlay_plane_data,
       std::vector<gfx::GpuFence> acquire_fences,
       std::vector<gfx::GpuFence> release_fences) override {
     return false;
