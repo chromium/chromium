@@ -9,6 +9,7 @@
 #include "base/android/orderfile/orderfile_buildflags.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
@@ -48,13 +49,20 @@ namespace content {
 namespace {
 
 #if defined(OS_ANDROID)
+
+// This is used as the stack frame to group these timeout crashes, so avoid
+// renaming it or moving the LOG(FATAL) call.
+NOINLINE void TimedOut() {
+  LOG(FATAL) << "Timed out waiting for GPU channel.";
+}
+
 void DumpGpuStackOnProcessThread() {
   GpuProcessHost* host =
       GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false);
   if (host) {
     host->DumpProcessStack();
   }
-  LOG(FATAL) << "Timed out waiting for GPU channel.";
+  TimedOut();
 }
 
 #endif  // OS_ANDROID
