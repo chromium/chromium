@@ -96,7 +96,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1637505162081889933">Vifaa <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Anza kutamka hoja ya utafutaji</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Bonyeza kitufe cha Utafutaji pamoja na kitufe cha Nafasi ili uone matokeo katika programu ya Mratibu.</translation>
 <translation id="1667964833127753507">Hali ya rangi ya kawaida haitumii rangi zilizotolewa kwenye mandhari, inazibadilisha na kuweka seti ya rangi angavu au nyeusi zenye uzito wa wastani.</translation>
 <translation id="1677472565718498478">Zimesalia <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> haijaunganishwa.</translation>
@@ -396,7 +395,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3945319193631853098">Gusa ili ukamilishe kuweka mipangilio</translation>
 <translation id="3945867833895287237">Inaunganisha kwenye mtandao pepe...</translation>
 <translation id="3950820424414687140">Ingia katika akaunti</translation>
-<translation id="3958465044488004317">Angalia matokeo katika programu ya Mratibu</translation>
 <translation id="3962859241508114581">Wimbo Uliotangulia</translation>
 <translation id="3969043077941541451">Zima</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
@@ -525,6 +523,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="485592688953820832">Hakuna kitendo (simamisha)</translation>
 <translation id="4868492592575313542">kimewashwa</translation>
 <translation id="4872237917498892622">Alt + Utafutaji au Hama</translation>
+<translation id="4881695831933465202">Fungua</translation>
 <translation id="4890187583552566966">Programu ya Mratibu wa Google imezimwa na msimamizi wako.</translation>
 <translation id="4890408602550914571">Hakikisha kwamba simu yako iko karibu na umewasha Bluetooth.</translation>
 <translation id="4895488851634969361">Betri imejaa.</translation>
@@ -865,6 +864,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="7497767806359279797">Chagua lugha na kibodi</translation>
 <translation id="7509246181739783082">Thibitisha utambulisho wako</translation>
 <translation id="7513622367902644023">Umechagua hali ya picha ya skrini</translation>
+<translation id="7514365320538308">Pakua</translation>
 <translation id="7526573455193969409">Huenda mtandao unafuatiliwa</translation>
 <translation id="7536035074519304529">Anwani ya IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Ni wakati wa kulala</translation>

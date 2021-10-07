@@ -936,7 +936,6 @@
 <translation id="1963976881984600709">Mbrojtja standarde</translation>
 <translation id="196425401113508486">Thekso kursorin kur lëviz</translation>
 <translation id="1965624977906726414">Nuk ka leje të veçanta.</translation>
-<translation id="1966497651828975688">Lidhja me rrjetin humbi. Kontrollo lidhjen me rrjetin ose provo një rrjet tjetër Wi-Fi.</translation>
 <translation id="1969654639948595766">Evidencat e tekstit WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Kalove në modalitetin e videos</translation>
 <translation id="197288927597451399">Mbaje</translation>
@@ -2267,7 +2266,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="337286756654493126">Lexo dosjet që hap në aplikacion.</translation>
 <translation id="3378572629723696641">Kjo shtesë mund të jetë e dëmtuar.</translation>
 <translation id="337920581046691015">Do të instalohet <ph name="PRODUCT_NAME" />.</translation>
-<translation id="337995611229308295">Nuk mund të lidhej me serverin. Kontrollo lidhjen e rrjetit dhe provo përsëri. Nëse ende ke probleme, provo të rinisësh Chromebook.</translation>
 <translation id="3380365263193509176">Gabim i panjohur</translation>
 <translation id="3382073616108123819">Mos! Sistemi nuk arriti të përcaktonte identifikuesit e pajisjeve për këtë pajisje.</translation>
 <translation id="3382200254148930874">Po ndalon mbikëqyrjen...</translation>
@@ -2902,7 +2900,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3994374631886003300">Shkyçe telefonin dhe afroje më shumë për të shkyçur pajisjen tënde <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zmadho</translation>
 <translation id="3995138139523574647">Pajisja USB-C (porta e pasme, djathtas)</translation>
-<translation id="3999533068584271567">Lidhja e rrjetit nuk mund të vendoset. Kontrollo lidhjen e rrjetit dhe provo përsëri.</translation>
 <translation id="4002329649066944389">Menaxho përjashtimet specifike të sajtit</translation>
 <translation id="4002440992267487163">Konfigurimi i kodit PIN</translation>
 <translation id="4005817994523282006">Metoda e zbulimit të brezit orar</translation>
@@ -3197,7 +3194,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4366138410738374926">Filloi printimi</translation>
 <translation id="4369121877634339065">Zvarrit mbi cilindo imazh për të kërkuar</translation>
 <translation id="4370975561335139969">Mail-i dhe fjalëkalimi që ke futur nuk përputhen</translation>
-<translation id="4371452868325715552">Nuk mund të lidhej me serverin. Kontrollo lidhjen e rrjetit dhe provo përsëri. Nëse ende ke probleme, provo të rinisësh Chromebook. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Po transmeton desktopin</translation>
 <translation id="4374831787438678295">Instaluesi për Linux</translation>
 <translation id="4375035964737468845">Hap skedarët e shkarkuar</translation>

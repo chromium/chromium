@@ -96,7 +96,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" /> ; <ph name="RESULT_TEXT" /> ; Appuyez sur "Rechercher" et sur "Espace" pour voir le résultat dans l'Assistant.</translation>
 <translation id="1667964833127753507">Le mode couleur neutre n'utilise pas des couleurs issues du fond d'écran : il les remplace par une gamme de tonalités neutres (claires ou sombres).</translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
@@ -396,7 +395,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3945319193631853098">Appuyez pour terminer la configuration</translation>
 <translation id="3945867833895287237">Connexion à un point d'accès…</translation>
 <translation id="3950820424414687140">Connexion</translation>
-<translation id="3958465044488004317">Voir le résultat dans l'Assistant</translation>
 <translation id="3962859241508114581">Titre précédent</translation>
 <translation id="3969043077941541451">Désactivé</translation>
 <translation id="397105322502079400">Calcul en cours…</translation>
@@ -525,6 +523,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="485592688953820832">Aucune action (pause)</translation>
 <translation id="4868492592575313542">a activé</translation>
 <translation id="4872237917498892622">Alt + Recherche ou Maj</translation>
+<translation id="4881695831933465202">Ouvrir</translation>
 <translation id="4890187583552566966">L'administrateur a désactivé l'Assistant Google.</translation>
 <translation id="4890408602550914571">Vérifiez que votre téléphone est à proximité et que le Bluetooth est activé.</translation>
 <translation id="4895488851634969361">La batterie est pleine.</translation>
@@ -865,6 +864,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7509246181739783082">Valider votre identité</translation>
 <translation id="7513622367902644023">Mode de capture d'écran sélectionné</translation>
+<translation id="7514365320538308">Télécharger</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Il est l'heure d'aller au lit</translation>

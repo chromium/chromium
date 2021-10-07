@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">Switch Access функциясын Жөндөөлөр &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
 <translation id="1654477262762802994">Айтып издеп баштоо</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Жардамчыдагы натыйжаны көрүү үчүн Издөө жана Боштук баскычтарын басыңыз.</translation>
 <translation id="1667964833127753507">Нейтралдуу түс режими тушкагаздан алынган түстөрдү эмес нейтралдуу тондогу жарык жана караңгы өндөрдү колдонот.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> калды</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> туташкан жок.</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">Жөндөп бүтүрүү үчүн таптаңыз</translation>
 <translation id="3945867833895287237">Байланыш түйүнүнө туташууда...</translation>
 <translation id="3950820424414687140">Кирүү</translation>
-<translation id="3958465044488004317">Жардамчынын натыйжаларын көрүү</translation>
 <translation id="3962859241508114581">Мурунку трек</translation>
 <translation id="3969043077941541451">Өчүк</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">Эч кандай аракет аткарылбасын (тындыруу)</translation>
 <translation id="4868492592575313542">жандырылды</translation>
 <translation id="4872237917498892622">Alt+Search же Shift</translation>
+<translation id="4881695831933465202">Ачуу</translation>
 <translation id="4890187583552566966">Администраторуңуз Google Жардамчыны өчүрдү.</translation>
 <translation id="4890408602550914571">Телефонуңуз жакын жерде турганын жана анда Bluetooth күйгүзүлгөнүн текшериңиз.</translation>
 <translation id="4895488851634969361">Батарея толду.</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">Тилди жана баскычтопту тандоо</translation>
 <translation id="7509246181739783082">Өздүгүңүздү ырастаңыз</translation>
 <translation id="7513622367902644023">Скриншот режими тандалды</translation>
+<translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7526573455193969409">Тармак көзөмөлдөнүшү мүмкүн</translation>
 <translation id="7536035074519304529">IP дареги: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Уктоого убакыт келди</translation>

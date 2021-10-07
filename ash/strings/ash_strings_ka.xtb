@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> მოწყობილობა</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; შედეგის ასისტენტში სანახავად დააჭირეთ კლავიშთა კომბინაციას Search პლუს შორისი.</translation>
 <translation id="1667964833127753507">ფერთა ნეიტრალური რეჟიმი არ იყენებს ფონიდან ამოღებულ ფერებს — ისინი ნეიტრალური ღია ან მუქი ტონებით ნაცვლდება.</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">შეეხეთ დაყენების დასასრულებლად</translation>
 <translation id="3945867833895287237">მიმდინარეობს უსადენო ქსელთან დაკავშირება...</translation>
 <translation id="3950820424414687140">შესვლა</translation>
-<translation id="3958465044488004317">პასუხი იხილეთ ასისტენტში</translation>
 <translation id="3962859241508114581">წინა ჩანაწერი</translation>
 <translation id="3969043077941541451">გამორთული</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">ქმედების გარეშე (პაუზა)</translation>
 <translation id="4868492592575313542">გააქტიურებულია</translation>
 <translation id="4872237917498892622">Alt+ძიება ან Shift</translation>
+<translation id="4881695831933465202">გახსნა</translation>
 <translation id="4890187583552566966">Google ასისტენტი გათიშულია თქვენი ადმინისტრატორის მიერ.</translation>
 <translation id="4890408602550914571">ტელეფონი ახლოს უნდა გქონდეთ და მასზე ჩართული იყოს Bluetooth.</translation>
 <translation id="4895488851634969361">ბატარეა სავსეა.</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">აირჩიეთ ენა და კლავიატურა</translation>
 <translation id="7509246181739783082">დაადასტურეთ ვინაობა</translation>
 <translation id="7513622367902644023">არჩეულია ეკრანის ანაბეჭდის რეჟიმი</translation>
+<translation id="7514365320538308">ჩამოტვირთვა</translation>
 <translation id="7526573455193969409">ქსელზე შესაძლოა ხორციელდებოდეს მონიტორინგი</translation>
 <translation id="7536035074519304529">IP მისამართი: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">ძილის დროა</translation>

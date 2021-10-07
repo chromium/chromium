@@ -939,7 +939,6 @@
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="196425401113508486">Resaltar el cursor al moverlo</translation>
 <translation id="1965624977906726414">No tiene permisos especiales.</translation>
-<translation id="1966497651828975688">Se ha perdido la conexión de red. Comprueba la conexión o prueba con otra red Wi-Fi.</translation>
 <translation id="1969654639948595766">Registros de texto de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Se ha cambiado al modo de vídeo</translation>
 <translation id="197288927597451399">Descargar</translation>
@@ -2270,7 +2269,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="337286756654493126">Lee carpetas que abras en la aplicación</translation>
 <translation id="3378572629723696641">Esta extensión puede estar dañada.</translation>
 <translation id="337920581046691015">Se va a instalar <ph name="PRODUCT_NAME" />.</translation>
-<translation id="337995611229308295">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook.</translation>
 <translation id="3380365263193509176">Error desconocido</translation>
 <translation id="3382073616108123819">¡Vaya! El sistema no ha podido determinar los identificadores de dispositivo de este dispositivo.</translation>
 <translation id="3382200254148930874">Deteniendo la supervisión...</translation>
@@ -2904,7 +2902,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3994374631886003300">Desbloquea el teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
 <translation id="3995138139523574647">Dispositivo USB tipo C (puerto trasero derecho)</translation>
-<translation id="3999533068584271567">No se puede establecer la conexión de red. Revisa tu conexión de red e inténtalo de nuevo.</translation>
 <translation id="4002329649066944389">Gestionar excepciones específicas del sitio web</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de zona horaria</translation>
@@ -3199,7 +3196,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4366138410738374926">Impresión iniciada</translation>
 <translation id="4369121877634339065">Arrastra sobre una imagen para buscar</translation>
 <translation id="4370975561335139969">La dirección de correo electrónico y la contraseña que has introducido no coinciden</translation>
-<translation id="4371452868325715552">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Enviando escritorio</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir archivos descargados</translation>

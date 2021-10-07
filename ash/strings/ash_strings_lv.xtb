@@ -96,7 +96,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1632985212731562677">Slēdžu piekļuvi var atspējot sadaļā Iestatījumi &gt; Pieejamība.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ierīces</translation>
 <translation id="1654477262762802994">Sākt balss vaicājumu</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; lai skatītu rezultātu Asistentā, nospiediet meklēšanas taustiņu un atstarpes taustiņu.</translation>
 <translation id="1667964833127753507">Neitrālo krāsu režīmā netiek izmantotas no fona tapetes iegūtās krāsas — to vietā tiek lietotas neitrālu toņu gaišas vai tumšas nokrāsas.</translation>
 <translation id="1677472565718498478">Atlikušais laiks: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Nav savienojuma ar funkciju <ph name="FEATURE_NAME" />.</translation>
@@ -396,7 +395,6 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="3945319193631853098">Pieskarieties, lai pabeigtu iestatīšanu.</translation>
 <translation id="3945867833895287237">Notiek savienojuma izveide ar tīklāju...</translation>
 <translation id="3950820424414687140">Pierakstīties</translation>
-<translation id="3958465044488004317">Skatiet rezultātu Asistentā</translation>
 <translation id="3962859241508114581">Iepriekšējais ieraksts</translation>
 <translation id="3969043077941541451">Izslēgt</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
@@ -525,6 +523,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="485592688953820832">Neveikt darbību (pārtraukt)</translation>
 <translation id="4868492592575313542">aktivizēts</translation>
 <translation id="4872237917498892622">Alt+Meklēt vai Shift</translation>
+<translation id="4881695831933465202">Atvērt</translation>
 <translation id="4890187583552566966">Jūsu administrators ir atspējojis Google asistentu.</translation>
 <translation id="4890408602550914571">Tālrunim ir jāatrodas tuvumā, un tajā ir jābūt ieslēgtam Bluetooth savienojumam.</translation>
 <translation id="4895488851634969361">Akumulators ir pilnībā uzlādēts.</translation>
@@ -865,6 +864,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="7497767806359279797">Izvēlēties valodu un tastatūru</translation>
 <translation id="7509246181739783082">Identitātes apstiprināšana</translation>
 <translation id="7513622367902644023">Atlasīts ekrānuzņēmuma režīms</translation>
+<translation id="7514365320538308">Lejupielādēt</translation>
 <translation id="7526573455193969409">Var tikt pārraudzītas tīklā veiktās darbības</translation>
 <translation id="7536035074519304529">IP adrese: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Laiks naktsmieram</translation>

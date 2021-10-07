@@ -939,7 +939,6 @@
 <translation id="1963976881984600709">Protecció estàndard</translation>
 <translation id="196425401113508486">Marca el cursor quan es mogui</translation>
 <translation id="1965624977906726414">No té permisos especials.</translation>
-<translation id="1966497651828975688">S'ha perdut la connexió a la xarxa. Comprova la connexió o prova una altra xarxa Wi-Fi.</translation>
 <translation id="1969654639948595766">Registres de text de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">S'ha entrat al mode de vídeo</translation>
 <translation id="197288927597451399">Conserva</translation>
@@ -2269,7 +2268,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="337286756654493126">Llegir carpetes que s'obrin a l'aplicació</translation>
 <translation id="3378572629723696641">És possible que aquesta extensió estigui malmesa.</translation>
 <translation id="337920581046691015">S'instal·larà <ph name="PRODUCT_NAME" />.</translation>
-<translation id="337995611229308295">No s'ha pogut connectar amb el servidor. Comprova la connexió a la xarxa i torna-ho a provar. Si encara tens problemes, prova de reiniciar el Chromebook.</translation>
 <translation id="3380365263193509176">Error desconegut</translation>
 <translation id="3382073616108123819">El sistema no ha pogut determinar els identificadors d'aquest dispositiu.</translation>
 <translation id="3382200254148930874">S'està aturant la supervisió...</translation>
@@ -2903,7 +2901,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3994374631886003300">Desbloqueja el telèfon i acosta'l per desbloquejar <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
-<translation id="3999533068584271567">No es pot establir cap connexió a la xarxa. Comprova la connexió a la xarxa i torna-ho a provar.</translation>
 <translation id="4002329649066944389">Gestiona les excepcions de cada lloc web</translation>
 <translation id="4002440992267487163">Configuració del PIN</translation>
 <translation id="4005817994523282006">Mètode de detecció de la zona horària</translation>
@@ -3198,7 +3195,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4366138410738374926">La impressió ha començat</translation>
 <translation id="4369121877634339065">Arrossega qualsevol imatge per cercar</translation>
 <translation id="4370975561335139969">El correu electrònic i la contrasenya indicats no coincideixen</translation>
-<translation id="4371452868325715552">No s'ha pogut connectar amb el servidor. Comprova la connexió a la xarxa i torna-ho a provar. Si encara tens problemes, prova de reiniciar el Chromebook. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">S'està emetent l'escriptori</translation>
 <translation id="4374831787438678295">Instal·lador de Linux</translation>
 <translation id="4375035964737468845">Obrir fitxers baixats</translation>

@@ -951,7 +951,6 @@
 <translation id="1963976881984600709">Perlindungan standard</translation>
 <translation id="196425401113508486">Serlahkan kursor semasa bergerak</translation>
 <translation id="1965624977906726414">Tidak mempunyai kebenaran khas.</translation>
-<translation id="1966497651828975688">Sambungan rangkaian terputus. Sila semak sambungan rangkaian anda atau cuba rangkaian Wi-Fi lain.</translation>
 <translation id="1969654639948595766">Log teks WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Mod video dimasukkan</translation>
 <translation id="197288927597451399">Simpan</translation>
@@ -2285,7 +2284,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="337286756654493126">Baca folder yang anda buka dalam aplikasi</translation>
 <translation id="3378572629723696641">Sambungan ini mungkin telah tercemar.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> akan dipasang.</translation>
-<translation id="337995611229308295">Tidak dapat menyambung kepada pelayan. Sila periksa sambungan rangkaian anda, kemudian cuba lagi. Jika anda masih menghadapi masalah, cuba mulakan semula Chromebook anda.</translation>
 <translation id="3380365263193509176">Ralat tidak diketahui</translation>
 <translation id="3382073616108123819">Op! Sistem gagal menentukan pengecam peranti untuk peranti ini.</translation>
 <translation id="3382200254148930874">Menghentikan pengawasan...</translation>
@@ -2920,7 +2918,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="3994374631886003300">Buka kunci telefon anda dan rapatkan untuk membuka kunci <ph name="DEVICE_TYPE" /> anda.</translation>
 <translation id="3994878504415702912">&amp;Zum</translation>
 <translation id="3995138139523574647">Peranti USB-C (port belakang sebelah kanan)</translation>
-<translation id="3999533068584271567">Sambungan rangkaian tidak dapat diwujudkan. Sila periksa sambungan rangkaian anda, kemudian cuba lagi.</translation>
 <translation id="4002329649066944389">Urus pengecualian khusus tapak</translation>
 <translation id="4002440992267487163">Persediaan PIN</translation>
 <translation id="4005817994523282006">Kaedah pengesanan zon waktu</translation>
@@ -3215,7 +3212,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4366138410738374926">Pencetakan dimulakan</translation>
 <translation id="4369121877634339065">Seret mana-mana imej untuk mencari</translation>
 <translation id="4370975561335139969">E-mel dan kata laluan yang anda masukkan tidak padan</translation>
-<translation id="4371452868325715552">Tidak dapat menyambung kepada pelayan. Sila periksa sambungan rangkaian anda, kemudian cuba lagi. Jika anda masih menghadapi masalah, cuba mulakan semula Chromebook anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Menghantar desktop</translation>
 <translation id="4374831787438678295">Pemasang Linux</translation>
 <translation id="4375035964737468845">Buka fail yang dimuat turun</translation>

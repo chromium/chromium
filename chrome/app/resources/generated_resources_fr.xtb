@@ -940,7 +940,6 @@
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="196425401113508486">Curseur en surbrillance lorsqu'il est déplacé</translation>
 <translation id="1965624977906726414">Ne dispose d'aucune autorisation spéciale.</translation>
-<translation id="1966497651828975688">Connexion réseau perdue. Veuillez vérifier votre connexion réseau ou essayer un autre réseau Wi-Fi.</translation>
 <translation id="1969654639948595766">Journaux texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Mode Vidéo activé</translation>
 <translation id="197288927597451399">Enregistrer</translation>
@@ -2271,7 +2270,6 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="337286756654493126">Accéder en lecture aux dossiers ouverts dans l'application</translation>
 <translation id="3378572629723696641">Cette extension a pu être corrompue.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> va être installé.</translation>
-<translation id="337995611229308295">Impossible de se connecter au serveur. Veuillez vérifier votre connexion réseau, puis réessayer. Si le problème persiste, essayez de redémarrer votre Chromebook.</translation>
 <translation id="3380365263193509176">Erreur inconnue.</translation>
 <translation id="3382073616108123819">Petit problème… Impossible de déterminer les identifiants de cet appareil.</translation>
 <translation id="3382200254148930874">Arrêt de la supervision...</translation>
@@ -2906,7 +2904,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3994374631886003300">Déverrouillez votre téléphone et rapprochez-le de votre <ph name="DEVICE_TYPE" /> pour le déverrouiller.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Appareil USB de type C (port situé sur la droite de l'appareil, à l'arrière)</translation>
-<translation id="3999533068584271567">Impossible d'établir la connexion au réseau. Veuillez vérifier votre connexion réseau, puis réessayer.</translation>
 <translation id="4002329649066944389">Gérer les exceptions spécifiques aux sites</translation>
 <translation id="4002440992267487163">Configuration du code</translation>
 <translation id="4005817994523282006">Méthode de détection du fuseau horaire</translation>
@@ -3201,7 +3198,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4366138410738374926">L'impression a commencé</translation>
 <translation id="4369121877634339065">Faites glisser une image pour rechercher</translation>
 <translation id="4370975561335139969">L'adresse e-mail et le mot de passe saisis ne correspondent pas.</translation>
-<translation id="4371452868325715552">Impossible de se connecter au serveur. Veuillez vérifier votre connexion réseau, puis réessayer. Si le problème persiste, essayez de redémarrer votre Chromebook. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Diffusion du Bureau en cours…</translation>
 <translation id="4374831787438678295">Programme d'installation de Linux</translation>
 <translation id="4375035964737468845">Ouvrir les fichiers téléchargés</translation>
@@ -4192,7 +4188,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5463625433003343978">Recherche d'appareils…</translation>
 <translation id="5463856536939868464">Menu contenant des favoris masqués</translation>
 <translation id="5464632865477611176">Exécuter cette fois</translation>
-<translation id="5464660706533281090">Ce paramètre ne peut pas être modifié par un utilisateur mineur.</translation>
+<translation id="5464660706533281090">Ce paramètre ne peut pas être modifié par un enfant.</translation>
 <translation id="5466374726908360271">Coller et chercher "<ph name="SEARCH_TERMS" />"</translation>
 <translation id="5467207440419968613">Autorisations bloquées : <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /></translation>
 <translation id="5468173180030470402">Recherche de partages de fichiers…</translation>

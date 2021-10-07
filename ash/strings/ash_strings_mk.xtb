@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; притиснете „Пребарување“ и Space за да видите резултат во „Помошникот“.</translation>
 <translation id="1667964833127753507">Режимот во неутрални бои не користи бои од тапетот, туку ги заменува со збир од неутрални светли или темни нијанси.</translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не е поврзана.</translation>
@@ -397,7 +396,6 @@
 <translation id="3945319193631853098">Допрете за да го завршите поставувањето</translation>
 <translation id="3945867833895287237">Се поврзува со точка на пристап…</translation>
 <translation id="3950820424414687140">Најави се</translation>
-<translation id="3958465044488004317">Видете ги резултатите во „Помошникот“</translation>
 <translation id="3962859241508114581">Претходна песна</translation>
 <translation id="3969043077941541451">Исклучи</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
@@ -526,6 +524,7 @@
 <translation id="485592688953820832">Нема дејство (пауза)</translation>
 <translation id="4868492592575313542">активиранo</translation>
 <translation id="4872237917498892622">Alt+Search или Shift</translation>
+<translation id="4881695831933465202">Отвори</translation>
 <translation id="4890187583552566966">„Помошникот на Google“ е оневозможен од вашиот администратор.</translation>
 <translation id="4890408602550914571">Проверете дали телефонот е во близина и со вклучен Bluetooth.</translation>
 <translation id="4895488851634969361">Батеријата е полна.</translation>
@@ -866,6 +865,7 @@
 <translation id="7497767806359279797">Изберете јазик и тастатура</translation>
 <translation id="7509246181739783082">Потврдете го вашиот идентитет</translation>
 <translation id="7513622367902644023">Избран е режимот на слика од екранот</translation>
+<translation id="7514365320538308">Преземи</translation>
 <translation id="7526573455193969409">Мрежата можеби се следи</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Време за спиење</translation>

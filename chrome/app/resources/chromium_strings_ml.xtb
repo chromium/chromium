@@ -136,7 +136,7 @@
 <translation id="5252179775517634216"><ph name="EXISTING_USER" /> ഇതിനകം ഈ Chromium പ്രൊഫൈലിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്നു. ഇത് <ph name="USER_EMAIL_ADDRESS" /> എന്ന അക്കൗണ്ടിനായി പുതിയൊരു Chromium പ്രൊഫൈൽ സൃഷ്ടിക്കും</translation>
 <translation id="5277894862589591112">നിങ്ങളുടെ മാറ്റങ്ങൾ ബാധകമാക്കാൻ Chromium സമാരംഭിക്കുക</translation>
 <translation id="5358375970380395591">നിങ്ങൾ ഒരു നിയന്ത്രിത അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്‌ത് അതിന്റെ അഡ്‌മിന് നിങ്ങളുടെ Chromium പ്രൊഫൈലിന്റെ നിയന്ത്രണം നൽകുന്നു. നിങ്ങളുടെ ആപ്പുകൾ, ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, പാസ്‌വേഡുകൾ, മറ്റ് ക്രമീകരണങ്ങൾ എന്നിവ പോലെയുള്ള Chromium ഡാറ്റ <ph name="USER_NAME" /> എന്നതുമായി ശാശ്വതമായി ബന്ധിപ്പിച്ചതായിത്തീരും. Google അക്കൗണ്ട്സ് ഡാഷ്‌ബോർഡ് വഴി നിങ്ങൾക്ക് ഈ ഡാറ്റ ഇല്ലാതാക്കാനാകുമെങ്കിലും, ഈ ഡാറ്റ മറ്റൊരു അക്കൗണ്ടുമായി ബന്ധപ്പെടുത്താനാകില്ല. <ph name="LEARN_MORE" /></translation>
-<translation id="5386450000063123300">Chromium അപ്‌ഡേറ്റുചെയ്യുന്നു, (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="5386450000063123300">Chromium അപ്‌ഡേറ്റ് ചെയ്യുന്നു, (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="5398878173008909840">Chromium-ത്തിന്റെ പുതിയ പതിപ്പ് ലഭ്യമാണ്.</translation>
 <translation id="5416696090975899932">അടങ്ങിയ PDF വ്യൂവർ ഇല്ലാതിരിക്കുമ്പോൾ, Chromium-ന് പ്രിന്റ് പ്രിവ്യു കാണിക്കാനാവില്ല.</translation>
@@ -208,7 +208,7 @@
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium-ത്തിലേക്ക് പകർത്തി)</translation>
 <translation id="6873893289264747459">"<ph name="EXTENSION_NAME" />" എന്നതിൽ മാൽ‌വെയർ അടങ്ങുന്നതായി Chromium കണ്ടെത്തി</translation>
-<translation id="6893813176749746474">Chromium അപ്‌ഡേറ്റുചെയ്‌തു, എന്നാൽ കുറഞ്ഞത് 30 ദിവസം പോലും നിങ്ങൾ ഇത് ഉപയോഗിച്ചില്ല.</translation>
+<translation id="6893813176749746474">Chromium അപ്‌ഡേറ്റ് ചെയ്‌തു, എന്നാൽ കുറഞ്ഞത് 30 ദിവസം പോലും നിങ്ങൾ ഇത് ഉപയോഗിച്ചില്ല.</translation>
 <translation id="691026815377248078">ജോടിയാക്കൽ തുടരാൻ Chromium-ന് Bluetooth ആക്സസ് 
  ആവശ്യമാണ്. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium അദൃശ്യ വിൻഡോയിൽ ലിങ്ക് തുറക്കുക</translation>
@@ -221,7 +221,7 @@
 <translation id="7197677400338048821">Chromium-ന് നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കാനാവുന്നില്ല. 24 മണിക്കൂറിന് ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="7223968959479464213">ടാസ്‌ക് മാനേജർ - Chromium</translation>
 <translation id="731644333568559921">&amp;Chromium OS അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
-<translation id="731795002583552498">Chromium അപ്‌ഡേറ്റുചെയ്യുന്നു</translation>
+<translation id="731795002583552498">Chromium അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="7318036098707714271">നിങ്ങളുടെ 'മുൻഗണനകൾ ഫയൽ' കേടായതാണ് അല്ലെങ്കിൽ അസാധുവാണ്.
 
 നിങ്ങളുടെ ക്രമീകരണങ്ങൾ വീണ്ടെടുക്കാൻ Chromium-ന് കഴിയില്ല.</translation>

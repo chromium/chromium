@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">அமைப்புகள் &gt; அணுகலம்சங்கள் என்பதற்குச் சென்று சுவிட்ச் அணுகலை முடக்கலாம்.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> சாதனங்கள்</translation>
 <translation id="1654477262762802994">குரல் வினவலைத் தொடங்கு</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Assistantடில் முடிவைப் பார்க்க Search + Space அழுத்தவும்.</translation>
 <translation id="1667964833127753507">வால்பேப்பரிலிருந்து எடுக்கப்பட்ட வண்ணங்களை நியூட்ரல் வண்ணப் பயன்முறை பயன்படுத்தாது. அவற்றுக்குப் பதிலாக நியூட்ரலாக டோன் செய்யப்பட்ட லைட் அல்லது டார்க் நிறச்சாயல்களின் தொகுப்பைப் பயன்படுத்தும்.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> மணி நேரம்</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> இணைக்கப்படவில்லை.</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">அமைவை நிறைவு செய்யத் தட்டவும்</translation>
 <translation id="3945867833895287237">ஹாட்ஸ்பாட்டுடன் இணைக்கிறது...</translation>
 <translation id="3950820424414687140">உள்நுழைக</translation>
-<translation id="3958465044488004317">முடிவை Assistantடில் பாருங்கள்</translation>
 <translation id="3962859241508114581">முந்தைய டிராக்</translation>
 <translation id="3969043077941541451">முடக்கப்பட்டுள்ளது</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">எந்தச் செயலும் இல்லை (இடைநிறுத்தும்)</translation>
 <translation id="4868492592575313542">செயல்படுத்தப்பட்டது</translation>
 <translation id="4872237917498892622">Alt+தேடல் அல்லது Shift</translation>
+<translation id="4881695831933465202">திற</translation>
 <translation id="4890187583552566966">Google அசிஸ்டண்ட்டை உங்கள் நிர்வாகி முடக்கியுள்ளார்.</translation>
 <translation id="4890408602550914571">உங்கள் மொபைல் அருகில் இருப்பதையும் அதில் புளூடூத் இயக்கப்பட்டிருப்பதையும் உறுதிப்படுத்திக் கொள்ளவும்.</translation>
 <translation id="4895488851634969361">பேட்டரி நிரம்பியது.</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">மொழியையும் கீபோர்ட்டையும் தேர்வுசெய்யவும்</translation>
 <translation id="7509246181739783082">உங்கள் அடையாளத்தைச் சரிபார்த்தல்</translation>
 <translation id="7513622367902644023">ஸ்கிரீன்ஷாட் பயன்முறை தேர்ந்தெடுக்கப்பட்டது</translation>
+<translation id="7514365320538308">பதிவிறக்கு</translation>
 <translation id="7526573455193969409">நெட்வொர்க் கண்காணிக்கப்படலாம்</translation>
 <translation id="7536035074519304529">IP முகவரி: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">தூங்கும் நேரம்</translation>

@@ -951,7 +951,6 @@
 <translation id="1963976881984600709">표준 보호 모드</translation>
 <translation id="196425401113508486">커서 이동 중 강조표시</translation>
 <translation id="1965624977906726414">특별한 권한이 필요하지 않습니다.</translation>
-<translation id="1966497651828975688">네트워크 연결이 끊어졌습니다. 네트워크 연결을 확인하거나 다른 Wi-Fi 네트워크를 사용해 보세요.</translation>
 <translation id="1969654639948595766">WebRTC 텍스트 로그(<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">동영상 모드 시작됨</translation>
 <translation id="197288927597451399">계속</translation>
@@ -2285,7 +2284,6 @@
 <translation id="337286756654493126">애플리케이션에서 연 폴더 읽기</translation>
 <translation id="3378572629723696641">확장 프로그램이 손상되었을 수도 있습니다.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" />이(가) 설치됩니다.</translation>
-<translation id="337995611229308295">서버에 연결할 수 없습니다. 네트워크 연결을 확인한 다음 다시 시도해 주세요. 문제가 해결되지 않는 경우 Chromebook을 다시 시작해 보세요.</translation>
 <translation id="3380365263193509176">알 수 없는 오류가 발생했습니다.</translation>
 <translation id="3382073616108123819">시스템에서 이 기기의 기기 식별자를 확인하지 못했습니다.</translation>
 <translation id="3382200254148930874">감독 기능 중지...</translation>
@@ -2920,7 +2918,6 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" />을(를) 잠금 해제하려면 휴대전화를 잠금 해제하고 더 가까이 가져오세요.</translation>
 <translation id="3994878504415702912">글꼴 크기(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
-<translation id="3999533068584271567">네트워크 연결을 설정할 수 없습니다. 네트워크 연결을 확인한 다음 다시 시도해 주세요.</translation>
 <translation id="4002329649066944389">사이트별 예외 관리</translation>
 <translation id="4002440992267487163">PIN 설정</translation>
 <translation id="4005817994523282006">시간대 감지 방법</translation>
@@ -3213,7 +3210,6 @@
 <translation id="4366138410738374926">인쇄 시작됨</translation>
 <translation id="4369121877634339065">검색할 이미지를 드래그하세요.</translation>
 <translation id="4370975561335139969">입력한 이메일과 비밀번호가 일치하지 않습니다.</translation>
-<translation id="4371452868325715552">서버에 연결할 수 없습니다. 네트워크 연결을 확인한 다음 다시 시도해 주세요. 문제가 해결되지 않는 경우 Chromebook을 다시 시작해 보세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="4373966964907728675">바탕화면 전송</translation>
 <translation id="4374831787438678295">Linux 설치 프로그램</translation>
 <translation id="4375035964737468845">다운로드한 파일 열기</translation>

@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> دستگاه</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />؛ <ph name="RESULT_TEXT" />؛ کلیدهای «جستجو» و «فاصله» را فشار دهید تا نتیجه را در «دستیار» ببینید</translation>
 <translation id="1667964833127753507">حالت «رنگ خنثی» از رنگ‌های استخراج‌شده از کاغذدیواری استفاده نمی‌کند، بلکه آن‌ها را با مجموعه‌ای از ته‌رنگ‌های تیره و روشن خنثی جایگزین می‌کند.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی‌مانده</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> متصل نیست.</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">برای تکمیل راه‌اندازی، ضربه بزنید</translation>
 <translation id="3945867833895287237">درحال اتصال به نقطه اتصال…</translation>
 <translation id="3950820424414687140">ورود به سیستم</translation>
-<translation id="3958465044488004317">دیدن نتایج در «دستیار»</translation>
 <translation id="3962859241508114581">آهنگ قبلی</translation>
 <translation id="3969043077941541451">خاموش</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">بی‌حرکت (مکث)</translation>
 <translation id="4868492592575313542">فعال شد</translation>
 <translation id="4872237917498892622">‏Alt+جستجو یا Shift</translation>
+<translation id="4881695831933465202">باز کردن</translation>
 <translation id="4890187583552566966">‏سرپرستتان «دستیار Google» را غیرفعال کرده است.</translation>
 <translation id="4890408602550914571">مطمئن شوید تلفنتان در همین اطراف باشد و بلوتوث آن روشن باشد.</translation>
 <translation id="4895488851634969361">باتری پر است.</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
 <translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
 <translation id="7513622367902644023">حالت نماگرفت انتخاب شد</translation>
+<translation id="7514365320538308">بارگیری</translation>
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">وقت خواب</translation>

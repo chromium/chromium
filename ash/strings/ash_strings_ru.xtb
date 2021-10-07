@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Чтобы посмотреть результат в Ассистенте, нажмите "Поиск + Пробел".</translation>
 <translation id="1667964833127753507">В режиме нейтральных цветов не используются оттенки ваших обоев. Вместо них интерфейс будет окрашен в нейтральные светлые или темные цвета.</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">Нажмите, чтобы завершить настройку.</translation>
 <translation id="3945867833895287237">Подключение к точке доступа…</translation>
 <translation id="3950820424414687140">Вход</translation>
-<translation id="3958465044488004317">Посмотрите результат в Ассистенте.</translation>
 <translation id="3962859241508114581">Предыдущий трек</translation>
 <translation id="3969043077941541451">Отключен</translation>
 <translation id="397105322502079400">Вычисление…</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">Отсутствие действий (пауза)</translation>
 <translation id="4868492592575313542">включила</translation>
 <translation id="4872237917498892622">Alt + Search или Shift</translation>
+<translation id="4881695831933465202">Открыть</translation>
 <translation id="4890187583552566966">Администратор отключил Google Ассистента</translation>
 <translation id="4890408602550914571">Убедитесь, что телефон находится рядом и на нем включена передача данных по Bluetooth.</translation>
 <translation id="4895488851634969361">Батарея полностью заряжена.</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">Выберите язык и клавиатуру</translation>
 <translation id="7509246181739783082">Подтвердите личность</translation>
 <translation id="7513622367902644023">Выбран режим создания скриншота</translation>
+<translation id="7514365320538308">Скачать</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Пора ложиться спать</translation>

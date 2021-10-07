@@ -938,7 +938,6 @@
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="196425401113508486">Destacar cursor ao movelo</translation>
 <translation id="1965624977906726414">Non ten permisos especiais.</translation>
-<translation id="1966497651828975688">Perdeuse a conexión de rede. Comproba a túa conexión de rede ou proba con outra rede wifi.</translation>
 <translation id="1969654639948595766">Rexistros de texto WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Iniciouse o modo de vídeo</translation>
 <translation id="197288927597451399">Continuar</translation>
@@ -2268,7 +2267,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="337286756654493126">Ler cartafoles que abres na aplicación</translation>
 <translation id="3378572629723696641">É posible que esta extensión se danase.</translation>
 <translation id="337920581046691015">Instalarase <ph name="PRODUCT_NAME" />.</translation>
-<translation id="337995611229308295">Non se puido establecer a conexión co servidor. Comproba a túa conexión de rede e téntao de novo. Se segues tendo problemas, proba a reiniciar o Chromebook.</translation>
 <translation id="3380365263193509176">Erro descoñecido</translation>
 <translation id="3382073616108123819">O sistema non logrou determinar os identificadores deste dispositivo.</translation>
 <translation id="3382200254148930874">Detendo supervisión...</translation>
@@ -2903,7 +2901,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3994374631886003300">Desbloquea o teléfono e achégao ao <ph name="DEVICE_TYPE" /> para desbloquealo.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">Dispositivo USB‑C (porto dereito posterior)</translation>
-<translation id="3999533068584271567">Non se pode establecer a conexión de rede. Comproba a túa conexión de rede e téntao de novo.</translation>
 <translation id="4002329649066944389">Xestionar as excepcións para sitios web específicos</translation>
 <translation id="4002440992267487163">Configuración do PIN</translation>
 <translation id="4005817994523282006">Método de detección de fuso horario</translation>
@@ -3198,7 +3195,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="4366138410738374926">Comezou a impresión</translation>
 <translation id="4369121877634339065">Arrastra o cursor sobre calquera imaxe para buscala</translation>
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
-<translation id="4371452868325715552">Non se puido establecer a conexión co servidor. Comproba a túa conexión de rede e téntao de novo. Se segues tendo problemas, proba a reiniciar o Chromebook. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Emitindo escritorio</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir ficheiros descargados</translation>

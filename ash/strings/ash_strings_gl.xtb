@@ -96,7 +96,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; preme Buscar e Espazo para ver o resultado no Asistente.</translation>
 <translation id="1667964833127753507">O modo de cor neutra non usa as cores extraídas dun fondo de pantalla, senón que as substitúe por un conxunto de cores claras ou escuras cun ton neutro.</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">A función <ph name="FEATURE_NAME" /> non está conectada.</translation>
@@ -397,7 +396,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3945319193631853098">Toca para completar a configuración</translation>
 <translation id="3945867833895287237">Conectándose á zona wifi...</translation>
 <translation id="3950820424414687140">Iniciar sesión</translation>
-<translation id="3958465044488004317">Consulta o resultado no Asistente</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">Desactivar</translation>
 <translation id="397105322502079400">Calculando...</translation>
@@ -526,6 +524,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="485592688953820832">Ningunha acción (pausa)</translation>
 <translation id="4868492592575313542">activou</translation>
 <translation id="4872237917498892622">Alt+Busca ou Maiús</translation>
+<translation id="4881695831933465202">Abrir</translation>
 <translation id="4890187583552566966">O teu administrador desactivou o Asistente de Google.</translation>
 <translation id="4890408602550914571">Asegúrate de ter o teléfono preto e co Bluetooth activado.</translation>
 <translation id="4895488851634969361">A batería está completamente cargada.</translation>
@@ -866,6 +865,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="7497767806359279797">Escoller idioma e teclado</translation>
 <translation id="7509246181739783082">Verifica a túa identidade</translation>
 <translation id="7513622367902644023">Seleccionouse o modo de captura de pantalla</translation>
+<translation id="7514365320538308">Descargar</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">É hora de deitarse</translation>

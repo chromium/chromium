@@ -936,7 +936,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1963976881984600709">Standardschutz</translation>
 <translation id="196425401113508486">Cursor beim Bewegen hervorheben</translation>
 <translation id="1965624977906726414">Erfordert keine besonderen Berechtigungen</translation>
-<translation id="1966497651828975688">Die Netzwerkverbindung wurde unterbrochen. Bitte überprüfen Sie Ihre Netzwerkverbindung oder stellen Sie eine Verbindung zu einem anderen WLAN her.</translation>
 <translation id="1969654639948595766">WebRTC-Textprotokolle (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Videomodus aktiviert</translation>
 <translation id="197288927597451399">Behalten</translation>
@@ -2267,7 +2266,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="337286756654493126">Ordner lesen, die Sie in der Anwendung öffnen</translation>
 <translation id="3378572629723696641">Diese Erweiterung ist möglicherweise beschädigt.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> wird installiert.</translation>
-<translation id="337995611229308295">Keine Verbindung mit dem Server möglich. Prüfen Sie Ihre Netzwerkverbindung und versuchen Sie es noch einmal. Falls weiterhin Probleme auftreten, versuchen Sie, Ihr Chromebook neu zu starten.</translation>
 <translation id="3380365263193509176">Unbekannter Fehler</translation>
 <translation id="3382073616108123819">Hoppla! Das System konnte die Geräte-IDs für dieses Gerät nicht ermitteln.</translation>
 <translation id="3382200254148930874">Elternaufsicht wird beendet…</translation>
@@ -2902,7 +2900,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3994374631886003300">Entsperren Sie Ihr Smartphone und verringern Sie den Abstand zu Ihrem <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C-Gerät (Port hinten rechts)</translation>
-<translation id="3999533068584271567">Netzwerkverbindung kann nicht hergestellt werden. Prüfen Sie Ihre Netzwerkverbindung und versuchen Sie es noch einmal.</translation>
 <translation id="4002329649066944389">Websitespezifische Ausnahmen verwalten</translation>
 <translation id="4002440992267487163">PIN einrichten</translation>
 <translation id="4005817994523282006">Methode zur Zeitzonenerkennung</translation>
@@ -3197,7 +3194,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4366138410738374926">Druckvorgang gestartet</translation>
 <translation id="4369121877634339065">Zum Suchen über Bildbereich ziehen</translation>
 <translation id="4370975561335139969">Die E-Mail-Adresse und das Passwort, die Sie eingegeben haben, stimmen nicht überein.</translation>
-<translation id="4371452868325715552">Keine Verbindung mit dem Server möglich. Prüfen Sie Ihre Netzwerkverbindung und versuchen Sie es noch einmal. Falls weiterhin Probleme auftreten, versuchen Sie, Ihr Chromebook neu zu starten. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Desktop wird übertragen</translation>
 <translation id="4374831787438678295">Linux-Installationsprogramm</translation>
 <translation id="4375035964737468845">Heruntergeladene Dateien öffnen</translation>

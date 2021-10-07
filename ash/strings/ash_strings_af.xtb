@@ -96,7 +96,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="1654477262762802994">Begin 'n stemnavraag</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Druk Search plus spasiebalk om resultaat in Assistent te sien.</translation>
 <translation id="1667964833127753507">Die neutrale kleurmodus gebruik nie kleure wat van die muurpapier onttrek is nie, maar vervang dit met 'n stel ligte of donker skakerings van neutrale kleure.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> oor</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is nie gekoppel nie.</translation>
@@ -397,7 +396,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="3945319193631853098">Tik om opstelling te voltooi</translation>
 <translation id="3945867833895287237">Koppel tans aan warmkol …</translation>
 <translation id="3950820424414687140">Meld aan</translation>
-<translation id="3958465044488004317">Sien resultaat in Assistent</translation>
 <translation id="3962859241508114581">Vorige snit</translation>
 <translation id="3969043077941541451">Af</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
@@ -526,6 +524,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="485592688953820832">Geen handeling nie (onderbreek)</translation>
 <translation id="4868492592575313542">geaktiveer</translation>
 <translation id="4872237917498892622">Alt+Search of Shift</translation>
+<translation id="4881695831933465202">Maak oop</translation>
 <translation id="4890187583552566966">Jou administrateur het die Google Assistent gedeaktiveer</translation>
 <translation id="4890408602550914571">Maak seker dat jou foon in die omtrek is en dat Bluetooth aangeskakel is.</translation>
 <translation id="4895488851634969361">Battery is vol.</translation>
@@ -866,6 +865,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
 <translation id="7513622367902644023">Skermkiekiemodus gekies</translation>
+<translation id="7514365320538308">Laai af</translation>
 <translation id="7526573455193969409">Netwerk kan gemonitor word</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Slaaptyd</translation>

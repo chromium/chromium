@@ -96,7 +96,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1632985212731562677">Switch Access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> devices</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; press Search plus Space to see the result in Assistant.</translation>
 <translation id="1667964833127753507">The neutral colour mode does not use wallpaper extracted colours, replacing them by a set of neutrally toned light or dark hues.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
@@ -396,7 +395,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3945319193631853098">Tap to complete setup</translation>
 <translation id="3945867833895287237">Connecting to hotspot…</translation>
 <translation id="3950820424414687140">Sign in</translation>
-<translation id="3958465044488004317">See result in Assistant</translation>
 <translation id="3962859241508114581">Previous track</translation>
 <translation id="3969043077941541451">Off</translation>
 <translation id="397105322502079400">Calculating...</translation>
@@ -525,6 +523,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="485592688953820832">No action (pause)</translation>
 <translation id="4868492592575313542">activated</translation>
 <translation id="4872237917498892622">Alt+Search or Shift</translation>
+<translation id="4881695831933465202">Open</translation>
 <translation id="4890187583552566966">The Google Assistant is disabled by your administrator.</translation>
 <translation id="4890408602550914571">Make sure that your phone is nearby and has Bluetooth turned on.</translation>
 <translation id="4895488851634969361">Battery is full.</translation>
@@ -865,6 +864,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7513622367902644023">Screenshot mode selected</translation>
+<translation id="7514365320538308">Download</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Time for bed</translation>

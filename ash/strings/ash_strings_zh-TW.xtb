@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">你可以依序點選 [設定] &gt; [無障礙設定] 來停用切換控制功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1654477262762802994">啟動語音查詢</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />；<ph name="RESULT_TEXT" />；按下搜尋鍵加空白鍵即可在 Google 助理中查看結果。</translation>
 <translation id="1667964833127753507">中間色模式不會使用從桌布擷取的色彩，而是改用一組中間色的亮色調或深色調。</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 後用盡</translation>
 <translation id="1677507110654891115">「<ph name="FEATURE_NAME" />」並未連線。</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">輕觸即可完成設定</translation>
 <translation id="3945867833895287237">正在連線到無線基地台...</translation>
 <translation id="3950820424414687140">登入</translation>
-<translation id="3958465044488004317">查看 Google 助理中的結果</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3969043077941541451">關閉</translation>
 <translation id="397105322502079400">計算中…</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">不執行任何動作 (暫停)</translation>
 <translation id="4868492592575313542">已啟用</translation>
 <translation id="4872237917498892622">Alt + 搜尋鍵或 Shift 鍵</translation>
+<translation id="4881695831933465202">開啟</translation>
 <translation id="4890187583552566966">你的管理員停用了 Google 助理。</translation>
 <translation id="4890408602550914571">請確認你的手機在附近，且已開啟藍牙功能。</translation>
 <translation id="4895488851634969361">電池電量已滿。</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7509246181739783082">驗證身分</translation>
 <translation id="7513622367902644023">已選取螢幕截圖模式</translation>
+<translation id="7514365320538308">下載</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">就寢時間到了</translation>

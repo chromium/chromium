@@ -936,7 +936,6 @@
 <translation id="1963976881984600709">Protección estándar</translation>
 <translation id="196425401113508486">Destacar el cursor cuando está en movimiento</translation>
 <translation id="1965624977906726414">No requiere permisos especiales.</translation>
-<translation id="1966497651828975688">Se interrumpió la conexión de red. Revísala o intenta usar otra red Wi-Fi.</translation>
 <translation id="1969654639948595766">Registros de texto de WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Accediste al modo de video</translation>
 <translation id="197288927597451399">Conservar</translation>
@@ -2267,7 +2266,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="337286756654493126">Leer carpetas que abras en la aplicación</translation>
 <translation id="3378572629723696641">Es posible que esta extensión esté dañada.</translation>
 <translation id="337920581046691015">Se instalará <ph name="PRODUCT_NAME" />.</translation>
-<translation id="337995611229308295">No se pudo establecer una conexión con el servidor. Comprueba la conexión de red y vuelve a intentarlo. Si los problemas persisten, reinicia tu Chromebook.</translation>
 <translation id="3380365263193509176">Error desconocido</translation>
 <translation id="3382073616108123819">El sistema no pudo determinar los identificadores de dispositivo para este dispositivo.</translation>
 <translation id="3382200254148930874">Deteniendo la supervisión…</translation>
@@ -2902,7 +2900,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3994374631886003300">Desbloquea tu teléfono y acércalo para desbloquear tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Tamaño</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
-<translation id="3999533068584271567">No se puede establecer una conexión de red. Comprueba la conexión de red y vuelve a intentarlo.</translation>
 <translation id="4002329649066944389">Administra las excepciones de sitios específicos</translation>
 <translation id="4002440992267487163">Configuración del PIN</translation>
 <translation id="4005817994523282006">Método de detección de la zona horaria</translation>
@@ -3197,7 +3194,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4366138410738374926">Se inició la impresión</translation>
 <translation id="4369121877634339065">Arrastra cualquier imagen para buscarla.</translation>
 <translation id="4370975561335139969">El correo electrónico y la contraseña que ingresaste no coinciden.</translation>
-<translation id="4371452868325715552">No se pudo establecer una conexión con el servidor. Comprueba la conexión de red y vuelve a intentarlo. Si los problemas persisten, reinicia tu Chromebook. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Transmitiendo el escritorio</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir archivos descargados</translation>

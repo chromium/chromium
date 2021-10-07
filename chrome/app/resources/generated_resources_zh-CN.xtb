@@ -252,7 +252,7 @@
 <translation id="1254593899333212300">直接连接到互联网</translation>
 <translation id="1258491128795710625">新变化</translation>
 <translation id="1259152067760398571">昨天运行过安全检查</translation>
-<translation id="1260451001046713751">始终允许 <ph name="HOST" /> 显示弹出式窗口和重定向</translation>
+<translation id="1260451001046713751">始终允许 <ph name="HOST" /> 显示弹出式窗口和进行重定向</translation>
 <translation id="1261380933454402672">小改</translation>
 <translation id="126156426083987769">演示模式设备许可出问题了。</translation>
 <translation id="1263231323834454256">阅读清单</translation>
@@ -936,7 +936,6 @@
 <translation id="1963976881984600709">标准保护</translation>
 <translation id="196425401113508486">突出显示移动时的光标</translation>
 <translation id="1965624977906726414">无需特殊权限。</translation>
-<translation id="1966497651828975688">网络连接中断了。请检查您的网络连接状况，或尝试另选一个 Wi-Fi 网络。</translation>
 <translation id="1969654639948595766">WebRTC 文本日志 (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">已进入视频模式</translation>
 <translation id="197288927597451399">保留</translation>
@@ -2266,7 +2265,6 @@
 <translation id="337286756654493126">读取您在该应用中打开的文件夹</translation>
 <translation id="3378572629723696641">此扩展程序可能已损坏。</translation>
 <translation id="337920581046691015">系统将要安装<ph name="PRODUCT_NAME" />。</translation>
-<translation id="337995611229308295">无法连接到服务器。请检查您的网络连接状况，然后重试。如果问题仍然存在，请尝试重启 Chromebook。</translation>
 <translation id="3380365263193509176">未知错误</translation>
 <translation id="3382073616108123819">糟糕！系统无法识别此设备的标识符。</translation>
 <translation id="3382200254148930874">正在停用监管功能…</translation>
@@ -2900,7 +2898,6 @@
 <translation id="3994374631886003300">请解锁您的手机并将它靠近您的 <ph name="DEVICE_TYPE" />，以解锁此设备。</translation>
 <translation id="3994878504415702912">缩放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
-<translation id="3999533068584271567">无法建立网络连接。请检查您的网络连接状况，然后重试。</translation>
 <translation id="4002329649066944389">管理针对具体网站的例外情况</translation>
 <translation id="4002440992267487163">PIN 码设置</translation>
 <translation id="4005817994523282006">时区检测方法</translation>
@@ -3195,7 +3192,6 @@
 <translation id="4366138410738374926">已开始打印</translation>
 <translation id="4369121877634339065">在任一图片上拖动光标即可搜索</translation>
 <translation id="4370975561335139969">您输入的电子邮件地址和密码不匹配。</translation>
-<translation id="4371452868325715552">无法连接到服务器。请检查您的网络连接状况，然后重试。如果问题仍然存在，请尝试重启 Chromebook。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">正在投射桌面</translation>
 <translation id="4374831787438678295">Linux 安装程序</translation>
 <translation id="4375035964737468845">打开已下载的文件</translation>

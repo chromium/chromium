@@ -950,7 +950,6 @@
 <translation id="1963976881984600709">標準保護功能</translation>
 <translation id="196425401113508486">突顯移動中的游標</translation>
 <translation id="1965624977906726414">沒有特殊權限。</translation>
-<translation id="1966497651828975688">網絡連線已中斷。請檢查您的網絡連線，或改用其他 Wi-Fi 網絡。</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 項)</translation>
 <translation id="1970368523891847084">進入咗影片模式</translation>
 <translation id="197288927597451399">保留</translation>
@@ -2284,7 +2283,6 @@
 <translation id="337286756654493126">讀取您在應用程式中開啟的資料夾</translation>
 <translation id="3378572629723696641">這個擴充功能可能已損毀。</translation>
 <translation id="337920581046691015">系統將會安裝 <ph name="PRODUCT_NAME" />。</translation>
-<translation id="337995611229308295">無法連線至伺服器。請檢查網絡連線，然後再試一次。如果問題仍未解決，請嘗試重新啟動 Chromebook。</translation>
 <translation id="3380365263193509176">未知的錯誤</translation>
 <translation id="3382073616108123819">糟糕！系統無法確定這部裝置的裝置識別碼。</translation>
 <translation id="3382200254148930874">正在停用監控功能…</translation>
@@ -2919,7 +2917,6 @@
 <translation id="3994374631886003300">解鎖手機並靠近您的 <ph name="DEVICE_TYPE" /> 即可解鎖。</translation>
 <translation id="3994878504415702912">縮放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右側後方連接埠)</translation>
-<translation id="3999533068584271567">無法建立網絡連線。請檢查你的網絡連線，然後再試一次。</translation>
 <translation id="4002329649066944389">管理特定網站的例外情況</translation>
 <translation id="4002440992267487163">PIN 設定</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
@@ -3214,7 +3211,6 @@
 <translation id="4366138410738374926">列印已開始</translation>
 <translation id="4369121877634339065">在任何圖片上拖曳即可搜尋</translation>
 <translation id="4370975561335139969">您所輸入的電郵與密碼不符</translation>
-<translation id="4371452868325715552">無法連線至伺服器。請檢查網絡連線，然後再試一次。如果問題仍未解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">投放桌面</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案</translation>

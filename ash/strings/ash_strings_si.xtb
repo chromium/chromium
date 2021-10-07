@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">ප්‍රවේශය මාරු කිරීම සැකසීම් &gt; ප්‍රවේශ්‍යතාව තුළ අබල කළ හැක.</translation>
 <translation id="1637505162081889933">උපාංග <ph name="NUM_DEVICES" />ක්</translation>
 <translation id="1654477262762802994">හඬ විමසුමක් අරඹන්න</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; සහායක තුළ ප්‍රතිඵලය බැලීමට සෙවීම සහ ඉඩ යතුර ඔබන්න.</translation>
 <translation id="1667964833127753507">උදාසීන වර්ණ ප්‍රකාරය වෝල්පේපරය නිස්සාරණය කළ වර්ණ, උදාසීන තානය සහිත ආලෝක හෝ අඳුරු වර්ණ කට්ටලයක් මගින් ප්‍රතිස්ථාපනය කරමින්, භාවිත නොකරයි.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ඉතිරිය</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> සම්බන්ධ නැත.</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">පිහිටුවීම අවසන් කිරීමට තට්ටු කරන්න</translation>
 <translation id="3945867833895287237">හොට්ස්පොට් වෙත සම්බන්ධ වෙමින්...</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
-<translation id="3958465044488004317">සහායක තුළ ප්‍රතිඵල බලන්න</translation>
 <translation id="3962859241508114581">පෙර ඛණ්ඩය</translation>
 <translation id="3969043077941541451">ක්‍රියාවිරහිතයි</translation>
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">ක්‍රියා කිසිවක් නැත (විරාම ගන්වන්න)</translation>
 <translation id="4868492592575313542">ක්‍රියාත්මක කළා</translation>
 <translation id="4872237917498892622">Alt+Search හෝ Shift</translation>
+<translation id="4881695831933465202">විවෘත කරන්න</translation>
 <translation id="4890187583552566966">Google සහායක ඔබේ පරිපාලක විසින් අබල කර ඇත.</translation>
 <translation id="4890408602550914571">ඔබගේ දුරකථනය අවට ඇති බව සහ බ්ලූටූත් ක්‍රියාත්මක කර ඇති බව සහතික කර ගන්න.</translation>
 <translation id="4895488851634969361">බැටරීය සම්පූර්ණයි.</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">භාෂාව සහ යතුරු පුවරුව තෝරන්න</translation>
 <translation id="7509246181739783082">ඔබගේ අනන්‍යතාව සත්‍යාපනය කරන්න</translation>
 <translation id="7513622367902644023">තිර රූ ප්‍රකාරය තෝරන ලදි</translation>
+<translation id="7514365320538308">බාගන්න</translation>
 <translation id="7526573455193969409">ජාලය නිරීක්ෂණය විය හැක</translation>
 <translation id="7536035074519304529">IP ලිපිනය: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">නිදා ගන්නා වේලාවයි</translation>

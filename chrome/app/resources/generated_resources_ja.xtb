@@ -939,7 +939,6 @@
 <translation id="1963976881984600709">標準保護機能</translation>
 <translation id="196425401113508486">移動中のカーソルをハイライト表示する</translation>
 <translation id="1965624977906726414">特別な権限はありません。</translation>
-<translation id="1966497651828975688">ネットワーク接続が切断されました。ネットワーク接続を確認するか、別の Wi-Fi ネットワークをお試しください。</translation>
 <translation id="1969654639948595766">WebRTC テキストログ（<ph name="WEBRTC_TEXT_LOG_COUNT" />）</translation>
 <translation id="1970368523891847084">動画モードに切り替えました</translation>
 <translation id="197288927597451399">保存</translation>
@@ -2269,7 +2268,6 @@
 <translation id="337286756654493126">アプリケーションで開いたフォルダに書き込む</translation>
 <translation id="3378572629723696641">この拡張機能は破損している可能性があります。</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> がインストールされます。</translation>
-<translation id="337995611229308295">サーバーに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。引き続き問題が解決しない場合は、Chromebook を再起動してみてください。</translation>
 <translation id="3380365263193509176">不明なエラー</translation>
 <translation id="3382073616108123819">このデバイスのデバイス識別子を特定できませんでした。</translation>
 <translation id="3382200254148930874">管理機能を停止しています...</translation>
@@ -2904,7 +2902,6 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> のロックを解除するには、スマートフォンのロックを解除してデバイスに近づけます。</translation>
 <translation id="3994878504415702912">ズーム(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C デバイス（右奥のポート）</translation>
-<translation id="3999533068584271567">ネットワーク接続を確立できません。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="4002329649066944389">サイト固有の例外の管理</translation>
 <translation id="4002440992267487163">PIN の設定</translation>
 <translation id="4005817994523282006">タイムゾーンの検出方法</translation>
@@ -3199,7 +3196,6 @@
 <translation id="4366138410738374926">印刷を開始しました</translation>
 <translation id="4369121877634339065">画像をドラッグして検索</translation>
 <translation id="4370975561335139969">入力したメールアドレスとパスワードが一致しません</translation>
-<translation id="4371452868325715552">サーバーに接続できませんでした。ネットワーク接続を確認してからもう一度お試しください。引き続き問題が解決しない場合は、Chromebook を再起動してみてください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">デスクトップをキャスト中</translation>
 <translation id="4374831787438678295">Linux インストーラ</translation>
 <translation id="4375035964737468845">ダウンロードしたファイルを開く</translation>

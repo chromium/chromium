@@ -939,7 +939,6 @@
 <translation id="1963976881984600709">標準防護</translation>
 <translation id="196425401113508486">醒目顯示移動中的游標</translation>
 <translation id="1965624977906726414">沒有特殊權限。</translation>
-<translation id="1966497651828975688">網路連線已中斷。請檢查網路連線，或改用其他 Wi-Fi 網路。</translation>
 <translation id="1969654639948595766">WebRTC 文字記錄 (<ph name="WEBRTC_TEXT_LOG_COUNT" /> 筆)</translation>
 <translation id="1970368523891847084">已進入影片模式</translation>
 <translation id="197288927597451399">保留</translation>
@@ -2270,7 +2269,6 @@
 <translation id="337286756654493126">讀取你在應用程式中開啟的資料夾</translation>
 <translation id="3378572629723696641">這個擴充功能可能已損毀。</translation>
 <translation id="337920581046691015">系統將會安裝「<ph name="PRODUCT_NAME" />」。</translation>
-<translation id="337995611229308295">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。</translation>
 <translation id="3380365263193509176">未知的錯誤</translation>
 <translation id="3382073616108123819">糟糕！系統無法判別這個裝置的裝置 ID。</translation>
 <translation id="3382200254148930874">正在停用監督功能...</translation>
@@ -2904,7 +2902,6 @@
 <translation id="3994374631886003300">解除手機的鎖定狀態，並且讓你的手機與 <ph name="DEVICE_TYPE" /> 更靠近，即可進入解鎖模式。</translation>
 <translation id="3994878504415702912">縮放(&amp;Z)</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右後方連接埠)</translation>
-<translation id="3999533068584271567">無法建立網路連線。請檢查網路連線，然後再試一次。</translation>
 <translation id="4002329649066944389">管理特定網站的例外狀況</translation>
 <translation id="4002440992267487163">PIN 碼設定</translation>
 <translation id="4005817994523282006">時區偵測方法</translation>
@@ -3199,7 +3196,6 @@
 <translation id="4366138410738374926">已開始列印</translation>
 <translation id="4369121877634339065">在任一圖片上拖曳游標即可搜尋</translation>
 <translation id="4370975561335139969">您所輸入的電子郵件和密碼不相符</translation>
-<translation id="4371452868325715552">無法連上伺服器。請檢查網路連線，然後再試一次。如果問題仍然無法解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="4373966964907728675">正在投放桌面</translation>
 <translation id="4374831787438678295">Linux 安裝程式</translation>
 <translation id="4375035964737468845">開啟已下載的檔案。</translation>

@@ -941,7 +941,6 @@
 <translation id="1963976881984600709">Štandardná ochrana</translation>
 <translation id="196425401113508486">Zvýrazniť kurzor pri pohybe</translation>
 <translation id="1965624977906726414">Nemá zvláštne povolenia.</translation>
-<translation id="1966497651828975688">Pripojenie k sieti bolo prerušené. Skontrolujte ho alebo skúste inú sieť Wi-Fi.</translation>
 <translation id="1969654639948595766">Textové denníky WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Bol aktivovaný režim videa</translation>
 <translation id="197288927597451399">Uložiť</translation>
@@ -2272,7 +2271,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="337286756654493126">Čítať priečinky, ktoré v aplikácii otvoríte</translation>
 <translation id="3378572629723696641">Toto rozšírenie mohlo byť poškodené.</translation>
 <translation id="337920581046691015">Nainštaluje sa <ph name="PRODUCT_NAME" />.</translation>
-<translation id="337995611229308295">K serveru sa nepodarilo pripojiť. Skontrolujte pripojenie k sieti a skúste to znova. Ak problémy pretrvávajú, skúste reštartovať Chromebook.</translation>
 <translation id="3380365263193509176">Neznáma chyba</translation>
 <translation id="3382073616108123819">Ojoj! Systém nedokázal rozpoznať identifikátory tohto zariadenia</translation>
 <translation id="3382200254148930874">Zastavuje sa dohľad…</translation>
@@ -2907,7 +2905,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3994374631886003300">Ak chcete odomknúť zariadenie <ph name="DEVICE_TYPE" />, odomknite svoj telefón a priblížte ho k nemu.</translation>
 <translation id="3994878504415702912">&amp;Lupa</translation>
 <translation id="3995138139523574647">zariadenia USB-C (port vpravo vzadu)</translation>
-<translation id="3999533068584271567">Nedá sa nadviazať pripojenie k sieti. Skontrolujte ho a skúste to znova.</translation>
 <translation id="4002329649066944389">Správa výnimiek pre konkrétne weby</translation>
 <translation id="4002440992267487163">Nastavenie kódu PIN</translation>
 <translation id="4005817994523282006">Metóda zisťovania časového pásma</translation>
@@ -3202,7 +3199,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4366138410738374926">Tlač sa začala</translation>
 <translation id="4369121877634339065">Vyhľadávajte presunutím cez ľubovoľný obrázok</translation>
 <translation id="4370975561335139969">Zadaný e-mail a heslo nesúhlasia.</translation>
-<translation id="4371452868325715552">K serveru sa nepodarilo pripojiť. Skontrolujte pripojenie k sieti a skúste to znova. Ak problémy pretrvávajú, skúste reštartovať Chromebook. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Prenáša sa pracovná plocha</translation>
 <translation id="4374831787438678295">Inštalátor systému Linux</translation>
 <translation id="4375035964737468845">Otvárať stiahnuté súbory</translation>

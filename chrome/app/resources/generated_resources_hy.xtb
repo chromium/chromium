@@ -941,7 +941,6 @@
 <translation id="1963976881984600709">Սովորական պաշտպանություն</translation>
 <translation id="196425401113508486">Ընդգծել նշորդը, երբ այն շարժվում է</translation>
 <translation id="1965624977906726414">Հատուկ թույլտվություններ չունի:</translation>
-<translation id="1966497651828975688">Կապը խափանվել է։ Ստուգեք ձեր ինտերնետ կապը կամ միացեք այլ Wi-Fi ցանցի։</translation>
 <translation id="1969654639948595766">WebRTC տեքստային մատյաններ (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Տեսագրելու ռեժիմը միացավ</translation>
 <translation id="197288927597451399">Տեղադրել</translation>
@@ -2271,7 +2270,6 @@
 <translation id="337286756654493126">Կարդալ հավելվածում բացված պանակները</translation>
 <translation id="3378572629723696641">Այս ընդլայնումը հավանաբար վնասված է:</translation>
 <translation id="337920581046691015">Կտեղադրվի <ph name="PRODUCT_NAME" />-ը:</translation>
-<translation id="337995611229308295">Չհաջողվեց միանալ սերվերին։ Ստուգեք կապը և նորից փորձեք։ Եթե չի հաջողվում վերացնել խնդիրը, փորձեք վերագործարկել Chromebook-ը։</translation>
 <translation id="3380365263193509176">Անհայտ սխալ</translation>
 <translation id="3382073616108123819">Համակարգը չճանաչեց սարքի նույնացուցիչները:</translation>
 <translation id="3382200254148930874">Ծնողական վերահսկողությունն անջատվում է…</translation>
@@ -2906,7 +2904,6 @@
 <translation id="3994374631886003300"><ph name="DEVICE_TYPE" /> սարքն ապակողպելու համար ապակողպեք ձեր հեռախոսը և այն մոտեցրեք սարքին։</translation>
 <translation id="3994878504415702912">&amp;Խոշորացնել</translation>
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
-<translation id="3999533068584271567">Չհաջողվեց միանալ։ Ստուգեք կապը և նորից փորձեք։</translation>
 <translation id="4002329649066944389">Կայքի բացառությունների կառավարում</translation>
 <translation id="4002440992267487163">Կարգավորել PIN կոդ</translation>
 <translation id="4005817994523282006">Ժամային գոտու որոշման եղանակ</translation>
@@ -3201,7 +3198,6 @@
 <translation id="4366138410738374926">Տպումը սկսված է</translation>
 <translation id="4369121877634339065">Քաշեք տարածքը և որոնեք ըստ պատկերի</translation>
 <translation id="4370975561335139969">Մուտքագրված էլփոստը և գաղտնաբառը չեն համընկնում</translation>
-<translation id="4371452868325715552">Չհաջողվեց միանալ սերվերին։ Ստուգեք կապը և նորից փորձեք։ Եթե չի հաջողվում վերացնել խնդիրը, փորձեք վերագործարկել Chromebook-ը։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="4373966964907728675">Աշխատասեղանը հեռարձակվում է</translation>
 <translation id="4374831787438678295">Լինուքսի տեղադրիչ</translation>
 <translation id="4375035964737468845">Բացել ներբեռնված ֆայլերը</translation>

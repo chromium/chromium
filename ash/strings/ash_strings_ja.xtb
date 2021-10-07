@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; アシスタントで結果を確認するには [検索]+Space キーを押してください。</translation>
 <translation id="1667964833127753507">壁紙から抽出した色の代わりに、ライトまたはダークな色調の中間色を使用します。</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">設定を完了するにはタップしてください</translation>
 <translation id="3945867833895287237">アクセス ポイントに接続しています…</translation>
 <translation id="3950820424414687140">ログイン</translation>
-<translation id="3958465044488004317">アシスタントで結果を見る</translation>
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3969043077941541451">オフ</translation>
 <translation id="397105322502079400">計算しています...</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">なし（一時停止）</translation>
 <translation id="4868492592575313542">有効</translation>
 <translation id="4872237917498892622">Alt+ 検索/Shift</translation>
+<translation id="4881695831933465202">開く</translation>
 <translation id="4890187583552566966">Google アシスタントは管理者によって無効にされています。</translation>
 <translation id="4890408602550914571">スマートフォンが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="4895488851634969361">バッテリー残量: 満。</translation>
@@ -866,6 +865,7 @@
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
 <translation id="7509246181739783082">本人確認</translation>
 <translation id="7513622367902644023">スクリーンショット モードを選択しました</translation>
+<translation id="7514365320538308">ダウンロード</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">おやすみの時間です</translation>

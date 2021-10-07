@@ -96,7 +96,6 @@
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />. Щоб переглянути результат в Асистенті, натисніть клавішу пошуку та пробіл.</translation>
 <translation id="1667964833127753507">У цьому режимі не використовуються кольори фонового малюнка, а підбираються нейтральні світлі або темні відтінки.</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не підключено.</translation>
@@ -396,7 +395,6 @@
 <translation id="3945319193631853098">Натисніть, щоб завершити налаштування</translation>
 <translation id="3945867833895287237">Підключення до точки доступу…</translation>
 <translation id="3950820424414687140">Вхід</translation>
-<translation id="3958465044488004317">Перегляньте результат в Асистенті</translation>
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3969043077941541451">Вимкнено</translation>
 <translation id="397105322502079400">Обчислення...</translation>
@@ -525,6 +523,7 @@
 <translation id="485592688953820832">Нічого не робити (призупинити)</translation>
 <translation id="4868492592575313542">активовано</translation>
 <translation id="4872237917498892622">Alt+клавіша пошуку або Shift</translation>
+<translation id="4881695831933465202">Відкрити</translation>
 <translation id="4890187583552566966">Ваш адміністратор вимкнув Google Асистент.</translation>
 <translation id="4890408602550914571">Переконайтеся, що ваш телефон поблизу, а Bluetooth увімкнено.</translation>
 <translation id="4895488851634969361">Акумулятор заряджений.</translation>
@@ -865,6 +864,7 @@
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
 <translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7513622367902644023">Вибрано режим знімка екрана</translation>
+<translation id="7514365320538308">Завантажити</translation>
 <translation id="7526573455193969409">Мережевий трафік може відстежуватися</translation>
 <translation id="7536035074519304529">ІР-адреса: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Час спати</translation>

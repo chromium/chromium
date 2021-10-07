@@ -96,7 +96,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
-<translation id="1655967159878494613"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />; Trykk på Søk + mellomrom for å se resultatet i assistenten.</translation>
 <translation id="1667964833127753507">Den nøytrale fargemodusen bruker ikke farger som er hentet fra bakgrunnen. I stedet brukes et nøytralt utvalg av lyse eller mørke fargetoner.</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> er ikke tilkoblet.</translation>
@@ -396,7 +395,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3945319193631853098">Trykk for å fullføre konfigureringen</translation>
 <translation id="3945867833895287237">Kobler til Wi-Fi-sone …</translation>
 <translation id="3950820424414687140">Logg på</translation>
-<translation id="3958465044488004317">Se resultatet i assistenten</translation>
 <translation id="3962859241508114581">Forrige spor</translation>
 <translation id="3969043077941541451">Av</translation>
 <translation id="397105322502079400">Beregner …</translation>
@@ -525,6 +523,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="485592688953820832">Ingen handling (pause)</translation>
 <translation id="4868492592575313542">aktivert</translation>
 <translation id="4872237917498892622">Alt + Søk eller Shift</translation>
+<translation id="4881695831933465202">Åpne</translation>
 <translation id="4890187583552566966">Administratoren din har slått av Google-assistenten.</translation>
 <translation id="4890408602550914571">Sørg for at telefonen er i nærheten, og at Bluetooth er slått på.</translation>
 <translation id="4895488851634969361">Batteriet er fullt.</translation>
@@ -865,6 +864,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
 <translation id="7513622367902644023">Skjermdumpmodus er valgt</translation>
+<translation id="7514365320538308">Last ned</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Nå er det sengetid</translation>

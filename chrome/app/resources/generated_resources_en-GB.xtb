@@ -951,7 +951,6 @@
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="196425401113508486">Highlight the cursor when moving</translation>
 <translation id="1965624977906726414">Has no special permissions.</translation>
-<translation id="1966497651828975688">Network connection was lost. Please check your network connection or try another Wi-Fi network.</translation>
 <translation id="1969654639948595766">WebRTC text logs (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
 <translation id="1970368523891847084">Video mode entered</translation>
 <translation id="197288927597451399">Keep</translation>
@@ -2285,7 +2284,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="337286756654493126">Read folders that you open in the application</translation>
 <translation id="3378572629723696641">This extension may have been corrupted.</translation>
 <translation id="337920581046691015"><ph name="PRODUCT_NAME" /> will be installed.</translation>
-<translation id="337995611229308295">Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook.</translation>
 <translation id="3380365263193509176">Unknown error</translation>
 <translation id="3382073616108123819">Oops!  The system failed to determine device identifiers for this device.</translation>
 <translation id="3382200254148930874">Stopping supervision...</translation>
@@ -2920,7 +2918,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3994374631886003300">Unlock your phone and bring it closer to unlock your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3994878504415702912">&amp;Zoom</translation>
 <translation id="3995138139523574647">USB-C device (right-hand-side back port)</translation>
-<translation id="3999533068584271567">Network connection cannot be established. Please check your network connection and try again.</translation>
 <translation id="4002329649066944389">Manage site specific exceptions</translation>
 <translation id="4002440992267487163">Pin setup</translation>
 <translation id="4005817994523282006">Time zone detection method</translation>
@@ -3215,7 +3212,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4366138410738374926">Printing started</translation>
 <translation id="4369121877634339065">Drag over any image to search</translation>
 <translation id="4370975561335139969">The email and password that you entered don't match.</translation>
-<translation id="4371452868325715552">Couldn’t connect with the server. Please check your network connection and try again. If you're still having trouble, try restarting your Chromebook. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="4373966964907728675">Casting desktop</translation>
 <translation id="4374831787438678295">Linux installer</translation>
 <translation id="4375035964737468845">Open downloaded files</translation>
