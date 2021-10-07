@@ -41,6 +41,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
+#include "ui/views/layout/grid_layout.h"
 
 namespace ash {
 
@@ -328,18 +329,43 @@ void StatusAreaWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 }
 
 void StatusAreaWidget::HandleLocaleChange() {
-  // Here we force the layer's bounds to be updated for text direction (if
-  // needed).
+  if (!shelf_->IsHorizontalAlignment()) {
+    for (auto* tray_button : tray_buttons_)
+      tray_button->HandleLocaleChange();
+    return;
+  }
+
+  // During adding child views in this 'for' loop, `CalculateTargetBounds` might
+  // be called which can create a new layout manager. So
+  // `CreateScopedPauseCalculatingTargetBounds` here to disable creating layout
+  // managers.
+  auto pause =
+      status_area_widget_delegate_->CreateScopedPauseCalculatingTargetBounds();
+  // If the layout is horizontal, each child's position should be recalculated
+  // when there is a RTL change. The layer's bounds could to be updated (if
+  // needed) by re-adding the children, since the bounds updating is done in the
+  // `AddChildView` method.
   status_area_widget_delegate_->RemoveAllChildViewsWithoutDeleting();
 
-  // The layout manager will be updated when shelf layout gets updated, which is
-  // done by the shelf layout manager after `HandleLocaleChange()` gets called.
-  status_area_widget_delegate_->SetLayoutManager(nullptr);
+  // Gets the layout manger and inits the starting point to (0.0).
+  views::GridLayout* layout_manager = static_cast<views::GridLayout*>(
+      status_area_widget_delegate_->GetLayoutManager());
+  views::ColumnSet* columns = layout_manager->GetColumnSet(0);
+  layout_manager->StartRow(0, 0);
+
+  // It doesn't matter that the visible or invisible views are all added to the
+  // layout manager, since `CalculateTargetBounds` is called after all the views
+  // are added.
   for (auto* tray_button : tray_buttons_) {
+    columns->AddColumn(
+        views::GridLayout::CENTER, views::GridLayout::FILL, 0,
+        /*resize_percent=*/views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+    std::unique_ptr<TrayBackgroundView> tray_button_uptr(tray_button);
+    layout_manager->AddView(std::move(tray_button_uptr));
     tray_button->HandleLocaleChange();
-    status_area_widget_delegate_->AddChildView(tray_button);
   }
   EnsureTrayOrder();
+  status_area_widget_delegate_->CalculateTargetBounds();
 }
 
 void StatusAreaWidget::CalculateButtonVisibilityForCollapsedState() {
