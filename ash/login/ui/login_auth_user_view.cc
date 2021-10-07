@@ -60,6 +60,7 @@
 #include "ui/gfx/interpolated_transform.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -722,6 +723,10 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetFocusBehavior(FocusBehavior::ALWAYS);
+    // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
+    // able to submit accessibility checks, but this focusable View needs to
+    // add a name so that the screen reader knows what to announce.
+    SetProperty(views::kSkipAccessibilityPaintChecks, true);
 
     // The icon size has to be defined later if the image will be visible.
     message_icon_ = AddChildView(std::make_unique<views::ImageView>());
