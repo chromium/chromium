@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import UIKit
 import SwiftUI
+import UIKit
 
 // A provider to provide the SwiftUI OverflowMenuView to Objective C. This is
 // necessary because Objective C can't see SwiftUI types.

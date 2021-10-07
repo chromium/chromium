@@ -24,7 +24,8 @@
 #import "ios/chrome/browser/ui/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_action_handler.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_mediator.h"
@@ -50,12 +51,15 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 }  // namespace
 
 @interface PopupMenuCoordinator () <PopupMenuCommands,
-                                    PopupMenuPresenterDelegate>
+                                    PopupMenuPresenterDelegate,
+                                    UISheetPresentationControllerDelegate>
 
 // Presenter for the popup menu, managing the animations.
 @property(nonatomic, strong) PopupMenuPresenter* presenter;
 // Mediator for the popup menu.
 @property(nonatomic, strong) PopupMenuMediator* mediator;
+// Mediator for the overflow menu
+@property(nonatomic, strong) OverflowMenuMediator* overflowMenuMediator;
 // Mediator to that alerts the main |mediator| when the web content area
 // is blocked by an overlay.
 @property(nonatomic, strong) BrowserContainerMediator* contentBlockerMediator;
@@ -139,6 +143,11 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
 - (void)dismissPopupMenuAnimated:(BOOL)animated {
   [self.UIUpdater updateUIForMenuDismissed];
+  if (self.overflowMenuMediator) {
+    [self.baseViewController dismissViewControllerAnimated:animated
+                                                completion:nil];
+    self.overflowMenuMediator = nil;
+  }
   [self.presenter dismissAnimated:animated];
   self.presenter = nil;
   [self.mediator disconnect];
@@ -178,6 +187,13 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
   [self dismissPopupMenuAnimated:NO];
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerWillDismiss:
+    (UIPresentationController*)presentationController {
+  [self dismissPopupMenuAnimated:NO];
+}
+
 #pragma mark - Notification callback
 
 - (void)applicationDidEnterBackground:(NSNotification*)note {
@@ -190,7 +206,7 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 // |guideName|.
 - (void)presentPopupOfType:(PopupMenuType)type
             fromNamedGuide:(GuideName*)guideName {
-  if (self.presenter)
+  if (self.presenter || self.overflowMenuMediator)
     [self dismissPopupMenuAnimated:YES];
 
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
@@ -274,12 +290,13 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
 
   if (IsNewOverflowMenuEnabled()) {
     if (@available(iOS 15, *)) {
-      OverflowMenuModel* model =
-          [[OverflowMenuModel alloc] initWithDestinations:@[] actions:@[]];
-      UIViewController* menu =
-          [OverflowMenuViewProvider makeViewControllerWithModel:model];
+      self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
+      UIViewController* menu = [OverflowMenuViewProvider
+          makeViewControllerWithModel:self.overflowMenuMediator
+                                          .overflowMenuModel];
       UISheetPresentationController* sheetPC = menu.sheetPresentationController;
       if (sheetPC) {
+        sheetPC.delegate = self;
         sheetPC.detents = @[
           [UISheetPresentationControllerDetent mediumDetent],
           [UISheetPresentationControllerDetent largeDetent]

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import Foundation
 import SwiftUI
 
 /// Represents a destination in the overflow menu.
@@ -24,10 +23,12 @@ import SwiftUI
   /// Whether or not the destination is enterprise disabled.
   @Published public var enterpriseDisabled: Bool
 
-  public init(name: String,
-              color: UIColor,
-              imageName: String,
-              enterpriseDisabled: Bool) {
+  public init(
+    name: String,
+    color: UIColor,
+    imageName: String,
+    enterpriseDisabled: Bool
+  ) {
     self.name = name
     self.color = Color(color)
     self.imageName = imageName

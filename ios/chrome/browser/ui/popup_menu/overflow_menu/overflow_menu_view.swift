@@ -5,11 +5,10 @@
 import SwiftUI
 
 struct OverflowMenuView: View {
+  @EnvironmentObject var model: OverflowMenuModel
   var body: some View {
     Group {
-      Rectangle()
-        .fill(Color.red)
-        .frame(width: 40, height: 40)
+      OverflowMenuActionList(actions: model.actions)
     }.background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.top))
   }
 }
