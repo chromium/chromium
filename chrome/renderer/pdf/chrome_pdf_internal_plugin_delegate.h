@@ -18,7 +18,7 @@ class ChromePdfInternalPluginDelegate final
   ~ChromePdfInternalPluginDelegate() override;
 
   // `pdf::PdfInternalPluginDelegate`:
-  bool IsAllowedFrame(const blink::WebFrame& frame) const override;
+  bool IsAllowedOrigin(const url::Origin& origin) const override;
 };
 
 #endif  // CHROME_RENDERER_PDF_CHROME_PDF_INTERNAL_PLUGIN_DELEGATE_H_

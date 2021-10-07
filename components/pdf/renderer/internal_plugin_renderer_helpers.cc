@@ -46,7 +46,13 @@ blink::WebPlugin* CreateInternalPlugin(
     return render_frame->CreatePlugin(info, params);
   }
 
-  if (!delegate->IsAllowedFrame(*render_frame->GetWebFrame()))
+  // The in-process plugin should only be created if the parent frame has an
+  // allowed origin.
+  blink::WebFrame* parent_frame = render_frame->GetWebFrame()->Parent();
+  if (!parent_frame)
+    return nullptr;
+
+  if (!delegate->IsAllowedOrigin(parent_frame->GetSecurityOrigin()))
     return nullptr;
 
   mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote;
