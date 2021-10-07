@@ -31,7 +31,6 @@
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
-#include "components/performance_manager/public/graph/policies/tab_loading_frame_navigation_policy.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -164,13 +163,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   graph->PassToGraph(
       std::make_unique<performance_manager::metrics::MemoryPressureMetrics>());
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kTabLoadingFrameNavigationThrottles)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::TabLoadingFrameNavigationPolicy>());
-  }
 
   // TODO(crbug.com/1225070): Consider using this policy on Android.
 #if !defined(OS_ANDROID)
