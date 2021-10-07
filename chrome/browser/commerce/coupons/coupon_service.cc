@@ -46,8 +46,6 @@ void CouponService::UpdateFreeListingCoupons(const CouponsMap& coupon_map) {
 }
 
 void CouponService::DeleteFreeListingCouponsForUrl(const GURL& url) {
-  if (!url.is_valid())
-    return;
   const GURL& origin(url.GetOrigin());
   coupon_map_.erase(origin);
   coupon_db_->DeleteCoupon(origin);
@@ -60,8 +58,6 @@ void CouponService::DeleteAllFreeListingCoupons() {
 
 CouponService::Coupons CouponService::GetFreeListingCouponsForUrl(
     const GURL& url) {
-  if (!url.is_valid())
-    return {};
   const GURL& origin(url.GetOrigin());
   if (coupon_map_.find(origin) == coupon_map_.end()) {
     return {};
@@ -71,12 +67,6 @@ CouponService::Coupons CouponService::GetFreeListingCouponsForUrl(
   for (const auto& data : coupon_map_.at(origin))
     result.emplace_back(data.get());
   return result;
-}
-
-bool CouponService::IsUrlEligible(const GURL& url) {
-  if (!url.is_valid())
-    return false;
-  return coupon_map_.find(url.GetOrigin()) != coupon_map_.end();
 }
 
 CouponDB* CouponService::GetDB() {

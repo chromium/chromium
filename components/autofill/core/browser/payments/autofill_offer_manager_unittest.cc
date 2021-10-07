@@ -113,7 +113,6 @@ class AutofillOfferManagerTest : public testing::Test {
    public:
     MOCK_METHOD1(GetFreeListingCouponsForUrl,
                  std::vector<AutofillOfferData*>(const GURL& url));
-    MOCK_METHOD1(IsUrlEligible, bool(const GURL& url));
   };
 
   base::test::TaskEnvironment task_environment_{
@@ -306,18 +305,6 @@ TEST_F(AutofillOfferManagerTest, GetOfferForUrl_ReturnOfferFromCouponDelegate) {
   AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(example_url);
   EXPECT_EQ(offer2, *result);
-}
-
-TEST_F(AutofillOfferManagerTest, IsUrlEligible_FromCouponDelegate) {
-  // Mock that CouponService has |example_url| as an eligible URL.
-  const GURL example_url("http://www.example.com");
-
-  EXPECT_FALSE(autofill_offer_manager_->IsUrlEligible(example_url));
-
-  EXPECT_CALL(coupon_service_delegate_, IsUrlEligible(example_url))
-      .Times(1)
-      .WillOnce(::testing::Return(true));
-  EXPECT_TRUE(autofill_offer_manager_->IsUrlEligible(example_url));
 }
 
 TEST_F(AutofillOfferManagerTest,

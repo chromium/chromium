@@ -6,8 +6,6 @@
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/commerce/coupons/coupon_service.h"
-#include "chrome/browser/commerce/coupons/coupon_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -45,7 +43,6 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
 
   personal_data_ =
       PersonalDataManagerFactory::GetForProfile(browser()->profile());
-  coupon_service_ = CouponServiceFactory::GetForProfile(browser()->profile());
 
   // Wait for Personal Data Manager to be fully loaded to prevent that
   // spurious notifications deceive the tests.
@@ -135,19 +132,6 @@ void OfferNotificationBubbleViewsTestBase::
   personal_data_->AddOfferDataForTest(
       CreatePromoCodeOfferDataWithDomains(domains));
   personal_data_->NotifyPersonalDataObserver();
-}
-
-void OfferNotificationBubbleViewsTestBase::
-    SetUpFreeListingCouponOfferDataForCouponService(
-        std::unique_ptr<AutofillOfferData> offer) {
-  coupon_service_->DeleteAllFreeListingCoupons();
-  base::flat_map<GURL,
-                 std::vector<std::unique_ptr<autofill::AutofillOfferData>>>
-      coupon_map;
-  for (auto origin : offer->merchant_origins) {
-    coupon_map[origin].emplace_back(std::move(offer));
-  }
-  coupon_service_->UpdateFreeListingCoupons(coupon_map);
 }
 
 void OfferNotificationBubbleViewsTestBase::NavigateTo(

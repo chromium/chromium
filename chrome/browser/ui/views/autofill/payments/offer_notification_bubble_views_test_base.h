@@ -14,8 +14,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 
-class CouponService;
-
 namespace autofill {
 
 namespace {
@@ -63,9 +61,6 @@ class OfferNotificationBubbleViewsTestBase
   void SetUpFreeListingCouponOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
-  void SetUpFreeListingCouponOfferDataForCouponService(
-      std::unique_ptr<AutofillOfferData> offer);
-
   void NavigateTo(const std::string& file_path);
 
   OfferNotificationBubbleViews* GetOfferNotificationBubbleViews();
@@ -86,7 +81,6 @@ class OfferNotificationBubbleViewsTestBase
 
  private:
   PersonalDataManager* personal_data_;
-  CouponService* coupon_service_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

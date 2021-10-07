@@ -77,28 +77,6 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
 }
 
-#if defined(OS_LINUX)
-// TODO(crbug.com/1248523): Does not work for Wayland-based tests.
-#define MAYBE_PromoCodeOffer_FromCouponService \
-  DISABLED_PromoCodeOffer_FromCouponService
-#else
-#define MAYBE_PromoCodeOffer_FromCouponService PromoCodeOffer_FromCouponService
-#endif
-
-IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
-                       MAYBE_PromoCodeOffer_FromCouponService) {
-  auto offer_data =
-      CreatePromoCodeOfferDataWithDomains({GURL("https://www.example.com/")});
-  SetUpFreeListingCouponOfferDataForCouponService(std::move(offer_data));
-
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  NavigateTo("https://www.example.com/first/");
-  WaitForObservedEvent();
-
-  EXPECT_TRUE(IsIconVisible());
-  EXPECT_TRUE(GetOfferNotificationBubbleViews());
-}
-
 class OfferNotificationBubbleViewsBrowserTestWithoutPromoCodes
     : public OfferNotificationBubbleViewsTestBase {
  public:
