@@ -1235,11 +1235,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
   }
 
   bool should_init() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
     return is_feature_flag_enabled_;
-#else
-    return is_feature_flag_enabled_ && is_manageable_;
-#endif
   }
 
  protected:
@@ -1273,9 +1269,6 @@ TEST_P(SafeBrowsingIsRealtimeReportingEnabledTest, CheckRealtimeReport) {
 
   bool should_report =
       is_feature_flag_enabled_ && is_policy_enabled_ && is_authorized_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  should_report &= is_manageable_;
-#endif
 
   if (should_report) {
     EXPECT_CALL(*client_, UploadSecurityEventReport_(_, _, _, _)).Times(1);

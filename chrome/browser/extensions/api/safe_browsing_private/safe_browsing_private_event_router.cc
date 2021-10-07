@@ -45,7 +45,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
@@ -825,11 +824,6 @@ bool SafeBrowsingPrivateEventRouter::ShouldInitRealtimeReportingClient() {
     return false;
   }
 
-  if (!IsRealtimeReportingAvailable()) {
-    DVLOG(1) << "Safe browsing real-time event reporting is only available for "
-                "managed browsers, devices or users.";
-    return false;
-  }
   return true;
 }
 
@@ -1105,25 +1099,6 @@ const user_manager::User* SafeBrowsingPrivateEventRouter::GetChromeOSUser() {
 }
 
 #endif
-
-bool SafeBrowsingPrivateEventRouter::IsRealtimeReportingAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // The device must be managed.
-  if (!g_browser_process->platform_part()
-           ->browser_policy_connector_ash()
-           ->IsDeviceEnterpriseManaged())
-    return false;
-
-  // The Chrome OS user must be affiliated with the device.
-  // This also implies that the user is managed.
-  const user_manager::User* user = GetChromeOSUser();
-  return user && user->IsAffiliated();
-#else
-  // The management status is determined by the settings returned by
-  // ConnectorsService.
-  return true;
-#endif
-}
 
 void SafeBrowsingPrivateEventRouter::RemoveDmTokenFromRejectedSet(
     const std::string& dm_token) {
