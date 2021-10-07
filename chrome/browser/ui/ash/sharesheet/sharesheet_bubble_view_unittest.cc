@@ -71,7 +71,7 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
   void ShowAndVerifyBubble(apps::mojom::IntentPtr intent) {
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(profile_.get());
-    sharesheet_service->ShowBubble(
+    sharesheet_service->ShowBubbleForTesting(
         parent_window_, std::move(intent),
         /*contains_hosted_document=*/false,
         ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown,

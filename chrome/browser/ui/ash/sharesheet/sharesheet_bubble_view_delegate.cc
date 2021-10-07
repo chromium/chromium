@@ -37,6 +37,7 @@ void SharesheetBubbleViewDelegate::ShowBubble(
     }
     return;
   }
+  DCHECK(sharesheet_bubble_view_);
   sharesheet_bubble_view_->ShowBubble(std::move(targets), std::move(intent),
                                       std::move(delivered_callback),
                                       std::move(close_callback));
@@ -56,16 +57,19 @@ void SharesheetBubbleViewDelegate::ShowNearbyShareBubbleForArc(
     }
     return;
   }
+  DCHECK(sharesheet_bubble_view_);
   sharesheet_bubble_view_->ShowNearbyShareBubbleForArc(
       std::move(intent), std::move(delivered_callback),
       std::move(close_callback));
 }
 
 void SharesheetBubbleViewDelegate::OnActionLaunched() {
+  DCHECK(sharesheet_bubble_view_);
   sharesheet_bubble_view_->ShowActionView();
 }
 
 void SharesheetBubbleViewDelegate::SetBubbleSize(int width, int height) {
+  DCHECK(sharesheet_bubble_view_);
   DCHECK_GT(width, 0);
   DCHECK_GT(height, 0);
   sharesheet_bubble_view_->ResizeBubble(width, height);
@@ -82,10 +86,12 @@ void SharesheetBubbleViewDelegate::CloseBubble(
     reason = views::Widget::ClosedReason::kCancelButtonClicked;
   }
 
+  DCHECK(sharesheet_bubble_view_);
   sharesheet_bubble_view_->CloseBubble(reason);
 }
 
 bool SharesheetBubbleViewDelegate::IsBubbleVisible() const {
+  DCHECK(sharesheet_bubble_view_);
   return sharesheet_bubble_view_->GetWidget() &&
          sharesheet_bubble_view_->GetWidget()->IsVisible();
 }

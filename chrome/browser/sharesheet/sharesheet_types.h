@@ -18,9 +18,10 @@ namespace sharesheet {
 constexpr int kIconSize = 40;
 
 enum class SharesheetResult {
-  kSuccess,           // Successfully passed data to selected target.
-  kCancel,            // Share was cancelled before completion.
-  kErrorAlreadyOpen,  // Share failed because the sharesheet is already open.
+  kSuccess,            // Successfully passed data to selected target.
+  kCancel,             // Share was cancelled before completion.
+  kErrorAlreadyOpen,   // Share failed because the sharesheet is already open.
+  kErrorWindowClosed,  // Parent window closed before sharesheet could be shown.
 };
 
 // The type of a target.

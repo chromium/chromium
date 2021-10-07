@@ -80,12 +80,6 @@ class SharesheetService : public KeyedService {
                   SharesheetMetrics::LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
-  void ShowBubble(gfx::NativeWindow native_window,
-                  apps::mojom::IntentPtr intent,
-                  bool contains_hosted_document,
-                  SharesheetMetrics::LaunchSource source,
-                  DeliveredCallback delivered_callback,
-                  CloseCallback close_callback = base::NullCallback());
   // Gets the sharesheet controller for the given |native_window|.
   SharesheetController* GetSharesheetController(
       gfx::NativeWindow native_window);
@@ -118,6 +112,12 @@ class SharesheetService : public KeyedService {
   // ==========================================================================
   // ========================== Testing APIs ==================================
   // ==========================================================================
+  void ShowBubbleForTesting(gfx::NativeWindow native_window,
+                            apps::mojom::IntentPtr intent,
+                            bool contains_hosted_document,
+                            SharesheetMetrics::LaunchSource source,
+                            DeliveredCallback delivered_callback,
+                            CloseCallback close_callback);
   SharesheetUiDelegate* GetUiDelegateForTesting(
       gfx::NativeWindow native_window);
   static void SetSelectedAppForTesting(const std::u16string& target_name);
@@ -126,13 +126,20 @@ class SharesheetService : public KeyedService {
   using SharesheetServiceIconLoaderCallback =
       base::OnceCallback<void(std::vector<TargetInfo> targets)>;
 
+  void PrepareToShowBubble(base::WeakPtr<content::WebContents> web_contents,
+                           apps::mojom::IntentPtr intent,
+                           bool contains_hosted_document,
+                           DeliveredCallback delivered_callback,
+                           CloseCallback close_callback);
+
+  std::vector<TargetInfo> GetActionsForIntent(
+      const apps::mojom::IntentPtr& intent,
+      bool contains_hosted_document);
+
   void LoadAppIcons(std::vector<apps::IntentLaunchInfo> intent_launch_info,
                     std::vector<TargetInfo> targets,
                     size_t index,
                     SharesheetServiceIconLoaderCallback callback);
-
-  void LaunchApp(const std::u16string& target_name,
-                 apps::mojom::IntentPtr intent);
 
   void OnIconLoaded(std::vector<apps::IntentLaunchInfo> intent_launch_info,
                     std::vector<TargetInfo> targets,
@@ -140,17 +147,21 @@ class SharesheetService : public KeyedService {
                     SharesheetServiceIconLoaderCallback callback,
                     apps::mojom::IconValuePtr icon_value);
 
-  void OnAppIconsLoaded(SharesheetServiceDelegate* delegate,
+  void OnAppIconsLoaded(base::WeakPtr<content::WebContents> web_contents,
                         apps::mojom::IntentPtr intent,
                         DeliveredCallback delivered_callback,
                         CloseCallback close_callback,
                         std::vector<TargetInfo> targets);
 
-  void ShowBubbleWithDelegate(SharesheetServiceDelegate* delegate,
-                              apps::mojom::IntentPtr intent,
-                              bool contains_hosted_document,
-                              DeliveredCallback delivered_callback,
-                              CloseCallback close_callback);
+  void OnReadyToShowBubble(gfx::NativeWindow native_window,
+                           apps::mojom::IntentPtr intent,
+                           DeliveredCallback delivered_callback,
+                           CloseCallback close_callback,
+                           std::vector<TargetInfo> targets);
+
+  void LaunchApp(const std::u16string& target_name,
+                 apps::mojom::IntentPtr intent);
+
   SharesheetServiceDelegate* GetOrCreateDelegate(
       gfx::NativeWindow native_window);
   SharesheetServiceDelegate* GetDelegate(gfx::NativeWindow native_window);

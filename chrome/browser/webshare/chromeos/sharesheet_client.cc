@@ -61,6 +61,7 @@ blink::mojom::ShareError SharesheetResultToShareError(
       return blink::mojom::ShareError::OK;
     case sharesheet::SharesheetResult::kCancel:
     case sharesheet::SharesheetResult::kErrorAlreadyOpen:
+    case sharesheet::SharesheetResult::kErrorWindowClosed:
       return blink::mojom::ShareError::CANCELED;
   }
 }

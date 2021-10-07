@@ -57,6 +57,7 @@ SharingHubSharesheetResult GetSharesheetResultHistogram(
       return SharingHubSharesheetResult::SUCCESS;
     case sharesheet::SharesheetResult::kCancel:
     case sharesheet::SharesheetResult::kErrorAlreadyOpen:
+    case sharesheet::SharesheetResult::kErrorWindowClosed:
       return SharingHubSharesheetResult::CANCELED;
   }
 }
