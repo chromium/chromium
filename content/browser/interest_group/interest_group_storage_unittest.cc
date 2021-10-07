@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -29,6 +30,7 @@
 namespace content {
 
 using blink::InterestGroup;
+using testing::UnorderedElementsAreArray;
 
 class InterestGroupStorageTest : public testing::Test {
  public:
@@ -75,7 +77,7 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
 
   {
     std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-    url::Origin test_origin =
+    const url::Origin test_origin =
         url::Origin::Create(GURL("https://owner.example.com"));
     storage->LeaveInterestGroup(test_origin, "example");
   }
@@ -93,7 +95,7 @@ TEST_F(InterestGroupStorageTest, DatabaseInitialized_CreateDatabase) {
 }
 
 TEST_F(InterestGroupStorageTest, DatabaseJoin) {
-  url::Origin test_origin =
+  const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   InterestGroup test_group = NewInterestGroup(test_origin, "example");
   {
@@ -120,7 +122,7 @@ TEST_F(InterestGroupStorageTest, DatabaseJoin) {
 // single distinct owner. Test that leaving one interest group does not affect
 // membership of other interest groups by the same owner.
 TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
-  url::Origin test_origin =
+  const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
@@ -164,7 +166,7 @@ TEST_F(InterestGroupStorageTest, JoinJoinLeave) {
 }
 
 TEST_F(InterestGroupStorageTest, BidCount) {
-  url::Origin test_origin =
+  const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
@@ -200,10 +202,10 @@ TEST_F(InterestGroupStorageTest, BidCount) {
 }
 
 TEST_F(InterestGroupStorageTest, RecordsWins) {
-  url::Origin test_origin =
+  const url::Origin test_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
-  GURL ad1_url = GURL("http://owner.example.com/ad1");
-  GURL ad2_url = GURL("http://owner.example.com/ad2");
+  const GURL ad1_url = GURL("http://owner.example.com/ad1");
+  const GURL ad2_url = GURL("http://owner.example.com/ad2");
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
 
   storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
@@ -257,10 +259,10 @@ TEST_F(InterestGroupStorageTest, RecordsWins) {
 }
 
 TEST_F(InterestGroupStorageTest, StoresAllFields) {
-  url::Origin partial_origin =
+  const url::Origin partial_origin =
       url::Origin::Create(GURL("https://partial.example.com"));
   InterestGroup partial = NewInterestGroup(partial_origin, "partial");
-  url::Origin full_origin =
+  const url::Origin full_origin =
       url::Origin::Create(GURL("https://full.example.com"));
   InterestGroup full;
   full.owner = full_origin;
@@ -300,26 +302,46 @@ TEST_F(InterestGroupStorageTest, StoresAllFields) {
 }
 
 TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
-  std::vector<::url::Origin> test_origins = {
-      url::Origin::Create(GURL("https://owner.example.com")),
-      url::Origin::Create(GURL("https://owner2.example.com")),
-      url::Origin::Create(GURL("https://owner3.example.com")),
-  };
+  const url::Origin owner_originA =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  const url::Origin owner_originB =
+      url::Origin::Create(GURL("https://owner2.example.com"));
+  const url::Origin owner_originC =
+      url::Origin::Create(GURL("https://owner3.example.com"));
+  const url::Origin joining_originA =
+      url::Origin::Create(GURL("https://joinerA.example.com"));
+  const url::Origin joining_originB =
+      url::Origin::Create(GURL("https://joinerB.example.com"));
   std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
-  for (const auto& origin : test_origins)
-    storage->JoinInterestGroup(NewInterestGroup(origin, "example"),
-                               origin.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(owner_originA, "example"),
+                             joining_originA.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(owner_originB, "example"),
+                             joining_originA.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(owner_originC, "example"),
+                             joining_originA.GetURL());
+  storage->JoinInterestGroup(NewInterestGroup(owner_originB, "exampleB"),
+                             joining_originB.GetURL());
 
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(3u, origins.size());
 
   storage->DeleteInterestGroupData(
-      base::BindLambdaForTesting([&test_origins](const url::Origin& origin) {
-        return origin == test_origins[0];
+      base::BindLambdaForTesting([&owner_originA](const url::Origin& origin) {
+        return origin == owner_originA;
       }));
 
   origins = storage->GetAllInterestGroupOwners();
   EXPECT_EQ(2u, origins.size());
+
+  // Delete all interest groups that joined on joining_origin A. We expect that
+  // we will be left with the one that joined on joining_origin B.
+  storage->DeleteInterestGroupData(
+      base::BindLambdaForTesting([&joining_originA](const url::Origin& origin) {
+        return origin == joining_originA;
+      }));
+
+  origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(1u, origins.size());
 
   storage->DeleteInterestGroupData({});
 
@@ -327,8 +349,91 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
   EXPECT_EQ(0u, origins.size());
 }
 
+// Maintenance should prune the number of interest groups and interest group
+// owners based on the set limit.
+TEST_F(InterestGroupStorageTest, JoinTooManyGroupNames) {
+  const size_t kExcessOwners = 10;
+  const url::Origin test_origin =
+      url::Origin::Create(GURL("https://owner.example.com"));
+  const size_t num_groups =
+      InterestGroupStorage::kMaxOwnerInterestGroups + kExcessOwners;
+  std::vector<std::string> added_groups;
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  for (size_t i = 0; i < num_groups; i++) {
+    const std::string group_name = base::NumberToString(i);
+    // Allow time to pass so that they have different expiration times.
+    // This makes which groups get removed deterministic as they are sorted by
+    // expiration time.
+    task_environment().FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+
+    storage->JoinInterestGroup(NewInterestGroup(test_origin, group_name),
+                               test_origin.GetURL());
+    added_groups.push_back(group_name);
+  }
+
+  std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
+  EXPECT_EQ(1u, origins.size());
+
+  std::vector<BiddingInterestGroup> interest_groups =
+      storage->GetInterestGroupsForOwner(test_origin);
+  EXPECT_EQ(num_groups, interest_groups.size());
+
+  // Allow enough idle time to trigger maintenance.
+  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+                                   base::TimeDelta::FromSeconds(1));
+
+  interest_groups = storage->GetInterestGroupsForOwner(test_origin);
+  ASSERT_EQ(InterestGroupStorage::kMaxOwnerInterestGroups,
+            interest_groups.size());
+
+  std::vector<std::string> remaining_groups;
+  for (const auto& group : interest_groups) {
+    remaining_groups.push_back(group.group->group.name);
+  }
+  std::vector<std::string> remaining_groups_expected(
+      added_groups.begin() + kExcessOwners, added_groups.end());
+  EXPECT_THAT(remaining_groups,
+              UnorderedElementsAreArray(remaining_groups_expected));
+}
+
+// Excess group owners should have their groups pruned by maintenance.
+TEST_F(InterestGroupStorageTest, JoinTooManyGroupOwners) {
+  const size_t kExcessGroups = 10;
+  const size_t num_groups = InterestGroupStorage::kMaxOwners + kExcessGroups;
+  std::vector<url::Origin> added_origins;
+
+  std::unique_ptr<InterestGroupStorage> storage = CreateStorage();
+  for (size_t i = 0; i < num_groups; i++) {
+    const url::Origin test_origin = url::Origin::Create(GURL(
+        base::StrCat({"https://", base::NumberToString(i), ".example.com/"})));
+
+    // Allow time to pass so that they have different expiration times.
+    // This makes which groups get removed deterministic as they are sorted by
+    // expiration time.
+    task_environment().FastForwardBy(base::TimeDelta::FromMicroseconds(1));
+
+    storage->JoinInterestGroup(NewInterestGroup(test_origin, "example"),
+                               test_origin.GetURL());
+    added_origins.push_back(test_origin);
+  }
+
+  std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
+  EXPECT_THAT(origins, UnorderedElementsAreArray(added_origins));
+
+  // Allow enough idle time to trigger maintenance.
+  task_environment().FastForwardBy(InterestGroupStorage::kIdlePeriod +
+                                   base::TimeDelta::FromSeconds(1));
+
+  // The oldest few interest groups should have been cleared during maintenance.
+  origins = storage->GetAllInterestGroupOwners();
+  std::vector<url::Origin> remaining_origins_expected(
+      added_origins.begin() + kExcessGroups, added_origins.end());
+  EXPECT_THAT(origins, UnorderedElementsAreArray(remaining_origins_expected));
+}
+
 TEST_F(InterestGroupStorageTest, DBMaintenanceExpiresOldInterestGroups) {
-  url::Origin keep_origin =
+  const url::Origin keep_origin =
       url::Origin::Create(GURL("https://owner.example.com"));
   std::vector<::url::Origin> test_origins = {
       url::Origin::Create(GURL("https://owner.example.com")),

@@ -43,6 +43,16 @@ class CONTENT_EXPORT InterestGroupStorage {
   // kUpdateFailedBackoffPeriod time has passed.
   static constexpr base::TimeDelta kUpdateFailedBackoffPeriod = base::Hours(1);
 
+  // Maximum number of interest groups, or interest group owners to keep in the
+  // database.
+  // TODO(crbug.com/1197209): Adjust these limits in response to usage.
+  static const size_t kMaxOwners = 1000;
+  static const size_t kMaxOwnerInterestGroups = 1000;
+
+  // Maximum number of operations allowed between maintenance calls.
+  // TODO(crbug.com/1257634): Add unit test to verify this count is respected.
+  static const size_t kMaxOpsBeforeMaintenance = 1000000;
+
   // Constructs an interest group storage based on a SQLite database in the
   // `path`/InterestGroups file. If the path passed in is empty, then the
   // database is instead stored in memory and not persisted to disk.
@@ -120,6 +130,8 @@ class CONTENT_EXPORT InterestGroupStorage {
       base::Time::Min();
   base::Time last_maintenance_time_ GUARDED_BY_CONTEXT(sequence_checker_) =
       base::Time::Min();
+  unsigned int ops_since_last_maintenance_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
