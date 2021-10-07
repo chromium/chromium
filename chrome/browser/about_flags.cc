@@ -630,6 +630,16 @@ const FeatureEntry::FeatureVariation kWebNoteStylizeVariations[] = {
     {"With Randomized Order", kWebNoteStylizeRandomizeParam,
      base::size(kWebNoteStylizeRandomizeParam), nullptr}};
 
+const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragSlow[] = {
+    {"autoscroll", "1"}};
+const FeatureEntry::FeatureParam kLongScreenshot_AutoscrollDragQuick[] = {
+    {"autoscroll", "2"}};
+const FeatureEntry::FeatureVariation kLongScreenshotVariations[] = {
+    {"Autoscroll Experiment 1", kLongScreenshot_AutoscrollDragSlow,
+     base::size(kLongScreenshot_AutoscrollDragSlow), nullptr},
+    {"Autoscroll Experiment 2", kLongScreenshot_AutoscrollDragQuick,
+     base::size(kLongScreenshot_AutoscrollDragQuick), nullptr}};
+
 const FeatureEntry::FeatureParam kSharingHubLinkToggle_ImageEnabled[] = {
     {"image_enabled", "true"}};
 const FeatureEntry::FeatureParam kSharingHubLinkToggle_ScreenshotEnabled[] = {
@@ -3480,7 +3490,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"chrome-share-long-screenshot",
      flag_descriptions::kChromeShareLongScreenshotName,
      flag_descriptions::kChromeShareLongScreenshotDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kChromeShareLongScreenshot)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kChromeShareLongScreenshot,
+                                    kLongScreenshotVariations,
+                                    "ChromeShareLongScreenshot")},
+
     {"chrome-sharing-hub-launch-adjacent",
      flag_descriptions::kChromeSharingHubLaunchAdjacentName,
      flag_descriptions::kChromeSharingHubLaunchAdjacentDescription, kOsAndroid,

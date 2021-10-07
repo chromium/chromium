@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
@@ -76,12 +77,20 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
     // Distance for each auto-scroll-at-edge step.
     private static final int EDGE_DRAG_STEP_DP = 5;
 
+    // Experimental flag feature variations for autoscrolling.
+    private static final String AUTOSCROLL_EXPERIMENT_PARAM_NAME = "autoscroll";
+    private int mAutoScrollExperimentArm;
+
     private static final String TAG = "long_screenshots";
 
     public LongScreenshotsMediator(Activity activity, EntryManager entryManager) {
         mActivity = activity;
         mEntryManager = entryManager;
         mDisplayDensity = activity.getResources().getDisplayMetrics().density;
+
+        mAutoScrollExperimentArm = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT, AUTOSCROLL_EXPERIMENT_PARAM_NAME,
+                0);
     }
 
     private void displayInitialScreenshot() {
@@ -379,15 +388,26 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
                 }
 
                 // Auto-scroll at edges.
-                int scrollY = mScrollView.getScrollY();
-                int edgeDragThresholdPx = dpToPx(EDGE_DRAG_THRESHOLD_DP);
-                if (isTop && Math.abs(topMaskY - scrollY) < edgeDragThresholdPx) {
-                    mScrollView.smoothScrollBy(0, dpToPx(-EDGE_DRAG_STEP_DP));
-                }
-                if (!isTop
-                        && Math.abs(scrollY + mScrollView.getHeight() - bottomMaskY)
-                                < edgeDragThresholdPx) {
-                    mScrollView.smoothScrollBy(0, dpToPx(EDGE_DRAG_STEP_DP));
+                if (mAutoScrollExperimentArm > 0) {
+                    int amount = EDGE_DRAG_STEP_DP;
+                    // Arms may be adjusted during development and teamfood:
+                    //   - Arm 0 disables autoscrolling.
+                    //   - Arm 1 enables the baseline.
+                    //   - Arm 2 (placeholder) uses a bigger step size.
+                    //   - Additional timer-based arms may be added.
+                    if (mAutoScrollExperimentArm == 2) {
+                        amount *= 10;
+                    }
+                    int scrollY = mScrollView.getScrollY();
+                    int edgeDragThresholdPx = dpToPx(EDGE_DRAG_THRESHOLD_DP);
+                    if (isTop && Math.abs(topMaskY - scrollY) < edgeDragThresholdPx) {
+                        mScrollView.smoothScrollBy(0, dpToPx(-amount));
+                    }
+                    if (!isTop
+                            && Math.abs(scrollY + mScrollView.getHeight() - bottomMaskY)
+                                    < edgeDragThresholdPx) {
+                        mScrollView.smoothScrollBy(0, dpToPx(amount));
+                    }
                 }
 
                 maskView.setLayoutParams(params);
