@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
@@ -54,12 +55,16 @@ void OnInstallDlcComplete(OnInstallCompleteCallback callback,
   PackResult result;
   result.operation_error = dlc_result.error;
 
-  if (dlc_result.error == dlcservice::kErrorNone) {
+  const bool success = dlc_result.error == dlcservice::kErrorNone;
+  if (success) {
     result.pack_state = PackResult::INSTALLED;
     result.path = dlc_result.root_path;
   } else {
     result.pack_state = PackResult::UNKNOWN;
   }
+
+  base::UmaHistogramBoolean("ChromeOS.LanguagePacks.InstallComplete.Success",
+                            success);
 
   std::move(callback).Run(result);
 }
@@ -69,11 +74,15 @@ void OnUninstallDlcComplete(OnUninstallCompleteCallback callback,
   PackResult result;
   result.operation_error = err;
 
-  if (err == dlcservice::kErrorNone) {
+  const bool success = err == dlcservice::kErrorNone;
+  if (success) {
     result.pack_state = PackResult::NOT_INSTALLED;
   } else {
     result.pack_state = PackResult::UNKNOWN;
   }
+
+  base::UmaHistogramBoolean("ChromeOS.LanguagePacks.UninstallComplete.Success",
+                            success);
 
   std::move(callback).Run(result);
 }

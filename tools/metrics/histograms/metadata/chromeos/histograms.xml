@@ -810,6 +810,28 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.LanguagePacks.InstallComplete.Success"
+    enum="BooleanSuccess" expires_after="2022-10-01">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records whether a language pack installation was successful after a language
+    pack installation attempt.
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.LanguagePacks.UninstallComplete.Success"
+    enum="BooleanSuccess" expires_after="2022-10-01">
+  <owner>claudiomagni@chromium.org</owner>
+  <owner>mlcui@google.com</owner>
+  <owner>dvallet@chromium.org</owner>
+  <summary>
+    Records whether a language pack uninstallation was successful after a
+    language pack uninstallation attempt.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.LegacySupervisedUsers.HiddenFromLoginScreen"
     enum="LegacySupervisedUserStatus" expires_after="2022-04-09">
   <owner>tobyhuang@chromium.org</owner>
