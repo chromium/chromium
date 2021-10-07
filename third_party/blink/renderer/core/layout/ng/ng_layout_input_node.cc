@@ -203,8 +203,8 @@ void NGLayoutInputNode::GetOverrideIntrinsicSize(
 
 #if DCHECK_IS_ON()
 
-CORE_EXPORT void showLayoutTree(const blink::NGLayoutInputNode& node) {
-  showLayoutTree(node.GetLayoutBox());
+CORE_EXPORT void ShowLayoutTree(const blink::NGLayoutInputNode& node) {
+  ShowLayoutTree(node.GetLayoutBox());
 }
 
 #endif  // DCHECK_IS_ON()

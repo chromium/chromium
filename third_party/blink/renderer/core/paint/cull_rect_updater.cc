@@ -55,7 +55,7 @@ void CullRectUpdater::Update() {
 #if DCHECK_IS_ON()
   if (VLOG_IS_ON(2)) {
     VLOG(2) << "PaintLayer tree after cull rect update:";
-    showLayerTree(&starting_layer_);
+    ShowLayerTree(&starting_layer_);
   }
 #endif
 }

@@ -54,7 +54,7 @@ enum LayoutAsTextBehaviorFlags {
   kLayoutAsTextShowIDAndClass = 1 << 4,
   // Dump the tree in printing mode.
   kLayoutAsTextPrintingMode = 1 << 5,
-  // Don't update layout, to make it safe to call showLayerTree() from the
+  // Don't update layout, to make it safe to call ShowLayerTree() from the
   // debugger inside layout or painting code.
   kLayoutAsTextDontUpdateLayout = 1 << 6,
   // Print the various 'needs layout' bits on layoutObjects.

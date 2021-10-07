@@ -104,10 +104,10 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
         root_frame_view.GetLayoutView()) {
       VLOG(2) << "PrePaintTreeWalk::Walk(root_frame_view=" << &root_frame_view
               << ")\nPaintLayer tree:";
-      showLayerTree(root_frame_view.GetLayoutView()->Layer());
+      ShowLayerTree(root_frame_view.GetLayoutView()->Layer());
     }
     if (VLOG_IS_ON(1))
-      showAllPropertyTrees(root_frame_view);
+      ShowAllPropertyTrees(root_frame_view);
   }
 #endif
 
@@ -165,7 +165,7 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
     if (VLOG_IS_ON(3) && needs_tree_builder_context_update) {
       VLOG(3) << "PrePaintTreeWalk::Walk(frame_view=" << &frame_view
               << ")\nLayout tree:";
-      showLayoutTree(view);
+      ShowLayoutTree(view);
       VLOG(3) << "Fragment tree:";
       ShowFragmentTree(*view);
     }

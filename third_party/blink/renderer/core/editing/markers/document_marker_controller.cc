@@ -1258,7 +1258,7 @@ void DocumentMarkerController::DidUpdateCharacterData(CharacterData* node,
 }  // namespace blink
 
 #if DCHECK_IS_ON()
-void showDocumentMarkers(const blink::DocumentMarkerController* controller) {
+void ShowDocumentMarkers(const blink::DocumentMarkerController* controller) {
   if (controller)
     controller->ShowMarkers();
 }

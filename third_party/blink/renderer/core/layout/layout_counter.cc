@@ -875,7 +875,7 @@ CounterMap* LayoutCounter::GetCounterMap(LayoutObject* object) {
 
 #if DCHECK_IS_ON()
 
-void showCounterLayoutTree(const blink::LayoutObject* layout_object,
+void ShowCounterLayoutTree(const blink::LayoutObject* layout_object,
                            const char* counter_name) {
   if (!layout_object)
     return;

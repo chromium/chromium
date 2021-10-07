@@ -1541,8 +1541,8 @@ class PaintLayerListMutationDetector {
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-CORE_EXPORT void showLayerTree(const blink::PaintLayer*);
-CORE_EXPORT void showLayerTree(const blink::LayoutObject*);
+CORE_EXPORT void ShowLayerTree(const blink::PaintLayer*);
+CORE_EXPORT void ShowLayerTree(const blink::LayoutObject*);
 #endif
 
 namespace cppgc {

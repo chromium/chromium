@@ -223,7 +223,7 @@ class CORE_EXPORT DocumentMarkerController final
 }  // namespace blink
 
 #if DCHECK_IS_ON()
-void showDocumentMarkers(const blink::DocumentMarkerController*);
+void ShowDocumentMarkers(const blink::DocumentMarkerController*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_DOCUMENT_MARKER_CONTROLLER_H_

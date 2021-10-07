@@ -444,7 +444,7 @@ static void ShowTreeAndMark(const CounterNode* node) {
 
 #if DCHECK_IS_ON()
 
-void showCounterTree(const blink::CounterNode* counter) {
+void ShowCounterTree(const blink::CounterNode* counter) {
   if (counter)
     ShowTreeAndMark(counter);
   else

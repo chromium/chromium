@@ -2126,12 +2126,12 @@ std::ostream& operator<<(std::ostream& out, const LayoutObject* object) {
 void LayoutObject::ShowTreeForThis() const {
   NOT_DESTROYED();
   if (GetNode())
-    ::showTree(GetNode());
+    ::ShowTree(GetNode());
 }
 
 void LayoutObject::ShowLayoutTreeForThis() const {
   NOT_DESTROYED();
-  showLayoutTree(this, nullptr);
+  ShowLayoutTree(this, nullptr);
 }
 
 void LayoutObject::ShowLineTreeForThis() const {
@@ -5082,7 +5082,7 @@ bool IsListBox(const LayoutObject* object) {
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::LayoutObject* object) {
+void ShowTree(const blink::LayoutObject* object) {
   if (getenv("RUNNING_UNDER_RR")) {
     // Printing timestamps requires an IPC to get the local time, which
     // does not work in an rr replay session. Just disable timestamp printing
@@ -5099,7 +5099,7 @@ void showTree(const blink::LayoutObject* object) {
     DLOG(INFO) << "Cannot showTree. Root is (nil)";
 }
 
-void showLineTree(const blink::LayoutObject* object) {
+void ShowLineTree(const blink::LayoutObject* object) {
   if (getenv("RUNNING_UNDER_RR")) {
     // Printing timestamps requires an IPC to get the local time, which
     // does not work in an rr replay session. Just disable timestamp printing
@@ -5116,11 +5116,11 @@ void showLineTree(const blink::LayoutObject* object) {
     DLOG(INFO) << "Cannot showLineTree. Root is (nil)";
 }
 
-void showLayoutTree(const blink::LayoutObject* object1) {
-  showLayoutTree(object1, nullptr);
+void ShowLayoutTree(const blink::LayoutObject* object1) {
+  ShowLayoutTree(object1, nullptr);
 }
 
-void showLayoutTree(const blink::LayoutObject* object1,
+void ShowLayoutTree(const blink::LayoutObject* object1,
                     const blink::LayoutObject* object2) {
   if (getenv("RUNNING_UNDER_RR")) {
     // Printing timestamps requires an IPC to get the local time, which

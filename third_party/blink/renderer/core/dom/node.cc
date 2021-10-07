@@ -3401,21 +3401,21 @@ void Node::Trace(Visitor* visitor) const {
 
 #if DCHECK_IS_ON()
 
-void showNode(const blink::Node* node) {
+void ShowNode(const blink::Node* node) {
   if (node)
     LOG(INFO) << *node;
   else
     LOG(INFO) << "Cannot showNode for <null>";
 }
 
-void showTree(const blink::Node* node) {
+void ShowTree(const blink::Node* node) {
   if (node)
     LOG(INFO) << "\n" << node->ToTreeStringForThis().Utf8();
   else
     LOG(INFO) << "Cannot showTree for <null>";
 }
 
-void showNodePath(const blink::Node* node) {
+void ShowNodePath(const blink::Node* node) {
   if (node) {
     std::stringstream stream;
     node->PrintNodePathTo(stream);

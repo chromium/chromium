@@ -218,7 +218,7 @@ using RangeVector = HeapVector<Member<Range>>;
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::Range*);
+void ShowTree(const blink::Range*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_RANGE_H_

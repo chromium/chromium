@@ -368,14 +368,14 @@ bool CanUseInlineBox(const LayoutObject& node) {
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::InlineBox* b) {
+void ShowTree(const blink::InlineBox* b) {
   if (b)
     b->ShowTreeForThis();
   else
     fprintf(stderr, "Cannot showTree for (nil) InlineBox.\n");
 }
 
-void showLineTree(const blink::InlineBox* b) {
+void ShowLineTree(const blink::InlineBox* b) {
   if (b)
     b->ShowLineTreeForThis();
   else

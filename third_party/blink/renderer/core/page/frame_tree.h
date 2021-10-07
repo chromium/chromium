@@ -124,7 +124,7 @@ class CORE_EXPORT FrameTree final {
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showFrameTree(const blink::Frame*);
+void ShowFrameTree(const blink::Frame*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FRAME_TREE_H_

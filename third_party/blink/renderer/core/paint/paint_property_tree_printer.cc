@@ -222,49 +222,49 @@ void UpdateDebugNames(const LayoutObject& object,
 
 }  // namespace blink
 
-CORE_EXPORT void showAllPropertyTrees(const blink::LocalFrameView& rootFrame) {
-  showTransformPropertyTree(rootFrame);
-  showClipPropertyTree(rootFrame);
-  showEffectPropertyTree(rootFrame);
-  showScrollPropertyTree(rootFrame);
+CORE_EXPORT void ShowAllPropertyTrees(const blink::LocalFrameView& rootFrame) {
+  ShowTransformPropertyTree(rootFrame);
+  ShowClipPropertyTree(rootFrame);
+  ShowEffectPropertyTree(rootFrame);
+  ShowScrollPropertyTree(rootFrame);
 }
 
-void showTransformPropertyTree(const blink::LocalFrameView& rootFrame) {
+void ShowTransformPropertyTree(const blink::LocalFrameView& rootFrame) {
   LOG(INFO) << "Transform tree:\n"
-            << transformPropertyTreeAsString(rootFrame).Utf8();
+            << TransformPropertyTreeAsString(rootFrame).Utf8();
 }
 
-void showClipPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(INFO) << "Clip tree:\n" << clipPropertyTreeAsString(rootFrame).Utf8();
+void ShowClipPropertyTree(const blink::LocalFrameView& rootFrame) {
+  LOG(INFO) << "Clip tree:\n" << ClipPropertyTreeAsString(rootFrame).Utf8();
 }
 
-void showEffectPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(INFO) << "Effect tree:\n" << effectPropertyTreeAsString(rootFrame).Utf8();
+void ShowEffectPropertyTree(const blink::LocalFrameView& rootFrame) {
+  LOG(INFO) << "Effect tree:\n" << EffectPropertyTreeAsString(rootFrame).Utf8();
 }
 
-void showScrollPropertyTree(const blink::LocalFrameView& rootFrame) {
-  LOG(INFO) << "Scroll tree:\n" << scrollPropertyTreeAsString(rootFrame).Utf8();
+void ShowScrollPropertyTree(const blink::LocalFrameView& rootFrame) {
+  LOG(INFO) << "Scroll tree:\n" << ScrollPropertyTreeAsString(rootFrame).Utf8();
 }
 
-String transformPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+String TransformPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter<
              blink::TransformPaintPropertyNodeOrAlias>()
       .TreeAsString(rootFrame);
 }
 
-String clipPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+String ClipPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter<
              blink::ClipPaintPropertyNodeOrAlias>()
       .TreeAsString(rootFrame);
 }
 
-String effectPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+String EffectPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter<
              blink::EffectPaintPropertyNodeOrAlias>()
       .TreeAsString(rootFrame);
 }
 
-String scrollPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
+String ScrollPropertyTreeAsString(const blink::LocalFrameView& rootFrame) {
   return blink::FrameViewPropertyTreePrinter<blink::ScrollPaintPropertyNode>()
       .TreeAsString(rootFrame);
 }

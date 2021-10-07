@@ -3950,7 +3950,7 @@ void PaintLayer::AncestorDependentCompositingInputs::Trace(
 }  // namespace blink
 
 #if DCHECK_IS_ON()
-void showLayerTree(const blink::PaintLayer* layer) {
+void ShowLayerTree(const blink::PaintLayer* layer) {
   if (!layer) {
     LOG(ERROR) << "Cannot showLayerTree. Root is (nil)";
     return;
@@ -3976,11 +3976,11 @@ void showLayerTree(const blink::PaintLayer* layer) {
   }
 }
 
-void showLayerTree(const blink::LayoutObject* layoutObject) {
+void ShowLayerTree(const blink::LayoutObject* layoutObject) {
   if (!layoutObject) {
     LOG(ERROR) << "Cannot showLayerTree. Root is (nil)";
     return;
   }
-  showLayerTree(layoutObject->EnclosingLayer());
+  ShowLayerTree(layoutObject->EnclosingLayer());
 }
 #endif

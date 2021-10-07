@@ -4609,12 +4609,12 @@ CORE_EXPORT bool IsListBox(const LayoutObject* object);
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-CORE_EXPORT void showTree(const blink::LayoutObject*);
-CORE_EXPORT void showLineTree(const blink::LayoutObject*);
-CORE_EXPORT void showLayoutTree(const blink::LayoutObject* object1);
+CORE_EXPORT void ShowTree(const blink::LayoutObject*);
+CORE_EXPORT void ShowLineTree(const blink::LayoutObject*);
+CORE_EXPORT void ShowLayoutTree(const blink::LayoutObject* object1);
 // We don't make object2 an optional parameter so that showLayoutTree
 // can be called from gdb easily.
-CORE_EXPORT void showLayoutTree(const blink::LayoutObject* object1,
+CORE_EXPORT void ShowLayoutTree(const blink::LayoutObject* object1,
                                 const blink::LayoutObject* object2);
 
 #endif

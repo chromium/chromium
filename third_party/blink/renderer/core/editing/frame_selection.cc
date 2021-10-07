@@ -1312,11 +1312,11 @@ void FrameSelection::MarkCacheDirty() {
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::FrameSelection& sel) {
+void ShowTree(const blink::FrameSelection& sel) {
   sel.ShowTreeForThis();
 }
 
-void showTree(const blink::FrameSelection* sel) {
+void ShowTree(const blink::FrameSelection* sel) {
   if (sel)
     sel->ShowTreeForThis();
   else

@@ -1181,9 +1181,9 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const Node*);
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showNode(const blink::Node*);
-void showTree(const blink::Node*);
-void showNodePath(const blink::Node*);
+void ShowNode(const blink::Node*);
+void ShowTree(const blink::Node*);
+void ShowNodePath(const blink::Node*);
 #endif
 
 namespace cppgc {

@@ -514,8 +514,8 @@ bool CanUseInlineBox(const LayoutObject&);
 
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
-void showTree(const blink::InlineBox*);
-void showLineTree(const blink::InlineBox*);
+void ShowTree(const blink::InlineBox*);
+void ShowLineTree(const blink::InlineBox*);
 #endif
 
 namespace cppgc {

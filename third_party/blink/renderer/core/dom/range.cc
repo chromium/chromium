@@ -1796,7 +1796,7 @@ void Range::Trace(Visitor* visitor) const {
 
 #if DCHECK_IS_ON()
 
-void showTree(const blink::Range* range) {
+void ShowTree(const blink::Range* range) {
   if (range && range->BoundaryPointsValid()) {
     LOG(INFO) << "\n"
               << range->startContainer()
