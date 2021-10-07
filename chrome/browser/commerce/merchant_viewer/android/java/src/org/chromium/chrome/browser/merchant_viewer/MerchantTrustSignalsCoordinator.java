@@ -77,7 +77,8 @@ public class MerchantTrustSignalsCoordinator
             MessageDispatcher messageDispatcher, ObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Profile> profileSupplier, MerchantTrustMetrics metrics,
             IntentRequestTracker intentRequestTracker) {
-        this(context, windowAndroid, new MerchantTrustMessageScheduler(messageDispatcher, metrics),
+        this(context, windowAndroid,
+                new MerchantTrustMessageScheduler(messageDispatcher, metrics, tabSupplier),
                 tabSupplier, new MerchantTrustSignalsDataProvider(), profileSupplier, metrics,
                 new MerchantTrustBottomSheetCoordinator(context, windowAndroid,
                         bottomSheetController, tabSupplier, layoutView, metrics,

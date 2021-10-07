@@ -11,7 +11,9 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
@@ -23,14 +25,16 @@ public class MerchantTrustMessageScheduler {
 
     private final MessageDispatcher mMessageDispatcher;
     private final MerchantTrustMetrics mMetrics;
+    private final ObservableSupplier<Tab> mTabSupplier;
     private Handler mEnqueueMessageTimer;
     private Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
 
-    public MerchantTrustMessageScheduler(
-            MessageDispatcher messageDispatcher, MerchantTrustMetrics metrics) {
+    public MerchantTrustMessageScheduler(MessageDispatcher messageDispatcher,
+            MerchantTrustMetrics metrics, ObservableSupplier<Tab> tabSupplier) {
         mEnqueueMessageTimer = new Handler(ThreadUtils.getUiThreadLooper());
         mMessageDispatcher = messageDispatcher;
         mMetrics = metrics;
+        mTabSupplier = tabSupplier;
     }
 
     /** Cancels any scheduled messages. */
@@ -53,7 +57,9 @@ public class MerchantTrustMessageScheduler {
                 new Pair<MerchantTrustMessageContext, PropertyModel>(messageContext, model));
         mMetrics.recordMetricsForMessagePrepared();
         mEnqueueMessageTimer.postDelayed(() -> {
-            if (messageContext.isValid()) {
+            if (messageContext.isValid() && mTabSupplier.hasValue()
+                    && messageContext.getWebContents().equals(
+                            mTabSupplier.get().getWebContents())) {
                 mMessageDispatcher.enqueueMessage(
                         model, messageContext.getWebContents(), MessageScopeType.NAVIGATION, false);
                 mMetrics.recordMetricsForMessageShown();
