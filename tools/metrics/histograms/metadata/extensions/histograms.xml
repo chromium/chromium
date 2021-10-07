@@ -2838,6 +2838,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.Management_Refresh" units="ms" expires_after="M100">
+  <owner>jam@chromium.org</owner>
+  <owner>cduvall@chromium.org</owner>
+  <summary>Measures how long ExtensionManagement::Refresh takes.</summary>
+</histogram>
+
 <histogram name="Extensions.ManifestFetchFailureRetryCountGoogleUrl"
     units="units" expires_after="M77">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

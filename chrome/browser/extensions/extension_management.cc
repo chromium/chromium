@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/syslog_logging.h"
@@ -405,6 +406,7 @@ bool ExtensionManagement::CheckMinimumVersion(
 
 void ExtensionManagement::Refresh() {
   TRACE_EVENT0("browser,startup", "ExtensionManagement::Refresh");
+  SCOPED_UMA_HISTOGRAM_TIMER("Extensions.Management_Refresh");
   // Load all extension management settings preferences.
   const base::ListValue* allowed_list_pref =
       static_cast<const base::ListValue*>(LoadPreference(
