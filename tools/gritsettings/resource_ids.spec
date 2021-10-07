@@ -531,7 +531,7 @@
   # Both projector_app_bundle_resources.grd and projector_app_bundle_mock_resources.grd
   # start with the same id because only one of them is built depending on if
   # src_internal is available. Lower bound for number of resource ids is number
-  # of languages (74).
+  # of languages (79).
   "chromeos/components/projector_app/resources/prod/projector_app_bundle_resources.grd": {
     "META": {"sizes": {"includes": [120],}}, # Relies on src-internal.
     "includes": [3420],
@@ -544,7 +544,7 @@
   # START components/ section.
   "components/arc/input_overlay/resources/input_overlay_resources.grd": {
     # Big alignment at start of section.
-    "META": {"align": 100},
+    "META": {"align": 1000},
     "includes": [3500],
   },
   # Chromium strings and Google Chrome strings must start at the same id.
