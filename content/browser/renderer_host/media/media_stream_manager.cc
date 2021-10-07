@@ -895,9 +895,9 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
       render_process_id, render_frame_id, requester_id, page_request_id,
       false /* user gesture */, std::move(audio_stream_selection_info_ptr),
       blink::MEDIA_DEVICE_ACCESS, controls,
-      MediaDeviceSaltAndOrigin{std::string() /* salt */,
-                               std::string() /* group_id_salt */,
-                               security_origin, true /* has_focus */});
+      MediaDeviceSaltAndOrigin{
+          std::string() /* salt */, std::string() /* group_id_salt */,
+          security_origin, true /* has_focus */, false /* is_background */});
 
   request->media_access_request_cb = std::move(callback);
   const std::string& label = AddRequest(std::move(request));

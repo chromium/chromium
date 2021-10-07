@@ -331,7 +331,8 @@ void MediaStreamDispatcherHost::DoGenerateStream(
       is_gum_request &&
       base::FeatureList::IsEnabled(features::kUserMediaCaptureOnFocus) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseFakeUIForMediaStream);
+          switches::kUseFakeUIForMediaStream) &&
+      !salt_and_origin.is_background;
   if (needs_focus && !salt_and_origin.has_focus) {
     pending_requests_.push_back(std::make_unique<PendingAccessRequest>(
         page_request_id, controls, user_gesture,

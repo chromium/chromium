@@ -271,6 +271,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
         audio_system_.get(), audio_manager_->GetTaskRunner(),
         std::move(mock_video_capture_provider));
     focus_ = true;
+    background_ = false;
     host_ = std::make_unique<MockMediaStreamDispatcherHost>(
         kProcessId, kRenderId, media_stream_manager_.get());
     host_->set_salt_and_origin_callback_for_testing(
@@ -331,7 +332,8 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   MediaDeviceSaltAndOrigin GetSaltAndOrigin(int /* process_id */,
                                             int /* frame_id */) {
     return MediaDeviceSaltAndOrigin(browser_context_->GetMediaDeviceIDSalt(),
-                                    "fake_group_id_salt", origin_, focus_);
+                                    "fake_group_id_salt", origin_, focus_,
+                                    background_);
   }
 
  protected:
@@ -460,6 +462,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   std::vector<std::string> stub_video_device_ids_;
   url::Origin origin_;
   bool focus_;
+  bool background_;
   MockVideoCaptureProvider* mock_video_capture_provider_;
 };
 
@@ -640,6 +643,34 @@ TEST_F(MediaStreamDispatcherHostTest, WebContentsNotFocused) {
           blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN));
   host_->OnGenerateStream(kPageRequestId, controls, run_loop.QuitClosure());
   run_loop.RunUntilIdle();
+}
+
+TEST_F(MediaStreamDispatcherHostTest, WebContentsNotFocusedInBackgroundPage) {
+  blink::StreamControls controls(true, true);
+
+  SetupFakeUI(true);
+
+  focus_ = false;
+  background_ = true;
+  host_->set_salt_and_origin_callback_for_testing(
+      base::BindRepeating(&MediaStreamDispatcherHostTest::GetSaltAndOrigin,
+                          base::Unretained(this)));
+
+  base::RunLoop run_loop;
+  host_->OnGenerateStream(kPageRequestId, controls, run_loop.QuitClosure());
+
+  int expected_audio_array_size =
+      (controls.audio.requested && !audio_device_descriptions_.empty()) ? 1 : 0;
+  int expected_video_array_size =
+      (controls.video.requested && !stub_video_device_ids_.empty()) ? 1 : 0;
+  EXPECT_CALL(*host_, OnStreamGenerationSuccess(kPageRequestId,
+                                                expected_audio_array_size,
+                                                expected_video_array_size))
+      .Times(1);
+
+  run_loop.Run();
+  EXPECT_EQ(host_->audio_devices_.size(), 1u);
+  EXPECT_EQ(host_->video_devices_.size(), 1u);
 }
 
 TEST_F(MediaStreamDispatcherHostTest, WebContentsFocused) {
