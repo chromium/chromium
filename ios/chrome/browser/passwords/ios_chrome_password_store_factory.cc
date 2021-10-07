@@ -98,13 +98,10 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
       ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
       base::Seconds(60), base::NullCallback());
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kFillingAcrossAffiliatedWebsites)) {
-    password_manager::AffiliationService* affiliation_service =
-        IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
-    password_manager::EnableAffiliationBasedMatching(store.get(),
-                                                     affiliation_service);
-  }
+  password_manager::AffiliationService* affiliation_service =
+      IOSChromeAffiliationServiceFactory::GetForBrowserState(context);
+  password_manager::EnableAffiliationBasedMatching(store.get(),
+                                                   affiliation_service);
   DelayReportingPasswordStoreMetrics(
       ChromeBrowserState::FromBrowserState(context));
   return store;

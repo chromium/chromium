@@ -115,13 +115,10 @@ PasswordStoreFactory::BuildServiceInstanceFor(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
       profile->GetPrefs(), base::Seconds(60), network_context_getter);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kFillingAcrossAffiliatedWebsites)) {
-    password_manager::AffiliationService* affiliation_service =
-        AffiliationServiceFactory::GetForProfile(profile);
-    password_manager::EnableAffiliationBasedMatching(ps.get(),
-                                                     affiliation_service);
-  }
+  password_manager::AffiliationService* affiliation_service =
+      AffiliationServiceFactory::GetForProfile(profile);
+  password_manager::EnableAffiliationBasedMatching(ps.get(),
+                                                   affiliation_service);
   DelayReportingPasswordStoreMetrics(profile);
   return ps;
 }
