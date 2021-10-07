@@ -8,18 +8,24 @@
     background: var(--cros-bg-color);
     display: flex;
     height: 64px;
-    padding-top: 8px;
     width: 100%;
   }
 
   :host([is-narrow]) #leftContent {
-    align-items: center;
-    display: flex;
-    padding-inline-start: 0;
+    padding-inline-start: 14px;
+  }
+
+  :host([is-narrow]) #title {
+    margin-inline-start: 8px;
   }
 
   :host(:not([is-narrow])) #leftContent {
-    padding-inline-start: 28px;
+    padding-inline-start: 20px;
+  }
+
+  #leftContent {
+    align-items: center;
+    display: flex;
   }
 
   #title {
