@@ -1,97 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.ui.widget.ViewLookupCachingFrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<org.chromium.ui.widget.ViewLookupCachingFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
   <LinearLayout
-    android:layout_height="match_parent"
-    android:layout_width="match_parent"
-    android:padding="24dp"
-    android:orientation="vertical">
-
-    <LinearLayout
-      android:layout_height="wrap_content"
       android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:padding="24dp"
       android:orientation="horizontal">
 
-      <org.chromium.ui.widget.ChromeImageView
-          android:id="@+id/title_start_icon"
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/bookmark_select_folder"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_gravity="center_vertical|start"
+        android:background="@drawable/bookmark_save_flow_background"
+        android:foreground="@drawable/bookmark_save_flow_ripple"
+        android:scaleType="centerInside" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|start"
+        android:paddingStart="12dp"
+        android:orientation="horizontal">
+
+      <LinearLayout
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical|end" />
+          android:orientation="vertical">
 
-      <TextView
-          android:id="@+id/title_text"
-          android:layout_width="0dp"
-          android:layout_height="wrap_content"
-          android:ellipsize="end"
-          android:layout_gravity="center_vertical"
-          android:textAppearance="@style/TextAppearance.HeadlineThick"
-          android:layout_weight="1" />
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.HeadlineThick" />
+
+        <TextView
+            android:id="@+id/subtitle_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+      </LinearLayout>
 
       <TextView
           android:id="@+id/bookmark_edit"
-          android:text="@string/edit_bookmark"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:layout_gravity="center_vertical|end"
+          android:layout_weight="1"
+          android:layout_gravity="center_vertical"
+          android:gravity="end"
+          android:text="@string/bookmark_item_edit"
           android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
-
     </LinearLayout>
-
-    <FrameLayout
-        android:background="@drawable/bookmark_save_flow_background"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_marginTop="16dp">
-
-      <LinearLayout
-        android:id="@+id/bookmark_select_folder"
-        android:background="@drawable/bookmark_save_flow_ripple"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:padding="16dp"
-        android:orientation="horizontal">
-
-        <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/bookmark_folder_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical" />
-
-        <TextView
-            android:id="@+id/bookmark_folder_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
-            android:textAppearance="@style/TextAppearance.TextLarge"
-            android:layout_weight="1" />
-
-        <org.chromium.ui.widget.ChromeImageView
-            android:id="@+id/bookmark_folder_edit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_edit_24dp"
-            android:tint="@color/default_icon_color_tint_list" />
-      </LinearLayout>
-    </FrameLayout>
-
-    <TextView
-      android:id="@+id/subtitle_text"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:ellipsize="end"
-      android:layout_gravity="center_vertical"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-      android:visibility="gone" />
   </LinearLayout>
 </org.chromium.ui.widget.ViewLookupCachingFrameLayout>

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.bookmarks;
 import android.content.Context;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkModelObserver;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -60,16 +61,15 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver {
 
     private void bindBookmarkProperties(BookmarkId bookmarkId) {
         BookmarkItem item = mBookmarkModel.getBookmarkById(bookmarkId);
-        mPropertyModel.set(BookmarkSaveFlowProperties.TITLE_START_ICON,
-                BookmarkUtils.getSaveFlowStartIconForBookmark(bookmarkId));
+        String folderName = mBookmarkModel.getBookmarkTitle(item.getParentId());
         mPropertyModel.set(BookmarkSaveFlowProperties.TITLE_TEXT,
                 BookmarkUtils.getSaveFlowTitleForBookmark(mContext, bookmarkId));
-        mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_START_ICON,
+        mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON,
                 BookmarkUtils.getFolderIcon(mContext, bookmarkId.getType()));
-        mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_TEXT,
-                mBookmarkModel.getBookmarkTitle(item.getParentId()));
+        mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED, item.isMovable());
         mPropertyModel.set(BookmarkSaveFlowProperties.SUBTITLE_TEXT,
-                BookmarkUtils.getSaveFlowSubtitleForBookmark(bookmarkId));
+                mContext.getResources().getString(
+                        R.string.bookmark_page_saved_location, folderName));
     }
 
     void destroy() {

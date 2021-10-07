@@ -23,26 +23,22 @@ public class BookmarkSaveFlowViewBinder
             view.findViewById(R.id.bookmark_edit)
                     .setOnClickListener(
                             model.get(BookmarkSaveFlowProperties.EDIT_ONCLICK_LISTENER));
+        } else if (propertyKey == BookmarkSaveFlowProperties.FOLDER_SELECT_ICON) {
+            ((ImageView) view.findViewById(R.id.bookmark_select_folder))
+                    .setImageDrawable(model.get(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON));
+        } else if (propertyKey == BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED) {
+            ((ImageView) view.findViewById(R.id.bookmark_select_folder))
+                    .setEnabled(model.get(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED));
         } else if (propertyKey == BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER) {
             view.findViewById(R.id.bookmark_select_folder)
                     .setOnClickListener(
                             model.get(BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER));
-        } else if (propertyKey == BookmarkSaveFlowProperties.TITLE_START_ICON) {
-            ((ImageView) view.findViewById(R.id.title_start_icon))
-                    .setImageDrawable(model.get(BookmarkSaveFlowProperties.TITLE_START_ICON));
-        } else if (propertyKey == BookmarkSaveFlowProperties.TITLE_TEXT) {
-            ((TextView) view.findViewById(R.id.title_text))
-                    .setText(model.get(BookmarkSaveFlowProperties.TITLE_TEXT));
-        } else if (propertyKey == BookmarkSaveFlowProperties.FOLDER_SELECT_START_ICON) {
-            ((ImageView) view.findViewById(R.id.bookmark_folder_icon))
-                    .setImageDrawable(
-                            model.get(BookmarkSaveFlowProperties.FOLDER_SELECT_START_ICON));
-        } else if (propertyKey == BookmarkSaveFlowProperties.FOLDER_SELECT_TEXT) {
-            ((TextView) view.findViewById(R.id.bookmark_folder_text))
-                    .setText(model.get(BookmarkSaveFlowProperties.FOLDER_SELECT_TEXT));
         } else if (propertyKey == BookmarkSaveFlowProperties.SUBTITLE_TEXT) {
             ((TextView) view.findViewById(R.id.subtitle_text))
                     .setText(model.get(BookmarkSaveFlowProperties.SUBTITLE_TEXT));
+        } else if (propertyKey == BookmarkSaveFlowProperties.TITLE_TEXT) {
+            ((TextView) view.findViewById(R.id.title_text))
+                    .setText(model.get(BookmarkSaveFlowProperties.TITLE_TEXT));
         }
     }
 }

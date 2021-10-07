@@ -3395,6 +3395,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_BOOKMARKS_SAVE_FLOW_CLOSED_DESCRIPTION" desc="The accessibility string read when the bookmark bottom sheet save flow is closed.">
         Bookmark save flow closed
       </message>
+      <message name="IDS_BOOKMARK_PAGE_SAVED_LOCATION" desc="App-based message shown after user adds a new bookmark to specify the location of a bookmark. [CHAR_LIMIT=32]">
+        in <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph>
+      </message>
+
       <!-- Read later strings -->
       <message name="IDS_READING_LIST_TITLE_NEW" desc="The title for the reading list with a new text.">
         Reading list <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
