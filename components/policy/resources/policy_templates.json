@@ -27868,7 +27868,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       'owners': ['mpetrisor@chromium.org', 'hendrich@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:96-'],
       'device_only': True,
       'features': {
         'dynamic_refresh': True,
@@ -27904,7 +27904,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
           'pattern': '^[a-p]{32}$',
         },
       },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:96-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
