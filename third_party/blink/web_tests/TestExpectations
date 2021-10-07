@@ -7192,8 +7192,7 @@ crbug.com/1255679 http/tests/devtools/service-workers/service-workers-wasm-test.
 
 # Sheriff 2021-10-05
 crbug.com/1256701 [ Debug Linux ] fast/forms/form-invalid-url.html [ Failure Pass ]
-crbug.com/1256755 [ Win ] http/tests/xmlhttprequest/cross-origin-unsupported-url.html [ Failure Pass ]
-crbug.com/1256755 [ Mac11-arm64 ] http/tests/xmlhttprequest/cross-origin-unsupported-url.html [ Failure Pass ]
+crbug.com/1256755 http/tests/xmlhttprequest/cross-origin-unsupported-url.html [ Failure Pass ]
 crbug.com/1256770 [ Mac ] svg/dynamic-updates/SVGFEComponentTransferElement-dom-intercept-attr.html [ Failure Pass ]
 crbug.com/1256763 [ Win ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
 crbug.com/1256763 [ Mac ] virtual/exotic-color-space/images/color-profile-svg-fill-text.html [ Failure Pass ]
