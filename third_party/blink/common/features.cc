@@ -55,7 +55,7 @@ const base::Feature kPaintHolding{"PaintHolding",
 
 // Enable defer commits to avoid flash of unstyled content, for all navigation.
 const base::Feature kPaintHoldingCrossOrigin{"PaintHoldingCrossOrigin",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable eagerly setting up a CacheStorage interface pointer and
 // passing it to service workers on startup as an optimization.
