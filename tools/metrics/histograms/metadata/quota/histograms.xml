@@ -329,8 +329,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Time spent to an eviction round.</summary>
 </histogram>
 
-<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2021-10-10">
+<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2022-10-06">
   <owner>jarrydg@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Total disk space for the storage directory. Logged at irregular intervals.
   </summary>
