@@ -287,6 +287,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Download.InitiatedByWindowOpener"
     enum="DownloadInitiatedByWindowOpenerType" expires_after="M85">
+  <obsolete>
+    Expired after M85. No longer in use.
+  </obsolete>
   <owner>meacer@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>
@@ -304,13 +307,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Download.InsecureBlocking.Extensions"
-    enum="InsecureDownloadExtensions" expires_after="M94">
+    enum="InsecureDownloadExtensions" expires_after="2022-03-27">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <summary>
     Records file extension of download to support analysis for mixed content
-    file download blocking.
+    file download blocking. Warning: this histogram was expired from M94 through
+    M95; data may be missing.
   </summary>
 </histogram>
 
@@ -326,14 +330,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Download.InsecureBlocking.Verification"
-    enum="DownloadContentType" expires_after="M92">
+    enum="DownloadContentType" expires_after="2022-03-27">
+  <obsolete>
+    Expired after M92. No longer in use.
+  </obsolete>
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <summary>
     Records mime-type of download to support analysis for mixed content file
     download blocking. This is a temporary metric for investigating differences
-    in metrics.
+    in metrics. Warning: this histogram was expired from M92 through M95; data
+    may be missing.
   </summary>
 </histogram>
 
