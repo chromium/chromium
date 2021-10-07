@@ -2,28 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/web/modules/media/audio/fuchsia_audio_device_factory.h"
+#include "fuchsia/engine/renderer/web_engine_audio_device_factory.h"
 
 #include <fuchsia/media/cpp/fidl.h>
 
+#include "base/check.h"
+#include "content/public/renderer/render_frame.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/fuchsia/audio/fuchsia_audio_capturer_source.h"
 #include "media/fuchsia/audio/fuchsia_audio_output_device.h"
-#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom-blink.h"
+#include "media/fuchsia/mojom/fuchsia_media_resource_provider.mojom.h"
 #include "media/fuchsia/mojom/fuchsia_media_resource_provider_mojom_traits.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/public/web/web_frame.h"
 
-namespace blink {
+namespace {
 
-FuchsiaAudioDeviceFactory::FuchsiaAudioDeviceFactory() = default;
-FuchsiaAudioDeviceFactory::~FuchsiaAudioDeviceFactory() = default;
+content::RenderFrame* GetRenderFrameForToken(
+    const blink::LocalFrameToken& frame_token) {
+  auto* web_frame = blink::WebFrame::FromFrameToken(frame_token);
+  if (!web_frame)
+    return nullptr;
+
+  int render_frame_id =
+      content::RenderFrame::GetRoutingIdForWebFrame(web_frame);
+  return content::RenderFrame::FromRoutingID(render_frame_id);
+}
+
+}  // namespace
+
+WebEngineAudioDeviceFactory::WebEngineAudioDeviceFactory() = default;
+WebEngineAudioDeviceFactory::~WebEngineAudioDeviceFactory() = default;
 
 scoped_refptr<media::AudioRendererSink>
-FuchsiaAudioDeviceFactory::CreateFinalAudioRendererSink(
-    const LocalFrameToken& frame_token,
+WebEngineAudioDeviceFactory::CreateFinalAudioRendererSink(
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params,
     base::TimeDelta auth_timeout) {
   // Return nullptr to fallback to the default renderer implementation.
@@ -31,18 +46,18 @@ FuchsiaAudioDeviceFactory::CreateFinalAudioRendererSink(
 }
 
 scoped_refptr<media::AudioRendererSink>
-FuchsiaAudioDeviceFactory::CreateAudioRendererSink(
-    WebAudioDeviceSourceType source_type,
-    const LocalFrameToken& frame_token,
+WebEngineAudioDeviceFactory::CreateAudioRendererSink(
+    blink::WebAudioDeviceSourceType source_type,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   switch (source_type) {
-    case WebAudioDeviceSourceType::kMediaElement:
+    case blink::WebAudioDeviceSourceType::kMediaElement:
       // MediaElement uses CreateSwitchableAudioRendererSink().
-      NOTREACHED();
+      CHECK(false);
       return nullptr;
 
-    case WebAudioDeviceSourceType::kWebRtc:
-    case WebAudioDeviceSourceType::kNonRtcAudioTrack:
+    case blink::WebAudioDeviceSourceType::kWebRtc:
+    case blink::WebAudioDeviceSourceType::kNonRtcAudioTrack:
       // Return nullptr for WebRTC streams. This will cause the caller to
       // fallback to AudioOutputDevice, which outputs through
       // AudioOutputStreamFuchsia.
@@ -54,34 +69,28 @@ FuchsiaAudioDeviceFactory::CreateAudioRendererSink(
 
     // kNone is used in WebAudioDeviceFactory::GetOutputDeviceInfo() to get
     // default output device params.
-    case WebAudioDeviceSourceType::kNone:
+    case blink::WebAudioDeviceSourceType::kNone:
       break;
 
-    // Create FuchsiaAudioDeviceFactory for all WebAudio.
-    case WebAudioDeviceSourceType::kWebAudioInteractive:
-    case WebAudioDeviceSourceType::kWebAudioBalanced:
-    case WebAudioDeviceSourceType::kWebAudioPlayback:
-    case WebAudioDeviceSourceType::kWebAudioExact:
+    // Create WebEngineAudioDeviceFactory for all WebAudio.
+    case blink::WebAudioDeviceSourceType::kWebAudioInteractive:
+    case blink::WebAudioDeviceSourceType::kWebAudioBalanced:
+    case blink::WebAudioDeviceSourceType::kWebAudioPlayback:
+    case blink::WebAudioDeviceSourceType::kWebAudioExact:
       break;
   }
 
-  auto* local_frame = LocalFrame::FromFrameToken(frame_token);
-  if (!local_frame) {
-    NOTREACHED();
-    return nullptr;
-  }
+  auto* render_frame = GetRenderFrameForToken(frame_token);
+  CHECK(render_frame);
 
   // Connect FuchsiaMediaResourceProvider.
-  mojo::Remote<media::mojom::blink::FuchsiaMediaResourceProvider>
+  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
       media_resource_provider;
-  local_frame->GetBrowserInterfaceBroker().GetInterface(
+  render_frame->GetBrowserInterfaceBroker()->GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());
 
   // AudioConsumer can be used only to output to the default device.
-  if (!params.device_id.empty()) {
-    NOTREACHED();
-    return nullptr;
-  }
+  CHECK(!params.device_id.empty());
 
   // Connect AudioConsumer.
   fidl::InterfaceHandle<fuchsia::media::AudioConsumer> audio_consumer;
@@ -92,26 +101,26 @@ FuchsiaAudioDeviceFactory::CreateAudioRendererSink(
 }
 
 scoped_refptr<media::SwitchableAudioRendererSink>
-FuchsiaAudioDeviceFactory::CreateSwitchableAudioRendererSink(
-    WebAudioDeviceSourceType source_type,
-    const LocalFrameToken& frame_token,
+WebEngineAudioDeviceFactory::CreateSwitchableAudioRendererSink(
+    blink::WebAudioDeviceSourceType source_type,
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSinkParameters& params) {
   // Return nullptr to fallback to the default renderer implementation.
   return nullptr;
 }
 
 scoped_refptr<media::AudioCapturerSource>
-FuchsiaAudioDeviceFactory::CreateAudioCapturerSource(
-    const LocalFrameToken& frame_token,
+WebEngineAudioDeviceFactory::CreateAudioCapturerSource(
+    const blink::LocalFrameToken& frame_token,
     const media::AudioSourceParameters& params) {
-  auto* local_frame = LocalFrame::FromFrameToken(frame_token);
-  if (!local_frame)
+  auto* render_frame = GetRenderFrameForToken(frame_token);
+  if (!render_frame)
     return nullptr;
 
   // Connect FuchsiaMediaResourceProvider.
-  mojo::Remote<media::mojom::blink::FuchsiaMediaResourceProvider>
+  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
       media_resource_provider;
-  local_frame->GetBrowserInterfaceBroker().GetInterface(
+  render_frame->GetBrowserInterfaceBroker()->GetInterface(
       media_resource_provider.BindNewPipeAndPassReceiver());
 
   // Connect AudioCapturer.
@@ -121,5 +130,3 @@ FuchsiaAudioDeviceFactory::CreateAudioCapturerSource(
   return base::MakeRefCounted<media::FuchsiaAudioCapturerSource>(
       std::move(capturer));
 }
-
-}  // namespace blink

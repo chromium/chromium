@@ -94,6 +94,7 @@ foreach(locale, locales_with_pseudolocales) {
 
 component("web_engine_core") {
   deps = [
+    ":audio_device_factory",
     ":fidl",
     ":mojom",
     ":switches",
@@ -277,6 +278,26 @@ component("web_engine_core") {
     "web_engine_main_delegate.cc",
     "web_engine_main_delegate.h",
   ]
+  visibility = [ ":*" ]
+}
+
+source_set("audio_device_factory") {
+  sources = [
+    "renderer/web_engine_audio_device_factory.cc",
+    "renderer/web_engine_audio_device_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/renderer",
+    "//media",
+    "//media/fuchsia/mojom",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public:blink",
+  ]
+
+  public_deps = [ "//third_party/blink/public/common" ]
+
   visibility = [ ":*" ]
 }
 

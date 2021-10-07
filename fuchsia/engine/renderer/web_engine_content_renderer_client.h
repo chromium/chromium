@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "components/cast_streaming/renderer/public/demuxer_provider.h"
 #include "content/public/renderer/content_renderer_client.h"
+#include "fuchsia/engine/renderer/web_engine_audio_device_factory.h"
 #include "fuchsia/engine/renderer/web_engine_render_frame_observer.h"
 
 namespace memory_pressure {
@@ -55,6 +56,10 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
 
   bool RunClosureWhenInForeground(content::RenderFrame* render_frame,
                                   base::OnceClosure closure);
+
+  // Overrides the default Content/Blink audio pipeline, to allow Renderers to
+  // use the AudioConsumer service directly.
+  WebEngineAudioDeviceFactory audio_device_factory_;
 
   // Handles interaction with cast_streaming component.
   cast_streaming::DemuxerProvider cast_streaming_demuxer_provider_;
