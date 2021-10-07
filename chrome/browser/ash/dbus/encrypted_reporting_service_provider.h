@@ -48,7 +48,7 @@ class EncryptedReportingServiceProvider
 
  private:
   // Called when DBus Method is invoked.
-  void RequestUploadEncryptedRecord(
+  void RequestUploadEncryptedRecords(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
 

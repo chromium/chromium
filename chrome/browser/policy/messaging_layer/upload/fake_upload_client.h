@@ -22,7 +22,7 @@ class FakeUploadClient : public UploadClient {
                      CreatedCallback created_cb);
 
   Status EnqueueUpload(
-      bool need_encryption_keys,
+      bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> records) override;
 
  private:

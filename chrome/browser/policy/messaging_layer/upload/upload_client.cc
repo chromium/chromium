@@ -42,15 +42,15 @@ void UploadClient::Create(
 }
 
 Status UploadClient::EnqueueUpload(
-    bool need_encryption_keys,
+    bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
   DCHECK(records);
 
-  if (records->empty() && !need_encryption_keys) {
+  if (records->empty() && !need_encryption_key) {
     return Status::StatusOK();
   }
 
-  return dm_server_upload_service_->EnqueueUpload(need_encryption_keys,
+  return dm_server_upload_service_->EnqueueUpload(need_encryption_key,
                                                   std::move(records));
 }
 

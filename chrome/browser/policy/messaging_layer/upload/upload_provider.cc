@@ -267,9 +267,7 @@ EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
     UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
     GetCloudPolicyClientCallback build_cloud_policy_client_cb,
     UploadClientBuilderCb upload_client_builder_cb)
-    : origin_thread_id_(base::PlatformThread::CurrentId()),
-      origin_thread_runner_(base::ThreadTaskRunnerHandle::Get()),
-      helper_(base::MakeRefCounted<UploadHelper>(
+    : helper_(base::MakeRefCounted<UploadHelper>(
           build_cloud_policy_client_cb,
           upload_client_builder_cb,
           report_successful_upload_cb,
@@ -281,16 +279,13 @@ EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
 
 EncryptedReportingUploadProvider::~EncryptedReportingUploadProvider() = default;
 
-void EncryptedReportingUploadProvider::RequestUploadEncryptedRecord(
+void EncryptedReportingUploadProvider::RequestUploadEncryptedRecords(
     bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records,
     base::OnceCallback<void(Status)> result_cb) {
-  DCHECK(OnOriginThread());
-
   DCHECK(helper_);
-  helper_->EnqueueUpload(
-      need_encryption_key, std::move(records),
-      base::BindPostTask(origin_thread_runner_, std::move(result_cb)));
+  helper_->EnqueueUpload(need_encryption_key, std::move(records),
+                         std::move(result_cb));
 }
 
 // static
@@ -298,9 +293,4 @@ EncryptedReportingUploadProvider::UploadClientBuilderCb
 EncryptedReportingUploadProvider::GetUploadClientBuilder() {
   return base::BindRepeating(&UploadClient::Create);
 }
-
-bool EncryptedReportingUploadProvider::OnOriginThread() const {
-  return base::PlatformThread::CurrentId() == origin_thread_id_;
-}
-
 }  // namespace reporting

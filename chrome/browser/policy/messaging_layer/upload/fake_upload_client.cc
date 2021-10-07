@@ -100,7 +100,7 @@ void FakeUploadClient::Create(
 }
 
 Status FakeUploadClient::EnqueueUpload(
-    bool need_encryption_keys,
+    bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records) {
   UploadEncryptedReportingRequestBuilder builder;
   for (auto record : *records) {

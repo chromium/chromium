@@ -28,7 +28,7 @@ class EncryptedReportingUploadProvider {
   // server. In order to do this it requires a `policy::CloudPolicyClient`.
   // |policy::CloudPolicyClient| may or may not be ready, so we attempt to get
   // it, and if we fail we repost with a backoff. Until an UploadClient is
-  // built, all requests to `RequestUploadEncryptedRecord` will fail.
+  // built, all requests to `RequestUploadEncryptedRecords` will fail.
   using UploadClientBuilderCb =
       base::RepeatingCallback<void(policy::CloudPolicyClient*,
                                    UploadClient::ReportSuccessfulUploadCallback,
@@ -49,7 +49,7 @@ class EncryptedReportingUploadProvider {
   virtual ~EncryptedReportingUploadProvider();
 
   // Called to upload records and/or request encryption key.
-  void RequestUploadEncryptedRecord(
+  void RequestUploadEncryptedRecords(
       bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> records,
       base::OnceCallback<void(Status)> result_cb);
@@ -60,13 +60,6 @@ class EncryptedReportingUploadProvider {
 
   // Default provider of upload client builder.
   static UploadClientBuilderCb GetUploadClientBuilder();
-
-  // Returns true if called on the origin thread.
-  bool OnOriginThread() const;
-
-  // Origin thread and task runner.
-  const base::PlatformThreadId origin_thread_id_;
-  const scoped_refptr<base::SingleThreadTaskRunner> origin_thread_runner_;
 
   // UploadHelper object.
   const scoped_refptr<UploadHelper> helper_;

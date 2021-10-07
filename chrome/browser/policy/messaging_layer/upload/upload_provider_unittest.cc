@@ -168,7 +168,7 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
       bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> records) {
     test::TestEvent<Status> result;
-    service_provider_->RequestUploadEncryptedRecord(
+    service_provider_->RequestUploadEncryptedRecords(
         need_encryption_key, std::move(records), result.cb());
     return result.result();
   }

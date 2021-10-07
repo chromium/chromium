@@ -20,6 +20,7 @@
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
@@ -41,8 +42,6 @@
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace reporting {
 
@@ -53,22 +52,6 @@ const base::FilePath::CharType kReportingDirectory[] =
 
 }  // namespace
 
-ReportingClient::AsyncStartUploaderRequest::AsyncStartUploaderRequest(
-    UploaderInterface::UploadReason reason,
-    UploaderInterface::UploaderInterfaceResultCb start_uploader_cb)
-    : reason_(reason), start_uploader_cb_(std::move(start_uploader_cb)) {}
-ReportingClient::AsyncStartUploaderRequest::~AsyncStartUploaderRequest() =
-    default;
-
-UploaderInterface::UploadReason
-ReportingClient::AsyncStartUploaderRequest::reason() const {
-  return reason_;
-}
-UploaderInterface::UploaderInterfaceResultCb&
-ReportingClient::AsyncStartUploaderRequest::start_uploader_cb() {
-  return start_uploader_cb_;
-}
-
 // Uploader is passed to Storage in order to upload messages using the
 // UploadClient.
 class ReportingClient::Uploader : public UploaderInterface {
@@ -77,12 +60,10 @@ class ReportingClient::Uploader : public UploaderInterface {
       base::OnceCallback<Status(bool,
                                 std::unique_ptr<std::vector<EncryptedRecord>>)>;
 
-  static StatusOr<std::unique_ptr<Uploader>> Create(
-      bool need_encryption_key,
-      UploadCallback upload_callback) {
-    auto uploader = base::WrapUnique(
+  static std::unique_ptr<Uploader> Create(bool need_encryption_key,
+                                          UploadCallback upload_callback) {
+    return base::WrapUnique(
         new Uploader(need_encryption_key, std::move(upload_callback)));
-    return uploader;
   }
 
   ~Uploader() override = default;
@@ -193,6 +174,63 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
   }
 }
 
+class ReportingClient::ClientInitializingContext
+    : public ReportQueueProvider::InitializingContext {
+ public:
+  ClientInitializingContext(
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
+      InitCompleteCallback init_complete_cb,
+      ReportingClient* client,
+      scoped_refptr<InitializationStateTracker> init_state_tracker)
+      : ReportQueueProvider::InitializingContext(std::move(init_complete_cb),
+                                                 std::move(init_state_tracker)),
+        async_start_upload_cb_(std::move(async_start_upload_cb)),
+        client_(client) {}
+
+ private:
+  // Destructor only called from Complete().
+  // The class runs a series of callbacks each of which may invoke
+  // either the next callback or Complete(). Thus eventually Complete()
+  // is always called and InitializingContext instance is self-destruct.
+  ~ClientInitializingContext() override = default;
+
+  // Begins the process of configuring the ReportingClient.
+  void OnStart() override {
+    StorageSelector::CreateStorageModule(
+        client_->reporting_path_, client_->verification_key_,
+        CompressionInformation::COMPRESSION_SNAPPY,
+        std::move(async_start_upload_cb_),
+        base::BindPostTask(
+            client_->client_sequenced_task_runner_,
+            base::BindOnce(
+                &ClientInitializingContext::OnStorageModuleConfigured,
+                base::Unretained(this))));
+  }
+
+  // Handles StorageModuleInterface instantiation for ReportingClient to refer
+  // to.
+  void OnStorageModuleConfigured(
+      StatusOr<scoped_refptr<StorageModuleInterface>> storage_result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(client_->client_sequence_checker_);
+    if (!storage_result.ok()) {
+      Complete(storage_result.status());
+      return;
+    }
+    DCHECK(!client_->storage_) << "Storage module already recorded";
+    client_->storage_ = storage_result.ValueOrDie();
+    Complete(Status::StatusOK());
+  }
+
+  // Finally updates client with the elements of the configuration into the
+  // ReportingClient, if the configuration process succeeded.
+  void OnCompleted() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(client_->client_sequence_checker_);
+  }
+
+  UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
+  ReportingClient* const client_;
+};
+
 ReportQueueProvider::InitializingContext*
 ReportingClient::InstantiateInitializingContext(
     InitCompleteCallback init_complete_cb,
@@ -202,116 +240,10 @@ ReportingClient::InstantiateInitializingContext(
       std::move(init_complete_cb), this, init_state_tracker);
 }
 
-ReportingClient::ClientInitializingContext::ClientInitializingContext(
-    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-    InitCompleteCallback init_complete_cb,
-    ReportingClient* client,
-    scoped_refptr<ReportingClient::InitializationStateTracker>
-        init_state_tracker)
-    : ReportQueueProvider::InitializingContext(std::move(init_complete_cb),
-                                               std::move(init_state_tracker)),
-      async_start_upload_cb_(std::move(async_start_upload_cb)),
-      client_(client) {}
-
-ReportingClient::ClientInitializingContext::~ClientInitializingContext() =
-    default;
-
-void ReportingClient::ClientInitializingContext::OnStart() {
-  StorageSelector::CreateStorageModule(
-      client_->reporting_path_, client_->verification_key_,
-      CompressionInformation::COMPRESSION_SNAPPY,
-      std::move(async_start_upload_cb_),
-      base::BindOnce(&ClientInitializingContext::OnStorageModuleConfigured,
-                     base::Unretained(this)));
-}
-
-void ReportingClient::ClientInitializingContext::OnStorageModuleConfigured(
-    StatusOr<scoped_refptr<StorageModuleInterface>> storage_result) {
-  if (!storage_result.ok()) {
-    client_->uploaders_queue_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &ClientInitializingContext::Complete, base::Unretained(this),
-            Status(error::FAILED_PRECONDITION,
-                   base::StrCat({"Unable to build StorageModule: ",
-                                 storage_result.status().message()}))));
-    return;
-  }
-
-  storage_ = storage_result.ValueOrDie();
-  client_->uploaders_queue_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ClientInitializingContext::Complete,
-                                base::Unretained(this), Status::StatusOK()));
-}
-
-void ReportingClient::ClientInitializingContext::OnCompleted() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_->uploaders_queue_sequence_checker_);
-  DCHECK(!client_->storage_) << "Storage module already recorded";
-  client_->storage_ = std::move(storage_);
-
-  // If non-missived uploading is enabled, it will need CloudPolicyClient,
-  // which requires posting to the main UI thread for getting access to it.
-  // In case of missived Uploader will be provided by
-  // EncryptedReportingServiceProvider so it does not need to be enabled here.
-  if (StorageSelector::is_uploader_required() &&
-      !StorageSelector::is_use_missive()) {
-    // Start configuring upload clients. Note that we will not wait for it!
-    client_->StartConfigureUpload();
-  }
-}
-
-void ReportingClient::StartConfigureUpload() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](ReportingClient* client) {
-            std::move(client->build_cloud_policy_client_cb_)
-                .Run(base::BindPostTask(
-                    client->uploaders_queue_task_runner_,
-                    base::BindOnce(
-                        &ReportingClient::OnCloudPolicyClientConfigured,
-                        base::Unretained(client))));
-          },
-          base::Unretained(this)));
-}
-
-void ReportingClient::OnCloudPolicyClientConfigured(
-    StatusOr<policy::CloudPolicyClient*> client_result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
-  if (!client_result.ok()) {
-    LOG(ERROR) << "Unable to build CloudPolicyClient, status="
-               << client_result.status();
-    return;
-  }
-  DCHECK(cloud_policy_client_ == nullptr)
-      << "Cloud policy client already recorded";
-  cloud_policy_client_ = client_result.ValueOrDie();
-
-  UploadClient::Create(
-      cloud_policy_client_,
-      base::BindRepeating(&StorageModuleInterface::ReportSuccess, storage_),
-      base::BindRepeating(&StorageModuleInterface::UpdateEncryptionKey,
-                          storage_),
-      base::BindOnce(&ReportingClient::OnUploadClientCreated,
-                     base::Unretained(this)));
-}
-
-void ReportingClient::OnUploadClientCreated(
-    StatusOr<std::unique_ptr<UploadClient>> upload_client_result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
-  if (!upload_client_result.ok()) {
-    LOG(ERROR) << "Unable to create UploadClient, status="
-               << upload_client_result.status();
-    return;
-  }
-  SetUploadClient(std::move(upload_client_result.ValueOrDie()));
-}
-
 ReportingClient::ReportingClient()
     : verification_key_(SignatureVerifier::VerificationKey()),
       build_cloud_policy_client_cb_(GetCloudPolicyClientCb()),
-      uploaders_queue_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+      client_sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
   // Storage location in the local file system (if local storage is enabled).
   base::FilePath user_data_dir;
@@ -322,7 +254,7 @@ ReportingClient::ReportingClient()
   user_data_dir = user_data_dir.Append("user");
 #endif
   reporting_path_ = user_data_dir.Append(kReportingDirectory);
-  DETACH_FROM_SEQUENCE(uploaders_queue_sequence_checker_);
+  DETACH_FROM_SEQUENCE(client_sequence_checker_);
 }
 
 ReportingClient::~ReportingClient() = default;
@@ -361,52 +293,74 @@ void ReportingClient::AsyncStartUploader(
 void ReportingClient::DeliverAsyncStartUploader(
     UploaderInterface::UploadReason reason,
     UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
-  uploaders_queue_task_runner_->PostTask(
+  client_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](UploaderInterface::UploadReason reason,
              UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
              ReportingClient* instance) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(
-                instance->uploaders_queue_sequence_checker_);
-            if (instance->upload_client_) {
-              auto uploader = Uploader::Create(
-                  reason, base::BindOnce(&UploadClient::EnqueueUpload,
-                                         base::Unretained(
-                                             instance->upload_client_.get())));
-              std::move(start_uploader_cb).Run(std::move(uploader));
-              return;
+            DCHECK_CALLED_ON_VALID_SEQUENCE(instance->client_sequence_checker_);
+            if (!instance->upload_provider_) {
+              // If non-missived uploading is enabled, it will need upload
+              // provider, In case of missived Uploader will be provided by
+              // EncryptedReportingServiceProvider so it does not need to be
+              // enabled here.
+              if (StorageSelector::is_uploader_required() &&
+                  !StorageSelector::is_use_missive()) {
+                DCHECK(!instance->upload_provider_)
+                    << "Upload provider already recorded";
+                instance->upload_provider_ = instance->GetDefaultUploadProvider(
+                    instance->build_cloud_policy_client_cb_);
+              } else {
+                std::move(start_uploader_cb)
+                    .Run(Status(error::UNAVAILABLE, "Uploader not available"));
+                return;
+              }
             }
-            // Not set yet. Enqueue it.
-            instance->async_start_uploaders_queue_.emplace(
-                reason, std::move(start_uploader_cb));
+            auto uploader = Uploader::Create(
+                reason,
+                base::BindOnce(
+                    [](EncryptedReportingUploadProvider* upload_provider,
+                       bool need_encryption_key,
+                       std::unique_ptr<std::vector<EncryptedRecord>> records) {
+                      upload_provider->RequestUploadEncryptedRecords(
+                          need_encryption_key, std::move(records),
+                          base::DoNothing());
+                      return Status::StatusOK();
+                    },
+                    base::Unretained(instance->upload_provider_.get())));
+            std::move(start_uploader_cb).Run(std::move(uploader));
           },
           reason, std::move(start_uploader_cb), base::Unretained(this)));
 }
 
-void ReportingClient::FlushAsyncStartUploaderQueue() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
-  // Executed on sequential task runner.
-  while (!async_start_uploaders_queue_.empty()) {
-    auto& request = async_start_uploaders_queue_.front();
-    auto uploader = Uploader::Create(
-        request.reason(),
-        base::BindOnce(&UploadClient::EnqueueUpload,
-                       base::Unretained(upload_client_.get())));
-    std::move(request.start_uploader_cb()).Run(std::move(uploader));
-    async_start_uploaders_queue_.pop();
-  }
-}
-
-void ReportingClient::SetUploadClient(
-    std::unique_ptr<UploadClient> upload_client) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(uploaders_queue_sequence_checker_);
-  // This can only happen once.
-  DCHECK(upload_client_ == nullptr) << "Upload client already recorded";
-  upload_client_ = std::move(upload_client);
-  uploaders_queue_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&ReportingClient::FlushAsyncStartUploaderQueue,
-                                base::Unretained(this)));
+std::unique_ptr<EncryptedReportingUploadProvider>
+ReportingClient::GetDefaultUploadProvider(
+    GetCloudPolicyClientCallback build_cloud_policy_client_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  auto report_success_cb = base::BindRepeating(
+      [](SequencingInformation sequencing_information, bool force_confirm) {
+        ReportingClient* const client = ReportingClient::GetInstance();
+        DCHECK_CALLED_ON_VALID_SEQUENCE(client->client_sequence_checker_);
+        if (client->storage_) {
+          client->storage_->ReportSuccess(std::move(sequencing_information),
+                                          force_confirm);
+        }
+      });
+  auto update_encryption_key_cb =
+      base::BindRepeating([](SignedEncryptionInfo signed_encryption_info) {
+        ReportingClient* const client = ReportingClient::GetInstance();
+        DCHECK_CALLED_ON_VALID_SEQUENCE(client->client_sequence_checker_);
+        if (client->storage_) {
+          client->storage_->UpdateEncryptionKey(
+              std::move(signed_encryption_info));
+        }
+      });
+  return std::make_unique<::reporting::EncryptedReportingUploadProvider>(
+      base::BindPostTask(client_sequenced_task_runner_, report_success_cb),
+      base::BindPostTask(client_sequenced_task_runner_,
+                         update_encryption_key_cb),
+      build_cloud_policy_client_cb);
 }
 
 ReportingClient::TestEnvironment::TestEnvironment(

@@ -76,7 +76,7 @@ void EncryptedReportingServiceProvider::Start(
       chromeos::kChromeReportingServiceInterface,
       chromeos::kChromeReportingServiceUploadEncryptedRecordMethod,
       base::BindRepeating(
-          &EncryptedReportingServiceProvider::RequestUploadEncryptedRecord,
+          &EncryptedReportingServiceProvider::RequestUploadEncryptedRecords,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&EncryptedReportingServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -90,7 +90,7 @@ void EncryptedReportingServiceProvider::OnExported(
                           << method_name;
 }
 
-void EncryptedReportingServiceProvider::RequestUploadEncryptedRecord(
+void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
   DCHECK(OnOriginThread());
@@ -126,7 +126,7 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecord(
     records->push_back(std::move(record));
   }
   DCHECK(upload_provider_);
-  upload_provider_->RequestUploadEncryptedRecord(
+  upload_provider_->RequestUploadEncryptedRecords(
       request.need_encryption_keys(), std::move(records),
       base::BindPostTask(
           origin_thread_runner_,

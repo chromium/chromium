@@ -11,6 +11,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
@@ -33,40 +34,6 @@ class ReportingClient : public ReportQueueProvider {
 
   using CreateReportQueueCallback =
       base::OnceCallback<void(CreateReportQueueResponse)>;
-
-  class ClientInitializingContext
-      : public ReportQueueProvider::InitializingContext {
-   public:
-    ClientInitializingContext(
-        UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-        InitCompleteCallback init_complete_cb,
-        ReportingClient* client,
-        scoped_refptr<InitializationStateTracker> init_state_tracker);
-
-   private:
-    // Destructor only called from Complete().
-    // The class runs a series of callbacks each of which may invoke
-    // either the next callback or Complete(). Thus eventually Complete()
-    // is always called and InitializingContext instance is self-destruct.
-    ~ClientInitializingContext() override;
-
-    // Begins the process of configuring the ReportingClient.
-    void OnStart() override;
-
-    // Finally updates client with the elements of the configuration into the
-    // ReportingClient, if the configuration process succeeded.
-    void OnCompleted() override;
-
-    // Handles StorageModuleInterface instantiation for ReportingClient to refer
-    // to.
-    void OnStorageModuleConfigured(
-        StatusOr<scoped_refptr<StorageModuleInterface>> storage_result);
-
-    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
-
-    scoped_refptr<StorageModuleInterface> storage_;
-    ReportingClient* const client_;
-  };
 
   ReportQueueProvider::InitializingContext* InstantiateInitializingContext(
       InitCompleteCallback init_complete_cb,
@@ -92,6 +59,7 @@ class ReportingClient : public ReportQueueProvider {
 
    private:
     GetCloudPolicyClientCallback saved_build_cloud_policy_client_cb_;
+    std::unique_ptr<EncryptedReportingUploadProvider> saved_upload_provider_;
   };
 
   ~ReportingClient() override;
@@ -99,27 +67,8 @@ class ReportingClient : public ReportQueueProvider {
   ReportingClient& operator=(const ReportingClient& other) = delete;
 
  private:
+  class ClientInitializingContext;
   class Uploader;
-
-  // Request for async start uploader (to be held in queue until upload_client
-  // is set).
-  class AsyncStartUploaderRequest {
-   public:
-    AsyncStartUploaderRequest(
-        UploaderInterface::UploadReason reason,
-        UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
-    AsyncStartUploaderRequest(const AsyncStartUploaderRequest& other) = delete;
-    AsyncStartUploaderRequest& operator=(
-        const AsyncStartUploaderRequest& other) = delete;
-    ~AsyncStartUploaderRequest();
-
-    UploaderInterface::UploadReason reason() const;
-    UploaderInterface::UploaderInterfaceResultCb& start_uploader_cb();
-
-   private:
-    const UploaderInterface::UploadReason reason_;
-    UploaderInterface::UploaderInterfaceResultCb start_uploader_cb_;
-  };
 
   friend class TestEnvironment;
   friend class ReportQueueProvider;
@@ -145,38 +94,27 @@ class ReportingClient : public ReportQueueProvider {
       UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
-  void FlushAsyncStartUploaderQueue();
+  // Returns default upload provider for the client.
+  std::unique_ptr<EncryptedReportingUploadProvider> GetDefaultUploadProvider(
+      GetCloudPolicyClientCallback build_cloud_policy_client_cb);
 
-  void StartConfigureUpload();
-
-  // Called back after CloudPolicyClient configuration succeeded.
-  void OnCloudPolicyClientConfigured(
-      StatusOr<policy::CloudPolicyClient*> client_result);
-
-  // Calls back upon creation of upload client.
-  void OnUploadClientCreated(
-      StatusOr<std::unique_ptr<UploadClient>> upload_client_result);
-
-  void SetUploadClient(std::unique_ptr<UploadClient> upload_client);
-
+  // Local storage parameters.
   base::FilePath reporting_path_;
   std::string verification_key_;
-  GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
 
-  // The three member variables below are protected by
-  // uploaders_queue_task_runner_.
-  // TODO(chromium:1078512) Passing around a raw pointer is unsafe. Wrap
-  // CloudPolicyClient and guard access.
-  policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
-  std::unique_ptr<UploadClient> upload_client_;
+  // Storage module associated with the client. Protected by
+  // client_sequenced_task_runner_.
   scoped_refptr<StorageModuleInterface> storage_;
 
-  // Queue of async start uploader requests protected by sequenced task runner.
-  // When new request is posted, upload_client_ might be not set yet; in that
-  // case it is added to the queue and executed only once upload_client_ is set.
-  std::queue<AsyncStartUploaderRequest> async_start_uploaders_queue_;
-  scoped_refptr<base::SequencedTaskRunner> uploaders_queue_task_runner_;
-  SEQUENCE_CHECKER(uploaders_queue_sequence_checker_);
+  // Cloud policy client (set by constructor, may only be changed for tests).
+  GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
+
+  // Upload provider (if enabled).
+  std::unique_ptr<EncryptedReportingUploadProvider> upload_provider_;
+
+  // Task runner used for guarding the client state.
+  scoped_refptr<base::SequencedTaskRunner> client_sequenced_task_runner_;
+  SEQUENCE_CHECKER(client_sequence_checker_);
 };
 }  // namespace reporting
 

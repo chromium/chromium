@@ -47,7 +47,7 @@ class UploadClient {
   UploadClient& operator=(const UploadClient& other) = delete;
 
   virtual Status EnqueueUpload(
-      bool need_encryption_keys,
+      bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> record);
 
  protected:
