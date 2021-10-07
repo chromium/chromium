@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -111,6 +112,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
     // Notifies the frame widget about the selection bound change.
     virtual void UpdateSelectionBounds() = 0;
+
+    // Gets the embedder's origin as a serialized string.
+    virtual std::string GetEmbedderOriginString() = 0;
 
     // Returns the local frame to which the web plugin container belongs.
     virtual blink::WebLocalFrame* GetFrame() = 0;

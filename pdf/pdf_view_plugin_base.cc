@@ -85,7 +85,7 @@ constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
 constexpr char kChromePrintHost[] = "chrome://print/";
 constexpr char kChromeExtensionHost[] =
-    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai";
+    "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
 
 // Same value as printing::COMPLETE_PREVIEW_DOCUMENT_INDEX.
 constexpr int kCompletePDFIndex = -1;
@@ -116,6 +116,10 @@ base::Value PrepareReplyMessage(base::StringPiece reply_type,
   return reply;
 }
 
+bool IsPrintPreviewUrl(base::StringPiece url) {
+  return base::StartsWith(url, kChromePrintHost);
+}
+
 int ExtractPrintPreviewPageIndex(base::StringPiece src_url) {
   // Sample `src_url` format: chrome://print/id/page_index/print.pdf
   // The page_index is zero-based, but can be negative with special meanings.
@@ -143,6 +147,48 @@ bool IsPreviewingPDF(int print_preview_page_count) {
 PdfViewPluginBase::PdfViewPluginBase() = default;
 
 PdfViewPluginBase::~PdfViewPluginBase() = default;
+
+void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
+                                       base::StringPiece embedder_origin,
+                                       base::StringPiece src_url,
+                                       base::StringPiece original_url,
+                                       bool full_frame,
+                                       SkColor background_color,
+                                       bool has_edits) {
+  // Check if the PDF is being loaded in the PDF chrome extension. We only allow
+  // the plugin to be loaded in the extension and print preview to avoid
+  // exposing sensitive APIs directly to external websites.
+  //
+  // This is enforced before launching the plugin process (see
+  // ChromeContentBrowserClient::ShouldAllowPluginCreation), so below we just do
+  // a CHECK as a defense-in-depth.
+  is_print_preview_ = IsPrintPreviewUrl(embedder_origin);
+  CHECK(IsPrintPreview() || embedder_origin == kChromeExtensionHost);
+
+  full_frame_ = full_frame;
+  background_color_ = background_color;
+
+  DCHECK(engine);
+  engine_ = std::move(engine);
+
+  // If we're in print preview mode we don't need to load the document yet.
+  // A `kJSResetPrintPreviewModeType` message will be sent to the plugin letting
+  // it know the url to load. By not loading here we avoid loading the same
+  // document twice.
+  if (IsPrintPreview())
+    return;
+
+  LoadUrl(src_url, /*is_print_preview=*/false);
+  url_ = std::string(original_url);
+
+  // Not all edits go through the PDF plugin's form filler. The plugin instance
+  // can be restarted by exiting annotation mode on ChromeOS, which can set the
+  // document to an edited state.
+  edit_mode_ = has_edits;
+#if !BUILDFLAG(ENABLE_INK)
+  DCHECK(!edit_mode_);
+#endif  // !BUILDFLAG(ENABLE_INK)
+}
 
 void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
   base::Value message(base::Value::Type::DICTIONARY);
@@ -693,7 +739,8 @@ bool PdfViewPluginBase::UnsupportedFeatureIsReportedForTesting(
   return base::Contains(unsupported_features_reported_, feature);
 }
 
-void PdfViewPluginBase::InitializeEngine(std::unique_ptr<PDFiumEngine> engine) {
+void PdfViewPluginBase::InitializeEngineForTesting(
+    std::unique_ptr<PDFiumEngine> engine) {
   DCHECK(engine);
   engine_ = std::move(engine);
 }
@@ -706,16 +753,11 @@ void PdfViewPluginBase::DestroyPreviewEngine() {
   preview_engine_.reset();
 }
 
-void PdfViewPluginBase::ValidateDocumentUrl(base::StringPiece document_url) {
-  CHECK(base::StartsWith(document_url, kChromeExtensionHost) ||
-        IsPrintPreview());
-}
-
-void PdfViewPluginBase::LoadUrl(const std::string& url, bool is_print_preview) {
+void PdfViewPluginBase::LoadUrl(base::StringPiece url, bool is_print_preview) {
   last_progress_sent_ = 0;
 
   UrlRequest request;
-  request.url = url;
+  request.url = std::string(url);
   request.method = "GET";
   request.ignore_redirects = true;
 
@@ -990,11 +1032,6 @@ void PdfViewPluginBase::SetZoom(double scale) {
 }
 
 // static
-bool PdfViewPluginBase::IsPrintPreviewUrl(base::StringPiece url) {
-  return base::StartsWith(url, kChromePrintHost);
-}
-
-// static
 base::Value::DictStorage PdfViewPluginBase::DictFromRect(
     const gfx::Rect& rect) {
   base::Value::DictStorage dict;
@@ -1109,8 +1146,8 @@ void PdfViewPluginBase::HandleResetPrintPreviewModeMessage(
   document_load_state_ = DocumentLoadState::kLoading;
   LoadUrl(GetURL(), /*is_print_preview=*/false);
   preview_engine_.reset();
-  InitializeEngine(std::make_unique<PDFiumEngine>(
-      this, PDFiumFormFiller::ScriptOption::kNoJavaScript));
+  engine_ = std::make_unique<PDFiumEngine>(
+      this, PDFiumFormFiller::ScriptOption::kNoJavaScript);
   engine()->SetGrayscale(is_grayscale);
 
   paint_manager_.InvalidateRect(gfx::Rect(plugin_rect().size()));
@@ -1180,9 +1217,8 @@ void PdfViewPluginBase::HandleSelectAllMessage(const base::Value& /*message*/) {
 
 void PdfViewPluginBase::HandleSetBackgroundColorMessage(
     const base::Value& message) {
-  const SkColor background_color =
+  background_color_ =
       base::checked_cast<SkColor>(message.FindDoubleKey("color").value());
-  SetBackgroundColor(background_color);
 }
 
 void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {

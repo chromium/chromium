@@ -22,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -30,7 +31,6 @@
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"
-#include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_metadata.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -72,6 +72,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "url/gurl.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "pdf/ppapi_migration/pdfium_font_linux.h"
@@ -441,44 +442,33 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   pp::Var document_url_var = pp::URLUtil_Dev::Get()->GetDocumentURL(this);
   if (!document_url_var.is_string())
     return false;
-
-  // Check if the PDF is being loaded in the PDF chrome extension. We only allow
-  // the plugin to be loaded in the extension and print preview to avoid
-  // exposing sensitive APIs directly to external websites.
-  //
-  // This is enforced before launching the plugin process (see
-  // ChromeContentBrowserClient::ShouldAllowPluginCreation), so below we just do
-  // a CHECK as a defense-in-depth.
-  std::string document_url = document_url_var.AsString();
-  base::StringPiece document_url_piece(document_url);
-  set_is_print_preview(IsPrintPreviewUrl(document_url_piece));
-  ValidateDocumentUrl(document_url_piece);
+  GURL document_url(document_url_var.AsString());
 
   // Allow the plugin to handle find requests.
   SetPluginToHandleFindRequests();
 
   text_input_ = std::make_unique<pp::TextInput_Dev>(this);
 
-  PDFiumFormFiller::ScriptOption script_option =
-      PDFiumFormFiller::DefaultScriptOption();
-  bool has_edits = false;
   const char* src_url = nullptr;
   const char* original_url = nullptr;
   const char* top_level_url = nullptr;
+  bool full_frame = false;
+  SkColor background_color = SK_ColorTRANSPARENT;
+  PDFiumFormFiller::ScriptOption script_option =
+      PDFiumFormFiller::DefaultScriptOption();
+  bool has_edits = false;
   for (uint32_t i = 0; i < argc; ++i) {
-    if (strcmp(argn[i], "original-url") == 0) {
-      original_url = argv[i];
-    } else if (strcmp(argn[i], "src") == 0) {
+    if (strcmp(argn[i], "src") == 0) {
       src_url = argv[i];
+    } else if (strcmp(argn[i], "original-url") == 0) {
+      original_url = argv[i];
     } else if (strcmp(argn[i], "top-level-url") == 0) {
       top_level_url = argv[i];
     } else if (strcmp(argn[i], "full-frame") == 0) {
-      set_full_frame(true);
+      full_frame = true;
     } else if (strcmp(argn[i], "background-color") == 0) {
-      SkColor background_color;
       if (!base::StringToUint(argv[i], &background_color))
         return false;
-      SetBackgroundColor(background_color);
     } else if (strcmp(argn[i], "javascript") == 0) {
       if (strcmp(argv[i], "allow") != 0)
         script_option = PDFiumFormFiller::ScriptOption::kNoJavaScript;
@@ -493,27 +483,14 @@ bool OutOfProcessInstance::Init(uint32_t argc,
   if (!original_url)
     original_url = src_url;
 
-  InitializeEngine(std::make_unique<PDFiumEngine>(this, script_option));
-
-  // If we're in print preview mode we don't need to load the document yet.
-  // A `kJSResetPrintPreviewModeType` message will be sent to the plugin letting
-  // it know the url to load. By not loading here we avoid loading the same
-  // document twice.
-  if (IsPrintPreview())
-    return true;
-
-  LoadUrl(src_url, /*is_print_preview=*/false);
-  set_url(original_url);
-
-  // Not all edits go through the PDF plugin's form filler. The plugin instance
-  // can be restarted by exiting annotation mode on ChromeOS, which can set the
-  // document to an edited state.
-  set_edit_mode(has_edits);
-#if !BUILDFLAG(ENABLE_INK)
-  DCHECK(!edit_mode());
-#endif  // !BUILDFLAG(ENABLE_INK)
-
   pp::PDF::SetCrashData(this, original_url, top_level_url);
+  InitializeBase(std::make_unique<PDFiumEngine>(this, script_option),
+                 /*embedder_origin=*/document_url.GetOrigin().spec(),
+                 /*src_url=*/src_url,
+                 /*original_url=*/original_url,
+                 /*full_frame=*/full_frame,
+                 /*background_color=*/background_color,
+                 /*has_edits=*/has_edits);
   return true;
 }
 

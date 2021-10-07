@@ -136,13 +136,10 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
  public:
   // Public for testing.
   using PdfViewPluginBase::accessibility_state;
-  using PdfViewPluginBase::edit_mode;
   using PdfViewPluginBase::engine;
   using PdfViewPluginBase::full_frame;
   using PdfViewPluginBase::HandleMessage;
-  using PdfViewPluginBase::InitializeEngine;
   using PdfViewPluginBase::LoadUrl;
-  using PdfViewPluginBase::set_full_frame;
   using PdfViewPluginBase::SetZoom;
   using PdfViewPluginBase::UpdateGeometryOnPluginRectChanged;
   using PdfViewPluginBase::UpdateScroll;
@@ -383,7 +380,7 @@ class PdfViewPluginBaseWithEngineTest : public PdfViewPluginBaseTest {
   void SetUp() override {
     auto engine =
         std::make_unique<testing::NiceMock<TestPDFiumEngine>>(&fake_plugin_);
-    fake_plugin_.InitializeEngine(std::move(engine));
+    fake_plugin_.InitializeEngineForTesting(std::move(engine));
   }
 
  protected:
@@ -417,7 +414,7 @@ class PdfViewPluginBaseWithDocInfoTest
   void SetUp() override {
     std::unique_ptr<TestPDFiumEngineWithDocInfo> engine =
         std::make_unique<TestPDFiumEngineWithDocInfo>(&fake_plugin_);
-    fake_plugin_.InitializeEngine(std::move(engine));
+    fake_plugin_.InitializeEngineForTesting(std::move(engine));
 
     // Initialize some arbitrary document information for the engine.
     static_cast<TestPDFiumEngineWithDocInfo*>(fake_plugin_.engine())
@@ -499,7 +496,7 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadProgressResetByLoadUrl) {
 }
 
 TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderInFullFrame) {
-  fake_plugin_.set_full_frame(true);
+  fake_plugin_.set_full_frame_for_testing(true);
   ASSERT_TRUE(fake_plugin_.full_frame());
 
   EXPECT_FALSE(fake_plugin_.GetDidCallStartLoadingForTesting());
@@ -527,7 +524,7 @@ TEST_F(PdfViewPluginBaseTest, CreateUrlLoaderWithoutFullFrame) {
 TEST_F(PdfViewPluginBaseWithDocInfoTest,
        DocumentLoadCompleteInFullFramePdfViewerWithAccessibilityEnabled) {
   // Notify the render frame about document loading.
-  fake_plugin_.set_full_frame(true);
+  fake_plugin_.set_full_frame_for_testing(true);
   ASSERT_TRUE(fake_plugin_.full_frame());
   fake_plugin_.CreateUrlLoader();
 
@@ -570,7 +567,7 @@ TEST_F(PdfViewPluginBaseWithDocInfoTest,
 TEST_F(PdfViewPluginBaseWithDocInfoTest,
        DocumentLoadCompleteInFullFramePdfViewerWithAccessibilityDisabled) {
   // Notify the render frame about document loading.
-  fake_plugin_.set_full_frame(true);
+  fake_plugin_.set_full_frame_for_testing(true);
   ASSERT_TRUE(fake_plugin_.full_frame());
   fake_plugin_.CreateUrlLoader();
 
@@ -663,7 +660,7 @@ TEST_F(PdfViewPluginBaseWithoutDocInfoTest, DocumentLoadCompletePostMessages) {
 
 TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithNotifiedRenderFrame) {
   // Notify the render frame about document loading.
-  fake_plugin_.set_full_frame(true);
+  fake_plugin_.set_full_frame_for_testing(true);
   ASSERT_TRUE(fake_plugin_.full_frame());
   fake_plugin_.CreateUrlLoader();
 
@@ -697,7 +694,7 @@ TEST_F(PdfViewPluginBaseTest, DocumentLoadFailedWithoutNotifiedRenderFrame) {
 }
 
 TEST_F(PdfViewPluginBaseTest, DocumentHasUnsupportedFeatureInFullFrame) {
-  fake_plugin_.set_full_frame(true);
+  fake_plugin_.set_full_frame_for_testing(true);
   ASSERT_TRUE(fake_plugin_.full_frame());
 
   // Arbitrary feature names and their matching metric names.
@@ -763,7 +760,7 @@ TEST_F(PdfViewPluginBaseTest, EnteredEditMode) {
   base::Value expected_response(base::Value::Type::DICTIONARY);
   expected_response.SetStringKey("type", "setIsEditing");
 
-  EXPECT_TRUE(fake_plugin_.edit_mode());
+  EXPECT_TRUE(fake_plugin_.edit_mode_for_testing());
   ASSERT_EQ(1u, fake_plugin_.sent_messages().size());
   EXPECT_EQ(expected_response, fake_plugin_.sent_messages()[0]);
 }
@@ -772,7 +769,7 @@ using PdfViewPluginBaseSaveTest = PdfViewPluginBaseWithEngineTest;
 
 #if BUILDFLAG(ENABLE_INK)
 TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
-  ASSERT_FALSE(fake_plugin_.edit_mode());
+  ASSERT_FALSE(fake_plugin_.edit_mode_for_testing());
 
   static constexpr char kSaveAnnotInNonEditModeToken[] =
       "save-annot-in-non-edit-mode-token";
@@ -791,7 +788,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInNonEditMode) {
 
 TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
   fake_plugin_.EnteredEditMode();
-  ASSERT_TRUE(fake_plugin_.edit_mode());
+  ASSERT_TRUE(fake_plugin_.edit_mode_for_testing());
 
   static constexpr char kSaveAnnotInEditModeToken[] =
       "save-annot-in-edit-mode-token";
@@ -810,7 +807,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveAnnotationInEditMode) {
 #endif  // BUILDFLAG(ENABLE_INK)
 
 TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInNonEditMode) {
-  ASSERT_FALSE(fake_plugin_.edit_mode());
+  ASSERT_FALSE(fake_plugin_.edit_mode_for_testing());
 
   static constexpr char kSaveOriginalInNonEditModeToken[] =
       "save-original-in-non-edit-mode-token";
@@ -831,7 +828,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInNonEditMode) {
 
 TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInEditMode) {
   fake_plugin_.EnteredEditMode();
-  ASSERT_TRUE(fake_plugin_.edit_mode());
+  ASSERT_TRUE(fake_plugin_.edit_mode_for_testing());
 
   static constexpr char kSaveOriginalInEditModeToken[] =
       "save-original-in-edit-mode-token";
@@ -853,7 +850,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveOriginalInEditMode) {
 
 #if BUILDFLAG(ENABLE_INK)
 TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInNonEditMode) {
-  ASSERT_FALSE(fake_plugin_.edit_mode());
+  ASSERT_FALSE(fake_plugin_.edit_mode_for_testing());
 
   static constexpr char kSaveEditedInNonEditModeToken[] =
       "save-edited-in-non-edit-mode";
@@ -872,7 +869,7 @@ TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInNonEditMode) {
 
 TEST_F(PdfViewPluginBaseSaveTest, SaveEditedInEditMode) {
   fake_plugin_.EnteredEditMode();
-  ASSERT_TRUE(fake_plugin_.edit_mode());
+  ASSERT_TRUE(fake_plugin_.edit_mode_for_testing());
 
   static constexpr char kSaveEditedInEditModeToken[] =
       "save-edited-in-edit-mode-token";

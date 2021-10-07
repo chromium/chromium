@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/paint_manager.h"
@@ -160,9 +161,15 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return notified_browser_about_unsupported_feature_;
   }
 
+  void InitializeEngineForTesting(std::unique_ptr<PDFiumEngine> engine);
+
+  void set_full_frame_for_testing(bool full_frame) { full_frame_ = full_frame; }
+
   DocumentLoadState document_load_state_for_testing() const {
     return document_load_state_;
   }
+
+  bool edit_mode_for_testing() const { return edit_mode_; }
 
  protected:
   struct BackgroundPart {
@@ -173,9 +180,17 @@ class PdfViewPluginBase : public PDFEngine::Client,
   PdfViewPluginBase();
   ~PdfViewPluginBase() override;
 
-  // Initializes the main `PDFiumEngine` with `engine`. Any existing engine will
-  // be replaced. `engine` must not be nullptr.
-  void InitializeEngine(std::unique_ptr<PDFiumEngine> engine);
+  // Performs initialization common to all implementations of this plugin.
+  // `engine` should be an appropriately-configured PDF engine, and
+  // `embedder_origin` should be the origin of the plugin's embedder. The other
+  // parameters come from the corresponding plugin attributes.
+  void InitializeBase(std::unique_ptr<PDFiumEngine> engine,
+                      base::StringPiece embedder_origin,
+                      base::StringPiece src_url,
+                      base::StringPiece original_url,
+                      bool full_frame,
+                      SkColor background_color,
+                      bool has_edits);
 
   // Destroys the main `PDFiumEngine`. Subclasses should call this method in
   // their destructor to ensure the engine is destroyed first.
@@ -188,11 +203,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   const PDFiumEngine* engine() const { return engine_.get(); }
   PDFiumEngine* engine() { return engine_.get(); }
 
-  void ValidateDocumentUrl(base::StringPiece document_url);
-
   // Starts loading `url`. If `is_print_preview` is `true`, load for print
   // preview instead of normal PDF viewing.
-  void LoadUrl(const std::string& url, bool is_print_preview);
+  void LoadUrl(base::StringPiece url, bool is_print_preview);
 
   // Gets a weak pointer with a lifetime matching the derived class.
   virtual base::WeakPtr<PdfViewPluginBase> GetWeakPtr() = 0;
@@ -355,8 +368,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Records user actions.
   virtual void UserMetricsRecordAction(const std::string& action) = 0;
 
-  void set_url(const std::string& url) { url_ = url; }
-
   ui::mojom::CursorType cursor_type() const { return cursor_type_; }
   void set_cursor_type(ui::mojom::CursorType cursor_type) {
     cursor_type_ = cursor_type;
@@ -365,7 +376,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   const std::string& link_under_cursor() const { return link_under_cursor_; }
 
   bool full_frame() const { return full_frame_; }
-  void set_full_frame(bool full_frame) { full_frame_ = full_frame; }
 
   SkBitmap& mutable_image_data() { return image_data_; }
 
@@ -374,10 +384,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
   const gfx::Rect& plugin_rect() const { return plugin_rect_; }
-
-  void SetBackgroundColor(SkColor background_color) {
-    background_color_ = background_color;
-  }
 
   // Sets the new zoom scale.
   void SetZoom(double scale);
@@ -389,15 +395,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   AccessibilityState accessibility_state() const {
     return accessibility_state_;
   }
-
-  bool edit_mode() const { return edit_mode_; }
-  void set_edit_mode(bool edit_mode) { edit_mode_ = edit_mode; }
-
-  void set_is_print_preview(bool is_print_preview) {
-    is_print_preview_ = is_print_preview;
-  }
-
-  static bool IsPrintPreviewUrl(base::StringPiece url);
 
   static constexpr bool IsSaveDataSizeValid(size_t size) {
     return size > 0 && size <= kMaximumSavedFileSize;

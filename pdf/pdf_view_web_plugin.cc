@@ -48,6 +48,7 @@
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_options.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
@@ -65,6 +67,7 @@
 #include "third_party/blink/public/web/web_print_preset_options.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/base/cursor/cursor.h"
@@ -220,6 +223,18 @@ class BlinkContainerWrapper final : public PdfViewWebPlugin::ContainerWrapper {
       widget->UpdateSelectionBounds();
   }
 
+  std::string GetEmbedderOriginString() override {
+    auto* frame = GetFrame();
+    if (!frame)
+      return {};
+
+    auto* parent_frame = frame->Parent();
+    if (!parent_frame)
+      return {};
+
+    return GURL(parent_frame->GetSecurityOrigin().ToString().Utf8()).spec();
+  }
+
   blink::WebLocalFrame* GetFrame() override {
     return container_->GetDocument().GetFrame();
   }
@@ -275,26 +290,15 @@ bool PdfViewWebPlugin::InitializeCommon(
     std::unique_ptr<ContainerWrapper> container_wrapper,
     std::unique_ptr<PDFiumEngine> engine) {
   container_wrapper_ = std::move(container_wrapper);
+  post_message_sender_.set_container(Container());
 
-  // Check if the PDF is being loaded in the PDF chrome extension. We only allow
-  // the plugin to be loaded in the extension and print preview to avoid
-  // exposing sensitive APIs directly to external websites.
-  std::string document_url;
-  auto* container = Container();
-  if (container) {
-    GURL maybe_url(container->GetDocument().Url());
-    if (maybe_url.is_valid())
-      document_url = maybe_url.possibly_invalid_spec();
-  }
-
-  base::StringPiece document_url_piece(document_url);
-  set_is_print_preview(IsPrintPreviewUrl(document_url_piece));
-  // TODO(crbug.com/1123621): Consider calling ValidateDocumentUrl() or
-  // something like it once the process model has been finalized.
+  // Allow the plugin to handle touch events.
+  container_wrapper_->RequestTouchEventType(
+      blink::WebPluginContainer::kTouchEventRequestTypeRaw);
 
   // Allow the plugin to handle find requests.
-  if (container)
-    container->UsePluginAsFindHandler();
+  if (Container())
+    Container()->UsePluginAsFindHandler();
 
   absl::optional<ParsedParams> params = ParseWebPluginParams(initial_params_);
 
@@ -304,21 +308,19 @@ bool PdfViewWebPlugin::InitializeCommon(
   if (!params.has_value())
     return false;
 
-  set_full_frame(params->full_frame);
-  if (params->background_color.has_value())
-    SetBackgroundColor(params->background_color.value());
-
   PerProcessInitializer::GetInstance().Acquire();
 
-  InitializeEngine(
+  // TODO(crbug.com/1257666): Implement "has-edits" support.
+  InitializeBase(
       engine ? std::move(engine)
-             : std::make_unique<PDFiumEngine>(this, params->script_option));
-  LoadUrl(params->src_url, /*is_print_preview=*/false);
-  set_url(params->original_url);
-  post_message_sender_.set_container(Container());
-
-  container_wrapper_->RequestTouchEventType(
-      blink::WebPluginContainer::kTouchEventRequestTypeRaw);
+             : std::make_unique<PDFiumEngine>(this, params->script_option),
+      /*embedder_origin=*/container_wrapper_->GetEmbedderOriginString(),
+      /*src_url=*/params->src_url,
+      /*original_url=*/params->original_url,
+      /*full_frame=*/params->full_frame,
+      /*background_color=*/
+      params->background_color.value_or(SK_ColorTRANSPARENT),
+      /*has_edits=*/false);
   return true;
 }
 
@@ -329,8 +331,8 @@ void PdfViewWebPlugin::Destroy() {
     DestroyPreviewEngine();
     DestroyEngine();
     PerProcessInitializer::GetInstance().Release();
-    container_wrapper_.reset();
     post_message_sender_.set_container(nullptr);
+    container_wrapper_.reset();
   }
 
   delete this;
