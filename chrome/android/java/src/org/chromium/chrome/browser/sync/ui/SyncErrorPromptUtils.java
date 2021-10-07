@@ -173,6 +173,31 @@ public class SyncErrorPromptUtils {
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_SYNC_ERROR);
     }
 
+    public static String getSyncErrorPromptUiHistogramSuffix(@SyncErrorPromptType int type) {
+        assert type != SyncErrorPromptType.NOT_SHOWN;
+        switch (type) {
+            case SyncErrorPromptType.AUTH_ERROR:
+                return "AuthError";
+            case SyncErrorPromptType.PASSPHRASE_REQUIRED:
+                return "PassphraseRequired";
+            case SyncErrorPromptType.SYNC_SETUP_INCOMPLETE:
+                return "SyncSetupIncomplete";
+            case SyncErrorPromptType.CLIENT_OUT_OF_DATE:
+                return "ClientOutOfDate";
+            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return "TrustedVaultKeyRequiredForEverything";
+            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return "TrustedVaultKeyRequiredForPasswords";
+            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+                return "TrustedVaultRecoverabilityDegradedForEverything";
+            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return "TrustedVaultRecoverabilityDegradedForPasswords";
+            default:
+                assert false;
+                return "";
+        }
+    }
+
     private static void openTrustedVaultKeyRetrievalActivity() {
         CoreAccountInfo primaryAccountInfo = getPrimaryAccountInfo();
         if (primaryAccountInfo == null) {

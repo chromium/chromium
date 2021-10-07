@@ -56,14 +56,14 @@ public class SyncErrorInfoBar
     @CalledByNative
     private void accept() {
         SyncService.get().removeSyncStateChangedListener(this);
-        recordHistogram(mType, SyncErrorPromptAction.BUTTON_CLICKED);
+        recordHistogram(SyncErrorPromptAction.BUTTON_CLICKED);
         SyncErrorPromptUtils.onUserAccepted(mType);
     }
 
     @CalledByNative
     private void dismissed() {
         SyncService.get().removeSyncStateChangedListener(this);
-        recordHistogram(mType, SyncErrorPromptAction.DISMISSED);
+        recordHistogram(SyncErrorPromptAction.DISMISSED);
     }
 
     private SyncErrorInfoBar(@SyncErrorPromptType int type, String title, String detailsMessage,
@@ -74,7 +74,7 @@ public class SyncErrorInfoBar
         mDetailsMessage = detailsMessage;
         SyncService.get().addSyncStateChangedListener(this);
         SyncErrorPromptUtils.updateLastShownTime();
-        recordHistogram(mType, SyncErrorPromptAction.SHOWN);
+        recordHistogram(SyncErrorPromptAction.SHOWN);
     }
 
     @Override
@@ -120,43 +120,10 @@ public class SyncErrorInfoBar
         SyncErrorInfoBarJni.get().launch(webContents);
     }
 
-    private static String getSyncErrorInfoBarHistogramName(@SyncErrorPromptType int type) {
-        assert type != SyncErrorPromptType.NOT_SHOWN;
-        String name = "Signin.SyncErrorInfoBar.";
-        switch (type) {
-            case SyncErrorPromptType.AUTH_ERROR:
-                name += "AuthError";
-                break;
-            case SyncErrorPromptType.PASSPHRASE_REQUIRED:
-                name += "PassphraseRequired";
-                break;
-            case SyncErrorPromptType.SYNC_SETUP_INCOMPLETE:
-                name += "SyncSetupIncomplete";
-                break;
-            case SyncErrorPromptType.CLIENT_OUT_OF_DATE:
-                name += "ClientOutOfDate";
-                break;
-            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
-                name += "TrustedVaultKeyRequiredForEverything";
-                break;
-            case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
-                name += "TrustedVaultKeyRequiredForPasswords";
-                break;
-            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
-                name += "TrustedVaultRecoverabilityDegradedForEverything";
-                break;
-            case SyncErrorPromptType.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
-                name += "TrustedVaultRecoverabilityDegradedForPasswords";
-                break;
-            default:
-                assert false;
-        }
-        return name;
-    }
-
-    private static void recordHistogram(
-            @SyncErrorPromptType int type, @SyncErrorPromptAction int action) {
-        String name = getSyncErrorInfoBarHistogramName(type);
+    private void recordHistogram(@SyncErrorPromptAction int action) {
+        assert mType != SyncErrorPromptType.NOT_SHOWN;
+        String name = "Signin.SyncErrorInfoBar."
+                + SyncErrorPromptUtils.getSyncErrorPromptUiHistogramSuffix(mType);
         RecordHistogram.recordEnumeratedHistogram(name, action, SyncErrorPromptAction.NUM_ENTRIES);
     }
 

@@ -13,11 +13,13 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
+import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils.SyncErrorPromptAction;
 import org.chromium.chrome.browser.sync.ui.SyncErrorPromptUtils.SyncErrorPromptType;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -102,7 +104,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
         mType = SyncErrorPromptUtils.getSyncErrorUiType(error);
         SyncService.get().addSyncStateChangedListener(this);
         SyncErrorPromptUtils.updateLastShownTime();
-        // TODO(crbug.com/1246073): add histogram recordings.
+        recordHistogram(SyncErrorPromptAction.SHOWN);
     }
 
     @Override
@@ -117,6 +119,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
 
     private void onAccepted() {
         SyncErrorPromptUtils.onUserAccepted(mType);
+        recordHistogram(SyncErrorPromptAction.BUTTON_CLICKED);
     }
 
     private void onDismissed(@DismissReason int reason) {
@@ -130,6 +133,18 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
         }
         SyncService.get().removeSyncStateChangedListener(this);
         SYNC_ERROR_MESSAGE_KEY.detachFromAllHosts(this);
+
+        // This metric should be recorded only on explicit dismissal.
+        if (reason == DismissReason.GESTURE) {
+            recordHistogram(SyncErrorPromptAction.DISMISSED);
+        }
+    }
+
+    private void recordHistogram(@SyncErrorPromptAction int action) {
+        assert mType != SyncErrorPromptType.NOT_SHOWN;
+        String name = "Signin.SyncErrorMessage."
+                + SyncErrorPromptUtils.getSyncErrorPromptUiHistogramSuffix(mType);
+        RecordHistogram.recordEnumeratedHistogram(name, action, SyncErrorPromptAction.NUM_ENTRIES);
     }
 
     @VisibleForTesting
