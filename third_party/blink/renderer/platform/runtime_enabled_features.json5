@@ -2406,6 +2406,7 @@
     // authentication to the public key credential response.
     {
       name: "WebAuthAuthenticatorAttachment",
+      status: "test"
     },
     // A more subtle UI for WebAuthn that is web exposed. Under development.
     // It's controlled by the corresponding Chromium feature which needs to
