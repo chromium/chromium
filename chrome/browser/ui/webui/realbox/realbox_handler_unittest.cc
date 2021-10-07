@@ -5,10 +5,14 @@
 #include "chrome/browser/ui/webui/realbox/realbox_handler.h"
 
 #include <string>
+#include <unordered_map>
 
 #include <gtest/gtest.h>
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/omnibox/browser/actions/omnibox_pedal.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_implementations.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/suggestion_answer.h"
@@ -69,5 +73,15 @@ TEST_P(RealboxHandlerIconTest, VectorIcons) {
       ASSERT_FALSE(svg_name.empty());
       ASSERT_NE("search.svg", svg_name);
     }
+  }
+
+  std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals =
+      GetPedalImplementations(true, true);
+  for (auto const& it : pedals) {
+    const scoped_refptr<OmniboxPedal> pedal = it.second;
+    const gfx::VectorIcon& vector_icon = pedal->GetVectorIcon();
+    const std::string& svg_name =
+        RealboxHandler::PedalVectorIconToResourceName(vector_icon);
+    ASSERT_FALSE(svg_name.empty());
   }
 }

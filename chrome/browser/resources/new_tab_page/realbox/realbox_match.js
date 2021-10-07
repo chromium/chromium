@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './realbox_icon.js';
+import './realbox_action.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
@@ -10,7 +11,8 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {decodeString16} from '../utils.js';
+import {decodeString16, mojoTimeTicks} from '../utils.js';
+import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 
 // clang-format off
 /**
@@ -116,6 +118,15 @@ class RealboxMatchElement extends PolymerElement {
       },
 
       /**
+       * @type {boolean}
+       * @private
+       */
+      actionIsVisible_: {
+        type: Boolean,
+        computed: `computeActionIsVisible_(match)`,
+      },
+
+      /**
        * Remove button's 'aria-label' attribute.
        * @type {string}
        * @private
@@ -155,6 +166,12 @@ class RealboxMatchElement extends PolymerElement {
     };
   }
 
+  constructor() {
+    super();
+    /** @private {realbox.mojom.PageHandlerRemote} */
+    this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
+  }
+
   ready() {
     super.ready();
 
@@ -165,6 +182,39 @@ class RealboxMatchElement extends PolymerElement {
   //============================================================================
   // Event handlers
   //============================================================================
+
+  /**
+   * @param {!Event} e Event
+   * containing index of the match that was removed as well as modifier key
+   * presses.
+   * @private
+   */
+  executeAction_(e) {
+    this.pageHandler_.executeAction(
+        this.matchIndex, mojoTimeTicks(Date.now()), e.button || 0, e.altKey,
+        e.ctrlKey, e.metaKey, e.shiftKey);
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onActionClick_(e) {
+    this.executeAction_(e);
+
+    e.preventDefault();   // Prevents default browser action (navigation).
+    e.stopPropagation();  // Prevents <iron-selector> from selecting the match.
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onActionKeyDown_(e) {
+    if (e.key && (e.key === 'Enter' || e.key === ' ')) {
+      this.onActionClick_(e);
+    }
+  }
 
   /**
    * @param {!Event} e
@@ -313,6 +363,14 @@ class RealboxMatchElement extends PolymerElement {
    */
   computeHasImage_() {
     return this.match && !!this.match.imageUrl;
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeActionIsVisible_() {
+    return this.match && !!this.match.action;
   }
 
   /**

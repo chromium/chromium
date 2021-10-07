@@ -89,7 +89,12 @@ constexpr char kDriveSlidesIconResourceName[] =
 constexpr char kDriveVideoIconResourceName[] = "realbox/icons/drive_video.svg";
 constexpr char kExtensionAppIconResourceName[] =
     "realbox/icons/extension_app.svg";
+constexpr char kGoogleCalendarIconResourceName[] = "realbox/icons/calendar.svg";
+constexpr char kGoogleKeepNoteIconResourceName[] = "realbox/icons/note.svg";
+constexpr char kGoogleSitesIconResourceName[] = "realbox/icons/sites.svg";
 constexpr char kPageIconResourceName[] = "realbox/icons/page.svg";
+constexpr char kPedalsIconResourceName[] =
+    "chrome://theme/current-channel-logo";
 constexpr char kTrendingUpIconResourceName[] = "realbox/icons/trending_up.svg";
 
 base::flat_map<int32_t, realbox::mojom::SuggestionGroupPtr>
@@ -188,6 +193,16 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.type == AutocompleteMatchType::CALCULATOR ||
         (match.answer.has_value() &&
          base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers));
+    if (match.action &&
+        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+      mojom_match->action = realbox::mojom::Action::New(
+          match.action->GetLabelStrings().accessibility_hint,
+          match.action->GetLabelStrings().accessibility_suffix,
+          match.action->GetLabelStrings().hint,
+          match.action->GetLabelStrings().suggestion_contents,
+          RealboxHandler::PedalVectorIconToResourceName(
+              match.action->GetVectorIcon()));
+    }
     matches.push_back(std::move(mojom_match));
   }
   return matches;
@@ -293,7 +308,7 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
   } else if (icon.name == omnibox::kPageIcon.name) {
     return kPageIconResourceName;
   } else if (icon.name == omnibox::kPedalIcon.name) {
-    return "";  // Pedals are not supported in the NTP Realbox.
+    return kPedalsIconResourceName;
   } else if (icon.name == vector_icons::kSearchIcon.name) {
     return kSearchIconResourceName;
   } else if (icon.name == omnibox::kTrendingUpIcon.name) {
@@ -301,6 +316,35 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
   } else {
     NOTREACHED()
         << "Every vector icon returned by AutocompleteMatch::GetVectorIcon "
+           "must have an equivalent SVG resource for the NTP Realbox.";
+    return "";
+  }
+}
+
+// static
+std::string RealboxHandler::PedalVectorIconToResourceName(
+    const gfx::VectorIcon& icon) {
+  if (icon.name == omnibox::kDriveFormsIcon.name) {
+    return kDriveFormIconResourceName;
+  } else if (icon.name == omnibox::kDriveDocsIcon.name) {
+    return kDriveDocsIconResourceName;
+  } else if (icon.name == omnibox::kDriveSheetsIcon.name) {
+    return kDriveSheetsIconResourceName;
+  } else if (icon.name == omnibox::kDriveSlidesIcon.name) {
+    return kDriveSlidesIconResourceName;
+  } else if (icon.name == omnibox::kGoogleCalendarIcon.name) {
+    return kGoogleCalendarIconResourceName;
+  } else if (icon.name == omnibox::kGoogleKeepNoteIcon.name) {
+    return kGoogleKeepNoteIconResourceName;
+  } else if (icon.name == omnibox::kGoogleSitesIcon.name) {
+    return kGoogleSitesIconResourceName;
+  } else if (icon.name == omnibox::kGoogleSuperGIcon.name) {
+    return kGoogleGIconResourceName;
+  } else if (icon.name == omnibox::kPedalIcon.name) {
+    return kPedalsIconResourceName;
+  } else {
+    NOTREACHED()
+        << "Every vector icon returned by OmniboxAction::GetVectorIcon "
            "must have an equivalent SVG resource for the NTP Realbox.";
     return "";
   }

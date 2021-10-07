@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {decodeString16, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, decodeString16, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {assertStyle, createTheme} from 'chrome://test/new_tab_page/test_support.js';
@@ -29,6 +29,7 @@ class TestRealboxBrowserProxy extends TestBrowserProxy {
   constructor() {
     super([
       'deleteAutocompleteMatch',
+      'executeAction',
       'logCharTypedToRepaintLatency',
       'openAutocompleteMatch',
       'queryAutocomplete',
@@ -40,6 +41,21 @@ class TestRealboxBrowserProxy extends TestBrowserProxy {
   /** @override */
   deleteAutocompleteMatch(line) {
     this.methodCalled('deleteAutocompleteMatch', {line});
+  }
+
+  /** @override */
+  executeAction(
+      line, matchSelectionTimestamp, mouseButton, altKey, ctrlKey, metaKey,
+      shiftKey) {
+    this.methodCalled('executeAction', {
+      line,
+      matchSelectionTimestamp,
+      mouseButton,
+      altKey,
+      ctrlKey,
+      metaKey,
+      shiftKey
+    });
   }
 
   /** @override */
@@ -200,7 +216,7 @@ function verifyMatch(match, matchEl) {
       match.swapContentsAndDescription ?
           matchDescription + separatorText + matchContents :
           matchContents + separatorText + matchDescription,
-      matchEl.$.container.textContent.trim());
+      matchEl.$['text-container'].textContent.trim());
 }
 
 suite('NewTabPageRealboxTest', () => {
@@ -2337,5 +2353,112 @@ suite('NewTabPageRealboxTest', () => {
     assertTrue(matchEls[0].classList.contains(CLASSES.SELECTED));
 
     assertIconMaskImageUrl(realbox.$.icon, 'search.svg'); // Default Icon
+  });
+
+  //============================================================================
+  // Test pedals
+  //============================================================================
+
+  test('Test Actions for Verbatim Query', async () => {
+    realbox.$.input.value = 'Clear Browsing History';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    const matches = [createSearchMatch({
+      action: {
+        accessibilityHint: mojoString16(''),
+        accessibilitySuffix: mojoString16(''),
+        hint: mojoString16('Clear Browsing History'),
+        suggestionContents: mojoString16(''),
+        iconUrl: 'chrome://theme/current-channel-logo'
+      }
+    })];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimLeft()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+
+    let matchEl = $$(realbox.$.matches, 'ntp-realbox-match');
+    verifyMatch(matches[0], matchEl);
+
+    const pedalEl = $$($$(matchEl, 'ntp-realbox-action'), '.contents');
+
+    assertEquals(
+        pedalEl.querySelector('#action-icon').src,
+        'chrome://theme/current-channel-logo');  // Default Pedal
+                                                 // Icon
+
+    let leftClick = new MouseEvent('click', {
+      bubbles: true,
+      button: 1,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      ctrlKey: true,
+    });
+
+    pedalEl.dispatchEvent(leftClick);
+    assertTrue(leftClick.defaultPrevented);
+
+    await testProxy.handler.whenCalled('executeAction').then((args) => {
+      assertTrue(args.ctrlKey);
+      assertEquals(0, args.line);
+      assertEquals(args.mouseButton, 1);
+      assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
+    });
+    assertEquals(1, testProxy.handler.getCallCount('executeAction'));
+  });
+
+  test('Test Actions for Autocomplete Query', async () => {
+    realbox.$.input.value = 'Clear Bro';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    const matches = [
+      createSearchMatch({contents: mojoString16('Clear Bro')}),
+      createSearchMatch({
+        action: {
+          accessibilityHint: mojoString16(''),
+          accessibilitySuffix: mojoString16(''),
+          hint: mojoString16('Clear Browsing History'),
+          suggestionContents: mojoString16(''),
+          iconUrl: 'chrome://theme/current-channel-logo'
+        }
+      })
+    ];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimLeft()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+
+    let matchEls =
+        realbox.$.matches.shadowRoot.querySelectorAll('ntp-realbox-match');
+    verifyMatch(matches[0], matchEls[0]);
+    verifyMatch(matches[1], matchEls[1]);
+
+    const pedalEl = $$($$(matchEls[1], 'ntp-realbox-action'), '.contents');
+
+    assertEquals(
+        pedalEl.querySelector('#action-icon').src,
+        'chrome://theme/current-channel-logo');  // Default Pedal
+                                                 // Icon
+
+    let leftClick = new MouseEvent('click', {
+      bubbles: true,
+      button: 0,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+    });
+
+    pedalEl.dispatchEvent(leftClick);
+    assertTrue(leftClick.defaultPrevented);
+
+    await testProxy.handler.whenCalled('executeAction').then((args) => {
+      assertEquals(1, args.line);
+      assertEquals(args.mouseButton, 0);
+      assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
+    });
+    assertEquals(1, testProxy.handler.getCallCount('executeAction'));
   });
 });

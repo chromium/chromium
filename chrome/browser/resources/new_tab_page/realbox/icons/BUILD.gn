@@ -10,6 +10,7 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
     "calculator.svg",
+    "calendar.svg",
     "currency.svg",
     "default.svg",
     "definition.svg",
@@ -23,7 +24,9 @@ generate_grd("build_grdp") {
     "drive_video.svg",
     "extension_app.svg",
     "finance.svg",
+    "note.svg",
     "page.svg",
+    "sites.svg",
     "sunrise.svg",
     "translation.svg",
     "trending_up.svg",

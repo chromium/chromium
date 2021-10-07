@@ -38,6 +38,7 @@ class RealboxHandler : public realbox::mojom::PageHandler,
   static void SetupWebUIDataSource(content::WebUIDataSource* source);
   static std::string AutocompleteMatchVectorIconToResourceName(
       const gfx::VectorIcon& icon);
+  static std::string PedalVectorIconToResourceName(const gfx::VectorIcon& icon);
 
   RealboxHandler(
       mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler,
