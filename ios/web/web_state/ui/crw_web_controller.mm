@@ -97,7 +97,6 @@ using web::wk_navigation_util::IsWKInternalUrl;
                                 CRWWebControllerContainerViewDelegate,
                                 CRWWebViewNavigationObserverDelegate,
                                 CRWWebRequestControllerDelegate,
-                                CRWJSNavigationHandlerDelegate,
                                 CRWWebViewScrollViewProxyObserver,
                                 CRWWKNavigationHandlerDelegate,
                                 CRWWKUIHandlerDelegate,
@@ -150,7 +149,7 @@ using web::wk_navigation_util::IsWKInternalUrl;
 @property(nonatomic, readonly, strong)
     CRWWKNavigationHandler* navigationHandler;
 @property(nonatomic, readonly, strong)
-    CRWJSNavigationHandler* JSNavigationHandler;
+    CRWJSNavigationHandler* jsNavigationHandler;
 // The WKUIDelegate handler class.
 @property(nonatomic, readonly, strong) CRWWKUIHandler* UIHandler;
 
@@ -307,8 +306,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
     _navigationHandler = [[CRWWKNavigationHandler alloc] initWithDelegate:self];
 
-    _JSNavigationHandler =
-        [[CRWJSNavigationHandler alloc] initWithDelegate:self];
+    _jsNavigationHandler = [[CRWJSNavigationHandler alloc] init];
 
     _UIHandler = [[CRWWKUIHandler alloc] init];
     _UIHandler.delegate = self;
@@ -543,7 +541,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   _SSLStatusUpdater = nil;
   [self.navigationHandler close];
   [self.UIHandler close];
-  [self.JSNavigationHandler close];
+  [self.jsNavigationHandler close];
   [self.requestController close];
   self.swipeRecognizerProvider = nil;
   [self.requestController close];
@@ -893,6 +891,34 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
                              error:&error];
   }
   return nil;
+}
+
+- (void)handleNavigationHashChange {
+  self.navigationManagerImpl->GetCurrentItemImpl()->SetIsCreatedFromHashChange(
+      true);
+}
+
+- (void)handleNavigationWillChangeState {
+  [self.jsNavigationHandler handleNavigationWillChangeState];
+}
+
+- (void)handleNavigationDidPushStateMessage:(base::Value*)message {
+  [self.jsNavigationHandler
+      handleNavigationDidPushStateMessage:message
+                                 webState:_webStateImpl
+                           hasUserGesture:self.isUserInteracting
+                     userInteractionState:&_userInteractionState
+                               currentURL:self.currentURL];
+  [self updateSSLStatusForCurrentNavigationItem];
+}
+
+- (void)handleNavigationDidReplaceStateMessage:(base::Value*)message {
+  [self.jsNavigationHandler
+      handleNavigationDidReplaceStateMessage:message
+                                    webState:_webStateImpl
+                              hasUserGesture:self.isUserInteracting
+                        userInteractionState:&_userInteractionState
+                                  currentURL:self.currentURL];
 }
 
 #pragma mark - JavaScript
@@ -1810,7 +1836,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   // |newNavigationContext| only exists if this method has to create a new
   // context object.
   std::unique_ptr<web::NavigationContextImpl> newNavigationContext;
-  if (!self.JSNavigationHandler.changingHistoryState) {
+  if (!self.jsNavigationHandler.changingHistoryState) {
     if ([self.navigationHandler
             contextForPendingMainFrameNavigationWithURL:newURL]) {
       // NavigationManager::LoadURLWithParams() was called with URL that has
@@ -1831,7 +1857,7 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 
   [self setDocumentURL:newURL context:newNavigationContext.get()];
 
-  if (!self.JSNavigationHandler.changingHistoryState) {
+  if (!self.jsNavigationHandler.changingHistoryState) {
     // Pass either newly created context (if it exists) or context that already
     // existed before.
     web::NavigationContextImpl* navigationContext = newNavigationContext.get();
@@ -1948,23 +1974,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     return webState->GetDelegate()->GetResponderInputView(webState);
   }
   return nil;
-}
-
-#pragma mark - CRWJSNavigationHandlerDelegate
-
-- (GURL)currentURLForJSNavigationHandler:
-    (CRWJSNavigationHandler*)navigationHandler {
-  return self.currentURL;
-}
-
-- (void)JSNavigationHandlerUpdateSSLStatusForCurrentNavigationItem:
-    (CRWJSNavigationHandler*)navigationHandler {
-  [self updateSSLStatusForCurrentNavigationItem];
-}
-
-- (void)JSNavigationHandlerOptOutScrollsToTopForSubviews:
-    (CRWJSNavigationHandler*)navigationHandler {
-  return [self optOutScrollsToTopForSubviews];
 }
 
 #pragma mark - UIDropInteractionDelegate

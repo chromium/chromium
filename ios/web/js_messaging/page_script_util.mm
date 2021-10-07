@@ -53,12 +53,7 @@ NSString* GetDocumentStartScriptForMainFrame(BrowserState* browser_state) {
       GetWebClient()->GetDocumentStartScriptForMainFrame(browser_state);
   DCHECK(embedder_page_script);
 
-  NSString* web_bundle = GetPageScript(@"main_frame_web_bundle");
-  DCHECK(web_bundle);
-
-  NSString* script =
-      [NSString stringWithFormat:@"%@; %@", web_bundle, embedder_page_script];
-  return MakeScriptInjectableOnce(@"start_main_frame", script);
+  return MakeScriptInjectableOnce(@"start_main_frame", embedder_page_script);
 }
 
 NSString* GetDocumentStartScriptForAllFrames(BrowserState* browser_state) {

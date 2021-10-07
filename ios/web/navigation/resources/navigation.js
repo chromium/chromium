@@ -8,7 +8,7 @@
 
 goog.provide('__crWeb.navigation');
 
-/** Beginning of anonymouse object */
+/** Beginning of anonymous object */
 (function() {
 
 /**
@@ -25,7 +25,7 @@ function DataCloneError() {
   // https://heycam.github.io/webidl/#datacloneerror
   this.name = 'DataCloneError';
   this.code = 25;
-  this.message = "Cyclic structures are not supported.";
+  this.message = 'Cyclic structures are not supported.';
 }
 
 /**
@@ -37,7 +37,8 @@ function DataCloneError() {
  * called for same-document navigation.
  */
 window.history.pushState = function(stateObject, pageTitle, pageUrl) {
-  __gCrWeb.message.invokeOnHost({'command': 'navigation.willChangeState'});
+  __gCrWeb.common.sendWebKitMessage(
+      'NavigationEventMessage', {'command': 'willChangeState'});
 
   // JSONStringify throws an exception when given a cyclical object. This
   // internal implementation detail should not be exposed to callers of
@@ -52,8 +53,8 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
   }
   pageUrl = pageUrl || window.location.href;
   originalWindowHistoryPushState.call(history, stateObject, pageTitle, pageUrl);
-  __gCrWeb.message.invokeOnHost({
-    'command': 'navigation.didPushState',
+  __gCrWeb.common.sendWebKitMessage('NavigationEventMessage', {
+    'command': 'didPushState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
     'pageUrl': pageUrl.toString()
@@ -61,12 +62,13 @@ window.history.pushState = function(stateObject, pageTitle, pageUrl) {
 };
 
 window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
-  __gCrWeb.message.invokeOnHost({'command': 'navigation.willChangeState'});
+  __gCrWeb.common.sendWebKitMessage(
+      'NavigationEventMessage', {'command': 'willChangeState'});
 
- // JSONStringify throws an exception when given a cyclical object. This
- // internal implementation detail should not be exposed to callers of
- // replaceState. Instead, throw a standard exception when stringification
- // fails.
+  // JSONStringify throws an exception when given a cyclical object. This
+  // internal implementation detail should not be exposed to callers of
+  // replaceState. Instead, throw a standard exception when stringification
+  // fails.
   try {
     // Calling stringify() on undefined causes a JSON parse error.
     var serializedState = typeof (stateObject) == 'undefined' ?
@@ -78,20 +80,16 @@ window.history.replaceState = function(stateObject, pageTitle, pageUrl) {
   pageUrl = pageUrl || window.location.href;
   originalWindowHistoryReplaceState.call(
       history, stateObject, pageTitle, pageUrl);
-  __gCrWeb.message.invokeOnHost({
-    'command': 'navigation.didReplaceState',
+  __gCrWeb.common.sendWebKitMessage('NavigationEventMessage', {
+    'command': 'didReplaceState',
     'stateObject': serializedState,
     'baseUrl': document.baseURI,
     'pageUrl': pageUrl.toString()
   });
 };
 
-window.addEventListener('hashchange', function(evt) {
-  __gCrWeb.message.invokeOnHost({'command': 'navigation.hashchange'});
-});
-
 /** Flush the message queue. */
 if (__gCrWeb.message) {
   __gCrWeb.message.invokeQueues();
 }
-}());  // End of anonymouse object
+}());  // End of anonymous object

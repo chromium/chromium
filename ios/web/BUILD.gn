@@ -618,16 +618,6 @@ test("ios_web_inttests") {
   assert_no_deps = ios_assert_no_deps
 }
 
-js_compile_bundle("main_frame_web_bundle") {
-  visibility = [ ":js_resources" ]
-  closure_entry_point = "__crWeb.mainFrameWebBundle"
-
-  sources = [
-    "web_state/js/resources/main_frame_web_bundle.js",
-    "web_state/js/resources/navigation.js",
-  ]
-}
-
 js_compile_bundle("all_frames_web_bundle") {
   visibility = [ ":js_resources" ]
   closure_entry_point = "__crWeb.allFramesWebBundle"
@@ -668,10 +658,7 @@ js_compile_bundle("message_js") {
 }
 
 js_compile_checked("js_resources") {
-  public_deps = [
-    ":all_frames_web_bundle",
-    ":main_frame_web_bundle",
-  ]
+  public_deps = [ ":all_frames_web_bundle" ]
 
   js_modules = [
     "//ios/web/web_state/js/resources/base.js",
