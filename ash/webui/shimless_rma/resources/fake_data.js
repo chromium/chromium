@@ -133,6 +133,10 @@ export const fakeChromeVersion = [
   '95.0.4444.123',
 ];
 
+/** @type {string} */
+export const fakeRsuChallengeCode =
+    'HRBXHV84NSTHT25WJECYQKB8SARWFTMSWNGFT2FVEEPX69VE99USV3QFBEANDVXGQVL93QK2M6P3DNV4';
+
 /** @type {!QrCode} */
 export const fakeRsuChallengeQrCode = {
   size: 4,

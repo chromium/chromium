@@ -8,10 +8,11 @@
 
     <p>Challenge:</p>
     <div id="rsuChallenge">
-      <!--TODO(gavindodd) This is 16 elements that should be displayed in a 4x4
-        grid -->
-      <template id="rsuChallengeParts" is="dom-repeat" items="{{rsuChallenge_}}" as="segment">
-        <span>[[segment]]&nbsp;</span>
+      <template id="rsuChallengeParts" is="dom-repeat" items="{{rsuChallenge_}}" as="row">
+        <template id="rsuChallengePart" is="dom-repeat" items="[[row]]" as="segment">
+          <span>[[segment]]&nbsp;</span>
+        </template>
+        <br/>
       </template>
     </div>
     <p>HWID: <span id="rsuHwid">[[rsuHwid_]]</span></p>

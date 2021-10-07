@@ -75,7 +75,7 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     await initializeEnterRsuWpDisableCodePage('rsu challenge', '');
     const rsuChallengeComponent =
         component.shadowRoot.querySelector('#rsuChallenge');
-    assertEquals(5, rsuChallengeComponent.childElementCount);
+    assertEquals(7, rsuChallengeComponent.childElementCount);
 
     // Confirm all the parts match the expected challenge.
     let parts = component.shadowRoot.querySelector('#rsuChallengeParts')

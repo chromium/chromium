@@ -40,7 +40,7 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
         value: 0,
       },
 
-      /** @protected {!Array<string>} */
+      /** @protected {!Array<!Array<string>>} */
       rsuChallenge_: {
         type: Array,
         value: () => [],
@@ -77,7 +77,15 @@ export class OnboardingEnterRsuWpDisableCodePageElement extends PolymerElement {
   getRsuChallengeAndHwid_() {
     this.shimlessRmaService_.getRsuDisableWriteProtectChallenge().then(
         (result) => {
-          this.rsuChallenge_ = result.challenge.match(/.{1,4}/g) || [];
+          this.rsuChallenge_ = [];
+          // Split raw challenge code every 4 characters.
+          /** @type !Array<string> */
+          const challenge = result.challenge.match(/.{1,4}/g) || [];
+          // Split array of 4 character blocks into multiple arrays of 4 blocks
+          // each.
+          for (let i = 0; i < challenge.length; i += 4) {
+            this.rsuChallenge_.push(challenge.slice(i, i + 4));
+          }
         });
     this.shimlessRmaService_.getRsuDisableWriteProtectHwid().then(
         (result) => {
