@@ -6,6 +6,7 @@
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
 #include <tuple>  // for std::ignore
+#include <type_traits>  // for std::remove_pointer_t
 
 #include "base/memory/raw_ptr.h"
 
@@ -79,6 +80,13 @@ void WontCompile() {
   const char foo[] = "42";
   raw_ptr<const void> ptr = foo;
   std::ignore = *ptr;
+}
+
+#elif defined(NCTEST_FUNCTION_POINTER) // [r"raw_ptr doesn't support function pointers"]
+
+void WontCompile() {
+  raw_ptr<void(int)> raw_ptr_var;
+  std::ignore = raw_ptr_var.get();
 }
 
 #endif

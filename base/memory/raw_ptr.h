@@ -280,8 +280,14 @@ template <typename T,
 #endif
 class raw_ptr {
  public:
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  static_assert(!std::is_function<T>::value,
+                "raw_ptr doesn't support function pointers");
+#if __OBJC__
+  static_assert(!std::is_convertible<T*, id>::value,
+                "raw_ptr doesn't support pointers to Objective-C objects");
+#endif
 
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
   constexpr ALWAYS_INLINE raw_ptr() noexcept : wrapped_ptr_(nullptr) {}
 
