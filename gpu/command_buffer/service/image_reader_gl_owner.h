@@ -47,8 +47,6 @@ class GPU_GLES2_EXPORT ImageReaderGLOwner : public TextureOwner {
                                   gfx::Size* coded_size,
                                   gfx::Rect* visible_rect) override;
 
-  // This method is never called in MediaPlayer path. Hence removing thread
-  // safety analysis until thread safety is implemented in MCVD path.
   void RunWhenBufferIsAvailable(base::OnceClosure callback) override;
 
   const AImageReader* image_reader_for_testing() const

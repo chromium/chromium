@@ -13,6 +13,7 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/bind_post_task.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -101,23 +102,13 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
                                                      base::ScopedFD(),
                                                      true /* is_video */),
         texture_owner_(std::move(texture_owner)),
-        image_(image),
-        task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+        image_(image) {
     DCHECK(image_);
     texture_owner_->RegisterRefOnImageLocked(image_);
   }
 
   ~ScopedHardwareBufferImpl() override {
-    if (task_runner_->RunsTasksInCurrentSequence()) {
-      if (texture_owner_) {
-        texture_owner_->ReleaseRefOnImage(image_, std::move(read_fence_));
-      }
-    } else {
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&gpu::ImageReaderGLOwner::ReleaseRefOnImage,
-                         texture_owner_, image_, std::move(read_fence_)));
-    }
+    texture_owner_->ReleaseRefOnImage(image_, std::move(read_fence_));
   }
 
   void SetReadFence(base::ScopedFD fence_fd, bool has_context) final {
@@ -131,7 +122,6 @@ class ImageReaderGLOwner::ScopedHardwareBufferImpl
   base::ScopedFD read_fence_;
   scoped_refptr<ImageReaderGLOwner> texture_owner_;
   AImage* image_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 ImageReaderGLOwner::ImageReaderGLOwner(
@@ -507,7 +497,8 @@ void ImageReaderGLOwner::RunWhenBufferIsAvailable(base::OnceClosure callback) {
     std::move(callback).Run();
   } else {
     base::AutoLock auto_lock(lock_);
-    buffer_available_cb_ = std::move(callback);
+    buffer_available_cb_ = base::BindPostTask(
+        base::ThreadTaskRunnerHandle::Get(), std::move(callback));
   }
 }
 
