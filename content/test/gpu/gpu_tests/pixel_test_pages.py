@@ -160,7 +160,7 @@ class PixelTestPages(object):
                       matching_algorithm=algo.SobelMatchingAlgorithm(
                           max_different_pixels=0,
                           pixel_delta_threshold=0,
-                          edge_threshold=100)),
+                          edge_threshold=90)),
         PixelTestPage('pixel_webgl_aa_alpha.html',
                       base_name + '_WebGLGreenTriangle_AA_Alpha',
                       test_rect=[0, 0, 300, 300]),
