@@ -6626,6 +6626,7 @@ static_library("browser") {
       "pdf/pdf_frame_util.h",
     ]
     deps += [
+      "//components/pdf/browser",
       "//components/pdf/browser:interceptors",
       "//components/pdf/common",
       "//extensions/common/api",
@@ -6678,7 +6679,6 @@ static_library("browser") {
       "renderer_host/pepper/pepper_isolated_file_system_message_filter.h",
     ]
     deps += [
-      "//components/pdf/browser",
       "//media:media_buildflags",
       "//ppapi/host",
       "//ppapi/proxy:ipc",

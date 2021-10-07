@@ -22,6 +22,7 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//rlz/buildflags/buildflags.gni")
@@ -511,7 +512,6 @@ static_library("ui") {
     "//components/payments/content:utils",
     "//components/payments/content/icon",
     "//components/payments/core:error_strings",
-    "//components/pdf/browser",
     "//components/performance_manager",
     "//components/permissions",
     "//components/policy/core/browser",
@@ -5032,6 +5032,10 @@ static_library("ui") {
       "webui/nacl_ui.h",
     ]
     deps += [ "//components/nacl/browser" ]
+  }
+
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
   }
 
   if (enable_plugins) {

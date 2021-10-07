@@ -39,12 +39,10 @@
 #include "chrome/browser/guest_view/web_view/chrome_web_view_permission_helper_delegate.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/ui/pdf/chrome_pdf_web_contents_helper_client.h"
 #include "chrome/browser/ui/webui/devtools_ui.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/pdf/browser/pdf_web_contents_helper.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/value_store/value_store_factory.h"
 #include "content/public/browser/browser_context.h"
@@ -62,6 +60,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
@@ -75,6 +74,11 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/extensions/clipboard_extension_helper_chromeos.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/ui/pdf/chrome_pdf_web_contents_helper_client.h"
+#include "components/pdf/browser/pdf_web_contents_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -114,8 +118,10 @@ void ChromeExtensionsAPIClient::AttachWebContentsHelpers(
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializePrinting(web_contents);
 #endif
+#if BUILDFLAG(ENABLE_PDF)
   pdf::PDFWebContentsHelper::CreateForWebContentsWithClient(
       web_contents, std::make_unique<ChromePDFWebContentsHelperClient>());
+#endif
 
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents);

@@ -1182,7 +1182,6 @@ if (!is_android && !is_fuchsia) {
       "//components/password_manager/core/browser/form_parsing",
       "//components/payments/content",
       "//components/payments/content:utils",
-      "//components/pdf/browser",
       "//components/performance_manager",
       "//components/policy:chrome_settings_proto_generated_compile",
       "//components/policy/core/browser:test_support",
@@ -2129,7 +2128,10 @@ if (!is_android && !is_fuchsia) {
     }
 
     if (enable_pdf) {
-      deps += [ "//pdf:internal" ]
+      deps += [
+        "//components/pdf/browser",
+        "//pdf:internal",
+      ]
     }
 
     if (safe_browsing_mode != 0) {

@@ -851,7 +851,6 @@ static_library("extensions") {
     "//components/password_manager/core/browser:affiliation",
     "//components/password_manager/core/browser/leak_detection",
     "//components/payments/core",
-    "//components/pdf/browser",
     "//components/performance_manager",
     "//components/permissions",
     "//components/policy:generated",
@@ -1289,6 +1288,7 @@ static_library("extensions") {
 
   if (enable_pdf) {
     deps += [
+      "//components/pdf/browser",
       "//pdf:buildflags",
       "//pdf:features",
     ]
