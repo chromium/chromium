@@ -1355,7 +1355,7 @@ try_.chromium_linux_builder(
     },
 )
 
-try_.chromium_linux_builder(
+try_.chromium_android_builder(
     name = "android-marshmallow-x86-rel-orchestrator",
     builderless = False,
     cores = 4,
