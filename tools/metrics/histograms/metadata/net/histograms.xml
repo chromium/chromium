@@ -2377,6 +2377,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.Ntlm.HashDependsOnLocale" enum="Boolean"
     expires_after="2021-10-25">
+  <obsolete>
+    Removed in 2021/09.
+  </obsolete>
   <owner>eroman@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
