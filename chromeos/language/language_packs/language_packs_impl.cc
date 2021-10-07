@@ -55,10 +55,19 @@ void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
 
 }  // namespace
 
-LanguagePacksImpl::LanguagePacksImpl(
-    mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver)
-    : receiver_(this, std::move(receiver)) {}
+LanguagePacksImpl::LanguagePacksImpl() = default;
 LanguagePacksImpl::~LanguagePacksImpl() = default;
+
+LanguagePacksImpl& LanguagePacksImpl::GetInstance() {
+  static base::NoDestructor<LanguagePacksImpl> impl;
+  return *impl;
+}
+
+void LanguagePacksImpl::BindReceiver(
+    mojo::PendingReceiver<language::mojom::LanguagePacks> receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
+}
 
 void LanguagePacksImpl::GetPackInfo(FeatureId feature_id,
                                     const std::string& language,

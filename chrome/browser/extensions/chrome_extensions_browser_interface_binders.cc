@@ -27,6 +27,8 @@
 #include "chromeos/components/camera_app_ui/camera_app_ui.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
+#include "chromeos/language/language_packs/language_packs_impl.h"
+#include "chromeos/language/public/mojom/language_packs.mojom.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -61,6 +63,13 @@ void BindInputEngineManager(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
   ash::input_method::InputMethodManager::Get()->ConnectInputEngineManager(
+      std::move(receiver));
+}
+
+void BindLanguagePacks(
+    content::RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<chromeos::language::mojom::LanguagePacks> receiver) {
+  chromeos::language_packs::LanguagePacksImpl::GetInstance().BindReceiver(
       std::move(receiver));
 }
 
@@ -122,6 +131,8 @@ void PopulateChromeFrameBindersForExtension(
   if (extension->id() == ash::extension_ime_util::kXkbExtensionId) {
     binder_map->Add<chromeos::ime::mojom::InputEngineManager>(
         base::BindRepeating(&BindInputEngineManager));
+    binder_map->Add<chromeos::language::mojom::LanguagePacks>(
+        base::BindRepeating(&BindLanguagePacks));
     binder_map->Add<chromeos::machine_learning::mojom::MachineLearningService>(
         base::BindRepeating(&BindMachineLearningService));
   }

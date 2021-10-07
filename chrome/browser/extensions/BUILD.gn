@@ -1117,6 +1117,8 @@ static_library("extensions") {
       "//chromeos/dbus/update_engine",
       "//chromeos/dbus/util",
       "//chromeos/disks",
+      "//chromeos/language/language_packs",
+      "//chromeos/language/public/mojom",
       "//chromeos/login/auth",
       "//chromeos/login/login_state",
       "//chromeos/network",
