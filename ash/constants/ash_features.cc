@@ -397,7 +397,7 @@ const base::Feature kDriveFsMirroring{"DriveFsMirroring",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the System Web App (SWA) version of Eche.
-const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables the naive resize for the Eche window.
 const base::Feature kEcheSWAResizing{"EcheSWAResizing",
