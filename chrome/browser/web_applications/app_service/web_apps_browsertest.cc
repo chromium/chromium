@@ -134,6 +134,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchAppIconKeyUnchanged) {
   const AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   auto* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  proxy->FlushMojoCallsForTesting();
 
   apps::mojom::IconKeyPtr original_key;
   proxy->AppRegistryCache().ForOneApp(

@@ -348,6 +348,19 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   app->install_source =
       GetInstallSource(profile()->GetPrefs(), web_app->app_id());
 
+  GURL install_url;
+  if (registrar().HasExternalAppWithInstallSource(
+          web_app->app_id(), ExternalInstallSource::kExternalPolicy)) {
+    std::map<AppId, GURL> installed_apps =
+        registrar().GetExternallyInstalledApps(
+            ExternalInstallSource::kExternalPolicy);
+    auto it = installed_apps.find(web_app->app_id());
+    if (it != installed_apps.end()) {
+      install_url = it->second;
+    }
+  }
+  app->policy_id = install_url.spec();
+
   // For system web apps (only), the install source is |kSystem|.
   DCHECK_EQ(web_app->IsSystemApp(),
             app->install_reason == apps::mojom::InstallReason::kSystem);
@@ -833,6 +846,13 @@ WebAppRegistrar& WebAppPublisherHelper::registrar() const {
 }
 
 void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
+  const WebApp* web_app = GetWebApp(app_id);
+  if (web_app && Accepts(app_id)) {
+    delegate_->PublishWebApp(ConvertWebApp(web_app));
+  }
+}
+
+void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
     delegate_->PublishWebApp(ConvertWebApp(web_app));
