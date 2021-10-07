@@ -125,20 +125,6 @@ public class SigninPreferencesManager {
     }
 
     /**
-     * Increments the shown count for the account picker bottom sheet.
-     */
-    public void incrementAccountPickerBottomSheetShownCount() {
-        mManager.incrementInt(ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT);
-    }
-
-    /**
-     * Returns the number of times account picker bottom sheet has already been shown.
-     */
-    public int getAccountPickerBottomSheetShownCount() {
-        return mManager.readInt(ChromePreferenceKeys.ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT);
-    }
-
-    /**
      * Increments the active dismissal count for the account picker bottom sheet.
      */
     public void incrementAccountPickerBottomSheetActiveDismissalCount() {

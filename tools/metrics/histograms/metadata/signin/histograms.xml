@@ -112,6 +112,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Every time the account picker bottom sheet is shown as part of the web
     sign-in flow this histogram records the number of times bottom sheet was
     shown (Android and iOS only).
+
+    NOTE: This stopped being recorded on Android on 10/2021.
   </summary>
 </histogram>
 
@@ -124,6 +126,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This histogram records the number of times the account picker bottom sheet
     was shown before the user signed-in through the bottom sheet (Android and
     iOS only).
+
+    NOTE: This stopped being recorded on Android on 10/2021.
   </summary>
 </histogram>
 

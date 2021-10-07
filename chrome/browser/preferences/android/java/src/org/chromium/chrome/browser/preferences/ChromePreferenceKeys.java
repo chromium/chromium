@@ -52,9 +52,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String ACCESSIBILITY_TAB_SWITCHER = "accessibility_tab_switcher";
 
-    public static final String ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT =
-            "Chrome.AccountPickerBottomSheet.ShownCount";
-
     public static final String ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT =
             "Chrome.AccountPickerBottomSheet.ConsecutiveActiveDismissalCount";
 
@@ -1035,7 +1032,6 @@ public final class ChromePreferenceKeys {
     static List<String> getKeysInUse() {
         // clang-format off
         return Arrays.asList(
-                ACCOUNT_PICKER_BOTTOM_SHEET_SHOWN_COUNT,
                 ACCOUNT_PICKER_BOTTOM_SHEET_ACTIVE_DISMISSAL_COUNT,
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED,
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,

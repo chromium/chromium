@@ -57,10 +57,7 @@ public class AccountPickerBottomSheetCoordinator {
     public AccountPickerBottomSheetCoordinator(Activity activity,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate) {
-        SigninPreferencesManager.getInstance().incrementAccountPickerBottomSheetShownCount();
         SigninMetricsUtils.logAccountConsistencyPromoAction(AccountConsistencyPromoAction.SHOWN);
-        SigninMetricsUtils.logAccountConsistencyPromoShownCount(
-                "Signin.AccountConsistencyPromoAction.Shown.Count");
 
         mAccountPickerBottomSheetMediator = new AccountPickerBottomSheetMediator(
                 activity, accountPickerDelegate, this::dismissBottomSheet);

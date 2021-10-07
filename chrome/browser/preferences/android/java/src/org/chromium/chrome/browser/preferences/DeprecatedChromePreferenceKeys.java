@@ -19,6 +19,7 @@ public class DeprecatedChromePreferenceKeys {
     static List<String> getKeysForTesting() {
         // clang-format off
         return Arrays.asList(
+                "Chrome.AccountPickerBottomSheet.ShownCount",
                 "Chrome.Flags.PaintPreviewTestEnabled",
                 "Chrome.Flags.SafeBool.*",
                 "Chrome.Flags.SafeDouble.*",

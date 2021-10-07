@@ -35,15 +35,6 @@ public class SigninMetricsUtils {
     }
 
     /**
-     * Logs AccountPickerBottomSheet shown count histograms.
-     */
-    public static void logAccountConsistencyPromoShownCount(String histogram) {
-        RecordHistogram.recordExactLinearHistogram(histogram,
-                SigninPreferencesManager.getInstance().getAccountPickerBottomSheetShownCount(),
-                100);
-    }
-
-    /**
      * Logs the access point when the user see the view of choosing account to sign in. Sign-in
      * completion histogram is recorded by {@link SigninManager#signinAndEnableSync}.
      *
