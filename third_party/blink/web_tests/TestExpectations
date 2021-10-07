@@ -7201,3 +7201,6 @@ crbug.com/1256763 [ Linux ] virtual/exotic-color-space/images/color-profile-svg-
 # Sheriff 2021-10-06
 crbug.com/1257298 svg/dynamic-updates/SVGFEComponentTransferElement-dom-tableValues-attr.html [ Failure Pass ]
 crbug.com/1257304 http/tests/serviceworker/use-counter-third-party-page-register.html [ Failure Pass ]
+
+# Sheriff 2021-10-07
+crbug.com/896194 plugins/focus-change-1-no-change.html [ Failure Pass ]
