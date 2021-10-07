@@ -91,7 +91,7 @@ class ResizeShadow {
   // shadow.
   ResizeShadowType type_;
 
-  bool visible_;
+  bool visible_ = false;
 };
 
 }  // namespace ash
