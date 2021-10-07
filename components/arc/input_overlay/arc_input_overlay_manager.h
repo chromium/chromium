@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "components/arc/ime/arc_ime_bridge.h"
+#include "components/arc/input_overlay/touch_injector.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
@@ -61,8 +62,8 @@ class ArcInputOverlayManager : public KeyedService,
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
-  // TODO(cuicuiruan): replace it with map when class TouchInjector is ready.
-  base::flat_set<aura::Window*> input_overlay_enabled_windows_;
+  base::flat_map<aura::Window*, std::unique_ptr<TouchInjector>>
+      input_overlay_enabled_windows_;
   bool is_text_input_active_ = false;
   ui::InputMethod* input_method_ = nullptr;
   std::unique_ptr<InputMethodObserver> input_method_observer_;

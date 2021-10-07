@@ -99,8 +99,14 @@ void ArcInputOverlayManager::ReadData(const std::string& package_name,
       base::JSONReader::ReadAndReturnValueWithError(json_file);
   DCHECK(result.value) << "Could not load input overlay data file: "
                        << result.error_message;
-  // TODO(cuicuiruan): Parse input data to objects.
-  input_overlay_enabled_windows_.emplace(top_level_window);
+  if (!result.value)
+    return;
+
+  base::Value& root = result.value.value();
+  std::unique_ptr<TouchInjector> injector =
+      std::make_unique<TouchInjector>(top_level_window);
+  injector->ParseActions(root);
+  input_overlay_enabled_windows_.emplace(top_level_window, std::move(injector));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
