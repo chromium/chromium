@@ -14,7 +14,7 @@ using ExtensionManifestChromeOSSystemExtensionTest = ChromeManifestTest;
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,
        InvalidChromeOSSystemExtension) {
   LoadAndExpectError("chromeos_system_extension_invalid.json",
-                     chromeos::kInvalidChromeOSSystemExtensionDeclaration);
+                     chromeos::kInvalidChromeOSSystemExtensionId);
 }
 
 TEST_F(ExtensionManifestChromeOSSystemExtensionTest,

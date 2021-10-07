@@ -13,6 +13,8 @@ assert(enable_extensions)
 # require many files from it. This makes linking more efficient.
 static_library("extensions") {
   sources = [
+    "chromeos_system_extension_info.cc",
+    "chromeos_system_extension_info.h",
     "chromeos_system_extensions_api_permissions.cc",
     "chromeos_system_extensions_api_permissions.h",
     "chromeos_system_extensions_api_provider.cc",

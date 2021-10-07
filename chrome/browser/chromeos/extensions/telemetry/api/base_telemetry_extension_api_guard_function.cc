@@ -12,21 +12,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "url/gurl.h"
 
 namespace chromeos {
-
-namespace {
-
-constexpr char kAllowedManufacturer[] = "HP";
-
-// TODO(b/200920331): replace with real host when it will be known.
-constexpr char kAllowedCompanionPwaHost[] = "www.google.com";
-
-}  // namespace
 
 BaseTelemetryExtensionApiGuardFunction::
     BaseTelemetryExtensionApiGuardFunction() = default;
@@ -60,6 +52,8 @@ BaseTelemetryExtensionApiGuardFunction::Run() {
 bool BaseTelemetryExtensionApiGuardFunction::IsPwaUiOpen() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
 
+  const auto& extension_info = GetChromeOSExtensionInfoForId(extension_id());
+
   for (auto* target_browser : *BrowserList::GetInstance()) {
     // Ignore incognito.
     if (target_browser->profile() != profile) {
@@ -71,7 +65,7 @@ bool BaseTelemetryExtensionApiGuardFunction::IsPwaUiOpen() {
       content::WebContents* target_contents =
           target_tab_strip->GetWebContentsAt(i);
       const GURL url = target_contents->GetLastCommittedURL();
-      if (url.host() == kAllowedCompanionPwaHost) {
+      if (url.host() == extension_info.host) {
         return true;
       }
     }
@@ -85,9 +79,9 @@ void BaseTelemetryExtensionApiGuardFunction::OnGetManufacturer(
   base::TrimWhitespaceASCII(manufacturer, base::TrimPositions::TRIM_ALL,
                             &manufacturer);
 
-  // TODO(b/200676336): create more general approach to verify manufacturers and
-  // extension IDs.
-  if (manufacturer != kAllowedManufacturer) {
+  const auto& extension_info = GetChromeOSExtensionInfoForId(extension_id());
+
+  if (manufacturer != extension_info.manufacturer) {
     Respond(Error(base::StringPrintf(
         "Unauthorized access to chrome.%s. "
         "This extension is not allowed to access the API on this device",

@@ -6,6 +6,9 @@
 
 namespace chromeos {
 
+const char kInvalidChromeOSSystemExtensionId[] =
+    "Invalid extension id. This extension is not allowed to define "
+    "chromeos_system_extension key.";
 const char kInvalidChromeOSSystemExtensionDeclaration[] =
     "Invalid value for 'chromeos_system_extension'. Must be a dictionary.";
 const char kSerialNumberPermissionMustBeOptional[] =

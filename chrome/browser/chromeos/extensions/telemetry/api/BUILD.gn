@@ -30,6 +30,7 @@ source_set("api") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/common/chromeos/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//components/user_manager",
     "//content/public/browser",

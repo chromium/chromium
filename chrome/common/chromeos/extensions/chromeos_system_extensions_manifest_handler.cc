@@ -5,6 +5,7 @@
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extensions_manifest_constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -35,9 +36,10 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
   if (matches_list.size() != 1)
     return false;
 
+  const auto& extension_info = GetChromeOSExtensionInfoForId(extension->id());
+
   // Verifies allowlisted origins.
-  // TODO(b/200920331): replace google.com with OEM-specific origin.
-  return matches_list.front().GetString() == "*://www.google.com/*";
+  return matches_list.front().GetString() == extension_info.pwa_origin;
 }
 
 }  // namespace
@@ -48,6 +50,11 @@ ChromeOSSystemExtensionHandler::~ChromeOSSystemExtensionHandler() = default;
 
 bool ChromeOSSystemExtensionHandler::Parse(extensions::Extension* extension,
                                            std::u16string* error) {
+  if (!IsChromeOSSystemExtension(extension->id())) {
+    *error = base::ASCIIToUTF16(kInvalidChromeOSSystemExtensionId);
+    return false;
+  }
+
   const base::DictionaryValue* system_extension_dict = nullptr;
   if (!extension->manifest()->GetDictionary(
           extensions::manifest_keys::kChromeOSSystemExtension,

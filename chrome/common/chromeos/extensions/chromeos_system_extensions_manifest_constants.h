@@ -7,6 +7,9 @@
 
 namespace chromeos {
 
+// Error message returned when the extension's id doesn't map to a valid
+// chromeos_system_extension extension ids.
+extern const char kInvalidChromeOSSystemExtensionId[];
 // Error message returned when chromeos_system_extension's value is of incorrect
 // type.
 extern const char kInvalidChromeOSSystemExtensionDeclaration[];
