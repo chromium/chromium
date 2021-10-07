@@ -205,6 +205,7 @@ public class TabSuggestionMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM})
+    @DisabledTest(message = "crbug.com/1257781")
     public void groupTabSuggestionReviewedAndDismissed() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
