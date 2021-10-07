@@ -435,4 +435,16 @@ class WallpaperPrivateGetSurpriseMeImageFunction : public ExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(WallpaperPrivateGetSurpriseMeImageFunction);
 };
 
+class WallpaperPrivateIsSwaEnabledFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("wallpaperPrivate.isSwaEnabled",
+                             WALLPAPERPRIVATE_ISSWAENABLED)
+
+ protected:
+  ~WallpaperPrivateIsSwaEnabledFunction() override = default;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_PRIVATE_API_H_

@@ -885,3 +885,8 @@ void WallpaperPrivateGetSurpriseMeImageFunction::OnSurpriseMeImageFetched(
   Respond(TwoArguments(Value::FromUniquePtrValue(image_info.ToValue()),
                        Value(next_resume_token)));
 }
+
+ExtensionFunction::ResponseAction WallpaperPrivateIsSwaEnabledFunction::Run() {
+  return RespondNow(
+      OneArgument(base::Value(ash::features::IsWallpaperWebUIEnabled())));
+}
