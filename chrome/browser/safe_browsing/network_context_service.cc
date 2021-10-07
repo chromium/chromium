@@ -27,10 +27,6 @@ void NetworkContextService::Shutdown() {
 }
 
 network::mojom::NetworkContext* NetworkContextService::GetNetworkContext() {
-  // The SafeBrowsingNetworkContext cannot operate correctly without a
-  // SystemNetworkContextManager instance, so return early if it does not exist.
-  if (!SystemNetworkContextManager::GetInstance())
-    return nullptr;
   return network_context_->GetNetworkContext();
 }
 

@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -87,23 +86,6 @@ using content::BrowserThread;
 using content::NonNestable;
 
 namespace safe_browsing {
-
-namespace {
-
-void OnGotCookies(
-    std::unique_ptr<mojo::Remote<network::mojom::CookieManager>> remote,
-    const std::vector<net::CanonicalCookie>& cookies) {
-  base::UmaHistogramBoolean("SafeBrowsing.HasCookieAtStartup",
-                            !cookies.empty());
-  if (!cookies.empty()) {
-    base::TimeDelta age = base::Time::Now() - cookies[0].CreationDate();
-    // Cookies can be up to 6 months old. Using millisecond precision over such
-    // a long time period overflows numeric limits. Instead, use a counts
-    // histogram and lower granularity.
-    base::UmaHistogramCounts10000("SafeBrowsing.CookieAgeHours", age.InHours());
-  }
-}
-}  // namespace
 
 // static
 base::FilePath SafeBrowsingService::GetCookieFilePathForTesting() {
@@ -449,8 +431,6 @@ void SafeBrowsingService::OnProfileAdded(Profile* profile) {
 
   SafeBrowsingMetricsCollectorFactory::GetForProfile(profile)->StartLogging();
 
-  RecordCookieMetrics(profile);
-
   CreateServicesForProfile(profile);
 }
 
@@ -537,22 +517,6 @@ SafeBrowsingService::CreateNetworkContextParams() {
   }
   proxy_config_monitor_->AddToNetworkContextParams(params.get());
   return params;
-}
-
-void SafeBrowsingService::RecordCookieMetrics(Profile* profile) {
-  network::mojom::NetworkContext* network_context = GetNetworkContext(profile);
-  if (!network_context)
-    return;
-  auto cookie_manager_remote =
-      std::make_unique<mojo::Remote<network::mojom::CookieManager>>();
-  network_context->GetCookieManager(
-      cookie_manager_remote->BindNewPipeAndPassReceiver());
-
-  mojo::Remote<network::mojom::CookieManager>* cookie_manager_raw =
-      cookie_manager_remote.get();
-  (*cookie_manager_raw)
-      ->GetAllCookies(
-          base::BindOnce(&OnGotCookies, std::move(cookie_manager_remote)));
 }
 
 // The default SafeBrowsingServiceFactory.  Global, made a singleton so we
