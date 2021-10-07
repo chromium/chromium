@@ -2,10 +2,8 @@
   #dialog-body {
     display: flex;
     flex-direction: column;
-    max-height: 350px;
-    /* min-height 30% of max-height */
-    min-height: 105px;
-    overflow: auto;
+    height: 350px;
+    overflow-y: auto;
   }
 
   .list-item {
@@ -16,7 +14,7 @@
 <cr-dialog id="dialog" show-on-attach show-close-button>
   <div slot="title">$i18n{appManagementIntentSettingsDialogTitle}</div>
   <div id="dialog-body" slot="body" scrollable>
-    <iron-list id="list" scroll-target="#dialog-body"
+    <iron-list id="list" scroll-target="dialog-body"
         items="[[app.supportedLinks]]">
       <template>
         <div class="list-item">
