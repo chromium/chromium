@@ -331,6 +331,7 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void SetBluetoothFakeAdapter(const std::string& adapter_name,
                                v8::Local<v8::Function> callback);
   void SetBluetoothManualChooser(bool enable);
+  void SetBrowserHandlesFocus(bool enable);
   void SetCaretBrowsingEnabled();
   void SetColorProfile(const std::string& name,
                        v8::Local<v8::Function> callback);
@@ -727,6 +728,8 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       // Otherwise falls back to the browser's default chooser.
       .SetMethod("setBluetoothManualChooser",
                  &TestRunnerBindings::SetBluetoothManualChooser)
+      .SetMethod("setBrowserHandlesFocus",
+                 &TestRunnerBindings::SetBrowserHandlesFocus)
       .SetMethod("setCallCloseOnWebViews", &TestRunnerBindings::NotImplemented)
       .SetMethod("setCaretBrowsingEnabled",
                  &TestRunnerBindings::SetCaretBrowsingEnabled)
@@ -1781,6 +1784,12 @@ void TestRunnerBindings::GetBluetoothManualChooserEvents(
                      WrapV8Callback(std::move(callback))));
 }
 
+void TestRunnerBindings::SetBrowserHandlesFocus(bool enable) {
+  if (invalid_)
+    return;
+  blink::SetBrowserCanHandleFocusForWebTest(enable);
+}
+
 void TestRunnerBindings::SendBluetoothManualChooserEvent(
     const std::string& event,
     const std::string& argument) {
@@ -2352,6 +2361,7 @@ void TestRunner::Reset() {
 #endif
   blink::ResetDomainRelaxationForTest();
 
+  blink::SetBrowserCanHandleFocusForWebTest(false);
   setlocale(LC_ALL, "");
   setlocale(LC_NUMERIC, "C");
 

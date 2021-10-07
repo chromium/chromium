@@ -163,6 +163,13 @@ String TruncateDialogMessage(const String& message) {
 
 }  // namespace
 
+static bool g_can_browser_handle_focus = false;
+
+// Function defined in third_party/blink/public/web/blink.h.
+void SetBrowserCanHandleFocusForWebTest(bool value) {
+  g_can_browser_handle_focus = value;
+}
+
 class CompositorAnimationTimeline;
 
 ChromeClientImpl::ChromeClientImpl(WebViewImpl* web_view)
@@ -211,7 +218,9 @@ void ChromeClientImpl::DidFocusPage() {
 bool ChromeClientImpl::CanTakeFocus(mojom::blink::FocusType) {
   // For now the browser can always take focus if we're not running layout
   // tests.
-  return !WebTestSupport::IsRunningWebTest();
+  if (!WebTestSupport::IsRunningWebTest())
+    return true;
+  return g_can_browser_handle_focus;
 }
 
 void ChromeClientImpl::TakeFocus(mojom::blink::FocusType type) {
