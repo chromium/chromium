@@ -10,6 +10,7 @@
 #include "ash/drag_drop/drag_drop_tracker.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/drag_drop/toplevel_window_drag_delegate.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
@@ -20,6 +21,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -56,6 +58,7 @@
 namespace ash {
 namespace {
 
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -426,10 +429,18 @@ class MockShellDelegate : public TestShellDelegate {
   ~MockShellDelegate() override = default;
 
   MOCK_METHOD(bool, IsTabDrag, (const ui::OSExchangeData&), (override));
-  MOCK_METHOD(aura::Window*,
-              CreateBrowserForTabDrop,
-              (aura::Window * source_window,
-               const ui::OSExchangeData& drop_data),
+};
+
+class MockNewWindowDelegate : public TestNewWindowDelegate {
+ public:
+  MockNewWindowDelegate() = default;
+  ~MockNewWindowDelegate() override = default;
+
+  MOCK_METHOD(void,
+              NewWindowForWebUITabDrop,
+              (aura::Window*,
+               const ui::OSExchangeData&,
+               NewWindowForWebUITabDropCallback),
               (override));
 };
 
@@ -443,6 +454,13 @@ class DragDropControllerTest : public AshTestBase {
   ~DragDropControllerTest() override = default;
 
   void SetUp() override {
+    auto mock_new_window_delegate =
+        std::make_unique<NiceMock<MockNewWindowDelegate>>();
+    mock_new_window_delegate_ptr_ = mock_new_window_delegate.get();
+    test_new_window_delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(
+            std::move(mock_new_window_delegate));
+
     auto mock_shell_delegate = std::make_unique<NiceMock<MockShellDelegate>>();
     mock_shell_delegate_ = mock_shell_delegate.get();
     AshTestBase::SetUp(std::move(mock_shell_delegate));
@@ -494,6 +512,10 @@ class DragDropControllerTest : public AshTestBase {
 
   MockShellDelegate* mock_shell_delegate() { return mock_shell_delegate_; }
 
+  MockNewWindowDelegate* mock_new_window_delegate() {
+    return mock_new_window_delegate_ptr_;
+  }
+
   gfx::LinearAnimation* cancel_animation() {
     return drag_drop_controller_->cancel_animation_.get();
   }
@@ -519,6 +541,10 @@ class DragDropControllerTest : public AshTestBase {
 
   std::unique_ptr<TestDragDropController> drag_drop_controller_;
   NiceMock<MockShellDelegate>* mock_shell_delegate_ = nullptr;
+
+  std::unique_ptr<TestNewWindowDelegateProvider>
+      test_new_window_delegate_provider_;
+  NiceMock<MockNewWindowDelegate>* mock_new_window_delegate_ptr_ = nullptr;
 };
 
 TEST_F(DragDropControllerTest, DragDropInSingleViewTest) {
@@ -1432,9 +1458,9 @@ TEST_F(DragDropControllerTest, DragTabChangesDragOperationToMove) {
       .Times(1)
       .WillOnce(Return(true));
   std::unique_ptr<aura::Window> new_window = CreateToplevelTestWindow();
-  EXPECT_CALL(*mock_shell_delegate(), CreateBrowserForTabDrop(_, _))
+  EXPECT_CALL(*mock_new_window_delegate(), NewWindowForWebUITabDrop(_, _, _))
       .Times(1)
-      .WillOnce(Return(new_window.get()));
+      .WillOnce(RunOnceCallback<2>(new_window.get()));
 
   std::unique_ptr<views::Widget> widget = CreateFramelessWidget();
   aura::Window* window = widget->GetNativeWindow();

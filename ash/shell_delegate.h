@@ -93,12 +93,6 @@ class ASH_EXPORT ShellDelegate {
   // dragged out of it.
   virtual int GetBrowserWebUITabStripHeight() = 0;
 
-  // Drops tab in a new browser window. |drop_data| must be from a tab
-  // drag as determined by IsTabDrag() above.
-  virtual aura::Window* CreateBrowserForTabDrop(
-      aura::Window* source_window,
-      const ui::OSExchangeData& drop_data);
-
   // Binds a BluetoothSystemFactory receiver if possible.
   virtual void BindBluetoothSystemFactory(
       mojo::PendingReceiver<device::mojom::BluetoothSystemFactory> receiver) {}

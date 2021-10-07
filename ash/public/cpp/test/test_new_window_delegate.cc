@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/shell.h"
-#include "ash/shell_delegate.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -22,10 +20,7 @@ void TestNewWindowDelegate::NewWindowForWebUITabDrop(
     aura::Window* source_window,
     const ui::OSExchangeData& drop_data,
     NewWindowForWebUITabDropCallback closure) {
-  aura::Window* const new_window =
-      Shell::Get()->shell_delegate()->CreateBrowserForTabDrop(source_window,
-                                                              drop_data);
-  std::move(closure).Run(new_window);
+  std::move(closure).Run(/*new_window=*/nullptr);
 }
 void TestNewWindowDelegate::OpenUrl(const GURL& url,
                                     bool from_user_interaction) {}

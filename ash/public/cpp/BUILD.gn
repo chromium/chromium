@@ -455,7 +455,6 @@ source_set("test_support") {
 
   deps = [
     ":cpp",
-    "//ash",
     "//base",
     "//services/device/public/cpp:test_support",
     "//services/network/public/cpp:cpp",

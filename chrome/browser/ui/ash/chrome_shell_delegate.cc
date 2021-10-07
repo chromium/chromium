@@ -9,7 +9,6 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -218,47 +217,6 @@ bool ChromeShellDelegate::IsTabDrag(const ui::OSExchangeData& drop_data) {
 int ChromeShellDelegate::GetBrowserWebUITabStripHeight() {
   DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
   return TabStripUILayout::GetContainerHeight();
-}
-
-aura::Window* ChromeShellDelegate::CreateBrowserForTabDrop(
-    aura::Window* source_window,
-    const ui::OSExchangeData& drop_data) {
-  DCHECK(ash::features::IsWebUITabStripTabDragIntegrationEnabled());
-
-  BrowserView* source_view = BrowserView::GetBrowserViewForNativeWindow(
-      source_window->GetToplevelWindow());
-  if (!source_view)
-    return nullptr;
-
-  Browser::CreateParams params = source_view->browser()->create_params();
-  params.user_gesture = true;
-  params.initial_show_state = ui::SHOW_STATE_DEFAULT;
-  Browser* browser = Browser::Create(params);
-  if (!browser)
-    return nullptr;
-
-  if (!tab_strip_ui::DropTabsInNewBrowser(browser, drop_data)) {
-    browser->window()->Close();
-    return nullptr;
-  }
-
-  // TODO(https://crbug.com/1069869): evaluate whether the above
-  // failures can happen in valid states, and if so whether we need to
-  // reflect failure in UX.
-
-  // TODO(crbug.com/1225667): Loosen restriction for SplitViewController to be
-  // able to snap a window without calling Show(). It will simplify the logic
-  // without having to set and clear ash::kIsDraggingTabsKey by calling Show()
-  // after snapping the window to the right place.
-
-  // We need to mark the newly created window with |ash::kIsDraggingTabsKey|
-  // and clear it afterwards in order to prevent
-  // SplitViewController::AutoSnapController from snapping it on Show().
-  aura::Window* window = browser->window()->GetNativeWindow();
-  window->SetProperty(ash::kIsDraggingTabsKey, true);
-  browser->window()->Show();
-  window->ClearProperty(ash::kIsDraggingTabsKey);
-  return window;
 }
 
 void ChromeShellDelegate::BindBluetoothSystemFactory(
