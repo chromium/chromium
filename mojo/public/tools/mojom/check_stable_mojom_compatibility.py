@@ -18,7 +18,6 @@ import json
 import os
 import os.path
 import shutil
-import six
 import sys
 import tempfile
 
@@ -73,10 +72,8 @@ def _ValidateDelta(root, delta):
     try:
       ast = parser.Parse(contents, mojom)
     except Exception as e:
-      six.reraise(
-          ParseError,
-          'encountered exception {0} while parsing {1}'.format(e, mojom),
-          sys.exc_info()[2])
+      raise ParseError('encountered exception {0} while parsing {1}'.format(
+          e, mojom))
     for imp in ast.import_list:
       parseMojom(imp.import_filename, file_overrides, override_modules)
 
