@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Matcher" units="ms"
-    expires_after="2022-01-02">
+    expires_after="2022-04-24">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.Duration.Overall" units="ms"
-    expires_after="2022-01-02">
+    expires_after="2022-04-24">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -182,7 +182,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.NoMatch.Duration.Overall" units="ms"
-    expires_after="2022-01-02">
+    expires_after="2022-04-24">
   <owner>rsorokin@chromium.org</owner>
   <owner>jessejames@chromium.org</owner>
   <owner>cros-oac@google.com</owner>

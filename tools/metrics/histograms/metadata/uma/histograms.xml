@@ -478,7 +478,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.MachineIdState" enum="UmaMachineIdState"
-    expires_after="2021-12-06">
+    expires_after="2022-04-24">
   <owner>jwd@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -742,7 +742,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.EventRecordingState"
-    enum="StructuredMetricsEventRecordingState" expires_after="2021-12-01">
+    enum="StructuredMetricsEventRecordingState" expires_after="2022-04-24">
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -775,7 +775,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.KeyValidationState"
-    enum="StructuredMetricsKeyValidationState" expires_after="2021-12-01">
+    enum="StructuredMetricsKeyValidationState" expires_after="2022-04-24">
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
@@ -787,7 +787,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.StructuredMetrics.NumEventsInUpload" units="count"
-    expires_after="2022-01-30">
+    expires_after="2022-04-24">
   <owner>tby@chromium.org</owner>
   <owner>rkaplow@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>

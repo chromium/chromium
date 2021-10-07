@@ -722,7 +722,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
-    units="microseconds" expires_after="2022-02-20">
+    units="microseconds" expires_after="2022-04-24">
   <owner>sadrul@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -961,7 +961,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="BrowserServices.ClientAppDataLoad" units="ms"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

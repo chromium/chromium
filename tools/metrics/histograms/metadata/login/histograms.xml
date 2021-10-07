@@ -77,7 +77,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.FailureReason" enum="LoginFailureReason"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>achuith@chromium.org</owner>
   <summary>Chrome OS login failure reason.</summary>
 </histogram>
@@ -157,7 +157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.PasswordChanged.ReauthReason" enum="LoginReauthReasons"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>rsorokin@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -207,7 +207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.PromptToCompleteLoginTime" units="ms"
-    expires_after="2022-01-16">
+    expires_after="2022-04-24">
   <owner>rsorokin@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
@@ -305,7 +305,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Login.UsersActiveWeekly" units="users"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>alemate@chromium.org</owner>
   <owner>achuith@chromium.org</owner>
   <summary>

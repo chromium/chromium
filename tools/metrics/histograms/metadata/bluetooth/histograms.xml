@@ -629,7 +629,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Web.ChooserInteraction" enum="BooleanInvalid"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
@@ -1015,7 +1015,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Bluetooth.Web.RequestDevice.UnionOfServices.Services"
-    enum="GATTServiceHash" expires_after="2022-02-20">
+    enum="GATTServiceHash" expires_after="2022-04-24">
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

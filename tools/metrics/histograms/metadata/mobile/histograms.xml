@@ -67,7 +67,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>gangwu@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1010,7 +1010,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileIntent.FirstPartyToInternalScheme" enum="Boolean"
-    expires_after="2021-12-19">
+    expires_after="2022-04-24">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -1209,7 +1209,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MobileStartup.LaunchCause" enum="LaunchCause"
-    expires_after="2022-02-23">
+    expires_after="2022-04-24">
   <owner>mthiesse@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>

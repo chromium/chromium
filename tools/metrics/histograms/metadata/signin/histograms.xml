@@ -250,7 +250,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidAccountInfoFetchTime" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>aliceywang@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -275,7 +275,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.AndroidDeviceAccountsNumberWhenEnteringFRE"
-    units="count" expires_after="2022-02-06">
+    units="count" expires_after="2022-04-24">
   <owner>bsazonov@chromium.org</owner>
   <owner>aliceywang@chromium.org</owner>
   <summary>
@@ -616,7 +616,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.Intercept.HeuristicOutcome"
-    enum="SigninInterceptHeuristicOutcome" expires_after="2022-02-20">
+    enum="SigninInterceptHeuristicOutcome" expires_after="2022-04-24">
   <owner>droger@chromium.org</owner>
   <owner>alexilin@chromium.org</owner>
   <summary>
@@ -704,7 +704,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.InterceptResult"
-    enum="SigninInterceptResult" expires_after="2022-02-20">
+    enum="SigninInterceptResult" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="SigninInterceptType" -->
 
   <owner>alexilin@chromium.org</owner>

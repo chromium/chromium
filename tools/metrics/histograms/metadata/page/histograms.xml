@@ -405,7 +405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Clients.AMP.Experimental.PageTiming.MainFrameToSubFrameNavigationDelta.Subframe"
-    units="ms" expires_after="M97">
+    units="ms" expires_after="2022-04-24">
   <owner>bmcquade@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
@@ -1501,7 +1501,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Experimental.NavigationTiming.NavigationStartToFirstLoaderCallback"
-    units="ms" expires_after="2022-02-06">
+    units="ms" expires_after="2022-04-24">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2030,7 +2030,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Internal.ErrorCode" enum="InternalErrorLoadEvent"
-    expires_after="2022-02-13">
+    expires_after="2022-04-24">
   <owner>csharrison@chromium.org</owner>
   <owner>bmcquade@chromium.org</owner>
   <summary>
@@ -2111,7 +2111,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
-    enum="LargestContentType" expires_after="2021-12-12">
+    enum="LargestContentType" expires_after="2022-04-24">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -2234,7 +2234,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime"
-    units="ms" expires_after="2021-12-31">
+    units="ms" expires_after="2022-04-24">
   <owner>jonross@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <summary>
@@ -2254,7 +2254,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.Internal.Renderer.PresentationTime.Valid"
-    enum="Boolean" expires_after="2021-12-31">
+    enum="Boolean" expires_after="2022-04-24">
   <owner>jonross@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <summary>
@@ -2420,7 +2420,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.PageTiming.ForegroundDuration" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>bmcquade@chromium.org</owner>
   <summary>
     For page loads that start in the foreground, measures the duration of time
@@ -2457,7 +2457,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PageLoad.PageTiming.NavigationToFirstForeground" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>bmcquade@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -2666,7 +2666,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.CrossSiteSubFrame"
-    units="ms" expires_after="2022-02-23">
+    units="ms" expires_after="2022-04-24">
   <owner>sisidovski@google.com</owner>
   <owner>kouhei@chromium.org</owner>
   <summary>

@@ -621,7 +621,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.OpenDownloads.PerProfileType"
-    enum="BrowserProfileType" expires_after="2021-12-31">
+    enum="BrowserProfileType" expires_after="2022-04-24">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -662,7 +662,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Download.OverwrittenDownloadRemovedFromHistory"
-    units="downloads" expires_after="2022-02-06">
+    units="downloads" expires_after="2022-04-24">
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-downloads@google.com</owner>
   <summary>

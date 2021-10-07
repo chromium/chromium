@@ -42,7 +42,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="VideoTutorials.LanguagePicker.LanguageSelected"
-    units="position" expires_after="2022-02-01">
+    units="position" expires_after="2022-04-24">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-upboarding-eng@google.com</owner>
   <summary>

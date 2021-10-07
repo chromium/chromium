@@ -173,7 +173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.BookmarksModelMetadataCorruptionReason"
-    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2022-02-20">
+    enum="SyncBookmarkModelMetadataCorruptionReason" expires_after="2022-04-24">
   <owner>rushans@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -253,7 +253,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.ConfigureDataTypes" enum="SyncModelTypes"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -452,7 +452,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.DataTypeRunFailures2" enum="SyncModelTypes"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -464,7 +464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.DataTypeStartFailures2" enum="SyncModelTypes"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -536,7 +536,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.InitialState" enum="SyncInitialState"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>treib@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -735,7 +735,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeCount4" units="entries"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>jkrcal@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -749,7 +749,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeEntityChange3"
-    enum="SyncEntityChange" expires_after="2022-02-20">
+    enum="SyncEntityChange" expires_after="2022-04-24">
   <owner>jkrcal@chromium.org</owner>
   <component>Services&gt;Sync</component>
   <summary>
@@ -956,7 +956,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Sync.ModelTypeUpdateDrop" enum="SyncModelTypes"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="SyncModelTypeUpdateDrop" -->
 
   <owner>jkrcal@chromium.org</owner>
@@ -969,7 +969,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.NonReflectionUpdateFreshnessPossiblySkewed2" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1262,7 +1262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.SharingMessage.CommitResult"
-    enum="SyncSharingMessageCommitErrorCode" expires_after="2022-02-20">
+    enum="SyncSharingMessageCommitErrorCode" expires_after="2022-04-24">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1272,7 +1272,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.Startup.DeferredInitTrigger"
-    enum="SyncDeferredInitTrigger" expires_after="2021-12-19">
+    enum="SyncDeferredInitTrigger" expires_after="2022-04-24">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>Services&gt;Sync</component>

@@ -265,7 +265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.IncludedRequestEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="2021-10-25">
+    enum="CookieEffectiveSameSite" expires_after="2022-04-24">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -275,7 +275,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.IncludedResponseEffectiveSameSite"
-    enum="CookieEffectiveSameSite" expires_after="2021-10-25">
+    enum="CookieEffectiveSameSite" expires_after="2022-04-24">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -336,7 +336,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.LoadProblem" enum="CookieLoadProblem"
-    expires_after="2021-12-19">
+    expires_after="2022-04-24">
   <owner>morlovich@chromium.org</owner>
   <summary>
     Recorded when a problem is recorded when loading the persistent cookie
@@ -358,7 +358,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.NumDomainPurgedKeys" units="keys"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>cfredric@chromium.org</owner>
   <owner>kaustubhag@chromium.org</owner>
   <summary>
@@ -662,7 +662,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.SameSiteAttributeValue" enum="CookieSameSiteString"
-    expires_after="2022-01-02">
+    expires_after="2022-04-24">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
   <summary>
@@ -811,7 +811,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>nharper@chromium.org</owner>
   <summary>
     The amount of time (ms) between the cookie store load starting and
@@ -957,7 +957,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Type" enum="CookieType" expires_after="2022-02-20">
+<histogram name="Cookie.Type" enum="CookieType" expires_after="2022-04-24">
   <owner>mkwst@chromium.org</owner>
   <summary>For each cookie added to the store, record it's type(s).</summary>
 </histogram>

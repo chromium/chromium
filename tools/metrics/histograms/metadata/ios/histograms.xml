@@ -59,7 +59,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ContentExtension.DisplayCount" units="count"
-    expires_after="2021-12-11">
+    expires_after="2022-04-24">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -227,7 +227,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -283,7 +283,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.ShowPasswordCount" units="count"
-    expires_after="2021-12-11">
+    expires_after="2022-04-24">
   <owner>javierrobles@chromium.org</owner>
   <owner>djean@chromium.org</owner>
   <summary>

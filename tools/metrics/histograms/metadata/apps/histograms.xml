@@ -292,7 +292,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.AppSearchProvider.QueryTime" units="ms"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -668,7 +668,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.OsSettingsProvider.Error"
-    enum="OsSettingsProviderError" expires_after="2022-01-23">
+    enum="OsSettingsProviderError" expires_after="2022-04-24">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -960,7 +960,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppList.ZeroStateResults.LaunchedItemType"
-    enum="ZeroStateResultType" expires_after="2021-12-19">
+    enum="ZeroStateResultType" expires_after="2022-04-24">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1140,7 +1140,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListAppTypeClicked" enum="AppListAppType"
-    expires_after="2022-01-09">
+    expires_after="2022-04-24">
   <owner>charleszhao@chromium.org</owner>
   <owner>pdyson@chromium.org</owner>
   <summary>
@@ -1278,7 +1278,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListLauncherClickedSearchQueryLength"
-    units="characters" expires_after="2021-12-26">
+    units="characters" expires_after="2022-04-24">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>
@@ -1484,7 +1484,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.AppListSearchCommenced" units="searches"
-    expires_after="2021-11-07">
+    expires_after="2022-04-24">
   <owner>tapted@chromium.org</owner>
   <summary>
     The number of searches that are started in the app list. This is gathered
@@ -2403,7 +2403,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency"
-    units="ms" expires_after="2022-02-20">
+    units="ms" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 

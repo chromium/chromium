@@ -82,7 +82,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ContextEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>updowndota@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>
@@ -197,7 +197,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Assistant.ServiceEnabledUserCount" enum="BooleanEnabled"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>xiaohuic@chromium.org</owner>
   <owner>meilinw@chromium.org</owner>
   <summary>
@@ -319,7 +319,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="QuickAnswers.Click" enum="QuickAnswersResultType"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

@@ -156,7 +156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.GL.DrawFrameUs"
-    units="microseconds" expires_after="2022-02-20">
+    units="microseconds" expires_after="2022-04-24">
   <owner>weiliangc@chromium.org</owner>
   <summary>
     Time spent drawing of composited layers by GLRenderer, in microseconds. This
@@ -343,7 +343,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>backer@chromium.org</owner>
   <owner>rjkroege@chromium.org</owner>
   <summary>
@@ -563,7 +563,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.Renderer.NumRenderSurfaces" units="surfaces"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -704,7 +704,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Compositing.SurfaceAggregator.PrewalkedSurfaceCount"
-    units="surfaces" expires_after="2022-01-09">
+    units="surfaces" expires_after="2022-04-24">
   <owner>kylechar@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <summary>

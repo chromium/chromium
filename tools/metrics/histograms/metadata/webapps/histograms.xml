@@ -276,7 +276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApp.Mover.Result" enum="WebAppMoverResult"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>dmurph@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -361,7 +361,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Webapp.SyncInitiatedUninstallResult" enum="BooleanSuccess"
-    expires_after="2022-01-01">
+    expires_after="2022-04-24">
   <owner>alancutter@chromium.org</owner>
   <owner>loyso@chromium.org</owner>
   <summary>
@@ -371,7 +371,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Webapp.SystemApps.BackgroundTaskStartDelay" units="ms"
-    expires_after="2022-01-05">
+    expires_after="2022-04-24">
   <owner>dominicschulz@google.com</owner>
   <owner>qjw@chromium.org</owner>
   <summary>
@@ -477,7 +477,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Webapp.Update.ManifestUpdateResult"
-    enum="WebAppManifestUpdateResult" expires_after="2021-12-12">
+    enum="WebAppManifestUpdateResult" expires_after="2022-04-24">
   <owner>alancutter@chromium.org</owner>
   <owner>desktop-pwas-team@chromium.org</owner>
   <owner>loyso@chromium.org</owner>

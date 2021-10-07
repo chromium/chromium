@@ -410,7 +410,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskExpired"
-    enum="BackgroundTaskId" expires_after="2021-12-01">
+    enum="BackgroundTaskId" expires_after="2022-04-24">
   <owner>fgorski@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
@@ -431,7 +431,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser"
-    enum="BackgroundTaskId" expires_after="2021-12-01">
+    enum="BackgroundTaskId" expires_after="2022-04-24">
   <owner>mheikal@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -442,7 +442,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode"
-    enum="BackgroundTaskId" expires_after="2021-12-01">
+    enum="BackgroundTaskId" expires_after="2022-04-24">
   <owner>mheikal@chromium.org</owner>
   <owner>hanxi@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -1096,7 +1096,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DownloadManager.NotificationInteraction"
-    enum="DownloadNotificationInteractions" expires_after="2022-01-02">
+    enum="DownloadNotificationInteractions" expires_after="2022-04-24">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>
@@ -1106,7 +1106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.DownloadManager.OpenSource.Audio"
-    enum="AndroidDownloadOpenSource" expires_after="2022-02-20">
+    enum="AndroidDownloadOpenSource" expires_after="2022-04-24">
   <owner>xingliu@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records how users open audio download files on Android.</summary>
@@ -1356,7 +1356,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.FontLookup.FetchFontName" enum="FetchFontName"
-    expires_after="2021-12-15">
+    expires_after="2022-04-24">
   <owner>chouinard@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1623,7 +1623,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Android.IsolatedSplits.ContextCreateTime"
-    units="ms" expires_after="2022-02-06">
+    units="ms" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="AndroidFeatureModuleName" -->
 
   <owner>cduvall@chromium.org</owner>
@@ -2126,7 +2126,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.NTP.Impression" enum="NTPImpressionType"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>finkm@chromium.org</owner>
   <summary>
     Counts impressions of the NTP on Android. It also counts potential
@@ -2344,7 +2344,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.PackageStats.CacheSize" units="MB"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>nyquist@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2763,7 +2763,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.SeccompStatus.RendererSandbox"
-    enum="AndroidSeccompSandboxStatus" expires_after="2021-12-05">
+    enum="AndroidSeccompSandboxStatus" expires_after="2022-04-24">
   <owner>rsesek@chromium.org</owner>
   <summary>
     Reports the status of the seccomp-bpf sandbox in renderer processes.
@@ -2830,7 +2830,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.StrictMode.OverrideUrlLoadingTime" units="ms"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>yfriedman@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
   <summary>

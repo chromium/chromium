@@ -1142,7 +1142,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.AuthEvent.Unlock" enum="EasyUnlockAuthEvent"
-    expires_after="2022-02-02">
+    expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1199,7 +1199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="EasyUnlock.RemoteLockScreenState"
-    enum="EasyUnlockRemoteLockScreenState" expires_after="2022-02-02">
+    enum="EasyUnlockRemoteLockScreenState" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1257,7 +1257,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.BluetoothDiscoverySessionStarted"
-    enum="BooleanSuccess" expires_after="2022-02-02">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1266,7 +1266,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.BluetoothDiscoverySessionStopped"
-    enum="BooleanSuccess" expires_after="2022-02-02">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1276,7 +1276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="InstantTethering.ConnectionToHostResult.Failure"
     enum="InstantTethering_ConnectionToHostResult_Failure"
-    expires_after="2022-02-02">
+    expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1315,7 +1315,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="InstantTethering.ConnectionToHostResult.Failure.TetheringTimeout"
     enum="InstantTethering_ConnectionToHostResult_Failure_TetheringTimeout"
-    expires_after="2022-02-02">
+    expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1347,7 +1347,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="InstantTethering.ConnectionToHostResult.ProvisioningFailureRate"
     enum="InstantTethering_ConnectionToHostResult_ProvisioningFailureRate"
-    expires_after="2022-02-02">
+    expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1455,7 +1455,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="InstantTethering.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2022-02-02">
+    enum="MultiDevice_FeatureState" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1674,7 +1674,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.ForgetHostConfirmed"
     enum="MultiDevice_VerifyAndForgetHostConfirmationState"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1683,7 +1683,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.PostOOBESetupFlow.PageShown"
-    enum="MultiDevice_PostOOBESetupFlow_Page" expires_after="2022-02-20">
+    enum="MultiDevice_PostOOBESetupFlow_Page" expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1700,7 +1700,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.GattConnectionToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2022-02-20">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1729,7 +1729,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.ReceiveAdvertisementToConnectionDuration.Background"
-    units="ms" expires_after="2022-02-20">
+    units="ms" expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1762,7 +1762,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.Performance.StartScanToConnectionDuration.Background"
-    units="ms" expires_after="2022-02-20">
+    units="ms" expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1794,7 +1794,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2022-02-20">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1806,7 +1806,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToGattConnection.EffectiveSuccessRateWithRetries"
-    enum="BooleanSuccess" expires_after="2022-02-20">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1954,7 +1954,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.Setup.HostVerifier.DoesHostHaveCryptoData"
-    enum="Boolean" expires_after="2022-02-20">
+    enum="Boolean" expires_after="2022-04-24">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -1978,7 +1978,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDeviceSetup.OOBE.UserChoice"
-    enum="MultiDeviceSetupOOBEUserChoice" expires_after="2022-02-20">
+    enum="MultiDeviceSetupOOBEUserChoice" expires_after="2022-04-24">
   <owner>danlee@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -2097,7 +2097,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.AuthMethodChoice.Unlock.PasswordState"
-    enum="SmartLockAuthEventPasswordState" expires_after="2022-02-01">
+    enum="SmartLockAuthEventPasswordState" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2127,7 +2127,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.SignIn.Failure"
-    enum="SmartLockAuthResultFailureReason" expires_after="2022-02-01">
+    enum="SmartLockAuthResultFailureReason" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2157,7 +2157,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.AuthResult.Unlock.Failure"
-    enum="SmartLockAuthResultFailureReason" expires_after="2022-02-01">
+    enum="SmartLockAuthResultFailureReason" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
@@ -2265,7 +2265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SmartLock.MultiDeviceFeatureState"
-    enum="MultiDevice_FeatureState" expires_after="2022-02-02">
+    enum="MultiDevice_FeatureState" expires_after="2022-04-24">
   <owner>hansberry@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

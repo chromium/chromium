@@ -1923,7 +1923,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.Offer.SuggestedCardsHaveOffer"
-    enum="AutofillCreditCardOfferSuggestion" expires_after="2022-02-20">
+    enum="AutofillCreditCardOfferSuggestion" expires_after="2022-04-24">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2607,7 +2607,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autofill.StrikeDatabase.StrikesPresentWhenLocalCardSaved"
-    units="strikes" expires_after="2021-12-20">
+    units="strikes" expires_after="2022-04-24">
   <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

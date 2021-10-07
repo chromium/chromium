@@ -173,7 +173,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingChanged" enum="BooleanEnabled"
-    expires_after="2022-01-31">
+    expires_after="2022-04-24">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -242,7 +242,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.MixedForm.InterstitialTriggerState"
-    enum="MixedFormInterstitialTriggeredState" expires_after="2021-12-26">
+    enum="MixedFormInterstitialTriggeredState" expires_after="2022-04-24">
   <owner>carlosil@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -413,7 +413,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.DownloadStarted" enum="SafetyTipStatus"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -426,7 +426,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.FormSubmission" enum="SafetyTipStatus"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -528,7 +528,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.StartNewNavigation" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -538,7 +538,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SafetyTips.OpenTime.SwitchTab" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
@@ -798,7 +798,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SecurityLevel.OnCommit" enum="SecurityLevel"
-    expires_after="2022-02-01">
+    expires_after="2022-04-24">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>

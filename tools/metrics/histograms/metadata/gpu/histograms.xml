@@ -54,7 +54,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="2022-01-02">
+    expires_after="2022-04-24">
   <owner>jonahr@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -262,7 +262,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.BlocklistFeatureTestResults"
-    enum="GPUBlocklistFeatureTestResults" expires_after="2021-12-01">
+    enum="GPUBlocklistFeatureTestResults" expires_after="2022-04-24">
   <owner>vmiura@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -465,7 +465,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.DirectComposition.DCLayer.YUVOverlayCount"
-    units="overlays" expires_after="2021-12-12">
+    units="overlays" expires_after="2022-04-24">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -804,7 +804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GLImplementation" enum="GLImplementation"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -901,7 +901,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUProcessExitCode" enum="GPUProcessExitCode"
-    expires_after="2022-01-30">
+    expires_after="2022-04-24">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -940,7 +940,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.GPUProcessTerminationStatus2" enum="GpuTerminationStatus"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Counts for each time the GPU Process Host detects the process dies.
@@ -958,7 +958,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.HasDiscreteGpu" enum="HasDiscreteGpu"
-    expires_after="2021-12-01">
+    expires_after="2022-04-24">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -1141,7 +1141,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2022-02-20">
+<histogram name="GPU.Output.HDR" enum="Boolean" expires_after="2022-04-24">
   <owner>hubbe@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
@@ -1210,7 +1210,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.HardwareAccelerated"
-    enum="GPUProcessLifetimeEvent" expires_after="2022-01-23">
+    enum="GPUProcessLifetimeEvent" expires_after="2022-04-24">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -1221,7 +1221,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.ProcessLifetimeEvents.SwiftShader"
-    enum="GPUProcessLifetimeEvent" expires_after="2022-01-09">
+    enum="GPUProcessLifetimeEvent" expires_after="2022-04-24">
   <owner>vmiura@chromium.org</owner>
   <summary>
     Recorded once for every GPU process launch and crash when GPU process is
@@ -1341,7 +1341,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.Scheduler.RunTaskTime" units="microseconds"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metrics@google.com</owner>
   <summary>
@@ -1429,7 +1429,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GPU.SoftwareRendering" enum="BooleanSoftwareRendering"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

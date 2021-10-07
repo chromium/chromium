@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The frequency of selection of each avatar.</summary>
 </histogram>
 
-<histogram name="Profile.BookmarksSize" units="MB" expires_after="2022-01-31">
+<histogram name="Profile.BookmarksSize" units="MB" expires_after="2022-04-24">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the bookmarks database.</summary>
@@ -125,7 +125,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Profile.CookiesSize" units="MB" expires_after="2022-01-31">
+<histogram name="Profile.CookiesSize" units="MB" expires_after="2022-04-24">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the cookies database.</summary>
@@ -174,7 +174,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.DeleteProfileAction" enum="ProfileDeleteAction"
-    expires_after="2022-01-09">
+    expires_after="2022-04-24">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <owner>anthonyvd@chromium.org</owner>
@@ -239,7 +239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Size of the extension cookies database.</summary>
 </histogram>
 
-<histogram name="Profile.FaviconsSize" units="MB" expires_after="2022-01-31">
+<histogram name="Profile.FaviconsSize" units="MB" expires_after="2022-04-24">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the favicons database.</summary>
@@ -287,7 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Profile.HistorySize" units="MB" expires_after="2022-01-31">
+<histogram name="Profile.HistorySize" units="MB" expires_after="2022-04-24">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>Size of the history database.</summary>
@@ -318,7 +318,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.Incognito.MovedToBackgroundAfterDuration"
-    units="minutes" expires_after="2022-02-22">
+    units="minutes" expires_after="2022-04-24">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -329,7 +329,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.Incognito.ResumedAfterReportedDuration"
-    units="minutes" expires_after="2022-02-22">
+    units="minutes" expires_after="2022-04-24">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -363,7 +363,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.Menu.OpenedAfterAvatarAnimation" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>droger@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <summary>
@@ -388,7 +388,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.NetUserCount" enum="ProfileNetUserCount"
-    expires_after="2021-11-07">
+    expires_after="2022-04-24">
   <owner>rogerta@chromium.org</owner>
   <summary>
     Counts of users added and deleted. Percentages are not meaningful. Please
@@ -622,7 +622,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Profile.State.SyncEnabled" enum="BooleanEnabled"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>jkrcal@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -805,7 +805,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
-    expires_after="2021-10-25">
+    expires_after="2022-04-24">
   <owner>vasilii@chromium.org</owner>
   <owner>ewald@chromium.org</owner>
   <summary>
@@ -933,7 +933,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ProfilePicker.UserAction" enum="ProfilePickerAction"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>msalama@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

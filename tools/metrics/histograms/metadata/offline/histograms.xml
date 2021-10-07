@@ -269,7 +269,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OfflinePages.AccessPageCount"
-    enum="OfflinePagesNamespaceEnumeration" expires_after="2021-10-31">
+    enum="OfflinePagesNamespaceEnumeration" expires_after="2022-04-24">
   <owner>dimich@chromium.org</owner>
   <owner>offline-dev@chromium.org</owner>
   <summary>

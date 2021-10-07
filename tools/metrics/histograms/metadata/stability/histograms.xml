@@ -90,7 +90,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability
@@ -562,7 +562,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.HasPossibleExplanation"
-    enum="BooleanHasPossibleExplanation" expires_after="2022-02-20">
+    enum="BooleanHasPossibleExplanation" expires_after="2022-04-24">
   <owner>michaeldo@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>

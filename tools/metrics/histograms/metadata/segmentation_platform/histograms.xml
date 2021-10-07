@@ -75,7 +75,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2022-02-01">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2022-04-24">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
@@ -149,7 +149,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SegmentationPlatform.Maintenance.SignalIdentifierCount"
-    units="ids" expires_after="2022-02-01">
+    units="ids" expires_after="2022-04-24">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -382,7 +382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="SegmentationPlatform.SignalDatabase.GetSamples.DatabaseEntryCount"
-    units="entries" expires_after="2022-02-01">
+    units="entries" expires_after="2022-04-24">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -397,7 +397,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SegmentationPlatform.SignalDatabase.GetSamples.Result"
-    enum="BooleanSuccess" expires_after="2022-02-01">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>nyquist@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>

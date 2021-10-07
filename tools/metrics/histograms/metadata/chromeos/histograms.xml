@@ -953,7 +953,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.MemoryPressureLevel" enum="MemoryPressureLevel"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>xdai@chromium.org</owner>
   <summary>
     The memory pressure level in Chrome OS, which is recorded periodically (once
@@ -1163,7 +1163,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Bluetooth.BluetoothOnOff"
-    enum="BooleanToggled" expires_after="2022-02-06">
+    enum="BooleanToggled" expires_after="2022-04-24">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1271,7 +1271,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Languages.OfferToTranslateCheckbox"
-    enum="BooleanChecked" expires_after="2022-02-06">
+    enum="BooleanChecked" expires_after="2022-04-24">
   <owner>myy@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1290,7 +1290,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="ChromeOS.Settings.Languages.Toggle"
-    enum="BooleanToggled" expires_after="2022-02-06">
+    enum="BooleanToggled" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="SettingsLanguagesPageToggle" -->
 
   <owner>myy@chromium.org</owner>
@@ -1482,7 +1482,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSubpageSelected"
-    enum="OsSettingsSubpage" expires_after="2022-02-06">
+    enum="OsSettingsSubpage" expires_after="2022-04-24">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1492,7 +1492,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultTypeSelected"
-    enum="OsSettingsSearchResultType" expires_after="2022-02-06">
+    enum="OsSettingsSearchResultType" expires_after="2022-04-24">
   <owner>khorimoto@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
@@ -1628,7 +1628,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.FormFactor"
-    enum="ChromeOSSharesheetFormFactor" expires_after="2021-12-12">
+    enum="ChromeOSSharesheetFormFactor" expires_after="2022-04-24">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>Records the form factor when the Sharesheet is invoked.</summary>
@@ -1645,7 +1645,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Sharesheet.IsImagePreviewPressed"
-    enum="BooleanSelected" expires_after="M97">
+    enum="BooleanSelected" expires_after="2022-04-24">
   <owner>dominickn@chromium.org</owner>
   <owner>melzhang@chromium.org</owner>
   <summary>
@@ -1932,7 +1932,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.UserTypeByDeviceType.LogSegment"
-    enum="UserDeviceMatrix" expires_after="2022-02-20">
+    enum="UserDeviceMatrix" expires_after="2022-04-24">
   <owner>bmalcolm@chromium.org</owner>
   <owner>cros-client-wa@google.com</owner>
   <summary>

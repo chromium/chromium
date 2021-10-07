@@ -144,7 +144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch" enum="HoldingSpaceItemType"
-    expires_after="2022-01-30">
+    expires_after="2022-04-24">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -154,7 +154,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="HoldingSpace.Item.FailureToLaunch.Extension"
-    enum="HoldingSpaceExtension" expires_after="2022-01-30">
+    enum="HoldingSpaceExtension" expires_after="2022-04-24">
   <owner>dmblack@google.com</owner>
   <owner>gzadina@google.com</owner>
   <summary>

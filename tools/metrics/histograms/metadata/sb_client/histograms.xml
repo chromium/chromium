@@ -65,7 +65,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -135,7 +135,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetError" enum="NetErrorCodes"
-    expires_after="2022-01-16">
+    expires_after="2022-04-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -180,7 +180,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestResponseCode"
-    enum="HttpResponseCode" expires_after="2021-11-07">
+    enum="HttpResponseCode" expires_after="2022-04-24">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -540,7 +540,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.Classifier.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2021-12-05">
+    enum="SBPhishingClassifierEvent" expires_after="2022-04-24">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -764,7 +764,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectionDuration" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

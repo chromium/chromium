@@ -405,7 +405,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.ConnectionInfo.SubResource" enum="ConnectionInfo"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -467,7 +467,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Cors.PreflightCacheResult" enum="CorsPreflightCacheResult"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>toyoshim@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
   <summary>
@@ -594,7 +594,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Nsswitch.Compatible" enum="BooleanValid"
-    expires_after="2022-01-15">
+    expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -606,7 +606,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Nsswitch.FileChange" enum="BooleanChanged"
-    expires_after="2022-01-15">
+    expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -616,7 +616,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Nsswitch.HostsFound" enum="BooleanFound"
-    expires_after="2022-01-15">
+    expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -684,7 +684,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Resolv.Compatible" enum="BooleanValid"
-    expires_after="2022-01-15">
+    expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -697,7 +697,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Resolv.FileChange" enum="BooleanChanged"
-    expires_after="2022-01-15">
+    expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -718,7 +718,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Resolv.Valid" enum="BooleanValid"
-    expires_after="2022-01-15">
+    expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -809,7 +809,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.SuccessTime" units="ms"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -1260,7 +1260,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.JobQueueTime.Failure" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>dmcardle@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
@@ -1271,7 +1271,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.JobQueueTime.PerTransaction" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>dmcardle@chromium.org</owner>
   <owner>ericorth@chromium.org</owner>
   <summary>
@@ -1315,7 +1315,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Failure.AttemptTime"
-    units="ms" expires_after="2022-02-06">
+    units="ms" expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1325,7 +1325,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.DNS.ProbeSequence.NetworkChange.Success.AttemptTime"
-    units="ms" expires_after="2022-02-13">
+    units="ms" expires_after="2022-04-24">
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -3169,7 +3169,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionCloseErrorCodeClientGoogle"
-    enum="QuicErrorCodes" expires_after="2022-01-16">
+    enum="QuicErrorCodes" expires_after="2022-04-24">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3199,7 +3199,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.ConnectionCloseErrorCodeServerIetfApplication"
-    enum="QuicHttp3ErrorCodes" expires_after="2021-12-05">
+    enum="QuicHttp3ErrorCodes" expires_after="2022-04-24">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -3508,7 +3508,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.QuicSession.HandshakeConfirmedTime" units="Milliseconds"
-    expires_after="2022-01-16">
+    expires_after="2022-04-24">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -4885,7 +4885,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.Reporting.HeaderType" enum="NetReportingHeaderType"
-    expires_after="2022-02-18">
+    expires_after="2022-04-24">
   <owner>rodneyding@google.com</owner>
   <owner>src/net/reporting/OWNERS</owner>
   <summary>
@@ -5569,7 +5569,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForFetchFailure"
-    enum="NetErrorCodes" expires_after="2022-01-15">
+    enum="NetErrorCodes" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -5584,7 +5584,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.NetErrorForTrustTokenOperation"
-    enum="NetErrorCodes" expires_after="2022-01-15">
+    enum="NetErrorCodes" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>
@@ -5650,7 +5650,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"
-    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2022-01-15">
+    enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->
 
   <owner>davidvc@chromium.org</owner>

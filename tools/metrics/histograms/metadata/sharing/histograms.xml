@@ -65,7 +65,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sharing.ClickToCallDialerPresent" enum="BooleanPresent"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -245,7 +245,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Sharing.MessageAckTime" units="ms" expires_after="M97">
+<histogram name="Sharing.MessageAckTime" units="ms" expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="SharingChannelType",
      name="SharingDevicePlatform" and name="SharingMessage" -->
 

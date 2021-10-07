@@ -376,7 +376,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Session.TotalDuration.TouchMode" units="times"
-    expires_after="2021-11-14">
+    expires_after="2022-04-24">
   <owner>collinbaker@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

@@ -379,7 +379,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CBCMPolicyRefresh" enum="EnterprisePolicyRefresh"
-    expires_after="2022-01-01">
+    expires_after="2022-04-24">
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -500,7 +500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestCount" units="requests"
-    expires_after="2022-02-01">
+    expires_after="2022-04-24">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -510,7 +510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestSize" units="KB"
-    expires_after="2022-02-01">
+    expires_after="2022-04-24">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -1181,7 +1181,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.EnrollmentTime.Cancel" units="ms"
-    expires_after="2022-02-01">
+    expires_after="2022-04-24">
   <owner>raleksandrov@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -1464,7 +1464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.FirstRun.AppRestrictionLoadTime.Medium" units="ms"
-    expires_after="2022-01-09">
+    expires_after="2022-04-24">
   <owner>skym@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
@@ -1625,7 +1625,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
-    expires_after="2022-02-01">
+    expires_after="2022-04-24">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -1642,7 +1642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.Policies" enum="EnterprisePolicies"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>mnissler@chromium.org</owner>
   <summary>
     A set of enterprise policy rules that are in use. This is recorded every 24
@@ -1651,7 +1651,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.Policies.IgnoredByPolicyGroup"
-    enum="EnterprisePolicies" expires_after="2022-01-09">
+    enum="EnterprisePolicies" expires_after="2022-04-24">
   <owner>ydago@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2277,7 +2277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Enterprise.UserSession.Logins"
-    enum="EnterpriseUserSessionLogins" expires_after="2022-01-23">
+    enum="EnterpriseUserSessionLogins" expires_after="2022-04-24">
   <owner>xiyuan@chromium.org</owner>
   <owner>sduraisamy@chromium.org</owner>
   <summary>Tracks the sign-in events on an enrolled device.</summary>

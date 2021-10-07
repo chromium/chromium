@@ -342,7 +342,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.BookmarkAppLaunchSource" enum="AppLaunchSource"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>phillis@chromium.org</owner>
   <owner>benwells@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
@@ -750,7 +750,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.LoadRulesetResult"
-    enum="LoadRulesetResult" expires_after="2021-11-14">
+    enum="LoadRulesetResult" expires_after="2022-04-24">
   <owner>karandeepb@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -846,7 +846,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ResponseHeaderChanged"
-    enum="WebRequest.ResponseHeader" expires_after="2021-10-31">
+    enum="WebRequest.ResponseHeader" expires_after="2022-04-24">
   <owner>karandeepb@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>kelvinjiang@chromium.org</owner>
@@ -882,7 +882,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.UpdateDynamicRulesStatus"
-    enum="UpdateDynamicRulesStatus" expires_after="2021-11-14">
+    enum="UpdateDynamicRulesStatus" expires_after="2022-04-24">
   <owner>karandeepb@chromium.org</owner>
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
@@ -928,7 +928,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DidCreateScriptContext_Blessed" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-04-24">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1019,7 +1019,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DidInitializeServiceWorkerContextOnWorkerThread"
-    units="ms" expires_after="2021-12-01">
+    units="ms" expires_after="2022-04-24">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1071,7 +1071,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.DisableReason" enum="ExtensionDisableReason"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -1152,7 +1152,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.EventPageIdleTime" units="ms"
-    expires_after="2021-12-01">
+    expires_after="2022-04-24">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>The time an extension's event page has spent unloaded.</summary>
@@ -1588,7 +1588,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceInstalledFailureNoUpdatesInfo"
-    enum="ExtensionNoUpdatesInfo" expires_after="2022-02-20">
+    enum="ExtensionNoUpdatesInfo" expires_after="2022-04-24">
   <owner>swapnilgupta@google.com</owner>
   <owner>burunduk@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -1939,7 +1939,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.ForceToolbarPinnedCount" units="extensions"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>nicolaso@chromium.org</owner>
   <owner>chrome-enterprise-team-core@google.com</owner>
   <summary>
@@ -2823,7 +2823,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The number of platform apps loaded at profile open.</summary>
 </histogram>
 
-<histogram name="Extensions.LoadTheme" units="units" expires_after="2022-02-20">
+<histogram name="Extensions.LoadTheme" units="units" expires_after="2022-04-24">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>The number of themes loaded at profile open.</summary>
@@ -3879,7 +3879,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.WebRequest.KeepaliveRequestState"
-    enum="ExtensionInProgressRequestState" expires_after="2022-01-02">
+    enum="ExtensionInProgressRequestState" expires_after="2022-04-24">
   <owner>yhirano@chromium.org</owner>
   <owner>kinuko@chromium.org</owner>
   <summary>

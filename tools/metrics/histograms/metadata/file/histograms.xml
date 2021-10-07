@@ -116,7 +116,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.DriveDuplicateFinder.LongComputeHash" units="ms"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -136,14 +136,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.DriveHostedFilePinSuccess" enum="BooleanSuccess"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>austinct@chromium.org</owner>
   <owner>dats@chromium.org</owner>
   <summary>Tracks success rate of pinning hosted files in Drive.</summary>
 </histogram>
 
 <histogram name="FileBrowser.DrivePinSuccess" enum="BooleanSuccess"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>austinct@chromium.org</owner>
   <owner>dats@chromium.org</owner>
   <summary>Tracks success rate of pinning files in Drive.</summary>
@@ -373,7 +373,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.Cancelled" enum="BooleanCanceled"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -393,7 +393,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.ErrorCount" units="count"
-    expires_after="2021-11-21">
+    expires_after="2022-04-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -402,7 +402,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.ImportCount" units="count"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -412,7 +412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.MediaImport.ImportMB" units="MBytes"
-    expires_after="2021-11-21">
+    expires_after="2022-04-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -631,7 +631,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Share.ActionSource" enum="SharingActionSource"
-    expires_after="2021-11-05">
+    expires_after="2022-04-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS File Browser: the source of file sharing action.</summary>
@@ -648,7 +648,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FileBrowser.Share.FileType" enum="ViewFileType"
-    expires_after="2021-11-05">
+    expires_after="2022-04-24">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

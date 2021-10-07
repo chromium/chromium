@@ -84,7 +84,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.GSA"
-    enum="CustomTabsConnection" expires_after="2021-12-12">
+    enum="CustomTabsConnection" expires_after="2022-04-24">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>

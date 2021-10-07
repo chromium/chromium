@@ -457,7 +457,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.FreeListReleaseTime" units="microseconds"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -480,7 +480,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.FreelistSize.Foreground" units="KiB"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -500,7 +500,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.LockingSuccess"
-    enum="BooleanLockingSuccess" expires_after="2022-02-06">
+    enum="BooleanLockingSuccess" expires_after="2022-04-24">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -510,7 +510,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Discardable.Size.Foreground" units="KiB"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1219,7 +1219,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Renderer2.Tiny" units="bytes"
-    expires_after="2022-01-10">
+    expires_after="2022-04-24">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>
@@ -1596,7 +1596,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.LowMemoryKiller.FirstKillLatency" units="ms"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>vovoy@google.com</owner>
   <owner>wvk@google.com</owner>
   <summary>
@@ -1640,7 +1640,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus"
-    enum="MappedAndResidentPagesDumpState" expires_after="2022-01-30">
+    enum="MappedAndResidentPagesDumpState" expires_after="2022-04-24">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1779,7 +1779,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.OOMKill.Contents.MemAvailableMB" units="MB"
-    expires_after="2021-11-07">
+    expires_after="2022-04-24">
   <owner>oshima@chromium.org</owner>
   <owner>alemate@chromium.org</owner>
   <summary>
@@ -2256,7 +2256,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.Latency" units="microseconds"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2268,7 +2268,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.SinceLastDiskWrite" units="ms"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -2277,7 +2277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.SizeKb" units="KB"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>Size read from disk for a ParkableString.</summary>
@@ -2686,7 +2686,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.Total.SystemCommitLimit" units="GB"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>

@@ -151,7 +151,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.NumberOfPrinters" units="units"
-    expires_after="2021-11-07">
+    expires_after="2022-04-24">
   <owner>thestig@chromium.org</owner>
   <owner>dhoss@chromium.org</owner>
   <summary>

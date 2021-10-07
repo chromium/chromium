@@ -269,7 +269,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.HomedirEncryptionType" enum="HomedirEncryptionType"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>dspaid@chromium.org</owner>
   <summary>
     The encryption type used for a user's cryptohome directory. This is logged
@@ -582,7 +582,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.TpmResults" enum="CryptohomeTpmResults"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>afakhry@chromium.org</owner>
   <summary>
     The errors resulting from interacting with the Trusted Platform Module (TPM)

@@ -720,7 +720,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.UserGroupCount" units="groups"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -741,7 +741,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabGroups.UserNamedGroupCount" units="groups"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
@@ -1464,7 +1464,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2022-02-20">
+<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2022-04-24">
   <owner>marq@chromium.org</owner>
   <summary>[Android and iOS] The number of tabs open at cold launch.</summary>
 </histogram>
@@ -1777,7 +1777,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.SadTab.CrashCreated" units="tabs"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1791,7 +1791,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.SadTab.CrashDisplayed" units="tabs"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1804,7 +1804,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.SadTab.Feedback.Event" enum="SadTabEvent"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1831,7 +1831,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.SadTab.KillCreated.OOM" units="tabs"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1846,7 +1846,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.SadTab.KillDisplayed" units="tabs"
-    expires_after="2021-12-05">
+    expires_after="2022-04-24">
   <owner>sonnyrao@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
   <summary>
@@ -1955,7 +1955,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Tabs.ScrubbedInInterval.MousePress" units="tabs"
-    expires_after="2022-02-13">
+    expires_after="2022-04-24">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

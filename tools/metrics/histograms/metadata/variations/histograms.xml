@@ -144,7 +144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.Headers.DomainOwner" enum="VariationsHeadersOwner"
-    expires_after="2021-11-08">
+    expires_after="2022-04-24">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics</component>
@@ -170,7 +170,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Variations.Headers.RequestContextCategory"
-    enum="VariationsHeadersRequestContextCategory" expires_after="2021-11-08">
+    enum="VariationsHeadersRequestContextCategory" expires_after="2022-04-24">
   <owner>asvitkine@chromium.org</owner>
   <owner>jwd@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>

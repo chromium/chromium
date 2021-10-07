@@ -68,7 +68,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ChromeDllPrefetchResult" enum="FilePrefetchResult"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>brucedawson@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -156,7 +156,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.HighResolutionTimerUsage" units="%"
-    expires_after="2022-02-12">
+    expires_after="2022-04-24">
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -380,7 +380,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
-    enum="BooleanEnabled" expires_after="2021-12-12">
+    enum="BooleanEnabled" expires_after="2022-04-24">
   <owner>rkc@chromium.org</owner>
   <owner>rockot@chromium.org</owner>
   <summary>
@@ -459,7 +459,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Windows.UnpinShortcut.ProcessError" enum="BooleanError"
-    expires_after="M99">
+    expires_after="2022-04-24">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>

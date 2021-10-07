@@ -41,14 +41,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteHungProcessTerminateReason"
-    enum="RemoteHungProcessTerminateReason" expires_after="M98">
+    enum="RemoteHungProcessTerminateReason" expires_after="2022-04-24">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>The reason of remote hang processes termination.</summary>
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.RemoteProcessInteractionResult"
-    enum="RemoteProcessInteractionResult" expires_after="M98">
+    enum="RemoteProcessInteractionResult" expires_after="2022-04-24">
   <owner>gab@chromium.org</owner>
   <owner>etienneb@chromium.org</owner>
   <summary>
@@ -118,7 +118,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
-    expires_after="M98">
+    expires_after="2022-04-24">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
@@ -148,7 +148,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Chrome.Tabs.AnimationSmoothness.TabLoading" units="%"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>
   <summary>

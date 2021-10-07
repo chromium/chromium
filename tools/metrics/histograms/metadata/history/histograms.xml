@@ -239,7 +239,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledAppsDialogAction"
-    enum="InstalledAppsDialogActions" expires_after="2022-02-22">
+    enum="InstalledAppsDialogActions" expires_after="2022-04-24">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -249,7 +249,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.InstalledAppsDialogShown"
-    units="Boolean" expires_after="2022-02-22">
+    units="Boolean" expires_after="2022-04-24">
   <owner>jarrydg@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

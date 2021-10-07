@@ -236,7 +236,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GeolocationDisclosure.PostDisclosureDSESetting"
-    enum="BooleanAllowed" expires_after="M100">
+    enum="BooleanAllowed" expires_after="2022-04-24">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
@@ -247,7 +247,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GeolocationDisclosure.PreDisclosureDSESetting"
-    enum="BooleanAllowed" expires_after="M100">
+    enum="BooleanAllowed" expires_after="2022-04-24">
   <owner>engedy@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>

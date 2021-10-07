@@ -241,7 +241,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.DiskType" enum="CrostiniDiskImageType"
-    expires_after="2022-01-06">
+    expires_after="2022-04-24">
   <owner>clumptini@google.com</owner>
   <owner>davidmunro@google.com</owner>
   <summary>
@@ -401,7 +401,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Crostini.SettingsEvent" enum="CrostiniSettingsEvent"
-    expires_after="2022-01-06">
+    expires_after="2022-04-24">
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <owner>victorhsieh@chromium.org</owner>

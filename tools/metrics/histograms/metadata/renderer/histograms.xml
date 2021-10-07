@@ -397,7 +397,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.SubframeSuccess"
-    enum="BooleanSuccess" expires_after="2022-01-02">
+    enum="BooleanSuccess" expires_after="2022-04-24">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>

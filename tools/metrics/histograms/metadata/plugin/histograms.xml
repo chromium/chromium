@@ -28,7 +28,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Plugin.FlashUsage" enum="FlashUsage"
-    expires_after="2022-02-20">
+    expires_after="2022-04-24">
   <owner>yzshen@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Collects Flash usage data.</summary>
@@ -132,7 +132,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.EngagementTime.Background" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-04-24">
   <owner>timloh@google.com</owner>
   <owner>joelhockey@google.com</owner>
   <summary>
@@ -200,14 +200,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.SetupFailureReason" enum="PluginVmSetupFailureReason"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>timloh@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>Recorded when the Plugin VM installer fails.</summary>
 </histogram>
 
 <histogram name="PluginVm.SetupResult" enum="PluginVmSetupResult"
-    expires_after="2021-12-26">
+    expires_after="2022-04-24">
   <owner>joelhockey@chromium.org</owner>
   <owner>okalitova@chromium.org</owner>
   <owner>timloh@chromium.org</owner>

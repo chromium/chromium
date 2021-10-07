@@ -144,7 +144,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc.ClippingPredictor.Precision" units="%"
-    expires_after="2021-12-31">
+    expires_after="2022-04-24">
   <owner>silen@chromium.org</owner>
   <owner>alessiob@chromium.org</owner>
   <summary>
@@ -232,7 +232,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.Agc2.FixedDigitalGainCurveRegion.Identity"
-    units="seconds" expires_after="2021-12-31">
+    units="seconds" expires_after="2022-04-24">
   <owner>alessiob@chromium.org</owner>
   <summary>
     The Fixed-Digital part of the AGC protects from saturation by reducing the
@@ -1107,7 +1107,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Call.LifetimeInSeconds" units="seconds"
-    expires_after="2022-02-21">
+    expires_after="2022-04-24">
   <owner>asapersson@chromium.org</owner>
   <summary>
     The lifetime of a call. Recorded when a Call instance is destroyed.
@@ -1323,7 +1323,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.MediaStreamDevices.HasPanTiltZoomCamera"
-    enum="BooleanAvailable" expires_after="M100">
+    enum="BooleanAvailable" expires_after="2022-04-24">
   <owner>reillyg@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -1560,7 +1560,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.KeyProtocol"
-    enum="PeerConnectionKeyProtocol" expires_after="2022-01-09">
+    enum="PeerConnectionKeyProtocol" expires_after="2022-04-24">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1740,7 +1740,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.SdpFormatReceived"
-    enum="PeerConnectionSdpFormatReceived" expires_after="2021-12-12">
+    enum="PeerConnectionSdpFormatReceived" expires_after="2022-04-24">
   <owner>steveanton@chromium.org</owner>
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
@@ -1877,7 +1877,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.ThermalState" enum="ThermalState"
-    expires_after="2022-02-06">
+    expires_after="2022-04-24">
   <owner>eshr@google.com</owner>
   <owner>hbos@chromium.org</owner>
   <summary>
@@ -1906,7 +1906,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.UsagePattern"
-    enum="WebRtcPeerConnectionUsagePattern" expires_after="2022-02-06">
+    enum="WebRtcPeerConnectionUsagePattern" expires_after="2022-04-24">
   <owner>hta@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -3872,7 +3872,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.webkitApiCount" enum="RTCAPIName"
-    expires_after="2022-01-23">
+    expires_after="2022-04-24">
   <owner>guidou@chromium.org</owner>
   <owner>hbos@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
