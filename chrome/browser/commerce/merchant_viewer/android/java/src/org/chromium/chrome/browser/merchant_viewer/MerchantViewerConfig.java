@@ -35,6 +35,12 @@ public class MerchantViewerConfig {
     @VisibleForTesting
     public static final String TRUST_SIGNALS_NUMBER_CHECK_WINDOW_DURATION_PARAM =
             "trust_signals_number_check_window_duration_ms";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_DISABLED_PARAM =
+            "trust_signals_message_disabled";
+    @VisibleForTesting
+    public static final String TRUST_SIGNALS_MESSAGE_RATING_THRESHOLD_PARAM =
+            "trust_signals_message_rating_threshold";
 
     public static int getDefaultTrustSignalsMessageDelay() {
         int defaultDelay = (int) TimeUnit.SECONDS.toMillis(30);
@@ -112,5 +118,25 @@ public class MerchantViewerConfig {
                     TRUST_SIGNALS_NUMBER_CHECK_WINDOW_DURATION_PARAM, defaultDuration);
         }
         return defaultDuration;
+    }
+
+    public static boolean isTrustSignalsMessageDisabled() {
+        boolean defaultValue = false;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_DISABLED_PARAM, defaultValue);
+        }
+        return defaultValue;
+    }
+
+    public static double getTrustSignalsMessageRatingThreshold() {
+        double defaultThreshold = 4.0;
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                    TRUST_SIGNALS_MESSAGE_RATING_THRESHOLD_PARAM, defaultThreshold);
+        }
+        return defaultThreshold;
     }
 }

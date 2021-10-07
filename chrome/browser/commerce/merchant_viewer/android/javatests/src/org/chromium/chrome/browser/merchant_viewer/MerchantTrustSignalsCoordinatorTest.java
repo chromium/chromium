@@ -186,6 +186,10 @@ public class MerchantTrustSignalsCoordinatorTest {
         mTestValues = new FeatureList.TestValues();
         mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_PARAM, "-1");
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_PARAM, "false");
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_RATING_THRESHOLD_PARAM, "4.0");
         FeatureList.setTestValues(mTestValues);
 
         mMessageContext = new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents);
@@ -422,6 +426,37 @@ public class MerchantTrustSignalsCoordinatorTest {
         doReturn(false).when(mCoordinator).isOnSecureWebsite(any(WebContents.class));
 
         mCoordinator.maybeDisplayMessage(mDummyMerchantTrustSignals, mMessageContext, false);
+
+        verify(mMockMerchantTrustStorage, times(0)).delete(eq(mMockMerchantTrustSignalsEvent));
+        verify(mMockMerchantMessageScheduler, times(0))
+                .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
+                        anyLong(), any(Callback.class));
+    }
+
+    @SmallTest
+    @Test
+    public void testMaybeDisplayMessage_MessageDisabled() {
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_PARAM, "true");
+
+        mCoordinator.maybeDisplayMessage(mDummyMerchantTrustSignals, mMessageContext, false);
+
+        verify(mMockMerchantTrustStorage, times(0)).delete(eq(mMockMerchantTrustSignalsEvent));
+        verify(mMockMerchantMessageScheduler, times(0))
+                .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
+                        anyLong(), any(Callback.class));
+    }
+
+    @SmallTest
+    @Test
+    public void testMaybeDisplayMessage_MerchantRatingBelowThreshold() {
+        MerchantTrustSignals trustSignals = MerchantTrustSignals.newBuilder()
+                                                    .setMerchantStarRating(3.5f)
+                                                    .setMerchantCountRating(100)
+                                                    .setMerchantDetailsPageUrl("")
+                                                    .build();
+
+        mCoordinator.maybeDisplayMessage(trustSignals, mMessageContext, false);
 
         verify(mMockMerchantTrustStorage, times(0)).delete(eq(mMockMerchantTrustSignalsEvent));
         verify(mMockMerchantMessageScheduler, times(0))
