@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.ntp.ScrollListener;
-import org.chromium.chrome.browser.ntp.ScrollListener.ScrollState;
-import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
+import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerState;

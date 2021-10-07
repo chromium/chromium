@@ -828,8 +828,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedTab.java",
   "java/src/org/chromium/chrome/browser/ntp/RecentlyClosedTabManager.java",
   "java/src/org/chromium/chrome/browser/ntp/RevampedIncognitoDescriptionView.java",
-  "java/src/org/chromium/chrome/browser/ntp/ScrollListener.java",
-  "java/src/org/chromium/chrome/browser/ntp/ScrollableContainerDelegate.java",
   "java/src/org/chromium/chrome/browser/ntp/SnapScrollHelper.java",
   "java/src/org/chromium/chrome/browser/ntp/TitleUtil.java",
   "java/src/org/chromium/chrome/browser/ntp/cards/SignInPromo.java",

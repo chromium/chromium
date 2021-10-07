@@ -13,14 +13,13 @@ import android.view.View.MeasureSpec;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.feed.webfeed.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.ntp.ScrollListener;
-import org.chromium.chrome.browser.ntp.ScrollableContainerDelegate;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -39,6 +38,8 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
     private static final int SPINNER_END_OFFSET = 80;
 
     private final Activity mActivity;
+    @IdRes
+    private final int mAnchorViewId;
     private View mTarget; // the target of the gesture.
     private final int mTouchSlop;
     private final ObserverList<SwipeRefreshLayout.OnRefreshListener> mRefreshListeners =
@@ -51,13 +52,15 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
     /**
      * Creates and returns an instance of {@link FeedSwipeRefreshLayout}.
      * @param activity The current {@link Activity}.
+     * @param anchorViewId ID of the view below which this layout is anchored.
      */
-    public static FeedSwipeRefreshLayout create(@NonNull Activity activity) {
+    public static FeedSwipeRefreshLayout create(
+            @NonNull Activity activity, @IdRes int anchorViewId) {
         if (!ChromeFeatureList.isInitialized()
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_INTERACTIVE_REFRESH)) {
             return null;
         }
-        FeedSwipeRefreshLayout instance = new FeedSwipeRefreshLayout(activity);
+        FeedSwipeRefreshLayout instance = new FeedSwipeRefreshLayout(activity, anchorViewId);
         instance.setLayoutParams(
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         instance.setProgressBackgroundColorSchemeResource(
@@ -70,8 +73,8 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         instance.addOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                String accessibilityRefreshString = activity.getResources().getString(
-                        org.chromium.chrome.R.string.accessibility_swipe_refresh);
+                String accessibilityRefreshString =
+                        activity.getResources().getString(R.string.accessibility_swipe_refresh);
                 instance.announceForAccessibility(accessibilityRefreshString);
                 RecordUserAction.record("MobilePullGestureReloadNTP");
             }
@@ -79,9 +82,10 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         return instance;
     }
 
-    private FeedSwipeRefreshLayout(@NonNull Activity activity) {
+    private FeedSwipeRefreshLayout(@NonNull Activity activity, @IdRes int anchorViewId) {
         super(activity);
         mActivity = activity;
+        mAnchorViewId = anchorViewId;
         mTouchSlop = ViewConfiguration.get(activity).getScaledTouchSlop();
 
         setOnRefreshListener(new OnRefreshListener() {
@@ -99,8 +103,7 @@ public class FeedSwipeRefreshLayout extends SwipeRefreshLayout implements Scroll
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
         if (contentContainer == null) return;
         // Only toolbar_container view appears in both NTP and start surface.
-        View toolbarView =
-                contentContainer.findViewById(org.chromium.chrome.R.id.toolbar_container);
+        View toolbarView = contentContainer.findViewById(mAnchorViewId);
         if (toolbarView == null) return;
         helper.requestShowIPH(new IPHCommandBuilder(getContext().getResources(),
                 FeatureConstants.FEED_SWIPE_REFRESH_FEATURE, R.string.feed_swipe_refresh_iph,

@@ -468,7 +468,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                 NewTabPageUtils.decodeOriginFromNtpUrl(url),
                 PrivacyPreferencesManagerImpl.getInstance(), mToolbarSupplier,
                 new FeedLaunchReliabilityLoggingState(SurfaceType.NEW_TAB_PAGE, mConstructedTimeNs),
-                FeedSwipeRefreshLayout.create(activity),
+                FeedSwipeRefreshLayout.create(activity, R.id.toolbar_container),
                 /* overScrollDisabled= */ false, /* viewportView= */ null,
                 new BookmarkBridge(profile));
 

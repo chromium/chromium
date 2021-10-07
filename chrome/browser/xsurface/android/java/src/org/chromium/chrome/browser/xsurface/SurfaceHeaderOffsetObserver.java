@@ -9,7 +9,7 @@ package org.chromium.chrome.browser.xsurface;
  * Certain layouts may simulate scrolls by translating views on and offscreen. This interface tracks
  * those changes by providing a vertical offset which represents the delta from the original
  * position that is currently rendered onscreen.
- * @see org.chromium.chrome.browser.ntp.ScrollListener
+ * @see org.chromium.chrome.browser.feed.ScrollListener
  */
 public interface SurfaceHeaderOffsetObserver {
     /**

@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.feed;
 
-import org.chromium.chrome.browser.ntp.ScrollListener;
-import org.chromium.chrome.browser.ntp.ScrollListener.ScrollState;
+import org.chromium.chrome.browser.feed.ScrollListener.ScrollState;
 
 /**
  * Creates a ScrollListener that triggers the "Back to top" callout bubble.

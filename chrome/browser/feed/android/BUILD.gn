@@ -9,7 +9,9 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListener.java",
     "java/src/org/chromium/chrome/browser/feed/CardMenuBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedBubbleDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/FeedImageFetchClient.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPersistentKeyValueCache.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPlaceholderLayout.java",
@@ -17,9 +19,13 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTracker.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSurfaceTracker.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedSwipeRefreshLayout.java",
     "java/src/org/chromium/chrome/browser/feed/FeedUma.java",
+    "java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListener.java",
     "java/src/org/chromium/chrome/browser/feed/NativeViewListRenderer.java",
     "java/src/org/chromium/chrome/browser/feed/NtpListContentManager.java",
+    "java/src/org/chromium/chrome/browser/feed/ScrollListener.java",
+    "java/src/org/chromium/chrome/browser/feed/ScrollableContainerDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",
     "java/src/org/chromium/chrome/browser/feed/componentinterfaces/SurfaceCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementCoordinator.java",
@@ -61,7 +67,6 @@ android_library("java") {
     "//chrome/browser/user_education:java",
     "//chrome/browser/util:java",
     "//chrome/browser/xsurface:java",
-    "//chrome/browser/xsurface:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/util/android:java",
@@ -75,6 +80,7 @@ android_library("java") {
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_main_dex_java",
+    "//third_party/android_swipe_refresh:android_swipe_refresh_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -142,7 +148,11 @@ generate_jni("jni_headers") {
 android_library("javatests") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListenerTest.java",
+    "java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
+    "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
+  ]
 
   deps = [
     ":java",
