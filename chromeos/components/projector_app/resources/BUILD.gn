@@ -102,6 +102,7 @@ generate_grd("build_untrusted_grd") {
     "annotator/annotator.html",
     "annotator/untrusted/untrusted_annotator_comm_factory.js",
     "app/index.html",
+    "app/sandboxed_load_time_data.js",
     "app/untrusted/untrusted_app_comm_factory.js",
   ]
 

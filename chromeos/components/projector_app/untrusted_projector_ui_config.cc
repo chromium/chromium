@@ -60,6 +60,10 @@ content::WebUIDataSource* CreateProjectorHTMLSource() {
 
   source->AddFrameAncestor(GURL(kChromeUITrustedProjectorUrl));
 
+  // TODO(b/201666699): Move this into a delegate, and populate with real data.
+  source->AddBoolean("isDevChannel", true);
+  source->UseStringsJs();
+
   return source;
 }
 
