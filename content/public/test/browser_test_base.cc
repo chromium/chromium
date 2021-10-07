@@ -38,6 +38,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -867,7 +868,10 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     InitializeNetworkProcess();
 
     {
-      TRACE_EVENT0("test", "RunTestOnMainThread");
+      auto* test = ::testing::UnitTest::GetInstance()->current_test_info();
+      TRACE_EVENT("test", "RunTestOnMainThread", "test_name",
+                  test->test_suite_name() + std::string(".") + test->name(),
+                  "file", test->file(), "line", test->line());
       base::ScopedDisallowBlocking disallow_blocking;
       RunTestOnMainThread();
     }
