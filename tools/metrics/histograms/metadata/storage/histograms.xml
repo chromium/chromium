@@ -431,7 +431,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBMaintenanceTime" units="microseconds"
-    expires_after="M97">
+    expires_after="M100">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -444,13 +444,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Storage.InterestGroup.PerSiteCount" units="groups"
-    expires_after="M97">
+    expires_after="M100">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
     Records the number of interest groups loaded for a single group owner when
     running an ad auction. Recorded for each owner involved in a running ad
-    auction. Caveat: the loading code only loads the most recent 1000 entries.
+    auction.
   </summary>
 </histogram>
 
