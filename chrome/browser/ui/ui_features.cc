@@ -220,7 +220,7 @@ const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kUseRelaunchToUpdateString{
-    "UseRelaunchToUpdateString", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UseRelaunchToUpdateString", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // This enables enables persistence of a WebContents in a 1-to-1 association
 // with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
