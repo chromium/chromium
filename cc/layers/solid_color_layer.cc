@@ -4,6 +4,8 @@
 
 #include "cc/layers/solid_color_layer.h"
 
+#include <memory>
+
 #include "cc/layers/solid_color_layer_impl.h"
 
 namespace cc {
@@ -22,6 +24,7 @@ SolidColorLayer::SolidColorLayer() = default;
 SolidColorLayer::~SolidColorLayer() = default;
 
 void SolidColorLayer::SetBackgroundColor(SkColor color) {
+  DCHECK(IsMutationAllowed());
   SetContentsOpaque(SkColorGetA(color) == 255);
   Layer::SetBackgroundColor(color);
 }

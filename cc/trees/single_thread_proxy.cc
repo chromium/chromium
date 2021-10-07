@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/completion_event.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/benchmarks/benchmark_instrumentation.h"
 #include "cc/input/browser_controls_offset_manager.h"
@@ -193,7 +194,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
   DCHECK(task_runner_provider_->IsMainThread());
 
   int source_frame_number = layer_tree_host_->SourceFrameNumber();
-  layer_tree_host_->WillCommit();
+  layer_tree_host_->WillCommit(nullptr);
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 

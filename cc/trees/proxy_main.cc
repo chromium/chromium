@@ -314,7 +314,11 @@ void ProxyMain::BeginMainFrame(
 
   int source_frame_number = layer_tree_host_->SourceFrameNumber();
 
-  layer_tree_host_->WillCommit();
+  auto completion_event_ptr = std::make_unique<CompletionEvent>(
+      base::WaitableEvent::ResetPolicy::MANUAL);
+  auto* completion_event = completion_event_ptr.get();
+  layer_tree_host_->WillCommit(std::move(completion_event_ptr));
+
   devtools_instrumentation::ScopedCommitTrace commit_task(
       layer_tree_host_->GetId(),
       begin_main_frame_state->begin_frame_args.frame_id.sequence_number);
@@ -322,6 +326,7 @@ void ProxyMain::BeginMainFrame(
   current_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
   if (final_pipeline_stage_ < COMMIT_PIPELINE_STAGE) {
     current_pipeline_stage_ = NO_PIPELINE_STAGE;
+    completion_event->Signal();
     layer_tree_host_->DidBeginMainFrame();
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoUpdates", TRACE_EVENT_SCOPE_THREAD);
     std::vector<std::unique_ptr<SwapPromise>> swap_promises =
@@ -365,15 +370,14 @@ void ProxyMain::BeginMainFrame(
 
     bool hold_commit_for_activation = commit_waits_for_activation_;
     commit_waits_for_activation_ = false;
-    CompletionEvent completion;
     ImplThreadTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&ProxyImpl::NotifyReadyToCommitOnImpl,
-                       base::Unretained(proxy_impl_.get()), &completion,
+                       base::Unretained(proxy_impl_.get()), completion_event,
                        layer_tree_host_, begin_main_frame_start_time,
                        begin_main_frame_state->begin_frame_args,
                        source_frame_number, hold_commit_for_activation));
-    completion.Wait();
+    layer_tree_host_->WaitForCommitCompletion();
   }
 
   // For Blink implementations, this updates frame throttling and

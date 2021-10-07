@@ -4,6 +4,9 @@
 
 #include "cc/layers/scrollbar_layer_base.h"
 
+#include <memory>
+#include <utility>
+
 #include "cc/layers/painted_overlay_scrollbar_layer.h"
 #include "cc/layers/painted_scrollbar_layer.h"
 #include "cc/layers/scrollbar_layer_impl_base.h"
@@ -59,6 +62,7 @@ scoped_refptr<ScrollbarLayerBase> ScrollbarLayerBase::CreateOrReuse(
 }
 
 void ScrollbarLayerBase::SetScrollElementId(ElementId element_id) {
+  DCHECK(IsMutationAllowed());
   if (element_id == scroll_element_id_)
     return;
 

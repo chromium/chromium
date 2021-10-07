@@ -5,7 +5,9 @@
 #ifndef CC_LAYERS_TEXTURE_LAYER_H_
 #define CC_LAYERS_TEXTURE_LAYER_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -148,8 +150,6 @@ class CC_EXPORT TextureLayer : public Layer, SharedBitmapIdRegistrar {
   // Code path for plugins which supply their own mailbox.
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
-
-  void SetNeedsDisplayRect(const gfx::Rect& dirty_rect) override;
 
   void SetLayerTreeHost(LayerTreeHost* layer_tree_host) override;
   bool Update() override;

@@ -5,6 +5,8 @@
 #include "cc/layers/surface_layer.h"
 
 #include <stdint.h>
+#include <memory>
+#include <utility>
 
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/surface_layer_impl.h"
@@ -35,6 +37,7 @@ SurfaceLayer::~SurfaceLayer() {
 
 void SurfaceLayer::SetSurfaceId(const viz::SurfaceId& surface_id,
                                 const DeadlinePolicy& deadline_policy) {
+  DCHECK(IsMutationAllowed());
   if (surface_range_.end() == surface_id &&
       deadline_policy.use_existing_deadline()) {
     return;
@@ -70,6 +73,7 @@ void SurfaceLayer::SetSurfaceId(const viz::SurfaceId& surface_id,
 void SurfaceLayer::SetOldestAcceptableFallback(
     const viz::SurfaceId& surface_id) {
   // The fallback should never move backwards.
+  DCHECK(IsMutationAllowed());
   DCHECK(!surface_range_.start() ||
          !surface_range_.start()->IsNewerThan(surface_id));
   if (surface_range_.start() == surface_id)
@@ -91,6 +95,7 @@ void SurfaceLayer::SetOldestAcceptableFallback(
 
 void SurfaceLayer::SetStretchContentToFillBounds(
     bool stretch_content_to_fill_bounds) {
+  DCHECK(IsMutationAllowed());
   if (stretch_content_to_fill_bounds_ == stretch_content_to_fill_bounds)
     return;
   stretch_content_to_fill_bounds_ = stretch_content_to_fill_bounds;
@@ -98,12 +103,14 @@ void SurfaceLayer::SetStretchContentToFillBounds(
 }
 
 void SurfaceLayer::SetSurfaceHitTestable(bool surface_hit_testable) {
+  DCHECK(IsMutationAllowed());
   if (surface_hit_testable_ == surface_hit_testable)
     return;
   surface_hit_testable_ = surface_hit_testable;
 }
 
 void SurfaceLayer::SetHasPointerEventsNone(bool has_pointer_events_none) {
+  DCHECK(IsMutationAllowed());
   if (has_pointer_events_none_ == has_pointer_events_none)
     return;
   has_pointer_events_none_ = has_pointer_events_none;
@@ -114,10 +121,12 @@ void SurfaceLayer::SetHasPointerEventsNone(bool has_pointer_events_none) {
 }
 
 void SurfaceLayer::SetIsReflection(bool is_reflection) {
+  DCHECK(IsMutationAllowed());
   is_reflection_ = true;
 }
 
 void SurfaceLayer::SetMayContainVideo(bool may_contain_video) {
+  DCHECK(IsMutationAllowed());
   may_contain_video_ = may_contain_video;
   SetNeedsCommit();
 }

@@ -769,10 +769,16 @@ class CC_EXPORT Layer : public base::RefCounted<Layer> {
   void AddDrawableDescendants(int num);
 
   // For debugging. Returns false if the LayerTreeHost this layer is attached to
-  // is in the process of updating layers for a BeginMainFrame. Layer properties
-  // should be changed by the client before the BeginMainFrame, and should not
-  // be changed while the frame is being generated for commit.
+  // is in the process of updating layers or performing commit for a
+  // BeginMainFrame. Layer properties should be changed by the client before the
+  // BeginMainFrame, and should not be changed while the frame is being
+  // generated or committed.
   bool IsPropertyChangeAllowed() const;
+
+  // For debugging. This is less restrictive than IsPropertyChangeAllowed().
+  // It is intended for layer attributes that can be modified during layer
+  // update, but not during commit.
+  bool IsMutationAllowed() const;
 
   void IncreasePaintCount() {
     if (debug_info_)

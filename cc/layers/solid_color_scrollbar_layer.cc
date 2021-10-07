@@ -75,6 +75,7 @@ void SolidColorScrollbarLayer::SetOpacity(float opacity) {
 }
 
 void SolidColorScrollbarLayer::SetNeedsDisplayRect(const gfx::Rect& rect) {
+  DCHECK(IsMutationAllowed());
   // Never needs repaint.
 }
 

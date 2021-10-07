@@ -502,9 +502,18 @@ void LayerTreeHost::PushPropertyTreesTo(LayerTreeImpl* tree_impl) {
   tree_impl->SetPropertyTrees(&property_trees_);
 }
 
-void LayerTreeHost::WillCommit() {
+void LayerTreeHost::WillCommit(std::unique_ptr<CompletionEvent> completion) {
+  DCHECK(!commit_completion_event_);
+  commit_completion_event_ = std::move(completion);
   swap_promise_manager_.WillCommit();
   client_->WillCommit();
+}
+
+void LayerTreeHost::WaitForCommitCompletion() {
+  if (commit_completion_event_) {
+    commit_completion_event_->Wait();
+    commit_completion_event_ = nullptr;
+  }
 }
 
 void LayerTreeHost::UpdateDeferMainFrameUpdateInternal() {
@@ -517,6 +526,9 @@ bool LayerTreeHost::IsUsingLayerLists() const {
 }
 
 void LayerTreeHost::CommitComplete() {
+  // This DCHECK ensures that WaitForCommitCompletion() will not block.
+  DCHECK(!in_commit());
+  WaitForCommitCompletion();
   source_frame_number_++;
   client_->DidCommit(impl_commit_start_time_);
   impl_commit_start_time_ = base::TimeTicks();

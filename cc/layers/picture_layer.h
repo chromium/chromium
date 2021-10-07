@@ -83,6 +83,7 @@ class CC_EXPORT PictureLayer : public Layer {
  private:
   friend class TestSerializationPictureLayer;
 
+  // Called on impl thread
   void DropRecordingSourceContentIfInvalid(int source_frame_number);
 
   std::unique_ptr<RecordingSource> recording_source_;

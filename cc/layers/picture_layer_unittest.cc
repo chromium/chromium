@@ -10,6 +10,7 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
+#include "cc/base/completion_event.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -51,6 +52,7 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
   layer->Update();
 
   EXPECT_EQ(0, host->SourceFrameNumber());
+  host->WillCommit(nullptr);
   host->CommitComplete();
   EXPECT_EQ(1, host->SourceFrameNumber());
 
@@ -65,6 +67,7 @@ TEST(PictureLayerTest, NoTilesIfEmptyBounds) {
   FakeLayerTreeHostImpl host_impl(
       LayerTreeSettings(), &impl_task_runner_provider, &task_graph_runner);
   host_impl.InitializeFrameSink(layer_tree_frame_sink.get());
+  host->WillCommit(nullptr);
   host_impl.CreatePendingTree();
   std::unique_ptr<FakePictureLayerImpl> layer_impl =
       FakePictureLayerImpl::Create(host_impl.pending_tree(), 1);
@@ -97,6 +100,7 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
   layer->SetNeedsDisplayRect(invalidation_bounds);
   layer->Update();
 
+  host->WillCommit(nullptr);
   host->CommitComplete();
   FakeImplTaskRunnerProvider impl_task_runner_provider;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
@@ -137,6 +141,7 @@ TEST(PictureLayerTest, InvalidateRasterWithoutUpdate) {
   // The important line is the following (note that we do not call Update):
   layer->SetNeedsDisplayRect(invalidation_bounds);
 
+  host->WillCommit(nullptr);
   host->CommitComplete();
   FakeImplTaskRunnerProvider impl_task_runner_provider;
   std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink(
@@ -175,6 +180,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
   layer->Update();
 
   EXPECT_EQ(0, host->SourceFrameNumber());
+  host->WillCommit(nullptr);
   host->CommitComplete();
   EXPECT_EQ(1, host->SourceFrameNumber());
 
@@ -197,6 +203,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
       host_impl.pending_tree()->root_layer());
   SetupRootProperties(layer_impl);
   UpdateDrawProperties(host_impl.pending_tree());
+  host->WillCommit(nullptr);
 
   layer->PushPropertiesTo(layer_impl);
 
@@ -211,6 +218,7 @@ TEST(PictureLayerTest, ClearVisibleRectWhenNoTiling) {
 
   layer->SetBounds(gfx::Size(11, 11));
 
+  host->WillCommit(nullptr);
   host_impl.CreatePendingTree();
   layer_impl = static_cast<FakePictureLayerImpl*>(
       host_impl.pending_tree()->root_layer());

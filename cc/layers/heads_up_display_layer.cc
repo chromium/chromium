@@ -33,6 +33,7 @@ HeadsUpDisplayLayer::~HeadsUpDisplayLayer() = default;
 void HeadsUpDisplayLayer::UpdateLocationAndSize(
     const gfx::Size& device_viewport,
     float device_scale_factor) {
+  DCHECK(IsMutationAllowed());
   gfx::Size device_viewport_in_layout_pixels =
       gfx::Size(device_viewport.width() / device_scale_factor,
                 device_viewport.height() / device_scale_factor);
@@ -74,11 +75,13 @@ const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {
 
 void HeadsUpDisplayLayer::SetLayoutShiftRects(
     const std::vector<gfx::Rect>& rects) {
+  DCHECK(IsMutationAllowed());
   layout_shift_rects_ = rects;
 }
 
 void HeadsUpDisplayLayer::UpdateWebVitalMetrics(
     std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
+  DCHECK(IsMutationAllowed());
   web_vital_metrics_ = std::move(web_vital_metrics);
 }
 

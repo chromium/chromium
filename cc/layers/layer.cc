@@ -150,6 +150,7 @@ const Layer::LayerTreeInputs* Layer::layer_tree_inputs() const {
 #endif
 
 void Layer::SetLayerTreeHost(LayerTreeHost* host) {
+  DCHECK(IsPropertyChangeAllowed());
   if (layer_tree_host_ == host)
     return;
 
@@ -225,7 +226,12 @@ bool Layer::IsPropertyChangeAllowed() const {
   if (!layer_tree_host_)
     return true;
 
-  return !layer_tree_host_->in_paint_layer_contents();
+  return !layer_tree_host_->in_paint_layer_contents() &&
+         !layer_tree_host_->in_commit();
+}
+
+bool Layer::IsMutationAllowed() const {
+  return !layer_tree_host_ || !layer_tree_host_->in_commit();
 }
 
 void Layer::CaptureContent(const gfx::Rect& rect,

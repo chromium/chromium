@@ -34,6 +34,7 @@ std::unique_ptr<LayerImpl> UIResourceLayer::CreateLayerImpl(
 
 void UIResourceLayer::SetUV(const gfx::PointF& top_left,
                             const gfx::PointF& bottom_right) {
+  DCHECK(IsMutationAllowed());
   if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right)
     return;
   uv_top_left_ = top_left;
@@ -45,6 +46,7 @@ void UIResourceLayer::SetVertexOpacity(float bottom_left,
                                        float top_left,
                                        float top_right,
                                        float bottom_right) {
+  DCHECK(IsMutationAllowed());
   // Indexing according to the quad vertex generation:
   // 1--2
   // |  |
@@ -74,6 +76,7 @@ void UIResourceLayer::SetLayerTreeHost(LayerTreeHost* host) {
 }
 
 void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
+  DCHECK(IsMutationAllowed());
   bitmap_ = bitmap;
   if (!layer_tree_host())
     return;
@@ -82,6 +85,7 @@ void UIResourceLayer::SetBitmap(const SkBitmap& bitmap) {
 }
 
 void UIResourceLayer::SetUIResourceId(UIResourceId resource_id) {
+  DCHECK(IsMutationAllowed());
   // Even if the ID is not changing we should drop the bitmap. The ID is 0 when
   // there's no layer tree. When setting an id (even if to 0), we should no
   // longer keep the bitmap.

@@ -4,6 +4,9 @@
 
 #include "cc/layers/texture_layer.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
@@ -29,12 +32,14 @@ TextureLayer::TextureLayer(TextureLayerClient* client) : client_(client) {}
 TextureLayer::~TextureLayer() = default;
 
 void TextureLayer::ClearClient() {
+  DCHECK(IsMutationAllowed());
   client_ = nullptr;
   ClearTexture();
   UpdateDrawsContent(HasDrawableContent());
 }
 
 void TextureLayer::ClearTexture() {
+  DCHECK(IsMutationAllowed());
   SetTransferableResource(viz::TransferableResource(), viz::ReleaseCallback());
 }
 
@@ -44,6 +49,7 @@ std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
 }
 
 void TextureLayer::SetFlipped(bool flipped) {
+  DCHECK(IsMutationAllowed());
   if (flipped_ == flipped)
     return;
   flipped_ = flipped;
@@ -51,6 +57,7 @@ void TextureLayer::SetFlipped(bool flipped) {
 }
 
 void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
+  DCHECK(IsMutationAllowed());
   if (nearest_neighbor_ == nearest_neighbor)
     return;
   nearest_neighbor_ = nearest_neighbor;
@@ -59,6 +66,7 @@ void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
 
 void TextureLayer::SetUV(const gfx::PointF& top_left,
                          const gfx::PointF& bottom_right) {
+  DCHECK(IsMutationAllowed());
   if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right)
     return;
   uv_top_left_ = top_left;
@@ -67,6 +75,7 @@ void TextureLayer::SetUV(const gfx::PointF& top_left,
 }
 
 void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
+  DCHECK(IsMutationAllowed());
   if (premultiplied_alpha_ == premultiplied_alpha)
     return;
   premultiplied_alpha_ = premultiplied_alpha;
@@ -74,6 +83,7 @@ void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
 }
 
 void TextureLayer::SetBlendBackgroundColor(bool blend) {
+  DCHECK(IsMutationAllowed());
   if (blend_background_color_ == blend)
     return;
   blend_background_color_ = blend;
@@ -81,6 +91,7 @@ void TextureLayer::SetBlendBackgroundColor(bool blend) {
 }
 
 void TextureLayer::SetForceTextureToOpaque(bool opaque) {
+  DCHECK(IsMutationAllowed());
   if (force_texture_to_opaque_ == opaque)
     return;
   force_texture_to_opaque_ = opaque;
@@ -91,6 +102,7 @@ void TextureLayer::SetTransferableResourceInternal(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback,
     bool requires_commit) {
+  DCHECK(IsMutationAllowed());
   DCHECK(resource.mailbox_holder.mailbox.IsZero() || !holder_ref_ ||
          resource != holder_ref_->holder()->resource());
   DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
@@ -115,16 +127,14 @@ void TextureLayer::SetTransferableResourceInternal(
 void TextureLayer::SetTransferableResource(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback) {
+  DCHECK(IsMutationAllowed());
   bool requires_commit = true;
   SetTransferableResourceInternal(resource, std::move(release_callback),
                                   requires_commit);
 }
 
-void TextureLayer::SetNeedsDisplayRect(const gfx::Rect& dirty_rect) {
-  Layer::SetNeedsDisplayRect(dirty_rect);
-}
-
 void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
+  DCHECK(IsMutationAllowed());
   if (layer_tree_host() == host) {
     Layer::SetLayerTreeHost(host);
     return;
@@ -222,6 +232,7 @@ void TextureLayer::PushPropertiesTo(LayerImpl* layer) {
 SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
     const viz::SharedBitmapId& id,
     scoped_refptr<CrossThreadSharedBitmap> bitmap) {
+  DCHECK(IsMutationAllowed());
   DCHECK(to_register_bitmaps_.find(id) == to_register_bitmaps_.end());
   DCHECK(registered_bitmaps_.find(id) == registered_bitmaps_.end());
   to_register_bitmaps_[id] = std::move(bitmap);
@@ -236,6 +247,7 @@ SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
 }
 
 void TextureLayer::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
+  DCHECK(IsMutationAllowed());
   // If we didn't get to sending the registration to the compositor thread yet,
   // just remove it.
   to_register_bitmaps_.erase(id);

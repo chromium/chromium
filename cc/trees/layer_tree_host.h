@@ -25,6 +25,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "cc/base/completion_event.h"
 #include "cc/benchmarks/micro_benchmark.h"
 #include "cc/benchmarks/micro_benchmark_controller.h"
 #include "cc/cc_export.h"
@@ -631,7 +632,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void AnimateLayers(base::TimeTicks monotonic_frame_begin_time);
   void RequestMainFrameUpdate(bool report_cc_metrics);
   void FinishCommitOnImplThread(LayerTreeHostImpl* host_impl);
-  void WillCommit();
+  void WillCommit(std::unique_ptr<CompletionEvent> completion);
+  bool in_commit() const {
+    return commit_completion_event_ && !commit_completion_event_->IsSignaled();
+  }
+  void WaitForCommitCompletion();
   void CommitComplete();
   void RequestNewLayerTreeFrameSink();
   void DidInitializeLayerTreeFrameSink();
@@ -1003,6 +1008,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // sent from the main thread. Zero if the most recent BeginMainFrame did not
   // result in a commit (due to no change in content).
   base::TimeTicks impl_commit_start_time_;
+
+  std::unique_ptr<CompletionEvent> commit_completion_event_;
 
   EventsMetricsManager events_metrics_manager_;
 
