@@ -4862,15 +4862,8 @@ void LocalFrameView::OnFirstContentfulPaint() {
   GetPage()->GetChromeClient().StopDeferringCommits(
       *frame_, cc::PaintHoldingCommitTrigger::kFirstContentfulPaint);
   const bool is_main_frame = frame_->IsMainFrame();
-  if (is_main_frame) {
-    UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP",
-                        FontPerformance::PrimaryFontTime());
-    UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP.Style",
-                        FontPerformance::PrimaryFontTimeInStyle());
-    UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.FCP",
-                        FontPerformance::SystemFallbackFontTime());
-    FontPerformance::DidReachFirstContentfulPaint();
-  }
+  if (is_main_frame && frame_->GetDocument()->ShouldMarkFontPerformance())
+    FontPerformance::MarkFirstContentfulPaint();
   EnsureUkmAggregator().DidReachFirstContentfulPaint(is_main_frame);
 }
 

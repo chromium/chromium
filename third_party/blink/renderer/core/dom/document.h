@@ -1349,6 +1349,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   const DocumentTiming& GetTiming() const { return document_timing_; }
 
+  bool ShouldMarkFontPerformance() const {
+    return !IsInitialEmptyDocument() && !IsXMLDocument();
+  }
+
   int RequestAnimationFrame(FrameCallback*);
   void CancelAnimationFrame(int id);
   void ServiceScriptedAnimations(base::TimeTicks monotonic_animation_start_time,

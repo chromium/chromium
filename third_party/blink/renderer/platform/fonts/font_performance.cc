@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 
+#include "base/metrics/histogram_macros.h"
+
 namespace blink {
 
 base::TimeDelta FontPerformance::primary_font_;
@@ -13,5 +15,25 @@ unsigned FontPerformance::in_style_ = 0;
 
 const base::Feature kAsyncFontAccess{"AsyncFontAccess",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+// static
+void FontPerformance::MarkFirstContentfulPaint() {
+  UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP",
+                      FontPerformance::PrimaryFontTime());
+  UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.FCP.Style",
+                      FontPerformance::PrimaryFontTimeInStyle());
+  UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.FCP",
+                      FontPerformance::SystemFallbackFontTime());
+}
+
+// static
+void FontPerformance::MarkDomContentLoaded() {
+  UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.DomContentLoaded",
+                      FontPerformance::PrimaryFontTime());
+  UMA_HISTOGRAM_TIMES("Renderer.Font.PrimaryFont.DomContentLoaded.Style",
+                      FontPerformance::PrimaryFontTimeInStyle());
+  UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.DomContentLoaded",
+                      FontPerformance::SystemFallbackFontTime());
+}
 
 }  // namespace blink

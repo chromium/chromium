@@ -245,9 +245,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
+    expires_after="2022-01-31">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent acquiring the primary font consumed in the main tread before
+    DomContentLoaded. On Windows, this includes IPC roundtrip to browser process
+    and DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
+    expires_after="2022-01-31">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent acquiring the primary font consumed in style recalc, in the
+    main tread before DomContentLoaded. On Windows, this includes IPC roundtrip
+    to browser process and DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
     expires_after="2022-01-31">
   <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -260,6 +287,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
     expires_after="2022-01-31">
   <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -269,9 +297,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Renderer.Font.SystemFallback.DomContentLoaded" units="ms"
+    expires_after="2022-01-31">
+  <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
+  <owner>yosin@chromium.org</owner>
+  <owner>layout-dev@chromium.org</owner>
+  <summary>
+    The time spent finding the system fallback font consumed in the main tread
+    before DomContentLoaded. On Windows, this includes IPC roundtrip to browser
+    process and DirectWriteFontProxy and DirectWrite calls.
+  </summary>
+</histogram>
+
 <histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
     expires_after="2022-01-31">
   <owner>kojii@chromium.org</owner>
+  <owner>tkent@chromium.org</owner>
   <owner>yosin@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>

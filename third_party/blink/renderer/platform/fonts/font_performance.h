@@ -17,7 +17,7 @@ PLATFORM_EXPORT extern const base::Feature kAsyncFontAccess;
 // This class collects performance data for font-related operations.
 class PLATFORM_EXPORT FontPerformance {
  public:
-  static void DidReachFirstContentfulPaint() {
+  static void Reset() {
     primary_font_ = base::TimeDelta();
     primary_font_in_style_ = base::TimeDelta();
     system_fallback_ = base::TimeDelta();
@@ -44,6 +44,9 @@ class PLATFORM_EXPORT FontPerformance {
   static void AddSystemFallbackFontTime(base::TimeDelta time) {
     system_fallback_ += time;
   }
+
+  static void MarkFirstContentfulPaint();
+  static void MarkDomContentLoaded();
 
   class StyleScope {
    public:
