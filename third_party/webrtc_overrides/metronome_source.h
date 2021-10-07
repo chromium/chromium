@@ -39,15 +39,19 @@ namespace blink {
 class RTC_EXPORT MetronomeSource final
     : public base::RefCountedThreadSafe<MetronomeSource> {
  public:
-  // Used to identify a listener, e.g. to perform
-  // MetronomeSource::RemoveListener().
-  // TODO(https://crbug.com/1253787): Also add a method to ListenerHandle to
-  // allow making it idle without removing the listener and re-adding.
+  // Identifies a listener and controls when its callback should be active.
   class RTC_EXPORT ListenerHandle
       : public base::RefCountedThreadSafe<ListenerHandle> {
    public:
     ListenerHandle(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                   base::RepeatingCallback<void()> callback);
+                   base::RepeatingCallback<void()> callback,
+                   base::TimeTicks wakeup_time);
+
+    // Sets the earliest time that the metronome may invoke the listener's
+    // callback. If set to base::TimeTicks::Min(), the callback is called on
+    // every metronome tick. If set to anything else, the callback is called a
+    // single time until SetWakeupTime() is called again.
+    void SetWakeupTime(base::TimeTicks wakeup_time);
 
    private:
     friend class base::RefCountedThreadSafe<ListenerHandle>;
@@ -62,19 +66,27 @@ class RTC_EXPORT MetronomeSource final
 
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     const base::RepeatingCallback<void()> callback_;
-    base::Lock lock_;
-    bool is_active_ GUARDED_BY(lock_) = true;
+    base::Lock is_active_lock_;
+    bool is_active_ GUARDED_BY(is_active_lock_) = true;
+    base::Lock wakeup_time_lock_;
+    // The earliest time that the metronome may invoke the listener's callback.
+    base::TimeTicks wakeup_time_ GUARDED_BY(wakeup_time_lock_);
   };
 
   MetronomeSource();
   MetronomeSource(const MetronomeSource&) = delete;
   MetronomeSource& operator=(const MetronomeSource&) = delete;
 
-  // Creates a new listener whose |callback| will be invoked on |task_runner|
-  // every metronome tick.
+  // Creates a new listener whose |callback| will be invoked on |task_runner|.
+  // If |wakeup_time| is set to base::TimeTicks::Min() then the listener will be
+  // called on every metronome tick. Otherwise |wakeup_time| is the earliest
+  // time where the listener will be called a single time, after which
+  // ListenerHandle::SetWakeupTime() has to be called for the listener to be
+  // called again.
   scoped_refptr<ListenerHandle> AddListener(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::RepeatingCallback<void()> callback);
+      base::RepeatingCallback<void()> callback,
+      base::TimeTicks wakeup_time = base::TimeTicks::Min());
   // After this call, the listener's callback is guaranteed not to be running
   // and won't ever run again. The listener can be removed from any thread, but
   // the listener cannot remove itself from within its own callback.

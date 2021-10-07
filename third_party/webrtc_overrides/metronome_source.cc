@@ -21,14 +21,37 @@ constexpr base::TimeDelta kMetronomeTick =
 
 MetronomeSource::ListenerHandle::ListenerHandle(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::RepeatingCallback<void()> callback)
-    : task_runner_(std::move(task_runner)), callback_(std::move(callback)) {}
+    base::RepeatingCallback<void()> callback,
+    base::TimeTicks wakeup_time)
+    : task_runner_(std::move(task_runner)),
+      callback_(std::move(callback)),
+      wakeup_time_(std::move(wakeup_time)) {}
 
 MetronomeSource::ListenerHandle::~ListenerHandle() {
   DCHECK(!is_active_);
 }
 
+void MetronomeSource::ListenerHandle::SetWakeupTime(
+    base::TimeTicks wakeup_time) {
+  base::AutoLock auto_lock(wakeup_time_lock_);
+  wakeup_time_ = std::move(wakeup_time);
+}
+
 void MetronomeSource::ListenerHandle::OnMetronomeTick() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  {
+    base::AutoLock auto_lock(wakeup_time_lock_);
+    if (now < wakeup_time_) {
+      // The listener is still sleeping.
+      return;
+    }
+    if (!wakeup_time_.is_min()) {
+      // A wakeup time had been specified (set to anything other than "min").
+      // Reset the wakeup time to "infinity", meaning SetWakeupTime() has to be
+      // called again in order to wake up again.
+      wakeup_time_ = base::TimeTicks::Max();
+    }
+  }
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -38,14 +61,14 @@ void MetronomeSource::ListenerHandle::OnMetronomeTick() {
 
 void MetronomeSource::ListenerHandle::MaybeRunCallbackOnTaskRunner() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(is_active_lock_);
   if (!is_active_)
     return;
   callback_.Run();
 }
 
 void MetronomeSource::ListenerHandle::Inactivate() {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(is_active_lock_);
   is_active_ = false;
 }
 
@@ -106,11 +129,12 @@ void MetronomeSource::StopTimer() {
 
 scoped_refptr<MetronomeSource::ListenerHandle> MetronomeSource::AddListener(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    base::RepeatingCallback<void()> callback) {
+    base::RepeatingCallback<void()> callback,
+    base::TimeTicks wakeup_time) {
   base::AutoLock auto_lock(lock_);
   scoped_refptr<ListenerHandle> listener_handle =
-      base::MakeRefCounted<ListenerHandle>(std::move(task_runner),
-                                           std::move(callback));
+      base::MakeRefCounted<ListenerHandle>(
+          std::move(task_runner), std::move(callback), std::move(wakeup_time));
   listeners_.insert(listener_handle);
   if (listeners_.size() == 1u) {
     // The first listener was just added.
