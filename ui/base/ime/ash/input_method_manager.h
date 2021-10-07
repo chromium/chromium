@@ -248,10 +248,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
         const std::vector<std::string>& allowed_input_method_ids,
         bool enable_allowed_input_methods) = 0;
 
-    // Returns the currently allowed input methods, as set by
+    // Returns IDs of currently allowed input methods, as set by
     // SetAllowedInputMethodIds. An empty vector means that all input methods
     // are allowed.
-    virtual const std::vector<std::string>& GetAllowedInputMethods() = 0;
+    virtual const std::vector<std::string>& GetAllowedInputMethodIds()
+        const = 0;
 
     // Methods related to custom input view of the input method.
     // Enables custom input view of the current (active) input method.

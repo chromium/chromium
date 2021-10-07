@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   ASSERT_TRUE(imm);
 
   // Check that input methods are default when policy is not set.
-  ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethods().size(), 0U);
+  ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethodIds().size(), 0U);
   std::vector<std::string> expected_input_methods;
   Append_en_US_InputMethods(&expected_input_methods);
   EXPECT_EQ(input_method::InputMethodManager::Get()
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
 
   std::vector<std::string> allowed_input_method{"xkb:de::ger"};
   SetAllowedInputMethod(allowed_input_method.front());
-  ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethods().size(), 1U);
+  ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethodIds().size(), 1U);
   ASSERT_EQ(imm->GetActiveIMEState()->GetNumEnabledInputMethods(), 1U);
 
   input_method::InputMethodManager::Get()->MigrateInputMethods(
@@ -386,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardPolicy, RestrictInputMethods) {
   policy_helper_.RefreshPolicyAndWaitUntilDeviceSettingsUpdated(
       {chromeos::kDeviceLoginScreenInputMethods});
 
-  ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethods().size(), 0U);
+  ASSERT_EQ(imm->GetActiveIMEState()->GetAllowedInputMethodIds().size(), 0U);
   ASSERT_EQ(expected_input_methods, input_method::InputMethodManager::Get()
                                         ->GetActiveIMEState()
                                         ->GetEnabledInputMethodIds());
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIDevicePolicyUserAdding, PolicyNotHonored) {
   EXPECT_EQ(user_adding_ime_state->GetEnabledInputMethodIds(),
             default_input_methods);
 
-  EXPECT_EQ(user_adding_ime_state->GetAllowedInputMethods().size(), 0u);
+  EXPECT_EQ(user_adding_ime_state->GetAllowedInputMethodIds().size(), 0u);
   EXPECT_FALSE(base::Contains(user_adding_ime_state->GetEnabledInputMethodIds(),
                               allowed_input_method.front()));
 }

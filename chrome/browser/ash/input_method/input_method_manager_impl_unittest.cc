@@ -1452,7 +1452,7 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsValid) {
               testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng")));
   EXPECT_THAT(manager_->GetActiveIMEState()->GetCurrentInputMethod().id(),
               ImeIdFromEngineId("xkb:us::eng"));
-  EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethods(),
+  EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
               testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng")));
 }
 
@@ -1472,7 +1472,7 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsInvalid) {
       manager_->GetActiveIMEState()->SetAllowedInputMethods(allowed, true));
   EXPECT_THAT(manager_->GetActiveIMEState()->GetCurrentInputMethod().id(),
               original_input_method);
-  EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethods(),
+  EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
               testing::IsEmpty());
 }
 
@@ -1495,7 +1495,7 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsValidAndInvalid) {
       manager_->GetActiveIMEState()->SetAllowedInputMethods(allowed, true));
   EXPECT_THAT(manager_->GetActiveIMEState()->GetCurrentInputMethod().id(),
               original_input_method_1);
-  EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethods(),
+  EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
               testing::ElementsAre(original_input_method_1));
 
   // Try to re-enable xkb:de::ger

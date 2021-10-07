@@ -468,7 +468,7 @@ bool InputMethodManagerImpl::StateImpl::SetAllowedInputMethods(
 }
 
 const std::vector<std::string>&
-InputMethodManagerImpl::StateImpl::GetAllowedInputMethods() {
+InputMethodManagerImpl::StateImpl::GetAllowedInputMethodIds() const {
   return allowed_keyboard_layout_input_method_ids_;
 }
 
@@ -756,10 +756,10 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault() {
   // and US dvorak keyboard layouts.
   if (g_browser_process && g_browser_process->local_state()) {
     const std::string locale = g_browser_process->GetApplicationLocale();
-    std::vector<std::string> input_methods_to_be_enabled;
-    if (!GetAllowedInputMethods().empty()) {
+    std::vector<std::string> input_method_ids_to_be_enabled;
+    if (!GetAllowedInputMethodIds().empty()) {
       // Prefer policy-set input methods.
-      input_methods_to_be_enabled = GetAllowedInputMethods();
+      input_method_ids_to_be_enabled = GetAllowedInputMethodIds();
     } else {
       // If the preferred keyboard for the login screen has been saved, use it.
       PrefService* prefs = g_browser_process->local_state();
@@ -768,13 +768,13 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault() {
       if (initial_input_method_id.empty()) {
         // If kPreferredKeyboardLayout is not specified, use the hardware
         // layout.
-        input_methods_to_be_enabled =
+        input_method_ids_to_be_enabled =
             manager_->util_.GetHardwareLoginInputMethodIds();
       } else {
-        input_methods_to_be_enabled.push_back(initial_input_method_id);
+        input_method_ids_to_be_enabled.push_back(initial_input_method_id);
       }
     }
-    EnableLoginLayouts(locale, input_methods_to_be_enabled);
+    EnableLoginLayouts(locale, input_method_ids_to_be_enabled);
     LoadNecessaryComponentExtensions();
   }
 }

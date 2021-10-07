@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   EXPECT_TRUE(imm->MigrateInputMethods(&input_methods));
 
   // No restrictions and current input method should be "xkb:us::eng" (default).
-  EXPECT_EQ(0U, ime_state->GetAllowedInputMethods().size());
+  EXPECT_EQ(0U, ime_state->GetAllowedInputMethodIds().size());
   EXPECT_EQ(input_methods[0], ime_state->GetCurrentInputMethod().id());
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[1]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
   // Only "xkb:fr::fra", "xkb:de::ger" should be allowed, current input method
   // should be "xkb:fr::fra", enabling "xkb:us::eng" should not be possible,
   // enabling "xkb:de::ger" should be possible.
-  EXPECT_EQ(2U, ime_state->GetAllowedInputMethods().size());
+  EXPECT_EQ(2U, ime_state->GetAllowedInputMethodIds().size());
   EXPECT_EQ(2U, ime_state->GetEnabledInputMethods()->size());
   EXPECT_EQ(input_methods[1], ime_state->GetCurrentInputMethod().id());
   EXPECT_FALSE(ime_state->EnableInputMethod(input_methods[0]));
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
                                          base::DictionaryValue(), profile);
 
   // No restrictions and current input method should still be "xkb:fr::fra".
-  EXPECT_EQ(0U, ime_state->GetAllowedInputMethods().size());
+  EXPECT_EQ(0U, ime_state->GetAllowedInputMethodIds().size());
   EXPECT_EQ(input_methods[1], ime_state->GetCurrentInputMethod().id());
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[0]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
                                          base::DictionaryValue(), profile);
 
   // No restrictions and current input method should still be "xkb:fr::fra".
-  EXPECT_EQ(0U, ime_state->GetAllowedInputMethods().size());
+  EXPECT_EQ(0U, ime_state->GetAllowedInputMethodIds().size());
   EXPECT_EQ(input_methods[1], ime_state->GetCurrentInputMethod().id());
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[0]));
   EXPECT_TRUE(ime_state->EnableInputMethod(input_methods[2]));

@@ -105,7 +105,7 @@ bool MockInputMethodManager::State::SetAllowedInputMethods(
 }
 
 const std::vector<std::string>&
-MockInputMethodManager::State::GetAllowedInputMethods() {
+MockInputMethodManager::State::GetAllowedInputMethodIds() const {
   return allowed_input_method_ids_;
 }
 

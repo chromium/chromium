@@ -81,7 +81,7 @@ base::flat_set<std::string> GetEnabledIMEs(
 // Returns the set of IDs of all allowed IMEs.
 base::flat_set<std::string> GetAllowedIMEs(
     scoped_refptr<InputMethodManager::State> ime_state) {
-  return ime_state->GetAllowedInputMethods();
+  return ime_state->GetAllowedInputMethodIds();
 }
 
 // Returns the set of IDs of enabled IMEs for the given pref.

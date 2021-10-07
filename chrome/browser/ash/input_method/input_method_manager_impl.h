@@ -109,7 +109,7 @@ class InputMethodManagerImpl : public InputMethodManager,
     bool SetAllowedInputMethods(
         const std::vector<std::string>& new_allowed_input_method_ids,
         bool enable_allowed_input_methods) override;
-    const std::vector<std::string>& GetAllowedInputMethods() override;
+    const std::vector<std::string>& GetAllowedInputMethodIds() const override;
     void EnableInputView() override;
     void DisableInputView() override;
     const GURL& GetInputViewUrl() const override;

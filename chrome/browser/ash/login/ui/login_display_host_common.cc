@@ -70,13 +70,13 @@ void ScheduleCompletionCallbacks(std::vector<base::OnceClosure>&& callbacks) {
   }
 }
 
-void PushFrontImIfNotExists(const std::string& input_method,
-                            std::vector<std::string>* input_methods) {
-  if (input_method.empty())
+void PushFrontImIfNotExists(const std::string& input_method_id,
+                            std::vector<std::string>* input_method_ids) {
+  if (input_method_id.empty())
     return;
 
-  if (!base::Contains(*input_methods, input_method))
-    input_methods->insert(input_methods->begin(), input_method);
+  if (!base::Contains(*input_method_ids, input_method_id))
+    input_method_ids->insert(input_method_ids->begin(), input_method_id);
 }
 
 void SetGaiaInputMethods(const AccountId& account_id) {
@@ -94,28 +94,32 @@ void SetGaiaInputMethods(const AccountId& account_id) {
                                           true /*honor_device_policy*/);
   } else {
     lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
-    std::vector<std::string> input_methods;
-    if (gaia_ime_state->GetAllowedInputMethods().empty()) {
-      input_methods =
+    std::vector<std::string> input_method_ids;
+    if (gaia_ime_state->GetAllowedInputMethodIds().empty()) {
+      input_method_ids =
           imm->GetInputMethodUtil()->GetHardwareLoginInputMethodIds();
     } else {
-      input_methods = gaia_ime_state->GetAllowedInputMethods();
+      input_method_ids = gaia_ime_state->GetAllowedInputMethodIds();
     }
-    const std::string owner_im = lock_screen_utils::GetUserLastInputMethod(
-        user_manager::UserManager::Get()->GetOwnerAccountId());
-    const std::string system_im = g_browser_process->local_state()->GetString(
-        language_prefs::kPreferredKeyboardLayout);
+    const std::string owner_input_method_id =
+        lock_screen_utils::GetUserLastInputMethod(
+            user_manager::UserManager::Get()->GetOwnerAccountId());
+    const std::string system_input_method_id =
+        g_browser_process->local_state()->GetString(
+            language_prefs::kPreferredKeyboardLayout);
 
-    PushFrontImIfNotExists(owner_im, &input_methods);
-    PushFrontImIfNotExists(system_im, &input_methods);
+    PushFrontImIfNotExists(owner_input_method_id, &input_method_ids);
+    PushFrontImIfNotExists(system_input_method_id, &input_method_ids);
 
     gaia_ime_state->EnableLoginLayouts(
-        g_browser_process->GetApplicationLocale(), input_methods);
+        g_browser_process->GetApplicationLocale(), input_method_ids);
 
-    if (!system_im.empty()) {
-      gaia_ime_state->ChangeInputMethod(system_im, false /* show_message */);
-    } else if (!owner_im.empty()) {
-      gaia_ime_state->ChangeInputMethod(owner_im, false /* show_message */);
+    if (!system_input_method_id.empty()) {
+      gaia_ime_state->ChangeInputMethod(system_input_method_id,
+                                        false /* show_message */);
+    } else if (!owner_input_method_id.empty()) {
+      gaia_ime_state->ChangeInputMethod(owner_input_method_id,
+                                        false /* show_message */);
     }
   }
 }

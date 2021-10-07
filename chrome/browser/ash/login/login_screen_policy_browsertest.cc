@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenPolicyTest, PolicyInputMethodsListEmpty) {
       input_method::InputMethodManager::Get();
   ASSERT_TRUE(imm);
 
-  ASSERT_EQ(0U, imm->GetActiveIMEState()->GetAllowedInputMethods().size());
+  ASSERT_EQ(0U, imm->GetActiveIMEState()->GetAllowedInputMethodIds().size());
 
   em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
   proto.mutable_login_screen_input_methods()->Clear();
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenPolicyTest, PolicyInputMethodsListEmpty) {
   RefreshDevicePolicyAndWaitForSettingChange(
       chromeos::kDeviceLoginScreenInputMethods);
 
-  ASSERT_EQ(0U, imm->GetActiveIMEState()->GetAllowedInputMethods().size());
+  ASSERT_EQ(0U, imm->GetActiveIMEState()->GetAllowedInputMethodIds().size());
 }
 
 class LoginScreenGuestButtonPolicyTest : public LoginScreenPolicyTest {

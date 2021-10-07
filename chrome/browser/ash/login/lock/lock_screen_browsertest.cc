@@ -229,8 +229,9 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
   EXPECT_EQ(input_manager->GetActiveIMEState()->GetEnabledInputMethodIds(),
             user_ime_state->GetEnabledInputMethodIds());
 
-  EXPECT_EQ(input_manager->GetActiveIMEState()->GetAllowedInputMethods().size(),
-            0u);
+  EXPECT_EQ(
+      input_manager->GetActiveIMEState()->GetAllowedInputMethodIds().size(),
+      0u);
 }
 
 }  // namespace
