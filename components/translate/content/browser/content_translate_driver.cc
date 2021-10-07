@@ -285,9 +285,6 @@ void ContentTranslateDriver::DidFinishNavigation(
                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
        IsAutoHrefTranslateAllOriginsEnabled());
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   translate_manager_->GetLanguageState()->DidNavigate(
       navigation_handle->IsSameDocument(),
       navigation_handle->IsInPrimaryMainFrame(), reload,

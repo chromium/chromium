@@ -2186,15 +2186,19 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class TranslateManagerPrerenderBrowserTest
-    : public TranslateManagerBrowserTest {
+    : public TranslateManagerBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   TranslateManagerPrerenderBrowserTest()
       : prerender_helper_(base::BindRepeating(
             &TranslateManagerPrerenderBrowserTest::web_contents,
-            base::Unretained(this))) {}
-
-  void SetUpOnMainThread() override {
-    TranslateManagerBrowserTest::SetUpOnMainThread();
+            base::Unretained(this))) {
+    if (GetParam() /* enable kTranslateSubFrames */) {
+      scoped_feature_list_.InitAndEnableFeature(translate::kTranslateSubFrames);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          translate::kTranslateSubFrames);
+    }
   }
 
   content::WebContents* web_contents() {
@@ -2203,9 +2207,12 @@ class TranslateManagerPrerenderBrowserTest
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_P(TranslateManagerPrerenderBrowserTest,
                        SkipPrerenderPage) {
   SetTranslateScript(kTestValidScript);
 
@@ -2259,6 +2266,10 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPrerenderBrowserTest,
   // Check noisy data was filtered out.
   histograms.ExpectTotalCount("Translate.LanguageDeterminedDuration", 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TranslateManagerPrerenderBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace
 }  // namespace translate

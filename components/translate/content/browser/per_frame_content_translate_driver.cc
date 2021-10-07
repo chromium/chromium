@@ -270,13 +270,23 @@ void PerFrameContentTranslateDriver::DidFinishNavigation(
   if (!navigation_handle->HasCommitted())
     return;
 
+  // Continue to process the navigation only if it is for frames in the primary
+  // page. It should be kept in sync with the implementation in
+  // ContentTranslateDriver::DidFinishNavigation.
+  if (!navigation_handle->GetRenderFrameHost()->GetPage().IsPrimary())
+    return;
+
   InitiateTranslationIfReload(navigation_handle);
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (navigation_handle->IsInPrimaryMainFrame())
+  if (navigation_handle->IsPrerenderedPageActivation()) {
+    // Set it to NULL time, and do not report the LanguageDeterminedDuration
+    // metric in this case.
+    // The browser defers the RegisterPage() message on a prerendering page, so
+    // this kind of data is noisy and should be filtered out.
+    finish_navigation_time_ = base::TimeTicks();
+  } else if (navigation_handle->IsInPrimaryMainFrame()) {
     finish_navigation_time_ = base::TimeTicks::Now();
+  }
 
   // Let the LanguageState clear its state.
   const bool reload =
@@ -293,9 +303,6 @@ void PerFrameContentTranslateDriver::DidFinishNavigation(
                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
        IsAutoHrefTranslateAllOriginsEnabled());
 
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   translate_manager()->GetLanguageState()->DidNavigate(
       navigation_handle->IsSameDocument(),
       navigation_handle->IsInPrimaryMainFrame(), reload,
