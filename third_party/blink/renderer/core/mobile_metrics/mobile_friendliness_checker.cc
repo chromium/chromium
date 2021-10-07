@@ -288,11 +288,14 @@ int CountBadTapTargets(wtf_size_t rightmost_position,
 int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   base::Time started = base::Time::Now();
   constexpr float kOneDipInMm = 0.15875;
-  const float scale_factor = frame_view_->GetChromeClient()
-                                 ->GetScreenInfo(frame_view_->GetFrame())
-                                 .device_scale_factor;
+  double initial_scale = frame_view_->GetPage()
+                             ->GetPageScaleConstraintsSet()
+                             .FinalConstraints()
+                             .initial_scale;
+  DCHECK_GT(initial_scale, 0);
   const int finger_radius =
-      std::floor((3 / kOneDipInMm) / scale_factor);  // 3mm in logical pixel.
+      std::floor((3 / kOneDipInMm) / initial_scale);  // 3mm in logical pixel.
+
   Vector<std::pair<int, EdgeOrCenter>> vertices;
   Vector<int> x_positions;
 
@@ -416,15 +419,13 @@ void MobileFriendlinessChecker::ComputeSmallTextRatio(
         style.ClipBottom().IsZero())
       return;
 
-    double actual_font_size = style.FontSize();
     double initial_scale = frame_view_->GetPage()
                                ->GetPageScaleConstraintsSet()
                                .FinalConstraints()
                                .initial_scale;
-    if (initial_scale > 0)
-      actual_font_size *= initial_scale;
-    actual_font_size /= viewport_scalar_;
-
+    DCHECK_GT(initial_scale, 0);
+    double actual_font_size =
+        style.FontSize() * initial_scale / viewport_scalar_;
     double area = text->PhysicalAreaSize();
     if (actual_font_size < kSmallFontThreshold)
       text_area_sizes_.small_font_area += area;
