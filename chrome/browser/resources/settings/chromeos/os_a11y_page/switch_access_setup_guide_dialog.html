@@ -85,6 +85,11 @@
     margin: 4px;
   }
 
+  .radio-button-title {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+  }
+
   .radio-button-description {
     padding-bottom: 16px;
   }
@@ -99,7 +104,7 @@
   </div>
   <div slot="body" class="sa-setup-body">
     <div id="intro" class="flex">
-      <div class="sa-setup-contents cr-title-text">
+      <div class="sa-setup-contents">
         $i18n{switchAccessSetupIntroBody}
       </div>
       <div class="illustration"></div>
@@ -109,7 +114,7 @@
       <div class="illustration"></div>
     </div>
     <div id="auto-scan-enabled" class="flex" hidden>
-      <div class="sa-setup-contents cr-title-text">
+      <div class="sa-setup-contents">
         <p>$i18n{switchAccessSetupAutoScanEnabledExplanation}</p>
         <p>$i18n{switchAccessSetupAutoScanEnabledDirections}</p>
       </div>
@@ -121,13 +126,13 @@
             on-selected-changed="onSwitchCountChanged_">
           <cr-radio-button name="one-switch" class="list-item"
               aria-label="$i18n{switchAccessSetupChoose1Switch}">
-            <span class="cr-title-text">
+            <span class="radio-button-title">
               $i18n{switchAccessSetupChoose1Switch}
             <span>
           </cr-radio-button>
           <cr-radio-button name="two-switches" class="list-item"
               aria-label="$i18n{switchAccessSetupChoose2Switches}">
-            <span class="cr-title-text">
+            <span class="radio-button-title">
               $i18n{switchAccessSetupChoose2Switches}
             </span>
             <div class="radio-button-description">
@@ -136,7 +141,7 @@
           </cr-radio-button>
           <cr-radio-button name="three-switches" class=list-item"
               aria-label="$i18n{switchAccessSetupChoose3Switches}">
-            <span class="cr-title-text">
+            <span class="radio-button-title">
               $i18n{switchAccessSetupChoose3Switches}
             </span>
             <div class="radio-button-description">
@@ -168,7 +173,7 @@
       </cr-button>
     </div>
     <div id="closing" class="flex" hidden>
-      <div class="sa-setup-contents cr-title-text">
+      <div class="sa-setup-contents">
         <p id="closing-instructions"></p>
         <p>$i18n{switchAccessSetupClosingInfo}</p>
       </div>
