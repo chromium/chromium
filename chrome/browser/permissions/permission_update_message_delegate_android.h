@@ -31,7 +31,9 @@ class PermissionUpdateMessageDelegate {
       const std::vector<std::string> required_android_permissions,
       const std::vector<std::string> optional_android_permissions,
       const std::vector<ContentSettingsType> content_settings_types,
-      int permission_msg_id,
+      int icon_id,
+      int title_id,
+      int description_id,
       PermissionUpdatedCallback callback,
       base::OnceCallback<void(PermissionUpdateMessageDelegate*)>
           delete_callback_);

@@ -5,9 +5,11 @@
 #include "chrome/browser/permissions/permission_update_message_controller_android.h"
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
+#include "components/strings/grit/components_strings.h"
 
 class PermissionUpdateMessageControllerAndroidTest
     : public ChromeRenderViewHostTestHarness {
@@ -23,8 +25,9 @@ class PermissionUpdateMessageControllerAndroidTest
   void Show(base::OnceCallback<void(bool)> callback) {
     EXPECT_CALL(message_dispatcher_bridge_, EnqueueMessage);
     GetController()->ShowMessageInternal(
-        {}, {}, {}, IDS_INFOBAR_MISSING_LOCATION_PERMISSION_TEXT,
-        std::move(callback));
+        {}, {}, {}, IDR_ANDROID_INFOBAR_GEOLOCATION,
+        IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TITLE,
+        IDS_MESSAGE_MISSING_LOCATION_PERMISSION_TEXT, std::move(callback));
   }
 
   size_t GetMessageDelegatesSize() {

@@ -44,7 +44,9 @@ class PermissionUpdateMessageController
       PermissionUpdatedCallback callback);
 
   void ShowMessage(const std::vector<std::string>& required_android_permissions,
-                   int permission_msg_id,
+                   int permission_icon_id,
+                   int permission_msg_title_id,
+                   int permission_msg_description_id,
                    PermissionUpdatedCallback callback);
 
   ~PermissionUpdateMessageController() override;
@@ -58,13 +60,17 @@ class PermissionUpdateMessageController
       const std::vector<std::string>& required_android_permissions,
       const std::vector<std::string>& optional_android_permissions,
       const std::vector<ContentSettingsType> content_settings_types,
-      int permission_msg_id,
+      int icon_id,
+      int title_id,
+      int description_id,
       PermissionUpdatedCallback callback);
   void DeleteMessage(PermissionUpdateMessageDelegate* delegate);
 
-  // This function determines the expected string based on given content
-  // setting types and populates the required permissions and optional
-  // permissions in the meantime.
+  // This function determines the expected drawables and string based on
+  // given content setting types and populates the required permissions
+  // and optional permissions in the meantime.
+  // Returns a tuple composed of icon drawable id, title string id and
+  // description string id.
   //
   // This function can only be called with one of
   // ContentSettingsType::MEDIASTREAM_MIC,
@@ -73,7 +79,7 @@ class PermissionUpdateMessageController
   // ContentSettingsType::AR or with both
   // ContentSettingsType::MEDIASTREAM_MIC and
   // ContentSettingsType::MEDIASTREAM_CAMERA.
-  int GetPermissionUpdateUiTitleId(
+  std::tuple<int, int, int> GetPermissionUpdateUiResourcesId(
       const std::vector<ContentSettingsType>& content_settings_types,
       std::vector<std::string>& required_permissions,
       std::vector<std::string>& optional_permissions);

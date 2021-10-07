@@ -21,7 +21,9 @@ PermissionUpdateMessageDelegate::PermissionUpdateMessageDelegate(
     const std::vector<std::string> required_android_permissions,
     const std::vector<std::string> optional_android_permissions,
     const std::vector<ContentSettingsType> content_settings_types,
-    int permission_msg_id,
+    int icon_id,
+    int title_id,
+    int description_id,
     PermissionUpdatedCallback callback,
     base::OnceCallback<void(PermissionUpdateMessageDelegate*)> delete_callback_)
     : content_settings_types_(content_settings_types),
@@ -36,11 +38,11 @@ PermissionUpdateMessageDelegate::PermissionUpdateMessageDelegate(
       base::BindOnce(&PermissionUpdateMessageDelegate::HandleDismissCallback,
                      base::Unretained(this)));
 
-  message_->SetTitle(l10n_util::GetStringUTF16(permission_msg_id));
+  message_->SetTitle(l10n_util::GetStringUTF16(title_id));
+  message_->SetDescription(l10n_util::GetStringUTF16(description_id));
   message_->SetPrimaryButtonText(
       l10n_util::GetStringUTF16(IDS_INFOBAR_UPDATE_PERMISSIONS_BUTTON_TEXT));
-  message_->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_INFOBAR_WARNING));
+  message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(icon_id));
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents, messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);
