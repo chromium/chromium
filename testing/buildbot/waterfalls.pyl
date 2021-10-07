@@ -3359,6 +3359,11 @@
           'gtest_tests': 'fieldtrial_browser_tests',
         },
       },
+      'linux-headless-shell-rel': {
+        'test_suites': {
+          'gtest_tests': 'headless_browser_gtests',
+        },
+      },
       'linux-lacros-code-coverage': {
         'additional_compile_targets': [
           'chrome',

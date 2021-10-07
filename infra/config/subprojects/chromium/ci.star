@@ -3688,6 +3688,14 @@ ci.fyi_builder(
     triggered_by = ["ci/Mac Builder"],
 )
 
+ci.fyi_builder(
+    name = "linux-headless-shell-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "hdls",
+    ),
+)
+
 ci.updater_builder(
     name = "mac-updater-builder-dbg",
     console_view_entry = consoles.console_view_entry(

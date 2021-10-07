@@ -4056,6 +4056,11 @@
       },
     },
 
+    'headless_browser_gtests': {
+      'headless_browsertests': {},
+      'headless_unittests': {},
+    },
+
     'ios_clang_tests': {
       'absl_hardening_tests': {},
       'base_unittests': {},

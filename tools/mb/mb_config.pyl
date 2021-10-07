@@ -357,6 +357,7 @@
       'linux-exp-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
+      'linux-headless-shell-rel': 'headless_shell_release_bot',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
       'linux-lacros-builder-rel (goma cache silo)': 'lacros_on_linux_release_bot',
       'linux-lacros-builder-rel (reclient)': 'lacros_on_linux_release_bot_reclient',
@@ -2444,6 +2445,10 @@
       'gn_linux_upload', 'official', 'goma',
     ],
 
+    'headless_shell_release_bot': [
+      'headless_shell', 'release', 'static', 'goma',
+    ],
+
     'ios_clang_tot_xctest': [
       'clang_tot', 'ios', 'ios_simulator', 'ios_cpu_x64', 'ios_disable_code_signing', 'release', 'static', 'xctest', 'ios_disable_xcode_project_generation',
     ],
@@ -3473,6 +3478,14 @@
       'mixins': ['chrome_with_codecs'],
     },
 
+    'headless': {
+      'args_file': '//build/args/headless.gn',
+    },
+
+    'headless_shell': {
+      'mixins': ['headless', 'no_codecs'],
+    },
+
     'hybrid': {
       'gn_args': 'v8_target_cpu="arm" target_cpu="x86"',
       'mixins': ['disable_nacl'],
@@ -3600,6 +3613,13 @@
 
     'no_clang': {
       'gn_args': 'is_clang=false',
+    },
+
+    'no_codecs': {
+      'gn_args': ('media_use_libvpx=false '
+                  'media_use_ffmpeg=false '
+                  'proprietary_codecs=false '
+                  'enable_ffmpeg_video_decoders=false'),
     },
 
     'no_com_init_hooks': {
