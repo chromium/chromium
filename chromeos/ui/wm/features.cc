@@ -12,7 +12,7 @@ namespace features {
 // bottom when the screen is in portrait orientation, while snap left and right
 // when the screen is in landscape orientation.
 const base::Feature kVerticalSnap{"VerticalSnap",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsVerticalSnapEnabled() {
   return base::FeatureList::IsEnabled(kVerticalSnap);
