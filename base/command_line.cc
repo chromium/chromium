@@ -32,6 +32,15 @@ namespace base {
 
 CommandLine* CommandLine::current_process_commandline_ = nullptr;
 
+static DuplicateSwitchHandler* duplicate_switch_handler = nullptr;
+void CommandLine::SetDuplicateSwitchHandler(
+    std::unique_ptr<DuplicateSwitchHandler> new_duplicate_switch_handler) {
+  if (duplicate_switch_handler) {
+    delete duplicate_switch_handler;
+  }
+  duplicate_switch_handler = new_duplicate_switch_handler.release();
+}
+
 namespace {
 
 constexpr CommandLine::CharType kSwitchTerminator[] = FILE_PATH_LITERAL("--");
@@ -157,10 +166,7 @@ std::wstring QuoteForCommandLineToArgvW(const std::wstring& arg,
 
 }  // namespace
 
-CommandLine::CommandLine(NoProgram no_program)
-    : argv_(1),
-      begin_args_(1) {
-}
+CommandLine::CommandLine(NoProgram no_program) : argv_(1), begin_args_(1) {}
 
 CommandLine::CommandLine(const FilePath& program)
     : argv_(1),
@@ -169,8 +175,7 @@ CommandLine::CommandLine(const FilePath& program)
 }
 
 CommandLine::CommandLine(int argc, const CommandLine::CharType* const* argv)
-    : argv_(1),
-      begin_args_(1) {
+    : argv_(1), begin_args_(1) {
   InitFromArgv(argc, argv);
 }
 
@@ -341,8 +346,14 @@ void CommandLine::AppendSwitchNative(StringPiece switch_string,
   StringType combined_switch_string(switch_key);
 #endif
   size_t prefix_length = GetSwitchPrefixLength(combined_switch_string);
-  base::InsertOrAssign(switches_, std::string(switch_key.substr(prefix_length)),
-                       StringType(value));
+  auto key = switch_key.substr(prefix_length);
+  if (duplicate_switch_handler) {
+    duplicate_switch_handler->ResolveDuplicate(key, value,
+                                               switches_[std::string(key)]);
+  } else {
+    base::InsertOrAssign(switches_, std::string(key), StringType(value));
+  }
+
   // Preserve existing switch prefixes in |argv_|; only append one if necessary.
   if (prefix_length == 0) {
     combined_switch_string.insert(0, kSwitchPrefixes[0].data(),

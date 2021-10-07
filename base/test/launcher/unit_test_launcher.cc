@@ -235,10 +235,31 @@ void InitGoogleTestWChar(int* argc, wchar_t** argv) {
 // Flag to avoid using job objects
 const char kDontUseJobObjectFlag[] = "dont-use-job-objects";
 
+MergeTestFilterSwitchHandler::~MergeTestFilterSwitchHandler() = default;
+void MergeTestFilterSwitchHandler::ResolveDuplicate(
+    base::StringPiece key,
+    CommandLine::StringPieceType new_value,
+    CommandLine::StringType& out_value) {
+  if (key != switches::kTestLauncherFilterFile) {
+    out_value = CommandLine::StringType(new_value);
+    return;
+  }
+  if (!out_value.empty()) {
+#if defined(OS_WIN)
+    StrAppend(&out_value, {L";"});
+#else
+    StrAppend(&out_value, {";"});
+#endif
+  }
+  StrAppend(&out_value, {new_value});
+}
+
 int LaunchUnitTests(int argc,
                     char** argv,
                     RunTestSuiteCallback run_test_suite,
                     size_t retry_limit) {
+  CommandLine::SetDuplicateSwitchHandler(
+      std::make_unique<MergeTestFilterSwitchHandler>());
   CommandLine::Init(argc, argv);
   size_t parallel_jobs = NumParallelJobs(/*cores_per_job=*/1);
   if (parallel_jobs == 0U) {

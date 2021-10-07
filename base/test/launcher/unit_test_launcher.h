@@ -162,6 +162,22 @@ class UnitTestLauncherDelegate : public TestLauncherDelegate {
   bool use_job_objects_;
 };
 
+// We want to stop throwing away duplicate test filter file flags, but we're
+// afraid of changing too much in fear of breaking other use cases.
+// If you feel like another flag should be merged instead of overridden,
+// feel free to make this into a set of flags in this function,
+// or add its own merging code.
+//
+// out_value contains the existing value and is modified to resolve the
+// duplicate
+class MergeTestFilterSwitchHandler : public DuplicateSwitchHandler {
+ public:
+  void ResolveDuplicate(base::StringPiece key,
+                        CommandLine::StringPieceType new_value,
+                        CommandLine::StringType& out_value) override;
+  ~MergeTestFilterSwitchHandler() override;
+};
+
 }   // namespace base
 
 #endif  // BASE_TEST_LAUNCHER_UNIT_TEST_LAUNCHER_H_
