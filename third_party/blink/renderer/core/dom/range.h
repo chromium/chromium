@@ -176,7 +176,7 @@ class CORE_EXPORT Range final : public AbstractRange {
   void CheckExtractPrecondition(ExceptionState&);
   bool HasSameRoot(const Node&) const;
 
-  enum ActionType { DELETE_CONTENTS, EXTRACT_CONTENTS, CLONE_CONTENTS };
+  enum ActionType { kDeleteContents, kExtractContents, kCloneContents };
   DocumentFragment* ProcessContents(ActionType, ExceptionState&);
   static Node* ProcessContentsBetweenOffsets(ActionType,
                                              DocumentFragment*,
