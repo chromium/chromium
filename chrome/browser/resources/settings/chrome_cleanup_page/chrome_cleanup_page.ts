@@ -17,9 +17,9 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
@@ -124,8 +124,7 @@ interface SettingsChromeCleanupPageElement {
 }
 
 const SettingsChromeCleanupPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], I18nMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior};
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 class SettingsChromeCleanupPageElement extends
     SettingsChromeCleanupPageElementBase {

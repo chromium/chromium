@@ -19,14 +19,14 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 // </if>
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
@@ -46,8 +46,7 @@ export interface SettingsPersonalizationOptionsElement {
 }
 
 const SettingsPersonalizationOptionsElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
-    {new (): PolymerElement & PrefsMixinInterface & WebUIListenerBehavior};
+    WebUIListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsPersonalizationOptionsElement extends
     SettingsPersonalizationOptionsElementBase {

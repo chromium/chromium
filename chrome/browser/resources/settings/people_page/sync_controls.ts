@@ -12,8 +12,8 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {Route, Router} from '../router.js';
@@ -53,9 +53,7 @@ enum RadioButtonNames {
  * 'settings-sync-controls' contains all sync data type controls.
  */
 
-const SettingsSyncControlsElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+const SettingsSyncControlsElementBase = WebUIListenerMixin(PolymerElement);
 
 class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
   static get is() {

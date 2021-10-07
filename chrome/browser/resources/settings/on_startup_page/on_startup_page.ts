@@ -15,8 +15,8 @@ import './startup_urls_page.js';
 import '../i18n_setup.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NtpExtension, OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
 
@@ -28,9 +28,7 @@ enum PrefValues {
   OPEN_SPECIFIC = 4,
 }
 
-const SettingsOnStartupPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+const SettingsOnStartupPageElementBase = WebUIListenerMixin(PolymerElement);
 
 class SettingsOnStartupPageElement extends SettingsOnStartupPageElementBase {
   static get is() {

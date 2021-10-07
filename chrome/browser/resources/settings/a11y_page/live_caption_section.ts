@@ -14,8 +14,8 @@ import '//resources/cr_elements/shared_style_css.m.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -37,8 +37,7 @@ type LiveCaptionLanguage = {
 type LiveCaptionLanguageList = Array<LiveCaptionLanguage>;
 
 const SettingsLiveCaptionElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+    WebUIListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   static get is() {

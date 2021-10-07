@@ -176,16 +176,16 @@ suite('ImportDataDialog', function() {
     assertFalse(dialog.$.cancel.hidden);
     assertTrue(dialog.$.cancel.disabled);
     assertTrue(dialog.$.done.hidden);
-    assertTrue(dialog.$$('paper-spinner-lite').active);
-    assertFalse(dialog.$$('paper-spinner-lite').hidden);
+    assertTrue(dialog.shadowRoot.querySelector('paper-spinner-lite').active);
+    assertFalse(dialog.shadowRoot.querySelector('paper-spinner-lite').hidden);
   }
 
   function assertSucceededButtons() {
     assertTrue(dialog.$.import.hidden);
     assertTrue(dialog.$.cancel.hidden);
     assertFalse(dialog.$.done.hidden);
-    assertFalse(dialog.$$('paper-spinner-lite').active);
-    assertTrue(dialog.$$('paper-spinner-lite').hidden);
+    assertFalse(dialog.shadowRoot.querySelector('paper-spinner-lite').active);
+    assertTrue(dialog.shadowRoot.querySelector('paper-spinner-lite').hidden);
   }
 
   /** @param {!ImportDataStatus} status */
@@ -204,7 +204,8 @@ suite('ImportDataDialog', function() {
       assertSucceededButtons();
 
       assertFalse(dialog.$.successIcon.parentElement.hidden);
-      assertFalse(dialog.$$('settings-toggle-button').parentElement.hidden);
+      assertFalse(dialog.shadowRoot.querySelector('settings-toggle-button')
+                      .parentElement.hidden);
     });
   });
 
@@ -229,7 +230,8 @@ suite('ImportDataDialog', function() {
       assertSucceededButtons();
 
       assertFalse(dialog.$.successIcon.parentElement.hidden);
-      assertTrue(dialog.$$('settings-toggle-button').parentElement.hidden);
+      assertTrue(dialog.shadowRoot.querySelector('settings-toggle-button')
+                     .parentElement.hidden);
     });
   });
 

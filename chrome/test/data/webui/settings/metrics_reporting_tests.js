@@ -72,7 +72,7 @@ suite('metrics reporting', function() {
       flush();
 
       // Restart button should be hidden by default (in any state).
-      assertFalse(!!page.$$('#restart'));
+      assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
       // Simulate toggling via policy.
       webUIListenerCallback('metrics-reporting-change', {
@@ -81,7 +81,7 @@ suite('metrics reporting', function() {
       });
 
       // No restart button should show because the value is managed.
-      assertFalse(!!page.$$('#restart'));
+      assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
       webUIListenerCallback('metrics-reporting-change', {
         enabled: true,
@@ -91,7 +91,7 @@ suite('metrics reporting', function() {
 
       // Changes in policy should not show the restart button because the value
       // is still managed.
-      assertFalse(!!page.$$('#restart'));
+      assertFalse(!!page.shadowRoot.querySelector('#restart'));
 
       // Remove the policy and toggle the value.
       webUIListenerCallback('metrics-reporting-change', {
@@ -101,7 +101,7 @@ suite('metrics reporting', function() {
       flush();
 
       // Now the restart button should be showing.
-      assertTrue(!!page.$$('#restart'));
+      assertTrue(!!page.shadowRoot.querySelector('#restart'));
 
       // Receiving the same values should have no effect.
       webUIListenerCallback('metrics-reporting-change', {
@@ -109,7 +109,7 @@ suite('metrics reporting', function() {
         managed: false,
       });
       flush();
-      assertTrue(!!page.$$('#restart'));
+      assertTrue(!!page.shadowRoot.querySelector('#restart'));
     });
   });
 });

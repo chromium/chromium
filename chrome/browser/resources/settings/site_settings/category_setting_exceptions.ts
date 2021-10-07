@@ -9,20 +9,16 @@
  */
 import './site_list.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
 
 const CategorySettingExceptionsElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior], SiteSettingsMixin(PolymerElement)) as {
-      new ():
-          PolymerElement & WebUIListenerBehavior & SiteSettingsMixinInterface
-    };
+    SiteSettingsMixin(WebUIListenerMixin(PolymerElement));
 
 export class CategorySettingExceptionsElement extends
     CategorySettingExceptionsElementBase {

@@ -11,10 +11,10 @@ import 'chrome://resources/cr_elements/md_select_css.m.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {MediaPickerEntry} from './site_settings_prefs_browser_proxy.js';
 
 interface MediaPickerElement {
@@ -24,11 +24,8 @@ interface MediaPickerElement {
   };
 }
 
-const MediaPickerElementBase = mixinBehaviors(
-                                   [WebUIListenerBehavior],
-                                   SiteSettingsMixin(PolymerElement)) as {
-  new (): PolymerElement & WebUIListenerBehavior & SiteSettingsMixinInterface
-};
+const MediaPickerElementBase =
+    SiteSettingsMixin(WebUIListenerMixin(PolymerElement));
 
 class MediaPickerElement extends MediaPickerElementBase {
   static get is() {

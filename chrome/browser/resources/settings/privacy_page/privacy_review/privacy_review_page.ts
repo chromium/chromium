@@ -19,8 +19,8 @@ import './step_indicator.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 import {routes} from '../../route.js';
@@ -48,11 +48,9 @@ interface PrivacyReviewStepComponents {
 }
 
 const PrivacyReviewBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior],
-        RouteObserverMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
-      RouteObserverMixinInterface
+    RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & I18nMixinInterface &
+      WebUIListenerMixinInterface & RouteObserverMixinInterface
     };
 
 /** @polymer */

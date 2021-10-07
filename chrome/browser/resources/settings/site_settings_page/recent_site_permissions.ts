@@ -12,9 +12,9 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
@@ -39,10 +39,10 @@ export interface SettingsRecentSitePermissionsElement {
 }
 
 const SettingsRecentSitePermissionsElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior],
-        RouteObserverMixin(SiteSettingsMixin(I18nMixin(PolymerElement)))) as {
-      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
+    RouteObserverMixin(
+        SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement)))) as {
+      new ():
+          PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
       SiteSettingsMixinInterface & RouteObserverMixinInterface
     };
 

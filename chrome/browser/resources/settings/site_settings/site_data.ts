@@ -22,7 +22,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
@@ -54,13 +54,13 @@ interface SiteDataElement {
   };
 }
 
-const SiteDataElementBase =
-    mixinBehaviors(
-        [ListPropertyUpdateBehavior, WebUIListenerBehavior],
-        GlobalScrollTargetMixin(BaseMixin(PolymerElement))) as {
-      new (): PolymerElement & ListPropertyUpdateBehavior & BaseMixinInterface &
-      WebUIListenerBehavior & RouteObserverMixinInterface
-    };
+const SiteDataElementBase = mixinBehaviors(
+                                [ListPropertyUpdateBehavior],
+                                GlobalScrollTargetMixin(WebUIListenerMixin(
+                                    BaseMixin(PolymerElement)))) as {
+  new (): PolymerElement & ListPropertyUpdateBehavior & BaseMixinInterface &
+  WebUIListenerMixinInterface & RouteObserverMixinInterface
+};
 
 class SiteDataElement extends SiteDataElementBase {
   static get is() {

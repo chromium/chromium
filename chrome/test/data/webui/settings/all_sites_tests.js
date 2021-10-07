@@ -672,13 +672,17 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     // Open the overflow menu.
     const overflowMenu = testElement.$.menu.get();
     assertFalse(overflowMenu.open);
-    testElement.fire('open-menu', {
-      target: expandButton,
-      index: 0,
-      item: siteGroup,
-      origin: siteGroup.origins[originIndex].origin,
-      actionScope: 'origin',
-    });
+    testElement.dispatchEvent(new CustomEvent('open-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        target: expandButton,
+        index: 0,
+        item: siteGroup,
+        origin: siteGroup.origins[originIndex].origin,
+        actionScope: 'origin',
+      }
+    }));
     assertTrue(overflowMenu.open);
 
     const menuItems = overflowMenu.querySelectorAll('.dropdown-item');
@@ -770,13 +774,17 @@ suite('AllSites_DisabledConsolidatedControls', function() {
     // Open the overflow menu.
     const overflowMenu = testElement.$.menu.get();
     assertFalse(overflowMenu.open);
-    testElement.fire('open-menu', {
-      target: expandButton,
-      index: 0,
-      item: siteGroup,
-      origin: siteGroup.origins[originIndex].origin,
-      actionScope: 'origin',
-    });
+    testElement.dispatchEvent(new CustomEvent('open-menu', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        target: expandButton,
+        index: 0,
+        item: siteGroup,
+        origin: siteGroup.origins[originIndex].origin,
+        actionScope: 'origin',
+      }
+    }));
     assertTrue(overflowMenu.open);
 
     const menuItems = overflowMenu.querySelectorAll('.dropdown-item');

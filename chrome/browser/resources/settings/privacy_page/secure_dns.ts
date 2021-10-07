@@ -23,11 +23,11 @@ import '../settings_shared_css.js';
 import './secure_dns_input.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from './privacy_page_browser_proxy.js';
 
@@ -40,8 +40,7 @@ interface SettingsSecureDnsElement {
 }
 
 const SettingsSecureDnsElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior & PrefsMixinInterface};
+    WebUIListenerMixin(PrefsMixin(PolymerElement));
 
 class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   static get is() {

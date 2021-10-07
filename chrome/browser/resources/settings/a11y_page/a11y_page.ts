@@ -22,8 +22,8 @@ import '../settings_page/settings_subpage.js';
 import './live_caption_section.js';
 // </if>
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -34,9 +34,7 @@ import {Router} from '../router.js';
 import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
 // </if>
 
-const SettingsA11YPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+const SettingsA11YPageElementBase = WebUIListenerMixin(PolymerElement);
 
 class SettingsA11YPageElement extends SettingsA11YPageElementBase {
   static get is() {

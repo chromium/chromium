@@ -20,11 +20,11 @@ import '../settings_shared_css.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from '//resources/js/assert.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
@@ -38,8 +38,7 @@ interface RepeaterEvent extends CustomEvent {
 }
 
 const SettingsSyncAccountControlElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PrefsMixin(PolymerElement)) as
-    {new (): PolymerElement & PrefsMixinInterface & WebUIListenerBehavior};
+    WebUIListenerMixin(PrefsMixin(PolymerElement));
 
 class SettingsSyncAccountControlElement extends
     SettingsSyncAccountControlElementBase {

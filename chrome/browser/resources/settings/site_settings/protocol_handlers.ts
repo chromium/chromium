@@ -23,8 +23,8 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -79,11 +79,8 @@ interface AppRepeaterEvent extends Event {
   }
 }
 
-const ProtocolHandlersElementBase = mixinBehaviors(
-                                        [WebUIListenerBehavior],
-                                        SiteSettingsMixin(PolymerElement)) as {
-  new (): PolymerElement & WebUIListenerBehavior & SiteSettingsMixinInterface
-};
+const ProtocolHandlersElementBase =
+    WebUIListenerMixin(SiteSettingsMixin(PolymerElement));
 
 class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   static get is() {

@@ -15,7 +15,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 
 import {ListPropertyUpdateBehavior} from 'chrome://resources/js/list_property_update_behavior.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -31,10 +31,10 @@ interface RepeaterEvent {
 
 const ZoomLevelsElementBase =
     mixinBehaviors(
-        [ListPropertyUpdateBehavior, WebUIListenerBehavior],
-        SiteSettingsMixin(PolymerElement)) as {
+        [ListPropertyUpdateBehavior],
+        SiteSettingsMixin(WebUIListenerMixin(PolymerElement))) as {
       new (): PolymerElement & SiteSettingsMixinInterface &
-      ListPropertyUpdateBehavior & WebUIListenerBehavior
+      ListPropertyUpdateBehavior & WebUIListenerMixinInterface
     };
 
 class ZoomLevelsElement extends ZoomLevelsElementBase {

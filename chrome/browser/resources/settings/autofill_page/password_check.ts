@@ -29,8 +29,8 @@ import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js
 // <if expr="chromeos">
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // </if>
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
@@ -56,13 +56,11 @@ interface SettingsPasswordCheckElement {
 }
 
 const SettingsPasswordCheckElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior],
-        RouteObserverMixin(
-            I18nMixin(PrefsMixin(PasswordCheckMixin((PolymerElement)))))) as {
-      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
-      PrefsMixinInterface & PasswordCheckMixinInterface &
-      RouteObserverMixinInterface
+    RouteObserverMixin(WebUIListenerMixin(
+        I18nMixin(PrefsMixin(PasswordCheckMixin((PolymerElement)))))) as {
+      new (): PolymerElement & I18nMixinInterface &
+      WebUIListenerMixinInterface & PrefsMixinInterface &
+      PasswordCheckMixinInterface & RouteObserverMixinInterface
     };
 
 class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {

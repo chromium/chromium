@@ -18,8 +18,8 @@ import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_ava
 
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
@@ -29,10 +29,9 @@ import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcu
 import {SyncStatus} from './sync_browser_proxy.js';
 
 const SettingsManageProfileElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior], RouteObserverMixin(PolymerElement)) as {
-      new ():
-          PolymerElement & WebUIListenerBehavior & RouteObserverMixinInterface
+    RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
+      RouteObserverMixinInterface
     };
 
 /** @polymer */

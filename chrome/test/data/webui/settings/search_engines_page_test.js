@@ -381,23 +381,29 @@ suite('SearchEnginePageTests', function() {
   // Tests that the add search engine dialog opens when the corresponding
   // button is tapped.
   test('AddSearchEngineDialog', function() {
-    assertFalse(!!page.$$('settings-search-engine-dialog'));
+    assertFalse(
+        !!page.shadowRoot.querySelector('settings-search-engine-dialog'));
     const addSearchEngineButton = page.$.addSearchEngine;
     assertTrue(!!addSearchEngineButton);
 
     addSearchEngineButton.click();
     flush();
-    assertTrue(!!page.$$('settings-search-engine-dialog'));
+    assertTrue(
+        !!page.shadowRoot.querySelector('settings-search-engine-dialog'));
   });
 
   test('EditSearchEngineDialog', function() {
     const engine = searchEnginesInfo.others[0];
-    page.fire(
-        'edit-search-engine', {engine, anchorElement: page.$.addSearchEngine});
+    page.dispatchEvent(new CustomEvent('edit-search-engine', {
+      bubbles: true,
+      composed: true,
+      detail: {engine, anchorElement: page.$.addSearchEngine}
+    }));
     return browserProxy.whenCalled('searchEngineEditStarted')
         .then(modelIndex => {
           assertEquals(engine.modelIndex, modelIndex);
-          const dialog = page.$$('settings-search-engine-dialog');
+          const dialog =
+              page.shadowRoot.querySelector('settings-search-engine-dialog');
           assertTrue(!!dialog);
 
           // Check that the cr-input fields are pre-populated.

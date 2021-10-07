@@ -16,16 +16,15 @@ import '../settings_shared_css.js';
 import './incompatible_application_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
 
 const SettingsIncompatibleApplicationsPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+    WebUIListenerMixin(PolymerElement);
 
 class SettingsIncompatibleApplicationsPageElement extends
     SettingsIncompatibleApplicationsPageElementBase {

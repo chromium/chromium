@@ -18,7 +18,7 @@ import './startup_url_dialog.js';
 import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {EDIT_STARTUP_URL_EVENT} from './startup_url_entry.js';
@@ -27,8 +27,10 @@ import {StartupPageInfo, StartupUrlsPageBrowserProxy, StartupUrlsPageBrowserProx
 
 const SettingsStartupUrlsPageElementBase =
     mixinBehaviors(
-        [CrScrollableBehavior, WebUIListenerBehavior], PolymerElement) as
-    {new (): PolymerElement & WebUIListenerBehavior & CrScrollableBehavior};
+        [CrScrollableBehavior], WebUIListenerMixin(PolymerElement)) as {
+      new ():
+          PolymerElement & WebUIListenerMixinInterface & CrScrollableBehavior
+    };
 
 class SettingsStartupUrlsPageElement extends
     SettingsStartupUrlsPageElementBase {

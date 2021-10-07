@@ -15,14 +15,14 @@ import '../settings_vars_css.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteDetailsPermissionElement {
@@ -32,12 +32,7 @@ export interface SiteDetailsPermissionElement {
 }
 
 const SiteDetailsPermissionElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior],
-        SiteSettingsMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
-      SiteSettingsMixinInterface
-    };
+    SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement)));
 
 export class SiteDetailsPermissionElement extends
     SiteDetailsPermissionElementBase {

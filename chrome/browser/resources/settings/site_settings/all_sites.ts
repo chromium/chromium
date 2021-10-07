@@ -25,9 +25,9 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -80,17 +80,15 @@ interface AllSitesElement {
 // TypeScript.
 type Constructor<T> = new (...args: any[]) => T;
 
-const AllSitesElementBase =
-    mixinBehaviors(
-        [
-          WebUIListenerBehavior,
-        ],
-        GlobalScrollTargetMixin(
-            RouteObserverMixin(I18nMixin(SiteSettingsMixin(PolymerElement))) as
-            unknown as Constructor<PolymerElement>)) as {
-      new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior &
-      SiteSettingsMixinInterface & RouteObserverMixinInterface
-    };
+const AllSitesElementBaseTemp = GlobalScrollTargetMixin(
+    RouteObserverMixin(
+        WebUIListenerMixin(I18nMixin(SiteSettingsMixin(PolymerElement)))) as
+    unknown as Constructor<PolymerElement>);
+
+const AllSitesElementBase = AllSitesElementBaseTemp as unknown as {
+  new (): PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
+  SiteSettingsMixinInterface & RouteObserverMixinInterface
+};
 
 class AllSitesElement extends AllSitesElementBase {
   static get is() {

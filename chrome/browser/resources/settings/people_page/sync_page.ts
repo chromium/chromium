@@ -27,8 +27,8 @@ import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js'
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
 import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {flush, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from '//resources/js/web_ui_listener_mixin.js';
+import {flush, html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -60,11 +60,9 @@ type FocusConfig = Map<string, (string|(() => void))>;
  */
 
 const SettingsSyncPageElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior],
-        RouteObserverMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUIListenerBehavior & I18nMixinInterface &
-      RouteObserverMixinInterface
+    RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
+      I18nMixinInterface & RouteObserverMixinInterface
     };
 
 export class SettingsSyncPageElement extends SettingsSyncPageElementBase {

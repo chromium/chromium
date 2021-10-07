@@ -38,14 +38,14 @@ import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
-import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ContentSettingProvider, DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
 
 /**
@@ -57,11 +57,7 @@ enum SubOptionMode {
 }
 
 const CategoryDefaultSettingElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior], SiteSettingsMixin(PolymerElement)) as {
-      new ():
-          PolymerElement & WebUIListenerBehavior & SiteSettingsMixinInterface
-    };
+    WebUIListenerMixin(SiteSettingsMixin(PolymerElement));
 
 class CategoryDefaultSettingElement extends CategoryDefaultSettingElementBase {
   static get is() {

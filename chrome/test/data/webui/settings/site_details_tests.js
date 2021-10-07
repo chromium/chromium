@@ -201,20 +201,23 @@ suite('SiteDetails', function() {
     browserProxy.setPrefs(prefs);
     testElement = createSiteDetails('https://foo.com:443');
     flush();
-    assertTrue(!!testElement.$$('#usage'));
+    assertTrue(!!testElement.shadowRoot.querySelector('#usage'));
 
     // When there's no usage, there should be a string that says so.
     assertEquals('', testElement.storedData_);
-    assertFalse(testElement.$$('#noStorage').hidden);
-    assertTrue(testElement.$$('#storage').hidden);
+    assertFalse(testElement.shadowRoot.querySelector('#noStorage').hidden);
+    assertTrue(testElement.shadowRoot.querySelector('#storage').hidden);
     assertTrue(
-        testElement.$$('#usage').innerText.indexOf('No usage data') !== -1);
+        testElement.shadowRoot.querySelector('#usage').innerText.indexOf(
+            'No usage data') !== -1);
 
     // If there is, check the correct amount of usage is specified.
     testElement.storedData_ = '1 KB';
-    assertTrue(testElement.$$('#noStorage').hidden);
-    assertFalse(testElement.$$('#storage').hidden);
-    assertTrue(testElement.$$('#usage').innerText.indexOf('1 KB') !== -1);
+    assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
+    assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
+    assertTrue(
+        testElement.shadowRoot.querySelector('#usage').innerText.indexOf(
+            '1 KB') !== -1);
   });
 
   test('storage gets trashed properly', function() {
@@ -237,10 +240,12 @@ suite('SiteDetails', function() {
           webUIListenerCallback(
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
           assertEquals('1 KB', testElement.storedData_);
-          assertTrue(testElement.$$('#noStorage').hidden);
-          assertFalse(testElement.$$('#storage').hidden);
+          assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
+          assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
 
-          testElement.$$('#confirmClearStorage .action-button').click();
+          testElement.shadowRoot
+              .querySelector('#confirmClearStorage .action-button')
+              .click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -268,10 +273,12 @@ suite('SiteDetails', function() {
           webUIListenerCallback(
               'usage-total-changed', hostRequested, '1 KB', '10 cookies');
           assertEquals('10 cookies', testElement.numCookies_);
-          assertTrue(testElement.$$('#noStorage').hidden);
-          assertFalse(testElement.$$('#storage').hidden);
+          assertTrue(testElement.shadowRoot.querySelector('#noStorage').hidden);
+          assertFalse(testElement.shadowRoot.querySelector('#storage').hidden);
 
-          testElement.$$('#confirmClearStorage .action-button').click();
+          testElement.shadowRoot
+              .querySelector('#confirmClearStorage .action-button')
+              .click();
           return websiteUsageProxy.whenCalled('clearUsage');
         })
         .then(originCleared => {
@@ -372,7 +379,7 @@ suite('SiteDetails', function() {
 
     // Check both cancelling and accepting the dialog closes it.
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      testElement.$$('#resetSettingsButton').click();
+      testElement.shadowRoot.querySelector('#resetSettingsButton').click();
       assertTrue(testElement.$.confirmResetSettings.open);
       const actionButtonList =
           testElement.$.confirmResetSettings.getElementsByClassName(buttonType);
@@ -396,7 +403,7 @@ suite('SiteDetails', function() {
 
     // Check both cancelling and accepting the dialog closes it.
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      testElement.$$('#usage cr-button').click();
+      testElement.shadowRoot.querySelector('#usage cr-button').click();
       assertTrue(testElement.$.confirmClearStorage.open);
       const actionButtonList =
           testElement.$.confirmClearStorage.getElementsByClassName(buttonType);

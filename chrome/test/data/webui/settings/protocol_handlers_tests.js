@@ -169,7 +169,8 @@ suite('ProtocolHandlers', function() {
 
   test('set protocol handlers default called', () => {
     return initPage().then(() => {
-      testElement.$$('#protcolHandlersRadioBlock').click();
+      testElement.shadowRoot.querySelector('#protcolHandlersRadioBlock')
+          .click();
       return browserProxy.whenCalled('setProtocolHandlerDefault');
     });
   });
@@ -239,7 +240,7 @@ suite('ProtocolHandlers', function() {
       const menuButtons =
           testElement.root.querySelectorAll('cr-icon-button.icon-more-vert');
       assertEquals(3, menuButtons.length);
-      const dialog = testElement.$$('cr-action-menu');
+      const dialog = testElement.shadowRoot.querySelector('cr-action-menu');
       return Promise.all([[0, 0], [1, 0], [1, 1]].map((indices, menuIndex) => {
         const protocolIndex = indices[0];
         const handlerIndex = indices[1];
@@ -249,7 +250,7 @@ suite('ProtocolHandlers', function() {
         menuButtons[menuIndex].click();
         assertTrue(dialog.open);
         if (testElement.$.defaultButton.disabled) {
-          testElement.$$('cr-action-menu').close();
+          testElement.shadowRoot.querySelector('cr-action-menu').close();
           assertFalse(dialog.open);
         } else {
           testElement.$[button].click();
@@ -278,7 +279,8 @@ suite('ProtocolHandlers', function() {
     return testButtonFlow('defaultButton', 'setProtocolDefault').then(() => {
       const menuButtons =
           testElement.root.querySelectorAll('cr-icon-button.icon-more-vert');
-      const closeMenu = () => testElement.$$('cr-action-menu').close();
+      const closeMenu = () =>
+          testElement.shadowRoot.querySelector('cr-action-menu').close();
       menuButtons[0].click();
       flush();
       assertTrue(testElement.$.defaultButton.disabled);
@@ -297,7 +299,7 @@ suite('ProtocolHandlers', function() {
     browserProxy.setIgnoredProtocols(ignoredProtocols);
     return initPage()
         .then(() => {
-          testElement.$$('#removeIgnoredButton').click();
+          testElement.shadowRoot.querySelector('#removeIgnoredButton').click();
           return browserProxy.whenCalled('removeProtocolHandler');
         })
         .then(args => {
@@ -331,7 +333,7 @@ suite('ProtocolHandlers', function() {
     browserProxy.setAppAllowedProtocolHandlers(appAllowedProtocols);
     await initPage();
     // Remove the first app protocol.
-    testElement.$$('#removeAppHandlerButton').click();
+    testElement.shadowRoot.querySelector('#removeAppHandlerButton').click();
     const args = await browserProxy.whenCalled('removeAppAllowedHandler');
 
     // BrowserProxy's handler is expected to be called with
@@ -362,7 +364,7 @@ suite('ProtocolHandlers', function() {
     browserProxy.setAppDisallowedProtocolHandlers(appDisallowedProtocols);
     await initPage();
     // Remove the first app protocol.
-    testElement.$$('#removeAppHandlerButton').click();
+    testElement.shadowRoot.querySelector('#removeAppHandlerButton').click();
     const args = await browserProxy.whenCalled('removeAppDisallowedHandler');
 
     // BrowserProxy's handler is expected to be called with

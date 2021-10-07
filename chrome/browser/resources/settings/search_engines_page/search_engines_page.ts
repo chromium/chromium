@@ -21,9 +21,9 @@ import '../settings_vars_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -46,9 +46,8 @@ interface SettingsSearchEnginesPageElement {
 }
 
 const SettingsSearchEnginesPageElementBase =
-    mixinBehaviors(
-        [WebUIListenerBehavior], GlobalScrollTargetMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior};
+    GlobalScrollTargetMixin(WebUIListenerMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerMixinInterface};
 
 class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {

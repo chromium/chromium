@@ -25,10 +25,10 @@ import './safety_check_updates_child.js';
 import './safety_check_chrome_cleaner_child.js';
 // </if>
 
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -44,8 +44,7 @@ type ParentChangedEvent = {
 };
 
 const SettingsSafetyCheckPageElementBase =
-    mixinBehaviors([WebUIListenerBehavior], I18nMixin(PolymerElement)) as
-    {new (): PolymerElement & I18nMixinInterface & WebUIListenerBehavior};
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class SettingsSafetyCheckPageElement extends
     SettingsSafetyCheckPageElementBase {
