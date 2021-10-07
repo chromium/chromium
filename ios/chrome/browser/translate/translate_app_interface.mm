@@ -38,6 +38,10 @@ class FakeNetworkChangeNotifier : public net::NetworkChangeNotifier {
       net::NetworkChangeNotifier::ConnectionType connection_type_to_return)
       : connection_type_to_return_(connection_type_to_return) {}
 
+  FakeNetworkChangeNotifier(const FakeNetworkChangeNotifier&) = delete;
+  FakeNetworkChangeNotifier& operator=(const FakeNetworkChangeNotifier&) =
+      delete;
+
  private:
   ConnectionType GetCurrentConnectionType() const override {
     return connection_type_to_return_;
@@ -47,8 +51,6 @@ class FakeNetworkChangeNotifier : public net::NetworkChangeNotifier {
   // CONNECTION_NONE, then NetworkChangeNotifier::IsOffline will return true.
   net::NetworkChangeNotifier::ConnectionType connection_type_to_return_ =
       net::NetworkChangeNotifier::CONNECTION_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkChangeNotifier);
 };
 
 // Helper singleton object to hold states for fake objects to facility testing.

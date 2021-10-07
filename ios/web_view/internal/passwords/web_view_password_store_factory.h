@@ -31,6 +31,10 @@ class WebViewPasswordStoreFactory
 
   static WebViewPasswordStoreFactory* GetInstance();
 
+  WebViewPasswordStoreFactory(const WebViewPasswordStoreFactory&) = delete;
+  WebViewPasswordStoreFactory& operator=(const WebViewPasswordStoreFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<WebViewPasswordStoreFactory>;
 
@@ -43,8 +47,6 @@ class WebViewPasswordStoreFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordStoreFactory);
 };
 
 }  // namespace ios_web_view

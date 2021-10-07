@@ -36,6 +36,9 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   // Construct a data source for the specified |source_name|.
   explicit AboutUIHTMLSource(const std::string& source_name);
 
+  AboutUIHTMLSource(const AboutUIHTMLSource&) = delete;
+  AboutUIHTMLSource& operator=(const AboutUIHTMLSource&) = delete;
+
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
@@ -52,8 +55,6 @@ class AboutUIHTMLSource : public web::URLDataSourceIOS {
   ~AboutUIHTMLSource() override;
 
   std::string source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutUIHTMLSource);
 };
 
 void AppendHeader(std::string* output,

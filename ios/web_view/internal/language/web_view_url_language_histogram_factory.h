@@ -26,6 +26,11 @@ class WebViewUrlLanguageHistogramFactory
       WebViewBrowserState* browser_state);
   static WebViewUrlLanguageHistogramFactory* GetInstance();
 
+  WebViewUrlLanguageHistogramFactory(
+      const WebViewUrlLanguageHistogramFactory&) = delete;
+  WebViewUrlLanguageHistogramFactory& operator=(
+      const WebViewUrlLanguageHistogramFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewUrlLanguageHistogramFactory>;
 
@@ -37,8 +42,6 @@ class WebViewUrlLanguageHistogramFactory
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewUrlLanguageHistogramFactory);
 };
 
 }  // namespace ios_web_view

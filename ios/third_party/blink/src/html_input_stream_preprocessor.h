@@ -43,6 +43,9 @@ public:
         reset();
     }
 
+    InputStreamPreprocessor(const InputStreamPreprocessor&) = delete;
+    InputStreamPreprocessor& operator=(const InputStreamPreprocessor&) = delete;
+
     ALWAYS_INLINE UChar nextInputCharacter() const { return m_nextInputCharacter; }
 
     // Returns whether we succeeded in peeking at the next character.
@@ -125,8 +128,6 @@ private:
     // http://www.whatwg.org/specs/web-apps/current-work/#next-input-character
     UChar m_nextInputCharacter;
     bool m_skipNextNewLine;
-
-    DISALLOW_COPY_AND_ASSIGN(InputStreamPreprocessor);
 };
 
 }

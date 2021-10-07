@@ -40,6 +40,10 @@ class KeepRenderProcessAliveTest : public WebTestWithWebState {
         web::features::kKeepsRenderProcessAlive);
   }
 
+  KeepRenderProcessAliveTest(const KeepRenderProcessAliveTest&) = delete;
+  KeepRenderProcessAliveTest& operator=(const KeepRenderProcessAliveTest&) =
+      delete;
+
   void SetUp() override {
     WebTestWithWebState::SetUp();
     ASSERT_EQ(0U, GetWebClient()->GetWindowedContainer().subviews.count);
@@ -61,7 +65,6 @@ class KeepRenderProcessAliveTest : public WebTestWithWebState {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(KeepRenderProcessAliveTest);
 };
 
 // Test's that nothing is added to the WindowedContainer when

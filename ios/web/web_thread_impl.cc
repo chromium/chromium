@@ -31,6 +31,9 @@ class WebThreadTaskRunner : public base::SingleThreadTaskRunner {
  public:
   explicit WebThreadTaskRunner(WebThread::ID identifier) : id_(identifier) {}
 
+  WebThreadTaskRunner(const WebThreadTaskRunner&) = delete;
+  WebThreadTaskRunner& operator=(const WebThreadTaskRunner&) = delete;
+
   // SingleThreadTaskRunner implementation.
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -54,7 +57,6 @@ class WebThreadTaskRunner : public base::SingleThreadTaskRunner {
 
  private:
   WebThread::ID id_;
-  DISALLOW_COPY_AND_ASSIGN(WebThreadTaskRunner);
 };
 
 // A separate helper is used just for the task runners, in order to avoid

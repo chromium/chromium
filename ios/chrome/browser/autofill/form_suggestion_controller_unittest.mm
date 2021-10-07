@@ -157,6 +157,10 @@ class FormSuggestionControllerTest : public PlatformTest {
   FormSuggestionControllerTest()
       : test_form_activity_tab_helper_(&fake_web_state_) {}
 
+  FormSuggestionControllerTest(const FormSuggestionControllerTest&) = delete;
+  FormSuggestionControllerTest& operator=(const FormSuggestionControllerTest&) =
+      delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -228,8 +232,6 @@ class FormSuggestionControllerTest : public PlatformTest {
 
   // The fake form tracker to simulate form events.
   autofill::TestFormActivityTabHelper test_form_activity_tab_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormSuggestionControllerTest);
 };
 
 // Tests that pages whose URLs don't have a web scheme aren't processed.

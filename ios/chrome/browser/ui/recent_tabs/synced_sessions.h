@@ -28,6 +28,10 @@ namespace synced_sessions {
 // Data holder that contains the data of the distant tabs to show in the UI.
 struct DistantTab {
   DistantTab();
+
+  DistantTab(const DistantTab&) = delete;
+  DistantTab& operator=(const DistantTab&) = delete;
+
   // Uniquely identifies the distant session this DistantTab belongs to.
   std::string session_tag;
   // Uniquely identifies this tab in its distant session.
@@ -40,8 +44,6 @@ struct DistantTab {
   // By design, two tabs in the same distant session can have the same
   // |hashOfUserVisibleProperties|.
   size_t hashOfUserVisibleProperties();
-
-  DISALLOW_COPY_AND_ASSIGN(DistantTab);
 };
 
 // Data holder that contains the data of the distant sessions and their tabs to

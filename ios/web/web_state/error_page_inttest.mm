@@ -123,6 +123,10 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
 // passed to WebClient::PrepareErrorPage, so the test also acts as integration
 // test for PrepareErrorPage WebClient method.
 class ErrorPageTest : public WebTestWithWebState {
+ public:
+  ErrorPageTest(const ErrorPageTest&) = delete;
+  ErrorPageTest& operator=(const ErrorPageTest&) = delete;
+
  protected:
   ErrorPageTest() : WebTestWithWebState(std::make_unique<FakeWebClient>()) {
     RegisterDefaultHandlers(&server_);
@@ -154,7 +158,6 @@ class ErrorPageTest : public WebTestWithWebState {
 
  private:
   std::unique_ptr<FakeWebStateObserver> web_state_observer_;
-  DISALLOW_COPY_AND_ASSIGN(ErrorPageTest);
 };
 
 // Tests that the error page is correctly displayed after navigating back to it

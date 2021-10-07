@@ -24,6 +24,10 @@ class TemplateURLFetcherFactory : public BrowserStateKeyedServiceFactory {
 
   static TemplateURLFetcherFactory* GetInstance();
 
+  TemplateURLFetcherFactory(const TemplateURLFetcherFactory&) = delete;
+  TemplateURLFetcherFactory& operator=(const TemplateURLFetcherFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<TemplateURLFetcherFactory>;
 
@@ -34,8 +38,6 @@ class TemplateURLFetcherFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLFetcherFactory);
 };
 
 }  // namespace ios

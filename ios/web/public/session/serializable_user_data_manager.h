@@ -42,6 +42,10 @@ class SerializableUserDataManager {
   // |web_state|, instantiating one if necessary.
   static SerializableUserDataManager* FromWebState(web::WebState* web_state);
 
+  SerializableUserDataManager(const SerializableUserDataManager&) = delete;
+  SerializableUserDataManager& operator=(const SerializableUserDataManager&) =
+      delete;
+
   // Adds |data| to the user data, allowing it to be encoded under |key|.
   // |data| is expected to be non-nil.  If |key| has already been used, its
   // associated value will be overwritten.
@@ -61,9 +65,6 @@ class SerializableUserDataManager {
  protected:
   SerializableUserDataManager() = default;
   ~SerializableUserDataManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SerializableUserDataManager);
 };
 
 }  // namespace web

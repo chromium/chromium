@@ -26,6 +26,11 @@ class WebViewPasswordManagerLogRouterFactory
 
   static WebViewPasswordManagerLogRouterFactory* GetInstance();
 
+  WebViewPasswordManagerLogRouterFactory(
+      const WebViewPasswordManagerLogRouterFactory&) = delete;
+  WebViewPasswordManagerLogRouterFactory& operator=(
+      const WebViewPasswordManagerLogRouterFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewPasswordManagerLogRouterFactory>;
 
@@ -35,8 +40,6 @@ class WebViewPasswordManagerLogRouterFactory
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewPasswordManagerLogRouterFactory);
 };
 
 }  // namespace ios_web_view

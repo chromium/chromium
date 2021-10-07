@@ -148,6 +148,10 @@ class HttpProtocolHandlerCore
  public:
   explicit HttpProtocolHandlerCore(NSURLRequest* request);
   explicit HttpProtocolHandlerCore(NSURLSessionTask* task);
+
+  HttpProtocolHandlerCore(const HttpProtocolHandlerCore&) = delete;
+  HttpProtocolHandlerCore& operator=(const HttpProtocolHandlerCore&) = delete;
+
   // Starts the network request, and forwards the data downloaded from the
   // network to |base_client|.
   void Start(id<CRNNetworkClientProtocol> base_client);
@@ -216,8 +220,6 @@ class HttpProtocolHandlerCore
 
   // It is a weak pointer because the owner of the uploader is the URLRequest.
   base::WeakPtr<ChunkedDataStreamUploader> chunked_uploader_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpProtocolHandlerCore);
 };
 
 HttpProtocolHandlerCore::HttpProtocolHandlerCore(NSURLRequest* request) {

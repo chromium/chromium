@@ -16,6 +16,9 @@ class AddressNormalizerFactory {
  public:
   static AddressNormalizer* GetInstance();
 
+  AddressNormalizerFactory(const AddressNormalizerFactory&) = delete;
+  AddressNormalizerFactory& operator=(const AddressNormalizerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<AddressNormalizerFactory>;
 
@@ -24,8 +27,6 @@ class AddressNormalizerFactory {
 
   // The only instance that exists.
   AddressNormalizerImpl address_normalizer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressNormalizerFactory);
 };
 
 }  // namespace autofill

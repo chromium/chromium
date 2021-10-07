@@ -34,6 +34,11 @@ class IOSNTPTilesInternalsMessageHandlerBridge
       favicon::FaviconService* favicon_service)
       : handler_(favicon_service) {}
 
+  IOSNTPTilesInternalsMessageHandlerBridge(
+      const IOSNTPTilesInternalsMessageHandlerBridge&) = delete;
+  IOSNTPTilesInternalsMessageHandlerBridge& operator=(
+      const IOSNTPTilesInternalsMessageHandlerBridge&) = delete;
+
  private:
   // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
@@ -57,8 +62,6 @@ class IOSNTPTilesInternalsMessageHandlerBridge
       const std::vector<const base::Value*>& values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSNTPTilesInternalsMessageHandlerBridge);
 };
 
 void IOSNTPTilesInternalsMessageHandlerBridge::RegisterMessages() {

@@ -1130,6 +1130,9 @@ TEST_F(CRWWebControllerTitleTest, TitleChange) {
    public:
     TitleObserver() = default;
 
+    TitleObserver(const TitleObserver&) = delete;
+    TitleObserver& operator=(const TitleObserver&) = delete;
+
     // Returns number of times |TitleWasSet| was called.
     int title_change_count() { return title_change_count_; }
     // WebStateObserver overrides:
@@ -1138,8 +1141,6 @@ TEST_F(CRWWebControllerTitleTest, TitleChange) {
 
    private:
     int title_change_count_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(TitleObserver);
   };
 
   TitleObserver observer;

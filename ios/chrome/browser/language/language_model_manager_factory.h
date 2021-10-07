@@ -26,6 +26,10 @@ class LanguageModelManagerFactory : public BrowserStateKeyedServiceFactory {
   static language::LanguageModelManager* GetForBrowserState(
       ChromeBrowserState* browser_state);
 
+  LanguageModelManagerFactory(const LanguageModelManagerFactory&) = delete;
+  LanguageModelManagerFactory& operator=(const LanguageModelManagerFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<LanguageModelManagerFactory>;
 
@@ -37,8 +41,6 @@ class LanguageModelManagerFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* state) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageModelManagerFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_LANGUAGE_MODEL_MANAGER_FACTORY_H_

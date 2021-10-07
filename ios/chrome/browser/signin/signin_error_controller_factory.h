@@ -23,6 +23,10 @@ class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static SigninErrorControllerFactory* GetInstance();
 
+  SigninErrorControllerFactory(const SigninErrorControllerFactory&) = delete;
+  SigninErrorControllerFactory& operator=(const SigninErrorControllerFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<SigninErrorControllerFactory>;
 
@@ -32,8 +36,6 @@ class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorControllerFactory);
 };
 
 }  // namespace ios

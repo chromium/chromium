@@ -33,6 +33,10 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
  public:
   PasswordStoreConsumerHelper() {}
 
+  PasswordStoreConsumerHelper(const PasswordStoreConsumerHelper&) = delete;
+  PasswordStoreConsumerHelper& operator=(const PasswordStoreConsumerHelper&) =
+      delete;
+
   void OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>> results) override {
     result_.swap(results);
@@ -48,8 +52,6 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
 
  private:
   std::vector<std::unique_ptr<PasswordForm>> result_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordStoreConsumerHelper);
 };
 
 @implementation PasswordManagerAppInterface

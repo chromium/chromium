@@ -68,6 +68,9 @@ class FakeU2FTabHelper : public U2FTabHelper {
                            base::WrapUnique(new FakeU2FTabHelper(web_state)));
   }
 
+  FakeU2FTabHelper(const FakeU2FTabHelper&) = delete;
+  FakeU2FTabHelper& operator=(const FakeU2FTabHelper&) = delete;
+
   void EvaluateU2FResult(const GURL& url) override { url_ = url; }
 
   const GURL& url() const { return url_; }
@@ -75,7 +78,6 @@ class FakeU2FTabHelper : public U2FTabHelper {
  private:
   FakeU2FTabHelper(web::WebState* web_state) : U2FTabHelper(web_state) {}
   GURL url_;
-  DISALLOW_COPY_AND_ASSIGN(FakeU2FTabHelper);
 };
 
 #pragma mark - Test class.

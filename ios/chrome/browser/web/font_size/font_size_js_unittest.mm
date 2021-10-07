@@ -22,6 +22,9 @@ class FontSizeJsTest : public web::WebTestWithWebState {
  public:
   FontSizeJsTest() : web::WebTestWithWebState() {}
 
+  FontSizeJsTest(const FontSizeJsTest&) = delete;
+  FontSizeJsTest& operator=(const FontSizeJsTest&) = delete;
+
   // Find DOM element by |element_id| and get computed font size in px.
   float GetElementFontSize(NSString* element_id) {
     NSNumber* res = ExecuteJavaScript([NSString
@@ -60,8 +63,6 @@ class FontSizeJsTest : public web::WebTestWithWebState {
                          scale]);
     return [script_result isEqual:@YES];
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FontSizeJsTest);
 };
 
 // Tests that __gCrWeb.font_size.adjustFontSize works for any scale.

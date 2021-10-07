@@ -27,6 +27,9 @@ class NavigationBlockerDecider
   NavigationBlockerDecider(web::WebState* web_state)
       : web::WebStatePolicyDecider(web_state) {}
 
+  NavigationBlockerDecider(const NavigationBlockerDecider&) = delete;
+  NavigationBlockerDecider& operator=(const NavigationBlockerDecider&) = delete;
+
   void ShouldAllowRequest(NSURLRequest* request,
                           RequestInfo request_info,
                           PolicyDecisionCallback callback) override {
@@ -34,9 +37,6 @@ class NavigationBlockerDecider
   }
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NavigationBlockerDecider);
 };
 
 WEB_STATE_USER_DATA_KEY_IMPL(NavigationBlockerDecider)

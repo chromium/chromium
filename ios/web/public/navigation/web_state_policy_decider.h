@@ -111,6 +111,9 @@ class WebStatePolicyDecider {
     bool for_main_frame = false;
   };
 
+  WebStatePolicyDecider(const WebStatePolicyDecider&) = delete;
+  WebStatePolicyDecider& operator=(const WebStatePolicyDecider&) = delete;
+
   // Removes self as a policy decider of |web_state_|.
   virtual ~WebStatePolicyDecider();
 
@@ -165,8 +168,6 @@ class WebStatePolicyDecider {
 
   // The web state to decide navigation policy for.
   WebState* web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStatePolicyDecider);
 };
 }  // namespace web
 

@@ -32,6 +32,10 @@ class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static DeviceInfoSyncServiceFactory* GetInstance();
 
+  DeviceInfoSyncServiceFactory(const DeviceInfoSyncServiceFactory&) = delete;
+  DeviceInfoSyncServiceFactory& operator=(const DeviceInfoSyncServiceFactory&) =
+      delete;
+
   // Iterates over browser states and returns any trackers that can be found.
   static void GetAllDeviceInfoTrackers(
       std::vector<const syncer::DeviceInfoTracker*>* trackers);
@@ -45,8 +49,6 @@ class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_DEVICE_INFO_SYNC_SERVICE_FACTORY_H_

@@ -20,6 +20,10 @@ using previous_session_info_constants::
     kDidSeeMemoryWarningShortlyBeforeTerminating;
 
 class MemoryWarningHelperTest : public PlatformTest {
+ public:
+  MemoryWarningHelperTest(const MemoryWarningHelperTest&) = delete;
+  MemoryWarningHelperTest& operator=(const MemoryWarningHelperTest&) = delete;
+
  protected:
   MemoryWarningHelperTest() {
     // Set up |memory_pressure_listener_| to invoke |OnMemoryPressure| which
@@ -59,8 +63,6 @@ class MemoryWarningHelperTest : public PlatformTest {
   base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
   MemoryWarningHelper* memory_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryWarningHelperTest);
 };
 
 // Invokes resetForegroundMemoryWarningCount and verifies the

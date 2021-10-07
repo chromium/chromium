@@ -26,6 +26,11 @@ class WebViewLanguageModelManagerFactory
       WebViewBrowserState* browser_state);
   static WebViewLanguageModelManagerFactory* GetInstance();
 
+  WebViewLanguageModelManagerFactory(
+      const WebViewLanguageModelManagerFactory&) = delete;
+  WebViewLanguageModelManagerFactory& operator=(
+      const WebViewLanguageModelManagerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<WebViewLanguageModelManagerFactory>;
 
@@ -37,8 +42,6 @@ class WebViewLanguageModelManagerFactory
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* state) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewLanguageModelManagerFactory);
 };
 
 }  // namespace ios_web_view

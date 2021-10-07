@@ -81,10 +81,11 @@ class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
 
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
+
   // web::NavigationManager implementation.
   void DiscardNonCommittedItems() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 std::unique_ptr<KeyedService> BuildReadingListModel(

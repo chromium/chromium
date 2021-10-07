@@ -130,6 +130,10 @@ class SessionCrashedInfoBarDelegate : public ConfirmInfoBarDelegate {
   static bool Create(infobars::InfoBarManager* infobar_manager,
                      CrashRestoreHelper* crash_restore_helper);
 
+  SessionCrashedInfoBarDelegate(const SessionCrashedInfoBarDelegate&) = delete;
+  SessionCrashedInfoBarDelegate& operator=(
+      const SessionCrashedInfoBarDelegate&) = delete;
+
  private:
   SessionCrashedInfoBarDelegate(CrashRestoreHelper* crash_restore_helper);
   ~SessionCrashedInfoBarDelegate() override;
@@ -151,8 +155,6 @@ class SessionCrashedInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // The CrashRestoreHelper to restore sessions.
   CrashRestoreHelper* crash_restore_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionCrashedInfoBarDelegate);
 };
 
 SessionCrashedInfoBarDelegate::SessionCrashedInfoBarDelegate(

@@ -41,6 +41,11 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
         browser_state_(TestChromeBrowserState::Builder().Build()),
         enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {}
 
+  IOSChromeMetricsServiceClientTest(const IOSChromeMetricsServiceClientTest&) =
+      delete;
+  IOSChromeMetricsServiceClientTest& operator=(
+      const IOSChromeMetricsServiceClientTest&) = delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
     metrics::MetricsService::RegisterPrefs(prefs_.registry());
@@ -56,9 +61,6 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMetricsServiceClientTest);
 };
 
 namespace {

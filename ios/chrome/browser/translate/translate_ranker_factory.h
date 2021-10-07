@@ -25,6 +25,9 @@ class TranslateRankerFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static TranslateRankerFactory* GetInstance();
 
+  TranslateRankerFactory(const TranslateRankerFactory&) = delete;
+  TranslateRankerFactory& operator=(const TranslateRankerFactory&) = delete;
+
  private:
   friend class base::NoDestructor<TranslateRankerFactory>;
 
@@ -36,8 +39,6 @@ class TranslateRankerFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerFactory);
 };
 
 }  // namespace translate

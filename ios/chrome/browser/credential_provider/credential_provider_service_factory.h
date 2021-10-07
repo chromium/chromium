@@ -22,6 +22,11 @@ class CredentialProviderServiceFactory
 
   static CredentialProviderServiceFactory* GetInstance();
 
+  CredentialProviderServiceFactory(const CredentialProviderServiceFactory&) =
+      delete;
+  CredentialProviderServiceFactory& operator=(
+      const CredentialProviderServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<CredentialProviderServiceFactory>;
 
@@ -31,8 +36,6 @@ class CredentialProviderServiceFactory
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_CREDENTIAL_PROVIDER_SERVICE_FACTORY_H_

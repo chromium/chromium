@@ -73,7 +73,9 @@ class StubTabHelper : public DownloadManagerTabHelper {
  public:
   StubTabHelper(web::WebState* web_state)
       : DownloadManagerTabHelper(web_state, /*delegate=*/nullptr) {}
-  DISALLOW_COPY_AND_ASSIGN(StubTabHelper);
+
+  StubTabHelper(const StubTabHelper&) = delete;
+  StubTabHelper& operator=(const StubTabHelper&) = delete;
 };
 
 }  // namespace

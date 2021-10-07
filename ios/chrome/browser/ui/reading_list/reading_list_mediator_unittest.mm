@@ -88,6 +88,9 @@ class ReadingListMediatorTest
         listItemFactory:[[ReadingListListItemFactory alloc] init]];
   }
 
+  ReadingListMediatorTest(const ReadingListMediatorTest&) = delete;
+  ReadingListMediatorTest& operator=(const ReadingListMediatorTest&) = delete;
+
  protected:
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<ReadingListModelImpl> model_;
@@ -99,7 +102,6 @@ class ReadingListMediatorTest
 
  private:
   web::WebTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ReadingListMediatorTest);
 };
 
 TEST_P(ReadingListMediatorTest, fillItems) {

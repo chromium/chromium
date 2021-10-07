@@ -17,6 +17,10 @@ class WebState;
 // Observer interface for objects interested in Session restoration events.
 class SessionRestorationObserver : public base::CheckedObserver {
  public:
+  SessionRestorationObserver(const SessionRestorationObserver&) = delete;
+  SessionRestorationObserver& operator=(const SessionRestorationObserver&) =
+      delete;
+
   // Invoked before the session restoration starts.
   virtual void WillStartSessionRestoration() {}
 
@@ -26,9 +30,6 @@ class SessionRestorationObserver : public base::CheckedObserver {
 
  protected:
   SessionRestorationObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorationObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_RESTORATION_OBSERVER_H_

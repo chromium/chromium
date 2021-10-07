@@ -28,6 +28,9 @@ class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static BookmarkModelFactory* GetInstance();
 
+  BookmarkModelFactory(const BookmarkModelFactory&) = delete;
+  BookmarkModelFactory& operator=(const BookmarkModelFactory&) = delete;
+
  private:
   friend class base::NoDestructor<BookmarkModelFactory>;
 
@@ -42,8 +45,6 @@ class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelFactory);
 };
 
 }  // namespace ios

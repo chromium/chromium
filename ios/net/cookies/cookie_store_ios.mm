@@ -55,6 +55,9 @@ class NotificationTrampoline {
  public:
   static NotificationTrampoline* GetInstance();
 
+  NotificationTrampoline(const NotificationTrampoline&) = delete;
+  NotificationTrampoline& operator=(const NotificationTrampoline&) = delete;
+
   void AddObserver(CookieNotificationObserver* obs);
   void RemoveObserver(CookieNotificationObserver* obs);
 
@@ -66,8 +69,6 @@ class NotificationTrampoline {
   ~NotificationTrampoline();
 
   base::ObserverList<CookieNotificationObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationTrampoline);
 
   static NotificationTrampoline* g_notification_trampoline;
 };

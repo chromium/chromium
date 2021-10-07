@@ -27,6 +27,9 @@ public:
     {
     }
 
+    CharacterProvider(const CharacterProvider&) = delete;
+    CharacterProvider& operator=(const CharacterProvider&) = delete;
+
     void setContents(const LChar* str, size_t numberOfBytes)
     {
         _totalBytes = numberOfBytes;
@@ -160,8 +163,6 @@ private:
     const LChar* _singleBytePtr;
     const UChar* _doubleBytePtr;
     bool _littleEndian;
-
-    DISALLOW_COPY_AND_ASSIGN(CharacterProvider);
 };
 
 }

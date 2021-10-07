@@ -23,6 +23,12 @@ class CrashesDOMHandler;
 // as a 'friend' below.
 class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
  public:
+  IOSChromeMetricsServiceAccessor() = delete;
+  IOSChromeMetricsServiceAccessor(const IOSChromeMetricsServiceAccessor&) =
+      delete;
+  IOSChromeMetricsServiceAccessor& operator=(
+      const IOSChromeMetricsServiceAccessor&) = delete;
+
   // If arg is non-null, the value will be returned from future calls to
   // IsMetricsAndCrashReportingEnabled(). Pointer must be valid until it is
   // reset to null here.
@@ -46,8 +52,6 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   // details.
   static bool RegisterSyntheticFieldTrial(const std::string& trial_name,
                                           const std::string& group_name);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(IOSChromeMetricsServiceAccessor);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_CHROME_METRICS_SERVICE_ACCESSOR_H_

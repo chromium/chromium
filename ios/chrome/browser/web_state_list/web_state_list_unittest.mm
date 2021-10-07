@@ -31,6 +31,9 @@ class WebStateListTestObserver : public WebStateListObserver {
  public:
   WebStateListTestObserver() = default;
 
+  WebStateListTestObserver(const WebStateListTestObserver&) = delete;
+  WebStateListTestObserver& operator=(const WebStateListTestObserver&) = delete;
+
   // Reset statistics whether events have been called.
   void ResetStatistics() {
     web_state_inserted_called_ = false;
@@ -120,8 +123,6 @@ class WebStateListTestObserver : public WebStateListObserver {
   bool web_state_activated_called_ = false;
   bool batch_operation_started_ = false;
   bool batch_operation_ended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateListTestObserver);
 };
 
 // A fake NavigationManager used to test opener-opened relationship in the
@@ -129,6 +130,9 @@ class WebStateListTestObserver : public WebStateListObserver {
 class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
+
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
 
   // web::NavigationManager implementation.
   int GetLastCommittedItemIndex() const override {
@@ -154,8 +158,6 @@ class FakeNavigationManager : public web::FakeNavigationManager {
   void GoToIndex(int index) override { last_committed_item_index = index; }
 
   int last_committed_item_index = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 }  // namespace

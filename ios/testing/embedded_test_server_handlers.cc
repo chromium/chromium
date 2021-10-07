@@ -40,6 +40,9 @@ class DownloadResponse : public net::test_server::BasicHttpResponse {
  public:
   DownloadResponse(int length) : length_(length) {}
 
+  DownloadResponse(const DownloadResponse&) = delete;
+  DownloadResponse& operator=(const DownloadResponse&) = delete;
+
   void SendResponse(
       base::WeakPtr<net::test_server::HttpResponseDelegate> delegate) override {
     base::StringPairs headers = {
@@ -75,8 +78,6 @@ class DownloadResponse : public net::test_server::BasicHttpResponse {
   }
 
   int length_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadResponse);
 };
 
 }  // namespace

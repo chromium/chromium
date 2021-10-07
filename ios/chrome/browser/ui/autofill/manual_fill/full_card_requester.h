@@ -29,6 +29,9 @@ class FullCardRequester
   FullCardRequester(UIViewController* base_view_controller,
                     ChromeBrowserState* browser_state);
 
+  FullCardRequester(const FullCardRequester&) = delete;
+  FullCardRequester& operator=(const FullCardRequester&) = delete;
+
   void GetFullCard(
       const autofill::CreditCard& card,
       autofill::BrowserAutofillManager* autofill_manager,
@@ -46,8 +49,6 @@ class FullCardRequester
  private:
   __weak UIViewController* base_view_controller_;
   autofill::CardUnmaskPromptControllerImpl unmask_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullCardRequester);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_FULL_CARD_REQUESTER_H_

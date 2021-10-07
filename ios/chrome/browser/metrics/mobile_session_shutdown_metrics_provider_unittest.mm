@@ -39,6 +39,11 @@ class MobileSessionShutdownMetricsProviderForTesting
       metrics::MetricsService* metrics_service)
       : MobileSessionShutdownMetricsProvider(metrics_service) {}
 
+  MobileSessionShutdownMetricsProviderForTesting(
+      const MobileSessionShutdownMetricsProviderForTesting&) = delete;
+  MobileSessionShutdownMetricsProviderForTesting& operator=(
+      const MobileSessionShutdownMetricsProviderForTesting&) = delete;
+
   void set_is_first_launch_after_upgrade(bool value) {
     is_first_launch_after_upgrade_ = value;
   }
@@ -66,8 +71,6 @@ class MobileSessionShutdownMetricsProviderForTesting
   bool has_crash_logs_ = false;
   bool received_memory_warning_before_last_shutdown_ = false;
   bool was_last_shutdown_frozen_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MobileSessionShutdownMetricsProviderForTesting);
 };
 
 class MobileSessionShutdownMetricsProviderTest
@@ -77,6 +80,11 @@ class MobileSessionShutdownMetricsProviderTest
   MobileSessionShutdownMetricsProviderTest() {
     metrics::MetricsService::RegisterPrefs(local_state_.registry());
   }
+
+  MobileSessionShutdownMetricsProviderTest(
+      const MobileSessionShutdownMetricsProviderTest&) = delete;
+  MobileSessionShutdownMetricsProviderTest& operator=(
+      const MobileSessionShutdownMetricsProviderTest&) = delete;
 
   // Initializes the MetricsStateManager, CleanExitBeacon, and MetricsService.
   void InitializeMetrics() {
@@ -97,9 +105,6 @@ class MobileSessionShutdownMetricsProviderTest
   std::unique_ptr<metrics::MetricsService> metrics_service_;
   std::unique_ptr<MobileSessionShutdownMetricsProviderForTesting>
       metrics_provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MobileSessionShutdownMetricsProviderTest);
 };
 
 // Verifies that a sample is recorded in the correct bucket of the shutdown type

@@ -24,6 +24,10 @@ class ManagedBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static ManagedBookmarkServiceFactory* GetInstance();
 
+  ManagedBookmarkServiceFactory(const ManagedBookmarkServiceFactory&) = delete;
+  ManagedBookmarkServiceFactory& operator=(
+      const ManagedBookmarkServiceFactory&) = delete;
+
  private:
   friend class base::NoDestructor<ManagedBookmarkServiceFactory>;
 
@@ -34,8 +38,6 @@ class ManagedBookmarkServiceFactory : public BrowserStateKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MANAGED_BOOKMARK_SERVICE_FACTORY_H_

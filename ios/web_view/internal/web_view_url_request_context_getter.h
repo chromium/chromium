@@ -39,6 +39,11 @@ class WebViewURLRequestContextGetter : public net::URLRequestContextGetter {
       net::NetLog* net_log,
       const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner);
 
+  WebViewURLRequestContextGetter(const WebViewURLRequestContextGetter&) =
+      delete;
+  WebViewURLRequestContextGetter& operator=(
+      const WebViewURLRequestContextGetter&) = delete;
+
   // net::URLRequestContextGetter implementation.
   net::URLRequestContext* GetURLRequestContext() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetNetworkTaskRunner()
@@ -73,8 +78,6 @@ class WebViewURLRequestContextGetter : public net::URLRequestContextGetter {
 
   // Used to ensure GetURLRequestContext() returns nullptr during shut down.
   bool is_shutting_down_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewURLRequestContextGetter);
 };
 
 }  // namespace ios_web_view

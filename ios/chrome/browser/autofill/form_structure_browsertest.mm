@@ -109,6 +109,10 @@ class FormStructureBrowserTest
     : public ChromeWebTest,
       public DataDrivenTest,
       public ::testing::WithParamInterface<base::FilePath> {
+ public:
+  FormStructureBrowserTest(const FormStructureBrowserTest&) = delete;
+  FormStructureBrowserTest& operator=(const FormStructureBrowserTest&) = delete;
+
  protected:
   FormStructureBrowserTest();
   ~FormStructureBrowserTest() override {}
@@ -132,7 +136,6 @@ class FormStructureBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
   PasswordController* password_controller_;
-  DISALLOW_COPY_AND_ASSIGN(FormStructureBrowserTest);
 };
 
 FormStructureBrowserTest::FormStructureBrowserTest()

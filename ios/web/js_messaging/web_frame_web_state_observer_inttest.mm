@@ -29,14 +29,14 @@ class WebStateObserverMock : public web::WebStateObserver {
  public:
   WebStateObserverMock() = default;
 
+  WebStateObserverMock(const WebStateObserverMock&) = delete;
+  WebStateObserverMock& operator=(const WebStateObserverMock&) = delete;
+
   MOCK_METHOD2(WebFrameDidBecomeAvailable,
                void(web::WebState*, web::WebFrame*));
   MOCK_METHOD2(WebFrameWillBecomeUnavailable,
                void(web::WebState*, web::WebFrame*));
   void WebStateDestroyed(web::WebState* web_state) override { NOTREACHED(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserverMock);
 };
 
 // A predicate that returns true if |frame| is a main frame.

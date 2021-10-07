@@ -28,6 +28,10 @@ class IOSChromePasswordStoreFactory
 
   static IOSChromePasswordStoreFactory* GetInstance();
 
+  IOSChromePasswordStoreFactory(const IOSChromePasswordStoreFactory&) = delete;
+  IOSChromePasswordStoreFactory& operator=(
+      const IOSChromePasswordStoreFactory&) = delete;
+
  private:
   friend class base::NoDestructor<IOSChromePasswordStoreFactory>;
 
@@ -40,8 +44,6 @@ class IOSChromePasswordStoreFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordStoreFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_STORE_FACTORY_H_

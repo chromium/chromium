@@ -729,6 +729,9 @@ class WebStateObserverMock : public WebStateObserver {
  public:
   WebStateObserverMock() = default;
 
+  WebStateObserverMock(const WebStateObserverMock&) = delete;
+  WebStateObserverMock& operator=(const WebStateObserverMock&) = delete;
+
   MOCK_METHOD2(DidStartNavigation, void(WebState*, NavigationContext*));
   MOCK_METHOD2(DidRedirectNavigation, void(WebState*, NavigationContext*));
   MOCK_METHOD2(DidFinishNavigation, void(WebState*, NavigationContext*));
@@ -737,15 +740,16 @@ class WebStateObserverMock : public WebStateObserver {
   MOCK_METHOD2(PageLoaded, void(WebState*, PageLoadCompletionStatus));
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
   void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserverMock);
 };
 
 // Mocks WebStateObserver navigation callbacks, including TitleWasSet.
 class WebStateObserverWithTitleMock : public WebStateObserver {
  public:
   WebStateObserverWithTitleMock() = default;
+
+  WebStateObserverWithTitleMock(const WebStateObserverWithTitleMock&) = delete;
+  WebStateObserverWithTitleMock& operator=(
+      const WebStateObserverWithTitleMock&) = delete;
 
   MOCK_METHOD2(DidStartNavigation, void(WebState*, NavigationContext*));
   MOCK_METHOD2(DidRedirectNavigation, void(WebState*, NavigationContext*));
@@ -756,9 +760,6 @@ class WebStateObserverWithTitleMock : public WebStateObserver {
   MOCK_METHOD1(DidChangeBackForwardState, void(WebState*));
   MOCK_METHOD1(TitleWasSet, void(WebState*));
   void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserverWithTitleMock);
 };
 
 // Mocks WebStatePolicyDecider decision callbacks.
@@ -800,6 +801,9 @@ class WebStateObserverTestBase : public WebIntTest {
  public:
   WebStateObserverTestBase() {}
 
+  WebStateObserverTestBase(const WebStateObserverTestBase&) = delete;
+  WebStateObserverTestBase& operator=(const WebStateObserverTestBase&) = delete;
+
   void SetUp() override {
     WebIntTest::SetUp();
 
@@ -832,8 +836,6 @@ class WebStateObserverTestBase : public WebIntTest {
  private:
   base::ScopedObservation<WebState, WebStateObserver> scoped_observation_{
       &observer_};
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserverTestBase);
 };
 
 class WebStateObserverTest

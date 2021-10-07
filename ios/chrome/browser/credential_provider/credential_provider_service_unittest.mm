@@ -51,6 +51,10 @@ class CredentialProviderServiceTest : public PlatformTest {
   CredentialProviderServiceTest()
       : chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
 
+  CredentialProviderServiceTest(const CredentialProviderServiceTest&) = delete;
+  CredentialProviderServiceTest& operator=(
+      const CredentialProviderServiceTest&) = delete;
+
   void SetUp() override {
     PlatformTest::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -118,8 +122,6 @@ class CredentialProviderServiceTest : public PlatformTest {
   ChromeAccountManagerService* account_manager_service_;
   syncer::TestSyncService sync_service_;
   FakeAffiliationService affiliation_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderServiceTest);
 };
 
 // Test that CredentialProviderService can be created.

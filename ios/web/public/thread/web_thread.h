@@ -66,6 +66,9 @@ class WebThread {
     ID_COUNT
   };
 
+  WebThread(const WebThread&) = delete;
+  WebThread& operator=(const WebThread&) = delete;
+
   // NOTE: Task posting APIs have moved to post_task.h. See web_task_traits.h.
 
   // Delete/ReleaseSoon() helpers allow future deletion of an owned object on
@@ -162,7 +165,6 @@ class WebThread {
       ID identifier);
 
   WebThread() {}
-  DISALLOW_COPY_AND_ASSIGN(WebThread);
 };
 
 }  // namespace web

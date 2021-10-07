@@ -157,6 +157,9 @@ class WebState : public base::SupportsUserData {
       const CreateParams& params,
       CRWSessionStorage* session_storage);
 
+  WebState(const WebState&) = delete;
+  WebState& operator=(const WebState&) = delete;
+
   ~WebState() override {}
 
   // A callback that returns a pointer to a WebState. The callback can always be
@@ -397,9 +400,6 @@ class WebState : public base::SupportsUserData {
   virtual void RemovePolicyDecider(WebStatePolicyDecider* decider) = 0;
 
   WebState() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebState);
 };
 
 }  // namespace web

@@ -29,6 +29,11 @@ class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
   explicit IOSChromeURLRequestContextGetter(
       std::unique_ptr<IOSChromeURLRequestContextFactory> factory);
 
+  IOSChromeURLRequestContextGetter(const IOSChromeURLRequestContextGetter&) =
+      delete;
+  IOSChromeURLRequestContextGetter& operator=(
+      const IOSChromeURLRequestContextGetter&) = delete;
+
   // Note that GetURLRequestContext() can only be called from the IO
   // thread (it will assert otherwise).
   // GetIOTaskRunner however can be called from any thread.
@@ -60,8 +65,6 @@ class IOSChromeURLRequestContextGetter : public net::URLRequestContextGetter {
   // was lazily created by GetURLRequestContext().
   // Access only from the IO thread.
   net::URLRequestContext* url_request_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeURLRequestContextGetter);
 };
 
 #endif  // IOS_CHROME_BROWSER_NET_IOS_CHROME_URL_REQUEST_CONTEXT_GETTER_H_

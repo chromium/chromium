@@ -23,6 +23,9 @@ class TestRedirectObserver final
     : public web::WebStateObserver,
       public web::WebStateUserData<TestRedirectObserver> {
  public:
+  TestRedirectObserver(const TestRedirectObserver&) = delete;
+  TestRedirectObserver& operator=(const TestRedirectObserver&) = delete;
+
   // Notifies the observer that |url| is about to be loaded by the associated
   // WebState, triggering the TestRedirectObserver to start observing redirects.
   void BeginObservingRedirectsForUrl(const GURL& url);
@@ -57,8 +60,6 @@ class TestRedirectObserver final
   std::set<GURL> expected_urls_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TestRedirectObserver);
 };
 
 }  // namespace web

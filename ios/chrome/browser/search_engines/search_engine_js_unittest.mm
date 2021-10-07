@@ -55,6 +55,10 @@ NSString* kSearchableForm =
 
 // Test fixture for search_engine.js testing.
 class SearchEngineJsTest : public web::WebTestWithWebState {
+ public:
+  SearchEngineJsTest(const SearchEngineJsTest&) = delete;
+  SearchEngineJsTest& operator=(const SearchEngineJsTest&) = delete;
+
  protected:
   SearchEngineJsTest() : web::WebTestWithWebState() {}
 
@@ -89,8 +93,6 @@ class SearchEngineJsTest : public web::WebTestWithWebState {
 
   // Subscription for JS message.
   base::CallbackListSubscription subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineJsTest);
 };
 
 // Tests that if a OSDD <link> is found in page, __gCrWeb.searchEngine will

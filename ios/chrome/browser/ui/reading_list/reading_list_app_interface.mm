@@ -40,12 +40,13 @@ class WifiNetworkChangeNotifier : public net::NetworkChangeNotifier {
  public:
   WifiNetworkChangeNotifier() : net::NetworkChangeNotifier() {}
 
+  WifiNetworkChangeNotifier(const WifiNetworkChangeNotifier&) = delete;
+  WifiNetworkChangeNotifier& operator=(const WifiNetworkChangeNotifier&) =
+      delete;
+
   ConnectionType GetCurrentConnectionType() const override {
     return CONNECTION_WIFI;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WifiNetworkChangeNotifier);
 };
 
 // Overrides the NetworkChangeNotifier to enable distillation even if the device
@@ -57,6 +58,9 @@ class ConnectionTypeOverrider {
   }
 
   ConnectionTypeOverrider() {}
+
+  ConnectionTypeOverrider(const ConnectionTypeOverrider&) = delete;
+  ConnectionTypeOverrider& operator=(const ConnectionTypeOverrider&) = delete;
 
   void OverrideConnectionType() {
     network_change_disabler_.reset(
@@ -73,8 +77,6 @@ class ConnectionTypeOverrider {
   std::unique_ptr<net::NetworkChangeNotifier::DisableForTest>
       network_change_disabler_;
   std::unique_ptr<WifiNetworkChangeNotifier> wifi_network_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTypeOverrider);
 };
 
 }  // namespace

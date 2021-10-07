@@ -59,6 +59,9 @@ class OmahaServiceTest : public PlatformTest {
     OmahaService::ClearPersistentStateForTests();
   }
 
+  OmahaServiceTest(const OmahaServiceTest&) = delete;
+  OmahaServiceTest& operator=(const OmahaServiceTest&) = delete;
+
   void OnNeedUpdate(const UpgradeRecommendedDetails& details) {
     was_one_off_ = false;
     scheduled_callback_used_ = true;
@@ -124,8 +127,6 @@ class OmahaServiceTest : public PlatformTest {
   bool scheduled_callback_used_ = false;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
   web::WebTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmahaServiceTest);
 };
 
 TEST_F(OmahaServiceTest, PingMessageTest) {

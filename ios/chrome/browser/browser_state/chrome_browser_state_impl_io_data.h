@@ -89,6 +89,10 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
     mutable bool initialized_;
   };
 
+  ChromeBrowserStateImplIOData(const ChromeBrowserStateImplIOData&) = delete;
+  ChromeBrowserStateImplIOData& operator=(const ChromeBrowserStateImplIOData&) =
+      delete;
+
  private:
   friend class base::RefCountedThreadSafe<ChromeBrowserStateImplIOData>;
 
@@ -134,8 +138,6 @@ class ChromeBrowserStateImplIOData : public ChromeBrowserStateIOData {
   // Parameters needed for isolated apps.
   base::FilePath profile_path_;
   int app_cache_max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserStateImplIOData);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_CHROME_BROWSER_STATE_IMPL_IO_DATA_H_

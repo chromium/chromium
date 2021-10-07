@@ -25,6 +25,9 @@ class TermsUIHTMLSource : public web::URLDataSourceIOS {
   // Construct a data source for the specified |source_name|.
   explicit TermsUIHTMLSource(const std::string& source_name);
 
+  TermsUIHTMLSource(const TermsUIHTMLSource&) = delete;
+  TermsUIHTMLSource& operator=(const TermsUIHTMLSource&) = delete;
+
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
@@ -41,8 +44,6 @@ class TermsUIHTMLSource : public web::URLDataSourceIOS {
   ~TermsUIHTMLSource() override;
 
   std::string source_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TermsUIHTMLSource);
 };
 
 }  // namespace

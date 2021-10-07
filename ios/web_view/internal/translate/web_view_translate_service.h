@@ -17,6 +17,9 @@ class WebViewTranslateService {
  public:
   static WebViewTranslateService* GetInstance();
 
+  WebViewTranslateService(const WebViewTranslateService&) = delete;
+  WebViewTranslateService& operator=(const WebViewTranslateService&) = delete;
+
   // Must be called before the Translate feature can be used.
   void Initialize();
 
@@ -58,8 +61,6 @@ class WebViewTranslateService {
 
   // Listener which manages when translate requests can occur.
   TranslateRequestsAllowedListener translate_requests_allowed_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewTranslateService);
 };
 
 }  // namespace ios_web_view

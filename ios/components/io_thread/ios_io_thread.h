@@ -121,6 +121,10 @@ class IOSIOThread : public web::WebThreadDelegate {
 
   // |net_log| must either outlive the IOSIOThread or be NULL.
   IOSIOThread(PrefService* local_state, net::NetLog* net_log);
+
+  IOSIOThread(const IOSIOThread&) = delete;
+  IOSIOThread& operator=(const IOSIOThread&) = delete;
+
   ~IOSIOThread() override;
 
   // Can only be called on the IO thread.
@@ -208,8 +212,6 @@ class IOSIOThread : public web::WebThreadDelegate {
       system_url_request_context_getter_;
 
   base::WeakPtrFactory<IOSIOThread> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSIOThread);
 };
 
 }  // namespace io_thread

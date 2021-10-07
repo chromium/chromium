@@ -34,6 +34,10 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
       web::BrowserState* browser_state,
       const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner);
 
+  ShellURLRequestContextGetter(const ShellURLRequestContextGetter&) = delete;
+  ShellURLRequestContextGetter& operator=(const ShellURLRequestContextGetter&) =
+      delete;
+
   // net::URLRequestContextGetter implementation.
   net::URLRequestContext* GetURLRequestContext() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetNetworkTaskRunner()
@@ -57,8 +61,6 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   // created in constructor and cleared in GetURLRequestContext() where
   // net::URLRequestContextStorage is lazily created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellURLRequestContextGetter);
 };
 
 }  // namespace web

@@ -70,6 +70,9 @@ class ShareToDataBuilderTest : public PlatformTest {
     delegate_.view.backgroundColor = [UIColor blueColor];
   }
 
+  ShareToDataBuilderTest(const ShareToDataBuilderTest&) = delete;
+  ShareToDataBuilderTest& operator=(const ShareToDataBuilderTest&) = delete;
+
   web::WebState* web_state() { return web_state_.get(); }
 
  private:
@@ -77,8 +80,6 @@ class ShareToDataBuilderTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShareToDataBuilderTest);
 };
 
 // Verifies that ShareToData is constructed properly for a given Tab when there

@@ -36,6 +36,10 @@ const char kImageData[] = "abc";
 
 // Test fixture for ImageFetchTabHelper class.
 class ImageFetchTabHelperTest : public ChromeWebTest {
+ public:
+  ImageFetchTabHelperTest(const ImageFetchTabHelperTest&) = delete;
+  ImageFetchTabHelperTest& operator=(const ImageFetchTabHelperTest&) = delete;
+
  protected:
   ImageFetchTabHelperTest()
       : ChromeWebTest(std::make_unique<web::FakeWebClient>(),
@@ -87,8 +91,6 @@ class ImageFetchTabHelperTest : public ChromeWebTest {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetchTabHelperTest);
 };
 
 // Tests that ImageFetchTabHelper::GetImageData can get image data from Js.

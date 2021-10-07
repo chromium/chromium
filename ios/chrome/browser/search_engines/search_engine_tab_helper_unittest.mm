@@ -49,6 +49,11 @@ std::unique_ptr<KeyedService> CreateTestingTemplateURLService(
 
 // Test fixture for SearchEngineTabHelper class.
 class SearchEngineTabHelperTest : public ChromeWebTest {
+ public:
+  SearchEngineTabHelperTest(const SearchEngineTabHelperTest&) = delete;
+  SearchEngineTabHelperTest& operator=(const SearchEngineTabHelperTest&) =
+      delete;
+
  protected:
   SearchEngineTabHelperTest()
       : ChromeWebTest(web::WebTaskEnvironment::Options::IO_MAINLOOP) {}
@@ -105,8 +110,6 @@ class SearchEngineTabHelperTest : public ChromeWebTest {
   }
 
   net::EmbeddedTestServer server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelperTest);
 };
 
 // Tests that SearchEngineTabHelper can add TemplateURL to TemplateURLService
@@ -199,6 +202,12 @@ TEST_F(SearchEngineTabHelperTest, AddTemplateURLBySearchableURL) {
 
 // Test fixture for SearchEngineTabHelper class in incognito mode.
 class SearchEngineTabHelperIncognitoTest : public SearchEngineTabHelperTest {
+ public:
+  SearchEngineTabHelperIncognitoTest(
+      const SearchEngineTabHelperIncognitoTest&) = delete;
+  SearchEngineTabHelperIncognitoTest& operator=(
+      const SearchEngineTabHelperIncognitoTest&) = delete;
+
  protected:
   SearchEngineTabHelperIncognitoTest() {}
 
@@ -206,8 +215,6 @@ class SearchEngineTabHelperIncognitoTest : public SearchEngineTabHelperTest {
   web::BrowserState* GetBrowserState() override {
     return chrome_browser_state_->GetOffTheRecordChromeBrowserState();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineTabHelperIncognitoTest);
 };
 
 // Tests that SearchEngineTabHelper doesn't add TemplateURL to

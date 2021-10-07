@@ -27,6 +27,9 @@ class TrackerFactory : public BrowserStateKeyedServiceFactory {
   // browser state. It is created if it does not already exist.
   static Tracker* GetForBrowserState(ChromeBrowserState* browser_state);
 
+  TrackerFactory(const TrackerFactory&) = delete;
+  TrackerFactory& operator=(const TrackerFactory&) = delete;
+
  protected:
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
@@ -39,8 +42,6 @@ class TrackerFactory : public BrowserStateKeyedServiceFactory {
 
   TrackerFactory();
   ~TrackerFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerFactory);
 };
 
 }  // namespace feature_engagement

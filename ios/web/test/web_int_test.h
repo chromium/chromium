@@ -21,6 +21,10 @@ namespace web {
 
 // A test fixture for integration tests that need a WebState which loads pages.
 class WebIntTest : public WebTest {
+ public:
+  WebIntTest(const WebIntTest&) = delete;
+  WebIntTest& operator=(const WebIntTest&) = delete;
+
  protected:
   WebIntTest();
   ~WebIntTest() override;
@@ -67,8 +71,6 @@ class WebIntTest : public WebTest {
  private:
   // WebState used to load pages.
   std::unique_ptr<WebState> web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebIntTest);
 };
 
 }  // namespace web
