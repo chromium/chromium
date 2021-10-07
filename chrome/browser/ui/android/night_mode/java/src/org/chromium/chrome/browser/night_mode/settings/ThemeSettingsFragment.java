@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.night_mode.NightModeMetrics;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.R;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkSettingsChangeSource;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,8 +52,8 @@ public class ThemeSettingsFragment extends PreferenceFragmentCompat {
                         != mWebContentsDarkModeEnabled) {
                     mWebContentsDarkModeEnabled =
                             radioButtonGroupThemePreference.isDarkenWebsitesEnabled();
-                    WebContentsDarkModeController.setGlobalUserSettings(mWebContentsDarkModeEnabled,
-                            AutoDarkSettingsChangeSource.THEME_SETTINGS);
+                    WebContentsDarkModeController.setGlobalUserSettings(
+                            mWebContentsDarkModeEnabled);
                 }
             }
             int theme = (int) newValue;

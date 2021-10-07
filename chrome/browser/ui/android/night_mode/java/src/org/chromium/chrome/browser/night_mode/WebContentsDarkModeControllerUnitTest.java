@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.night_mode;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,12 +36,15 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkSettingsChangeSource;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.site_settings.SingleCategorySettings.AutoDarkSiteSettingObserver;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link WebContentsDarkModeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,10 +101,14 @@ public class WebContentsDarkModeControllerUnitTest {
     PrefService mMockPrefService;
     @Mock
     Profile mMockProfile;
+    @Mock
+    GURL mMockGurl;
 
     TestNightModeStateProvider mNightModeStateProvider;
     WebContentsDarkModeController mWebContentsDarkModeController;
-    boolean mIsAutoDarkEnabledBySettings;
+    boolean mIsGlobalSettingsEnabled;
+    @ContentSettingValues
+    int mIsAutoDarkEnabledForUrlContentSettingValue;
 
     @Before
     public void setup() {
@@ -118,16 +127,28 @@ public class WebContentsDarkModeControllerUnitTest {
         ShadowRecordHistogram.reset();
 
         Mockito.doAnswer(invocation -> {
-                   mIsAutoDarkEnabledBySettings = (boolean) invocation.getArguments()[2];
+                   mIsGlobalSettingsEnabled = (boolean) invocation.getArguments()[2];
                    return null;
                })
                 .when(mMockWebsitePreferenceBridgeJni)
                 .setContentSettingEnabled(eq(mMockProfile),
                         eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), anyBoolean());
-        Mockito.doAnswer(invocation -> mIsAutoDarkEnabledBySettings)
+        Mockito.doAnswer(invocation -> mIsGlobalSettingsEnabled)
                 .when(mMockWebsitePreferenceBridgeJni)
                 .isContentSettingEnabled(
                         eq(mMockProfile), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT));
+        Mockito.doAnswer(invocation -> {
+                   mIsAutoDarkEnabledForUrlContentSettingValue = (int) invocation.getArguments()[4];
+                   return null;
+               })
+                .when(mMockWebsitePreferenceBridgeJni)
+                .setContentSettingDefaultScope(eq(mMockProfile),
+                        eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT), notNull(), notNull(),
+                        anyInt());
+        Mockito.doAnswer(invocation -> mIsAutoDarkEnabledForUrlContentSettingValue)
+                .when(mMockWebsitePreferenceBridgeJni)
+                .getContentSetting(eq(mMockProfile), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT),
+                        notNull(), notNull());
     }
 
     @After
@@ -165,40 +186,78 @@ public class WebContentsDarkModeControllerUnitTest {
         assertIsObservingNightMode(false);
     }
 
-    private void doTestSetAutoDarkEnabled(
-            boolean enabled, @AutoDarkSettingsChangeSource int source) {
+    private void doTestSetAutoDarkGlobalSettingsEnabled(boolean enabled) {
         mNightModeStateProvider.mIsInNightMode = true;
 
-        WebContentsDarkModeController.setGlobalUserSettings(enabled, source);
+        WebContentsDarkModeController.setGlobalUserSettings(enabled);
         Assert.assertEquals(
-                "Auto dark settings state incorrect.", enabled, mIsAutoDarkEnabledBySettings);
+                "Auto dark settings state incorrect.", enabled, mIsGlobalSettingsEnabled);
         assertForceDarkModeEnabled(enabled);
-        assertAutoDarkModeChangeSourceRecorded(source, enabled, 1);
+        assertAutoDarkModeChangeSourceRecorded(
+                AutoDarkSettingsChangeSource.THEME_SETTINGS, enabled, 1);
     }
 
     @Test
-    public void testEnable_ByThemeSettings() {
-        doTestSetAutoDarkEnabled(true, AutoDarkSettingsChangeSource.THEME_SETTINGS);
+    public void testGlobalSettingsEnabled() {
+        doTestSetAutoDarkGlobalSettingsEnabled(true);
     }
 
     @Test
-    public void testEnable_BySiteSettings() {
-        doTestSetAutoDarkEnabled(true, AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL);
+    public void testGlobalSettingsDisabled() {
+        doTestSetAutoDarkGlobalSettingsEnabled(false);
+    }
+
+    private void doTestSetAutoDarkForUrl(boolean enableForUrl) {
+        mNightModeStateProvider.mIsInNightMode = true;
+        Mockito.doReturn(ContentSettingValues.ALLOW)
+                .when(mMockWebsitePreferenceBridgeJni)
+                .getDefaultContentSetting(
+                        eq(mMockProfile), eq(ContentSettingsType.AUTO_DARK_WEB_CONTENT));
+
+        WebContentsDarkModeController.setEnabledForUrl(mMockProfile, mMockGurl, enableForUrl);
+
+        Assert.assertEquals("Auto dark for URL is incorrect.", enableForUrl,
+                WebContentsDarkModeController.isEnabledForUrl(mMockProfile, mMockGurl));
+        assertAutoDarkModeChangeSourceRecorded(
+                AutoDarkSettingsChangeSource.APP_MENU, enableForUrl, 1);
     }
 
     @Test
-    public void testDisabled_ByThemeSettings() {
-        doTestSetAutoDarkEnabled(false, AutoDarkSettingsChangeSource.THEME_SETTINGS);
+    public void testEnableForUrl_Enabled() {
+        doTestSetAutoDarkForUrl(true);
     }
 
     @Test
-    public void testDisabled_BySiteSettings() {
-        doTestSetAutoDarkEnabled(false, AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL);
+    public void testEnableForUrl_Disabled() {
+        doTestSetAutoDarkForUrl(false);
+    }
+
+    @Test
+    public void testAutoDarkSiteSettingsObserver_DefaultValueChanged() {
+        AutoDarkSiteSettingObserver observer = WebContentsDarkModeController.createInstance();
+
+        observer.onDefaultValueChanged(true);
+        assertAutoDarkModeChangeSourceRecorded(
+                AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL, true, 1);
+        observer.onDefaultValueChanged(false);
+        assertAutoDarkModeChangeSourceRecorded(
+                AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL, false, 1);
+    }
+
+    @Test
+    public void testAutoDarkSiteSettingsObserver_SiteExceptionChanged() {
+        AutoDarkSiteSettingObserver observer = WebContentsDarkModeController.createInstance();
+        observer.onSiteExceptionChanged(true);
+        assertAutoDarkModeChangeSourceRecorded(
+                AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST, false, 1);
+        observer.onSiteExceptionChanged(false);
+        assertAutoDarkModeChangeSourceRecorded(
+                AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST, true, 1);
     }
 
     @Test
     public void testOnNightModeChange() {
-        mIsAutoDarkEnabledBySettings = true;
+        mIsGlobalSettingsEnabled = true;
         mNightModeStateProvider.mIsInNightMode = false;
 
         mWebContentsDarkModeController = WebContentsDarkModeController.createInstance();

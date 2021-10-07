@@ -1802,6 +1802,7 @@ Unknown properties are collapsed to zero. -->
   <int value="0" label="Theme settings"/>
   <int value="1" label="Site settings global"/>
   <int value="2" label="App menu"/>
+  <int value="3" label="Site settings exception list"/>
 </enum>
 
 <enum name="AndroidComponentLoaderLoadStatus">

@@ -40,14 +40,16 @@ public class WebContentsDarkModeController
      */
     @IntDef({AutoDarkSettingsChangeSource.THEME_SETTINGS,
             AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL,
-            AutoDarkSettingsChangeSource.APP_MENU})
+            AutoDarkSettingsChangeSource.APP_MENU,
+            AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AutoDarkSettingsChangeSource {
         int THEME_SETTINGS = 0;
         int SITE_SETTINGS_GLOBAL = 1;
         int APP_MENU = 2;
+        int SITE_SETTINGS_EXCEPTION_LIST = 3;
 
-        int NUM_ENTRIES = 3;
+        int NUM_ENTRIES = 4;
     }
 
     private NightModeStateProvider.Observer mNightModeObserver;
@@ -105,17 +107,15 @@ public class WebContentsDarkModeController
      * Enable or disable the global user settings for auto dark mode. If the global settings is
      * enabled, the web contents will be darkened by default if Chrome is in dark mode.
      * @param enabled The new global setting state of the web content auto dark mode.
-     * @param source The {@link AutoDarkSettingsChangeSource} that changes the auto dark web content
-     *               settings.
+     *
      */
-    public static void setGlobalUserSettings(
-            boolean enabled, @AutoDarkSettingsChangeSource int source) {
-        assert source == AutoDarkSettingsChangeSource.THEME_SETTINGS
-                || source == AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL;
+    public static void setGlobalUserSettings(boolean enabled) {
+        // This function is only used by Theme Settings so far. If this function has additional
+        // call sites, change the AutoDarkSettingsChangeSource as well.
         WebsitePreferenceBridge.setContentSettingEnabled(Profile.getLastUsedRegularProfile(),
                 ContentSettingsType.AUTO_DARK_WEB_CONTENT, enabled);
         enableWebContentsDarkMode(shouldEnableWebContentsDarkMode());
-        recordAutoDarkSettingsChangeSource(source, enabled);
+        recordAutoDarkSettingsChangeSource(AutoDarkSettingsChangeSource.THEME_SETTINGS, enabled);
     }
 
     /** Return whether web content dark mode is enabled by settings. */
@@ -169,13 +169,15 @@ public class WebContentsDarkModeController
     // AutoDarkSiteSettingsObserver:
     @Override
     public void onDefaultValueChanged(boolean newState) {
-        // TODO(https://crbug.com/1250800): Add metrics.
         enableWebContentsDarkMode(shouldEnableWebContentsDarkMode());
+        recordAutoDarkSettingsChangeSource(
+                AutoDarkSettingsChangeSource.SITE_SETTINGS_GLOBAL, newState);
     }
 
     @Override
     public void onSiteExceptionChanged(boolean isAdded) {
-        // TODO(https://crbug.com/1250800): Add metrics.
+        recordAutoDarkSettingsChangeSource(
+                AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST, !isAdded);
     }
 
     @VisibleForTesting
