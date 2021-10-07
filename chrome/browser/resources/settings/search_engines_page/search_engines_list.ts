@@ -57,7 +57,7 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      shortcutColumnHeader: {
+      nameColumnHeader: {
         type: String,
         reflectToAttribute: true,
       },
@@ -96,6 +96,11 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
 
       listBlurred_: Boolean,
 
+      expandListText: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
       fixedHeight: {
         type: Boolean,
         value: false,
@@ -114,7 +119,8 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
   showShortcut: boolean;
   showQueryUrl: boolean;
   collapseList: boolean;
-  shortcutColumnHeader: String;
+  nameColumnHeader: String;
+  expandListText: String;
   private lastFocused_: HTMLElement;
   private listBlurred_: boolean;
 

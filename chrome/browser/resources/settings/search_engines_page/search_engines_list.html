@@ -36,12 +36,12 @@
     </style>
     <div id="outer" class="list-frame">
       <div id="headers" class="column-header">
-        <div class="name">$i18n{searchEnginesSearchEngine}</div>
+        <div class="name">[[nameColumnHeader]]</div>
         <div class="keyword" hidden="[[isActiveSearchEnginesFlagEnabled]]">
           $i18n{searchEnginesKeyword}
         </div>
         <div class="shortcut" hidden="[[!showShortcut]]">
-          [[shortcutColumnHeader]]
+          $i18n{searchEnginesShortcut}
         </div>
         <div class="url" hidden="[[isActiveSearchEnginesFlagEnabled]]">
           $i18n{searchEnginesQueryURL}
@@ -90,9 +90,11 @@
             </settings-search-engine-entry>
           </template>
         </iron-list>
-        <cr-expand-button class="cr-row" hidden="[[!collapsedEngines.length]]"
+
+        <cr-expand-button no-hover class="cr-row"
+            hidden="[[!collapsedEngines.length]]"
             expanded="{{enginesListExpanded_}}">
-          <div>$i18n{searchEnginesShowAll}</div>
+          <div>[[expandListText]]</div>
         </cr-expand-button>
         <iron-collapse opened="[[enginesListExpanded_]]">
           <iron-list items="[[collapsedEngines]]"

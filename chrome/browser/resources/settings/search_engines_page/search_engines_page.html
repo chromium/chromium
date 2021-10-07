@@ -57,7 +57,7 @@
           engines="[[matchingDefaultEngines_]]"
           is-active-search-engines-flag-enabled=
                   "[[isActiveSearchEnginesFlagEnabled_"]] show-shortcut
-          shortcut-column-header="$i18n{searchEnginesSearchEngine}">
+          name-column-header="$i18n{searchEnginesSearchEngine}">
       </settings-search-engines-list>
     </template>
 
@@ -99,7 +99,8 @@
           is-active-search-engines-flag-enabled=
                 "[[isActiveSearchEnginesFlagEnabled_]]"
           show-shortcut collapse-list
-          shortcut-column-header="$i18n{searchEnginesSiteOrPage}">
+          expand-list-text="$i18n{searchEnginesAdditionalSites}"
+          name-column-header="$i18n{searchEnginesSiteOrPage}">
       </settings-search-engines-list>
     </template>
 
@@ -131,7 +132,8 @@
           is-active-search-engines-flag-enabled=
                 "[[isActiveSearchEnginesFlagEnabled_]]"
           show-query-url collapse-list
-          shortcut-column-header="$i18n{searchEnginesInactiveSite}">
+          expand-list-text="$i18n{searchEnginesAdditionalInactiveSites}"
+          name-column-header="$i18n{searchEnginesInactiveSite}">
       </settings-search-engines-list>
     </template>
     <div id="noOtherEngines" class="list-frame"
