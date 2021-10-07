@@ -43,6 +43,9 @@ content::WebUIDataSource* CreateWhatsNewUIHtmlSource(Profile* profile) {
       {"reloadButton", IDS_RELOAD},
   };
   source->AddLocalizedStrings(kStrings);
+  source->AddBoolean("showFeedbackButton",
+                     features::kChromeWhatsNewUIFeedbackButton.Get());
+
   // Allow embedding of iframe from chrome.com
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,

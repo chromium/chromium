@@ -5,6 +5,7 @@
 import {CommandHandlerRemote} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {WhatsNewAppElement} from 'chrome://whats-new/whats_new_app.js';
 import {WhatsNewProxyImpl} from 'chrome://whats-new/whats_new_proxy.js';
 
@@ -42,7 +43,8 @@ suite('WhatsNewAppTest', function() {
     document.body.innerHTML = '';
   });
 
-  test('with query parameter', async () => {
+  test('with query parameters', async () => {
+    loadTimeData.overrideValues({'showFeedbackButton': true});
     const proxy = new TestWhatsNewProxy(whatsNewURL);
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '?auto=true');
@@ -55,13 +57,17 @@ suite('WhatsNewAppTest', function() {
     const iframe = whatsNewApp.shadowRoot.querySelector('#content');
     assertTrue(!!iframe);
     // iframe has latest=true URL query parameter except on CrOS
-    assertEquals(whatsNewURL + (isChromeOS ? '' : '?latest=true'), iframe.src);
+    assertEquals(
+        whatsNewURL + (isChromeOS ? '?latest=false' : '?latest=true') +
+            '&feedback=true',
+        iframe.src);
     const errorPage =
         whatsNewApp.shadowRoot.querySelector('whats-new-error-page');
     assertFalse(!!errorPage);
   });
 
-  test('no query parameter', async () => {
+  test('no query parameters', async () => {
+    loadTimeData.overrideValues({'showFeedbackButton': false});
     const proxy = new TestWhatsNewProxy(whatsNewURL);
     WhatsNewProxyImpl.setInstance(proxy);
     window.history.replaceState({}, '', '/');
@@ -73,7 +79,7 @@ suite('WhatsNewAppTest', function() {
 
     const iframe = whatsNewApp.shadowRoot.querySelector('#content');
     assertTrue(!!iframe);
-    assertEquals(whatsNewURL, iframe.src);
+    assertEquals(whatsNewURL + '?latest=false&feedback=false', iframe.src);
     const errorPage =
         whatsNewApp.shadowRoot.querySelector('whats-new-error-page');
     assertFalse(!!errorPage);

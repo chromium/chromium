@@ -29,6 +29,7 @@ extern const base::Feature kChromeTipsInMainMenuNewBadge;
 #endif
 
 extern const base::Feature kChromeWhatsNewUI;
+extern const base::FeatureParam<bool> kChromeWhatsNewUIFeedbackButton;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const base::Feature kChromeWhatsNewInMainMenuNewBadge;

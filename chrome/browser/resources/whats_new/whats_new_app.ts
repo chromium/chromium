@@ -34,11 +34,18 @@ export class WhatsNewAppElement extends PolymerElement {
   static get properties() {
     return {
       showErrorPage_: Boolean,
+
+      showFeedbackButton_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showFeedbackButton'),
+      },
+
       url_: String,
     };
   }
 
   private showErrorPage_: boolean = false;
+  private showFeedbackButton_: boolean;
   private url_: string = '';
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -53,7 +60,9 @@ export class WhatsNewAppElement extends PolymerElement {
         return;
       }
 
-      this.url_ = isAutoOpen ? url.concat('?latest=true') : url;
+      const latest = isAutoOpen ? 'true' : 'false';
+      const feedback = this.showFeedbackButton_ ? 'true' : 'false';
+      this.url_ = url.concat(`?latest=${latest}&feedback=${feedback}`);
       this.eventTracker_.add(
           window, 'message',
           event => this.handleMessage_(event as MessageEvent));
