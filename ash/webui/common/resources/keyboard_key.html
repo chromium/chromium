@@ -3,7 +3,11 @@
     --background-color-pressed: hsl(214deg 82% 51%);
     --background-color-unpressed: hsl(218deg 92% 95%);
     --border-color: hsl(214deg 82% 51%);
-    --border-radius: 3px;
+    --border-radius:
+        var(--keyboard-key-top-radii, 3px)
+        var(--keyboard-key-top-radii, 3px)
+        var(--keyboard-key-bottom-right-radius, 3px)
+        3px;
     --glyph-alignment: var(--keyboard-key-glyph-alignment, center);
     --travel: var(--keyboard-key-travel, 3px);
     --foreground-color-unpressed: hsl(214deg 82% 51%);
@@ -19,6 +23,7 @@
     background-color: var(--background-color-unpressed);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
+    border-top-width: var(--keyboard-key-border-top-width, 1px);
     bottom: var(--travel);
     color: var(--foreground-color-unpressed);
     display: flex;

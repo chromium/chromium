@@ -40,6 +40,13 @@ js_library("fake_method_resolver_test") {
   ]
 }
 
+js_library("keyboard_diagram_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/common/resources:keyboard_diagram",
+  ]
+}
+
 js_library("navigation_selector_test") {
   deps = [
     "../..:chai_assert",

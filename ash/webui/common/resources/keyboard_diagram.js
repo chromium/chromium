@@ -11,6 +11,16 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
  * 'keyboard-diagram' displays a diagram of a CrOS-style keyboard.
  */
 
+/**
+ * Enum of mechanical layouts supported by the component.
+ * @enum {string}
+ */
+export const MechanicalLayout = {
+  kAnsi: 'ansi',
+  kIso: 'iso',
+  kJis: 'jis',
+};
+
 export class KeyboardDiagramElement extends PolymerElement {
   static get is() {
     return 'keyboard-diagram';
@@ -18,6 +28,27 @@ export class KeyboardDiagramElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The mechanical layout to be displayed, or null for the default.
+       * @type {?MechanicalLayout}
+       */
+      mechanicalLayout: String,
+    };
+  }
+
+  /**
+   * Utility method for the HTML template to check values are equal.
+   * @param {*} lhs
+   * @param {*} rhs
+   * @return {boolean}
+   * @private
+   */
+  isEqual_(lhs, rhs) {
+    return lhs === rhs;
   }
 }
 

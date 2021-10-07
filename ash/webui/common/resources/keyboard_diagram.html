@@ -85,9 +85,78 @@
   #spacebar {
     grid-column: span 10;
   }
+
+  /*
+   * On ISO and JIS, the Enter key is L-shaped (with the backslash key moved
+   * down one row). To achieve this with elements that fit in the grid, two
+   * separate elements are placed on the grid, with their corners and
+   * positioning tweaked to make them look like one key.
+   */
+  [data-mech-layout="iso"] #enterKey,
+  [data-mech-layout="jis"] #enterKey {
+    --keyboard-key-bottom-right-radius: 0;
+    grid-column: 28 / -1;
+    grid-row: 3;
+  }
+
+  #enterKeyLowerPart {
+    display: none;
+  }
+
+  [data-mech-layout="iso"] #enterKeyLowerPart,
+  [data-mech-layout="jis"] #enterKeyLowerPart {
+    --keyboard-key-border-top-width: 0;
+    --keyboard-key-top-radii: 0;
+    display: block;
+    grid-column: 29 / -1;
+    /*
+     * Expand the element upwards so that it overlaps the grid gap, key travel
+     * area, and border of the actual Enter key on the row above.
+     */
+    margin-top: calc(-1 * var(--grid-gap) - var(--key-travel) - 1px);
+  }
+
+  [data-mech-layout="iso"] #backslashKey,
+  [data-mech-layout="jis"] #backslashKey {
+    grid-column: 27 / span 2;
+    grid-row: 4;
+  }
+
+  /* Modifications for ISO */
+
+  [data-mech-layout="iso"] #leftShiftKey {
+    grid-column: span 3;
+  }
+
+  /* Modifications for JIS */
+
+  /*
+   * JIS crams in a few more keys, most notably an additional one on the number
+   * row, so a 30-column grid makes more sense for it.
+   */
+  .main-cluster[data-mech-layout="jis"] {
+    grid-template-columns: repeat(30, 1fr);
+  }
+
+  [data-mech-layout="jis"] #backspaceKey {
+    grid-column: span 2;
+  }
+
+  [data-mech-layout="jis"] #spacebar {
+    grid-column: span 6;
+  }
+
+  [data-mech-layout="jis"] #rightShiftKey {
+    grid-column: span 3;
+  }
+
+  [data-mech-layout="jis"] #arrowKeyCluster {
+    grid-column: span 7;
+  }
 </style>
 <div class="keyboard">
-  <div class="main-cluster">
+  <div class="main-cluster"
+      data-mech-layout$="[[mechanicalLayout]]">
     <div id="topRow">
       <keyboard-key main-glyph="esc"></keyboard-key>
       <!-- TODO(crbug.com/1207678): Use icons for the top row keys. -->
@@ -118,6 +187,9 @@
     <keyboard-key main-glyph="0"></keyboard-key>
     <keyboard-key main-glyph="-"></keyboard-key>
     <keyboard-key main-glyph="="></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisYenKey" main-glyph="¥"></keyboard-key>
+    </template>
     <keyboard-key id="backspaceKey" class="right" main-glyph="backspace"></keyboard-key>
 
     <keyboard-key id="tabKey" class="left" main-glyph="tab"></keyboard-key>
@@ -148,8 +220,12 @@
     <keyboard-key main-glyph=";"></keyboard-key>
     <keyboard-key main-glyph="'"></keyboard-key>
     <keyboard-key id="enterKey" class="right" main-glyph="enter"></keyboard-key>
+    <keyboard-key id="enterKeyLowerPart" main-glyph=""></keyboard-key>
 
     <keyboard-key id="leftShiftKey" class="left" main-glyph="shift"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'iso')]]">
+      <keyboard-key id="isoKey" main-glyph="&lt;"></keyboard-key>
+    </template>
     <keyboard-key main-glyph="z"></keyboard-key>
     <keyboard-key main-glyph="x"></keyboard-key>
     <keyboard-key main-glyph="c"></keyboard-key>
@@ -160,11 +236,20 @@
     <keyboard-key main-glyph=","></keyboard-key>
     <keyboard-key main-glyph="."></keyboard-key>
     <keyboard-key main-glyph="/"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisBackslashKey" main-glyph="\\"></keyboard-key>
+    </template>
     <keyboard-key id="rightShiftKey" class="right" main-glyph="shift"></keyboard-key>
 
     <keyboard-key id="leftCtrlKey" class="left" main-glyph="ctrl"></keyboard-key>
     <keyboard-key id="leftAltKey" class="left" main-glyph="alt"></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisAlphanumericKey" main-glyph="英数"></keyboard-key>
+    </template>
     <keyboard-key id="spacebar" main-glyph=""></keyboard-key>
+    <template is="dom-if" if="[[isEqual_(mechanicalLayout, 'jis')]]">
+      <keyboard-key id="jisKanaKey" main-glyph="かな"></keyboard-key>
+    </template>
     <keyboard-key id="rightAltKey" main-glyph="alt"></keyboard-key>
     <keyboard-key id="rightCtrlKey" main-glyph="ctrl"></keyboard-key>
 

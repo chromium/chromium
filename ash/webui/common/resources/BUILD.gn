@@ -40,6 +40,8 @@ js_type_check("closure_compile_module") {
   deps = [
     ":fake_method_resolver",
     ":fake_observables",
+    ":keyboard_diagram",
+    ":keyboard_key",
     ":navigation_selector",
     ":navigation_view_panel",
     ":page_toolbar",

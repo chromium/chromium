@@ -37,6 +37,7 @@ this['AshCommon'] = class extends PolymerTest {
 const debug_suites_list = [
   'FakeObservables',
   'FakeMethodResolver',
+  'KeyboardDiagram',
   'NavigationSelector',
   'NavigationViewPanel',
   'PageToolbar',
