@@ -28239,6 +28239,64 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       If this policy is not set, the default configuration for the network sandbox will be used. This may vary depending on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> release, currently running field trials, and platform.
       This policy is intended to give enterprises flexibility to disable the network sandbox if they use third party software that interferes with the network service sandbox.''',
     },
+    {
+      'name': 'DeskTemplatesEnabled',
+      'owners': ['brianbeck@chromium.org', 'yzd@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to use predefined desk templates',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to use predefined desk templates',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 910,
+      'caption': '''Allow users to select a preconfigured desktop layout to load''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled allows users to use preconfigured desktop layout templates.  Setting the policy to Disabled or unset means these templates will be unavailable.'''
+    },
+    {
+      'name': 'PreconfiguredDeskTemplates',
+      'owners': ['brianbeck@chromium.org', 'yzd@chromium.org'],
+      'type': 'external',
+      'schema': {
+        'type': 'object',
+        'properties': {
+          'url': {
+            'description': 'The URL from which the desk template can be downloaded.',
+            'type': 'string'
+          },
+          'hash': {
+            'description': 'The SHA-256 hash of the desk template.',
+            'type': 'string'
+          }
+        },
+      },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'example_value': {"url":"https://example.com/a.json", "hash":"842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32"},
+      'max_size': 1048576,
+      'id': 911,
+      'caption': '''Allow users to select a preconfigured desktop layout to load''',
+      'tags': [],
+      'desc': '''If set, this policy contains information to download a desk template file.  The file contains a desk template to be provisioned for the current user.
+      If not set, no preconfigured desk template will be included in the list of desk templates.  If the <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME">DeskTemplatesEnabled</ph>
+      policy is not set to true, this policy has no effect.'''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -29203,6 +29261,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 909,
+  'highest_id_currently_used': 911,
   'highest_atomic_group_id_currently_used': 41
 }

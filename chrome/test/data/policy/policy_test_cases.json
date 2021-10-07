@@ -16016,5 +16016,43 @@
         }
       }
     ]
+  },
+  "DeskTemplatesEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeskTemplatesEnabled": true
+        },
+        "prefs": {
+          "ash.desk_templates_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeskTemplatesEnabled": false
+        },
+        "prefs": {
+          "ash.desk_templates_enabled": {
+            "value": false
+          }
+        }
+      },
+          {
+        "policies": {},
+        "prefs": {
+          "ash.desk_templates_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  },
+  "PreconfiguredDeskTemplates": {
+    "reason_for_missing_test": "TODO(crbug.com/1213475) external data policy not supported yet"
   }
 }

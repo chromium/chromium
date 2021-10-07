@@ -848,6 +848,15 @@ const char kLacrosProxyControllingExtension[] =
 // A boolean pref which is true if Fast Pair is enabled.
 const char kFastPairEnabled[] = "ash.fast_pair.enabled";
 
+// A boolean pref that controls whether the user is allowed to use the Desk
+// Templates feature - including creating Desks templates and using predefined
+// Desks templates.
+const char kDeskTemplatesEnabled[] = "ash.desk_templates_enabled";
+
+// A string pref which contains download URLs and hashes for files containing
+// predefined Desks templates configured by policy administrators.
+const char kPreconfiguredDeskTemplates[] = "ash.preconfigured_desk_templates";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

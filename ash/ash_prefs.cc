@@ -46,6 +46,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/desks/persistent_desks_bar_controller.h"
+#include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
@@ -71,6 +72,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   contextual_tooltip::RegisterProfilePrefs(registry);
   ClipboardNudgeController::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);
+  desks_templates_util::RegisterProfilePrefs(registry);
   DockedMagnifierController::RegisterProfilePrefs(registry);
   FullscreenController::RegisterProfilePrefs(registry);
   GestureEducationNotificationController::RegisterProfilePrefs(registry,

@@ -2418,6 +2418,8 @@ source_set("chromeos") {
     "../ash/policy/external_data/handlers/device_wallpaper_image_external_data_handler.h",
     "../ash/policy/external_data/handlers/device_wilco_dtc_configuration_external_data_handler.cc",
     "../ash/policy/external_data/handlers/device_wilco_dtc_configuration_external_data_handler.h",
+    "../ash/policy/external_data/handlers/preconfigured_desk_templates_external_data_handler.cc",
+    "../ash/policy/external_data/handlers/preconfigured_desk_templates_external_data_handler.h",
     "../ash/policy/external_data/handlers/print_servers_external_data_handler.cc",
     "../ash/policy/external_data/handlers/print_servers_external_data_handler.h",
     "../ash/policy/external_data/handlers/printers_external_data_handler.cc",

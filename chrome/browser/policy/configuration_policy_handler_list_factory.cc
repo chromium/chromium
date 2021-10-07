@@ -1260,6 +1260,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kGhostWindowEnabled,
     ash::full_restore::kGhostWindowEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kDeskTemplatesEnabled,
+    ash::prefs::kDeskTemplatesEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
@@ -1975,6 +1978,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kDeviceWilcoDtcConfiguration));
   handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
       key::kCrostiniAnsiblePlaybook));
+  handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
+      key::kPreconfiguredDeskTemplates));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kSessionLocales, nullptr, chrome_schema, SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
