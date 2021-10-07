@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
+#include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -37,13 +38,19 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
 
-MediaToolbarButtonView::MediaToolbarButtonView(BrowserView* browser_view)
+MediaToolbarButtonView::MediaToolbarButtonView(
+    BrowserView* browser_view,
+    std::unique_ptr<MediaToolbarButtonContextualMenu> context_menu)
     : ToolbarButton(base::BindRepeating(&MediaToolbarButtonView::ButtonPressed,
-                                        base::Unretained(this))),
+                                        base::Unretained(this)),
+                    context_menu ? context_menu->CreateMenuModel() : nullptr,
+                    /** tab_strip_model*/ nullptr,
+                    /** trigger_menu_on_long_press */ false),
       browser_(browser_view->browser()),
       service_(MediaNotificationServiceFactory::GetForProfile(
           browser_view->browser()->profile())),
-      feature_promo_controller_(browser_view->feature_promo_controller()) {
+      feature_promo_controller_(browser_view->feature_promo_controller()),
+      context_menu_(std::move(context_menu)) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetFlipCanvasOnPaintForRTLUI(false);
