@@ -147,6 +147,13 @@ bool LocalPolicyTestServerMixin::UpdateUserPolicy(
   return policy_test_server_->SetConfig(server_config_);
 }
 
+bool LocalPolicyTestServerMixin::UpdateUserPolicyTimestamp(
+    const base::Time& timestamp) {
+  server_config_.SetKey(
+      "timestamp", base::Value(static_cast<double>(timestamp.ToJavaTime())));
+  return policy_test_server_->SetConfig(server_config_);
+}
+
 void LocalPolicyTestServerMixin::SetFakeAttestationFlow() {
   g_browser_process->platform_part()
       ->browser_policy_connector_ash()

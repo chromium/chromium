@@ -1298,7 +1298,7 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     # Fill the policy data protobuf.
     policy_data = dm.PolicyData()
     policy_data.policy_type = msg.policy_type
-    policy_data.timestamp = int(time.time() * 1000)
+    policy_data.timestamp = int(policy.get('timestamp', time.time() * 1000))
     policy_data.request_token = token_info['device_token']
     policy_data.policy_value = payload
     policy_data.machine_name = token_info['machine_name']

@@ -68,6 +68,10 @@ class LocalPolicyTestServerMixin : public InProcessBrowserTestMixin {
                         const base::Value& recommended_policy,
                         const std::string& policy_user);
 
+  // Sets a fixed timestamp for the user policy served by the local policy
+  // server. By default the timestamp is set to current time on each request.
+  bool UpdateUserPolicyTimestamp(const base::Time& timestamp);
+
   void SetUpdateDeviceAttributesPermission(bool allowed);
 
   // Configures fake attestation flow so that we can test attestation-based
