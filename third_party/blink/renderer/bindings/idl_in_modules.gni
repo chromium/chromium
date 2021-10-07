@@ -6,10 +6,6 @@ import("//third_party/blink/renderer/config.gni")
 
 # Statically-defined (not runtime-generated) IDL files in 'modules' component
 # for production.
-#
-# CAUTION: static_idl_files_in_modules is used only by a new V8 bindings
-# generator, which is under development.  You have to update
-# modules/modules_idl_files.gni in addition to this list.
 static_idl_files_in_modules = get_path_info(
         [
           "//third_party/blink/renderer/modules/ad_auction/auction_ad.idl",
@@ -1148,7 +1144,12 @@ static_idl_files_in_modules = get_path_info(
         "abspath")
 
 # Direct Sockets
-if (!is_android) {
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for android. When
+# generating the snapshot for android, blink is compiled with
+# current_os="linux" and target_os="android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os="android".
+if (target_os != "android") {
   static_idl_files_in_modules += get_path_info(
           [
             "//third_party/blink/renderer/modules/direct_sockets/navigator_socket.idl",
@@ -1160,7 +1161,12 @@ if (!is_android) {
 }
 
 # Serial
-if (!is_android) {
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for android. When
+# generating the snapshot for android, blink is compiled with
+# current_os="linux" and target_os="android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os="android".
+if (target_os != "android") {
   static_idl_files_in_modules += get_path_info(
           [
             "//third_party/blink/renderer/modules/serial/navigator_serial.idl",

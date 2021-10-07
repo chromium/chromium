@@ -786,7 +786,12 @@ mojom("android_mojo_bindings") {
     "//url/mojom:url_mojom_origin",
   ]
 
-  if (is_android) {
+  # This uses target_os rather than current_os (which is what is_android is set
+  # from) for the case of generating the v8 context snapshot for android. When
+  # generating the snapshot for android, blink is compiled with
+  # current_os="linux" and target_os="android". Using target_os is necessary as
+  # we need to compile in the same way as would happen when current_os="android".
+  if (target_os == "android") {
     sources += [ "remote_objects/remote_objects.mojom" ]
 
     # Direct deps (instead of transitive deps) are necessary for java targets.
