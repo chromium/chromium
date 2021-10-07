@@ -15,7 +15,8 @@ enum class ShareSourceDesktop {
   kUnknown = 0,
   kOmniboxSharingHub = 1,
   kWebContextMenu = 2,
-  kMaxValue = kWebContextMenu,
+  kAppMenuSharingHub = 3,
+  kMaxValue = kAppMenuSharingHub,
 };
 
 void LogShareSourceDesktop(ShareSourceDesktop source);

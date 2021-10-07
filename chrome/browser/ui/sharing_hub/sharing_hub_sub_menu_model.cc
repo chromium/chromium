@@ -8,6 +8,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/share_metrics.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service_factory.h"
@@ -35,6 +36,8 @@ bool SharingHubSubMenuModel::IsCommandIdEnabled(int command_id) const {
 }
 
 void SharingHubSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
+  share::LogShareSourceDesktop(share::ShareSourceDesktop::kAppMenuSharingHub);
+
   if (IsThirdPartyAction(command_id)) {
     SharingHubModel* const model = GetSharingHubModel();
     if (!model)
