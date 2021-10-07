@@ -36,6 +36,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/client_hints.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
@@ -51,6 +52,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/nqe/effective_connection_type.h"
+#include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -70,6 +72,7 @@
 namespace {
 
 using ::content::URLLoaderInterceptor;
+using net::test_server::EmbeddedTestServer;
 using ::testing::Eq;
 using ::testing::Optional;
 
@@ -171,6 +174,8 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
       : http_server_(net::EmbeddedTestServer::TYPE_HTTP),
         https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         https_cross_origin_server_(net::EmbeddedTestServer::TYPE_HTTPS),
+        http2_server_(net::EmbeddedTestServer::TYPE_HTTPS,
+                      net::test_server::HttpConnection::Protocol::kHttp2),
         expect_client_hints_on_main_frame_(false),
         expect_client_hints_on_subresources_(false),
         count_user_agent_hint_headers_seen_(0),
@@ -183,11 +188,15 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
         "chrome/test/data/client_hints");
     https_cross_origin_server_.ServeFilesFromSourceDirectory(
         "chrome/test/data/client_hints");
+    http2_server_.ServeFilesFromSourceDirectory("chrome/test/data");
 
     http_server_.RegisterRequestMonitor(
         base::BindRepeating(&ClientHintsBrowserTest::MonitorResourceRequest,
                             base::Unretained(this)));
     https_server_.RegisterRequestMonitor(
+        base::BindRepeating(&ClientHintsBrowserTest::MonitorResourceRequest,
+                            base::Unretained(this)));
+    http2_server_.RegisterRequestMonitor(
         base::BindRepeating(&ClientHintsBrowserTest::MonitorResourceRequest,
                             base::Unretained(this)));
     https_cross_origin_server_.RegisterRequestMonitor(
@@ -200,8 +209,17 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
         &ClientHintsBrowserTest::RequestHandlerToFetchCrossOriginIframe,
         base::Unretained(this)));
 
+    http2_server_.AddDefaultHandlers();
+
+    std::vector<std::string> accept_ch_tokens;
+    for (const auto& pair : network::GetClientHintToNameMap())
+      accept_ch_tokens.push_back(pair.second);
+
+    http2_server_.SetAlpsAcceptCH("", base::JoinString(accept_ch_tokens, ","));
+
     EXPECT_TRUE(http_server_.Start());
     EXPECT_TRUE(https_server_.Start());
+    EXPECT_TRUE(http2_server_.Start());
     EXPECT_TRUE(https_cross_origin_server_.Start());
 
     EXPECT_NE(https_server_.base_url(), https_cross_origin_server_.base_url());
@@ -455,6 +473,10 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
     return http_equiv_accept_ch_merge_;
   }
 
+  GURL GetHttp2Url(const std::string& relative_url) const {
+    return http2_server_.GetURL(relative_url);
+  }
+
   size_t count_user_agent_hint_headers_seen() const {
     base::AutoLock lock(count_headers_lock_);
     return count_user_agent_hint_headers_seen_;
@@ -579,7 +601,8 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
   // Called by |https_server_|.
   void MonitorResourceRequest(const net::test_server::HttpRequest& request) {
     bool is_main_frame_navigation =
-        request.GetURL().spec().find(".html") != std::string::npos;
+        (request.GetURL().spec().find(".html") != std::string::npos ||
+         request.GetURL().spec().find("echoheader") != std::string::npos);
 
     if (is_main_frame_navigation &&
         request.GetURL().spec().find("redirect") != std::string::npos) {
@@ -704,6 +727,7 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
     for (const auto& elem : network::GetClientHintToNameMap()) {
       const auto& header = elem.second;
       SCOPED_TRACE(testing::Message() << header);
+      SCOPED_TRACE(testing::Message() << request.GetURL().spec());
       // Resource width client hint is only attached on image subresources.
       if (header == "width") {
         continue;
@@ -799,6 +823,7 @@ class ClientHintsBrowserTest : public InProcessBrowserTest,
   net::EmbeddedTestServer http_server_;
   net::EmbeddedTestServer https_server_;
   net::EmbeddedTestServer https_cross_origin_server_;
+  net::EmbeddedTestServer http2_server_;
   GURL accept_ch_with_lifetime_http_local_url_;
   GURL http_equiv_accept_ch_with_lifetime_http_local_url_;
   GURL accept_ch_with_lifetime_url_;
@@ -931,6 +956,37 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest, ClientHintsHttps) {
     histogram_tester.ExpectUniqueSample("ClientHints.PersistDuration",
                                         uma_histogram_max_value, 1);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, ClientHintsAlps) {
+  base::HistogramTester histogram_tester;
+  SetClientHintExpectationsOnMainFrame(true);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetHttp2Url("/blank.html")));
+  histogram_tester.ExpectBucketCount(
+      "ClientHints.AcceptCHFrame",
+      content::AcceptCHFrameRestart::kNavigationRestarted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
+                       ClientHintsAlpsNavigationPreload) {
+  SetClientHintExpectationsOnMainFrame(true);
+  const GURL kCreateServiceWorker =
+      GetHttp2Url("/service_worker/create_service_worker.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kCreateServiceWorker));
+  EXPECT_EQ(
+      "DONE",
+      EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+             "register('/service_worker/navigation_preload_worker.js', '/');"));
+
+  const GURL kEchoHeader =
+      GetHttp2Url("/echoheader?Service-Worker-Navigation-Preload");
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kEchoHeader));
+  histogram_tester.ExpectBucketCount(
+      "ClientHints.AcceptCHFrame",
+      content::AcceptCHFrameRestart::kNavigationRestarted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, PRE_ClientHintsClearSession) {

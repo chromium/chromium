@@ -75,11 +75,6 @@ class CheckForCancelledOrPausedDelegate
     cancelled_or_paused_ = true;
   }
 
-  void RestartWithModifiedHeadersNow(
-      const net::HttpRequestHeaders& modified_headers) override {
-    cancelled_or_paused_ = true;
-  }
-
   bool cancelled_or_paused() const { return cancelled_or_paused_; }
 
  private:

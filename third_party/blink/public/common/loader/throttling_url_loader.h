@@ -40,8 +40,7 @@ namespace blink {
 // URL loading. If the Mojo connection fails during the request it is canceled
 // with net::ERR_ABORTED.
 class BLINK_COMMON_EXPORT ThrottlingURLLoader
-    : public network::mojom::URLLoaderClient,
-      public network::mojom::AcceptCHFrameObserver {
+    : public network::mojom::URLLoaderClient {
  public:
   // Reason used when resetting the URLLoader to follow a redirect.
   static const char kFollowRedirectReason[];
@@ -150,10 +149,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // Restart the request immediately if the response has not started yet.
   void RestartWithURLResetAndFlagsNow(int additional_load_flags);
 
-  // Restart the request immediately with modified headers.
-  void RestartWithModifiedHeadersNow(
-      const net::HttpRequestHeaders& modified_headers);
-
   // network::mojom::URLLoaderClient implementation:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
@@ -169,14 +164,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
-
-  // network::mojom::AcceptCHFrameObserver implementation
-  void OnAcceptCHFrameReceived(
-      const GURL& url,
-      const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
-      OnAcceptCHFrameReceivedCallback callback) override;
-  void Clone(mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver>
-                 listener) override;
 
   void OnClientConnectionError();
 
@@ -320,12 +307,6 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   int pending_restart_flags_ = 0;
   bool has_pending_restart_ = false;
-
-  // While it's not expected to have two active Remote ends for the same
-  // ThrottlingURLLoader, when a TrustedParam is copied all of the pipes are
-  // cloned instead of being destroyed.
-  mojo::ReceiverSet<network::mojom::AcceptCHFrameObserver>
-      accept_ch_frame_observers_;
 
   base::WeakPtrFactory<ThrottlingURLLoader> weak_factory_{this};
 };

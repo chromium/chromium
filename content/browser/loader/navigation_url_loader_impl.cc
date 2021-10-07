@@ -23,6 +23,7 @@
 #include "content/browser/appcache/appcache_navigation_handle.h"
 #include "content/browser/appcache/appcache_request_handler.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/client_hints/client_hints.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
@@ -49,6 +50,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/client_hints.h"
+#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/frame_accept_header.h"
@@ -81,6 +84,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/url_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -193,7 +197,9 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
-    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer) {
+    mojo::PendingRemote<network::mojom::DevToolsObserver> devtools_observer,
+    mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
+        accept_ch_frame_observer) {
   auto new_request = std::make_unique<network::ResourceRequest>();
 
   new_request->method = request_info.common_params->method;
@@ -208,6 +214,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->trusted_params->devtools_observer = std::move(devtools_observer);
   new_request->trusted_params->client_security_state =
       request_info.client_security_state.Clone();
+  new_request->trusted_params->accept_ch_frame_observer =
+      std::move(accept_ch_frame_observer);
   new_request->is_main_frame = request_info.is_main_frame;
   new_request->priority = net::HIGHEST;
   new_request->request_initiator = request_info.common_params->initiator_origin;
@@ -323,6 +331,10 @@ void LogQueueTimeHistogram(base::StringPiece name, bool is_main_frame) {
   base::UmaHistogramTimes(
       base::StrCat({name, is_main_frame ? ".MainFrame" : ".Subframe"}),
       base::TimeTicks::Now() - task->queue_time);
+}
+
+void LogAcceptCHFrameStatus(AcceptCHFrameRestart status) {
+  base::UmaHistogramEnumeration("ClientHints.AcceptCHFrame", status);
 }
 
 }  // namespace
@@ -953,8 +965,78 @@ void NavigationURLLoaderImpl::OnComplete(
                                 weak_factory_.GetWeakPtr(), status));
 }
 
-  // Returns true if an interceptor wants to handle the response, i.e. return a
-  // different response. For e.g. AppCache may have fallback content.
+void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
+    const GURL& url,
+    const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
+    OnAcceptCHFrameReceivedCallback callback) {
+  if (!base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  LogAcceptCHFrameStatus(AcceptCHFrameRestart::kFramePresent);
+
+  // Given that this is happening in the middle of navigation, there should
+  // always be an owning frame tree node
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  DCHECK(frame_tree_node);
+  ClientHintsControllerDelegate* client_hint_delegate =
+      browser_context_->GetClientHintsControllerDelegate();
+
+  if (!client_hint_delegate) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  // Filter out hints that are disabled by features and the like.
+  blink::EnabledClientHints filtered_enabled_hints;
+  for (const auto& hint : accept_ch_frame)
+    filtered_enabled_hints.SetIsEnabled(hint, true);
+  const std::vector<network::mojom::WebClientHintsType>& filtered_hints =
+      filtered_enabled_hints.GetEnabledHints();
+
+  if (!AreCriticalHintsMissing(url, frame_tree_node, client_hint_delegate,
+                               filtered_hints)) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  // While not a true redirect, a redirect loop can be simulated by repeatedly
+  // closing the socket and presenting a different ALPS setting with each new
+  // handshake.
+  if (redirect_limit_-- == 0) {
+    std::move(callback).Run(net::ERR_TOO_MANY_REDIRECTS);
+    return;
+  }
+
+  net::HttpRequestHeaders modified_headers;
+  client_hint_delegate->SetAdditionalClientHints(filtered_hints);
+  AddNavigationRequestClientHintsHeaders(
+      url, &modified_headers, browser_context_, client_hint_delegate,
+      frame_tree_node->navigation_request()->is_overriding_user_agent(),
+      frame_tree_node,
+      frame_tree_node->navigation_request()
+          ->commit_params()
+          .frame_policy.container_policy);
+  client_hint_delegate->ClearAdditionalClientHints();
+
+  LogAcceptCHFrameStatus(AcceptCHFrameRestart::kNavigationRestarted);
+
+  resource_request_->headers.MergeFrom(modified_headers);
+  url_loader_.reset();
+  Restart();
+
+  std::move(callback).Run(net::ERR_ABORTED);
+}
+
+void NavigationURLLoaderImpl::Clone(
+    mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver> listener) {
+  accept_ch_frame_observers_.Add(this, std::move(listener));
+}
+
+// Returns true if an interceptor wants to handle the response, i.e. return a
+// different response. For e.g. AppCache may have fallback content.
 bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
     network::mojom::URLResponseHeadPtr* response) {
   if (!default_loader_used_ &&
@@ -1135,9 +1217,14 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
           storage_partition_->GetPrefetchURLLoaderService()
               ->signed_exchange_prefetch_metric_recorder();
 
+  mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
+      accept_ch_frame_observer;
+  accept_ch_frame_observers_.Add(
+      this, accept_ch_frame_observer.InitWithNewPipeAndPassReceiver());
   resource_request_ = CreateResourceRequest(
       *request_info_, frame_tree_node_id_, std::move(cookie_observer),
-      std::move(url_loader_network_observer), std::move(devtools_observer));
+      std::move(url_loader_network_observer), std::move(devtools_observer),
+      std::move(accept_ch_frame_observer));
 
   std::string accept_langs =
       GetContentClient()->browser()->GetAcceptLangs(browser_context_);

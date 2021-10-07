@@ -32,10 +32,6 @@ void LogCriticalCHStatus(CriticalCHRestart status) {
   base::UmaHistogramEnumeration("ClientHints.CriticalCHRestart", status);
 }
 
-void LogAcceptCHFrameStatus(AcceptCHFrameRestart status) {
-  base::UmaHistogramEnumeration("ClientHints.AcceptCHFrame", status);
-}
-
 }  // namespace
 
 namespace content {
@@ -89,25 +85,6 @@ void CriticalClientHintsThrottle::BeforeWillProcessResponse(
         context_, client_hint_delegate_,
         FrameTreeNode::GloballyFindByID(frame_tree_node_id_));
     delegate_->RestartWithURLResetAndFlags(/*additional_load_flags=*/0);
-  }
-}
-
-void CriticalClientHintsThrottle::HandleAcceptCHFrameReceived(
-    const GURL& url,
-    const std::vector<WebClientHintsType>& accept_ch_frame) {
-  if (accept_ch_frame_redirect_ ||
-      !base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
-    return;
-  }
-
-  LogAcceptCHFrameStatus(AcceptCHFrameRestart::kFramePresent);
-
-  net::HttpRequestHeaders modified_headers;
-
-  if (ShouldRestartWithHints(url, accept_ch_frame, modified_headers)) {
-    accept_ch_frame_redirect_ = true;
-    LogAcceptCHFrameStatus(AcceptCHFrameRestart::kNavigationRestarted);
-    delegate_->RestartWithModifiedHeadersNow(modified_headers);
   }
 }
 

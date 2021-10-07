@@ -24,6 +24,14 @@ CONTENT_EXPORT void AddClientHintsHeadersToPrefetchNavigation(
     bool is_ua_override_on,
     bool is_javascript_enabled);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AcceptCHFrameRestart {
+  kFramePresent = 0,
+  kNavigationRestarted = 1,
+  kMaxValue = kNavigationRestarted,
+};
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_CLIENT_HINTS_H_

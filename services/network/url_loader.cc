@@ -404,6 +404,12 @@ std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
   // Only look at/add headers that aren't already present.
   std::vector<mojom::WebClientHintsType> hints;
   for (auto hint : maybe_hints.value()) {
+    // ResourceWidth is only for images, which won't trigger a restart.
+    if (hint == mojom::WebClientHintsType::kResourceWidth ||
+        hint == mojom::WebClientHintsType::kResourceWidth_DEPRECATED) {
+      continue;
+    }
+
     const std::string header = GetClientHintToNameMap().at(hint);
     if (!headers.HasHeader(header))
       hints.push_back(hint);

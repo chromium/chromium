@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/url_request/url_request.h"
+#include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -42,7 +43,8 @@ struct WebPluginInfo;
 
 class CONTENT_EXPORT NavigationURLLoaderImpl
     : public NavigationURLLoader,
-      public network::mojom::URLLoaderClient {
+      public network::mojom::URLLoaderClient,
+      public network::mojom::AcceptCHFrameObserver {
  public:
   // The caller is responsible for ensuring that `delegate` outlives the loader.
   NavigationURLLoaderImpl(
@@ -199,6 +201,14 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {}
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  // network::mojom::AcceptCHFrameObserver implementation
+  void OnAcceptCHFrameReceived(
+      const GURL& url,
+      const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
+      OnAcceptCHFrameReceivedCallback callback) override;
+  void Clone(mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver>
+                 listener) override;
+
   // NavigationURLLoader implementation:
   void Start() override;
   void FollowRedirect(
@@ -313,6 +323,12 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Set on the constructor and runs in Start(). This is used for transferring
   // parameters prepared in the constructor to Start().
   base::OnceClosure start_closure_;
+
+  // While it's not expected to have two active Remote ends for the same
+  // NavigationURLLoaderImpl, when a TrustedParam is copied all of the pipes are
+  // cloned instead of being destroyed.
+  mojo::ReceiverSet<network::mojom::AcceptCHFrameObserver>
+      accept_ch_frame_observers_;
 
   base::WeakPtrFactory<NavigationURLLoaderImpl> weak_factory_{this};
 };

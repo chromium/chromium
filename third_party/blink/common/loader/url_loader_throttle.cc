@@ -42,11 +42,6 @@ void URLLoaderThrottle::Delegate::RestartWithURLResetAndFlagsNow(
   NOTIMPLEMENTED();
 }
 
-void URLLoaderThrottle::Delegate::RestartWithModifiedHeadersNow(
-    const net::HttpRequestHeaders& modified_headers) {
-  NOTIMPLEMENTED();
-}
-
 URLLoaderThrottle::Delegate::~Delegate() {}
 
 URLLoaderThrottle::~URLLoaderThrottle() {}
@@ -87,10 +82,6 @@ void URLLoaderThrottle::BeforeWillProcessResponse(
 void URLLoaderThrottle::WillOnCompleteWithError(
     const network::URLLoaderCompletionStatus& status,
     bool* defer) {}
-
-void URLLoaderThrottle::HandleAcceptCHFrameReceived(
-    const GURL& url,
-    const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame) {}
 
 bool URLLoaderThrottle::makes_unsafe_redirect() {
   return false;
