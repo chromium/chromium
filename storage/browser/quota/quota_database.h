@@ -23,6 +23,7 @@
 #include "base/types/id_type.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -126,18 +127,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Returns all buckets for `type` in the buckets table. Returns a QuotaError
   // if the operation has failed.
-  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForType(
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForType(
       blink::mojom::StorageType type);
 
   // Retrieves all buckets for `host` and `type`. Returns a QuotaError if the
   // operation has failed.
-  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHost(
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForHost(
       const std::string& host,
       blink::mojom::StorageType type);
 
   // Returns all buckets for `storage_key` in the buckets table. Returns a
   // QuotaError if the operation has failed.
-  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKey(
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type);
 

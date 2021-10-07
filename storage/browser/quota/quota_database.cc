@@ -17,6 +17,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -235,37 +236,33 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetBucket(
                     statement.ColumnInt(2));
 }
 
-QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForType(
+QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForType(
     StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   QuotaError open_error = EnsureOpened(EnsureOpenedMode::kFailIfNotFound);
   if (open_error != QuotaError::kNone)
     return open_error;
 
-  // clang-format off
   static constexpr char kSql[] =
-      "SELECT id, storage_key, name, expiration, quota "
-        "FROM buckets "
-        "WHERE type = ?";
-  // clang-format on
+      "SELECT id, storage_key, name FROM buckets WHERE type = ?";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(type));
 
-  std::set<BucketInfo> buckets;
+  std::set<BucketLocator> buckets;
   while (statement.Step()) {
     absl::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
     if (!read_storage_key.has_value())
       continue;
     buckets.emplace(BucketId(statement.ColumnInt64(0)),
-                    read_storage_key.value(), type, statement.ColumnString(2),
-                    statement.ColumnTime(3), statement.ColumnInt(4));
+                    read_storage_key.value(), type,
+                    statement.ColumnString(2) == kDefaultBucketName);
   }
   return buckets;
 }
 
-QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForHost(
+QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForHost(
     const std::string& host,
     blink::mojom::StorageType storage_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -273,17 +270,14 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForHost(
   if (open_error != QuotaError::kNone)
     return open_error;
 
-  // clang-format off
   static constexpr char kSql[] =
-      "SELECT id, storage_key, name, expiration, quota FROM buckets "
-        "WHERE host = ? AND type = ?";
-  // clang-format on
+      "SELECT id, storage_key, name FROM buckets WHERE host = ? AND type = ?";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, host);
   statement.BindInt(1, static_cast<int>(storage_type));
 
-  std::set<BucketInfo> buckets;
+  std::set<BucketLocator> buckets;
   while (statement.Step()) {
     absl::optional<StorageKey> read_storage_key =
         StorageKey::Deserialize(statement.ColumnString(1));
@@ -291,13 +285,12 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForHost(
       continue;
     buckets.emplace(BucketId(statement.ColumnInt64(0)),
                     read_storage_key.value(), storage_type,
-                    statement.ColumnString(2), statement.ColumnTime(3),
-                    statement.ColumnInt(4));
+                    statement.ColumnString(2) == kDefaultBucketName);
   }
   return buckets;
 }
 
-QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForStorageKey(
+QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForStorageKey(
     const StorageKey& storage_key,
     StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -305,22 +298,17 @@ QuotaErrorOr<std::set<BucketInfo>> QuotaDatabase::GetBucketsForStorageKey(
   if (open_error != QuotaError::kNone)
     return open_error;
 
-  // clang-format off
   static constexpr char kSql[] =
-      "SELECT id, name, expiration, quota "
-        "FROM buckets "
-        "WHERE storage_key = ? AND type = ?";
-  // clang-format on
+      "SELECT id, name FROM buckets WHERE storage_key = ? AND type = ?";
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, storage_key.Serialize());
   statement.BindInt(1, static_cast<int>(type));
 
-  std::set<BucketInfo> buckets;
+  std::set<BucketLocator> buckets;
   while (statement.Step()) {
     buckets.emplace(BucketId(statement.ColumnInt64(0)), storage_key, type,
-                    statement.ColumnString(1), statement.ColumnTime(2),
-                    statement.ColumnInt(3));
+                    statement.ColumnString(1) == kDefaultBucketName);
   }
   return buckets;
 }

@@ -38,6 +38,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/client_usage_tracker.h"
@@ -127,14 +128,14 @@ QuotaErrorOr<std::set<StorageKey>> GetStorageKeysForTypeOnDBThread(
   return database->GetStorageKeysForType(type);
 }
 
-QuotaErrorOr<std::set<BucketInfo>> GetBucketsForTypeOnDBThread(
+QuotaErrorOr<std::set<BucketLocator>> GetBucketsForTypeOnDBThread(
     StorageType type,
     QuotaDatabase* database) {
   DCHECK(database);
   return database->GetBucketsForType(type);
 }
 
-QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHostOnDBThread(
+QuotaErrorOr<std::set<BucketLocator>> GetBucketsForHostOnDBThread(
     const std::string& host,
     StorageType type,
     QuotaDatabase* database) {
@@ -142,7 +143,7 @@ QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHostOnDBThread(
   return database->GetBucketsForHost(host, type);
 }
 
-QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKeyOnDBThread(
+QuotaErrorOr<std::set<BucketLocator>> GetBucketsForStorageKeyOnDBThread(
     const StorageKey& storage_key,
     StorageType type,
     QuotaDatabase* database) {
@@ -1154,7 +1155,7 @@ void QuotaManagerImpl::GetStorageKeysForType(blink::mojom::StorageType type,
 
 void QuotaManagerImpl::GetBucketsForType(
     blink::mojom::StorageType type,
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
@@ -1167,7 +1168,7 @@ void QuotaManagerImpl::GetBucketsForType(
 void QuotaManagerImpl::GetBucketsForHost(
     const std::string& host,
     blink::mojom::StorageType type,
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
@@ -1180,7 +1181,7 @@ void QuotaManagerImpl::GetBucketsForHost(
 void QuotaManagerImpl::GetBucketsForStorageKey(
     const StorageKey& storage_key,
     blink::mojom::StorageType type,
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
 
@@ -2278,8 +2279,8 @@ void QuotaManagerImpl::DidGetStorageKeys(
 }
 
 void QuotaManagerImpl::DidGetBuckets(
-    base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
-    QuotaErrorOr<std::set<BucketInfo>> result) {
+    base::OnceCallback<void(QuotaErrorOr<std::set<BucketLocator>>)> callback,
+    QuotaErrorOr<std::set<BucketLocator>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
   std::move(callback).Run(std::move(result));

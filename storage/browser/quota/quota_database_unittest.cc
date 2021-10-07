@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -40,6 +41,15 @@ static const blink::mojom::StorageType kTemp =
     blink::mojom::StorageType::kTemporary;
 static const blink::mojom::StorageType kPerm =
     blink::mojom::StorageType::kPersistent;
+
+bool ContainsBucket(const std::set<BucketLocator>& buckets,
+                    const BucketInfo& target_bucket) {
+  BucketLocator target_bucket_locator(
+      target_bucket.id, target_bucket.storage_key, target_bucket.type,
+      target_bucket.name == kDefaultBucketName);
+  auto it = buckets.find(target_bucket_locator);
+  return it != buckets.end();
+}
 
 }  // namespace
 
@@ -294,19 +304,19 @@ TEST_P(QuotaDatabaseTest, GetBucketsForType) {
   ASSERT_TRUE(bucket_result.ok());
   BucketInfo perm_bucket2 = bucket_result.value();
 
-  QuotaErrorOr<std::set<BucketInfo>> result = db.GetBucketsForType(kTemp);
+  QuotaErrorOr<std::set<BucketLocator>> result = db.GetBucketsForType(kTemp);
   ASSERT_TRUE(result.ok());
-  std::set<BucketInfo> buckets = result.value();
+  std::set<BucketLocator> buckets = result.value();
   ASSERT_EQ(2U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(temp_bucket1));
-  EXPECT_EQ(1U, buckets.count(temp_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
 
   result = db.GetBucketsForType(kPerm);
   ASSERT_TRUE(result.ok());
   buckets = result.value();
   ASSERT_EQ(2U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(perm_bucket1));
-  EXPECT_EQ(1U, buckets.count(perm_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, perm_bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets, perm_bucket2));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
@@ -326,12 +336,12 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
       StorageKey::CreateFromStringForTesting("http://google.com:123/"),
       "default", kTemp);
 
-  QuotaErrorOr<std::set<BucketInfo>> result =
+  QuotaErrorOr<std::set<BucketLocator>> result =
       db.GetBucketsForHost("example.com", kTemp);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 2U);
-  EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket1.value()));
-  EXPECT_TRUE(base::Contains(result.value(), temp_example_bucket2.value()));
+  EXPECT_TRUE(ContainsBucket(result.value(), temp_example_bucket1.value()));
+  EXPECT_TRUE(ContainsBucket(result.value(), temp_example_bucket2.value()));
 
   result = db.GetBucketsForHost("example.com", kPerm);
   ASSERT_TRUE(result.ok());
@@ -340,12 +350,12 @@ TEST_P(QuotaDatabaseTest, GetBucketsForHost) {
   result = db.GetBucketsForHost("google.com", kPerm);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 1U);
-  EXPECT_TRUE(base::Contains(result.value(), perm_google_bucket1.value()));
+  EXPECT_TRUE(ContainsBucket(result.value(), perm_google_bucket1.value()));
 
   result = db.GetBucketsForHost("google.com", kTemp);
   ASSERT_TRUE(result.ok());
   ASSERT_EQ(result->size(), 1U);
-  EXPECT_TRUE(base::Contains(result.value(), temp_google_bucket2.value()));
+  EXPECT_TRUE(ContainsBucket(result.value(), temp_google_bucket2.value()));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
@@ -374,19 +384,19 @@ TEST_P(QuotaDatabaseTest, GetBucketsForStorageKey) {
   ASSERT_TRUE(bucket_result.ok());
   BucketInfo perm_bucket2 = bucket_result.value();
 
-  QuotaErrorOr<std::set<BucketInfo>> result =
+  QuotaErrorOr<std::set<BucketLocator>> result =
       db.GetBucketsForStorageKey(storage_key1, kTemp);
   ASSERT_TRUE(result.ok());
-  std::set<BucketInfo> buckets = result.value();
+  std::set<BucketLocator> buckets = result.value();
   ASSERT_EQ(2U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(temp_bucket1));
-  EXPECT_EQ(1U, buckets.count(temp_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets, temp_bucket2));
 
   result = db.GetBucketsForStorageKey(storage_key2, kPerm);
   ASSERT_TRUE(result.ok());
   buckets = result.value();
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(perm_bucket2));
+  EXPECT_TRUE(ContainsBucket(buckets, perm_bucket2));
 }
 
 TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {

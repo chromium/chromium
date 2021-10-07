@@ -31,6 +31,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -90,6 +91,15 @@ MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
                                      result_listener) &&
          testing::ExplainMatchResult(type, arg.type, result_listener) &&
          testing::ExplainMatchResult(use_count, arg.use_count, result_listener);
+}
+
+bool ContainsBucket(const std::set<BucketLocator>& buckets,
+                    const BucketInfo& target_bucket) {
+  BucketLocator target_bucket_locator(
+      target_bucket.id, target_bucket.storage_key, target_bucket.type,
+      target_bucket.name == kDefaultBucketName);
+  auto it = buckets.find(target_bucket_locator);
+  return it != buckets.end();
 }
 
 }  // namespace
@@ -192,13 +202,13 @@ class QuotaManagerImplTest : public testing::Test {
     run_loop.Run();
   }
 
-  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForType(
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForType(
       blink::mojom::StorageType storage_type) {
     base::RunLoop run_loop;
-    QuotaErrorOr<std::set<BucketInfo>> buckets;
+    QuotaErrorOr<std::set<BucketLocator>> buckets;
     quota_manager_impl_->GetBucketsForType(
         storage_type, base::BindLambdaForTesting(
-                          [&](QuotaErrorOr<std::set<BucketInfo>> result) {
+                          [&](QuotaErrorOr<std::set<BucketLocator>> result) {
                             buckets = std::move(result);
                             run_loop.Quit();
                           }));
@@ -206,15 +216,15 @@ class QuotaManagerImplTest : public testing::Test {
     return buckets;
   }
 
-  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForHost(
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForHost(
       const std::string& host,
       blink::mojom::StorageType storage_type) {
     base::RunLoop run_loop;
-    QuotaErrorOr<std::set<BucketInfo>> buckets;
+    QuotaErrorOr<std::set<BucketLocator>> buckets;
     quota_manager_impl_->GetBucketsForHost(
         host, storage_type,
         base::BindLambdaForTesting(
-            [&](QuotaErrorOr<std::set<BucketInfo>> result) {
+            [&](QuotaErrorOr<std::set<BucketLocator>> result) {
               buckets = std::move(result);
               run_loop.Quit();
             }));
@@ -222,15 +232,15 @@ class QuotaManagerImplTest : public testing::Test {
     return buckets;
   }
 
-  QuotaErrorOr<std::set<BucketInfo>> GetBucketsForStorageKey(
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForStorageKey(
       const StorageKey& storage_key,
       blink::mojom::StorageType storage_type) {
     base::RunLoop run_loop;
-    QuotaErrorOr<std::set<BucketInfo>> buckets;
+    QuotaErrorOr<std::set<BucketLocator>> buckets;
     quota_manager_impl_->GetBucketsForStorageKey(
         storage_key, storage_type,
         base::BindLambdaForTesting(
-            [&](QuotaErrorOr<std::set<BucketInfo>> result) {
+            [&](QuotaErrorOr<std::set<BucketLocator>> result) {
               buckets = std::move(result);
               run_loop.Quit();
             }));
@@ -824,18 +834,18 @@ TEST_F(QuotaManagerImplTest, GetBucketsForType) {
   EXPECT_TRUE(bucket_.ok());
   BucketInfo bucket_c = bucket_.value();
 
-  QuotaErrorOr<std::set<BucketInfo>> result = GetBucketsForType(kTemp);
+  QuotaErrorOr<std::set<BucketLocator>> result = GetBucketsForType(kTemp);
   EXPECT_TRUE(result.ok());
 
-  std::set<BucketInfo> buckets = result.value();
+  std::set<BucketLocator> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(bucket_a));
-  EXPECT_EQ(1U, buckets.count(bucket_b));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket_a));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket_b));
 
   result = GetBucketsForType(kPerm);
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(bucket_c));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket_c));
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsForHost) {
@@ -855,18 +865,19 @@ TEST_F(QuotaManagerImplTest, GetBucketsForHost) {
   EXPECT_TRUE(bucket_.ok());
   BucketInfo host_b_bucket = bucket_.value();
 
-  QuotaErrorOr<std::set<BucketInfo>> result = GetBucketsForHost("a.com", kTemp);
+  QuotaErrorOr<std::set<BucketLocator>> result =
+      GetBucketsForHost("a.com", kTemp);
   EXPECT_TRUE(result.ok());
 
-  std::set<BucketInfo> buckets = result.value();
+  std::set<BucketLocator> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(host_a_bucket_1));
-  EXPECT_EQ(1U, buckets.count(host_a_bucket_2));
+  EXPECT_TRUE(ContainsBucket(buckets, host_a_bucket_1));
+  EXPECT_TRUE(ContainsBucket(buckets, host_a_bucket_2));
 
   result = GetBucketsForHost("b.com", kPerm);
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(host_b_bucket));
+  EXPECT_TRUE(ContainsBucket(buckets, host_b_bucket));
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
@@ -890,14 +901,14 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
   EXPECT_TRUE(bucket_.ok());
   BucketInfo bucket_c = bucket_.value();
 
-  QuotaErrorOr<std::set<BucketInfo>> result =
+  QuotaErrorOr<std::set<BucketLocator>> result =
       GetBucketsForStorageKey(storage_key_a, kTemp);
   EXPECT_TRUE(result.ok());
 
-  std::set<BucketInfo> buckets = result.value();
+  std::set<BucketLocator> buckets = result.value();
   EXPECT_EQ(2U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(bucket_a1));
-  EXPECT_EQ(1U, buckets.count(bucket_a2));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket_a1));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket_a2));
 
   result = GetBucketsForStorageKey(storage_key_a, kPerm);
   EXPECT_TRUE(result.ok());
@@ -908,7 +919,7 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
 
   buckets = result.value();
   EXPECT_EQ(1U, buckets.size());
-  EXPECT_EQ(1U, buckets.count(bucket_c));
+  EXPECT_TRUE(ContainsBucket(buckets, bucket_c));
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
