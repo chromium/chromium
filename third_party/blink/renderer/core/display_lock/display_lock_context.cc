@@ -43,7 +43,6 @@ const char* kContainmentNotSatisfied =
     "Containment requirement is not satisfied.";
 const char* kUnsupportedDisplay =
     "Element has unsupported display type (display: contents).";
-const char* kNoComputedStyle = "Element does not have a computed style.";
 }  // namespace rejection_names
 
 void RecordActivationReason(Document* document,
@@ -356,6 +355,14 @@ bool DisplayLockContext::ShouldStyleChildren() const {
 }
 
 void DisplayLockContext::DidStyleSelf() {
+  // If we don't have a style after styling self, it means that we should revert
+  // to the default state of being visible. This will get updated when we gain
+  // new style.
+  if (!element_->GetComputedStyle()) {
+    SetRequestedState(EContentVisibility::kVisible);
+    return;
+  }
+
   // TODO(vmpstr): This needs to be in the spec.
   if (ForceUnlockIfNeeded())
     return;
@@ -923,12 +930,7 @@ const char* DisplayLockContext::ShouldForceUnlock() const {
     return rejection_names::kUnsupportedDisplay;
 
   auto* style = element_->GetComputedStyle();
-  // Note that if for whatever reason we don't have computed style, then unlock
-  // this lock. This would be the case if we're in a display:none subtree. We
-  // need to unlock to make sure our subtree also clears style so that style
-  // assumptions about display:none subtrees are not broken.
-  if (!style)
-    return rejection_names::kNoComputedStyle;
+  DCHECK(style);
 
   // We need style and layout containment in order to properly lock the subtree.
   if (!style->ContainsStyle() || !style->ContainsLayout())
