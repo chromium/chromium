@@ -404,7 +404,7 @@ gfx::Rect UnifiedMessageListView::GetNotificationBoundsBelowY(
 }
 
 gfx::Size UnifiedMessageListView::CalculatePreferredSize() const {
-  return gfx::Size(kTrayMenuWidth,
+  return gfx::Size(message_view_width_,
                    gfx::Tween::IntValueBetween(GetCurrentValue(), start_height_,
                                                ideal_height_));
 }
@@ -645,6 +645,12 @@ void UnifiedMessageListView::CollapseAllNotifications() {
 }
 
 void UnifiedMessageListView::UpdateBorders(bool force_update) {
+  // We do not need individual notifications to have rounded corners
+  // on the borders with the new UI. This is because the entire
+  // scroll view has rounded corners now.
+  if (is_notifications_refresh_enabled_)
+    return;
+
   // The top notification is drawn with rounded corners when the stacking bar is
   // not shown.
   bool is_top = state_ != State::MOVE_DOWN;
@@ -669,12 +675,10 @@ void UnifiedMessageListView::UpdateBounds() {
       y += kMessageListNotificationSpacing;
 
     view->set_start_bounds(view->ideal_bounds());
-    view->set_ideal_bounds(
-        view->is_removed()
-            ? gfx::Rect(message_view_width_ * direction, y, message_view_width_,
-                        height)
-            : gfx::Rect((kTrayMenuWidth - message_view_width_) / 2, y,
-                        message_view_width_, height));
+    view->set_ideal_bounds(view->is_removed()
+                               ? gfx::Rect(message_view_width_ * direction, y,
+                                           message_view_width_, height)
+                               : gfx::Rect(0, y, message_view_width_, height));
     y += height;
   }
 

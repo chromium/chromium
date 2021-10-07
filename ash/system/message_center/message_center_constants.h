@@ -20,8 +20,9 @@ constexpr int kGroupedNotificationsCollapsedSpacing = 6;
 constexpr gfx::Insets kGroupedNotificationContainerInsets(8, 0);
 
 constexpr int kMessagePopupCornerRadius = 16;
-constexpr int kMessageCenterNotificationCornerRadius = 2;
 
+constexpr int kMessageCenterNotificationCornerRadius = 2;
+constexpr int kMessageCenterScrollViewCornerRadius = 12;
 constexpr int kMessageCenterSidePadding = 8;
 constexpr int kMessageCenterBottomPadding = 8;
 constexpr int kMessageListNotificationSpacing = 2;

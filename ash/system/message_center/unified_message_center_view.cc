@@ -23,6 +23,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
@@ -107,6 +108,11 @@ void UnifiedMessageCenterView::Init() {
   scroller_->SetBackgroundColor(absl::nullopt);
   scroller_->SetVerticalScrollBar(base::WrapUnique(scroll_bar_));
   scroller_->SetDrawOverflowIndicator(false);
+  if (is_notifications_refresh_enabled_) {
+    scroller_->SetPaintToLayer();
+    scroller_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{kMessageCenterScrollViewCornerRadius});
+  }
   AddChildView(scroller_);
 
   notification_bar_->Update(
@@ -238,9 +244,11 @@ void UnifiedMessageCenterView::Layout() {
       scroller_bottom_inset += kMessageCenterBottomPadding;
 
     gfx::Rect scroller_bounds(GetContentsBounds());
-    scroller_bounds.Inset(
-        gfx::Insets(notification_bar_height - notification_bar_offset, 0,
-                    scroller_bottom_inset, 0));
+    int scroller_side_padding =
+        is_notifications_refresh_enabled_ ? kMessageCenterSidePadding : 0;
+    scroller_bounds.Inset(gfx::Insets(
+        notification_bar_height - notification_bar_offset,
+        scroller_side_padding, scroller_bottom_inset, scroller_side_padding));
     scroller_->SetBoundsRect(scroller_bounds);
   } else {
     scroller_->SetBoundsRect(GetContentsBounds());
