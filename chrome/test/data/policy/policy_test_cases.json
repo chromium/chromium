@@ -7471,6 +7471,35 @@
       }
     ]
   },
+  "FastPairEnabled": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policy set)",
+        "policies": {},
+        "prefs": {
+          "ash.fast_pair.enabled": {
+            "location": "user_profile",
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check simple policy value",
+        "policies": {
+          "FastPairEnabled": false
+        },
+        "prefs": {
+          "ash.fast_pair.enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "GloballyScopeHTTPAuthCacheEnabled": {
     "os": [
       "win",

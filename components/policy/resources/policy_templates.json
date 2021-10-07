@@ -28297,6 +28297,36 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       If not set, no preconfigured desk template will be included in the list of desk templates.  If the <ph name="DESK_TEMPLATES_ENABLED_POLICY_NAME">DeskTemplatesEnabled</ph>
       policy is not set to true, this policy has no effect.'''
     },
+    {
+      'name': 'FastPairEnabled',
+      'owners': ['file://ash/quick_pair/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Force Fast Pair (fast Bluetooth pairing) to be enabled.',
+        },
+        {
+          'value': False,
+          'caption': 'Force Fast Pair (fast Bluetooth pairing) to be disabled.',
+        },
+      ],
+      'default': True,
+      'example_value': True,
+      'id': 912,
+      'caption': '''Enable Fast Pair (fast Bluetooth pairing)''',
+      'tags': [],
+      'desc': '''Setting this policy will force Fast Pair to be enabled or disabled.
+      Fast Pair is a new Bluetooth pairing flow that links paired peripherals with a GAIA account.
+      This allows other Chrome OS (and Android) devices signed in with the same GAIA account to pair automatically.
+      If unset, Fast Pair will follow Chrome OS's default, which is enabled.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -29261,6 +29291,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 911,
+  'highest_id_currently_used': 912,
   'highest_atomic_group_id_currently_used': 41
 }
