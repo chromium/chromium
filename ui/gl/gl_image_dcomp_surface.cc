@@ -57,17 +57,6 @@ bool GLImageDCOMPSurface::CopyTexSubImage(unsigned target,
   return false;
 }
 
-bool GLImageDCOMPSurface::ScheduleOverlayPlane(
-    gfx::AcceleratedWidget widget,
-    int z_order,
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  return false;
-}
-
 void GLImageDCOMPSurface::SetSize(gfx::Size size) {
   size_ = size;
 }

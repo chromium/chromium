@@ -170,13 +170,6 @@ TEST_F(CodecImageTest, CopyTexImageIsInvalidForOverlayImages) {
   ASSERT_NE(gl::GLImage::COPY, i->ShouldBindOrCopy());
 }
 
-TEST_F(CodecImageTest, ScheduleOverlayPlaneIsInvalidForTextureOwnerImages) {
-  auto i = NewImage(kTextureOwner);
-  ASSERT_FALSE(i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0,
-                                       gfx::OverlayTransform(), gfx::Rect(),
-                                       gfx::RectF(), true, nullptr));
-}
-
 TEST_F(CodecImageTest, CopyTexImageFailsIfTargetIsNotOES) {
   auto i = NewImage(kTextureOwner);
   ASSERT_FALSE(i->CopyTexImage(GL_TEXTURE_2D));
@@ -205,18 +198,6 @@ TEST_F(CodecImageTest, CopyTexImageTriggersFrontBufferRendering) {
   EXPECT_CALL(*codec_buffer_wait_coordinator_->texture_owner(),
               UpdateTexImage());
   i->CopyTexImage(GL_TEXTURE_EXTERNAL_OES);
-  ASSERT_TRUE(i->was_rendered_to_front_buffer());
-}
-
-TEST_F(CodecImageTest, ScheduleOverlayPlaneTriggersFrontBufferRendering) {
-  auto i = NewImage(kOverlay);
-  EXPECT_CALL(*codec_, ReleaseOutputBuffer(_, true));
-  // Also verify that it sends the appropriate promotion hint so that the
-  // overlay is positioned properly.
-  PromotionHintAggregator::Hint hint(gfx::Rect(1, 2, 3, 4), true);
-  EXPECT_CALL(promotion_hint_receiver_, OnPromotionHint(hint));
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint.screen_rect, gfx::RectF(), true, nullptr);
   ASSERT_TRUE(i->was_rendered_to_front_buffer());
 }
 
@@ -314,24 +295,6 @@ TEST_F(CodecImageTest, RenderToFrontBufferRestoresGLContext) {
   context = nullptr;
   share_group = nullptr;
   surface = nullptr;
-}
-
-TEST_F(CodecImageTest, ScheduleOverlayPlaneDoesntSendDuplicateHints) {
-  // SOP should send only one promotion hint unless the position changes.
-  auto i = NewImage(kOverlay);
-  // Also verify that it sends the appropriate promotion hint so that the
-  // overlay is positioned properly.
-  PromotionHintAggregator::Hint hint1(gfx::Rect(1, 2, 3, 4), true);
-  PromotionHintAggregator::Hint hint2(gfx::Rect(5, 6, 7, 8), true);
-  EXPECT_CALL(promotion_hint_receiver_, OnPromotionHint(hint1)).Times(1);
-  EXPECT_CALL(promotion_hint_receiver_, OnPromotionHint(hint2)).Times(1);
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint1.screen_rect, gfx::RectF(), true, nullptr);
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint1.screen_rect, gfx::RectF(), true, nullptr);
-  // Sending a different rectangle should send another hint.
-  i->ScheduleOverlayPlane(gfx::AcceleratedWidget(), 0, gfx::OverlayTransform(),
-                          hint2.screen_rect, gfx::RectF(), true, nullptr);
 }
 
 TEST_F(CodecImageTest, GetAHardwareBuffer) {

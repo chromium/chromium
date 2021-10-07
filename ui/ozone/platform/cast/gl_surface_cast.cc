@@ -90,26 +90,6 @@ bool GLSurfaceCast::Resize(const gfx::Size& size,
                                         has_alpha);
 }
 
-bool GLSurfaceCast::ScheduleOverlayPlane(
-    int z_order,
-    gfx::OverlayTransform transform,
-    gl::GLImage* image,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    const gfx::Rect& damage_rect,
-    float opacity,
-    std::unique_ptr<gfx::GpuFence> gpu_fence,
-    gfx::OverlayPriorityHint priority_hint) {
-  // Currently the Ozone-Cast platform doesn't use the gpu_fence, so we don't
-  // propagate it further. If this changes we will need to store the gpu fence
-  // to ensure it stays valid for as long as the operation needs it, and pass a
-  // pointer to the fence in the call below.
-  return image->ScheduleOverlayPlane(widget_, z_order, transform, bounds_rect,
-                                     crop_rect, enable_blend,
-                                     /* gpu_fence */ nullptr);
-}
-
 EGLConfig GLSurfaceCast::GetConfig() {
   if (!config_) {
     EGLint config_attribs[] = {EGL_BUFFER_SIZE,

@@ -35,16 +35,6 @@ class GLSurfaceCast : public gl::NativeViewGLSurfaceEGL {
               float scale_factor,
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
-  bool ScheduleOverlayPlane(int z_order,
-                            gfx::OverlayTransform transform,
-                            gl::GLImage* image,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            const gfx::Rect& damage_rect,
-                            float opacity,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence,
-                            gfx::OverlayPriorityHint priority_hint) override;
   EGLConfig GetConfig() override;
   int GetBufferCount() const override;
 

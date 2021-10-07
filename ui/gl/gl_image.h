@@ -41,10 +41,6 @@ class ScopedHardwareBufferFenceSync;
 }  // namespace android
 }  // namespace base
 
-namespace gfx {
-class GpuFence;
-}
-
 namespace gl {
 
 // Encapsulates an image that can be bound and/or copied to a texture, hiding
@@ -99,15 +95,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   virtual bool CopyTexSubImage(unsigned target,
                                const gfx::Point& offset,
                                const gfx::Rect& rect);
-
-  // Schedule image as an overlay plane to be shown at swap time for |widget|.
-  virtual bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                                    int z_order,
-                                    gfx::OverlayTransform transform,
-                                    const gfx::Rect& bounds_rect,
-                                    const gfx::RectF& crop_rect,
-                                    bool enable_blend,
-                                    std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   // Set the color space when image is used as an overlay.
   virtual void SetColorSpace(const gfx::ColorSpace& color_space);
