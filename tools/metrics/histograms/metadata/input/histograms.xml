@@ -1043,6 +1043,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.VirtualKeyboard.Paprika.Actions"
+    enum="IMEPaprikaActions" expires_after="M100">
+  <owner>jopalmer@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Type of action performed by the user in Paprika. Recorded when the action is
+    performed. Only for Chrome OS
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.VirtualKeyboard.PreferredLayoutForStylus"
     enum="IMEVKLayout" expires_after="2021-12-12">
   <owner>shend@chromium.org</owner>

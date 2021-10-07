@@ -42827,6 +42827,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="WITH_DIACRITICS"/>
 </enum>
 
+<enum name="IMEPaprikaActions">
+  <int value="0" label="DELETE"/>
+  <int value="1" label="SWITCH_TO_VK"/>
+  <int value="2" label="UNDO"/>
+</enum>
+
 <enum name="IMERegisterProxyView">
   <obsolete>
     Removed as of Jan 2020.
