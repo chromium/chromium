@@ -521,6 +521,12 @@ TEST_F('CrSettingsPrivacyReviewPageTest', 'PrivacyReviewPageTests', function() {
   runMochaSuite('PrivacyReviewPage');
 });
 
+
+TEST_F(
+    'CrSettingsPrivacyReviewPageTest', 'HistorySyncFragmentTests', function() {
+      runMochaSuite('HistorySyncFragment');
+    });
+
 // eslint-disable-next-line no-var
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */

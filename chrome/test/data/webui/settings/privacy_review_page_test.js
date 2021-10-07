@@ -5,8 +5,9 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
-import {Route, Router, routes} from 'chrome://settings/settings.js';
+import {PrivacyReviewHistorySyncFragmentElement, SettingsPrivacyReviewPageElement} from 'chrome://settings/lazy_load.js';
+import {Route, Router, routes, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {TestSyncBrowserProxy} from 'chrome://test/settings/test_sync_browser_proxy.js';
 
 import {assertEquals} from '../chai_assert.js';
 import {flushTasks, isChildVisible} from '../test_util.js';
@@ -291,5 +292,68 @@ suite('PrivacyReviewPage', function() {
         .then(function() {
           assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
         });
+  });
+});
+
+suite('HistorySyncFragment', function() {
+  /** @type {!PrivacyReviewHistorySyncFragmentElement} */
+  let page;
+  /** @type {!SyncBrowserProxy} */
+  let syncBrowserProxy;
+
+  setup(function() {
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+
+    document.body.innerHTML = '';
+    page = /** @type {!PrivacyReviewHistorySyncFragmentElement} */
+        (document.createElement('privacy-review-history-sync-fragment'));
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  /**
+   * @param {boolean} syncAllOnBefore If sync-all is on before the click.
+   * @param {boolean} historySyncOnBefore If history sync is on before the
+   *     click.
+   * @param {boolean} historySyncOnAfter If history sync is expected to be on
+   *     after the click.
+   */
+  async function assertBrowserProxyCallOnToggleClicked(
+      syncAllOnBefore, historySyncOnBefore, historySyncOnAfterwardsExpected) {
+    const event = {
+      syncAllDataTypes: syncAllOnBefore,
+      typedUrlsSynced: historySyncOnBefore,
+    };
+    webUIListenerCallback('sync-prefs-changed', event);
+    flush();
+
+    page.shadowRoot.querySelector('#historyToggle').click();
+
+    const syncPrefs = await syncBrowserProxy.whenCalled('setSyncDatatypes');
+    assertFalse(syncPrefs.syncAllDataTypes);
+    assertEquals(historySyncOnAfterwardsExpected, syncPrefs.typedUrlsSynced);
+  }
+
+  test('syncAllOnDisableHistorySync', async function() {
+    assertBrowserProxyCallOnToggleClicked(
+        /*syncAllOnBefore=*/ true, /*historySyncOnBefore=*/ true,
+        /*historySyncOnAfterwardsExpected=*/ false);
+  });
+
+  test('syncAllOffDisableHistorySync', async function() {
+    assertBrowserProxyCallOnToggleClicked(
+        /*syncAllOnBefore=*/ false, /*historySyncOnBefore=*/ true,
+        /*historySyncOnAfterwardsExpected=*/ false);
+  });
+
+  test('syncAllOffEnableHistorySync', async function() {
+    assertBrowserProxyCallOnToggleClicked(
+        /*syncAllOnBefore=*/ false, /*historySyncOnBefore=*/ false,
+        /*historySyncOnAfterwardsExpected=*/ true);
   });
 });
