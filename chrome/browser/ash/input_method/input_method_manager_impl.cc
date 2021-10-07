@@ -522,8 +522,10 @@ void InputMethodManagerImpl::StateImpl::ChangeInputMethod(
   // happens after activating the 3rd party IME.
   // So here to record the 3rd party IME to be activated, and activate it
   // when SetEnabledExtensionImes happens later.
-  if (MethodAwaitsExtensionLoad(input_method_id))
+  if (!InputMethodIsEnabled(input_method_id) &&
+      extension_ime_util::IsExtensionIME(input_method_id)) {
     pending_input_method_id_ = input_method_id;
+  }
 
   if (descriptor->id() != current_input_method_.id()) {
     last_used_input_method_id_ = current_input_method_.id();
@@ -559,16 +561,6 @@ void InputMethodManagerImpl::StateImpl::ToggleInputMethodForJpIme() {
           ? extension_ime_util::GetInputMethodIDByEngineID("xkb:jp::jpn")
           : jp_ime_id,
       true);
-}
-
-bool InputMethodManagerImpl::StateImpl::MethodAwaitsExtensionLoad(
-    const std::string& input_method_id) const {
-  // For 3rd party IME, when the user just logged in, SetEnabledExtensionImes
-  // happens after activating the 3rd party IME.
-  // So here to record the 3rd party IME to be activated, and activate it
-  // when SetEnabledExtensionImes happens later.
-  return !InputMethodIsEnabled(input_method_id) &&
-         extension_ime_util::IsExtensionIME(input_method_id);
 }
 
 void InputMethodManagerImpl::StateImpl::AddInputMethodExtension(

@@ -129,9 +129,6 @@ class InputMethodManagerImpl : public InputMethodManager,
         const std::string& input_method_id,
         std::vector<std::string>* new_enabled_input_method_ids) const;
 
-    // Returns true if given input method requires pending extension.
-    bool MethodAwaitsExtensionLoad(const std::string& input_method_id) const;
-
     // Returns true if the passed input method is allowed. By default, all input
     // methods are allowed. After SetAllowedKeyboardLayoutInputMethods was
     // called, the passed keyboard layout input methods are allowed and all
