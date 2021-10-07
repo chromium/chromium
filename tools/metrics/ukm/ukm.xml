@@ -9818,6 +9818,13 @@ be describing additional metrics about the same event.
       Type of media::Renderer used for the playback. In most cases we do not
       support dynamically changing RendererType during one playback.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="TimeToFirstFrame">
     <summary>
