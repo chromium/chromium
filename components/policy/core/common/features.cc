@@ -35,6 +35,9 @@ const base::Feature kLoginEventReporting{"LoginEventReporting",
 const base::Feature kPasswordBreachEventReporting{
     "PasswordBreachEventReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kChromeManagementPageAndroid{
+    "ChromeManagementPageAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 }  // namespace policy

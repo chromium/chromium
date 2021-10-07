@@ -270,6 +270,10 @@ public class NativePageFactory {
                 page = getBuilder().buildLaunchpadPage(tab);
                 break;
             case NativePageType.MANAGEMENT:
+                if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_MANAGEMENT_PAGE)) {
+                    return null;
+                }
+
                 page = getBuilder().buildManagementPage(tab);
                 break;
             default:

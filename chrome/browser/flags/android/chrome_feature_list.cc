@@ -46,6 +46,7 @@
 #include "components/paint_preview/features/features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/permissions/features.h"
+#include "components/policy/core/common/features.h"
 #include "components/query_tiles/switches.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -334,6 +335,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kRecoverFromNeverSaveAndroid,
     &performance_hints::features::kContextMenuPerformanceInfo,
     &permissions::features::kRevertDSEAutomaticPermissions,
+    &policy::features::kChromeManagementPageAndroid,
     &query_tiles::features::kQueryTilesGeoFilter,
     &query_tiles::features::kQueryTiles,
     &query_tiles::features::kQueryTilesInNTP,
