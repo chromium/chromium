@@ -18,7 +18,7 @@ class ReactionLayout extends RelativeLayout {
     private Drawable mDrawable;
     private ImageView mReaction;
 
-    ReactionLayout(Context context, AttributeSet attrs) {
+    public ReactionLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
