@@ -17,9 +17,10 @@
 namespace app_list {
 
 // The most-recently-frequently-used cache stores a mapping from strings -
-// called items - to scores that is persisted to disk. The cache has two
+// called items - to scores that is persisted to disk. The cache has two main
 // operations: |Use| boosts the score of an item, and |Get| returns the score
-// of an item.
+// of an item. |GetNormalized| returns the score of an item divided by the
+// sum of all scores.
 //
 // THEORY
 //
@@ -89,9 +90,14 @@ class MrfuCache {
   MrfuCache(const MrfuCache&) = delete;
   MrfuCache& operator=(const MrfuCache&) = delete;
 
+  // Records the use of |item|, increasing its score and decaying other scores.
   void Use(const std::string& item);
 
+  // Returns the score of |item|.
   float Get(const std::string& item);
+
+  // Returns the score of |item| divided by the sum of all scores.
+  float GetNormalized(const std::string& item);
 
  private:
   friend class MrfuCacheTest;

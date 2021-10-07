@@ -14,7 +14,7 @@
 namespace app_list {
 namespace {
 
-constexpr int kVersion = 1;
+constexpr int kVersion = 2;
 
 // We boost scores with the equation
 //
@@ -107,7 +107,10 @@ void MrfuCache::Use(const std::string& item) {
   // step, then decay the score, then add the boost for the current use.
   proto_->set_update_count(proto_->update_count() + 1);
   Decay(score);
-  score->set_score(score->score() + boost_coeff_ * (1.0f - score->score()));
+
+  float boost = boost_coeff_ * (1.0f - score->score());
+  score->set_score(score->score() + boost);
+  proto_->set_total_score(proto_->total_score() + boost);
 
   MaybeCleanup();
   proto_.QueueWrite();
@@ -125,14 +128,22 @@ float MrfuCache::Get(const std::string& item) {
   // |score| may not be current, so |Decay| it if needed.
   Score* score = &it->second;
   Decay(score);
+
   return score->score();
+}
+
+float MrfuCache::GetNormalized(const std::string& item) {
+  return Get(item) / proto_->total_score();
 }
 
 void MrfuCache::Decay(Score* score) {
   int64_t update_count = proto_->update_count();
   int64_t count_delta = update_count - score->last_update_count();
   if (count_delta > 0) {
-    score->set_score(score->score() * std::pow(decay_coeff_, count_delta));
+    float decay = std::pow(decay_coeff_, count_delta);
+    proto_->set_total_score(proto_->total_score() +
+                            (decay - 1.0f) * score->score());
+    score->set_score(score->score() * decay);
     score->set_last_update_count(update_count);
     proto_.QueueWrite();
   }
@@ -159,15 +170,22 @@ void MrfuCache::MaybeCleanup() {
             });
 
   // Clear the proto and reinsert at most |max_items_| items.
+  float new_total = 0.0f;
   proto_->clear_items();
   for (size_t i = 0; i < std::min(max_items_, kept_items.size()); ++i) {
     proto_->mutable_items()->insert(
         {kept_items[i].first, kept_items[i].second});
+    new_total += kept_items[i].second.score();
   }
+  proto_->set_total_score(new_total);
   proto_.QueueWrite();
 }
 
 void MrfuCache::OnProtoRead(ReadStatus status) {
+  if (!proto_->has_version() || proto_->version() != kVersion) {
+    proto_.Purge();
+  }
+
   proto_->set_version(kVersion);
 }
 

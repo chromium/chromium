@@ -11,9 +11,8 @@ package app_list;
 // The storage proto for the MrfuCache class, see its header comment for more
 // information.
 message MrfuCacheProto {
-  // Versioning information that can be used to discard on-disk state if an
-  // incompatible change is made to the MRFU cache's algorithm. Currently unset
-  // and unused.
+  // Versioning information that can be used to discard or migrate on-disk
+  // state if an incompatible change is made to the MRFU cache's algorithm.
   optional int32 version = 1;
 
   message Score {
@@ -24,4 +23,7 @@ message MrfuCacheProto {
 
   // The total number of updates by the MRFU cache.
   optional int64 update_count = 3 [default = 0];
+
+  // The sum of all scores in |items|.
+  optional float total_score = 4 [default = 0.0];
 }

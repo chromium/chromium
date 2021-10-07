@@ -100,6 +100,26 @@ TEST_F(MrfuCacheTest, UseAndDecayItem) {
   EXPECT_NEAR(cache.Get("A"), score / 2.0f, kEps);
 }
 
+TEST_F(MrfuCacheTest, GetNormalized) {
+  MrfuCache cache(GetPath(), TestingParams());
+  Wait();
+
+  cache.Use("A");
+  cache.Use("B");
+  cache.Use("A");
+  cache.Use("A");
+  cache.Use("B");
+  cache.Use("C");
+  float a = cache.Get("A");
+  float b = cache.Get("B");
+  float c = cache.Get("C");
+  float total = a + b + c;
+
+  EXPECT_NEAR(cache.GetNormalized("A"), a / total, kEps);
+  EXPECT_NEAR(cache.GetNormalized("B"), b / total, kEps);
+  EXPECT_NEAR(cache.GetNormalized("C"), c / total, kEps);
+}
+
 TEST_F(MrfuCacheTest, CorrectBoostCoeffApproximation) {
   // This is a hand-optimized solution to the boost coefficient equation
   // accurate to 3 dp. It uses a half-life of 10 (so decay coefficient of about
@@ -131,17 +151,26 @@ TEST_F(MrfuCacheTest, CleanupOnTooManyItems) {
   }
 
   // We should have retained only D, E, F as the three highest-scoring items.
-  EXPECT_GT(cache.Get("F"), cache.Get("E"));
-  EXPECT_GT(cache.Get("E"), cache.Get("D"));
-  EXPECT_GT(cache.Get("D"), cache.Get("C"));
-  EXPECT_FLOAT_EQ(cache.Get("C"), 0.0f);
-  EXPECT_FLOAT_EQ(cache.Get("B"), 0.0f);
-  EXPECT_FLOAT_EQ(cache.Get("A"), 0.0f);
+  float a = cache.Get("A");
+  float b = cache.Get("B");
+  float c = cache.Get("C");
+  float d = cache.Get("D");
+  float e = cache.Get("E");
+  float f = cache.Get("F");
+  EXPECT_GT(f, e);
+  EXPECT_GT(e, d);
+  EXPECT_GT(d, c);
+  EXPECT_FLOAT_EQ(c, 0.0f);
+  EXPECT_FLOAT_EQ(b, 0.0f);
+  EXPECT_FLOAT_EQ(a, 0.0f);
 
-  // And there should only be three items on disk.
+  // There should only be three items on disk.
   Wait();
   MrfuCacheProto proto = ReadFromDisk();
   EXPECT_EQ(proto.items_size(), 3);
+
+  // The total score should reflect the remaining three items.
+  EXPECT_NEAR(proto.total_score(), d + e + f, kEps);
 }
 
 TEST_F(MrfuCacheTest, WriteToDisk) {
@@ -171,6 +200,7 @@ TEST_F(MrfuCacheTest, ReadFromDisk) {
   // Create a test proto and write it to disk.
   MrfuCacheProto proto;
   MrfuCacheProto::Score score;
+  proto.set_version(2);
   proto.set_update_count(10);
   auto& items = *proto.mutable_items();
   score.set_score(0.5f);
