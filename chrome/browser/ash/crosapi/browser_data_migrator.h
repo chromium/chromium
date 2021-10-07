@@ -23,7 +23,15 @@ constexpr char kLacrosProfilePath[] = "Default";
 // The following are UMA names.
 constexpr char kFinalStatus[] = "Ash.BrowserDataMigrator.FinalStatus";
 constexpr char kCopiedDataSize[] = "Ash.BrowserDataMigrator.CopiedDataSizeMB";
+constexpr char kNoCopyDataSize[] = "Ash.BrowserDataMigrator.NoCopyDataSizeMB";
+constexpr char kAshDataSize[] = "Ash.BrowserDataMigrator.AshDataSizeMB";
+constexpr char kLacrosDataSize[] = "Ash.BrowserDataMigrator.LacrosDataSizeMB";
+constexpr char kCommonDataSize[] = "Ash.BrowserDataMigrator.CommonDataSizeMB";
 constexpr char kTotalTime[] = "Ash.BrowserDataMigrator.TotalTimeTakenMS";
+constexpr char kLacrosDataTime[] =
+    "Ash.BrowserDataMigrator.LacrosDataTimeTakenMS";
+constexpr char kCommonDataTime[] =
+    "Ash.BrowserDataMigrator.CommonDataTimeTakenMS";
 constexpr char kCreateDirectoryFail[] =
     "Ash.BrowserDataMigrator.CreateDirectoryFailure";
 

@@ -15,6 +15,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -247,7 +248,18 @@ void BrowserDataMigrator::RecordStatus(const FinalStatus& final_status,
     return;
   // Record byte size. Range 0 ~ 10GB in MBs.
   UMA_HISTOGRAM_CUSTOM_COUNTS(kCopiedDataSize,
+                              target_info->TotalCopySize() / 1024 / 1024, 1,
+                              10000, 100);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      kAshDataSize, target_info->ash_data_size / 1024 / 1024, 1, 10000, 100);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(kLacrosDataSize,
                               target_info->lacros_data_size / 1024 / 1024, 1,
+                              10000, 100);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(kCommonDataSize,
+                              target_info->common_data_size / 1024 / 1024, 1,
+                              10000, 100);
+  UMA_HISTOGRAM_CUSTOM_COUNTS(kNoCopyDataSize,
+                              target_info->no_copy_data_size / 1024 / 1024, 1,
                               10000, 100);
 
   if (!timer || final_status != FinalStatus::kSuccess)
@@ -489,10 +501,18 @@ bool BrowserDataMigrator::CopyTargetItems(const base::FilePath& to_dir,
   base::TimeDelta elapsed_time = timer.Elapsed();
   // TODO(crbug.com/1178702): Once BrowserDataMigrator stabilises, reduce the
   // log level to VLOG(1).
-  // TODO(crbug.com/1178702): Add a UMA metrics to record size and time.
   LOG(WARNING) << "Copied " << items_size / (1024 * 1024) << " MB of "
                << category_name << " data and it took "
                << elapsed_time.InMilliseconds() << " ms.";
+
+  if (category_name == kLacrosCategory) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(kLacrosDataTime, elapsed_time);
+  } else if (category_name == kCommonCategory) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(kCommonDataTime, elapsed_time);
+  } else {
+    NOTREACHED();
+  }
+
   return true;
 }
 

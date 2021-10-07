@@ -233,7 +233,10 @@ TEST_F(BrowserDataMigratorTest, RecordStatus) {
     base::HistogramTester histogram_tester;
 
     BrowserDataMigrator::TargetInfo target_info;
-    target_info.lacros_data_size = /* 200 MBs */ 200 * 1024 * 1024;
+    target_info.ash_data_size = /* 300 MBs */ 300 * 1024 * 1024;
+    target_info.lacros_data_size = /* 400 MBs */ 400 * 1024 * 1024;
+    target_info.common_data_size = /* 500 MBs */ 500 * 1024 * 1024;
+    target_info.no_copy_data_size = /* 600 MBs */ 600 * 1024 * 1024;
 
     base::ElapsedTimer timer;
 
@@ -242,12 +245,23 @@ TEST_F(BrowserDataMigratorTest, RecordStatus) {
 
     histogram_tester.ExpectTotalCount(kFinalStatus, 1);
     histogram_tester.ExpectTotalCount(kCopiedDataSize, 1);
+    histogram_tester.ExpectTotalCount(kAshDataSize, 1);
+    histogram_tester.ExpectTotalCount(kLacrosDataSize, 1);
+    histogram_tester.ExpectTotalCount(kCommonDataSize, 1);
     histogram_tester.ExpectTotalCount(kTotalTime, 1);
 
     histogram_tester.ExpectBucketCount(
         kFinalStatus, BrowserDataMigrator::FinalStatus::kSuccess, 1);
     histogram_tester.ExpectBucketCount(
-        kCopiedDataSize, target_info.lacros_data_size / (1024 * 1024), 1);
+        kCopiedDataSize, target_info.TotalCopySize() / (1024 * 1024), 1);
+    histogram_tester.ExpectBucketCount(
+        kAshDataSize, target_info.ash_data_size / (1024 * 1024), 1);
+    histogram_tester.ExpectBucketCount(
+        kLacrosDataSize, target_info.lacros_data_size / (1024 * 1024), 1);
+    histogram_tester.ExpectBucketCount(
+        kCommonDataSize, target_info.common_data_size / (1024 * 1024), 1);
+    histogram_tester.ExpectBucketCount(
+        kNoCopyDataSize, target_info.no_copy_data_size / (1024 * 1024), 1);
   }
 }
 
@@ -295,7 +309,13 @@ TEST_F(BrowserDataMigratorTest, Migrate) {
 
   histogram_tester.ExpectTotalCount(kFinalStatus, 1);
   histogram_tester.ExpectTotalCount(kCopiedDataSize, 1);
+  histogram_tester.ExpectTotalCount(kAshDataSize, 1);
+  histogram_tester.ExpectTotalCount(kLacrosDataSize, 1);
+  histogram_tester.ExpectTotalCount(kCommonDataSize, 1);
+  histogram_tester.ExpectTotalCount(kNoCopyDataSize, 1);
   histogram_tester.ExpectTotalCount(kTotalTime, 1);
+  histogram_tester.ExpectTotalCount(kLacrosDataTime, 1);
+  histogram_tester.ExpectTotalCount(kCommonDataTime, 1);
   histogram_tester.ExpectTotalCount(kCreateDirectoryFail, 0);
 
   histogram_tester.ExpectBucketCount(
