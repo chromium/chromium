@@ -91,10 +91,14 @@ bool SegmentSelectorImpl::CanComputeSegmentSelection(
   // Don't compute results if segment selection TTL hasn't expired.
   const auto& previous_selection =
       result_prefs_->ReadSegmentationResultFromPref(config_->segmentation_key);
-  if (previous_selection.has_value() &&
-      previous_selection->selection_time + config_->segment_selection_ttl >
-          clock_->Now()) {
-    return false;
+  if (previous_selection.has_value()) {
+    bool was_unknown_selected = previous_selection->segment_id ==
+                                OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+    base::TimeDelta ttl_to_use = was_unknown_selected
+                                     ? config_->unknown_selection_ttl
+                                     : config_->segment_selection_ttl;
+    if (previous_selection->selection_time + ttl_to_use > clock_->Now())
+      return false;
   }
 
   return true;
@@ -132,11 +136,13 @@ void SegmentSelectorImpl::UpdateSelectedSegment(
 
   // Auto-extend the results, if
   // (1) segment selection hasn't changed.
-  // (2) or the new segment is UNKNOWN, and the previous one was a valid one.
+  // (2) or, UNKNOWN selection TTL = 0 and the new segment is UNKNOWN, and the
+  //     previous one was a valid one.
   bool skip_updating_prefs = false;
   if (previous_selection.has_value()) {
-    skip_updating_prefs =
-        new_selection == previous_selection->segment_id ||
+    skip_updating_prefs = new_selection == previous_selection->segment_id;
+    skip_updating_prefs |=
+        config_->unknown_selection_ttl == base::TimeDelta() &&
         new_selection == OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
     // TODO(shaktisahu): Use segment selection inertia.
   }

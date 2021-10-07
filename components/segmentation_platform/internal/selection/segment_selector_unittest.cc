@@ -32,11 +32,13 @@ Config CreateTestConfig() {
   Config config;
   config.segmentation_key = "test_key";
   config.segment_selection_ttl = base::Days(28);
+  config.unknown_selection_ttl = base::Days(14);
   config.segment_ids = {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
   return config;
 }
+
 }  // namespace
 
 class TestSegmentationResultPrefs : public SegmentationResultPrefs {
@@ -62,9 +64,9 @@ class SegmentSelectorTest : public testing::Test {
   SegmentSelectorTest() = default;
   ~SegmentSelectorTest() override = default;
 
-  void SetUp() override {
+  void SetUpWithConfig(const Config& config) {
     clock_.SetNow(base::Time::Now());
-    config_ = CreateTestConfig();
+    config_ = config;
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     prefs_ = std::make_unique<TestSegmentationResultPrefs>();
     segment_selector_ = std::make_unique<SegmentSelectorImpl>(
@@ -116,6 +118,7 @@ class SegmentSelectorTest : public testing::Test {
 };
 
 TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
+  SetUpWithConfig(CreateTestConfig());
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
       .WillRepeatedly(Return(true));
 
@@ -139,6 +142,10 @@ TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
 }
 
 TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
+  Config config = CreateTestConfig();
+  config.unknown_selection_ttl = base::TimeDelta();
+  SetUpWithConfig(config);
+
   // Setup test with two models.
   OptimizationTarget segment_id1 =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
@@ -182,7 +189,7 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
   ASSERT_TRUE(prefs_->selection.has_value());
   ASSERT_EQ(segment_id2, prefs_->selection->segment_id);
 
-  // Run the models again after few days, but segment selection TTL hasn't
+  // Run the models again after few days later, but segment selection TTL hasn't
   // expired. Result will not update.
   clock_.Advance(config_.segment_selection_ttl * 0.8f);
   CompleteModelExecution(segment_id1, 0.8);
@@ -199,7 +206,58 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
   ASSERT_EQ(segment_id2, prefs_->selection->segment_id);
 }
 
+TEST_F(SegmentSelectorTest, UnknownSegmentTtlExpiryForBooleanModel) {
+  Config config = CreateTestConfig();
+  config.segment_ids = {
+      OptimizationTarget::
+          OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID};
+  SetUpWithConfig(config);
+
+  OptimizationTarget segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID;
+  float mapping[][2] = {{0.7, 1}};
+  InitializeMetadataForSegment(segment_id, mapping, 1);
+
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
+      .WillRepeatedly(Return(true));
+
+  // Set a value less than 1 and result should be UNKNOWN.
+  CompleteModelExecution(segment_id, 0);
+  ASSERT_TRUE(prefs_->selection.has_value());
+  ASSERT_EQ(OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN,
+            prefs_->selection->segment_id);
+
+  // Advance by less than UNKNOWN segment TTL and result should not change,
+  // UNKNOWN segment TTL is less than selection TTL.
+  clock_.Advance(config_.unknown_selection_ttl * 0.8f);
+  CompleteModelExecution(segment_id, 0.9);
+  ASSERT_EQ(OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN,
+            prefs_->selection->segment_id);
+
+  // Advance clock so that the time is between UNKNOWN segment TTL and selection
+  // TTL.
+  clock_.Advance(config_.unknown_selection_ttl * 0.4f);
+  CompleteModelExecution(segment_id, 0.9);
+  ASSERT_EQ(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+      prefs_->selection->segment_id);
+
+  // Advance by more than UNKNOWN segment TTL and result should not change.
+  clock_.Advance(config_.unknown_selection_ttl * 1.2f);
+  CompleteModelExecution(segment_id, 0);
+  ASSERT_EQ(
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
+      prefs_->selection->segment_id);
+
+  // Advance by segment selection TTL and result should change.
+  clock_.Advance(config_.segment_selection_ttl * 1.2f);
+  CompleteModelExecution(segment_id, 0);
+  ASSERT_EQ(OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN,
+            prefs_->selection->segment_id);
+}
+
 TEST_F(SegmentSelectorTest, DoesNotMeetSignalCollectionRequirement) {
+  SetUpWithConfig(CreateTestConfig());
   OptimizationTarget segment_id1 =
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
   float mapping1[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}, {0.8, 5}};
@@ -220,6 +278,7 @@ TEST_F(SegmentSelectorTest, DoesNotMeetSignalCollectionRequirement) {
 
 TEST_F(SegmentSelectorTest,
        GetSelectedSegmentReturnsResultFromPreviousSession) {
+  SetUpWithConfig(CreateTestConfig());
   EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
       .WillRepeatedly(Return(true));
   OptimizationTarget segment_id0 =

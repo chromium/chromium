@@ -23,10 +23,19 @@ namespace segmentation_platform {
 
 namespace {
 
+// Default TTL for segment selection and unknown selection:
+
 #if defined(OS_ANDROID)
-// Default TTL for segment selection.
-constexpr int kDefaultSegmentSelectionTTLDays = 28;
-#endif
+constexpr int kAdaptiveToolbarDefaultSelectionTTLDays = 28;
+
+constexpr int kChromeStartDefaultSelectionTTLDays = 30;
+constexpr int kChromeStartDefaultUnknownTTLDays = 7;
+
+// DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES
+constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
+// DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD
+constexpr int kQueryTilesDefaultUnknownTTLDays = 7;
+#endif  // defined(OS_ANDROID)
 
 std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   auto config = std::make_unique<Config>();
@@ -35,8 +44,9 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
 #if defined(OS_ANDROID)
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
-      "segment_selection_ttl_days", kDefaultSegmentSelectionTTLDays);
+      "segment_selection_ttl_days", kAdaptiveToolbarDefaultSelectionTTLDays);
   config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  // Do not set unknown TTL so that the platform ignores unknown results.
 #endif
 
   // A hardcoded list of segment IDs known to the segmentation platform.
@@ -59,14 +69,23 @@ std::unique_ptr<Config> GetConfigForDummyFeature() {
   return config;
 }
 
+#if defined(OS_ANDROID)
 std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kChromeStartAndroidSegmentationKey;
   config->segment_ids = {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
   };
-  // TODO(ssid): Fill in TTL for segments, also potentially update the TTL to be
-  // per result key.
+
+  int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kStartSurfaceAndroid, "segment_selection_ttl_days",
+      kChromeStartDefaultSelectionTTLDays);
+  int unknown_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
+      chrome::android::kStartSurfaceAndroid,
+      "segment_unknown_selection_ttl_days", kChromeStartDefaultUnknownTTLDays);
+  config->segment_selection_ttl = base::Days(segment_selection_ttl_days);
+  config->unknown_selection_ttl = base::Days(unknown_selection_ttl_days);
+
   return config;
 }
 
@@ -76,10 +95,13 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
   config->segment_ids = {
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
   };
-  // TODO(ssid): Fill in TTL for segments, also potentially update the TTL to be
-  // per result key.
+  // TODO(ssid): use experiment params to configure these.
+  config->segment_selection_ttl =
+      base::Days(kQueryTilesDefaultSelectionTTLDays);
+  config->unknown_selection_ttl = base::Days(kQueryTilesDefaultUnknownTTLDays);
   return config;
 }
+#endif  // defined(OS_ANDROID)
 
 }  // namespace
 
@@ -87,8 +109,10 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   std::vector<std::unique_ptr<Config>> configs;
   configs.emplace_back(GetConfigForAdaptiveToolbar());
   configs.emplace_back(GetConfigForDummyFeature());
+#if defined(OS_ANDROID)
   configs.emplace_back(GetConfigForChromeStartAndroid());
   configs.emplace_back(GetConfigForQueryTiles());
+#endif
   return configs;
 }
 
