@@ -88,21 +88,35 @@ const char PhotosService::kLastMemoryOpenTimePrefName[] =
 // static
 const base::TimeDelta PhotosService::kDismissDuration = base::Days(1);
 
-PhotosService::~PhotosService() = default;
-
 PhotosService::PhotosService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
     PrefService* pref_service)
     : url_loader_factory_(std::move(url_loader_factory)),
       identity_manager_(identity_manager),
-      pref_service_(pref_service) {}
+      pref_service_(pref_service) {
+  identity_manager_->AddObserver(this);
+}
+
+PhotosService::~PhotosService() {
+  identity_manager_->RemoveObserver(this);
+}
 
 // static
 void PhotosService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
   registry->RegisterBooleanPref(kOptInAcknowledgedPrefName, false);
   registry->RegisterTimePref(kLastMemoryOpenTimePrefName, base::Time());
+}
+
+void PhotosService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  // If the primary account has changed, clear opt-in pref.
+  if (event.GetCurrentState().primary_account !=
+          event.GetPreviousState().primary_account &&
+      pref_service_->HasPrefPath(kOptInAcknowledgedPrefName)) {
+    pref_service_->ClearPref(kOptInAcknowledgedPrefName);
+  }
 }
 
 void PhotosService::GetMemories(GetMemoriesCallback callback) {

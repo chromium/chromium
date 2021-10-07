@@ -12,6 +12,7 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -26,7 +27,8 @@ class PrimaryAccountAccessTokenFetcher;
 }  // namespace signin
 
 // Handles requests for user Google Photos data.
-class PhotosService : public KeyedService {
+class PhotosService : public KeyedService,
+                      public signin::IdentityManager::Observer {
  public:
   // Enumeration of various request results we want to log.
   // This is reported to histogram, please do not change the values.
@@ -49,6 +51,10 @@ class PhotosService : public KeyedService {
   ~PhotosService() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  // IdentityManager::Observer overrides.
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   using GetMemoriesCallback = photos::mojom::PhotosHandler::GetMemoriesCallback;
   // Retrieves Google Photos memories from API.

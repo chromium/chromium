@@ -529,6 +529,22 @@ TEST_F(PhotosServiceTest, OptInShown) {
   EXPECT_TRUE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that the pref is cleared on signout.
+// ChromeOS does not support signout.
+TEST_F(PhotosServiceTest, ClearOnPrimaryAccountChange) {
+  EXPECT_FALSE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
+
+  // Opt-in current account
+  service_->OnUserOptIn(true);
+  EXPECT_TRUE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
+
+  // Clear primary account which should trigger clearing the pref.
+  identity_test_env.ClearPrimaryAccount();
+  EXPECT_FALSE(prefs_.GetBoolean(PhotosService::kOptInAcknowledgedPrefName));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 class PhotosServiceFakeDataTest : public PhotosServiceTest {
  public:
   PhotosServiceFakeDataTest() {
