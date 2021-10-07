@@ -647,6 +647,34 @@
     },
     'identifier': 'KEVIN_LKGM',
   },
+  'CROS_OCTOPUS_LKGM': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R96-14263.0.0',
+    },
+    'identifier': 'OCTOPUS_LKGM',
+  },
+  'CROS_OCTOPUS_DEV': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R96-14244.0.0',
+    },
+    'identifier': 'OCTOPUS_DEV',
+  },
+  'CROS_OCTOPUS_BETA': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R94-14150.46.0',
+    },
+    'identifier': 'OCTOPUS_BETA',
+  },
+  'CROS_OCTOPUS_STABLE': {
+    'skylab': {
+      'cros_board': 'octopus',
+      'cros_img': 'octopus-release/R93-14092.66.0',
+    },
+    'identifier': 'OCTOPUS_STABLE',
+  },
   'LACROS_AMD64_GENERIC': {
     'args': [
       '--board=amd64-generic',

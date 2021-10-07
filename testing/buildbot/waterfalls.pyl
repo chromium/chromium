@@ -6690,7 +6690,7 @@
           'chrome',
         ],
         'test_suites': {
-          'skylab_tests': 'lacros_skylab_x86_64',
+          'skylab_tests': 'lacros_skylab_tests_amd64_generic_fyi',
         },
         'swarming': {
           'dimension_sets': [
