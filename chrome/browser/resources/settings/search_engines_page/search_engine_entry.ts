@@ -50,6 +50,12 @@ class SettingsSearchEngineEntryElement extends
         computed: 'computeIsDefault_(engine)'
       },
 
+      showMenuButton: {
+        reflectToAttribute: true,
+        type: Boolean,
+        computed: 'computeShowMenuButton_(engine)'
+      },
+
     };
   }
 
@@ -58,6 +64,7 @@ class SettingsSearchEngineEntryElement extends
   showQueryUrl: boolean;
   isActiveSearchEnginesFlagEnabled: boolean;
   isDefault: boolean;
+  showMenuButton: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 
@@ -67,6 +74,10 @@ class SettingsSearchEngineEntryElement extends
 
   private computeIsDefault_(): boolean {
     return this.engine.default;
+  }
+
+  private computeShowMenuButton_(): boolean {
+    return !this.isActiveSearchEnginesFlagEnabled || !this.engine.default;
   }
 
   private onDeleteTap_() {

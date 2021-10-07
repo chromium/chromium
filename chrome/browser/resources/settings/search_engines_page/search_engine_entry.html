@@ -31,6 +31,12 @@
         flex: 3;
         margin-inline-end: 40px;
       }
+
+      .icon-placeholder {
+        margin-inline-end: 0;
+        margin-inline-start: var(--cr-icon-button-margin-start);
+        width: var(--cr-icon-ripple-size);
+      }
     </style>
 
     <div class="list-item" focus-row-container>
@@ -54,6 +60,7 @@
       <div id="url-column-padded" class="text-elide" hidden="[[!showQueryUrl]]">
         <div>[[engine.url]]</div>
       </div>
+      <div class="icon-placeholder" hidden="[[showMenuButton]]"></div>
       <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled]]">
         <cr-button class="secondary-button" on-click="onActivateTap_"
              hidden="[[!engine.canBeActivated]]" id="activate">
@@ -65,8 +72,8 @@
         </cr-icon-button>
       </template>
       <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
-          title="$i18n{moreActions}" focus-row-control
-          focus-type="cr-menu-button"></cr-icon-button>
+          hidden="[[!showMenuButton]]" title="$i18n{moreActions}"
+          focus-row-control focus-type="cr-menu-button"></cr-icon-button>
       <cr-action-menu role-description="$i18n{menu}">
         <button class="dropdown-item" on-click="onMakeDefaultTap_"
             disabled$="[[!engine.canBeDefault]]" id="makeDefault">
