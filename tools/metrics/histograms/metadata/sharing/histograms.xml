@@ -219,6 +219,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Sharing.LongScreenshots.BitmapSelectedHeight" units="pixels"
+    expires_after="M98">
+  <owner>skare@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Height of the long screenshot output from the region-selection dialog.
+    Recorded on region selection dialog confirmation.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.LongScreenshots.Event"
     enum="SharingLongScreenshotsEvent" expires_after="M98">
   <owner>skare@chromium.org</owner>
@@ -620,6 +630,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the index of the third party app selected from the bottom row of the
     sharing hub.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
+    units="ms" expires_after="M98">
+  <owner>skare@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the amount of time taken to save the output bitmap from the image
+    editor to temporary storage and generate a URI. Recorded when the followup
+    share actions panel is displayed.
   </summary>
 </histogram>
 

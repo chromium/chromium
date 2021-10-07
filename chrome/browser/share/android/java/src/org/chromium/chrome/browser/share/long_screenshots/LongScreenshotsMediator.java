@@ -304,7 +304,8 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         return mDone;
     }
 
-    // Called by host after the dialog is canceled; invalidates |mFullBitmap|.
+    // Called by host after the dialog is canceled to obtain screenshot data.
+    // Invalidates |mFullBitmap|.
     @Override
     public Bitmap getScreenshot() {
         // Extract bitmap data from the bottom of the top mask to the top of the bottom mask.
@@ -333,6 +334,7 @@ public class LongScreenshotsMediator implements LongScreenshotsEntry.EntryListen
         Bitmap cropped =
                 Bitmap.createBitmap(mFullBitmap, 0, startY, mFullBitmap.getWidth(), endY - startY);
         mFullBitmap = null;
+        LongScreenshotsMetrics.logBitmapSelectedHeightPx(endY - startY);
         return cropped;
     }
 
