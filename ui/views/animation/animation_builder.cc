@@ -84,11 +84,7 @@ void AnimationBuilder::Observer::SetAbortHandle(
 
 void AnimationBuilder::Observer::OnLayerAnimationEnded(
     ui::LayerAnimationSequence* sequence) {
-  const auto running =
-      base::ranges::count_if(attached_sequences(), [](auto* sequence) {
-        return !sequence->IsFinished(base::TimeTicks::Now());
-      });
-  if (running <= 1) {
+  if (--sequences_to_run_ == 0) {
     if (on_ended_)
       std::move(on_ended_).Run();
     if (abort_handle_ && abort_handle_->animation_state() ==
@@ -135,6 +131,7 @@ void AnimationBuilder::Observer::OnAttachedToSequence(
     ui::LayerAnimationSequence* sequence) {
   ui::LayerAnimationObserver::OnAttachedToSequence(sequence);
   attached_to_sequence_ = true;
+  sequences_to_run_++;
 }
 
 void AnimationBuilder::Observer::OnDetachedFromSequence(

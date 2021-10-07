@@ -262,6 +262,32 @@ TEST_F(AnimationBuilderTest, ModifiedZeroAnimationDuration) {
   EXPECT_FLOAT_EQ(second_delegate->GetOpacityForAnimation(), 0.4f);
 }
 
+// This test checks that the callback supplied to .OnEnded is not called before
+// all sequences have finished running. This test will crash if .OnEnded is
+// called prematurely.
+TEST_F(AnimationBuilderTest, ModifiedZeroAnimationDurationWithOnEndedCallback) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto first_animating_view = std::make_unique<TestAnimatibleLayerOwner>();
+  auto second_animating_view = std::make_unique<TestAnimatibleLayerOwner>();
+
+  views::AnimationBuilder b;
+  b.OnEnded(base::BindRepeating(
+                [](TestAnimatibleLayerOwner* layer_owner,
+                   TestAnimatibleLayerOwner* second_layer_owner) {
+                  delete layer_owner;
+                  delete second_layer_owner;
+                },
+                first_animating_view.get(), second_animating_view.get()))
+      .Once()
+      .SetDuration(base::Seconds(3))
+      .SetOpacity(first_animating_view.get(), 0.4f)
+      .SetOpacity(second_animating_view.get(), 0.9f);
+
+  first_animating_view.release();
+  second_animating_view.release();
+}
+
 TEST_F(AnimationBuilderTest, ZeroDurationBlock) {
   TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
   ui::LayerAnimationDelegate* first_delegate = first_animating_view->delegate();

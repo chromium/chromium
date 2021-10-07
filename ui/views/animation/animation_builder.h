@@ -74,6 +74,11 @@ class VIEWS_EXPORT AnimationBuilder {
     base::OnceClosure on_scheduled_;
 
     bool attached_to_sequence_ = false;
+    // Incremented when a sequence is attached and decremented when a sequence
+    // ends. Does not account for aborted sequences. This provides a more
+    // reliable way of tracking when all sequences have ended since IsFinished
+    // can return true before a sequence is started if the duration is zero.
+    int sequences_to_run_ = 0;
 
     AnimationAbortHandle* abort_handle_ = nullptr;
   };
