@@ -163,17 +163,6 @@ extern const base::FeatureParam<std::string> kIdentifiabilityStudyPerHashCost;
 extern const base::FeatureParam<std::string>
     kIdentifiabilityStudySurfaceEquivalenceClasses;
 
-// Selection rate for clusters of related surfaces.
-//
-// Parameter name: "HashRate"
-// Parameter type: Comma separated list of <filter-string>;<rate> pairs.
-//
-// E.g.:
-//   * "257;800" : Sets the selection rate to 1-in-800 for
-//                 IdentifiableSurface::FromTypeAndToken(kWebFeature, 1).
-extern const base::FeatureParam<std::string>
-    kIdentifiabilityStudyPerSurfaceSettings;
-
 // Selection rate for clusters of related surface types.
 //
 // Parameter name: "TypeCost"
