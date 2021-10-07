@@ -16,6 +16,12 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
+namespace lacros {
+namespace net {
+class LacrosExtensionProxyTracker;
+}
+}  // namespace lacros
+
 namespace chromeos {
 
 // Implementation of ProxyConfigService that retrieves the system proxy
@@ -62,6 +68,11 @@ class ProxyConfigServiceLacros
   // enforced in the browser only if the pref kUseAshProxy=true and the
   // kProxy pref, which has precedence, is unset or set to mode=system.
   absl::optional<net::ProxyConfigWithAnnotation> cached_config_;
+
+  // Forwards proxy configs set via extensions in the Lacros primary profile
+  // to Ash-Chrome.
+  std::unique_ptr<lacros::net::LacrosExtensionProxyTracker>
+      lacros_extension_proxy_tracker_;
 
   base::WeakPtrFactory<ProxyConfigServiceLacros> weak_ptr_factory_{this};
 };

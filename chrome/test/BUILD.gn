@@ -4070,6 +4070,7 @@ if (is_chromeos_lacros) {
       "../browser/lacros/browser_test_util.h",
       "../browser/lacros/clipboard_lacros_browsertest.cc",
       "../browser/lacros/crosapi_pref_observer_lacros_browsertest.cc",
+      "../browser/lacros/net/lacros_extension_proxy_tracker_browsertest.cc",
       "../browser/lacros/overview_lacros_browsertest.cc",
       "../browser/lacros/tablet_mode_lacros_browsertest.cc",
     ]

@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chrome/browser/lacros/net/lacros_extension_proxy_tracker.h"
 #include "chrome/browser/lacros/net/network_settings_translation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -58,6 +59,8 @@ ProxyConfigServiceLacros::ProxyConfigServiceLacros(Profile* profile) {
   // `kUseAshProxy` from chrome://settings.
   if (profile->IsMainProfile()) {
     profile->GetPrefs()->SetBoolean(prefs::kUseAshProxy, true);
+    lacros_extension_proxy_tracker_ =
+        std::make_unique<lacros::net::LacrosExtensionProxyTracker>(profile);
   }
 
   profile_prefs_ = profile->GetPrefs();

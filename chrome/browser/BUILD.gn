@@ -5047,6 +5047,8 @@ static_library("browser") {
       "lacros/lacros_url_handling.h",
       "lacros/metrics_reporting_observer.cc",
       "lacros/metrics_reporting_observer.h",
+      "lacros/net/lacros_extension_proxy_tracker.cc",
+      "lacros/net/lacros_extension_proxy_tracker.h",
       "lacros/net/network_settings_translation.h",
       "lacros/net/network_settings_translation_crosapi.cc",
       "lacros/net/network_settings_translation_net_proxy.cc",
