@@ -37,6 +37,7 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_host_registry.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/external_provider_interface.h"
@@ -166,6 +167,7 @@ class ExtensionService : public ExtensionServiceInterface,
                          public ExtensionManagement::Observer,
                          public UpgradeObserver,
                          public ExtensionRegistrar::Delegate,
+                         public ExtensionHostRegistry::Observer,
                          public ProfileManagerObserver {
  public:
   // Constructor stores pointers to |profile| and |extension_prefs| but
@@ -472,6 +474,11 @@ class ExtensionService : public ExtensionServiceInterface,
   void LoadSigninProfileTestExtension(const std::string& path);
 #endif
 
+  // ExtensionHostRegistry::Observer:
+  void OnExtensionHostRenderProcessGone(
+      content::BrowserContext* browser_context,
+      ExtensionHost* extension_host) override;
+
   // content::NotificationObserver implementation:
   void Observe(int type,
                const content::NotificationSource& source,
@@ -724,6 +731,10 @@ class ExtensionService : public ExtensionServiceInterface,
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
+
+  base::ScopedObservation<ExtensionHostRegistry,
+                          ExtensionHostRegistry::Observer>
+      host_registry_observation_{this};
 
   using InstallGateRegistry =
       std::map<ExtensionPrefs::DelayReason, InstallGate*>;

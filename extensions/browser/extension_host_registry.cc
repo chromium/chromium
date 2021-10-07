@@ -129,6 +129,16 @@ void ExtensionHostRegistry::ExtensionHostDocumentElementAvailable(
   }
 }
 
+void ExtensionHostRegistry::ExtensionHostRenderProcessGone(
+    ExtensionHost* extension_host) {
+  DCHECK(base::Contains(extension_hosts_, extension_host));
+
+  for (Observer& observer : observers_) {
+    observer.OnExtensionHostRenderProcessGone(extension_host->browser_context(),
+                                              extension_host);
+  }
+}
+
 void ExtensionHostRegistry::ExtensionHostDestroyed(
     ExtensionHost* extension_host) {
   DCHECK(base::Contains(extension_hosts_, extension_host));

@@ -230,6 +230,8 @@ void ExtensionHost::RenderProcessGone(base::TerminationStatus status) {
   // TODO(aa): This is suspicious. There can be multiple views in an extension,
   // and they aren't all going to use ExtensionHost. This should be in someplace
   // more central, like EPM maybe.
+  ExtensionHostRegistry::Get(browser_context_)
+      ->ExtensionHostRenderProcessGone(this);
   content::NotificationService::current()->Notify(
       extensions::NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
       content::Source<BrowserContext>(browser_context_),

@@ -390,10 +390,11 @@ ExtensionService::ExtensionService(Profile* profile,
 
   registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
                  content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, NOTIFICATION_EXTENSION_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
                  content::NotificationService::AllBrowserContextsAndSources());
+
+  host_registry_observation_.Observe(ExtensionHostRegistry::Get(profile));
+
   // The ProfileManager may be null in unit tests.
   if (g_browser_process->profile_manager())
     profile_manager_observation_.Observe(g_browser_process->profile_manager());
@@ -1959,6 +1960,22 @@ void ExtensionService::DidCreateMainFrameForBackgroundPage(
   extension_registrar_.DidCreateMainFrameForBackgroundPage(host);
 }
 
+void ExtensionService::OnExtensionHostRenderProcessGone(
+    content::BrowserContext* browser_context,
+    ExtensionHost* extension_host) {
+  DCHECK(
+      profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
+
+  // Mark the extension as terminated and deactivated. We want it to
+  // be in a consistent state: either fully working or not loaded
+  // at all, but never half-crashed.  We do it in a PostTask so
+  // that other handlers of this notification will still have
+  // access to the Extension and ExtensionHost.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ExtensionService::TerminateExtension,
+                                AsWeakPtr(), extension_host->extension_id()));
+}
+
 void ExtensionService::Observe(int type,
                                const content::NotificationSource& source,
                                const content::NotificationDetails& details) {
@@ -1969,23 +1986,6 @@ void ExtensionService::Observe(int type,
       // happens too late in browser teardown.)
       browser_terminating_ = true;
       break;
-    case NOTIFICATION_EXTENSION_PROCESS_TERMINATED: {
-      if (profile_ !=
-          content::Source<Profile>(source).ptr()->GetOriginalProfile()) {
-        break;
-      }
-
-      // Mark the extension as terminated and deactivated. We want it to
-      // be in a consistent state: either fully working or not loaded
-      // at all, but never half-crashed.  We do it in a PostTask so
-      // that other handlers of this notification will still have
-      // access to the Extension and ExtensionHost.
-      ExtensionHost* host = content::Details<ExtensionHost>(details).ptr();
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(&ExtensionService::TerminateExtension,
-                                    AsWeakPtr(), host->extension_id()));
-      break;
-    }
     case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
       content::RenderProcessHost* process =
           content::Source<content::RenderProcessHost>(source).ptr();

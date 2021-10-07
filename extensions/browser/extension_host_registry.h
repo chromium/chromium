@@ -63,6 +63,15 @@ class ExtensionHostRegistry : public KeyedService {
     virtual void OnExtensionHostDocumentElementAvailable(
         content::BrowserContext* browser_context,
         ExtensionHost* extension_host) {}
+
+    // Called when an ExtensionHost's render process is terminated. Note that
+    // this may be called multiple times for a single process termination, since
+    // there may be multiple ExtensionHosts in the same process.
+    // `browser_context` is the context associated with that host (which might
+    // be an incognito version of ExtensionHostRegistry::browser_context_).
+    virtual void OnExtensionHostRenderProcessGone(
+        content::BrowserContext* browser_context,
+        ExtensionHost* extension_host) {}
   };
 
   ExtensionHostRegistry();
@@ -93,6 +102,9 @@ class ExtensionHostRegistry : public KeyedService {
   // Called when an ExtensionHost has created a document element for its first
   // time.
   void ExtensionHostDocumentElementAvailable(ExtensionHost* extension_host);
+
+  // Called when an ExtensionHost's render process is terminated.
+  void ExtensionHostRenderProcessGone(ExtensionHost* extension_host);
 
   // Called when an ExtensionHost is destroyed. Stops tracking the host and
   // notifies observers.
