@@ -92,14 +92,14 @@ WheelEvent::WheelEvent(const AtomicString& type,
     : MouseEvent(type, initializer),
       wheel_delta_(
           initializer->wheelDeltaX() ? initializer->wheelDeltaX()
-                                     : clampTo<int32_t>(initializer->deltaX()),
+                                     : ClampTo<int32_t>(initializer->deltaX()),
           initializer->wheelDeltaY() ? initializer->wheelDeltaY()
-                                     : clampTo<int32_t>(initializer->deltaY())),
+                                     : ClampTo<int32_t>(initializer->deltaY())),
       delta_x_(initializer->deltaX() ? initializer->deltaX()
-                                     : clampTo<int32_t>(-static_cast<double>(
+                                     : ClampTo<int32_t>(-static_cast<double>(
                                            initializer->wheelDeltaX()))),
       delta_y_(initializer->deltaY() ? initializer->deltaY()
-                                     : clampTo<int32_t>(-static_cast<double>(
+                                     : ClampTo<int32_t>(-static_cast<double>(
                                            initializer->wheelDeltaY()))),
       delta_z_(initializer->deltaZ()),
       delta_mode_(initializer->deltaMode()) {}

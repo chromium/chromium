@@ -385,8 +385,8 @@ MediaQueryExp MediaQueryExp::Create(const String& media_feature,
 
     return MediaQueryExp(
         lower_media_feature,
-        MediaQueryExpValue(clampTo<unsigned>(value->GetDoubleValue()),
-                           clampTo<unsigned>(denominator->GetDoubleValue())));
+        MediaQueryExpValue(ClampTo<unsigned>(value->GetDoubleValue()),
+                           ClampTo<unsigned>(denominator->GetDoubleValue())));
   }
 
   if (FeatureWithValidDensity(lower_media_feature, value)) {

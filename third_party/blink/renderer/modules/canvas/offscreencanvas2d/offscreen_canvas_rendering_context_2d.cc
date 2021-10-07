@@ -448,7 +448,7 @@ void OffscreenCanvasRenderingContext2D::setLetterSpacing(
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float letter_spacing_float = clampTo<float>(letter_spacing);
+  float letter_spacing_float = ClampTo<float>(letter_spacing);
   GetState().SetLetterSpacing(letter_spacing_float, Host()->GetFontSelector());
 }
 
@@ -464,7 +464,7 @@ void OffscreenCanvasRenderingContext2D::setWordSpacing(
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float word_spacing_float = clampTo<float>(word_spacing);
+  float word_spacing_float = ClampTo<float>(word_spacing);
   GetState().SetWordSpacing(word_spacing_float, Host()->GetFontSelector());
 }
 

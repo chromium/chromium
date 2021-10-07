@@ -587,7 +587,7 @@ void PannerHandler::CalculateAzimuthElevation(
   // vectors has zero length.  We know here that |projected_source| and
   // |listener_right| are "normalized", so the dot product is good enough.
   double azimuth =
-      Rad2deg(acos(clampTo(projected_source.Dot(listener_right), -1.0f, 1.0f)));
+      Rad2deg(acos(ClampTo(projected_source.Dot(listener_right), -1.0f, 1.0f)));
   FixNANs(azimuth);  // avoid illegal values
 
   // Source  in front or behind the listener

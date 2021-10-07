@@ -471,11 +471,11 @@ CSSMathExpressionNode* CSSMathExpressionBinaryOperation::CreateSimplified(
               CSSPrimitiveValue::CanonicalUnitTypeForCategory(
                   left_unit_category);
           if (canonical_type != CSSPrimitiveValue::UnitType::kUnknown) {
-            double left_value = clampTo<double>(
+            double left_value = ClampTo<double>(
                 left_side->DoubleValue() *
                 CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                     left_type));
-            double right_value = clampTo<double>(
+            double right_value = ClampTo<double>(
                 right_side->DoubleValue() *
                 CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                     right_type));
@@ -810,20 +810,20 @@ double CSSMathExpressionBinaryOperation::EvaluateOperator(double left_value,
     case CSSMathOperator::kAdd:
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
         return left_value + right_value;
-      return clampTo<double>(left_value + right_value);
+      return ClampTo<double>(left_value + right_value);
     case CSSMathOperator::kSubtract:
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
         return left_value - right_value;
-      return clampTo<double>(left_value - right_value);
+      return ClampTo<double>(left_value - right_value);
     case CSSMathOperator::kMultiply:
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
         return left_value * right_value;
-      return clampTo<double>(left_value * right_value);
+      return ClampTo<double>(left_value * right_value);
     case CSSMathOperator::kDivide:
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
         return left_value / right_value;
       if (right_value)
-        return clampTo<double>(left_value / right_value);
+        return ClampTo<double>(left_value / right_value);
       return std::numeric_limits<double>::quiet_NaN();
     default:
       NOTREACHED();

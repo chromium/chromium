@@ -527,7 +527,7 @@ void BaseRenderingContext2D::setLineWidth(double width) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineWidth,
                                                 width);
   }
-  GetState().SetLineWidth(clampTo<float>(width));
+  GetState().SetLineWidth(ClampTo<float>(width));
 }
 
 String BaseRenderingContext2D::lineCap() const {
@@ -575,7 +575,7 @@ void BaseRenderingContext2D::setMiterLimit(double limit) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetMiterLimit,
                                                 limit);
   }
-  GetState().SetMiterLimit(clampTo<float>(limit));
+  GetState().SetMiterLimit(ClampTo<float>(limit));
 }
 
 double BaseRenderingContext2D::shadowOffsetX() const {
@@ -591,7 +591,7 @@ void BaseRenderingContext2D::setShadowOffsetX(double x) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetX,
                                                 x);
   }
-  GetState().SetShadowOffsetX(clampTo<float>(x));
+  GetState().SetShadowOffsetX(ClampTo<float>(x));
 }
 
 double BaseRenderingContext2D::shadowOffsetY() const {
@@ -607,7 +607,7 @@ void BaseRenderingContext2D::setShadowOffsetY(double y) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowOffsetY,
                                                 y);
   }
-  GetState().SetShadowOffsetY(clampTo<float>(y));
+  GetState().SetShadowOffsetY(ClampTo<float>(y));
 }
 
 double BaseRenderingContext2D::shadowBlur() const {
@@ -623,7 +623,7 @@ void BaseRenderingContext2D::setShadowBlur(double blur) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetShadowBlur,
                                                 blur);
   }
-  GetState().SetShadowBlur(clampTo<float>(blur));
+  GetState().SetShadowBlur(ClampTo<float>(blur));
 }
 
 String BaseRenderingContext2D::shadowColor() const {
@@ -673,7 +673,7 @@ void BaseRenderingContext2D::setLineDashOffset(double offset) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kSetLineDashOffset,
                                                 offset);
   }
-  GetState().SetLineDashOffset(clampTo<float>(offset));
+  GetState().SetLineDashOffset(ClampTo<float>(offset));
 }
 
 double BaseRenderingContext2D::globalAlpha() const {
@@ -781,8 +781,8 @@ void BaseRenderingContext2D::scale(double sx, double sy) {
   }
 
   TransformationMatrix new_transform = GetState().GetTransform();
-  float fsx = clampTo<float>(sx);
-  float fsy = clampTo<float>(sy);
+  float fsx = ClampTo<float>(sx);
+  float fsy = ClampTo<float>(sy);
   new_transform.ScaleNonUniform(fsx, fsy);
   if (GetState().GetTransform() == new_transform)
     return;
@@ -804,9 +804,9 @@ void BaseRenderingContext2D::scale(double sx, double sy, double sz) {
     return;
 
   TransformationMatrix new_transform = GetState().GetTransform();
-  float fsx = clampTo<float>(sx);
-  float fsy = clampTo<float>(sy);
-  float fsz = clampTo<float>(sz);
+  float fsx = ClampTo<float>(sx);
+  float fsy = ClampTo<float>(sy);
+  float fsz = ClampTo<float>(sz);
   new_transform.Scale3d(fsx, fsy, fsz);
   if (GetState().GetTransform() == new_transform)
     return;
@@ -842,7 +842,7 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   SetTransform(new_transform);
   if (!IsTransformInvertible())
     return;
-  c->rotate(clampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
+  c->rotate(ClampTo<float>(angle_in_radians * (180.0 / kPiFloat)));
   path_.Transform(AffineTransform().RotateRadians(-angle_in_radians));
 }
 
@@ -925,8 +925,8 @@ void BaseRenderingContext2D::translate(double tx, double ty) {
 
   TransformationMatrix new_transform = GetState().GetTransform();
   // clamp to float to avoid float cast overflow when used as SkScalar
-  float ftx = clampTo<float>(tx);
-  float fty = clampTo<float>(ty);
+  float ftx = ClampTo<float>(tx);
+  float fty = ClampTo<float>(ty);
   new_transform.Translate(ftx, fty);
   if (GetState().GetTransform() == new_transform)
     return;
@@ -948,9 +948,9 @@ void BaseRenderingContext2D::translate(double tx, double ty, double tz) {
     return;
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  float ftx = clampTo<float>(tx);
-  float fty = clampTo<float>(ty);
-  float ftz = clampTo<float>(ty);
+  float ftx = ClampTo<float>(tx);
+  float fty = ClampTo<float>(ty);
+  float ftz = ClampTo<float>(ty);
 
   TransformationMatrix translation_matrix =
       TransformationMatrix().Translate3d(ftx, fty, ftz);
@@ -980,7 +980,7 @@ void BaseRenderingContext2D::perspective(double length) {
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
-  float flength = clampTo<float>(length);
+  float flength = ClampTo<float>(length);
 
   TransformationMatrix perspective_matrix =
       TransformationMatrix().ApplyPerspective(flength);
@@ -1031,22 +1031,22 @@ void BaseRenderingContext2D::transform(double m11,
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  float fm11 = clampTo<float>(m11);
-  float fm12 = clampTo<float>(m12);
-  float fm13 = clampTo<float>(m13);
-  float fm14 = clampTo<float>(m14);
-  float fm21 = clampTo<float>(m21);
-  float fm22 = clampTo<float>(m22);
-  float fm23 = clampTo<float>(m23);
-  float fm24 = clampTo<float>(m24);
-  float fm31 = clampTo<float>(m31);
-  float fm32 = clampTo<float>(m32);
-  float fm33 = clampTo<float>(m33);
-  float fm34 = clampTo<float>(m34);
-  float fm41 = clampTo<float>(m41);
-  float fm42 = clampTo<float>(m42);
-  float fm43 = clampTo<float>(m43);
-  float fm44 = clampTo<float>(m44);
+  float fm11 = ClampTo<float>(m11);
+  float fm12 = ClampTo<float>(m12);
+  float fm13 = ClampTo<float>(m13);
+  float fm14 = ClampTo<float>(m14);
+  float fm21 = ClampTo<float>(m21);
+  float fm22 = ClampTo<float>(m22);
+  float fm23 = ClampTo<float>(m23);
+  float fm24 = ClampTo<float>(m24);
+  float fm31 = ClampTo<float>(m31);
+  float fm32 = ClampTo<float>(m32);
+  float fm33 = ClampTo<float>(m33);
+  float fm34 = ClampTo<float>(m34);
+  float fm41 = ClampTo<float>(m41);
+  float fm42 = ClampTo<float>(m42);
+  float fm43 = ClampTo<float>(m43);
+  float fm44 = ClampTo<float>(m44);
 
   TransformationMatrix transform =
       TransformationMatrix(fm11, fm12, fm13, fm14, fm21, fm22, fm23, fm24, fm31,
@@ -1084,12 +1084,12 @@ void BaseRenderingContext2D::transform(double m11,
     return;
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  float fm11 = clampTo<float>(m11);
-  float fm12 = clampTo<float>(m12);
-  float fm21 = clampTo<float>(m21);
-  float fm22 = clampTo<float>(m22);
-  float fdx = clampTo<float>(dx);
-  float fdy = clampTo<float>(dy);
+  float fm11 = ClampTo<float>(m11);
+  float fm12 = ClampTo<float>(m12);
+  float fm21 = ClampTo<float>(m21);
+  float fm22 = ClampTo<float>(m22);
+  float fdx = ClampTo<float>(dx);
+  float fdy = ClampTo<float>(dy);
   if (identifiability_study_helper_.ShouldUpdateBuilder()) {
     identifiability_study_helper_.UpdateBuilder(CanvasOps::kTransform, fm11,
                                                 fm12, fm21, fm22, fdx, fdy);
@@ -1334,10 +1334,10 @@ void BaseRenderingContext2D::fillRect(double x,
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
-  float fx = clampTo<float>(x);
-  float fy = clampTo<float>(y);
-  float fwidth = clampTo<float>(width);
-  float fheight = clampTo<float>(height);
+  float fx = ClampTo<float>(x);
+  float fy = ClampTo<float>(y);
+  float fwidth = ClampTo<float>(width);
+  float fheight = ClampTo<float>(height);
 
   // We are assuming that if the pattern is not accelerated and the current
   // canvas is accelerated, the texture of the pattern will not be able to be
@@ -1400,10 +1400,10 @@ void BaseRenderingContext2D::strokeRect(double x,
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
-  float fx = clampTo<float>(x);
-  float fy = clampTo<float>(y);
-  float fwidth = clampTo<float>(width);
-  float fheight = clampTo<float>(height);
+  float fx = ClampTo<float>(x);
+  float fy = ClampTo<float>(y);
+  float fwidth = ClampTo<float>(width);
+  float fheight = ClampTo<float>(height);
 
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
   FloatRect bounds = rect;
@@ -1487,7 +1487,7 @@ bool BaseRenderingContext2D::IsPointInPathInternal(
 
   if (!std::isfinite(x) || !std::isfinite(y))
     return false;
-  FloatPoint point(clampTo<float>(x), clampTo<float>(y));
+  FloatPoint point(ClampTo<float>(x), ClampTo<float>(y));
   TransformationMatrix ctm = GetState().GetTransform();
   FloatPoint transformed_point = ctm.Inverse().MapPoint(point);
 
@@ -1516,7 +1516,7 @@ bool BaseRenderingContext2D::IsPointInStrokeInternal(const Path& path,
 
   if (!std::isfinite(x) || !std::isfinite(y))
     return false;
-  FloatPoint point(clampTo<float>(x), clampTo<float>(y));
+  FloatPoint point(ClampTo<float>(x), ClampTo<float>(y));
   AffineTransform ctm = GetState().GetAffineTransform();
   FloatPoint transformed_point = ctm.Inverse().MapPoint(point);
 
@@ -1560,10 +1560,10 @@ void BaseRenderingContext2D::clearRect(double x,
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
-  float fx = clampTo<float>(x);
-  float fy = clampTo<float>(y);
-  float fwidth = clampTo<float>(width);
-  float fheight = clampTo<float>(height);
+  float fx = ClampTo<float>(x);
+  float fy = ClampTo<float>(y);
+  float fwidth = ClampTo<float>(width);
+  float fheight = ClampTo<float>(height);
 
   FloatRect rect(fx, fy, fwidth, fheight);
   if (RectContainsTransformedRect(rect, clip_bounds)) {
@@ -1899,14 +1899,14 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
     return;
 
   // clamp to float to avoid float cast overflow when used as SkScalar
-  float fsx = clampTo<float>(sx);
-  float fsy = clampTo<float>(sy);
-  float fsw = clampTo<float>(sw);
-  float fsh = clampTo<float>(sh);
-  float fdx = clampTo<float>(dx);
-  float fdy = clampTo<float>(dy);
-  float fdw = clampTo<float>(dw);
-  float fdh = clampTo<float>(dh);
+  float fsx = ClampTo<float>(sx);
+  float fsy = ClampTo<float>(sy);
+  float fsw = ClampTo<float>(sw);
+  float fsh = ClampTo<float>(sh);
+  float fdx = ClampTo<float>(dx);
+  float fdy = ClampTo<float>(dy);
+  float fdw = ClampTo<float>(dw);
+  float fdh = ClampTo<float>(dh);
 
   FloatRect src_rect = NormalizeRect(FloatRect(fsx, fsy, fsw, fsh));
   FloatRect dst_rect = NormalizeRect(FloatRect(fdx, fdy, fdw, fdh));
@@ -1979,10 +1979,10 @@ CanvasGradient* BaseRenderingContext2D::createLinearGradient(double x0,
     return nullptr;
 
   // clamp to float to avoid float cast overflow
-  float fx0 = clampTo<float>(x0);
-  float fy0 = clampTo<float>(y0);
-  float fx1 = clampTo<float>(x1);
-  float fy1 = clampTo<float>(y1);
+  float fx0 = ClampTo<float>(x0);
+  float fy0 = ClampTo<float>(y0);
+  float fx1 = ClampTo<float>(x1);
+  float fy1 = ClampTo<float>(y1);
 
   auto* gradient = MakeGarbageCollected<CanvasGradient>(FloatPoint(fx0, fy0),
                                                         FloatPoint(fx1, fy1));
@@ -2012,12 +2012,12 @@ CanvasGradient* BaseRenderingContext2D::createRadialGradient(
     return nullptr;
 
   // clamp to float to avoid float cast overflow
-  float fx0 = clampTo<float>(x0);
-  float fy0 = clampTo<float>(y0);
-  float fr0 = clampTo<float>(r0);
-  float fx1 = clampTo<float>(x1);
-  float fy1 = clampTo<float>(y1);
-  float fr1 = clampTo<float>(r1);
+  float fx0 = ClampTo<float>(x0);
+  float fy0 = ClampTo<float>(y0);
+  float fr0 = ClampTo<float>(r0);
+  float fx1 = ClampTo<float>(x1);
+  float fy1 = ClampTo<float>(y1);
+  float fr1 = ClampTo<float>(r1);
 
   auto* gradient = MakeGarbageCollected<CanvasGradient>(
       FloatPoint(fx0, fy0), fr0, FloatPoint(fx1, fy1), fr1);
@@ -2038,9 +2038,9 @@ CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   // clamp to float to avoid float cast overflow
-  float a = clampTo<float>(startAngle);
-  float x = clampTo<float>(centerX);
-  float y = clampTo<float>(centerY);
+  float a = ClampTo<float>(startAngle);
+  float x = ClampTo<float>(centerX);
+  float y = ClampTo<float>(centerY);
 
   // convert |startAngle| from radians to degree and rotate 90 degree, so
   // |startAngle| at 0 starts from x-axis.
@@ -2476,7 +2476,7 @@ void BaseRenderingContext2D::InflateStrokeRect(FloatRect& rect) const {
   else if (GetState().GetLineCap() == kSquareCap)
     delta *= kRoot2;
 
-  rect.Inflate(clampTo<float>(delta));
+  rect.Inflate(ClampTo<float>(delta));
 }
 
 bool BaseRenderingContext2D::imageSmoothingEnabled() const {

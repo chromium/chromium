@@ -67,26 +67,26 @@ inline void LastMatrixRow(Vector<float>& matrix) {
 }
 
 Vector<float> GrayscaleMatrix(double amount) {
-  double one_minus_amount = clampTo(1 - amount, 0.0, 1.0);
+  double one_minus_amount = ClampTo(1 - amount, 0.0, 1.0);
 
   // See https://drafts.fxtf.org/filter-effects/#grayscaleEquivalent for
   // information on parameters.
   Vector<float> matrix;
   matrix.ReserveInitialCapacity(20);
 
-  matrix.UncheckedAppend(clampTo<float>(0.2126 + 0.7874 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.7152 - 0.7152 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.0722 - 0.0722 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.2126 + 0.7874 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.7152 - 0.7152 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.0722 - 0.0722 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.2126 - 0.2126 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.7152 + 0.2848 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.0722 - 0.0722 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.2126 - 0.2126 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.7152 + 0.2848 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.0722 - 0.0722 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.2126 - 0.2126 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.7152 - 0.7152 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.0722 + 0.9278 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.2126 - 0.2126 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.7152 - 0.7152 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.0722 + 0.9278 * one_minus_amount));
   EndMatrixRow(matrix);
 
   LastMatrixRow(matrix);
@@ -94,26 +94,26 @@ Vector<float> GrayscaleMatrix(double amount) {
 }
 
 Vector<float> SepiaMatrix(double amount) {
-  double one_minus_amount = clampTo(1 - amount, 0.0, 1.0);
+  double one_minus_amount = ClampTo(1 - amount, 0.0, 1.0);
 
   // See https://drafts.fxtf.org/filter-effects/#sepiaEquivalent for information
   // on parameters.
   Vector<float> matrix;
   matrix.ReserveInitialCapacity(20);
 
-  matrix.UncheckedAppend(clampTo<float>(0.393 + 0.607 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.769 - 0.769 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.189 - 0.189 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.393 + 0.607 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.769 - 0.769 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.189 - 0.189 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.349 - 0.349 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.686 + 0.314 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.168 - 0.168 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.349 - 0.349 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.686 + 0.314 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.168 - 0.168 * one_minus_amount));
   EndMatrixRow(matrix);
 
-  matrix.UncheckedAppend(clampTo<float>(0.272 - 0.272 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.534 - 0.534 * one_minus_amount));
-  matrix.UncheckedAppend(clampTo<float>(0.131 + 0.869 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.272 - 0.272 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.534 - 0.534 * one_minus_amount));
+  matrix.UncheckedAppend(ClampTo<float>(0.131 + 0.869 * one_minus_amount));
   EndMatrixRow(matrix);
 
   LastMatrixRow(matrix);
@@ -180,7 +180,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       }
       case FilterOperation::SATURATE: {
         Vector<float> input_parameters;
-        input_parameters.push_back(clampTo<float>(
+        input_parameters.push_back(ClampTo<float>(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount()));
         effect = MakeGarbageCollected<FEColorMatrix>(
             parent_filter, FECOLORMATRIX_TYPE_SATURATE,
@@ -189,7 +189,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       }
       case FilterOperation::HUE_ROTATE: {
         Vector<float> input_parameters;
-        input_parameters.push_back(clampTo<float>(
+        input_parameters.push_back(ClampTo<float>(
             To<BasicColorMatrixFilterOperation>(filter_operation)->Amount()));
         effect = MakeGarbageCollected<FEColorMatrix>(
             parent_filter, FECOLORMATRIX_TYPE_HUEROTATE,
@@ -218,9 +218,9 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_TABLE;
         Vector<float> transfer_parameters;
         transfer_parameters.push_back(
-            clampTo<float>(component_transfer_operation->Amount()));
+            ClampTo<float>(component_transfer_operation->Amount()));
         transfer_parameters.push_back(
-            clampTo<float>(1 - component_transfer_operation->Amount()));
+            ClampTo<float>(1 - component_transfer_operation->Amount()));
         transfer_function.table_values = transfer_parameters;
 
         ComponentTransferFunction null_function;
@@ -234,7 +234,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_TABLE;
         Vector<float> transfer_parameters;
         transfer_parameters.push_back(0);
-        transfer_parameters.push_back(clampTo<float>(
+        transfer_parameters.push_back(ClampTo<float>(
             To<BasicComponentTransferFilterOperation>(filter_operation)
                 ->Amount()));
         transfer_function.table_values = transfer_parameters;
@@ -248,7 +248,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::BRIGHTNESS: {
         ComponentTransferFunction transfer_function;
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_LINEAR;
-        transfer_function.slope = clampTo<float>(
+        transfer_function.slope = ClampTo<float>(
             To<BasicComponentTransferFilterOperation>(filter_operation)
                 ->Amount());
         transfer_function.intercept = 0;
@@ -262,7 +262,7 @@ FilterEffect* FilterEffectBuilder::BuildFilterEffect(
       case FilterOperation::CONTRAST: {
         ComponentTransferFunction transfer_function;
         transfer_function.type = FECOMPONENTTRANSFER_TYPE_LINEAR;
-        float amount = clampTo<float>(
+        float amount = ClampTo<float>(
             To<BasicComponentTransferFilterOperation>(filter_operation)
                 ->Amount());
         transfer_function.slope = amount;

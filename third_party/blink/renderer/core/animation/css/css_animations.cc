@@ -1344,7 +1344,7 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
     if (interrupted_progress) {
       reversing_adjusted_start_value = interrupted_transition->to.get();
       reversing_shortening_factor =
-          clampTo((interrupted_progress.value() *
+          ClampTo((interrupted_progress.value() *
                    interrupted_transition->reversing_shortening_factor) +
                       (1 - interrupted_transition->reversing_shortening_factor),
                   0.0, 1.0);

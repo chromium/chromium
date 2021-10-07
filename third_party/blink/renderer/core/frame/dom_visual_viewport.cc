@@ -131,7 +131,7 @@ double DOMVisualViewport::width() const {
     auto* scrollable_area = frame->View()->LayoutViewport();
     float width =
         scrollable_area->VisibleContentRect(kExcludeScrollbars).Width();
-    return AdjustForAbsoluteZoom::AdjustInt(clampTo<int>(ceilf(width)),
+    return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(width)),
                                             frame->PageZoomFactor());
   }
 
@@ -153,7 +153,7 @@ double DOMVisualViewport::height() const {
     auto* scrollable_area = frame->View()->LayoutViewport();
     float height =
         scrollable_area->VisibleContentRect(kExcludeScrollbars).Height();
-    return AdjustForAbsoluteZoom::AdjustInt(clampTo<int>(ceilf(height)),
+    return AdjustForAbsoluteZoom::AdjustInt(ClampTo<int>(ceilf(height)),
                                             frame->PageZoomFactor());
   }
 

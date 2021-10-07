@@ -176,8 +176,8 @@ struct GridSpan {
                                     : kLegacyGridMaxTracks;
 
     start_line_ =
-        clampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
-    end_line_ = clampTo<int>(end_line, -grid_max_tracks + 1, grid_max_tracks);
+        ClampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
+    end_line_ = ClampTo<int>(end_line, -grid_max_tracks + 1, grid_max_tracks);
   }
 
   int start_line_;

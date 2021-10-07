@@ -431,7 +431,7 @@ float SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(
   ctm.Scale(
       layout_object->GetDocument().GetPage()->DeviceScaleFactorDeprecated());
 
-  return clampTo<float>(sqrt((ctm.XScaleSquared() + ctm.YScaleSquared()) / 2));
+  return ClampTo<float>(sqrt((ctm.XScaleSquared() + ctm.YScaleSquared()) / 2));
 }
 
 static inline bool CompareCandidateDistance(const SearchCandidate& r1,

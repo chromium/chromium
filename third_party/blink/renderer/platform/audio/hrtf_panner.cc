@@ -130,7 +130,7 @@ int HRTFPanner::CalculateDesiredAzimuthIndexAndBlend(double azimuth,
   // this index from the last index we rendered at.  This minimizes the clicks
   // and graininess for moving sources which occur otherwise.
   desired_azimuth_index =
-      clampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
+      ClampTo(desired_azimuth_index, 0, number_of_azimuths - 1);
   return desired_azimuth_index;
 }
 

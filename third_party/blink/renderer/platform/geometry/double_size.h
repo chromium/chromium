@@ -91,17 +91,17 @@ constexpr bool operator!=(const DoubleSize& a, const DoubleSize& b) {
 }
 
 inline IntSize FlooredIntSize(const DoubleSize& p) {
-  return IntSize(clampTo<int>(floor(p.Width())),
-                 clampTo<int>(floor(p.Height())));
+  return IntSize(ClampTo<int>(floor(p.Width())),
+                 ClampTo<int>(floor(p.Height())));
 }
 
 inline IntSize RoundedIntSize(const DoubleSize& p) {
-  return IntSize(clampTo<int>(round(p.Width())),
-                 clampTo<int>(round(p.Height())));
+  return IntSize(ClampTo<int>(round(p.Width())),
+                 ClampTo<int>(round(p.Height())));
 }
 
 inline IntSize ExpandedIntSize(const DoubleSize& p) {
-  return IntSize(clampTo<int>(ceil(p.Width())), clampTo<int>(ceil(p.Height())));
+  return IntSize(ClampTo<int>(ceil(p.Width())), ClampTo<int>(ceil(p.Height())));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DoubleSize&);

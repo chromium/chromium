@@ -24,7 +24,7 @@ template <typename T>
 inline T Blend(T from, T to, double progress) {
   static_assert(std::is_integral<T>::value,
                 "blend can only be used with integer types");
-  return clampTo<T>(round(to > from ? from + (to - from) * progress
+  return ClampTo<T>(round(to > from ? from + (to - from) * progress
                                     : from - (from - to) * progress));
 }
 

@@ -41,7 +41,7 @@ bool SizesAttributeParser::CalculateLengthInPixels(CSSParserTokenRange range,
     if ((media_values_->ComputeLength(start_token.NumericValue(),
                                       start_token.GetUnitType(), length)) &&
         (length >= 0)) {
-      result = clampTo<float>(length);
+      result = ClampTo<float>(length);
       return true;
     }
   } else if (type == kFunctionToken) {
@@ -107,7 +107,7 @@ float SizesAttributeParser::EffectiveSize() {
 
 float SizesAttributeParser::EffectiveSizeDefaultValue() {
   // Returning the equivalent of "100vw"
-  return clampTo<float>(media_values_->ViewportWidth());
+  return ClampTo<float>(media_values_->ViewportWidth());
 }
 
 }  // namespace blink

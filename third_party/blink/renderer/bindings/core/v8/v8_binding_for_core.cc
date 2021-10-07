@@ -186,7 +186,7 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
       return 0;
     }
     if (configuration == kClamp)
-      return clampTo<T>(result);
+      return ClampTo<T>(result);
     result %= LimitsTrait::kNumberOfValues;
     return static_cast<T>(result > LimitsTrait::kMaxValue
                               ? result - LimitsTrait::kNumberOfValues
@@ -217,7 +217,7 @@ static inline T ToSmallerInt(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<T>(number_value);
+    return ClampTo<T>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -250,7 +250,7 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
       return 0;
     }
     if (configuration == kClamp)
-      return clampTo<T>(result);
+      return ClampTo<T>(result);
     return static_cast<T>(result);
   }
 
@@ -279,7 +279,7 @@ static inline T ToSmallerUInt(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<T>(number_value);
+    return ClampTo<T>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -351,7 +351,7 @@ int32_t ToInt32Slow(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<int32_t>(number_value);
+    return ClampTo<int32_t>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -380,7 +380,7 @@ uint32_t ToUInt32Slow(v8::Isolate* isolate,
       return 0;
     }
     DCHECK_EQ(configuration, kClamp);
-    return clampTo<uint32_t>(result);
+    return ClampTo<uint32_t>(result);
   }
 
   // Can the value be converted to a number?
@@ -403,7 +403,7 @@ uint32_t ToUInt32Slow(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<uint32_t>(number_value);
+    return ClampTo<uint32_t>(number_value);
 
   if (std::isinf(number_value))
     return 0;
@@ -457,7 +457,7 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
       return 0;
     }
     DCHECK_EQ(configuration, kClamp);
-    return clampTo<uint64_t>(result);
+    return ClampTo<uint64_t>(result);
   }
 
   v8::Local<v8::Number> number_object;
@@ -480,7 +480,7 @@ uint64_t ToUInt64Slow(v8::Isolate* isolate,
     return 0;
 
   if (configuration == kClamp)
-    return clampTo<uint64_t>(number_value);
+    return ClampTo<uint64_t>(number_value);
 
   return DoubleToInteger(number_value);
 }

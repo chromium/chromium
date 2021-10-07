@@ -187,7 +187,7 @@ void SVGMarkerDataBuilder::UpdateAngle(bool ends_subpath) {
   if (last_element_type_ == kPathElementCloseSubpath)
     out_slope_ = last_moveto_out_slope_;
   AngleType type = DetermineAngleType(ends_subpath);
-  float angle = clampTo<float>(CurrentAngle(type));
+  float angle = ClampTo<float>(CurrentAngle(type));
   // When closing a subpath, backpatch the first marker on that subpath.
   if (last_element_type_ == kPathElementCloseSubpath)
     positions_[last_moveto_index_].angle = angle;

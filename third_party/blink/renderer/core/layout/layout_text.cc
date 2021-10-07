@@ -2056,7 +2056,7 @@ void LayoutText::SetTextWithOffset(scoped_refptr<StringImpl> text,
     for (RootInlineBox* curr = first_root_box; curr && curr != last_root_box;
          curr = curr->NextRootBox()) {
       if (curr->LineBreakObj().IsEqual(this) && curr->LineBreakPos() > end)
-        curr->SetLineBreakPos(clampTo<int>(curr->LineBreakPos() + delta));
+        curr->SetLineBreakPos(ClampTo<int>(curr->LineBreakPos() + delta));
     }
   }
 

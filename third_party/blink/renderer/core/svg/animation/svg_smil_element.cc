@@ -1053,9 +1053,9 @@ SVGSMILElement::ProgressState SVGSMILElement::CalculateProgressState(
     repeat = active_time.IntDiv(simple_duration);
     simple_time = active_time % simple_duration;
   }
-  return {clampTo<float>(simple_time.InternalValueAsDouble() /
+  return {ClampTo<float>(simple_time.InternalValueAsDouble() /
                          simple_duration.InternalValueAsDouble()),
-          clampTo<unsigned>(repeat)};
+          ClampTo<unsigned>(repeat)};
 }
 
 SMILTime SVGSMILElement::NextProgressTime(SMILTime presentation_time) const {

@@ -727,7 +727,7 @@ void CanvasRenderingContext2D::setLetterSpacing(const double letter_spacing) {
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float letter_spacing_float = clampTo<float>(letter_spacing);
+  float letter_spacing_float = ClampTo<float>(letter_spacing);
   GetState().SetLetterSpacing(letter_spacing_float, Host()->GetFontSelector());
 }
 
@@ -742,7 +742,7 @@ void CanvasRenderingContext2D::setWordSpacing(const double word_spacing) {
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float word_spacing_float = clampTo<float>(word_spacing);
+  float word_spacing_float = ClampTo<float>(word_spacing);
   GetState().SetWordSpacing(word_spacing_float, Host()->GetFontSelector());
 }
 
@@ -997,8 +997,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
                    bidi_override);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
-  FloatPoint location(clampTo<float>(x),
-                      clampTo<float>(y + GetFontBaseline(*font_data)));
+  FloatPoint location(ClampTo<float>(x),
+                      ClampTo<float>(y + GetFontBaseline(*font_data)));
   double font_width = font.Width(text_run);
 
   bool use_max_width = (max_width && *max_width < font_width);
@@ -1024,7 +1024,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
   FloatRect bounds(
       location.X() - font_metrics.Height() / 2,
       location.Y() - font_metrics.Ascent() - font_metrics.LineGap(),
-      clampTo<float>(width + font_metrics.Height()),
+      ClampTo<float>(width + font_metrics.Height()),
       font_metrics.LineSpacing());
   if (paint_type == CanvasRenderingContext2DState::kStrokePaintType)
     InflateStrokeRect(bounds);
@@ -1036,8 +1036,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
     // still work. As the width of canvas is scaled, so text can be scaled to
     // match the given maxwidth, update text location so it appears on desired
     // place.
-    c->scale(clampTo<float>(width / font_width), 1);
-    location.SetX(location.X() / clampTo<float>(width / font_width));
+    c->scale(ClampTo<float>(width / font_width), 1);
+    location.SetX(location.X() / ClampTo<float>(width / font_width));
   }
 
   Draw<OverdrawOp::kNone>(

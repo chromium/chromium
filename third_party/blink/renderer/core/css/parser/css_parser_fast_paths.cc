@@ -107,7 +107,7 @@ static inline bool ParseSimpleLength(const CharacterType* characters,
   number = CharactersToDouble(characters, length, &ok);
   if (!ok)
     return false;
-  number = clampTo<double>(number, -std::numeric_limits<float>::max(),
+  number = ClampTo<double>(number, -std::numeric_limits<float>::max(),
                            std::numeric_limits<float>::max());
   return true;
 }

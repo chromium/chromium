@@ -1387,7 +1387,7 @@ String StylePropertySerializer::BackgroundRepeatPropertyValue() const {
     return String();
 
   size_t shorthand_length =
-      lowestCommonMultiple(repeat_x_length, repeat_y_length);
+      LowestCommonMultiple(repeat_x_length, repeat_y_length);
   StringBuilder builder;
   for (size_t i = 0; i < shorthand_length; ++i) {
     if (i)

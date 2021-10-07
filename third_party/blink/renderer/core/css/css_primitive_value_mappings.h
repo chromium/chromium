@@ -57,31 +57,31 @@ namespace blink {
 template <>
 inline int16_t CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<int16_t>(GetDoubleValue());
+  return ClampTo<int16_t>(GetDoubleValue());
 }
 
 template <>
 inline uint16_t CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<uint16_t>(GetDoubleValue());
+  return ClampTo<uint16_t>(GetDoubleValue());
 }
 
 template <>
 inline int CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<int>(GetDoubleValue());
+  return ClampTo<int>(GetDoubleValue());
 }
 
 template <>
 inline unsigned CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<unsigned>(GetDoubleValue());
+  return ClampTo<unsigned>(GetDoubleValue());
 }
 
 template <>
 inline float CSSPrimitiveValue::ConvertTo() const {
   DCHECK(IsNumber());
-  return clampTo<float>(GetDoubleValue());
+  return ClampTo<float>(GetDoubleValue());
 }
 
 // TODO(sashab): Move these to CSSIdentifierValueMappings.h, and update to use

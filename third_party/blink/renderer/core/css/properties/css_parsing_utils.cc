@@ -1179,7 +1179,7 @@ static int ClampRGBComponent(const CSSPrimitiveValue& value) {
     // 2.55 cannot be precisely represented as a double
     result = (result / 100.0) * 255.0;
   }
-  return clampTo<int>(round(result), 0, 255);
+  return ClampTo<int>(round(result), 0, 255);
 }
 
 static bool ParseRGBParameters(CSSParserTokenRange& range,
@@ -1230,7 +1230,7 @@ static bool ParseRGBParameters(CSSParserTokenRange& range,
     }
     // W3 standard stipulates a 2.55 alpha value multiplication factor.
     int alpha_component =
-        static_cast<int>(lround(clampTo<double>(alpha, 0.0, 1.0) * 255.0));
+        static_cast<int>(lround(ClampTo<double>(alpha, 0.0, 1.0) * 255.0));
     result = MakeRGBA(color_array[0], color_array[1], color_array[2],
                       alpha_component);
   } else {
@@ -1270,7 +1270,7 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
     if (!hsl_value)
       return false;
     double double_value = hsl_value->GetDoubleValue();
-    color_array[i] = clampTo<double>(double_value, 0.0, 100.0) /
+    color_array[i] = ClampTo<double>(double_value, 0.0, 100.0) /
                      100.0;  // Needs to be value between 0 and 1.0.
   }
 
@@ -1289,7 +1289,7 @@ static bool ParseHSLParameters(CSSParserTokenRange& range,
       else
         alpha = alpha_percent->GetDoubleValue() / 100.0;
     }
-    alpha = clampTo<double>(alpha, 0.0, 1.0);
+    alpha = ClampTo<double>(alpha, 0.0, 1.0);
   }
   result =
       MakeRGBAFromHSLA(color_array[0], color_array[1], color_array[2], alpha);
@@ -2132,12 +2132,12 @@ static CSSValue* ConsumeCrossFade(CSSParserTokenRange& args,
   if (CSSPrimitiveValue* percent_value =
           ConsumePercent(args, context, kValueRangeAll)) {
     percentage = CSSNumericLiteralValue::Create(
-        clampTo<double>(percent_value->GetDoubleValue() / 100.0, 0, 1),
+        ClampTo<double>(percent_value->GetDoubleValue() / 100.0, 0, 1),
         CSSPrimitiveValue::UnitType::kNumber);
   } else if (CSSPrimitiveValue* number_value =
                  ConsumeNumber(args, context, kValueRangeAll)) {
     percentage = CSSNumericLiteralValue::Create(
-        clampTo<double>(number_value->GetDoubleValue(), 0, 1),
+        ClampTo<double>(number_value->GetDoubleValue(), 0, 1),
         CSSPrimitiveValue::UnitType::kNumber);
   }
 
@@ -3572,7 +3572,7 @@ CSSValue* ConsumeCounter(CSSParserTokenRange& range,
       return nullptr;
     int value = default_value;
     if (CSSPrimitiveValue* counter_value = ConsumeInteger(range, context))
-      value = clampTo<int>(counter_value->GetDoubleValue());
+      value = ClampTo<int>(counter_value->GetDoubleValue());
     list->Append(*MakeGarbageCollected<CSSValuePair>(
         counter_name,
         CSSNumericLiteralValue::Create(value,
@@ -3852,7 +3852,7 @@ CSSFontFeatureValue* ConsumeFontFeatureTag(CSSParserTokenRange& range,
   int tag_value = 1;
   // Feature tag values could follow: <integer> | on | off
   if (CSSPrimitiveValue* value = ConsumeInteger(range, context, 0)) {
-    tag_value = clampTo<int>(value->GetDoubleValue());
+    tag_value = ClampTo<int>(value->GetDoubleValue());
   } else if (range.Peek().Id() == CSSValueID::kOn ||
              range.Peek().Id() == CSSValueID::kOff) {
     tag_value = range.ConsumeIncludingWhitespace().Id() == CSSValueID::kOn;
@@ -4053,7 +4053,7 @@ bool ConsumeGridTrackRepeatFunction(CSSParserTokenRange& range,
     if (!repetition)
       return false;
     repetitions =
-        clampTo<wtf_size_t>(repetition->GetDoubleValue(), 0, kGridMaxTracks);
+        ClampTo<wtf_size_t>(repetition->GetDoubleValue(), 0, kGridMaxTracks);
     repeated_values = CSSValueList::CreateSpaceSeparated();
   }
   if (!ConsumeCommaIncludingWhitespace(args))
@@ -4202,7 +4202,7 @@ CSSValue* ConsumeGridLine(CSSParserTokenRange& range,
 
   if (numeric_value) {
     numeric_value = CSSNumericLiteralValue::Create(
-        clampTo(numeric_value->GetIntValue(), -kGridMaxTracks, kGridMaxTracks),
+        ClampTo(numeric_value->GetIntValue(), -kGridMaxTracks, kGridMaxTracks),
         CSSPrimitiveValue::UnitType::kInteger);
   }
 

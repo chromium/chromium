@@ -207,7 +207,7 @@ class BlinkScrollbarPartAnimationTimer {
       timer_.Stop();
 
     double fraction = delta / duration_;
-    fraction = clampTo(fraction, 0.0, 1.0);
+    fraction = ClampTo(fraction, 0.0, 1.0);
     double progress = timing_function_->Evaluate(fraction);
     // In some scenarios, animation_ gets released during the call to
     // setCurrentProgress. Because BlinkScrollbarPartAnimationTimer is a

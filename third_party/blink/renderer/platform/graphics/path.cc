@@ -84,7 +84,7 @@ bool Path::Contains(const FloatPoint& point, WindRule rule) const {
 
 SkPath Path::StrokePath(const StrokeData& stroke_data,
                         const AffineTransform& transform) const {
-  float stroke_precision = clampTo<float>(
+  float stroke_precision = ClampTo<float>(
       sqrt(std::max(transform.XScaleSquared(), transform.YScaleSquared())));
   return StrokePath(stroke_data, stroke_precision);
 }

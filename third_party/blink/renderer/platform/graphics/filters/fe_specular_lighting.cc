@@ -63,7 +63,7 @@ float FESpecularLighting::SpecularExponent() const {
 }
 
 bool FESpecularLighting::SetSpecularExponent(float specular_exponent) {
-  specular_exponent = clampTo(specular_exponent, 1.0f, 128.0f);
+  specular_exponent = ClampTo(specular_exponent, 1.0f, 128.0f);
   if (specular_exponent_ == specular_exponent)
     return false;
   specular_exponent_ = specular_exponent;

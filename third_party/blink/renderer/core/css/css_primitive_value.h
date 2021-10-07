@@ -253,7 +253,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   int GetIntValue() const { return GetValue<int>(); }
   template <typename T>
   inline T GetValue() const {
-    return clampTo<T>(GetDoubleValue());
+    return ClampTo<T>(GetDoubleValue());
   }
 
   template <typename T>

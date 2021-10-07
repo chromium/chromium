@@ -268,7 +268,7 @@ void Biquad::Reset() {
 
 void Biquad::SetLowpassParams(int index, double cutoff, double resonance) {
   // Limit cutoff to 0 to 1.
-  cutoff = clampTo(cutoff, 0.0, 1.0);
+  cutoff = ClampTo(cutoff, 0.0, 1.0);
 
   if (cutoff == 1) {
     // When cutoff is 1, the z-transform is 1.
@@ -301,7 +301,7 @@ void Biquad::SetLowpassParams(int index, double cutoff, double resonance) {
 
 void Biquad::SetHighpassParams(int index, double cutoff, double resonance) {
   // Limit cutoff to 0 to 1.
-  cutoff = clampTo(cutoff, 0.0, 1.0);
+  cutoff = ClampTo(cutoff, 0.0, 1.0);
 
   if (cutoff == 1) {
     // The z-transform is 0.
@@ -351,7 +351,7 @@ void Biquad::SetNormalizedCoefficients(int index,
 
 void Biquad::SetLowShelfParams(int index, double frequency, double db_gain) {
   // Clip frequencies to between 0 and 1, inclusive.
-  frequency = clampTo(frequency, 0.0, 1.0);
+  frequency = ClampTo(frequency, 0.0, 1.0);
 
   double a = pow10(db_gain / 40);
 
@@ -383,7 +383,7 @@ void Biquad::SetLowShelfParams(int index, double frequency, double db_gain) {
 
 void Biquad::SetHighShelfParams(int index, double frequency, double db_gain) {
   // Clip frequencies to between 0 and 1, inclusive.
-  frequency = clampTo(frequency, 0.0, 1.0);
+  frequency = ClampTo(frequency, 0.0, 1.0);
 
   double a = pow10(db_gain / 40);
 
@@ -418,7 +418,7 @@ void Biquad::SetPeakingParams(int index,
                               double q,
                               double db_gain) {
   // Clip frequencies to between 0 and 1, inclusive.
-  frequency = clampTo(frequency, 0.0, 1.0);
+  frequency = ClampTo(frequency, 0.0, 1.0);
 
   // Don't let Q go negative, which causes an unstable filter.
   q = std::max(0.0, q);
@@ -453,7 +453,7 @@ void Biquad::SetPeakingParams(int index,
 
 void Biquad::SetAllpassParams(int index, double frequency, double q) {
   // Clip frequencies to between 0 and 1, inclusive.
-  frequency = clampTo(frequency, 0.0, 1.0);
+  frequency = ClampTo(frequency, 0.0, 1.0);
 
   // Don't let Q go negative, which causes an unstable filter.
   q = std::max(0.0, q);
@@ -486,7 +486,7 @@ void Biquad::SetAllpassParams(int index, double frequency, double q) {
 
 void Biquad::SetNotchParams(int index, double frequency, double q) {
   // Clip frequencies to between 0 and 1, inclusive.
-  frequency = clampTo(frequency, 0.0, 1.0);
+  frequency = ClampTo(frequency, 0.0, 1.0);
 
   // Don't let Q go negative, which causes an unstable filter.
   q = std::max(0.0, q);
@@ -822,7 +822,7 @@ double Biquad::TailFrame(int coef_index, double max_frame) {
     // This may produce a negative tail frame.  Just clamp the tail
     // frame to 0.
     tail_frame =
-        clampTo(1 + fdlibm::log(kMaxTailAmplitude / (fabs(c1) + fabs(c2))) /
+        ClampTo(1 + fdlibm::log(kMaxTailAmplitude / (fabs(c1) + fabs(c2))) /
                         fdlibm::log(fabs(r1)),
                 0);
 
@@ -896,7 +896,7 @@ double Biquad::TailFrame(int coef_index, double max_frame) {
         // -(1+log(r))/log(r). so we can start our search from that
         // point to max_frames.
 
-        double low = clampTo(-(1 + fdlibm::log(r)) / fdlibm::log(r), 1.0,
+        double low = ClampTo(-(1 + fdlibm::log(r)) / fdlibm::log(r), 1.0,
                              static_cast<double>(max_frame - 1));
         double high = max_frame;
 

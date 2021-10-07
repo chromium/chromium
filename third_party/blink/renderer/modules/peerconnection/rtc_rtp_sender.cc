@@ -337,7 +337,7 @@ webrtc::RtpEncodingParameters ToRtpEncodingParameters(
   webrtc_encoding.network_priority =
       PriorityToEnum(encoding->networkPriority());
   if (encoding->hasMaxBitrate()) {
-    webrtc_encoding.max_bitrate_bps = clampTo<int>(encoding->maxBitrate());
+    webrtc_encoding.max_bitrate_bps = ClampTo<int>(encoding->maxBitrate());
   }
   if (encoding->hasScaleResolutionDownBy()) {
     webrtc_encoding.scale_resolution_down_by =

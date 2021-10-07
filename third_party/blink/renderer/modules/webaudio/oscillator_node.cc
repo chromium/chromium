@@ -179,7 +179,7 @@ static void ClampFrequency(float* frequency,
     if (std::isnan(f)) {
       frequency[k] = nyquist;
     } else {
-      frequency[k] = clampTo(f, -nyquist, nyquist);
+      frequency[k] = ClampTo(f, -nyquist, nyquist);
     }
   }
 }

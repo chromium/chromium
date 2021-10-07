@@ -80,7 +80,7 @@ void SVGInteger::CalculateAnimatedValue(
   if (parameters.is_additive)
     result += value_;
 
-  value_ = clampTo<int>(roundf(result));
+  value_ = ClampTo<int>(roundf(result));
 }
 
 float SVGInteger::CalculateDistance(const SVGPropertyBase* other,

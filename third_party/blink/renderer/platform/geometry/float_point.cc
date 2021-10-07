@@ -65,7 +65,7 @@ FloatPoint FloatPoint::ShrunkTo(const FloatPoint& other) const {
 }
 
 FloatPoint FloatPoint::NarrowPrecision(double x, double y) {
-  return FloatPoint(clampTo<float>(x), clampTo<float>(y));
+  return FloatPoint(ClampTo<float>(x), ClampTo<float>(y));
 }
 
 bool FindIntersection(const FloatPoint& p1,

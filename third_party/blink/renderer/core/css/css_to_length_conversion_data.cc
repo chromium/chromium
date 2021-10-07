@@ -189,7 +189,7 @@ CSSToLengthConversionData::CSSToLengthConversionData(
       font_sizes_(font_sizes),
       viewport_size_(viewport_size),
       container_sizes_(container_sizes),
-      zoom_(clampTo<float>(zoom, std::numeric_limits<float>::denorm_min())) {}
+      zoom_(ClampTo<float>(zoom, std::numeric_limits<float>::denorm_min())) {}
 
 CSSToLengthConversionData::CSSToLengthConversionData(
     const ComputedStyle* style,

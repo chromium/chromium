@@ -2317,10 +2317,10 @@ const CSSValue* Cursor::ParseSingleValue(CSSParserTokenRange& range,
     IntPoint hot_spot(-1, -1);
     bool hot_spot_specified = false;
     if (css_parsing_utils::ConsumeNumberRaw(range, context, num)) {
-      hot_spot.SetX(clampTo<int>(num));
+      hot_spot.SetX(ClampTo<int>(num));
       if (!css_parsing_utils::ConsumeNumberRaw(range, context, num))
         return nullptr;
-      hot_spot.SetY(clampTo<int>(num));
+      hot_spot.SetY(ClampTo<int>(num));
       hot_spot_specified = true;
     }
 
@@ -3085,7 +3085,7 @@ cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
   if (!css_parsing_utils::ConsumeNumberRaw(range, context, tag_value))
     return nullptr;
   return MakeGarbageCollected<cssvalue::CSSFontVariationValue>(
-      tag, clampTo<float>(tag_value));
+      tag, ClampTo<float>(tag_value));
 }
 
 }  // namespace

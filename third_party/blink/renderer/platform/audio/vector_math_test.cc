@@ -342,7 +342,7 @@ TEST_F(VectorMathTest, Vclip) {
     const float high_threshold = std::max(thresholds[0], thresholds[1]);
     TestVector<float> expected_dest(GetDestination(0u), source);
     for (size_t i = 0u; i < source.size(); ++i)
-      expected_dest[i] = clampTo(source[i], low_threshold, high_threshold);
+      expected_dest[i] = ClampTo(source[i], low_threshold, high_threshold);
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       Vclip(source.p(), source.stride(), &low_threshold, &high_threshold,
             dest.p(), dest.stride(), source.size());

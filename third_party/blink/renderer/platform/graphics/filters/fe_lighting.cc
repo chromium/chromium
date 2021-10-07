@@ -51,7 +51,7 @@ FELighting::FELighting(Filter* filter,
       surface_scale_(surface_scale),
       diffuse_constant_(std::max(diffuse_constant, 0.0f)),
       specular_constant_(std::max(specular_constant, 0.0f)),
-      specular_exponent_(clampTo(specular_exponent, 1.0f, 128.0f)) {}
+      specular_exponent_(ClampTo(specular_exponent, 1.0f, 128.0f)) {}
 
 Color FELighting::LightingColor() const {
   return lighting_color_;

@@ -46,7 +46,7 @@ CSSNumericLiteralValue* CSSNumericLiteralValue::Create(double value,
       value = 0;
   }
 
-  int int_value = clampTo<int>(value);
+  int int_value = ClampTo<int>(value);
   if (value != int_value)
     return MakeGarbageCollected<CSSNumericLiteralValue>(value, type);
 

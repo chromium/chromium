@@ -48,10 +48,10 @@ namespace blink {
 namespace {
 
 void ClampBoundsToFinite(FloatRect& bounds) {
-  bounds.SetX(clampTo<float>(bounds.X()));
-  bounds.SetY(clampTo<float>(bounds.Y()));
-  bounds.SetWidth(clampTo<float>(bounds.Width()));
-  bounds.SetHeight(clampTo<float>(bounds.Height()));
+  bounds.SetX(ClampTo<float>(bounds.X()));
+  bounds.SetY(ClampTo<float>(bounds.Y()));
+  bounds.SetWidth(ClampTo<float>(bounds.Width()));
+  bounds.SetHeight(ClampTo<float>(bounds.Height()));
 }
 
 }  // namespace
@@ -489,7 +489,7 @@ float LayoutSVGShape::StrokeWidthForMarkerUnits() const {
     if (!non_scaling_transform.IsInvertible())
       return 0;
     float scale_factor =
-        clampTo<float>(sqrt((non_scaling_transform.XScaleSquared() +
+        ClampTo<float>(sqrt((non_scaling_transform.XScaleSquared() +
                              non_scaling_transform.YScaleSquared()) /
                             2));
     stroke_width /= scale_factor;

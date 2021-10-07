@@ -358,8 +358,8 @@ T StyleBuilderConverter::ConvertLineWidth(StyleResolverState& state,
   double zoomed_result = state.StyleRef().EffectiveZoom() * result;
   if (zoomed_result > 0.0 && zoomed_result < 1.0)
     return 1.0;
-  return clampTo<T>(RoundForImpreciseConversion<T>(result),
-                    defaultMinimumForClamp<T>(), defaultMaximumForClamp<T>());
+  return ClampTo<T>(RoundForImpreciseConversion<T>(result),
+                    DefaultMinimumForClamp<T>(), DefaultMaximumForClamp<T>());
 }
 
 template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>

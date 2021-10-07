@@ -72,7 +72,7 @@ scoped_refptr<TransformOperation> PerspectiveTransformOperation::Blend(
   }
   double p =
       1.0 / std::max(0.0, blink::Blend(from_p_inverse, to_p_inverse, progress));
-  return PerspectiveTransformOperation::Create(clampTo<double>(p, 0));
+  return PerspectiveTransformOperation::Create(ClampTo<double>(p, 0));
 }
 
 scoped_refptr<TransformOperation> PerspectiveTransformOperation::Zoom(

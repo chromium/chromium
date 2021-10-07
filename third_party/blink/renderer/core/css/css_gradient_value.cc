@@ -1237,7 +1237,7 @@ float ResolveRadius(const CSSPrimitiveValue* radius,
   else
     result = radius->ComputeLength<float>(conversion_data);
 
-  return clampTo<float>(std::max(result, 0.0f));
+  return ClampTo<float>(std::max(result, 0.0f));
 }
 
 enum EndShapeType { kCircleEndShape, kEllipseEndShape };
@@ -1248,10 +1248,10 @@ FloatSize RadiusToSide(const FloatPoint& point,
                        const FloatSize& size,
                        EndShapeType shape,
                        bool (*compare)(float, float)) {
-  float dx1 = clampTo<float>(fabs(point.X()));
-  float dy1 = clampTo<float>(fabs(point.Y()));
-  float dx2 = clampTo<float>(fabs(point.X() - size.Width()));
-  float dy2 = clampTo<float>(fabs(point.Y() - size.Height()));
+  float dx1 = ClampTo<float>(fabs(point.X()));
+  float dy1 = ClampTo<float>(fabs(point.Y()));
+  float dx2 = ClampTo<float>(fabs(point.X() - size.Width()));
+  float dy2 = ClampTo<float>(fabs(point.Y() - size.Height()));
 
   float dx = compare(dx1, dx2) ? dx1 : dx2;
   float dy = compare(dy1, dy2) ? dy1 : dy2;
@@ -1275,7 +1275,7 @@ inline FloatSize EllipseRadius(const FloatPoint& p, float aspect_ratio) {
   // a/b = aspectRatio, b = a/aspectRatio
   // a = sqrt(x^2 + y^2/(1/r^2))
   float a = sqrtf(p.X() * p.X() + p.Y() * p.Y() * aspect_ratio * aspect_ratio);
-  return FloatSize(clampTo<float>(a), clampTo<float>(a / aspect_ratio));
+  return FloatSize(ClampTo<float>(a), ClampTo<float>(a / aspect_ratio));
 }
 
 // Compute the radius to the closest/farthest corner (depending on the compare
@@ -1299,7 +1299,7 @@ FloatSize RadiusToCorner(const FloatPoint& point,
   }
 
   if (shape == kCircleEndShape) {
-    distance = clampTo<float>(distance);
+    distance = ClampTo<float>(distance);
     return FloatSize(distance, distance);
   }
 

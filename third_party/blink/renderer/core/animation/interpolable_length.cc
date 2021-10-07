@@ -228,7 +228,7 @@ Length InterpolableLength::CreateLength(
     has_percentage = true;
   if (pixels != 0 && has_percentage) {
     return Length(CalculationValue::Create(
-        PixelsAndPercent(clampTo<float>(pixels), clampTo<float>(percentage)),
+        PixelsAndPercent(ClampTo<float>(pixels), ClampTo<float>(percentage)),
         range));
   }
   if (has_percentage)

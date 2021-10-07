@@ -127,7 +127,7 @@ constexpr float Grad2turn(float g) {
   return g * (1.0f / 400.0f);
 }
 
-// clampTo() is implemented by templated helper classes (to allow for partial
+// ClampTo() is implemented by templated helper classes (to allow for partial
 // template specialization) as well as several helper functions.
 
 // This helper function can be called when we know that:
@@ -136,7 +136,7 @@ constexpr float Grad2turn(float g) {
 // (2) The default type promotions/conversions are sufficient to handle things
 //     correctly
 template <typename LimitType, typename ValueType>
-inline LimitType clampToDirectComparison(ValueType value,
+inline LimitType ClampToDirectComparison(ValueType value,
                                          LimitType min,
                                          LimitType max) {
   if (value >= max)
@@ -151,22 +151,25 @@ inline LimitType clampToDirectComparison(ValueType value,
 // will give correct results.
 //
 // In some cases, we can get better performance by using
-// clampToDirectComparison().  We use a templated class to switch between these
+// ClampToDirectComparison().  We use a templated class to switch between these
 // two cases (instead of simply using a conditional within one function) in
-// order to only compile the clampToDirectComparison() code for cases where it
+// order to only compile the ClampToDirectComparison() code for cases where it
 // will actually be used; this prevents the compiler from emitting warnings
 // about unsafe code (even though we wouldn't actually be executing that code).
-template <bool canUseDirectComparison, typename LimitType, typename ValueType>
+template <bool can_use_direct_comparison,
+          typename LimitType,
+          typename ValueType>
 class ClampToNonLongLongHelper;
+
 template <typename LimitType, typename ValueType>
 class ClampToNonLongLongHelper<true, LimitType, ValueType> {
   STATIC_ONLY(ClampToNonLongLongHelper);
 
  public:
-  static inline LimitType clampTo(ValueType value,
+  static inline LimitType ClampTo(ValueType value,
                                   LimitType min,
                                   LimitType max) {
-    return clampToDirectComparison(value, min, max);
+    return ClampToDirectComparison(value, min, max);
   }
 };
 
@@ -175,19 +178,19 @@ class ClampToNonLongLongHelper<false, LimitType, ValueType> {
   STATIC_ONLY(ClampToNonLongLongHelper);
 
  public:
-  static inline LimitType clampTo(ValueType value,
+  static inline LimitType ClampTo(ValueType value,
                                   LimitType min,
                                   LimitType max) {
-    const double doubleValue = static_cast<double>(value);
-    if (doubleValue >= static_cast<double>(max))
+    const double double_value = static_cast<double>(value);
+    if (double_value >= static_cast<double>(max))
       return max;
-    if (doubleValue <= static_cast<double>(min))
+    if (double_value <= static_cast<double>(min))
       return min;
     // If the limit type is integer, we might get better performance by
-    // casting |value| (as opposed to |doubleValue|) to the limit type.
+    // casting |value| (as opposed to |double_value|) to the limit type.
     return std::numeric_limits<LimitType>::is_integer
                ? static_cast<LimitType>(value)
-               : static_cast<LimitType>(doubleValue);
+               : static_cast<LimitType>(double_value);
   }
 };
 
@@ -197,20 +200,20 @@ class ClampToNonLongLongHelper<false, LimitType, ValueType> {
 template <typename LimitType, typename ValueType>
 class ClampToHelper {
  public:
-  static inline LimitType clampTo(ValueType value,
+  static inline LimitType ClampTo(ValueType value,
                                   LimitType min,
                                   LimitType max) {
-    // We only use clampToDirectComparison() when the integerness and
+    // We only use ClampToDirectComparison() when the integerness and
     // signedness of the two types matches.
     //
     // If the integerness of the types doesn't match, then at best
-    // clampToDirectComparison() won't be much more efficient than the
+    // ClampToDirectComparison() won't be much more efficient than the
     // cast-everything-to-double method, since we'll need to convert to
     // floating point anyway; at worst, we risk incorrect results when
     // clamping a float to a 32-bit integral type due to potential precision
     // loss.
     //
-    // If the signedness doesn't match, clampToDirectComparison() will
+    // If the signedness doesn't match, ClampToDirectComparison() will
     // produce warnings about comparing signed vs. unsigned, which are apt
     // since negative signed values will be converted to large unsigned ones
     // and we'll get incorrect results.
@@ -219,7 +222,7 @@ class ClampToHelper {
                    std::numeric_limits<ValueType>::is_integer &&
                std::numeric_limits<LimitType>::is_signed ==
                    std::numeric_limits<ValueType>::is_signed,
-           LimitType, ValueType > ::clampTo(value, min, max);
+           LimitType, ValueType > ::ClampTo(value, min, max);
   }
 };
 
@@ -233,7 +236,7 @@ class ClampToHelper<int64_t, ValueType> {
   STATIC_ONLY(ClampToHelper);
 
  public:
-  static inline int64_t clampTo(ValueType value, int64_t min, int64_t max) {
+  static inline int64_t ClampTo(ValueType value, int64_t min, int64_t max) {
     if (!std::numeric_limits<ValueType>::is_integer) {
       if (value > 0) {
         if (static_cast<double>(value) >=
@@ -247,7 +250,7 @@ class ClampToHelper<int64_t, ValueType> {
     // Note: If |value| were uint64_t it could be larger than the largest
     // int64_t, and this code would be wrong; we handle  this case with
     // a separate full specialization below.
-    return clampToDirectComparison(static_cast<int64_t>(value), min, max);
+    return ClampToDirectComparison(static_cast<int64_t>(value), min, max);
   }
 };
 
@@ -258,11 +261,11 @@ class ClampToHelper<int64_t, uint64_t> {
   STATIC_ONLY(ClampToHelper);
 
  public:
-  static inline int64_t clampTo(uint64_t value, int64_t min, int64_t max) {
+  static inline int64_t ClampTo(uint64_t value, int64_t min, int64_t max) {
     if (max <= 0 || value >= static_cast<uint64_t>(max))
       return max;
-    const int64_t longLongValue = static_cast<int64_t>(value);
-    return (longLongValue <= min) ? min : longLongValue;
+    const int64_t long_long_value = static_cast<int64_t>(value);
+    return (long_long_value <= min) ? min : long_long_value;
   }
 };
 
@@ -274,7 +277,7 @@ class ClampToHelper<uint64_t, ValueType> {
   STATIC_ONLY(ClampToHelper);
 
  public:
-  static inline uint64_t clampTo(ValueType value, uint64_t min, uint64_t max) {
+  static inline uint64_t ClampTo(ValueType value, uint64_t min, uint64_t max) {
     if (value <= 0)
       return min;
     if (!std::numeric_limits<ValueType>::is_integer) {
@@ -282,49 +285,49 @@ class ClampToHelper<uint64_t, ValueType> {
           static_cast<double>(std::numeric_limits<uint64_t>::max()))
         return max;
     }
-    return clampToDirectComparison(static_cast<uint64_t>(value), min, max);
+    return ClampToDirectComparison(static_cast<uint64_t>(value), min, max);
   }
 };
 
 template <typename T>
-constexpr T defaultMaximumForClamp() {
+constexpr T DefaultMaximumForClamp() {
   return std::numeric_limits<T>::max();
 }
 // This basically reimplements C++11's std::numeric_limits<T>::lowest().
 template <typename T>
-constexpr T defaultMinimumForClamp() {
+constexpr T DefaultMinimumForClamp() {
   return std::numeric_limits<T>::min();
 }
 template <>
-constexpr float defaultMinimumForClamp<float>() {
+constexpr float DefaultMinimumForClamp<float>() {
   return -std::numeric_limits<float>::max();
 }
 template <>
-constexpr double defaultMinimumForClamp<double>() {
+constexpr double DefaultMinimumForClamp<double>() {
   return -std::numeric_limits<double>::max();
 }
 
 // And, finally, the actual function for people to call.
 template <typename LimitType, typename ValueType>
-inline LimitType clampTo(ValueType value,
-                         LimitType min = defaultMinimumForClamp<LimitType>(),
-                         LimitType max = defaultMaximumForClamp<LimitType>()) {
+inline LimitType ClampTo(ValueType value,
+                         LimitType min = DefaultMinimumForClamp<LimitType>(),
+                         LimitType max = DefaultMaximumForClamp<LimitType>()) {
   DCHECK(!std::isnan(static_cast<double>(value)));
   DCHECK_LE(min, max);  // This also ensures |min| and |max| aren't NaN.
-  return ClampToHelper<LimitType, ValueType>::clampTo(value, min, max);
+  return ClampToHelper<LimitType, ValueType>::ClampTo(value, min, max);
 }
 
-constexpr bool isWithinIntRange(float x) {
+constexpr bool IsWithinIntRange(float x) {
   return x > static_cast<float>(std::numeric_limits<int>::min()) &&
          x < static_cast<float>(std::numeric_limits<int>::max());
 }
 
-static constexpr size_t greatestCommonDivisor(size_t a, size_t b) {
-  return b ? greatestCommonDivisor(b, a % b) : a;
+static constexpr size_t GreatestCommonDivisor(size_t a, size_t b) {
+  return b ? GreatestCommonDivisor(b, a % b) : a;
 }
 
-constexpr size_t lowestCommonMultiple(size_t a, size_t b) {
-  return a && b ? a / greatestCommonDivisor(a, b) * b : 0;
+constexpr size_t LowestCommonMultiple(size_t a, size_t b) {
+  return a && b ? a / GreatestCommonDivisor(a, b) * b : 0;
 }
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_MATH_EXTRAS_H_

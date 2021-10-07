@@ -41,11 +41,11 @@ float FloatSize::DiagonalLength() const {
 }
 
 bool FloatSize::IsExpressibleAsIntSize() const {
-  return isWithinIntRange(width_) && isWithinIntRange(height_);
+  return IsWithinIntRange(width_) && IsWithinIntRange(height_);
 }
 
 FloatSize FloatSize::NarrowPrecision(double width, double height) {
-  return FloatSize(clampTo<float>(width), clampTo<float>(height));
+  return FloatSize(ClampTo<float>(width), ClampTo<float>(height));
 }
 
 std::ostream& operator<<(std::ostream& ostream, const FloatSize& size) {

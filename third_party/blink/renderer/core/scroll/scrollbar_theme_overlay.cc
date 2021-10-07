@@ -118,7 +118,7 @@ int ScrollbarThemeOverlay::ThumbLength(const Scrollbar& scrollbar) {
       static_cast<float>(scrollbar.VisibleSize()) / scrollbar.TotalSize();
   int length = round(proportion * track_len);
   int min_len = std::min(MinimumThumbLength(scrollbar), track_len);
-  length = clampTo(length, min_len, track_len);
+  length = ClampTo(length, min_len, track_len);
   return length;
 }
 

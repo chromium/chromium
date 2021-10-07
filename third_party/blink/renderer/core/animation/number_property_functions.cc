@@ -90,17 +90,17 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
                                             double value) {
   switch (property.PropertyID()) {
     case CSSPropertyID::kStrokeMiterlimit:
-      return clampTo<float>(value, 1);
+      return ClampTo<float>(value, 1);
 
     case CSSPropertyID::kFloodOpacity:
     case CSSPropertyID::kStopOpacity:
     case CSSPropertyID::kStrokeOpacity:
     case CSSPropertyID::kShapeImageThreshold:
-      return clampTo<float>(value, 0, 1);
+      return ClampTo<float>(value, 0, 1);
 
     case CSSPropertyID::kFillOpacity:
     case CSSPropertyID::kOpacity:
-      return clampTo<float>(value, 0, nextafterf(1, 0));
+      return ClampTo<float>(value, 0, nextafterf(1, 0));
 
     case CSSPropertyID::kFlexGrow:
     case CSSPropertyID::kFlexShrink:
@@ -108,18 +108,18 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
     case CSSPropertyID::kLineHeight:
     case CSSPropertyID::kTabSize:
     case CSSPropertyID::kTextSizeAdjust:
-      return clampTo<float>(value, 0);
+      return ClampTo<float>(value, 0);
 
     case CSSPropertyID::kOrphans:
     case CSSPropertyID::kWidows:
-      return clampTo<int16_t>(round(value), 1);
+      return ClampTo<int16_t>(round(value), 1);
 
     case CSSPropertyID::kColumnCount:
-      return clampTo<uint16_t>(round(value), 1);
+      return ClampTo<uint16_t>(round(value), 1);
 
     case CSSPropertyID::kOrder:
     case CSSPropertyID::kZIndex:
-      return clampTo<int>(round(value));
+      return ClampTo<int>(round(value));
 
     default:
       NOTREACHED();

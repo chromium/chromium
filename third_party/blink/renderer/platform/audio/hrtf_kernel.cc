@@ -58,7 +58,7 @@ static float ExtractAverageGroupDelay(AudioChannel* channel,
   estimation_frame.DoFFT(impulse_p);
 
   float frame_delay =
-      clampTo<float>(estimation_frame.ExtractAverageGroupDelay());
+      ClampTo<float>(estimation_frame.ExtractAverageGroupDelay());
   estimation_frame.DoInverseFFT(impulse_p);
 
   return frame_delay;
@@ -106,7 +106,7 @@ std::unique_ptr<HRTFKernel> HRTFKernel::CreateInterpolatedKernel(
   DCHECK(kernel2);
   DCHECK_GE(x, 0.0);
   DCHECK_LT(x, 1.0);
-  x = clampTo(x, 0.0f, 1.0f);
+  x = ClampTo(x, 0.0f, 1.0f);
 
   float sample_rate1 = kernel1->SampleRate();
   float sample_rate2 = kernel2->SampleRate();

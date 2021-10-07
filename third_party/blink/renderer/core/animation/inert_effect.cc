@@ -60,7 +60,7 @@ void InertEffect::Sample(HeapVector<Member<Interpolation>>& result) const {
   absl::optional<double> iteration = CurrentIteration();
   DCHECK(iteration);
   DCHECK_GE(iteration.value(), 0);
-  model_->Sample(clampTo<int>(iteration.value(), 0), Progress().value(),
+  model_->Sample(ClampTo<int>(iteration.value(), 0), Progress().value(),
                  NormalizedTiming().iteration_duration, result);
 }
 

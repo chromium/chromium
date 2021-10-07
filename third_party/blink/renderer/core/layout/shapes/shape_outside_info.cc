@@ -427,7 +427,7 @@ ShapeOutsideDeltas ShapeOutsideInfo::ComputeDeltasForContainingBlockLine(
                 : containing_block.MarginEndForChild(*layout_box_);
         LayoutUnit raw_left_margin_box_delta =
             segment.logical_left + LogicalLeftOffset() + logical_left_margin;
-        LayoutUnit left_margin_box_delta = clampTo<LayoutUnit>(
+        LayoutUnit left_margin_box_delta = ClampTo<LayoutUnit>(
             raw_left_margin_box_delta, LayoutUnit(), float_margin_box_width);
 
         LayoutUnit logical_right_margin =
@@ -438,7 +438,7 @@ ShapeOutsideDeltas ShapeOutsideInfo::ComputeDeltasForContainingBlockLine(
             segment.logical_right + LogicalLeftOffset() -
             containing_block.LogicalWidthForChild(*layout_box_) -
             logical_right_margin;
-        LayoutUnit right_margin_box_delta = clampTo<LayoutUnit>(
+        LayoutUnit right_margin_box_delta = ClampTo<LayoutUnit>(
             raw_right_margin_box_delta, -float_margin_box_width, LayoutUnit());
 
         shape_outside_deltas_ =

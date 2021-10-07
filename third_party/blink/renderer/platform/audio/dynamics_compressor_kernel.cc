@@ -341,7 +341,7 @@ void DynamicsCompressorKernel::Process(
 
       // Contain within range: -12 -> 0 then scale to go from 0 -> 3
       float x = compression_diff_db;
-      x = clampTo(x, -12.0f, 0.0f);
+      x = ClampTo(x, -12.0f, 0.0f);
       x = 0.25f * (x + 12);
 
       // Compute adaptive release curve using 4th order polynomial.

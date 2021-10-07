@@ -53,7 +53,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
     if (!ComputeLengthImpl(value, type, default_font_size, viewport_width,
                            viewport_height, temp_result))
       return false;
-    result = clampTo<T>(temp_result);
+    result = ClampTo<T>(temp_result);
     return true;
   }
   virtual bool ComputeLength(double value,

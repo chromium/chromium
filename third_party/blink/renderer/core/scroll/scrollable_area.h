@@ -433,7 +433,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                                : MaximumScrollOffset().Height();
   }
   float ClampScrollOffset(ScrollbarOrientation orientation, float offset) {
-    return clampTo(offset, MinimumScrollOffset(orientation),
+    return ClampTo(offset, MinimumScrollOffset(orientation),
                    MaximumScrollOffset(orientation));
   }
 

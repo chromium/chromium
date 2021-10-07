@@ -322,9 +322,9 @@ ScrollOffset RootFrameViewport::ClampToUserScrollableOffset(
   ScrollOffset scroll_offset = offset;
   FloatRect user_scrollable = GetUserScrollableRect(LayoutViewport()) +
                               GetUserScrollableRect(GetVisualViewport());
-  scroll_offset.SetWidth(clampTo(scroll_offset.Width(), user_scrollable.X(),
+  scroll_offset.SetWidth(ClampTo(scroll_offset.Width(), user_scrollable.X(),
                                  user_scrollable.MaxX()));
-  scroll_offset.SetHeight(clampTo(scroll_offset.Height(), user_scrollable.Y(),
+  scroll_offset.SetHeight(ClampTo(scroll_offset.Height(), user_scrollable.Y(),
                                   user_scrollable.MaxY()));
   return scroll_offset;
 }

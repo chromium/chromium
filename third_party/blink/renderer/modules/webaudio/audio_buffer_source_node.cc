@@ -377,7 +377,7 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
             sample = (1.0 - interpolation_factor) * sample1 +
                      interpolation_factor * sample2;
           }
-          destination[write_index] = clampTo<float>(sample);
+          destination[write_index] = ClampTo<float>(sample);
         } else {
           destination[write_index] = 0;
         }
@@ -479,7 +479,7 @@ void AudioBufferSourceHandler::ClampGrainParameters(
   // buffer.
   double buffer_duration = shared_buffer_->duration();
 
-  grain_offset_ = clampTo(grain_offset_, 0.0, buffer_duration);
+  grain_offset_ = ClampTo(grain_offset_, 0.0, buffer_duration);
 
   // If the duration was not explicitly given, use the buffer duration to set
   // the grain duration. Otherwise, we want to use the user-specified value, of
@@ -493,11 +493,11 @@ void AudioBufferSourceHandler::ClampGrainParameters(
     // loop multiple times if grainDuration is larger than the buffer duration.
     // The net effect is as if the user called stop(when + grainDuration).
     grain_duration_ =
-        clampTo(grain_duration_, 0.0, std::numeric_limits<double>::infinity());
+        ClampTo(grain_duration_, 0.0, std::numeric_limits<double>::infinity());
     end_time_ = start_time_ + grain_duration_;
   } else {
     grain_duration_ =
-        clampTo(grain_duration_, 0.0, buffer_duration - grain_offset_);
+        ClampTo(grain_duration_, 0.0, buffer_duration - grain_offset_);
   }
 
   // We call timeToSampleFrame here since at playbackRate == 1 we don't want to
@@ -636,7 +636,7 @@ double AudioBufferSourceHandler::ComputePlaybackRate() {
 
   // Sanity check the total rate.  It's very important that the resampler not
   // get any bad rate values.
-  final_playback_rate = clampTo(final_playback_rate, 0.0, kMaxRate);
+  final_playback_rate = ClampTo(final_playback_rate, 0.0, kMaxRate);
 
   DCHECK(!std::isnan(final_playback_rate));
   DCHECK(!std::isinf(final_playback_rate));

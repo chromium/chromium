@@ -317,10 +317,10 @@ class PLATFORM_EXPORT FontDescription {
                         bool is_unique_match) const;
 
   void SetFamily(const FontFamily& family) { family_list_ = family; }
-  void SetComputedSize(float s) { computed_size_ = clampTo<float>(s); }
-  void SetSpecifiedSize(float s) { specified_size_ = clampTo<float>(s); }
-  void SetAdjustedSize(float s) { adjusted_size_ = clampTo<float>(s); }
-  void SetSizeAdjust(float aspect) { size_adjust_ = clampTo<float>(aspect); }
+  void SetComputedSize(float s) { computed_size_ = ClampTo<float>(s); }
+  void SetSpecifiedSize(float s) { specified_size_ = ClampTo<float>(s); }
+  void SetAdjustedSize(float s) { adjusted_size_ = ClampTo<float>(s); }
+  void SetSizeAdjust(float aspect) { size_adjust_ = ClampTo<float>(aspect); }
 
   void SetStyle(FontSelectionValue i);
   void SetWeight(FontSelectionValue w) { font_selection_request_.weight = w; }

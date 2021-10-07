@@ -173,7 +173,7 @@ class CanvasRenderingContext2DState final
   }
 
   void SetLineWidth(double line_width) {
-    stroke_flags_.setStrokeWidth(clampTo<float>(line_width));
+    stroke_flags_.setStrokeWidth(ClampTo<float>(line_width));
   }
   double LineWidth() const { return stroke_flags_.getStrokeWidth(); }
 
@@ -192,7 +192,7 @@ class CanvasRenderingContext2DState final
   }
 
   void SetMiterLimit(double miter_limit) {
-    stroke_flags_.setStrokeMiter(clampTo<float>(miter_limit));
+    stroke_flags_.setStrokeMiter(ClampTo<float>(miter_limit));
   }
   double MiterLimit() const { return stroke_flags_.getStrokeMiter(); }
 

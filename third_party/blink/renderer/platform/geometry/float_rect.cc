@@ -38,8 +38,8 @@ FloatRect FloatRect::NarrowPrecision(double x,
                                      double y,
                                      double width,
                                      double height) {
-  return FloatRect(clampTo<float>(x), clampTo<float>(y), clampTo<float>(width),
-                   clampTo<float>(height));
+  return FloatRect(ClampTo<float>(x), ClampTo<float>(y), ClampTo<float>(width),
+                   ClampTo<float>(height));
 }
 
 #if DCHECK_IS_ON()
@@ -68,9 +68,9 @@ bool FloatRect::IsFinite() const {
 }
 
 bool FloatRect::IsExpressibleAsIntRect() const {
-  return isWithinIntRange(X()) && isWithinIntRange(Y()) &&
-         isWithinIntRange(Width()) && isWithinIntRange(Height()) &&
-         isWithinIntRange(MaxX()) && isWithinIntRange(MaxY());
+  return IsWithinIntRange(X()) && IsWithinIntRange(Y()) &&
+         IsWithinIntRange(Width()) && IsWithinIntRange(Height()) &&
+         IsWithinIntRange(MaxX()) && IsWithinIntRange(MaxY());
 }
 
 void FloatRect::ShiftXEdgeTo(float edge) {
@@ -230,8 +230,8 @@ void FloatRect::Scale(float sx, float sy) {
 
 float FloatRect::SquaredDistanceTo(const FloatPoint& point) const {
   FloatPoint closest_point;
-  closest_point.SetX(clampTo<float>(point.X(), X(), MaxX()));
-  closest_point.SetY(clampTo<float>(point.Y(), Y(), MaxY()));
+  closest_point.SetX(ClampTo<float>(point.X(), X(), MaxX()));
+  closest_point.SetY(ClampTo<float>(point.Y(), Y(), MaxY()));
   return (point - closest_point).DiagonalLengthSquared();
 }
 

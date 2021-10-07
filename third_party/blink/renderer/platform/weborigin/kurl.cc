@@ -887,12 +887,12 @@ void KURL::Init(const KURL& base,
     StringUTF8Adaptor relative_utf8(relative);
     is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
                                      base.parsed_, relative_utf8.data(),
-                                     clampTo<int>(relative_utf8.size()),
+                                     ClampTo<int>(relative_utf8.size()),
                                      charset_converter, &output, &parsed_);
   } else {
     is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
                                      base.parsed_, relative.Characters16(),
-                                     clampTo<int>(relative.length()),
+                                     ClampTo<int>(relative.length()),
                                      charset_converter, &output, &parsed_);
   }
 

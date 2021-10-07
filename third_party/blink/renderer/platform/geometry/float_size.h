@@ -206,23 +206,23 @@ constexpr bool operator!=(const FloatSize& a, const FloatSize& b) {
 }
 
 inline IntSize RoundedIntSize(const FloatSize& p) {
-  return IntSize(clampTo<int>(roundf(p.Width())),
-                 clampTo<int>(roundf(p.Height())));
+  return IntSize(ClampTo<int>(roundf(p.Width())),
+                 ClampTo<int>(roundf(p.Height())));
 }
 
 inline IntSize FlooredIntSize(const FloatSize& p) {
-  return IntSize(clampTo<int>(floorf(p.Width())),
-                 clampTo<int>(floorf(p.Height())));
+  return IntSize(ClampTo<int>(floorf(p.Width())),
+                 ClampTo<int>(floorf(p.Height())));
 }
 
 inline IntSize ExpandedIntSize(const FloatSize& p) {
-  return IntSize(clampTo<int>(ceilf(p.Width())),
-                 clampTo<int>(ceilf(p.Height())));
+  return IntSize(ClampTo<int>(ceilf(p.Width())),
+                 ClampTo<int>(ceilf(p.Height())));
 }
 
 inline IntPoint FlooredIntPoint(const FloatSize& p) {
-  return IntPoint(clampTo<int>(floorf(p.Width())),
-                  clampTo<int>(floorf(p.Height())));
+  return IntPoint(ClampTo<int>(floorf(p.Width())),
+                  ClampTo<int>(floorf(p.Height())));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const FloatSize&);

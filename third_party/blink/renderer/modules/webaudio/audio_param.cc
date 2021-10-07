@@ -184,7 +184,7 @@ float AudioParamHandler::Value() {
 }
 
 void AudioParamHandler::SetIntrinsicValue(float new_value) {
-  new_value = clampTo(new_value, min_value_, max_value_);
+  new_value = ClampTo(new_value, min_value_, max_value_);
   intrinsic_value_.store(new_value, std::memory_order_relaxed);
 }
 

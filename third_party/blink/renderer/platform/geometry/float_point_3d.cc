@@ -51,7 +51,7 @@ float FloatPoint3D::AngleBetween(const FloatPoint3D& y) const {
     float cos_angle = this->Dot(y) / (x_length * y_length);
     // Due to round-off |cosAngle| can have a magnitude greater than 1.  Clamp
     // the value to [-1, 1] before computing the angle.
-    return acos(clampTo(cos_angle, -1.0, 1.0));
+    return acos(ClampTo(cos_angle, -1.0, 1.0));
   }
   return 0;
 }

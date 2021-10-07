@@ -84,7 +84,7 @@ typedef double Vector3[3];
 static void Clamp(double& value) {
   // TODO(crbug.com/1224320): We should prevent NaN input from outside.
   // To prevent crashes, the following clamp NaN to 0 is added.
-  value = UNLIKELY(std::isnan(value)) ? 0 : clampTo<double>(value);
+  value = UNLIKELY(std::isnan(value)) ? 0 : ClampTo<double>(value);
 }
 
 static void ClampMatrix(TransformationMatrix::Matrix4& matrix) {
@@ -97,7 +97,7 @@ static void ClampMatrix(TransformationMatrix::Matrix4& matrix) {
 
 static float ClampToFloat(double value) {
   // TODO(crbug.com/1224320): See Clamp() about isnan.
-  return UNLIKELY(std::isnan(value)) ? 0 : clampTo<float>(value);
+  return UNLIKELY(std::isnan(value)) ? 0 : ClampTo<float>(value);
 }
 
 // inverse(original_matrix, inverse_matrix)
@@ -890,7 +890,7 @@ FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q) const {
 
 static float ClampEdgeValue(float f) {
   DCHECK(!std::isnan(f));
-  return clampTo(f, (-LayoutUnit::Max() / 2).ToFloat(),
+  return ClampTo(f, (-LayoutUnit::Max() / 2).ToFloat(),
                  (LayoutUnit::Max() / 2).ToFloat());
 }
 

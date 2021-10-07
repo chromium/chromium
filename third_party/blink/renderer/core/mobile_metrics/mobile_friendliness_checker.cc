@@ -187,11 +187,11 @@ int ExtractAndCountAllTapTargets(
         object = object->NextInPreOrder();
         continue;
       }
-      const int top = clampTo<int>(rect.Y() - finger_radius + scroll_offset);
+      const int top = ClampTo<int>(rect.Y() - finger_radius + scroll_offset);
       const int bottom =
-          clampTo<int>(rect.MaxY() + finger_radius + scroll_offset);
-      const int left = clampTo<int>(rect.X() - finger_radius);
-      const int right = clampTo<int>(rect.MaxX() + finger_radius);
+          ClampTo<int>(rect.MaxY() + finger_radius + scroll_offset);
+      const int left = ClampTo<int>(rect.X() - finger_radius);
+      const int right = ClampTo<int>(rect.MaxX() + finger_radius);
       const int center = right / 2 + left / 2;
       if (top > max_height) {
         break;

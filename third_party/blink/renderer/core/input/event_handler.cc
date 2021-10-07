@@ -171,9 +171,9 @@ IntPoint DetermineHotSpot(const Image& image,
     if (image_rect.Contains(specified_hot_spot))
       return specified_hot_spot;
 
-    return IntPoint(clampTo<int>(specified_hot_spot.X(), image_rect.X(),
+    return IntPoint(ClampTo<int>(specified_hot_spot.X(), image_rect.X(),
                                  image_rect.MaxX() - 1),
-                    clampTo<int>(specified_hot_spot.Y(), image_rect.Y(),
+                    ClampTo<int>(specified_hot_spot.Y(), image_rect.Y(),
                                  image_rect.MaxY() - 1));
   }
 

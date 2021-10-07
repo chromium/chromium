@@ -64,7 +64,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
   float height = base_on_top_controls ? TopHeight() : BottomHeight();
   // Clamp and use the expected content offset so that we don't return
   // spurious remaining scrolls due to the imprecision of the shownRatio.
-  new_content_offset = clampTo(
+  new_content_offset = ClampTo(
       new_content_offset,
       base_on_top_controls ? TopMinHeight() : BottomMinHeight(), height);
 
@@ -74,7 +74,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
   float min_ratio =
       base_on_top_controls ? TopMinShownRatio() : BottomMinShownRatio();
   float normalized_shown_ratio =
-      (clampTo(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
+      (ClampTo(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
   // relative/normalized ratio to keep them in sync.

@@ -92,7 +92,7 @@ class PLATFORM_EXPORT Length {
 
   Length(double v, Length::Type t, bool q = false)
       : quirk_(q), type_(t), is_float_(true) {
-    float_value_ = clampTo<float>(v);
+    float_value_ = ClampTo<float>(v);
   }
 
   explicit Length(scoped_refptr<const CalculationValue>);

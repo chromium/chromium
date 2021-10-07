@@ -391,7 +391,7 @@ static bool EvalResolution(const MediaQueryExpValue& value,
   // media type of the query will either be "print" or "all".
   if (EqualIgnoringASCIICase(media_values.MediaType(),
                              media_type_names::kScreen)) {
-    actual_resolution = clampTo<float>(media_values.DevicePixelRatio());
+    actual_resolution = ClampTo<float>(media_values.DevicePixelRatio());
   } else if (EqualIgnoringASCIICase(media_values.MediaType(),
                                     media_type_names::kPrint)) {
     // The resolution of images while printing should not depend on the DPI
@@ -407,7 +407,7 @@ static bool EvalResolution(const MediaQueryExpValue& value,
     return false;
 
   if (value.Unit() == CSSPrimitiveValue::UnitType::kNumber)
-    return CompareValue(actual_resolution, clampTo<float>(value.Value()), op);
+    return CompareValue(actual_resolution, ClampTo<float>(value.Value()), op);
 
   if (!CSSPrimitiveValue::IsResolution(value.Unit()))
     return false;
@@ -417,7 +417,7 @@ static bool EvalResolution(const MediaQueryExpValue& value,
   double dppx_factor = CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
       CSSPrimitiveValue::UnitType::kDotsPerPixel);
   float value_in_dppx =
-      clampTo<float>(value.Value() * (canonical_factor / dppx_factor));
+      ClampTo<float>(value.Value() * (canonical_factor / dppx_factor));
   if (value.Unit() == CSSPrimitiveValue::UnitType::kDotsPerCentimeter) {
     // To match DPCM to DPPX values, we limit to 2 decimal points.
     // The https://drafts.csswg.org/css-values/#absolute-lengths recommends
@@ -467,7 +467,7 @@ static bool ComputeLength(const MediaQueryExpValue& value,
     return false;
 
   if (value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
-    result = clampTo<int>(value.Value());
+    result = ClampTo<int>(value.Value());
     return !media_values.StrictMode() || !result;
   }
 

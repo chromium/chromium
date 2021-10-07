@@ -1101,10 +1101,10 @@ PaintArtifactCompositor* VisualViewport::GetPaintArtifactCompositor() const {
 std::unique_ptr<TracedValue> VisualViewport::ViewportToTracedValue() const {
   auto value = std::make_unique<TracedValue>();
   IntRect viewport = VisibleContentRect();
-  value->SetInteger("x", clampTo<int>(roundf(viewport.X())));
-  value->SetInteger("y", clampTo<int>(roundf(viewport.Y())));
-  value->SetInteger("width", clampTo<int>(roundf(viewport.Width())));
-  value->SetInteger("height", clampTo<int>(roundf(viewport.Height())));
+  value->SetInteger("x", ClampTo<int>(roundf(viewport.X())));
+  value->SetInteger("y", ClampTo<int>(roundf(viewport.Y())));
+  value->SetInteger("width", ClampTo<int>(roundf(viewport.Width())));
+  value->SetInteger("height", ClampTo<int>(roundf(viewport.Height())));
   value->SetString("frameID",
                    IdentifiersFactory::FrameId(GetPage().MainFrame()));
   return value;

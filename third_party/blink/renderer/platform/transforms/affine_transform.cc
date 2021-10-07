@@ -265,7 +265,7 @@ FloatPoint AffineTransform::MapPoint(const FloatPoint& point) const {
   double x2, y2;
   Map(point.X(), point.Y(), x2, y2);
 
-  return FloatPoint(clampTo<float>(x2), clampTo<float>(y2));
+  return FloatPoint(ClampTo<float>(x2), ClampTo<float>(y2));
 }
 
 IntSize AffineTransform::MapSize(const IntSize& size) const {
@@ -280,7 +280,7 @@ FloatSize AffineTransform::MapSize(const FloatSize& size) const {
   double width2 = size.Width() * XScale();
   double height2 = size.Height() * YScale();
 
-  return FloatSize(clampTo<float>(width2), clampTo<float>(height2));
+  return FloatSize(ClampTo<float>(width2), ClampTo<float>(height2));
 }
 
 IntRect AffineTransform::MapRect(const IntRect& rect) const {
@@ -293,8 +293,8 @@ FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
       return rect;
 
     FloatRect mapped_rect(rect);
-    mapped_rect.Move(clampTo<float>(transform_[4]),
-                     clampTo<float>(transform_[5]));
+    mapped_rect.Move(ClampTo<float>(transform_[4]),
+                     ClampTo<float>(transform_[5]));
     return mapped_rect;
   }
 
@@ -309,8 +309,8 @@ FloatRect AffineTransform::MapRect(const FloatRect& rect) const {
 FloatQuad AffineTransform::MapQuad(const FloatQuad& q) const {
   if (IsIdentityOrTranslation()) {
     FloatQuad mapped_quad(q);
-    mapped_quad.Move(clampTo<float>(transform_[4]),
-                     clampTo<float>(transform_[5]));
+    mapped_quad.Move(ClampTo<float>(transform_[4]),
+                     ClampTo<float>(transform_[5]));
     return mapped_quad;
   }
 

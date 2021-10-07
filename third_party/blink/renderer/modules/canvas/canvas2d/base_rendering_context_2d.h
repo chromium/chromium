@@ -909,7 +909,7 @@ ALWAYS_INLINE bool BaseRenderingContext2D::ComputeDirtyRect(
   if (UNLIKELY(AlphaChannel(state.ShadowColor()))) {
     FloatRect shadow_rect(canvas_rect);
     shadow_rect.Move(state.ShadowOffset());
-    shadow_rect.Inflate(clampTo<float>(state.ShadowBlur()));
+    shadow_rect.Inflate(ClampTo<float>(state.ShadowBlur()));
     canvas_rect.Unite(shadow_rect);
   }
 

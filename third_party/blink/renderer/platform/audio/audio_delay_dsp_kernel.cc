@@ -246,7 +246,7 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
 
   double delay_time = DelayTime(sample_rate);
   // Make sure the delay time is in a valid range.
-  delay_time = clampTo(delay_time, 0.0, max_time);
+  delay_time = ClampTo(delay_time, 0.0, max_time);
   double desired_delay_frames = delay_time * sample_rate;
   int w_index = write_index_;
   double read_position = w_index + buffer_length - desired_delay_frames;

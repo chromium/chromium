@@ -1353,9 +1353,9 @@ void ComputedStyle::ApplyMotionPathTransform(
     // TODO(ericwilligers): crbug.com/641245 Support <size> for ray paths.
     float float_distance = FloatValueForLength(distance, 0);
 
-    // Use clampTo() to convert infinite values to min/max finite ones.
+    // Use ClampTo() to convert infinite values to min/max finite ones.
     path_position.tangent_in_degrees =
-        clampTo<float, float>(To<StyleRay>(*path).Angle() - 90);
+        ClampTo<float, float>(To<StyleRay>(*path).Angle() - 90);
     float tangent_in_radians = Deg2rad(path_position.tangent_in_degrees);
     path_position.point.SetX(float_distance * cos(tangent_in_radians));
     path_position.point.SetY(float_distance * sin(tangent_in_radians));
@@ -1371,7 +1371,7 @@ void ComputedStyle::ApplyMotionPathTransform(
       if (computed_distance < 0)
         computed_distance += path_length;
     } else {
-      computed_distance = clampTo<float>(float_distance, 0, path_length);
+      computed_distance = ClampTo<float>(float_distance, 0, path_length);
     }
 
     path_position =
@@ -1420,7 +1420,7 @@ void ComputedStyle::SetListStyleImage(StyleImage* v) {
 bool ComputedStyle::SetEffectiveZoom(float f) {
   // Clamp the effective zoom value to a smaller (but hopeful still large
   // enough) range, to avoid overflow in derived computations.
-  float clamped_effective_zoom = clampTo<float>(f, 1e-6, 1e6);
+  float clamped_effective_zoom = ClampTo<float>(f, 1e-6, 1e6);
   if (EffectiveZoom() == clamped_effective_zoom)
     return false;
   SetEffectiveZoomInternal(clamped_effective_zoom);
