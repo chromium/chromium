@@ -33,6 +33,10 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 @interface PopupMenuTableViewController ()
 // Whether the -viewDidAppear: callback has been called.
 @property(nonatomic, assign) BOOL viewDidAppear;
+// A cached copy of |self.view.bounds|, made during calls to
+// viewDidLayoutSubviews, and used to reduce the number of calls to
+// calculatePreferredContentSize. which can be an expensive operation.
+@property(nonatomic, assign) CGRect cachedBounds;
 // Tracks reusable cells in memory, which has an upper limit. This is used to
 // ensure that pointer interaction is added only once to a cell.
 @property(nonatomic, strong)
@@ -51,6 +55,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
   self = [super initWithStyle:UITableViewStyleGrouped];
   if (self) {
     self.cellsInMemory = [NSHashTable<UITableViewCell*> weakObjectsHashTable];
+    self.cachedBounds = CGRectZero;
   }
   return self;
 }
@@ -165,7 +170,13 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
 
-  self.preferredContentSize = [self calculatePreferredContentSize];
+  // -calculatePreferredContentSize is a somewhat expensive operation and may
+  // be responsible for some system hangs. Optimize away some calls by checking
+  // if bounds changed first. See crbug.com/1257151 for more context.
+  if (!CGRectEqualToRect(self.cachedBounds, self.view.bounds)) {
+    self.preferredContentSize = [self calculatePreferredContentSize];
+    self.cachedBounds = self.view.bounds;
+  }
 }
 
 - (CGSize)calculatePreferredContentSize {
