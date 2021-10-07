@@ -127,6 +127,38 @@ class UserInfo {
 std::ostream& operator<<(std::ostream& out, const AccessorySheetField& field);
 std::ostream& operator<<(std::ostream& out, const UserInfo& user_info);
 
+// Represents data pertaining to promo code offers to be shown on the Payments
+// tab of manual fallback UI.
+class PromoCodeInfo {
+ public:
+  PromoCodeInfo(std::u16string promo_code, std::u16string details_text);
+  PromoCodeInfo(const PromoCodeInfo& promo_code_info);
+  PromoCodeInfo(PromoCodeInfo&& promo_code_info);
+
+  ~PromoCodeInfo();
+
+  PromoCodeInfo& operator=(const PromoCodeInfo& promo_code_info);
+  PromoCodeInfo& operator=(PromoCodeInfo&& promo_code_info);
+
+  const AccessorySheetField promo_code() const { return promo_code_; }
+
+  const std::u16string details_text() const { return details_text_; }
+
+  bool operator==(const PromoCodeInfo& promo_code_info) const;
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
+ private:
+  AccessorySheetField promo_code_;
+  std::u16string details_text_;
+  size_t estimated_dynamic_memory_use_ = 0;
+};
+
+std::ostream& operator<<(std::ostream& out,
+                         const PromoCodeInfo& promo_code_info);
+
 // Represents a command below the suggestions, such as "Manage password...".
 class FooterCommand {
  public:
@@ -240,6 +272,14 @@ class AccessorySheetData {
 
   std::vector<UserInfo>& mutable_user_info_list() { return user_info_list_; }
 
+  void add_promo_code_info(PromoCodeInfo promo_code_info) {
+    promo_code_info_list_.emplace_back(std::move(promo_code_info));
+  }
+
+  const std::vector<PromoCodeInfo>& promo_code_info_list() const {
+    return promo_code_info_list_;
+  }
+
   void add_footer_command(FooterCommand footer_command) {
     footer_commands_.emplace_back(std::move(footer_command));
   }
@@ -260,6 +300,7 @@ class AccessorySheetData {
   std::u16string warning_;
   absl::optional<OptionToggle> option_toggle_;
   std::vector<UserInfo> user_info_list_;
+  std::vector<PromoCodeInfo> promo_code_info_list_;
   std::vector<FooterCommand> footer_commands_;
 };
 
@@ -332,6 +373,12 @@ class AccessorySheetData::Builder {
                        std::string id,
                        bool is_obfuscated,
                        bool selectable) &;
+
+  // Adds a new PromoCodeInfo object to |accessory_sheet_data_|.
+  Builder&& AddPromoCodeInfo(std::u16string promo_code,
+                             std::u16string details_text) &&;
+  Builder& AddPromoCodeInfo(std::u16string promo_code,
+                            std::u16string details_text) &;
 
   // Appends a new footer command to |accessory_sheet_data_|.
   Builder&& AppendFooterCommand(std::u16string display_text,

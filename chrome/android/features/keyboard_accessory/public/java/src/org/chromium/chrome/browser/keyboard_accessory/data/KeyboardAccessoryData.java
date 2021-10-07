@@ -290,6 +290,32 @@ public class KeyboardAccessoryData {
     }
 
     /**
+     * Represents a Promo Code Offer to be shown on the manual fallback UI.
+     */
+    public static final class PromoCodeInfo {
+        private UserInfoField mPromoCode;
+        private String mDetailsText;
+
+        public PromoCodeInfo() {}
+
+        public void setPromoCode(UserInfoField promoCode) {
+            mPromoCode = promoCode;
+        }
+
+        public void setDetailsText(String detailsText) {
+            mDetailsText = detailsText;
+        }
+
+        public UserInfoField getPromoCode() {
+            return mPromoCode;
+        }
+
+        public String getDetailsText() {
+            return mDetailsText;
+        }
+    }
+
+    /**
      * Represents a command below the suggestions, such as "Manage password...".
      */
     public static final class FooterCommand {
@@ -332,6 +358,7 @@ public class KeyboardAccessoryData {
         private final @AccessoryTabType int mSheetType;
         private OptionToggle mToggle;
         private final List<UserInfo> mUserInfoList = new ArrayList<>();
+        private final List<PromoCodeInfo> mPromoCodeInfoList = new ArrayList<>();
         private final List<FooterCommand> mFooterCommands = new ArrayList<>();
 
         /**
@@ -378,6 +405,13 @@ public class KeyboardAccessoryData {
          */
         public List<UserInfo> getUserInfoList() {
             return mUserInfoList;
+        }
+
+        /**
+         * Returns the list of {@link PromoCodeInfo} to be shown on the accessory sheet.
+         */
+        public List<PromoCodeInfo> getPromoCodeInfoList() {
+            return mPromoCodeInfoList;
         }
 
         /**

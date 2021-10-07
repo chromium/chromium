@@ -122,6 +122,18 @@ const CreditCard* UnwrapCardOrVirtualCard(
   return absl::get<const CreditCard*>(card);
 }
 
+PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
+  DCHECK(data);
+  DCHECK(data->IsPromoCodeOffer());
+
+  std::u16string promo_code = base::ASCIIToUTF16(data->promo_code);
+  std::u16string details_text =
+      base::ASCIIToUTF16(data->display_strings.value_prop_text);
+  PromoCodeInfo promo_code_info(promo_code, details_text);
+
+  return promo_code_info;
+}
+
 }  // namespace
 
 CreditCardAccessoryControllerImpl::~CreditCardAccessoryControllerImpl() {
@@ -177,6 +189,14 @@ CreditCardAccessoryControllerImpl::GetSheetData() const {
   AccessorySheetData data = autofill::CreateAccessorySheetData(
       AccessoryTabType::CREDIT_CARDS, GetTitle(has_suggestions),
       std::move(info_to_add), std::move(footer_commands));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillFillMerchantPromoCodeFields)) {
+    for (auto* offer : GetPromoCodeOffers()) {
+      data.add_promo_code_info(TranslateOffer(offer));
+    }
+  }
+
   if (has_suggestions && !allow_filling && autofill_manager) {
     data.set_warning(
         l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
@@ -396,6 +416,17 @@ CreditCardAccessoryControllerImpl::GetUnmaskedCreditCards() const {
   };
   base::EraseIf(unmasked_cards, not_virtual_card);
   return unmasked_cards;
+}
+
+std::vector<const AutofillOfferData*>
+CreditCardAccessoryControllerImpl::GetPromoCodeOffers() const {
+  autofill::BrowserAutofillManager* autofill_manager = GetManager();
+  if (!web_contents_->GetFocusedFrame() || !personal_data_manager_ ||
+      !autofill_manager)
+    return std::vector<const AutofillOfferData*>();
+
+  return personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
+      autofill_manager->client()->GetLastCommittedURL().GetOrigin());
 }
 
 base::WeakPtr<ManualFillingController>

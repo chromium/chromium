@@ -31,11 +31,26 @@ class CreditCardAccessorySheetViewBinder {
                         parent, R.layout.keyboard_accessory_sheet_tab_title);
             case AccessorySheetDataPiece.Type.CREDIT_CARD_INFO:
                 return new CreditCardInfoViewHolder(parent);
+            case AccessorySheetDataPiece.Type.PROMO_CODE_INFO:
+                return new PromoCodeInfoViewHolder(parent);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
+    }
+
+    private static void bindChipView(ChipView chip, UserInfoField field) {
+        chip.getPrimaryTextView().setText(field.getDisplayText());
+        chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
+        chip.setVisibility(field.getDisplayText().isEmpty() ? View.GONE : View.VISIBLE);
+        if (!field.isSelectable()) {
+            chip.setEnabled(false);
+        } else {
+            chip.setOnClickListener(src -> field.triggerSelection());
+            chip.setClickable(true);
+            chip.setEnabled(true);
+        }
     }
 
     /**
@@ -76,19 +91,6 @@ class CreditCardAccessorySheetViewBinder {
             }
         }
 
-        private static void bindChipView(ChipView chip, UserInfoField field) {
-            chip.getPrimaryTextView().setText(field.getDisplayText());
-            chip.getPrimaryTextView().setContentDescription(field.getA11yDescription());
-            chip.setVisibility(field.getDisplayText().isEmpty() ? View.GONE : View.VISIBLE);
-            if (!field.isSelectable()) {
-                chip.setEnabled(false);
-                return;
-            }
-            chip.setOnClickListener(src -> field.triggerSelection());
-            chip.setClickable(true);
-            chip.setEnabled(true);
-        }
-
         private static @DrawableRes int getDrawableForOrigin(String origin) {
             switch (origin) {
                 case "americanExpressCC":
@@ -116,11 +118,35 @@ class CreditCardAccessorySheetViewBinder {
         }
     }
 
+    /**
+     * View which represents a single Promo Code Offer and its fields.
+     */
+    static class PromoCodeInfoViewHolder
+            extends ElementViewHolder<KeyboardAccessoryData.PromoCodeInfo,
+                    PromoCodeAccessoryInfoView> {
+        PromoCodeInfoViewHolder(ViewGroup parent) {
+            super(parent, R.layout.keyboard_accessory_sheet_tab_promo_code_info);
+        }
+
+        @Override
+        protected void bind(
+                KeyboardAccessoryData.PromoCodeInfo info, PromoCodeAccessoryInfoView view) {
+            bindChipView(view.getPromoCode(), info.getPromoCode());
+            view.getDetailsText().setText(info.getDetailsText());
+            view.getDetailsText().setVisibility(
+                    info.getDetailsText().isEmpty() ? View.GONE : View.VISIBLE);
+
+            view.setIcon(AppCompatResources.getDrawable(
+                    view.getContext(), R.drawable.ic_logo_googleg_24dp));
+        }
+    }
+
     static void initializeView(RecyclerView view, AccessorySheetTabModel model) {
         view.setAdapter(new RecyclerViewAdapter<>(
                 new SimpleRecyclerViewMcp<>(model, AccessorySheetDataPiece::getType,
                         AccessorySheetTabViewBinder.ElementViewHolder::bind),
                 CreditCardAccessorySheetViewBinder::create));
         view.addItemDecoration(new DynamicInfoViewBottomSpacer(CreditCardAccessoryInfoView.class));
+        view.addItemDecoration(new DynamicInfoViewBottomSpacer(PromoCodeAccessoryInfoView.class));
     }
 }

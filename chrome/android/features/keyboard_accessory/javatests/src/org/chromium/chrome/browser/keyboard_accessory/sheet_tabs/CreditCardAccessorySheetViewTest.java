@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetCoordinator;
@@ -308,6 +309,51 @@ public class CreditCardAccessorySheetViewTest {
         TextView warningText = warning.findViewById(R.id.tab_title);
         assertThat(warningText.isShown(), is(true));
         assertThat(warningText.getText(), is(kWarning));
+    }
+
+    @Test
+    @MediumTest
+    public void testAddingPromoCodeInfoToTheModelRendersClickableActions()
+            throws ExecutionException {
+        final String kPromoCode = "$50OFF";
+        final String kDetailsText = "Get $50 off when you use this code.";
+        final AtomicBoolean clicked = new AtomicBoolean();
+        assertThat(mView.get().getChildCount(), is(0));
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PromoCodeInfo info = new PromoCodeInfo();
+            info.setPromoCode(new UserInfoField(
+                    kPromoCode, "Promo code for test store", "", false, item -> clicked.set(true)));
+            info.setDetailsText(kDetailsText);
+            mModel.add(new AccessorySheetDataPiece(
+                    info, AccessorySheetDataPiece.Type.PROMO_CODE_INFO));
+            mModel.add(new AccessorySheetDataPiece(
+                    "No payment methods", AccessorySheetDataPiece.Type.TITLE));
+            mModel.add(new AccessorySheetDataPiece(
+                    new KeyboardAccessoryData.FooterCommand("Manage credit cards", null),
+                    AccessorySheetDataPiece.Type.FOOTER_COMMAND));
+        });
+
+        // mView's child count should be 3: Promo code field, no payment methods message, and footer
+        // command.
+        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(mView.get().getChildCount(), is(3)));
+
+        // Check that the titles are correct:
+        assertThat(getChipText(R.id.promo_code), is(kPromoCode));
+        LinearLayout promoCodeLayout = (LinearLayout) mView.get().getChildAt(0);
+        assertThat(promoCodeLayout.findViewById(R.id.details_text), instanceOf(TextView.class));
+        TextView detailsText = promoCodeLayout.findViewById(R.id.details_text);
+        assertThat(detailsText.isShown(), is(true));
+        assertThat(detailsText.getText(), is(kDetailsText));
+
+        // Verify that the icon is correctly set.
+        ImageView iconImageView = (ImageView) mView.get().getChildAt(0).findViewById(R.id.icon);
+        Drawable expectedIcon = mActivityTestRule.getActivity().getResources().getDrawable(
+                R.drawable.ic_logo_googleg_24dp);
+        assertTrue(getBitmap(expectedIcon).sameAs(getBitmap(iconImageView.getDrawable())));
+        // Chips are clickable:
+        TestThreadUtils.runOnUiThreadBlocking(findChipView(R.id.promo_code)::performClick);
+        assertThat(clicked.get(), is(true));
     }
 
     private UserInfo createInfo(String origin, String number, String month, String year,

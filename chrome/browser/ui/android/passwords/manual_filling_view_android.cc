@@ -197,6 +197,20 @@ ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject(
     }
   }
 
+  for (const autofill::PromoCodeInfo& promo_code_info :
+       tab_data.promo_code_info_list()) {
+    const AccessorySheetField promo_code = promo_code_info.promo_code();
+    const std::u16string detailsText = promo_code_info.details_text();
+    Java_ManualFillingComponentBridge_addPromoCodeInfoToAccessorySheetData(
+        env, java_object_internal_, j_tab_data,
+        static_cast<int>(tab_data.get_sheet_type()),
+        ConvertUTF16ToJavaString(env, promo_code.display_text()),
+        ConvertUTF16ToJavaString(env, promo_code.text_to_fill()),
+        ConvertUTF16ToJavaString(env, promo_code.a11y_description()),
+        ConvertUTF8ToJavaString(env, promo_code.id()),
+        promo_code.is_obfuscated(), ConvertUTF16ToJavaString(env, detailsText));
+  }
+
   for (const FooterCommand& footer_command : tab_data.footer_commands()) {
     Java_ManualFillingComponentBridge_addFooterCommandToAccessorySheetData(
         env, java_object_internal_, j_tab_data,

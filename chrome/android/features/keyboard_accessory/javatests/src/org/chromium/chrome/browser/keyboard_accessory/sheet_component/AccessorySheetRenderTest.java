@@ -179,12 +179,12 @@ public class AccessorySheetRenderTest {
         mRenderTestRule.render(mContentView, "Passwords");
     }
 
+    // Tests rendering of Payments tab with both credit cards and promo code offers.
+    // Promo code offers should appear above the credit cards.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    public void testAddingCreditCardToModelRendersTabsView() throws Exception {
-        // Construct a sheet with a few data fields. Leave gaps so that the footer is visible in the
-        // screenshot (but supply the fields itself since the field count should be fixed).
+    public void testAddingCreditCardAndPromoCodeToModelRendersTabsView() throws Exception {
         final KeyboardAccessoryData.AccessorySheetData sheet =
                 new KeyboardAccessoryData.AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS, "Payments", "");
@@ -199,17 +199,11 @@ public class AccessorySheetRenderTest {
                 new UserInfoField("Todd Tester", "Todd Tester", "0", false, result -> {}));
         sheet.getUserInfoList().get(0).addField(
                 new UserInfoField("123", "123", "-1", false, result -> {}));
-        sheet.getUserInfoList().add(new KeyboardAccessoryData.UserInfo("", false));
-        sheet.getUserInfoList().get(1).addField(
-                new UserInfoField("**** 8012", "Card for Maya Park", "1", false, result -> {}));
-        sheet.getUserInfoList().get(1).addField( // Unused expiration month field.
-                new UserInfoField("", "", "-1", false, result -> {}));
-        sheet.getUserInfoList().get(1).addField( // Unused expiration year field.
-                new UserInfoField("", "", "-1", false, result -> {}));
-        sheet.getUserInfoList().get(1).addField( // Unused card holder field.
-                new UserInfoField("", "", "1", false, result -> {}));
-        sheet.getUserInfoList().get(1).addField(
-                new UserInfoField("", "", "-1", false, result -> {}));
+        sheet.getPromoCodeInfoList().add(new KeyboardAccessoryData.PromoCodeInfo());
+        sheet.getPromoCodeInfoList().get(0).setPromoCode(new UserInfoField(
+                "50$OFF", "Promo Code for Todd Tester", "1", false, result -> {}));
+        sheet.getPromoCodeInfoList().get(0).setDetailsText(
+                "Get $50 off when you use this code at checkout.");
         sheet.getFooterCommands().add(
                 new KeyboardAccessoryData.FooterCommand("Manage payment methods", cb -> {}));
 
@@ -219,7 +213,7 @@ public class AccessorySheetRenderTest {
                                 mActivityTestRule.getActivity(), null));
         showSheetTab(coordinator, sheet);
 
-        mRenderTestRule.render(mContentView, "Payments");
+        mRenderTestRule.render(mContentView, "credit_cards_and_promo_codes");
     }
 
     @Test
