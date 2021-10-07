@@ -22,6 +22,9 @@ class TimeProvider {
   // Returns the number of days since epoch (1970-01-01) in the local timezone.
   virtual uint32_t GetCurrentDay() const = 0;
 
+  // Returns the current time.
+  virtual base::Time Now() const = 0;
+
  protected:
   TimeProvider() = default;
 };
