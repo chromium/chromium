@@ -94,7 +94,6 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       download_to_blob_(false),
       use_stream_on_response_(false),
       keepalive_(false),
-      should_reset_app_cache_(false),
       allow_stale_response_(false),
       cache_mode_(mojom::FetchCacheMode::kDefault),
       skip_service_worker_(false),
@@ -199,7 +198,6 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetDownloadToBlob(DownloadToBlob());
   request->SetUseStreamOnResponse(UseStreamOnResponse());
   request->SetRequestContext(GetRequestContext());
-  request->SetShouldResetAppCache(ShouldResetAppCache());
   request->SetMode(GetMode());
   request->SetCredentialsMode(GetCredentialsMode());
   request->SetKeepalive(GetKeepalive());

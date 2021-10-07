@@ -33,7 +33,6 @@
 #include "base/stl_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
-#include "third_party/blink/public/mojom/appcache/appcache.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
@@ -719,17 +718,8 @@ void HTMLDocumentParser::EnqueueTokenizedChunk(
   }
 
   if (preloader_) {
-    bool appcache_fetched = false;
-    if (GetDocument()->Loader()) {
-      appcache_fetched = (GetDocument()->Loader()->GetResponse().AppCacheID() !=
-                          mojom::blink::kAppCacheNoCacheId);
-    }
-    bool appcache_initialized = GetDocument()->documentElement();
-    // Delay sending some requests if meta tag based CSP is present or
-    // if AppCache was used to fetch the HTML but was not yet initialized for
-    // this document.
-    if (pending_csp_meta_token_ ||
-        (appcache_fetched && !appcache_initialized)) {
+    // Delay sending some requests if meta tag based CSP is present.
+    if (pending_csp_meta_token_) {
       for (auto& request : chunk->preloads) {
         queued_preloads_.push_back(std::move(request));
       }
@@ -1317,10 +1307,6 @@ void HTMLDocumentParser::Append(const String& input_source) {
   }
 
   if (GetDocument()->IsPrefetchOnly()) {
-    // Do not prefetch if there is an appcache.
-    if (GetDocument()->Loader()->GetResponse().AppCacheID() != 0)
-      return;
-
     preload_scanner_->AppendToEnd(source);
     if (preloader_) {
       // TODO(Richard.Townsend@arm.com): add test coverage of this branch.

@@ -1206,7 +1206,6 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
     } else {
       request.SetCacheMode(mojom::FetchCacheMode::kBypassCache);
     }
-    request.SetShouldResetAppCache(true);
   }
   if (bypass_service_worker_.Get())
     request.SetSkipServiceWorker(true);

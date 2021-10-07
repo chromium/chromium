@@ -315,14 +315,6 @@ void WebURLRequest::SetSkipServiceWorker(bool skip_service_worker) {
   resource_request_->SetSkipServiceWorker(skip_service_worker);
 }
 
-bool WebURLRequest::ShouldResetAppCache() const {
-  return resource_request_->ShouldResetAppCache();
-}
-
-void WebURLRequest::SetShouldResetAppCache(bool set_should_reset_app_cache) {
-  resource_request_->SetShouldResetAppCache(set_should_reset_app_cache);
-}
-
 network::mojom::RequestMode WebURLRequest::GetMode() const {
   return resource_request_->GetMode();
 }

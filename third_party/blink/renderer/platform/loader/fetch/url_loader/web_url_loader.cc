@@ -783,8 +783,6 @@ void WebURLLoader::PopulateURLResponse(
   response->SetIsLegacyTLSVersion(head.is_legacy_tls_version);
   response->SetHasRangeRequested(head.has_range_requested);
   response->SetTimingAllowPassed(head.timing_allow_passed);
-  response->SetAppCacheID(head.appcache_id);
-  response->SetAppCacheManifestURL(KURL(head.appcache_manifest_url));
   response->SetWasCached(!head.load_timing.request_start_time.is_null() &&
                          head.response_time <
                              head.load_timing.request_start_time);

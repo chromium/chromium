@@ -209,12 +209,6 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void ClearHttpHeaderField(const WebString& name);
   BLINK_PLATFORM_EXPORT void VisitHttpHeaderFields(WebHTTPHeaderVisitor*) const;
 
-  BLINK_PLATFORM_EXPORT int64_t AppCacheID() const;
-  BLINK_PLATFORM_EXPORT void SetAppCacheID(int64_t);
-
-  BLINK_PLATFORM_EXPORT WebURL AppCacheManifestURL() const;
-  BLINK_PLATFORM_EXPORT void SetAppCacheManifestURL(const WebURL&);
-
   BLINK_PLATFORM_EXPORT void SetHasMajorCertificateErrors(bool);
   BLINK_PLATFORM_EXPORT void SetCTPolicyCompliance(net::ct::CTPolicyCompliance);
   BLINK_PLATFORM_EXPORT void SetIsLegacyTLSVersion(bool);

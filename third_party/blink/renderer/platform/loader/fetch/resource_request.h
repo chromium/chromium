@@ -267,12 +267,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
     skip_service_worker_ = skip_service_worker;
   }
 
-  // True if corresponding AppCache group should be resetted.
-  bool ShouldResetAppCache() const { return should_reset_app_cache_; }
-  void SetShouldResetAppCache(bool should_reset_app_cache) {
-    should_reset_app_cache_ = should_reset_app_cache;
-  }
-
   // Extra data associated with this request.
   const scoped_refptr<WebURLRequestExtraData>& GetURLRequestExtraData() const {
     return url_request_extra_data_;
@@ -560,7 +554,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool download_to_blob_ : 1;
   bool use_stream_on_response_ : 1;
   bool keepalive_ : 1;
-  bool should_reset_app_cache_ : 1;
   bool allow_stale_response_ : 1;
   mojom::FetchCacheMode cache_mode_;
   bool skip_service_worker_ : 1;

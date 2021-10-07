@@ -239,7 +239,6 @@ void WorkerClassicScriptLoader::DidReceiveResponse(
   identifier_ = identifier;
   response_url_ = response.ResponseUrl();
   response_encoding_ = response.TextEncodingName();
-  app_cache_id_ = response.AppCacheID();
   response_address_space_ = response.AddressSpace();
 
   referrer_policy_ = response.HttpHeaderField(http_names::kReferrerPolicy);

@@ -212,22 +212,6 @@ void WebURLResponse::VisitHttpHeaderFields(
     visitor->VisitHeader(it->key, it->value);
 }
 
-int64_t WebURLResponse::AppCacheID() const {
-  return resource_response_->AppCacheID();
-}
-
-void WebURLResponse::SetAppCacheID(int64_t app_cache_id) {
-  resource_response_->SetAppCacheID(app_cache_id);
-}
-
-WebURL WebURLResponse::AppCacheManifestURL() const {
-  return resource_response_->AppCacheManifestURL();
-}
-
-void WebURLResponse::SetAppCacheManifestURL(const WebURL& url) {
-  resource_response_->SetAppCacheManifestURL(url);
-}
-
 void WebURLResponse::SetHasMajorCertificateErrors(bool value) {
   resource_response_->SetHasMajorCertificateErrors(value);
 }

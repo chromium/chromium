@@ -316,14 +316,6 @@ class PLATFORM_EXPORT ResourceResponse final {
                           const Vector<AtomicString>& certificate,
                           const SignedCertificateTimestampList& sct_list);
 
-  int64_t AppCacheID() const { return app_cache_id_; }
-  void SetAppCacheID(int64_t id) { app_cache_id_ = id; }
-
-  const KURL& AppCacheManifestURL() const { return app_cache_manifest_url_; }
-  void SetAppCacheManifestURL(const KURL& url) {
-    app_cache_manifest_url_ = url;
-  }
-
   const KURL& WebBundleURL() const { return web_bundle_url_; }
   void SetWebBundleURL(const KURL& url) { web_bundle_url_ = url; }
 
@@ -666,14 +658,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   mutable absl::optional<base::Time> date_;
   mutable absl::optional<base::Time> expires_;
   mutable absl::optional<base::Time> last_modified_;
-
-  // The id of the appcache this response was retrieved from, or zero if
-  // the response was not retrieved from an appcache.
-  int64_t app_cache_id_ = 0;
-
-  // The manifest url of the appcache this response was retrieved from, if any.
-  // Note: only valid for main resource responses.
-  KURL app_cache_manifest_url_;
 
   // The URL list of the response which was fetched by the ServiceWorker.
   // This is empty if the response was created inside the ServiceWorker.
