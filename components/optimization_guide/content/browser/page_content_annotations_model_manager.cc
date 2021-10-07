@@ -191,7 +191,7 @@ void PageContentAnnotationsModelManager::OnPageEntitiesModelExecutionCompleted(
     base::UmaHistogramTimes(
         "OptimizationGuide.PageContentAnnotationsService."
         "PageEntitiesExecutionLatency",
-        execution_start - base::TimeTicks::Now());
+        base::TimeTicks::Now() - execution_start);
   }
   ExecuteNextModelOrInvokeCallback(text, std::move(current_annotations),
                                    std::move(callback), current_model_index);
