@@ -183,6 +183,9 @@ public final class EventConstants {
     /** User has used Ephemeral Tab i.e. opened and browsed the content. */
     public static final String EPHEMERAL_TAB_USED = "ephemeral_tab_used";
 
+    /** 'Manage windows' menu for multi-instance support feature was tapped. */
+    public static final String INSTANCE_SWITCHER_IPH_USED = "instance_switcher_iph_used";
+
     /** HomepagePromo has been accepted. */
     public static final String NTP_SHOWN = "ntp_shown";
     public static final String NTP_HOME_BUTTON_CLICKED = "ntp_homebutton_clicked";

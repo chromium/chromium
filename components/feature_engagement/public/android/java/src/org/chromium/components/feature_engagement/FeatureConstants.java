@@ -92,6 +92,7 @@ public @interface FeatureConstants {
     String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE =
             "IPH_KeyboardAccessoryPaymentVirtualCard";
     String KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE = "IPH_KeyboardAccessoryBarSwiping";
+    String INSTANCE_SWITCHER = "IPH_InstanceSwitcher";
     String PREVIEWS_OMNIBOX_UI_FEATURE = "IPH_PreviewsOmniboxUI";
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
     String EXPLORE_SITES_TILE_FEATURE = "IPH_ExploreSitesTile";

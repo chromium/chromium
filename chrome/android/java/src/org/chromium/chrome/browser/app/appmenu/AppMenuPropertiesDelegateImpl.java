@@ -670,9 +670,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     }
 
     private boolean shouldShowManageAllWindows() {
-        if (!instanceSwitcherEnabled()) return false;
-        // Show the menu if there is more than one instance to manage.
-        return getInstanceCount() > 1;
+        return MultiWindowUtils.shouldShowManageWindowsMenu();
     }
 
     /**

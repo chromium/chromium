@@ -456,6 +456,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig("auto_dark_user_education_message_trigger",
                     Comparator(LESS_THAN, 6), 360, 360));
+  }
+
+  if (kIPHInstanceSwitcherFeature.name == feature->name) {
+    // A config that allows the 'Manage windows' text bubble IPH to be shown
+    // only once when the user starts using the multi-instance feature by
+    // opening more than one window.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger =
+        EventConfig("instance_switcher_iph_trigger", Comparator(LESS_THAN, 1),
+                    k10YearsInDays, k10YearsInDays);
+    config->used = EventConfig("instance_switcher_used", Comparator(EQUAL, 0),
+                               k10YearsInDays, k10YearsInDays);
     return config;
   }
 #endif  // defined(OS_ANDROID)

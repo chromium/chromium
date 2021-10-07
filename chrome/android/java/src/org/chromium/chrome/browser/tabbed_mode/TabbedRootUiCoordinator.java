@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.language.LanguageAskPrompt;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -585,11 +586,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mToolbarManager.getMenuButtonView(), mToolbarManager.getSecurityIconView());
         mReadLaterIPHController = new ReadLaterIPHController(mActivity,
                 getToolbarManager().getMenuButtonView(), mAppMenuCoordinator.getAppMenuHandler());
-
         boolean didTriggerPromo = triggerPromo(intentWithEffect);
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIPH();
             mReadLaterIPHController.showColdStartIPH();
+            if (MultiWindowUtils.instanceSwitcherEnabled()
+                    && MultiWindowUtils.shouldShowManageWindowsMenu()) {
+                MultiInstanceIphController.maybeShowInProductHelp(mActivity,
+                        getToolbarManager().getMenuButtonView(),
+                        mAppMenuCoordinator.getAppMenuHandler(), R.id.manage_all_windows_menu_id);
+            }
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOOLBAR_IPH_ANDROID)) {
             mPromoShownOneshotSupplier.set(didTriggerPromo);

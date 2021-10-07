@@ -29462,6 +29462,7 @@ should be able to be added at any place in this file.
   <suffix name="HomepageTile" label="For HomepageTile feature."/>
   <suffix name="IdentityDisc" label="For IdentityDisc feature."/>
   <suffix name="IncognitoWindow" label="For IncognitoWindow feature."/>
+  <suffix name="InstanceSwitcher" label="For Instance switcher feature."/>
   <suffix name="LongPressToolbarTip" label="For LongPressToolbar feature."/>
   <suffix name="MediaDownload" label="For MediaDownload feature."/>
   <suffix name="MicToolbar" label="In product help for toolbar mic."/>

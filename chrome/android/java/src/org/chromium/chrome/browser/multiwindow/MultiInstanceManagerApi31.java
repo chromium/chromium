@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -42,6 +43,8 @@ import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -101,6 +104,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                     () -> openNewWindow("Android.WindowManager.NewWindow"),
                     info.size() < MultiWindowUtils.getMaxInstances(), info);
             RecordUserAction.record("MobileMenuWindowManager");
+            Tracker tracker = TrackerFactory.getTrackerForProfile(getProfile());
+            assert tracker.isInitialized();
+            tracker.notifyEvent(EventConstants.INSTANCE_SWITCHER_IPH_USED);
             return true;
         }
         // clang-format on

@@ -316,6 +316,13 @@ public class MultiWindowUtils implements ActivityStateListener {
         return count;
     }
 
+    /**
+     * @return Whether the app menu 'Manage windows' should be shown.
+     */
+    public static boolean shouldShowManageWindowsMenu() {
+        return getInstanceCount() > 1;
+    }
+
     static boolean isRestorableInstance(int index) {
         return MultiInstanceManagerApi31.readTabCount(index) != 0
                 || MultiInstanceManagerApi31.getTaskFromMap(index) != INVALID_TASK_ID;

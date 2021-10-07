@@ -146,6 +146,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </variant>
   <variant name="IPH_IdentityDisc" summary="Identity Disc"/>
   <variant name="IPH_IncognitoWindow" summary="incognito window"/>
+  <variant name="IPH_InstanceSwitcher" summary="instance switcher"/>
   <variant name="IPH_KeyboardAccessoryAddressFilling"
       summary="address autofill suggestions"/>
   <variant name="IPH_KeyboardAccessoryPasswordFilling"

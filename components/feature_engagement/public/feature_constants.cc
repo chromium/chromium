@@ -123,6 +123,8 @@ const base::Feature kIPHHomepagePromoCardFeature{
     "IPH_HomepagePromoCard", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHIdentityDiscFeature{"IPH_IdentityDisc",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHInstanceSwitcherFeature{
+    "IPH_InstanceSwitcher", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHKeyboardAccessoryAddressFillingFeature{
     "IPH_KeyboardAccessoryAddressFilling", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHKeyboardAccessoryBarSwipingFeature{
