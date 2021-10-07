@@ -7,12 +7,12 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import '../strings.m.js';
 
+import {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
-/** @polymer */
 class PrintPreviewMoreSettingsElement extends PolymerElement {
   static get is() {
     return 'print-preview-more-settings';
@@ -36,31 +36,26 @@ class PrintPreviewMoreSettingsElement extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-
-    /** @private {!MetricsContext} */
-    this.metrics_ = MetricsContext.printSettingsUi();
-  }
+  settingsExpandedByUser: boolean;
+  disabled: boolean;
+  private metrics_: MetricsContext = MetricsContext.printSettingsUi();
 
   /**
    * Toggles the expand button within the element being listened to.
-   * @param {!Event} e
-   * @private
    */
-  toggleExpandButton_(e) {
+  private toggleExpandButton_(e: Event) {
     // The expand button handles toggling itself.
     const expandButtonTag = 'CR-EXPAND-BUTTON';
-    if (e.target.tagName === expandButtonTag) {
+    if ((e.target as HTMLElement).tagName === expandButtonTag) {
       return;
     }
 
-    if (!e.currentTarget.hasAttribute('actionable')) {
+    if (!(e.currentTarget as HTMLElement).hasAttribute('actionable')) {
       return;
     }
 
-    /** @type {!CrExpandButtonElement} */
-    const expandButton = e.currentTarget.querySelector(expandButtonTag);
+    const expandButton: CrExpandButtonElement =
+        (e.currentTarget as HTMLElement).querySelector(expandButtonTag)!;
     assert(expandButton);
     expandButton.expanded = !expandButton.expanded;
     this.metrics_.record(

@@ -13,7 +13,6 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {Destination, DestinationOrigin, GooglePromotedDestinationId} from '../data/destination.js';
 
-/** @polymer */
 export class PrintPreviewLinkContainerElement extends PolymerElement {
   static get is() {
     return 'print-preview-link-container';
@@ -27,12 +26,10 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
     return {
       appKioskMode: Boolean,
 
-      /** @type {?Destination} */
       destination: Object,
 
       disabled: Boolean,
 
-      /** @private {boolean} */
       shouldShowSystemDialogLink_: {
         type: Boolean,
         computed:
@@ -40,19 +37,16 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      /** @private {boolean} */
       systemDialogLinkDisabled_: {
         type: Boolean,
         computed: 'computeSystemDialogLinkDisabled_(disabled)',
       },
 
-      /** @private {boolean} */
       openingSystemDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       openingInPreview_: {
         type: Boolean,
         value: false,
@@ -60,11 +54,18 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
     };
   }
 
+  appKioskMode: boolean;
+  destination: Destination|null;
+  disabled: boolean;
+  private shouldShowSystemDialogLink_: boolean;
+  private systemDialogLinkDisabled_: boolean;
+  private openingSystemDialog_: boolean;
+  private openingInPreview_: boolean;
+
   /**
-   * @return {boolean} Whether the system dialog link should be visible.
-   * @private
+   * @return Whether the system dialog link should be visible.
    */
-  computeShouldShowSystemDialogLink_() {
+  private computeShouldShowSystemDialogLink_(): boolean {
     if (this.appKioskMode) {
       return false;
     }
@@ -77,25 +78,19 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
   }
 
   /**
-   * @return {boolean} Whether the system dialog link should be disabled
-   * @private
+   * @return Whether the system dialog link should be disabled
    */
-  computeSystemDialogLinkDisabled_() {
+  private computeSystemDialogLinkDisabled_(): boolean {
     return isWindows && this.disabled;
   }
 
-  /**
-   * @param {string} eventName
-   * @private
-   */
-  fire_(eventName) {
+  private fire_(eventName: string) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true}));
   }
 
 
-  /** @private */
-  onSystemDialogClick_() {
+  private onSystemDialogClick_() {
     if (!this.shouldShowSystemDialogLink_) {
       return;
     }
@@ -107,16 +102,21 @@ export class PrintPreviewLinkContainerElement extends PolymerElement {
   }
 
   // <if expr="is_macosx">
-  /** @private */
-  onOpenInPreviewClick_() {
+  private onOpenInPreviewClick_() {
     this.openingInPreview_ = true;
     this.fire_('open-pdf-in-preview');
   }
   // </if>
 
-  /** @return {boolean} Whether the system dialog link is available. */
-  systemDialogLinkAvailable() {
+  /** @return Whether the system dialog link is available. */
+  systemDialogLinkAvailable(): boolean {
     return this.shouldShowSystemDialogLink_ && !this.systemDialogLinkDisabled_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-link-container': PrintPreviewLinkContainerElement;
   }
 }
 

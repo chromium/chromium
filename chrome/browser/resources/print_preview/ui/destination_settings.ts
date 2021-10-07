@@ -308,7 +308,8 @@ export class PrintPreviewDestinationSettingsElement extends
    */
   init(
       defaultPrinter: string, pdfPrinterDisabled: boolean,
-      isDriveMounted: boolean, serializedDefaultDestinationRulesStr: string) {
+      isDriveMounted: boolean,
+      serializedDefaultDestinationRulesStr: string|null) {
     const cloudPrintInterface = CloudPrintInterfaceImpl.getInstance();
     this.pdfPrinterDisabled_ = pdfPrinterDisabled;
     let recentDestinations =

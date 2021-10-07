@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../strings.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
@@ -17,7 +18,6 @@ import {getPrinterTypeForDestination, PrinterType} from '../data/destination_mat
 import {State} from '../data/state.js';
 
 
-/** @polymer */
 export class PrintPreviewButtonStripElement extends PolymerElement {
   static get is() {
     return 'print-preview-button-strip';
@@ -29,7 +29,6 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {!Destination} */
       destination: Object,
 
       firstLoad: Boolean,
@@ -76,52 +75,45 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
     ];
   }
 
-  constructor() {
-    super();
+  destination: Destination;
+  firstLoad: boolean;
+  maxSheets: number;
+  sheetCount: number;
+  state: State;
+  private printButtonEnabled_: boolean;
+  private printButtonLabel_: string;
+  // <if expr="chromeos or lacros">
+  private errorMessage_: string;
+  // </if>
 
-    /** @private {!State} */
-    this.lastState_ = State.NOT_READY;
-  }
+  private lastState_: State = State.NOT_READY;
 
-  /**
-   * @param {string} eventName
-   * @param {*=} detail
-   * @private
-   */
-  fire_(eventName, detail) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  /** @private */
-  onPrintClick_() {
+  private onPrintClick_() {
     this.fire_('print-requested');
   }
 
-  /** @private */
-  onCancelClick_() {
+  private onCancelClick_() {
     this.fire_('cancel-requested');
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isPdfOrDrive_() {
+  private isPdfOrDrive_(): boolean {
     return this.destination &&
         (getPrinterTypeForDestination(this.destination) ===
              PrinterType.PDF_PRINTER ||
          this.destination.id === GooglePromotedDestinationId.DOCS);
   }
 
-  /** @private */
-  updatePrintButtonLabel_() {
+  private updatePrintButtonLabel_() {
     this.printButtonLabel_ = loadTimeData.getString(
         this.isPdfOrDrive_() ? 'saveButton' : 'printButton');
   }
 
-  /** @private */
-  updatePrintButtonEnabled_() {
+  private updatePrintButtonEnabled_() {
     switch (this.state) {
       case (State.PRINTING):
         this.printButtonEnabled_ = false;
@@ -134,7 +126,9 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         this.printButtonEnabled_ = true;
         // </if>
         if (this.firstLoad) {
-          this.shadowRoot.querySelector('cr-button.action-button').focus();
+          this.shadowRoot!
+              .querySelector<CrButtonElement>(
+                  'cr-button.action-button')!.focus();
           this.fire_('print-button-focused');
         }
         break;
@@ -147,11 +141,9 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
 
   // <if expr="chromeos or lacros">
   /**
-   * @return {boolean} Whether to disable "Print" button because of sheets limit
-   *     policy.
-   * @private
+   * @return Whether to disable "Print" button because of sheets limit policy.
    */
-  printButtonDisabled_() {
+  private printButtonDisabled_(): boolean {
     // The "Print" button is disabled if 3 conditions are met:
     // * This is "real" printing, i.e. not saving to PDF/Drive.
     // * Sheets policy is present.
@@ -161,17 +153,15 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   }
 
   /**
-   * @return {boolean} Whether to show the "Too many sheets" error.
-   * @private
+   * @return Whether to show the "Too many sheets" error.
    */
-  showSheetsError_() {
+  private showSheetsError_(): boolean {
     // The error is shown if the number of sheets is already calculated and the
     // print button is disabled.
     return this.sheetCount > 0 && this.printButtonDisabled_();
   }
 
-  /** @private */
-  updateErrorMessage_() {
+  private updateErrorMessage_() {
     if (!this.showSheetsError_()) {
       this.errorMessage_ = '';
       return;
@@ -185,9 +175,8 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
 
   /**
    * Uses IronA11yAnnouncer to notify screen readers that an error is set.
-   * @private
    */
-  errorMessageChanged_() {
+  private errorMessageChanged_() {
     if (this.errorMessage_ !== '') {
       IronA11yAnnouncer.requestAvailability();
       this.fire_('iron-announce', {text: this.errorMessage_});

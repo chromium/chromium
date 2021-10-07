@@ -1181,7 +1181,7 @@ export class PrintPreviewModelElement extends PolymerElement {
    * Sets settings in accordance to policies from native code, and prevents
    * those settings from being changed via other means.
    */
-  setPolicySettings(policies: Policies) {
+  setPolicySettings(policies: Policies|undefined) {
     if (policies === undefined) {
       return;
     }

@@ -33,7 +33,7 @@ import './link_container.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin, DarkModeMixinInterface} from '../dark_mode_mixin.js';
@@ -41,30 +41,31 @@ import {Destination} from '../data/destination.js';
 import {Error, State} from '../data/state.js';
 import {MetricsContext, PrintSettingsUiBucket} from '../metrics.js';
 
-import {DestinationState} from './destination_settings.js';
+import {DestinationState, PrintPreviewDestinationSettingsElement} from './destination_settings.js';
 import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
 
 /**
  * Number of settings sections to show when "More settings" is collapsed.
- * @type {number}
  */
-const MAX_SECTIONS_TO_SHOW = 6;
+const MAX_SECTIONS_TO_SHOW: number = 6;
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DarkModeMixinInterface}
- * @implements {SettingsMixinInterface}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const PrintPreviewSidebarElementBase = mixinBehaviors(
-    [
-      CrContainerShadowBehavior,
-      WebUIListenerBehavior,
-    ],
-    SettingsMixin(DarkModeMixin(PolymerElement)));
+export interface PrintPreviewSidebarElement {
+  $: {
+    destinationSettings: PrintPreviewDestinationSettingsElement,
+  };
+}
 
-/** @polymer */
+const PrintPreviewSidebarElementBase =
+    mixinBehaviors(
+        [
+          CrContainerShadowBehavior,
+          WebUIListenerBehavior,
+        ],
+        SettingsMixin(DarkModeMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUIListenerBehavior & DarkModeMixinInterface &
+      SettingsMixinInterface
+    };
+
 export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   static get is() {
     return 'print-preview-sidebar';
@@ -80,19 +81,16 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
 
       controlsManaged: Boolean,
 
-      /** @type {Destination} */
       destination: {
         type: Object,
         notify: true,
       },
 
-      /** @private {!DestinationState} */
       destinationState: {
         type: Number,
         notify: true,
       },
 
-      /** @type {!Error} */
       error: {
         type: Number,
         notify: true,
@@ -102,13 +100,11 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
 
       pageCount: Number,
 
-      /** @type {!State} */
       state: {
         type: Number,
         observer: 'onStateChanged_',
       },
 
-      /** @private {boolean} */
       controlsDisabled_: {
         type: Boolean,
         computed: 'computeControlsDisabled_(state)',
@@ -116,32 +112,27 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
 
       maxSheets: Number,
 
-      /** @private {number} */
       sheetCount_: {
         type: Number,
         computed: 'computeSheetCount_(' +
             'settings.pages.*, settings.duplex.*, settings.copies.*)',
       },
 
-      /** @private {boolean} */
       firstLoad_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private {boolean} */
       isInAppKioskMode_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       settingsExpandedByUser_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {boolean} */
       shouldShowMoreSettings_: {
         type: Boolean,
         computed: 'computeShouldShowMoreSettings_(settings.pages.available, ' +
@@ -155,18 +146,33 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     };
   }
 
+  cloudPrintErrorMessage: string;
+  controlsManaged: boolean;
+  destination: Destination|null;
+  destinationState: DestinationState;
+  error: Error;
+  isPdf: boolean;
+  pageCount: number;
+  state: State;
+  private controlsDisabled_: boolean;
+  private firstLoad_: boolean;
+  private isInAppKioskMode_: boolean;
+  private settingsExpandedByUser_: boolean;
+  private sheetCount_: number;
+  private shouldShowMoreSettings_: boolean;
+
   /**
-   * @param {boolean} appKioskMode
-   * @param {string} defaultPrinter The system default printer ID.
-   * @param {string} serializedDestinationSelectionRulesStr String with rules
+   * @param defaultPrinter The system default printer ID.
+   * @param serializedDestinationSelectionRulesStr String with rules
    *     for selecting the default destination.
-   * @param {boolean} pdfPrinterDisabled Whether the PDF printer is disabled.
-   * @param {boolean} isDriveMounted Whether Google Drive is mounted. Only used
+   * @param pdfPrinterDisabled Whether the PDF printer is disabled.
+   * @param isDriveMounted Whether Google Drive is mounted. Only used
         on Chrome OS.
    */
   init(
-      appKioskMode, defaultPrinter, serializedDestinationSelectionRulesStr,
-      pdfPrinterDisabled, isDriveMounted) {
+      appKioskMode: boolean, defaultPrinter: string,
+      serializedDestinationSelectionRulesStr: string|null,
+      pdfPrinterDisabled: boolean, isDriveMounted: boolean) {
     this.isInAppKioskMode_ = appKioskMode;
     pdfPrinterDisabled = this.isInAppKioskMode_ || pdfPrinterDisabled;
     // If PDF printing is disabled, then Save to Drive also needs to be disabled
@@ -178,30 +184,27 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   }
 
   /**
-   * @return {boolean} Whether the controls should be disabled.
-   * @private
+   * @return Whether the controls should be disabled.
    */
-  computeControlsDisabled_() {
+  private computeControlsDisabled_(): boolean {
     return this.state !== State.READY;
   }
 
   /**
-   * @return {number} The number of sheets that will be printed.
-   * @private
+   * @return The number of sheets that will be printed.
    */
-  computeSheetCount_() {
-    let sheets = this.getSettingValue('pages').length;
+  private computeSheetCount_(): number {
+    let sheets = (this.getSettingValue('pages') as number[]).length;
     if (this.getSettingValue('duplex')) {
       sheets = Math.ceil(sheets / 2);
     }
-    return sheets * /** @type {number} */ (this.getSettingValue('copies'));
+    return sheets * (this.getSettingValue('copies') as number);
   }
 
   /**
-   * @return {boolean} Whether to show the "More settings" link.
-   * @private
+   * @return Whether to show the "More settings" link.
    */
-  computeShouldShowMoreSettings_() {
+  computeShouldShowMoreSettings_(): boolean {
     // Destination settings is always available. See if the total number of
     // available sections exceeds the maximum number to show.
     return [
@@ -213,10 +216,9 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
   }
 
   /**
-   * @return {boolean} Whether the "more settings" collapse should be expanded.
-   * @private
+   * @return Whether the "more settings" collapse should be expanded.
    */
-  shouldExpandSettings_() {
+  private shouldExpandSettings_(): boolean {
     if (this.settingsExpandedByUser_ === undefined ||
         this.shouldShowMoreSettings_ === undefined) {
       return false;
@@ -227,13 +229,11 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     return this.settingsExpandedByUser_ || !this.shouldShowMoreSettings_;
   }
 
-  /** @private */
-  onPrintButtonFocused_() {
+  private onPrintButtonFocused_() {
     this.firstLoad_ = false;
   }
 
-  /** @private */
-  onStateChanged_() {
+  private onStateChanged_() {
     if (this.state !== State.PRINTING) {
       return;
     }
@@ -246,12 +246,14 @@ export class PrintPreviewSidebarElement extends PrintPreviewSidebarElementBase {
     }
   }
 
-  /** @return {boolean} Whether the system dialog link is available. */
-  systemDialogLinkAvailable() {
+  // <if expr="not chromeos and not lacros">
+  /** @return Whether the system dialog link is available. */
+  systemDialogLinkAvailable(): boolean {
     const linkContainer =
-        this.shadowRoot.querySelector('print-preview-link-container');
+        this.shadowRoot!.querySelector('print-preview-link-container');
     return !!linkContainer && linkContainer.systemDialogLinkAvailable();
   }
+  // </if>
 }
 
 customElements.define(

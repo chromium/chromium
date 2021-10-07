@@ -38,7 +38,7 @@ const PrintPreviewDocumentInfoElementBase =
     mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
     {new (): PolymerElement & WebUIListenerBehavior};
 
-class PrintPreviewDocumentInfoElement extends
+export class PrintPreviewDocumentInfoElement extends
     PrintPreviewDocumentInfoElementBase {
   static get is() {
     return 'print-preview-document-info';

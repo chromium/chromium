@@ -29,7 +29,7 @@ export enum Error {
 }
 
 
-class PrintPreviewStateElement extends PolymerElement {
+export class PrintPreviewStateElement extends PolymerElement {
   static get is() {
     return 'print-preview-state';
   }

@@ -15,17 +15,11 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {Destination, GooglePromotedDestinationId} from '../data/destination.js';
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {Error, State} from '../data/state.js';
-import {SettingsMixin, SettingsMixinInterface} from './settings_mixin.js';
+import {SettingsMixin} from './settings_mixin.js';
 
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {SettingsMixinInterface}
- */
 const PrintPreviewHeaderElementBase = SettingsMixin(PolymerElement);
 
-/** @polymer */
 export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   static get is() {
     return 'print-preview-header';
@@ -39,20 +33,16 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     return {
       cloudPrintErrorMessage: String,
 
-      /** @type {!Destination} */
       destination: Object,
 
-      /** @type {!Error} */
       error: Number,
 
-      /** @type {!State} */
       state: Number,
 
       managed: Boolean,
 
       sheetCount: Number,
 
-      /** @private {?string} */
       summary_: String,
     };
   }
@@ -63,19 +53,22 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     ];
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isPdfOrDrive_() {
+  cloudPrintErrorMessage: string;
+  destination: Destination;
+  error: Error;
+  state: State;
+  managed: boolean;
+  sheetCount: number;
+  private summary_: string|null;
+
+  private isPdfOrDrive_(): boolean {
     return this.destination &&
         (getPrinterTypeForDestination(this.destination) ===
              PrinterType.PDF_PRINTER ||
          this.destination.id === GooglePromotedDestinationId.DOCS);
   }
 
-  /** @private */
-  updateSummary_() {
+  private updateSummary_() {
     switch (this.state) {
       case (State.PRINTING):
         this.summary_ = loadTimeData.getString(
@@ -94,10 +87,9 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
   }
 
   /**
-   * @return {string} The error message to display.
-   * @private
+   * @return The error message to display.
    */
-  getErrorMessage_() {
+  private getErrorMessage_(): string {
     switch (this.error) {
       case Error.PRINT_FAILED:
         return loadTimeData.getString('couldNotPrint');
@@ -108,8 +100,7 @@ export class PrintPreviewHeaderElement extends PrintPreviewHeaderElementBase {
     }
   }
 
-  /** @private */
-  updateSheetsSummary_() {
+  private updateSheetsSummary_() {
     if (this.sheetCount === 0) {
       this.summary_ = '';
       return;
