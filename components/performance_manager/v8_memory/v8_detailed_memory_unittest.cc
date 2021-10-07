@@ -112,7 +112,7 @@ class V8DetailedMemoryDecoratorTest : public GraphTestHarness,
                                       public V8MemoryTestBase {
  public:
   V8DetailedMemoryDecoratorTest() {
-    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    GetGraphFeatures().EnableExecutionContextRegistry();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> GetMainThreadTaskRunner()

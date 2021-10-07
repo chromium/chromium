@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -197,7 +198,7 @@ int ShellBrowserMainParts::PreCreateThreads() {
 void ShellBrowserMainParts::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
-          performance_manager::Decorators::kMinimal, base::DoNothing());
+          performance_manager::GraphFeatures::WithMinimal(), base::DoNothing());
 }
 
 int ShellBrowserMainParts::PreMainMessageLoopRun() {

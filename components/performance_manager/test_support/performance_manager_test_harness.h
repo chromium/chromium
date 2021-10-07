@@ -74,14 +74,12 @@ class PerformanceManagerTestHarness
 
   // An additional seam that gets invoked as part of the PM initialization. This
   // will be invoked on the PM sequence as part of "SetUp". This will be called
-  // after graph features have been configured (see "GetGraphFeaturesHelper").
+  // after graph features have been configured (see "GetGraphFeatures").
   virtual void OnGraphCreated(GraphImpl* graph) {}
 
   // Allows configuring which Graph features are initialized during "SetUp".
   // This defaults to initializing no features.
-  GraphFeaturesHelper& GetGraphFeaturesHelper() {
-    return helper_->GetGraphFeaturesHelper();
-  }
+  GraphFeatures& GetGraphFeatures() { return helper_->GetGraphFeatures(); }
 
  private:
   std::unique_ptr<PerformanceManagerTestHarnessHelper> helper_;

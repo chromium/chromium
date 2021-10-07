@@ -16,8 +16,8 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/captive_portal/core/buildflags.h"
+#include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
-#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "components/prefs/pref_service.h"
@@ -218,7 +218,7 @@ int BrowserMainPartsImpl::PreEarlyInitialization() {
 void BrowserMainPartsImpl::PostCreateThreads() {
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
-          performance_manager::Decorators::kMinimal,
+          performance_manager::GraphFeatures::WithMinimal(),
           base::BindOnce(&CreatePerformanceManagerAddOns));
 
   translate::TranslateDownloadManager* download_manager =

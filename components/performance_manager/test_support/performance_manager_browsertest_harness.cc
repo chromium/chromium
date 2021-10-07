@@ -36,8 +36,8 @@ void PerformanceManagerBrowserTestHarness::SetUp() {
   base::Lock lock;
   base::ConditionVariable cv(&lock);
   bool graph_initialization_complete = false;
-  PerformanceManagerLifetime::SetDecoratorsOverrideForTesting(
-      Decorators::kNone);
+  PerformanceManagerLifetime::SetGraphFeaturesOverrideForTesting(
+      GraphFeatures::WithNone());
   PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
       base::BindLambdaForTesting([&](Graph* graph) {
         OnGraphCreatedImpl(graph);
@@ -135,7 +135,7 @@ void PerformanceManagerBrowserTestHarness::WaitForLoad(
 }
 
 void PerformanceManagerBrowserTestHarness::OnGraphCreatedImpl(Graph* graph) {
-  graph_features_helper_.ConfigureGraph(graph);
+  graph_features_.ConfigureGraph(graph);
   OnGraphCreated(graph);
 }
 

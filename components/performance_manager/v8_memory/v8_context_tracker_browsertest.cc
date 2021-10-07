@@ -30,7 +30,7 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   ~V8ContextTrackerTest() override = default;
 
   void SetUp() override {
-    GetGraphFeaturesHelper().EnableV8ContextTracker();
+    GetGraphFeatures().EnableV8ContextTracker();
     Super::SetUp();
   }
 

@@ -46,7 +46,7 @@ void GraphTestHarness::SetUp() {
   setup_called_ = true;
 
   graph_->SetUp();
-  graph_features_helper_.ConfigureGraph(graph_.get());
+  graph_features_.ConfigureGraph(graph_.get());
 
   // This can't be done in the constructor because it is a virtual function.
   OnGraphCreated(graph_.get());

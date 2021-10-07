@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/embedder/graph_features_helper.h"
+#include "components/performance_manager/embedder/graph_features.h"
 
 #include "build/build_config.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -13,8 +13,8 @@
 
 namespace performance_manager {
 
-TEST(GraphFeaturesHelperTest, ConfigureGraph) {
-  GraphFeaturesHelper features;
+TEST(GraphFeaturesTest, ConfigureGraph) {
+  GraphFeatures features;
 
   EXPECT_FALSE(features.flags().execution_context_registry);
   EXPECT_FALSE(features.flags().v8_context_tracker);
@@ -32,8 +32,8 @@ TEST(GraphFeaturesHelperTest, ConfigureGraph) {
   graph.TearDown();
 }
 
-TEST(GraphFeaturesHelperTest, EnableDefault) {
-  GraphFeaturesHelper features;
+TEST(GraphFeaturesTest, EnableDefault) {
+  GraphFeatures features;
   TestGraphImpl graph;
   graph.SetUp();
 
@@ -71,6 +71,19 @@ TEST(GraphFeaturesHelperTest, EnableDefault) {
   EXPECT_TRUE(v8_memory::V8ContextTracker::GetFromGraph(&graph));
 
   graph.TearDown();
+}
+
+TEST(GraphFeaturesTest, StandardConfigurations) {
+  GraphFeatures features;
+  EXPECT_EQ(features.flags().flags, GraphFeatures::WithNone().flags().flags);
+  features.EnableMinimal();
+  EXPECT_EQ(features.flags().flags, GraphFeatures::WithMinimal().flags().flags);
+
+  // This test will fail if Default is not a superset of Minimal, since it does
+  // not remove the Minimal flags. That's a good thing to test since it would
+  // be confusing for Minimal to include features that Default doesn't.
+  features.EnableDefault();
+  EXPECT_EQ(features.flags().flags, GraphFeatures::WithDefault().flags().flags);
 }
 
 }  // namespace performance_manager

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/performance_manager/embedder/graph_features_helper.h"
+#include "components/performance_manager/embedder/graph_features.h"
 
 #include <memory>
 
@@ -38,7 +38,7 @@ void Install(Graph* graph) {
 
 }  // namespace
 
-void GraphFeaturesHelper::ConfigureGraph(Graph* graph) const {
+void GraphFeatures::ConfigureGraph(Graph* graph) const {
   if (flags_.execution_context_registry)
     Install<execution_context::ExecutionContextRegistryImpl>(graph);
   if (flags_.frame_node_impl_describer)

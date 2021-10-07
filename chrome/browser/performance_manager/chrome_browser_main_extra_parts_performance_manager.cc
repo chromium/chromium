@@ -189,7 +189,7 @@ ChromeBrowserMainExtraPartsPerformanceManager::GetFeatureObserverClient() {
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
   performance_manager_ =
-      performance_manager::CreatePerformanceManagerWithDefaultDecorators(
+      performance_manager::CreatePerformanceManagerWithDefaultFeatures(
           base::BindOnce(&ChromeBrowserMainExtraPartsPerformanceManager::
                              CreatePoliciesAndDecorators));
   registry_ = performance_manager::PerformanceManagerRegistry::Create();

@@ -24,7 +24,7 @@ class ProcessPriorityAggregatorTest : public GraphTestHarness {
   using Super = GraphTestHarness;
 
   void SetUp() override {
-    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
     ppa_ = new ProcessPriorityAggregator();
     graph()->PassToGraph(base::WrapUnique(ppa_));

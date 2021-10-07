@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_GRAPH_FEATURES_HELPER_H_
-#define COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_GRAPH_FEATURES_HELPER_H_
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_GRAPH_FEATURES_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_GRAPH_FEATURES_H_
 
 #include <cstdint>
 
@@ -14,8 +14,24 @@ class Graph;
 // A helper for configuring and enabling Graph features. This object is
 // constexpr so that it can be easily used with static storage without
 // requiring an initializer.
-class GraphFeaturesHelper {
+class GraphFeatures {
  public:
+  // Returns a configuration with no graph features. Mostly intended for
+  // unittests, where tests pick and choose exactly which decorators they want.
+  static constexpr GraphFeatures WithNone() { return GraphFeatures(); }
+
+  // Returns a configuration with the minimal set of graph features required
+  // for content_shell to work.
+  static constexpr GraphFeatures WithMinimal() {
+    return GraphFeatures().EnableMinimal();
+  }
+
+  // Returns a configuration with the default set of graph features shipped
+  // with a full-featured Chromium browser.
+  static constexpr GraphFeatures WithDefault() {
+    return GraphFeatures().EnableDefault();
+  }
+
   // Helper for housing the actual configuration data.
   union Flags {
     uint32_t flags;
@@ -41,87 +57,87 @@ class GraphFeaturesHelper {
     };
   };
 
-  constexpr GraphFeaturesHelper() = default;
-  constexpr GraphFeaturesHelper(const GraphFeaturesHelper& other) = default;
-  GraphFeaturesHelper& operator=(const GraphFeaturesHelper& other) = default;
+  constexpr GraphFeatures() = default;
+  constexpr GraphFeatures(const GraphFeatures& other) = default;
+  GraphFeatures& operator=(const GraphFeatures& other) = default;
 
-  constexpr GraphFeaturesHelper& EnableExecutionContextPriorityDecorator() {
+  constexpr GraphFeatures& EnableExecutionContextPriorityDecorator() {
     EnableExecutionContextRegistry();
     flags_.execution_context_priority_decorator = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableExecutionContextRegistry() {
+  constexpr GraphFeatures& EnableExecutionContextRegistry() {
     flags_.execution_context_registry = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableFrameNodeImplDescriber() {
+  constexpr GraphFeatures& EnableFrameNodeImplDescriber() {
     flags_.frame_node_impl_describer = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableFrameVisibilityDecorator() {
+  constexpr GraphFeatures& EnableFrameVisibilityDecorator() {
     flags_.frame_visibility_decorator = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableFreezingVoteDecorator() {
+  constexpr GraphFeatures& EnableFreezingVoteDecorator() {
     flags_.freezing_vote_decorator = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnablePageLiveStateDecorator() {
+  constexpr GraphFeatures& EnablePageLiveStateDecorator() {
     flags_.page_live_state_decorator = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnablePageLoadTrackerDecorator() {
+  constexpr GraphFeatures& EnablePageLoadTrackerDecorator() {
     flags_.page_load_tracker_decorator = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnablePageNodeImplDescriber() {
+  constexpr GraphFeatures& EnablePageNodeImplDescriber() {
     flags_.page_node_impl_describer = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableProcessHostedContentTypesAggregator() {
+  constexpr GraphFeatures& EnableProcessHostedContentTypesAggregator() {
     flags_.process_hosted_content_types_aggregator = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableProcessNodeImplDescriber() {
+  constexpr GraphFeatures& EnableProcessNodeImplDescriber() {
     flags_.process_node_impl_describer = true;
     return *this;
   }
 
   // This is a nop on the Android platform, as the feature isn't available
   // there.
-  constexpr GraphFeaturesHelper& EnableSiteDataRecorder() {
+  constexpr GraphFeatures& EnableSiteDataRecorder() {
     flags_.site_data_recorder = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableTabPropertiesDecorator() {
+  constexpr GraphFeatures& EnableTabPropertiesDecorator() {
     flags_.tab_properties_decorator = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableV8ContextTracker() {
+  constexpr GraphFeatures& EnableV8ContextTracker() {
     EnableExecutionContextRegistry();
     flags_.v8_context_tracker = true;
     return *this;
   }
 
-  constexpr GraphFeaturesHelper& EnableWorkerNodeImplDescriber() {
+  constexpr GraphFeatures& EnableWorkerNodeImplDescriber() {
     flags_.worker_node_impl_describer = true;
     return *this;
   }
 
   // Helper to enable the minimal set of features required for a content_shell
   // browser to work.
-  constexpr GraphFeaturesHelper& EnableMinimal() {
+  constexpr GraphFeatures& EnableMinimal() {
     EnableExecutionContextRegistry();
     EnableV8ContextTracker();
     return *this;
@@ -129,7 +145,7 @@ class GraphFeaturesHelper {
 
   // Helper to enable the default set of features. This is only intended for use
   // from production code.
-  constexpr GraphFeaturesHelper& EnableDefault() {
+  constexpr GraphFeatures& EnableDefault() {
     EnableExecutionContextRegistry();
     EnableFrameNodeImplDescriber();
     EnableFrameVisibilityDecorator();
@@ -163,4 +179,4 @@ class GraphFeaturesHelper {
 
 }  // namespace performance_manager
 
-#endif  // COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_GRAPH_FEATURES_HELPER_H_
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_EMBEDDER_GRAPH_FEATURES_H_

@@ -24,7 +24,7 @@ void PerformanceManagerTestHarnessHelper::SetUp() {
   base::RunLoop run_loop;
   GraphImplCallback callback =
       base::BindLambdaForTesting([&](GraphImpl* graph) {
-        graph_features_helper_.ConfigureGraph(graph);
+        graph_features_.ConfigureGraph(graph);
         if (graph_impl_callback_)
           std::move(graph_impl_callback_).Run(graph);
         run_loop.Quit();
