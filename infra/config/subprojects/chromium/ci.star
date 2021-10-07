@@ -1201,6 +1201,16 @@ ci.android_fyi_builder(
     triggered_by = [],
 )
 
+ci.android_fyi_builder(
+    name = "android-10-x86-fyi-rel-tests",
+    console_view_entry = consoles.console_view_entry(
+        category = "tester|10",
+        short_name = "10",
+    ),
+    triggered_by = ["android-x86-fyi-rel"],
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
 # TODO(crbug.com/1137474): Remove this builder once there are no associated
 # disabled tests.
 ci.android_fyi_builder(
@@ -1262,6 +1272,14 @@ ci.angle_thin_tester(
         short_name = "arm64",
     ),
     triggered_by = ["android-angle-chromium-arm64-builder"],
+)
+
+ci.android_fyi_builder(
+    name = "android-x86-fyi-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|x86",
+        short_name = "x86",
+    ),
 )
 
 ci.angle_linux_builder(

@@ -527,6 +527,10 @@ try_.chromium_android_builder(
 )
 
 try_.chromium_android_builder(
+    name = "android-10-x86-fyi-rel-tests",
+)
+
+try_.chromium_android_builder(
     name = "android-pie-arm64-wpt-rel-non-cq",
 )
 

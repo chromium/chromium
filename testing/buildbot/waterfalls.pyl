@@ -1108,6 +1108,20 @@
           'all',
         ],
       },
+      'android-10-x86-fyi-rel-tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          '10-x86-emulator',
+          'emulator-4-cores',
+          'linux-xenial-or-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'webview_cts_tests_gtest',
+        },
+        'use_swarming': True,
+      },
       'android-12-x64-fyi-rel': {
         'mixins': [
           '12-x64-emulator',
