@@ -721,14 +721,10 @@ void PopulateInputMethodListFromDescriptors(
   const base::flat_set<std::string> allowed_ids(
       ime_state->GetAllowedInputMethodIds());
 
-  // Collator used to sort display names in the given locale.
   UErrorCode error = U_ZERO_ERROR;
-  const std::string app_locale = g_browser_process->GetApplicationLocale();
   std::unique_ptr<icu::Collator> collator(
-      icu::Collator::createInstance(icu::Locale(app_locale.c_str()), error));
-  if (U_FAILURE(error)) {
-    collator.reset();
-  }
+      icu::Collator::createInstance(error));  // use current ICU locale
+  DCHECK(U_SUCCESS(error));
 
   // Map of sorted [display name -> input methods].
   std::map<std::u16string, language_settings_private::InputMethod,
