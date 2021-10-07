@@ -1901,18 +1901,18 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledRatio4",
+                    "name": "MglruBehavior",
                     "params": {
-                        "KstaledRatio": "4"
+                        "KstaledRatio": "1"
                     },
                     "enable_features": [
                         "KstaledSwap"
                     ]
                 },
                 {
-                    "name": "EnabledRatio6",
+                    "name": "KswapdBehavior",
                     "params": {
-                        "KstaledRatio": "6"
+                        "KstaledRatio": "0"
                     },
                     "enable_features": [
                         "KstaledSwap"
