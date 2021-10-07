@@ -46,6 +46,10 @@ struct App {
   // store, etc.
   InstallSource install_source;
 
+  // An optional ID used for policy to identify the app.
+  // For web apps, it contains the install URL.
+  string? policy_id;
+
   // Whether the app is an extensions::Extensions where is_platform_app()
   // returns true.
   OptionalBool is_platform_app;

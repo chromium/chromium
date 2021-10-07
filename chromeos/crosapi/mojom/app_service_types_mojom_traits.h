@@ -75,6 +75,11 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->install_reason;
   }
 
+  static const absl::optional<std::string>& policy_id(
+      const apps::mojom::AppPtr& r) {
+    return r->policy_id;
+  }
+
   static const apps::mojom::OptionalBool& recommendable(
       const apps::mojom::AppPtr& r) {
     return r->recommendable;

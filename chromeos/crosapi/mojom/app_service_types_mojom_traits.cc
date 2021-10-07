@@ -66,6 +66,10 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   if (!data.ReadInstallReason(&install_reason))
     return false;
 
+  absl::optional<std::string> policy_id;
+  if (!data.ReadPolicyId(&policy_id))
+    return false;
+
   apps::mojom::OptionalBool recommendable;
   if (!data.ReadRecommendable(&recommendable))
     return false;
@@ -120,6 +124,7 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   app->last_launch_time = last_launch_time;
   app->install_time = install_time;
   app->install_reason = install_reason;
+  app->policy_id = policy_id;
   app->recommendable = recommendable;
   app->searchable = searchable;
   app->show_in_launcher = show_in_launcher;

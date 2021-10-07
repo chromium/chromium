@@ -101,6 +101,9 @@ void AppUpdate::Merge(apps::mojom::App* state, const apps::mojom::App* delta) {
   if (delta->install_source != apps::mojom::InstallSource::kUnknown) {
     state->install_source = delta->install_source;
   }
+  if (delta->policy_id.has_value()) {
+    state->policy_id = delta->policy_id;
+  }
   if (delta->is_platform_app != apps::mojom::OptionalBool::kUnknown) {
     state->is_platform_app = delta->is_platform_app;
   }
@@ -374,6 +377,21 @@ bool AppUpdate::InstallSourceChanged() const {
          (!state_ || (delta_->install_source != state_->install_source));
 }
 
+const std::string& AppUpdate::PolicyId() const {
+  if (delta_ && delta_->policy_id.has_value()) {
+    return delta_->policy_id.value();
+  }
+  if (state_ && state_->policy_id.has_value()) {
+    return state_->policy_id.value();
+  }
+  return base::EmptyString();
+}
+
+bool AppUpdate::PolicyIdChanged() const {
+  return delta_ && delta_->policy_id.has_value() &&
+         (!state_ || (delta_->policy_id != state_->policy_id));
+}
+
 apps::mojom::OptionalBool AppUpdate::InstalledInternally() const {
   switch (InstallReason()) {
     case apps::mojom::InstallReason::kUnknown:
@@ -616,6 +634,7 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
   }
 
   out << "InstallReason: " << app.InstallReason() << std::endl;
+  out << "PolicyId: " << app.PolicyId() << std::endl;
   out << "InstalledInternally: " << app.InstalledInternally() << std::endl;
   out << "IsPlatformApp: " << app.IsPlatformApp() << std::endl;
   out << "Recommendable: " << app.Recommendable() << std::endl;

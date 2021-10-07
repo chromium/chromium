@@ -36,6 +36,7 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   input->install_time = base::Time() + base::Days(2);
 
   input->install_reason = apps::mojom::InstallReason::kUser;
+  input->policy_id = "https://app.site/alpha";
   input->recommendable = apps::mojom::OptionalBool::kTrue;
   input->searchable = apps::mojom::OptionalBool::kTrue;
   input->paused = apps::mojom::OptionalBool::kFalse;
@@ -77,6 +78,7 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   EXPECT_EQ(output->install_time, base::Time() + base::Days(2));
 
   EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
+  EXPECT_EQ(output->policy_id, "https://app.site/alpha");
   EXPECT_EQ(output->recommendable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->searchable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->paused, apps::mojom::OptionalBool::kFalse);
@@ -139,6 +141,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
   EXPECT_EQ(output->additional_search_terms, input->additional_search_terms);
 
   EXPECT_EQ(output->install_reason, apps::mojom::InstallReason::kUser);
+  EXPECT_FALSE(output->policy_id.has_value());
   EXPECT_EQ(output->recommendable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->searchable, apps::mojom::OptionalBool::kTrue);
   EXPECT_EQ(output->paused, apps::mojom::OptionalBool::kFalse);

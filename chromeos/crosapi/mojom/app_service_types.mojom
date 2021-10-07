@@ -67,6 +67,11 @@ struct App {
   // Whether the app's display mode is in the browser or otherwise.
   [MinVersion=2]
   WindowMode window_mode@22;
+
+  // An optional ID used for policy to identify the app.
+  // For web apps, it contains the install URL.
+  [MinVersion=7]
+  string? policy_id@23;
 };
 
 // The types of apps available in the registry.

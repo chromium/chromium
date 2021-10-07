@@ -109,6 +109,11 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::mojom::InstallSource InstallSource() const;
   bool InstallSourceChanged() const;
 
+  // An optional ID used for policy to identify the app.
+  // For web apps, it contains the install URL.
+  const std::string& PolicyId() const;
+  bool PolicyIdChanged() const;
+
   apps::mojom::OptionalBool InstalledInternally() const;
 
   apps::mojom::OptionalBool IsPlatformApp() const;
