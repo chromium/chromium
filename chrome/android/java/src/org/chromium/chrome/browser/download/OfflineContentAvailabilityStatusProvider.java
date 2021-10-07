@@ -26,8 +26,8 @@ import java.util.Set;
 public class OfflineContentAvailabilityStatusProvider implements OfflineContentProvider.Observer {
     private static OfflineContentAvailabilityStatusProvider sInstance;
 
-    // Keeps track of prefetch content, i.e. suggested content.
-    private Set<ContentId> mPrefetchItems = new HashSet<>();
+    // Keeps track of suggested content.
+    private Set<ContentId> mSuggestedItems = new HashSet<>();
     // Keeps track of persistent content, i.e. non-transient content, including prefetch, downloads,
     // offline pages, etc. The idea is that this set will be empty iff Download Home would be empty.
     private Set<ContentId> mPersistentItems = new HashSet<>();
@@ -50,9 +50,9 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
     OfflineContentAvailabilityStatusProvider() {}
 
     /**
-     * @return Whether or not there is any prefetch content available in Chrome.
+     * @return Whether or not there is any suggested offline content available in Chrome.
      */
-    public boolean isPrefetchContentAvailable() {
+    public boolean isSuggestedContentAvailable() {
         return SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS, false);
     }
@@ -73,7 +73,7 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
         if (items.isEmpty()) return;
 
         for (OfflineItem item : items) {
-            if (item.isSuggested) mPrefetchItems.add(item.id);
+            if (item.isSuggested) mSuggestedItems.add(item.id);
             if (!item.isTransient) mPersistentItems.add(item.id);
         }
         updateSharedPrefs();
@@ -81,7 +81,7 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
 
     @Override
     public void onItemRemoved(ContentId id) {
-        boolean prefetch_removed = mPrefetchItems.remove(id);
+        boolean prefetch_removed = mSuggestedItems.remove(id);
         boolean persistent_removed = mPersistentItems.remove(id);
         if (prefetch_removed || persistent_removed) updateSharedPrefs();
     }
@@ -92,7 +92,7 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
     private void updateSharedPrefs() {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS,
-                !mPrefetchItems.isEmpty());
+                !mSuggestedItems.isEmpty());
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 !mPersistentItems.isEmpty());

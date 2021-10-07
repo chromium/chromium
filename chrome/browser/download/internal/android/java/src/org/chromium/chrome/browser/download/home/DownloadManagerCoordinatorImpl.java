@@ -16,7 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
@@ -58,7 +58,7 @@ class DownloadManagerCoordinatorImpl
 
     /** Builds a {@link DownloadManagerCoordinatorImpl} instance. */
     public DownloadManagerCoordinatorImpl(Activity activity, DownloadManagerUiConfig config,
-            ObservableSupplier<Boolean> isPrefetchEnabledSupplier,
+            Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
             Callback<Context> settingsLauncher, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager, PrefService prefService, Tracker tracker,
             FaviconProvider faviconProvider, OfflineContentProvider provider,
@@ -69,7 +69,7 @@ class DownloadManagerCoordinatorImpl
         mDeleteCoordinator = new DeleteUndoCoordinator(snackbarManager);
         mSelectionDelegate = new SelectionDelegate<ListItem>();
         mListCoordinator = new DateOrderedListCoordinator(mActivity, config,
-                isPrefetchEnabledSupplier, provider, legacyProvider,
+                exploreOfflineTabVisibilitySupplier, provider, legacyProvider,
                 mDeleteCoordinator::showSnackbar, mSelectionDelegate, this::notifyFilterChanged,
                 createDateOrderedListObserver(), modalDialogManager, prefService, faviconProvider,
                 discardableReferencePool);

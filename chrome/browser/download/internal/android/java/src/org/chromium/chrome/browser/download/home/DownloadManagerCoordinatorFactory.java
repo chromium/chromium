@@ -9,7 +9,7 @@ import android.content.Context;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -22,14 +22,15 @@ public class DownloadManagerCoordinatorFactory {
 
     /** Builds a {@link DownloadManagerCoordinatorImpl} instance. */
     public static DownloadManagerCoordinator create(Activity activity,
-            DownloadManagerUiConfig config, ObservableSupplier<Boolean> isPrefetchEnabledSupplier,
+            DownloadManagerUiConfig config, Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
             Callback<Context> settingsLauncher, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager, PrefService prefService, Tracker tracker,
             FaviconProvider faviconProvider, OfflineContentProvider provider,
             LegacyDownloadProvider legacyProvider,
             DiscardableReferencePool discardableReferencePool) {
-        return new DownloadManagerCoordinatorImpl(activity, config, isPrefetchEnabledSupplier,
-                settingsLauncher, snackbarManager, modalDialogManager, prefService, tracker,
-                faviconProvider, provider, legacyProvider, discardableReferencePool);
+        return new DownloadManagerCoordinatorImpl(activity, config,
+                exploreOfflineTabVisibilitySupplier, settingsLauncher, snackbarManager,
+                modalDialogManager, prefService, tracker, faviconProvider, provider, legacyProvider,
+                discardableReferencePool);
     }
 }
