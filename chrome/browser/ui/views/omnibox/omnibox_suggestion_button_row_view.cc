@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -49,6 +50,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         popup_contents_view_(popup_contents_view),
         selection_(selection),
         icon_color_(SK_ColorTRANSPARENT) {
+    SetTriggerableEventFlags(GetTriggerableEventFlags() |
+                             ui::EF_MIDDLE_MOUSE_BUTTON);
     views::InstallPillHighlightPathGenerator(this);
     SetImageLabelSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
         DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
@@ -290,7 +293,10 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
       model_->AcceptKeyword(entry_method);
     }
   } else {
-    model_->TriggerPopupSelectionAction(selection, event.time_stamp());
+    WindowOpenDisposition disposition =
+        ui::DispositionFromEventFlags(event.flags());
+    model_->TriggerPopupSelectionAction(selection, event.time_stamp(),
+                                        disposition);
   }
 }
 
