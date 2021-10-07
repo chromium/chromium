@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_version.h"
 #include "ui/base/ui_base_features.h"
@@ -50,6 +51,7 @@ void MenuConfig::Init() {
        base::GetFieldTrialParamByFeatureAsBool(
            features::kWin11StyleMenus,
            features::kWin11StyleMenuAllWindowsVersionsName, false));
+  UMA_HISTOGRAM_BOOLEAN("Windows.Menu.Win11Style", win11_style_menus);
   separator_upper_height = 5;
   separator_lower_height = 7;
 

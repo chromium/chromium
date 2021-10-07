@@ -10218,6 +10218,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Initialized to be read frequently"/>
 </enum>
 
+<enum name="BooleanWin11MenuStyle">
+  <int value="0" label="Prior to Win11 Style"/>
+  <int value="1" label="Win11 Style"/>
+</enum>
+
 <enum name="BooleanWiped">
   <int value="0" label="Re-enabled"/>
   <int value="1" label="Wiped out"/>
