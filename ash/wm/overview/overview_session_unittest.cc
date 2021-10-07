@@ -6044,9 +6044,8 @@ class SplitViewOverviewSessionInClamshellTest
       scoped_feature_list_.InitAndEnableFeature(
           chromeos::wm::features::kVerticalSnap);
     } else {
-      scoped_feature_list_.InitWithFeatureState(
-          chromeos::wm::features::kVerticalSnap,
-          chromeos::wm::features::IsVerticalSnapEnabled());
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::wm::features::kVerticalSnap);
     }
     OverviewSessionTest::SetUp();
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);

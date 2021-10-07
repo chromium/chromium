@@ -571,57 +571,6 @@ TEST_F(WorkspaceWindowResizerTest, Edge) {
     EXPECT_EQ(gfx::Rect(20, 30, 400, 60),
               window_state->GetRestoreBoundsInScreen());
   }
-
-  // Restore the window to clear snapped state.
-  window_state->Restore();
-
-  // Test dragging to another display and snapping there.
-  UpdateDisplay("800x600,500x600");
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  {
-    EXPECT_EQ("20,30 400x60", window_->GetBoundsInScreen().ToString());
-
-    std::unique_ptr<WindowResizer> resizer =
-        CreateResizerForTest(window_.get());
-    ASSERT_TRUE(resizer.get());
-    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-    // without having to call |CursorManager::SetDisplay|.
-    Shell::Get()->cursor_manager()->SetDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
-    resizer->Drag(CalculateDragPoint(*resizer, 499, 0), 0);
-    int bottom =
-        screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()).bottom();
-    EXPECT_EQ(root_windows[0], window_->GetRootWindow());
-    resizer->CompleteDrag();
-    EXPECT_EQ(root_windows[1], window_->GetRootWindow());
-    EXPECT_EQ(gfx::Rect(250, bottom), window_->bounds());
-    EXPECT_EQ(gfx::Rect(820, 30, 400, 60),
-              window_state->GetRestoreBoundsInScreen());
-  }
-
-  // Restore the window to clear snapped state.
-  window_state->Restore();
-
-  // Test dragging from a secondary display and snapping on the same display.
-  {
-    EXPECT_EQ("820,30 400x60", window_->GetBoundsInScreen().ToString());
-
-    std::unique_ptr<WindowResizer> resizer =
-        CreateResizerForTest(window_.get());
-    ASSERT_TRUE(resizer.get());
-    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
-    // without having to call |CursorManager::SetDisplay|.
-    Shell::Get()->cursor_manager()->SetDisplay(
-        display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
-    resizer->Drag(CalculateDragPoint(*resizer, 499, 0), 0);
-    int bottom =
-        screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()).bottom();
-    resizer->CompleteDrag();
-    // TODO(varkha): Insets are updated because of http://crbug.com/292238
-    EXPECT_EQ(gfx::Rect(250, 0, 250, bottom), window_->bounds());
-    EXPECT_EQ(gfx::Rect(820, 30, 400, 60),
-              window_state->GetRestoreBoundsInScreen());
-  }
 }
 
 // Check that non resizable windows will not get resized.
@@ -2419,5 +2368,117 @@ TEST_F(PortraitWorkspaceWindowResizerTest, SnapBottom) {
   EXPECT_TRUE(WindowState::Get(window_.get())->IsSnapped());
   EXPECT_EQ(expected_snapped_bounds, window_->bounds());
 }
+
+// Test WorkspaceWindowResizer functionalities for two displays with different
+// orientation: landscape and portrait. This test is parameterized to enable
+// vertical or horizontal snap layout in the portrait display.
+class MultiOrientationDisplayWorkspaceWindowResizerTest
+    : public WorkspaceWindowResizerTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  MultiOrientationDisplayWorkspaceWindowResizerTest() = default;
+  MultiOrientationDisplayWorkspaceWindowResizerTest(
+      const MultiOrientationDisplayWorkspaceWindowResizerTest&) = delete;
+  MultiOrientationDisplayWorkspaceWindowResizerTest& operator=(
+      const MultiOrientationDisplayWorkspaceWindowResizerTest&) = delete;
+  ~MultiOrientationDisplayWorkspaceWindowResizerTest() override = default;
+
+  bool IsVerticalSnapEnabled() const { return GetParam(); }
+
+  // WorkspaceWindowResizerTest:
+  void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::wm::features::kVerticalSnap);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::wm::features::kVerticalSnap);
+    }
+    WorkspaceWindowResizerTest::SetUp();
+    UpdateDisplay("800x600,500x600");
+
+    // Make the window snappable.
+    AllowSnap(window_.get());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Assertions around dragging near the four edges of the display.
+TEST_P(MultiOrientationDisplayWorkspaceWindowResizerTest, Edge) {
+  window_->SetBounds(gfx::Rect(20, 30, 400, 60));
+  WindowState* window_state = WindowState::Get(window_.get());
+  // Test dragging to another display and snapping there.
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  const gfx::Rect display2_work_area =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(root_windows[1])
+          .work_area();
+  {
+    EXPECT_EQ(gfx::Rect(20, 30, 400, 60), window_->GetBoundsInScreen());
+
+    std::unique_ptr<WindowResizer> resizer =
+        CreateResizerForTest(window_.get());
+    ASSERT_TRUE(resizer.get());
+    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+    // without having to call |CursorManager::SetDisplay|.
+    // Move to the second display.
+    // Drag to bottom right area of the second display to trigger the bottom
+    // snap if vertical snap is enabled or the right snap otherwise.
+    Shell::Get()->cursor_manager()->SetDisplay(
+        display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+    resizer->Drag(CalculateDragPoint(*resizer, display2_work_area.right(),
+                                     display2_work_area.bottom()),
+                  0);
+    EXPECT_EQ(root_windows[0], window_->GetRootWindow());
+    resizer->CompleteDrag();
+    EXPECT_EQ(root_windows[1], window_->GetRootWindow());
+
+    const gfx::Rect secondary_snap_bounds =
+        IsVerticalSnapEnabled() ? gfx::Rect(0, display2_work_area.height() / 2,
+                                            display2_work_area.width(),
+                                            display2_work_area.height() / 2)
+                                : gfx::Rect(display2_work_area.width() / 2, 0,
+                                            display2_work_area.width() / 2,
+                                            display2_work_area.height());
+    EXPECT_EQ(secondary_snap_bounds, window_->bounds());
+    EXPECT_EQ(gfx::Rect(820, 30, 400, 60),
+              window_state->GetRestoreBoundsInScreen());
+  }
+
+  // Restore the window to clear snapped state.
+  window_state->Restore();
+
+  {
+    // Test dragging from a secondary display and snapping on the same display.
+    EXPECT_EQ(gfx::Rect(820, 30, 400, 60), window_->GetBoundsInScreen());
+
+    std::unique_ptr<WindowResizer> resizer =
+        CreateResizerForTest(window_.get(), gfx::Point(0, 100));
+    ASSERT_TRUE(resizer.get());
+    // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+    // without having to call |CursorManager::SetDisplay|.
+    // Drag to top left area of the second display to trigger the top snap
+    // if vertical snap is enabled or the bottom snap otherwise.
+    Shell::Get()->cursor_manager()->SetDisplay(
+        display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]));
+    resizer->Drag(CalculateDragPoint(*resizer, 0, -95), 0);
+    resizer->Drag(CalculateDragPoint(*resizer, 0, -100), 0);
+    resizer->CompleteDrag();
+    const gfx::Rect primary_snap_bounds =
+        IsVerticalSnapEnabled() ? gfx::Rect(display2_work_area.width(),
+                                            display2_work_area.height() / 2)
+                                : gfx::Rect(display2_work_area.width() / 2,
+                                            display2_work_area.height());
+    EXPECT_EQ(primary_snap_bounds, window_->bounds());
+    EXPECT_EQ(gfx::Rect(820, 30, 400, 60),
+              window_state->GetRestoreBoundsInScreen());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         MultiOrientationDisplayWorkspaceWindowResizerTest,
+                         ::testing::Bool());
 
 }  // namespace ash
