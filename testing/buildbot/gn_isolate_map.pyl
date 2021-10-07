@@ -1495,6 +1495,10 @@
     "label": "//v8:postmortem-metadata",
     "type": "additional_compile_target",
   },
+  "power_sampler_unittests": {
+    "label": "//tools/mac/power:power_sampler_unittests",
+     "type": "console_test_launcher",
+  },
   "ppapi_unittests": {
     "label": "//ppapi:ppapi_unittests",
     "type": "console_test_launcher",

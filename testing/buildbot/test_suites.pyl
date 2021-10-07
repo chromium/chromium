@@ -4462,6 +4462,7 @@
     },
 
     'mac_specific_chromium_gtests': {
+      'power_sampler_unittests': {},
       'sandbox_mac_unittests': {},
       'updater_tests': {
         'args': [
