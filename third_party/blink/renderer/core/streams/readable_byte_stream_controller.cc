@@ -305,8 +305,23 @@ void ReadableByteStreamController::Enqueue(
   DOMArrayBuffer* const transferred_buffer =
       TransferArrayBuffer(script_state, buffer, exception_state);
 
+  // This line is actually a part of https://github.com/whatwg/streams/pull/1123
+  // which hasn't been applied to our implementation yet. However, it has been
+  // added ahead of time as part of the fix for https://crbug.com/1255762.
+  // TODO(ricea): Apply the changes from
+  // https://github.com/whatwg/streams/pull/1123 to our implementation.
+  InvalidateBYOBRequest(controller);
+
   // 7. If ! ReadableStreamHasDefaultReader(stream) is true
   if (ReadableStream::HasDefaultReader(stream)) {
+    if (!pending_pull_intos_.empty()) {
+      DCHECK_EQ(pending_pull_intos_.size(), 1u);
+      DCHECK_EQ(pending_pull_intos_[0]->reader_type, ReaderType::kDefault);
+      pending_pull_intos_.clear();
+    }
+
+    // TODO(ricea): Update the step numbering to match the standard.
+
     //   a. If ! ReadableStreamGetNumReadRequests(stream) is 0,
     if (ReadableStream::GetNumReadRequests(stream) == 0) {
       //     i. Perform !
