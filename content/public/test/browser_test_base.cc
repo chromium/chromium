@@ -101,10 +101,6 @@
 #include "content/public/common/content_paths.h"
 #include "testing/android/native_test/native_browser_test_support.h"
 #include "ui/base/ui_base_paths.h"
-
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
-#include "gin/v8_initializer.h"  // nogncheck
-#endif
 #endif
 
 #if defined(OS_MAC)
@@ -585,10 +581,6 @@ void BrowserTestBase::SetUp() {
 
   base::i18n::AllowMultipleInitializeCallsForTesting();
   base::i18n::InitializeICU();
-
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
-  gin::V8Initializer::LoadV8Snapshot();
-#endif
 
   ContentMainDelegate* delegate = GetContentMainDelegateForTesting();
   // The delegate should have been set by JNI_OnLoad for the test target.
