@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/image_downloader.h"
 #include "base/memory/weak_ptr.h"
 
 class GoogleServiceAuthError;
@@ -27,6 +28,8 @@ class AmbientClientImpl : public ash::AmbientClient {
   // ash::AmbientClient:
   bool IsAmbientModeAllowed() override;
   void RequestAccessToken(GetAccessTokenCallback callback) override;
+  void DownloadImage(const std::string& url,
+                     ash::ImageDownloader::DownloadCallback callback) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   void RequestWakeLockProvider(
       mojo::PendingReceiver<device::mojom::WakeLockProvider> receiver) override;

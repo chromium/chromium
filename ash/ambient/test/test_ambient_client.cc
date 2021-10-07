@@ -11,12 +11,11 @@
 #include "base/time/time.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
 namespace {
-
-const char* kTestGaiaId = "0123456789";
 
 constexpr base::TimeDelta kDefaultTokenExpirationDelay = base::Seconds(60);
 
@@ -67,6 +66,9 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 
 }  // namespace
 
+const char* TestAmbientClient::kTestGaiaId = "test_gaia_id";
+const char* TestAmbientClient::kTestAccessToken = "test_access_token";
+
 TestAmbientClient::TestAmbientClient(
     device::TestWakeLockProvider* wake_lock_provider)
     : url_loader_factory_(new FakeSharedURLLoaderFactory()),
@@ -81,6 +83,15 @@ bool TestAmbientClient::IsAmbientModeAllowed() {
 
 void TestAmbientClient::RequestAccessToken(GetAccessTokenCallback callback) {
   pending_callback_ = std::move(callback);
+  if (is_automatic_)
+    IssueAccessToken(/*is_empty=*/false);
+}
+
+void TestAmbientClient::DownloadImage(
+    const std::string& url,
+    ash::ImageDownloader::DownloadCallback callback) {
+  // Return fake image.
+  std::move(callback).Run(gfx::test::CreateImageSkia(10, 10));
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -93,21 +104,26 @@ void TestAmbientClient::RequestWakeLockProvider(
   wake_lock_provider_->BindReceiver(std::move(receiver));
 }
 
-void TestAmbientClient::IssueAccessToken(const std::string& access_token,
-                                         bool with_error) {
+void TestAmbientClient::IssueAccessToken(bool is_empty) {
   if (!pending_callback_)
     return;
 
-  if (with_error) {
+  if (is_empty) {
     std::move(pending_callback_)
         .Run(/*gaia_id=*/std::string(),
              /*access_token=*/std::string(),
              /*expiration_time=*/base::Time::Now());
   } else {
     std::move(pending_callback_)
-        .Run(kTestGaiaId, access_token,
+        .Run(kTestGaiaId, kTestAccessToken,
              base::Time::Now() + kDefaultTokenExpirationDelay);
   }
+}
+
+void TestAmbientClient::SetAutomaticalyIssueToken(bool is_automatic) {
+  is_automatic_ = is_automatic;
+  if (is_automatic_)
+    IssueAccessToken(/*is_empty=*/false);
 }
 
 bool TestAmbientClient::ShouldUseProdServer() {

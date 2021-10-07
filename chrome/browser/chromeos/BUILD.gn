@@ -4538,6 +4538,7 @@ source_set("unit_tests") {
     ":user_event_reporter_helper_test_support",
     ":user_event_reporter_testing_record_proto",
     "//ash",
+    "//ash:test_support",
     "//ash/components/audio",
     "//ash/constants",
     "//ash/public/cpp",

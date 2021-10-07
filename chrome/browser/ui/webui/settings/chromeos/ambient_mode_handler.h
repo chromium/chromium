@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/image_downloader.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"

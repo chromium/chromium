@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/image_downloader.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/device_service.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -132,6 +134,34 @@ void AmbientClientImpl::RequestAccessToken(GetAccessTokenCallback callback) {
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      account_info.gaia),
       signin::AccessTokenFetcher::Mode::kImmediate);
+}
+
+void AmbientClientImpl::DownloadImage(
+    const std::string& url,
+    ash::ImageDownloader::DownloadCallback callback) {
+  if (ash::features::IsAmbientModeNewUrlEnabled()) {
+    RequestAccessToken(base::BindOnce(
+        [](const std::string& url,
+           ash::ImageDownloader::DownloadCallback callback,
+           const std::string& gaia_id, const std::string& access_token,
+           const base::Time& expiration_time) {
+          if (access_token.empty()) {
+            std::move(callback).Run({});
+            return;
+          }
+          net::HttpRequestHeaders headers;
+          headers.SetHeader("Authorization", "Bearer " + access_token);
+
+          ash::ImageDownloader::Get()->Download(GURL(url),
+                                                NO_TRAFFIC_ANNOTATION_YET,
+                                                headers, std::move(callback));
+        },
+        url, std::move(callback)));
+  } else {
+    ash::ImageDownloader::Get()->Download(GURL(url), NO_TRAFFIC_ANNOTATION_YET,
+                                          /*additional_headers=*/{},
+                                          std::move(callback));
+  }
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

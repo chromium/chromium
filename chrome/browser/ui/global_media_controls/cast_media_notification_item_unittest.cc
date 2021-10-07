@@ -51,11 +51,17 @@ class MockBitmapFetcher : public BitmapFetcher {
       : BitmapFetcher(url, delegate, traffic_annotation) {}
   ~MockBitmapFetcher() override = default;
 
-  MOCK_METHOD3(Init,
-               void(const std::string& referrer,
-                    net::ReferrerPolicy referrer_policy,
-                    network::mojom::CredentialsMode credentials_mode));
-  MOCK_METHOD1(Start, void(network::mojom::URLLoaderFactory* loader_factory));
+  MOCK_METHOD(void,
+              Init,
+              (const std::string& referrer,
+               net::ReferrerPolicy referrer_policy,
+               network::mojom::CredentialsMode credentials_mode,
+               const net::HttpRequestHeaders& additional_headers),
+              (override));
+  MOCK_METHOD(void,
+              Start,
+              (network::mojom::URLLoaderFactory * loader_factory),
+              (override));
 };
 
 class MockSessionController : public CastMediaSessionController {
@@ -275,7 +281,7 @@ TEST_F(CastMediaNotificationItemTest, DownloadImage) {
             bitmap_fetcher_delegate = delegate;
 
             EXPECT_EQ(url, image_url);
-            EXPECT_CALL(*bitmap_fetcher, Init(_, _, _));
+            EXPECT_CALL(*bitmap_fetcher, Init(_, _, _, _));
             EXPECT_CALL(*bitmap_fetcher, Start(_));
             return bitmap_fetcher;
           });

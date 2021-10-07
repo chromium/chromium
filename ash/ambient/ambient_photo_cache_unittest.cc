@@ -65,9 +65,9 @@ class AmbientPhotoCacheTest : public testing::Test {
         .IsAccessTokenRequestPending();
   }
 
-  void IssueAccessToken(const std::string& token) {
+  void IssueAccessToken() {
     ambient_ash_test_helper_->ambient_client().IssueAccessToken(
-        token, /*with_error=*/false);
+        /*is_empty=*/false);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -163,14 +163,13 @@ TEST_F(AmbientPhotoCacheTest, DisableNewUrlDisablesTokenFetch) {
 
 TEST_F(AmbientPhotoCacheTest, EnableNewUrlAttachesTokenToDownloadRequest) {
   std::string fake_url = "https://faketesturl/";
-  std::string fake_token = "fake_access_token";
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
 
   photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
   RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(fake_token);
+  IssueAccessToken();
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   auto* pending_requests = test_url_loader_factory().pending_requests();
@@ -179,13 +178,13 @@ TEST_F(AmbientPhotoCacheTest, EnableNewUrlAttachesTokenToDownloadRequest) {
   std::string header;
   pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
 
-  EXPECT_EQ(header, "Bearer " + fake_token);
+  EXPECT_EQ(header,
+            std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
 TEST_F(AmbientPhotoCacheTest,
        EnableNewUrlAttachesTokenToDownloadToFileRequest) {
   std::string fake_url = "https://faketesturl/";
-  std::string fake_token = "fake_access_token";
   base::test::ScopedFeatureList feature;
   feature.InitAndEnableFeature(features::kAmbientModeNewUrl);
 
@@ -194,7 +193,7 @@ TEST_F(AmbientPhotoCacheTest,
 
   RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());
-  IssueAccessToken(fake_token);
+  IssueAccessToken();
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   auto* pending_requests = test_url_loader_factory().pending_requests();
@@ -203,7 +202,8 @@ TEST_F(AmbientPhotoCacheTest,
   std::string header;
   pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
 
-  EXPECT_EQ(header, "Bearer " + fake_token);
+  EXPECT_EQ(header,
+            std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
 }  // namespace ash

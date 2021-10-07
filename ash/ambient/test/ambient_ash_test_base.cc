@@ -428,9 +428,8 @@ int AmbientAshTestBase::GetNumOfActiveWakeLocks(
   return result_count;
 }
 
-void AmbientAshTestBase::IssueAccessToken(const std::string& token,
-                                          bool with_error) {
-  GetAmbientAshTestHelper()->IssueAccessToken(token, with_error);
+void AmbientAshTestBase::IssueAccessToken(bool is_empty) {
+  GetAmbientAshTestHelper()->IssueAccessToken(is_empty);
 }
 
 bool AmbientAshTestBase::IsAccessTokenRequestPending() {

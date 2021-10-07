@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -43,10 +44,13 @@ class BitmapFetcher : public ImageDecoder::ImageRequest {
   // |credentials_mode| determines whether credentials such as cookies should be
   // sent.  Init may be called more than once in some cases.  If so, subsequent
   // calls will be ignored.
+  // |additional_headers| will be merged with default HTTP headers provided by
+  // |BitmapFetcher| when fetching the image.
   // TODO(tommycli): Init and Start should likely be combined.
   virtual void Init(const std::string& referrer,
                     net::ReferrerPolicy referrer_policy,
-                    network::mojom::CredentialsMode credentials_mode);
+                    network::mojom::CredentialsMode credentials_mode,
+                    const net::HttpRequestHeaders& additional_headers = {});
 
   // Start fetching the URL with the fetcher. The delegate is notified
   // asynchronously when done.  Start may be called more than once in some

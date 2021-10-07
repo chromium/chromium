@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
@@ -24,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -577,8 +579,8 @@ void AmbientModeHandler::DownloadAlbumPreviewImage(
           continue;
         }
 
-        ash::ImageDownloader::Get()->Download(
-            GURL(album.banner_image_url), NO_TRAFFIC_ANNOTATION_YET,
+        ash::AmbientClient::Get()->DownloadImage(
+            album.banner_image_url,
             base::BindOnce(&AmbientModeHandler::OnAlbumPreviewImageDownloaded,
                            backend_weak_factory_.GetWeakPtr(), topic_source,
                            album.album_id));
@@ -586,8 +588,9 @@ void AmbientModeHandler::DownloadAlbumPreviewImage(
       break;
     case ash::AmbientModeTopicSource::kArtGallery:
       for (const auto& album : settings_->art_settings) {
-        ash::ImageDownloader::Get()->Download(
-            GURL(album.preview_image_url), NO_TRAFFIC_ANNOTATION_YET,
+        ash::AmbientClient::Get()->DownloadImage(
+            album.preview_image_url,
+
             base::BindOnce(&AmbientModeHandler::OnAlbumPreviewImageDownloaded,
                            backend_weak_factory_.GetWeakPtr(), topic_source,
                            album.album_id));
@@ -638,21 +641,20 @@ void AmbientModeHandler::DownloadRecentHighlightsPreviewImages(
 
   for (int url_index = 0; url_index < total_previews; ++url_index) {
     const auto& url = urls[url_index];
-    ash::ImageDownloader::Get()->Download(
-        GURL(url), NO_TRAFFIC_ANNOTATION_YET,
-        base::BindOnce(
-            [](std::vector<gfx::ImageSkia>* preview_images, int url_index,
-               base::RepeatingClosure on_done,
-               base::WeakPtr<AmbientModeHandler> weak_ptr,
-               const gfx::ImageSkia& image) {
-              if (!weak_ptr)
-                return;
+    ash::AmbientClient::Get()->DownloadImage(
+        url, base::BindOnce(
+                 [](std::vector<gfx::ImageSkia>* preview_images, int url_index,
+                    base::RepeatingClosure on_done,
+                    base::WeakPtr<AmbientModeHandler> weak_ptr,
+                    const gfx::ImageSkia& image) {
+                   if (!weak_ptr)
+                     return;
 
-              (*preview_images)[url_index] = image;
-              on_done.Run();
-            },
-            &recent_highlights_preview_images_, url_index, on_done,
-            recent_highlights_previews_weak_factory_.GetWeakPtr()));
+                   (*preview_images)[url_index] = image;
+                   on_done.Run();
+                 },
+                 &recent_highlights_preview_images_, url_index, on_done,
+                 recent_highlights_previews_weak_factory_.GetWeakPtr()));
   }
 }
 

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -26,7 +28,6 @@ class AmbientClientImplTest : public testing::Test {
   ~AmbientClientImplTest() override = default;
 
   void SetUp() override {
-    ambient_client_ = std::make_unique<AmbientClientImpl>();
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -41,6 +42,9 @@ class AmbientClientImplTest : public testing::Test {
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<ash::FakeChromeUserManager>());
+    image_downloader_ = std::make_unique<ash::TestImageDownloader>();
+
+    ambient_client_ = std::make_unique<AmbientClientImpl>();
   }
 
   void TearDown() override {
@@ -53,6 +57,7 @@ class AmbientClientImplTest : public testing::Test {
   }
 
  protected:
+  AmbientClientImpl& ambient_client() { return *ambient_client_; }
   TestingProfile* profile() { return profile_; }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -67,11 +72,12 @@ class AmbientClientImplTest : public testing::Test {
     MaybeMakeAccountAsPrimaryAccount(account_id);
   }
 
- private:
+  ash::TestImageDownloader& image_downloader() { return *image_downloader_; }
   signin::IdentityTestEnvironment* identity_test_env() {
     return identity_test_env_adaptor_->identity_test_env();
   }
 
+ private:
   void MaybeMakeAccountAsPrimaryAccount(const AccountId& account_id) {
     if (!identity_test_env()->identity_manager()->HasPrimaryAccount(
             signin::ConsentLevel::kSignin)) {
@@ -88,6 +94,7 @@ class AmbientClientImplTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  std::unique_ptr<ash::TestImageDownloader> image_downloader_;
   std::unique_ptr<AmbientClientImpl> ambient_client_;
 };
 
@@ -109,4 +116,29 @@ TEST_F(AmbientClientImplTest, DisallowedByEmailDomain) {
   AddAndLoginUser(
       AccountId::FromUserEmailGaiaId("user@gmailtest.com", kTestGaiaId));
   EXPECT_FALSE(ash::AmbientClient::Get()->IsAmbientModeAllowed());
+}
+
+TEST_F(AmbientClientImplTest, DownloadImage) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(ash::features::kAmbientModeNewUrl);
+  ambient_client().DownloadImage("test_url", base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(image_downloader().last_request_headers().IsEmpty());
+}
+
+TEST_F(AmbientClientImplTest, DownloadImageWithNewUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kAmbientModeNewUrl);
+
+  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  AddAndLoginUser(AccountId::FromUserEmailGaiaId(
+      profile()->GetProfileUserName(), kTestGaiaId));
+  ambient_client().DownloadImage("test_url", base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(image_downloader().last_request_headers().IsEmpty());
+  std::string out;
+  image_downloader().last_request_headers().GetHeader("Authorization", &out);
+  EXPECT_EQ("Bearer access_token", out);
 }

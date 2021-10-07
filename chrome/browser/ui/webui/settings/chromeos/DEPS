@@ -5,3 +5,9 @@ include_rules = [
   "+chromeos/tpm:tpm",
   "+device/udev_linux/fake_udev_loader.h",      # For keyboard unit test.
 ]
+
+specific_include_rules = {
+   'ambient_mode_handler_unittest.cc': [
+      '+ash/ambient/test/ambient_ash_test_helper.h',
+   ],
+}

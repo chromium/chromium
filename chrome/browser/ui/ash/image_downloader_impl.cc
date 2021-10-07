@@ -31,9 +31,10 @@ class DownloadTask : public BitmapFetcherDelegate {
  public:
   DownloadTask(const GURL& url,
                const net::NetworkTrafficAnnotationTag& annotation_tag,
+               const net::HttpRequestHeaders& additional_headers,
                ash::ImageDownloader::DownloadCallback callback)
       : callback_(std::move(callback)) {
-    StartTask(url, annotation_tag);
+    StartTask(url, annotation_tag, additional_headers);
   }
 
   DownloadTask(const DownloadTask&) = delete;
@@ -50,7 +51,8 @@ class DownloadTask : public BitmapFetcherDelegate {
 
  private:
   void StartTask(const GURL& url,
-                 const net::NetworkTrafficAnnotationTag& annotation_tag) {
+                 const net::NetworkTrafficAnnotationTag& annotation_tag,
+                 const net::HttpRequestHeaders& additional_headers) {
     auto* profile = GetProfileForActiveUser();
     if (!profile) {
       std::move(callback_).Run(gfx::ImageSkia());
@@ -62,7 +64,7 @@ class DownloadTask : public BitmapFetcherDelegate {
 
     bitmap_fetcher_->Init(
         /*referrer=*/std::string(), net::ReferrerPolicy::NEVER_CLEAR,
-        network::mojom::CredentialsMode::kOmit);
+        network::mojom::CredentialsMode::kOmit, additional_headers);
 
     bitmap_fetcher_->Start(profile->GetURLLoaderFactory().get());
   }
@@ -83,6 +85,15 @@ void ImageDownloaderImpl::Download(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     ash::ImageDownloader::DownloadCallback callback) {
+  Download(url, annotation_tag, /*additional_headers=*/{}, std::move(callback));
+}
+
+void ImageDownloaderImpl::Download(
+    const GURL& url,
+    const net::NetworkTrafficAnnotationTag& annotation_tag,
+    const net::HttpRequestHeaders& additional_headers,
+    ash::ImageDownloader::DownloadCallback callback) {
   // The download task will delete itself upon task completion.
-  new DownloadTask(url, annotation_tag, std::move(callback));
+  new DownloadTask(url, annotation_tag, additional_headers,
+                   std::move(callback));
 }
