@@ -68,18 +68,19 @@ class MerchantTrustMessageViewModel {
 
     public static Spannable getMessageDescription(
             Context context, MerchantTrustSignals trustSignals) {
+        // Only keep one decimal to avoid inaccurate double value.
+        double ratingValue = Math.round(trustSignals.getMerchantStarRating() * 10) / 10.0;
         SpannableStringBuilder builder = new SpannableStringBuilder();
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         numberFormatter.setMaximumFractionDigits(1);
         if (MerchantViewerConfig.doesTrustSignalsMessageUseRatingBar()) {
-            builder.append(numberFormatter.format(trustSignals.getMerchantStarRating()));
+            builder.append(numberFormatter.format(ratingValue));
             builder.append(" ");
-            builder.append(getRatingBarSpan(context, trustSignals.getMerchantStarRating()));
+            builder.append(getRatingBarSpan(context, ratingValue));
         } else {
             builder.append(context.getResources().getString(
                     R.string.merchant_viewer_message_description_rating,
-                    numberFormatter.format(trustSignals.getMerchantStarRating()),
-                    numberFormatter.format(BASELINE_RATING)));
+                    numberFormatter.format(ratingValue), numberFormatter.format(BASELINE_RATING)));
             builder.setSpan(new StyleSpan(Typeface.BOLD), 0, builder.length(),
                     Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
         }
