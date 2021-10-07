@@ -127,6 +127,10 @@ class PreferredAppsList {
   bool IsPreferredAppForSupportedLinks(const std::string& app_id);
 
  private:
+  // Check if the entry already exists in the preferred app list.
+  bool EntryExists(const std::string& app_id,
+                   const apps::mojom::IntentFilterPtr& intent_filter);
+
   PreferredApps preferred_apps_;
   base::ObserverList<Observer> observers_;
   bool initialized_ = false;

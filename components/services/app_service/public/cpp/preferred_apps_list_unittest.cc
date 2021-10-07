@@ -305,6 +305,55 @@ TEST_F(PreferredAppListTest, ReplacedAppPreferencesSameApp) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url));
 }
 
+TEST_F(PreferredAppListTest, OverlapPreferencesSameApp) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  GURL filter_url_2 = GURL("http://www.google.com.au/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kHost, filter_url_2.host(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+
+  GURL filter_url_3 = GURL("https://www.abc.com/abc");
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kHost, filter_url_2.host(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_2);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_2);
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+}
+
+TEST_F(PreferredAppListTest, AddSameEntry) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  GURL filter_url_2 = GURL("http://www.google.com.au/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kScheme, filter_url_2.scheme(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+  apps_util::AddConditionValue(
+      apps::mojom::ConditionType::kHost, filter_url_2.host(),
+      apps::mojom::PatternMatchType::kNone, intent_filter_1);
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(1U, preferred_apps_.GetEntrySize());
+
+  preferred_apps_.AddPreferredApp(kAppId1, intent_filter_1);
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(1U, preferred_apps_.GetEntrySize());
+}
+
 // Test that for a single preferred app with URL filter, we can delete
 // the preferred app id.
 TEST_F(PreferredAppListTest, DeletePreferredAppForURL) {
@@ -661,6 +710,36 @@ TEST_F(PreferredAppListTest, ApplyBulkUpdateAdditions) {
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
   EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
   EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+}
+
+TEST_F(PreferredAppListTest, ApplyBulkUpdateDuplicateAdditions) {
+  GURL filter_url_1 = GURL("https://www.google.com/abc");
+  auto intent_filter_1 = apps_util::CreateIntentFilterForUrlScope(filter_url_1);
+  GURL filter_url_2 = GURL("https://www.google.com/def");
+  auto intent_filter_2 = apps_util::CreateIntentFilterForUrlScope(filter_url_2);
+  GURL filter_url_3 = GURL("https://www.google.com/hij");
+  auto intent_filter_3 = apps_util::CreateIntentFilterForUrlScope(filter_url_3);
+
+  auto changes = apps::mojom::PreferredAppChanges::New();
+  changes->added_filters[kAppId1].push_back(intent_filter_1->Clone());
+  changes->added_filters[kAppId1].push_back(intent_filter_2->Clone());
+  changes->added_filters[kAppId2].push_back(intent_filter_3->Clone());
+
+  preferred_apps_.ApplyBulkUpdate(changes->Clone());
+
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+
+  EXPECT_EQ(3U, preferred_apps_.GetEntrySize());
+
+  preferred_apps_.ApplyBulkUpdate(changes->Clone());
+
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_1));
+  EXPECT_EQ(kAppId1, preferred_apps_.FindPreferredAppForUrl(filter_url_2));
+  EXPECT_EQ(kAppId2, preferred_apps_.FindPreferredAppForUrl(filter_url_3));
+
+  EXPECT_EQ(3U, preferred_apps_.GetEntrySize());
 }
 
 // Test that you can add and remove overlapping filters with a single call to

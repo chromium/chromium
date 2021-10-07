@@ -91,6 +91,11 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
     const std::string& app_id,
     const apps::mojom::IntentFilterPtr& intent_filter) {
   auto replaced_app_preferences = apps::mojom::ReplacedAppPreferences::New();
+
+  if (EntryExists(app_id, intent_filter)) {
+    return replaced_app_preferences;
+  }
+
   auto iter = preferred_apps_.begin();
   auto& replaced_preference_map = replaced_app_preferences->replaced_preference;
 
@@ -98,15 +103,12 @@ apps::mojom::ReplacedAppPreferencesPtr PreferredAppsList::AddPreferredApp(
   // list. If there is, add this into the replaced_app_preferences and remove it
   // from the list.
   while (iter != preferred_apps_.end()) {
-    if (apps_util::FiltersHaveOverlap((*iter)->intent_filter, intent_filter)) {
+    // Only replace overlapped intent filters for other apps.
+    if ((*iter)->app_id != app_id &&
+        apps_util::FiltersHaveOverlap((*iter)->intent_filter, intent_filter)) {
       // Add the to be removed preferred app into a map, key by app_id.
-      const std::string replaced_app_id = (*iter)->app_id;
-      // Only notify about removals in other apps, since we already know that
-      // |app_id|'s preferred apps have changed.
-      if (replaced_app_id != app_id) {
-        replaced_preference_map[replaced_app_id].push_back(
-            std::move((*iter)->intent_filter));
-      }
+      replaced_preference_map[(*iter)->app_id].push_back(
+          std::move((*iter)->intent_filter));
       iter = preferred_apps_.erase(iter);
     } else {
       iter++;
@@ -241,6 +243,9 @@ void PreferredAppsList::ApplyBulkUpdate(
     const std::string& app_id = added_filters.first;
     bool has_supported_link = false;
     for (auto& filter : added_filters.second) {
+      if (EntryExists(app_id, filter)) {
+        continue;
+      }
       has_supported_link = has_supported_link ||
                            apps_util::IsSupportedLinkForApp(app_id, filter);
       preferred_apps_.emplace_back(base::in_place, std::move(filter), app_id);
@@ -322,6 +327,17 @@ bool PreferredAppsList::IsPreferredAppForSupportedLinks(
     }
   }
 
+  return false;
+}
+
+bool PreferredAppsList::EntryExists(
+    const std::string& app_id,
+    const apps::mojom::IntentFilterPtr& intent_filter) {
+  for (auto& entry : preferred_apps_) {
+    if (app_id == entry->app_id && intent_filter == entry->intent_filter) {
+      return true;
+    }
+  }
   return false;
 }
 
