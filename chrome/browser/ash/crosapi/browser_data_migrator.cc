@@ -10,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -43,13 +44,63 @@ constexpr char kTmpDir[] = "browser_data_migrator";
 // The base names of files and directories directly under the original profile
 // data directory that does not need to be copied nor need to remain in ash e.g.
 // cache data.
-constexpr const char* const kNoCopyPaths[] = {kTmpDir, "Cache"};
+constexpr const char* const kNoCopyPathsDeprecated[] = {kTmpDir, "Cache"};
+constexpr const char* const kNoCopyPaths[] = {
+    kTmpDir,
+    "Cache",
+    "Code Cache",
+    "blob_storage",
+    "GCache",
+    "data_reduction_proxy_leveldb",
+    "previews_opt_out.db",
+    "Download Service",
+    "Network Persistent State",
+    "Reporting and NEL",
+    "TransportSecurity",
+    "optimization_guide_hint_cache_store",
+    "Site Characteristics Database",
+    "Network Action Predictor"};
 // The base names of files and directories that should remain in ash data
 // directory.
-constexpr const char* const kAshDataPaths[]{"Downloads", "MyFiles"};
+constexpr const char* const kAshDataPathsDeprecated[]{"Downloads", "MyFiles"};
+constexpr const char* const kAshDataPaths[] = {"FullRestoreData",
+                                               "Downloads",
+                                               "MyFiles",
+                                               "arc.apps",
+                                               "crostini.icons",
+                                               "PreferredApps",
+                                               "autobrightness",
+                                               "extension_install_log",
+                                               "google-assistant-library",
+                                               "login-times",
+                                               "logout-times",
+                                               "structured_metrics",
+                                               "PrintJobDatabase",
+                                               "PPDCache",
+                                               "BudgetDatabase",
+                                               "RLZ Data",
+                                               "app_ranker.pb",
+                                               "zero_state_group_ranker.pb",
+                                               "zero_state_local_files.pb"};
 // The base names of files/dirs that are needed only by the browser part of
 // chrome i.e. data that should be moved to lacros.
-constexpr const char* const kLacrosDataPaths[]{"Bookmarks"};
+constexpr const char* const kLacrosDataPathsDeprecated[]{"Bookmarks"};
+constexpr const char* const kLacrosDataPaths[]{"AutofillStrikeDatabase",
+                                               "Bookmarks",
+                                               "Extension Cookies",
+                                               "Extension Rules",
+                                               "Extension State",
+                                               "Extensions",
+                                               "Local App Settings",
+                                               "Local Extension Settings",
+                                               "Managed Extension Settings",
+                                               "Sync App Settings",
+                                               "DNR Extension Rules",
+                                               "Favicons",
+                                               "History",
+                                               "Top Sites",
+                                               "Shortcuts",
+                                               "Sessions"};
 // `First Run` is the only file that should be copied to lacros from user data
 // directory (parent directory of profile directory).
 const char* const kFirstRun = "First Run";
@@ -69,6 +120,17 @@ constexpr char kCommonCategory[] = "common";
 // feature is only limited to googlers only.
 const base::Feature kLacrosProfileMigrationForAnyUser{
     "LacrosProfileMigrationForAnyUser", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable these to fallback to an older version of paths lists.
+const base::Feature kLacrosProfileMigrationUseDeprecatedNoCopyPaths{
+    "LacrosProfileMigrationUseDeprecatedNoCopyPaths",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kLacrosProfileMigrationUseDeprecatedAshDataPaths{
+    "LacrosProfileMigrationUseDeprecatedAshDataPaths",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kLacrosProfileMigrationUseDeprecatedLacrosDataPaths{
+    "LacrosProfileMigrationUseDeprecatedLacrosDataPaths",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Emergency switch to turn off profile migration via Finch.
 const base::Feature kLacrosProfileMigrationForceOff{
@@ -125,6 +187,30 @@ void MaybeRestartToMigrateCallback(const AccountId& account_id,
   SessionManagerClient::Get()->RequestBrowserDataMigration(
       cryptohome::CreateAccountIdentifierFromAccountId(account_id),
       base::BindOnce(&OnRestartRequestResponse));
+}
+
+base::span<const char* const> GetNoCopyDataPaths() {
+  if (base::FeatureList::IsEnabled(
+          kLacrosProfileMigrationUseDeprecatedNoCopyPaths)) {
+    return base::make_span(kNoCopyPathsDeprecated);
+  }
+  return base::make_span(kNoCopyPaths);
+}
+
+base::span<const char* const> GetAshDataPaths() {
+  if (base::FeatureList::IsEnabled(
+          kLacrosProfileMigrationUseDeprecatedAshDataPaths)) {
+    return base::make_span(kAshDataPathsDeprecated);
+  }
+  return base::make_span(kAshDataPaths);
+}
+
+base::span<const char* const> GetLacrosDataPaths() {
+  if (base::FeatureList::IsEnabled(
+          kLacrosProfileMigrationUseDeprecatedLacrosDataPaths)) {
+    return base::make_span(kLacrosDataPathsDeprecated);
+  }
+  return base::make_span(kLacrosDataPaths);
 }
 }  // namespace
 
@@ -387,6 +473,9 @@ bool BrowserDataMigrator::CopyTargetItem(
 BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo(
     const base::FilePath& original_user_dir) {
   TargetInfo target_info;
+  const base::span<const char* const> no_copy_data_paths = GetNoCopyDataPaths();
+  const base::span<const char* const> ash_data_paths = GetAshDataPaths();
+  const base::span<const char* const> lacros_data_paths = GetLacrosDataPaths();
 
   base::FileEnumerator enumerator(original_user_dir, false /* recursive */,
                                   base::FileEnumerator::FILES |
@@ -408,12 +497,12 @@ BrowserDataMigrator::TargetInfo BrowserDataMigrator::GetTargetInfo(
       continue;
     }
 
-    if (base::Contains(kAshDataPaths, entry.BaseName().value())) {
+    if (base::Contains(ash_data_paths, entry.BaseName().value())) {
       target_info.ash_data_items.emplace_back(TargetItem{entry, item_type});
       target_info.ash_data_size += size;
-    } else if (base::Contains(kNoCopyPaths, entry.BaseName().value())) {
+    } else if (base::Contains(no_copy_data_paths, entry.BaseName().value())) {
       target_info.no_copy_data_size += size;
-    } else if (base::Contains(kLacrosDataPaths, entry.BaseName().value())) {
+    } else if (base::Contains(lacros_data_paths, entry.BaseName().value())) {
       // Items that should be moved to lacros.
       target_info.lacros_data_items.emplace_back(TargetItem{entry, item_type});
       target_info.lacros_data_size += size;
