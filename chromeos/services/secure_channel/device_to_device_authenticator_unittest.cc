@@ -10,6 +10,7 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -19,6 +20,8 @@
 #include "chromeos/services/secure_channel/authenticator.h"
 #include "chromeos/services/secure_channel/connection.h"
 #include "chromeos/services/secure_channel/device_to_device_responder_operations.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/secure_context.h"
 #include "chromeos/services/secure_channel/session_keys.h"
 #include "chromeos/services/secure_channel/wire_message.h"
@@ -98,6 +101,14 @@ class FakeConnection : public Connection {
     const WireMessage& message_alias = *message;
     message_buffer_.push_back(std::move(message));
     OnDidSendMessage(message_alias, !connection_blocked_);
+  }
+
+  void RegisterPayloadFileImpl(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override {
+    std::move(registration_result_callback).Run(/*success=*/false);
   }
 
  private:

@@ -11,6 +11,7 @@
 
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -45,6 +46,11 @@ class FakeChannel : public mojom::Channel {
   // mojom::Channel:
   void SendMessage(const std::string& message,
                    SendMessageCallback callback) override;
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      mojo::PendingRemote<mojom::FilePayloadListener> listener,
+      RegisterPayloadFileCallback callback) override {}
   void GetConnectionMetadata(GetConnectionMetadataCallback callback) override;
 
   mojo::Receiver<mojom::Channel> receiver_{this};

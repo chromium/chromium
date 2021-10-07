@@ -7,10 +7,13 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/channel_impl.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/single_client_message_proxy.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -62,6 +65,12 @@ class SingleClientMessageProxyImpl : public SingleClientMessageProxy,
   // ChannelImpl::Delegate:
   void OnSendMessageRequested(const std::string& message,
                               base::OnceClosure on_sent_callback) override;
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
+
   void GetConnectionMetadata(
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void OnClientDisconnected() override;

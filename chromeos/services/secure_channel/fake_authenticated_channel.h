@@ -12,7 +12,10 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/authenticated_channel.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/services/secure_channel/register_payload_file_request.h"
 
 namespace chromeos {
 
@@ -33,6 +36,11 @@ class FakeAuthenticatedChannel : public AuthenticatedChannel {
     return sent_messages_;
   }
 
+  const std::vector<RegisterPayloadFileRequest>&
+  reigster_payload_file_requests() const {
+    return reigster_payload_file_requests_;
+  }
+
   bool has_disconnection_been_requested() {
     return has_disconnection_been_requested_;
   }
@@ -49,6 +57,11 @@ class FakeAuthenticatedChannel : public AuthenticatedChannel {
   void PerformSendMessage(const std::string& feature,
                           const std::string& payload,
                           base::OnceClosure on_sent_callback) override;
+  void PerformRegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
   void PerformDisconnection() override;
 
   // Make Notify{Disconnected|MessageReceived}() public for testing.
@@ -60,6 +73,7 @@ class FakeAuthenticatedChannel : public AuthenticatedChannel {
   bool has_disconnection_been_requested_ = false;
   std::vector<std::tuple<std::string, std::string, base::OnceClosure>>
       sent_messages_;
+  std::vector<RegisterPayloadFileRequest> reigster_payload_file_requests_;
 };
 
 // Test AuthenticatedChannel::Observer implementation.

@@ -7,9 +7,12 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/unguessable_token.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace chromeos {
 
@@ -27,6 +30,11 @@ class SingleClientMessageProxy {
     virtual void OnSendMessageRequested(const std::string& message_feaure,
                                         const std::string& message_payload,
                                         base::OnceClosure on_sent_callback) = 0;
+    virtual void RegisterPayloadFile(
+        int64_t payload_id,
+        mojom::PayloadFilesPtr payload_files,
+        FileTransferUpdateCallback file_transfer_update_callback,
+        base::OnceCallback<void(bool)> registration_result_callback) = 0;
     virtual void GetConnectionMetadata(
         base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) = 0;
     virtual void OnClientDisconnected(
@@ -56,6 +64,11 @@ class SingleClientMessageProxy {
                                   const std::string& message_payload,
                                   base::OnceClosure on_sent_callback);
   void NotifyClientDisconnected();
+  void RegisterPayloadFileWithDelegate(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback);
   void GetConnectionMetadataFromDelegate(
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback);
 

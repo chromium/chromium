@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/secure_channel/connection_details.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
@@ -19,7 +20,9 @@
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/services/secure_channel/fake_multiplexed_channel.h"
 #include "chromeos/services/secure_channel/fake_single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/single_client_message_proxy_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -449,6 +452,27 @@ TEST_F(SecureChannelMultiplexedChannelImplTest,
   DisconnectClientAndVerifyState(id_to_active_proxy_map().begin()->second,
                                  false /* expected_to_be_last_client */);
   EXPECT_EQ(1u, id_to_active_proxy_map().size());
+  DisconnectClientAndVerifyState(id_to_active_proxy_map().begin()->second,
+                                 true /* expected_to_be_last_client */);
+}
+
+TEST_F(SecureChannelMultiplexedChannelImplTest,
+       RegisterPayloadFile_DisconnectFromClient) {
+  CreateChannel();
+  EXPECT_EQ(1u, id_to_active_proxy_map().size());
+
+  id_to_active_proxy_map().begin()->second->RegisterPayloadFileWithDelegate(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  EXPECT_EQ(
+      1ul,
+      fake_authenticated_channel()->reigster_payload_file_requests().size());
+  EXPECT_EQ(1234, fake_authenticated_channel()
+                      ->reigster_payload_file_requests()
+                      .at(0)
+                      .payload_id);
+
   DisconnectClientAndVerifyState(id_to_active_proxy_map().begin()->second,
                                  true /* expected_to_be_last_client */);
 }

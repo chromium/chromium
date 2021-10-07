@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/bind.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -17,6 +18,8 @@
 #include "chromeos/services/secure_channel/fake_authenticator.h"
 #include "chromeos/services/secure_channel/fake_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_context.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -530,6 +533,27 @@ TEST_F(SecureChannelConnectionTest, SendMessage_MultipleMessages_FirstFails) {
 
   // The first message failed, so no other ones should be tried afterward.
   VerifyNoMessageBeingSent();
+}
+
+TEST_F(SecureChannelConnectionTest, RegisterPayloadFile) {
+  ConnectAndAuthenticate();
+
+  secure_channel_->RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+  secure_channel_->RegisterPayloadFile(
+      /*payload_id=*/-5678, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+
+  EXPECT_EQ(2ul, fake_connection_->reigster_payload_file_requests().size());
+  EXPECT_EQ(
+      1234,
+      fake_connection_->reigster_payload_file_requests().at(0).payload_id);
+  EXPECT_EQ(
+      -5678,
+      fake_connection_->reigster_payload_file_requests().at(1).payload_id);
 }
 
 TEST_F(SecureChannelConnectionTest, ReceiveMessage) {

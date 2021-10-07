@@ -10,7 +10,9 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace chromeos {
 
@@ -45,6 +47,18 @@ class AuthenticatedChannel {
                    const std::string& payload,
                    base::OnceClosure on_sent_callback);
 
+  // Registers |payload_files| to receive an incoming file transfer with
+  // the given |payload_id|. |registration_result_callback| will return true
+  // if the file was successfully registered, or false if the registration
+  // failed or if this operation is not supported by the connection type.
+  // Callers can listen to progress information about the transfer through the
+  // |file_transfer_update_callback| if the registration was successful.
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback);
+
   // Disconnects this channel. Note that disconnection is an asynchronous
   // operation; observers will be notified when disconnection completes via the
   // OnDisconnected() callback.
@@ -64,6 +78,15 @@ class AuthenticatedChannel {
   virtual void PerformSendMessage(const std::string& feature,
                                   const std::string& payload,
                                   base::OnceClosure on_sent_callback) = 0;
+
+  // Performs the actual logic of registering payload files. By the time this
+  // function is called, it has already been confirmed that the channel has not
+  // been disconnected.
+  virtual void PerformRegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) = 0;
 
   // Performs the actual logic of disconnecting. By the time this function is
   // called, it has already been confirmed that the channel is still indeed

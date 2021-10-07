@@ -9,8 +9,12 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/unguessable_token.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/services/secure_channel/register_payload_file_request.h"
 #include "chromeos/services/secure_channel/single_client_message_proxy.h"
 
 namespace chromeos {
@@ -44,9 +48,10 @@ class FakeSingleClientMessageProxy : public SingleClientMessageProxy {
   const base::UnguessableToken& GetProxyId() override;
 
   // Public for testing.
-  using SingleClientMessageProxy::NotifySendMessageRequested;
-  using SingleClientMessageProxy::NotifyClientDisconnected;
   using SingleClientMessageProxy::GetConnectionMetadataFromDelegate;
+  using SingleClientMessageProxy::NotifyClientDisconnected;
+  using SingleClientMessageProxy::NotifySendMessageRequested;
+  using SingleClientMessageProxy::RegisterPayloadFileWithDelegate;
 
  private:
   // SingleClientMessageProxy:
@@ -79,6 +84,15 @@ class FakeSingleClientMessageProxyDelegate
     return send_message_requests_;
   }
 
+  const base::flat_map<int64_t, RegisterPayloadFileRequest>&
+  register_payload_file_requests() const {
+    return register_payload_file_requests_;
+  }
+
+  void set_register_payload_file_result(bool register_payload_file_result) {
+    register_payload_file_result_ = register_payload_file_result;
+  }
+
   void set_connection_metadata_for_next_call(
       mojom::ConnectionMetadataPtr connection_metadata_for_next_call) {
     connection_metadata_for_next_call_ =
@@ -99,12 +113,20 @@ class FakeSingleClientMessageProxyDelegate
   void OnSendMessageRequested(const std::string& message_feaure,
                               const std::string& message_payload,
                               base::OnceClosure on_sent_callback) override;
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
   void GetConnectionMetadata(
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) override;
   void OnClientDisconnected(const base::UnguessableToken& proxy_id) override;
 
   std::vector<std::tuple<std::string, std::string, base::OnceClosure>>
       send_message_requests_;
+  base::flat_map<int64_t, RegisterPayloadFileRequest>
+      register_payload_file_requests_;
+  bool register_payload_file_result_ = true;
   mojom::ConnectionMetadataPtr connection_metadata_for_next_call_;
   base::OnceClosure on_client_disconnected_closure_;
   base::UnguessableToken disconnected_proxy_id_;

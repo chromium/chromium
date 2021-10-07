@@ -98,6 +98,7 @@ static_library("secure_channel") {
     "error_tolerant_ble_advertisement.h",
     "error_tolerant_ble_advertisement_impl.cc",
     "error_tolerant_ble_advertisement_impl.h",
+    "file_transfer_update_callback.h",
     "foreground_eid_generator.cc",
     "foreground_eid_generator.h",
     "multiplexed_channel.cc",
@@ -230,6 +231,8 @@ static_library("test_support") {
     "fake_connection_delegate.h",
     "fake_error_tolerant_ble_advertisement.cc",
     "fake_error_tolerant_ble_advertisement.h",
+    "fake_file_payload_listener.cc",
+    "fake_file_payload_listener.h",
     "fake_message_receiver.cc",
     "fake_message_receiver.h",
     "fake_multiplexed_channel.cc",
@@ -259,6 +262,8 @@ static_library("test_support") {
     "fake_wire_message.h",
     "mock_foreground_eid_generator.cc",
     "mock_foreground_eid_generator.h",
+    "register_payload_file_request.cc",
+    "register_payload_file_request.h",
   ]
 
   public_deps = [ ":secure_channel" ]

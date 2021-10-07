@@ -6,9 +6,13 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/cxx20_erase.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/services/secure_channel/register_payload_file_request.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 
 namespace chromeos {
@@ -92,6 +96,16 @@ void FakeConnection::ReceiveMessage(const std::string& feature,
 void FakeConnection::SendMessageImpl(std::unique_ptr<WireMessage> message) {
   CHECK(!current_message_);
   current_message_ = std::move(message);
+}
+
+void FakeConnection::RegisterPayloadFileImpl(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    FileTransferUpdateCallback file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  reigster_payload_file_requests_.emplace_back(
+      payload_id, std::move(file_transfer_update_callback));
+  std::move(registration_result_callback).Run(/*success=*/true);
 }
 
 std::unique_ptr<WireMessage> FakeConnection::DeserializeWireMessage(

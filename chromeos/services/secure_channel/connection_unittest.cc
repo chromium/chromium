@@ -8,9 +8,12 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/bind.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/connection_observer.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +47,12 @@ class MockConnection : public Connection {
   MOCK_METHOD0(GetDeviceAddress, std::string());
   MOCK_METHOD0(CancelConnectionAttempt, void());
   MOCK_METHOD1(SendMessageImplProxy, void(WireMessage* message));
+  MOCK_METHOD4(
+      RegisterPayloadFileImpl,
+      void(int64_t payload_id,
+           mojom::PayloadFilesPtr payload_files,
+           FileTransferUpdateCallback file_transfer_update_callback,
+           base::OnceCallback<void(bool)> registration_result_callback));
   MOCK_METHOD1(DeserializeWireMessageProxy,
                WireMessage*(bool* is_incomplete_message));
 
@@ -171,6 +180,31 @@ TEST_F(CryptAuthConnectionTest,
 
   EXPECT_CALL(connection, SendMessageImplProxy(_));
   connection.SendMessage(std::unique_ptr<WireMessage>());
+}
+
+TEST_F(CryptAuthConnectionTest, RegisterPayloadFile_FailsWhenNotConnected) {
+  StrictMock<MockConnection> connection;
+  connection.SetStatus(Connection::Status::IN_PROGRESS);
+
+  EXPECT_CALL(connection, GetDeviceAddress()).Times(1);
+  EXPECT_CALL(connection, RegisterPayloadFileImpl(_, _, _, _)).Times(0);
+  bool result;
+  connection.RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(),
+      base::BindLambdaForTesting([&](bool success) { result = success; }));
+  EXPECT_FALSE(result);
+}
+
+TEST_F(CryptAuthConnectionTest, RegisterPayloadFile_SucceedsWhenConnected) {
+  StrictMock<MockConnection> connection;
+  connection.SetStatus(Connection::Status::CONNECTED);
+
+  EXPECT_CALL(connection,
+              RegisterPayloadFileImpl(/*payload_id=*/1234, _, _, _));
+  connection.RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(), base::OnceCallback<void(bool)>());
 }
 
 TEST_F(CryptAuthConnectionTest, SetStatus_NotifiesObserversOfStatusChange) {

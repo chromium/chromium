@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -22,6 +23,8 @@
 #include "chromeos/services/secure_channel/ble_weave_packet_generator.h"
 #include "chromeos/services/secure_channel/ble_weave_packet_receiver.h"
 #include "chromeos/services/secure_channel/connection.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/remote_attribute.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -151,6 +154,11 @@ class BluetoothLowEnergyWeaveClientConnection
   // Connection:
   void SendMessageImpl(std::unique_ptr<WireMessage> message) override;
   void OnDidSendMessage(const WireMessage& message, bool success) override;
+  void RegisterPayloadFileImpl(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      FileTransferUpdateCallback file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
 
   // device::BluetoothAdapter::Observer:
   void DeviceConnectedStateChanged(device::BluetoothAdapter* adapter,

@@ -13,12 +13,15 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
 #include "chromeos/services/secure_channel/fake_connection.h"
 #include "chromeos/services/secure_channel/fake_secure_channel_connection.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -231,6 +234,31 @@ TEST_F(SecureChannelAuthenticatedChannelImplTest, SendReceive_Async) {
   EXPECT_FALSE(HasMessageBeenSent(sequence_number_2));
   fake_secure_channel()->CompleteSendingMessage(sequence_number_2);
   EXPECT_TRUE(HasMessageBeenSent(sequence_number_2));
+}
+
+TEST_F(SecureChannelAuthenticatedChannelImplTest, RegisterPayloadFile) {
+  channel()->RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_TRUE(success); }));
+
+  EXPECT_EQ(1ul,
+            fake_secure_channel()->register_payload_file_requests().size());
+  EXPECT_EQ(
+      1234,
+      fake_secure_channel()->register_payload_file_requests().at(0).payload_id);
+}
+
+TEST_F(SecureChannelAuthenticatedChannelImplTest,
+       RegisterPayloadFileWhenDisconnected) {
+  fake_secure_channel()->ChangeStatus(SecureChannel::Status::DISCONNECTED);
+
+  channel()->RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      FileTransferUpdateCallback(),
+      base::BindLambdaForTesting([&](bool success) { EXPECT_FALSE(success); }));
+
+  EXPECT_TRUE(fake_secure_channel()->register_payload_file_requests().empty());
 }
 
 }  // namespace secure_channel

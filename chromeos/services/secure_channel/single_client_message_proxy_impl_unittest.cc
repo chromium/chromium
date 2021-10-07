@@ -10,12 +10,20 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/services/secure_channel/fake_client_connection_parameters.h"
+#include "chromeos/services/secure_channel/fake_file_payload_listener.h"
 #include "chromeos/services/secure_channel/fake_message_receiver.h"
 #include "chromeos/services/secure_channel/fake_single_client_message_proxy.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -169,6 +177,65 @@ class SecureChannelSingleClientMessageProxyImplTest : public testing::Test {
     return std::move(last_metadata_from_channel_);
   }
 
+  void RegisterPayloadFileAndVerifyResult(
+      int64_t payload_id,
+      bool expect_success,
+      FakeFilePayloadListener& fake_file_payload_listener) {
+    base::FilePath file_path;
+    base::CreateTemporaryFile(&file_path);
+    base::File input_file(
+        file_path, base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ);
+    base::File output_file(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
+                                          base::File::Flags::FLAG_WRITE);
+
+    mojo::PendingRemote<mojom::FilePayloadListener>
+        file_payload_listener_remote =
+            fake_file_payload_listener.GenerateRemote();
+
+    size_t old_registration_count =
+        fake_proxy_delegate()->register_payload_file_requests().size();
+
+    fake_proxy_delegate()->set_register_payload_file_result(expect_success);
+
+    mojo::Remote<mojom::Channel>& channel =
+        fake_client_connection_parameters_->channel();
+    channel->RegisterPayloadFile(
+        payload_id,
+        mojom::PayloadFiles::New(std::move(input_file), std::move(output_file)),
+        std::move(file_payload_listener_remote),
+        base::BindLambdaForTesting(
+            [&](bool success) { EXPECT_EQ(success, expect_success); }));
+    channel.FlushForTesting();
+
+    EXPECT_EQ(++old_registration_count,
+              fake_proxy_delegate()->register_payload_file_requests().size());
+    EXPECT_TRUE(
+        fake_proxy_delegate()->register_payload_file_requests().contains(
+            payload_id));
+  }
+
+  void SendFileTransferUpdateAndVerifyResult(
+      int64_t payload_id,
+      mojom::FileTransferStatus status,
+      uint64_t total_bytes,
+      uint64_t bytes_transferred,
+      size_t expected_update_count,
+      FakeFilePayloadListener& fake_file_payload_listener) {
+    mojom::FileTransferUpdate expected_update = mojom::FileTransferUpdate(
+        payload_id, status, total_bytes, bytes_transferred);
+
+    fake_proxy_delegate()
+        ->register_payload_file_requests()
+        .at(payload_id)
+        .file_transfer_update_callback.Run(expected_update.Clone());
+    fake_file_payload_listener.receiver().FlushForTesting();
+
+    EXPECT_EQ(expected_update_count,
+              fake_file_payload_listener.received_updates().size());
+    EXPECT_EQ(expected_update,
+              *fake_file_payload_listener.received_updates().back());
+  }
+
  private:
   void OnMessageSent(int message_counter) {
     sent_message_counters_.insert(message_counter);
@@ -255,6 +322,77 @@ TEST_F(SecureChannelSingleClientMessageProxyImplTest, ConnectionMetadata) {
   metadata = GetConnectionMetadataFromChannel();
   EXPECT_EQ(creation_details, metadata->creation_details);
   EXPECT_EQ(-24, metadata->bluetooth_connection_metadata->current_rssi);
+}
+
+TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+       RegisterOnePayloadFileAndReceiveMultipleUpdates) {
+  FakeFilePayloadListener fake_file_payload_listener;
+
+  RegisterPayloadFileAndVerifyResult(/*payload_id=*/1234,
+                                     /*expect_success=*/true,
+                                     fake_file_payload_listener);
+
+  SendFileTransferUpdateAndVerifyResult(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kInProgress,
+      /*total_bytes=*/1000, /*bytes_transferred=*/100,
+      /*expected_update_count=*/1, fake_file_payload_listener);
+  EXPECT_TRUE(fake_file_payload_listener.is_connected());
+
+  SendFileTransferUpdateAndVerifyResult(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kSuccess,
+      /*total_bytes=*/1000, /*bytes_transferred=*/1000,
+      /*expected_update_count=*/2, fake_file_payload_listener);
+  EXPECT_FALSE(fake_file_payload_listener.is_connected());
+}
+
+TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+       RegisterMultiplePayloadFilesAndReceiveUpdates) {
+  FakeFilePayloadListener first_payload_listener;
+  FakeFilePayloadListener second_payload_listener;
+
+  RegisterPayloadFileAndVerifyResult(/*payload_id=*/1234,
+                                     /*expect_sucess=*/true,
+                                     first_payload_listener);
+  RegisterPayloadFileAndVerifyResult(/*payload_id=*/-5678,
+                                     /*expect_sucess=*/true,
+                                     second_payload_listener);
+
+  SendFileTransferUpdateAndVerifyResult(
+      /*payload_id=*/1234, mojom::FileTransferStatus::kSuccess,
+      /*total_bytes=*/1000, /*bytes_transferred=*/1000,
+      /*expected_update_count=*/1, first_payload_listener);
+  EXPECT_FALSE(first_payload_listener.is_connected());
+
+  SendFileTransferUpdateAndVerifyResult(
+      /*payload_id=*/-5678, mojom::FileTransferStatus::kFailure,
+      /*total_bytes=*/2000, /*bytes_transferred=*/0,
+      /*expected_update_count=*/1, second_payload_listener);
+  EXPECT_FALSE(second_payload_listener.is_connected());
+}
+
+TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+       RemoteDeviceDisconnectsBeforeTransfersComplete) {
+  FakeFilePayloadListener fake_file_payload_listener;
+  RegisterPayloadFileAndVerifyResult(/*payload_id=*/1234,
+                                     /*expect_sucess=*/true,
+                                     fake_file_payload_listener);
+
+  // Disconnect from remote device before transfer of the second payload is
+  // complete.
+  DisconnectFromRemoteDeviceSide();
+  fake_file_payload_listener.receiver().FlushForTesting();
+  EXPECT_FALSE(fake_file_payload_listener.is_connected());
+}
+
+TEST_F(SecureChannelSingleClientMessageProxyImplTest,
+       RegisterPayloadFileFails) {
+  FakeFilePayloadListener fake_file_payload_listener;
+  RegisterPayloadFileAndVerifyResult(/*payload_id=*/1234,
+                                     /*expect_sucess=*/false,
+                                     fake_file_payload_listener);
+
+  fake_file_payload_listener.receiver().FlushForTesting();
+  EXPECT_FALSE(fake_file_payload_listener.is_connected());
 }
 
 }  // namespace secure_channel

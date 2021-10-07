@@ -5,7 +5,6 @@
 module chromeos.secure_channel.mojom;
 
 import "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom";
-import "mojo/public/mojom/base/file_path.mojom";
 
 // Service ID to use. Nearby Connections requires a service ID to be associated
 // with each connection request.
