@@ -1350,9 +1350,6 @@ void ArcSessionManager::OnAndroidManagementChecked(
     case policy::AndroidManagementClient::Result::UNMANAGED:
       VLOG(1) << "Starting ARC for first sign in.";
       StartArc();
-      // Since opt-in is an explicit user (or admin) action, relax the
-      // cgroups restriction now.
-      SetArcCpuRestriction(CpuRestrictionState::CPU_RESTRICTION_FOREGROUND);
       break;
     case policy::AndroidManagementClient::Result::MANAGED:
       ShowArcSupportHostError(

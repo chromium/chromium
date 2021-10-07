@@ -34,6 +34,8 @@ void ThrottleObserver::StartObserving(
     content::BrowserContext* context,
     const ObserverStateChangedCallback& callback) {
   DCHECK(!callback_);
+  // Make sure active is not set first.
+  DCHECK(!active_);
   callback_ = callback;
   context_ = context;
 }

@@ -190,11 +190,6 @@ bool IsArcLocaleSyncDisabled();
 // Returns true in case ARC Play Auto Install flow is disabled.
 bool IsArcPlayAutoInstallDisabled();
 
-// Adjusts the amount of CPU the ARC instance is allowed to use. When
-// |cpu_restriction_state| is CPU_RESTRICTION_BACKGROUND, the limit is adjusted
-// so ARC can only use tightly restricted CPU resources.
-void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state);
-
 // Returns the Android density that should be used for the given device scale
 // factor used on chrome.
 int32_t GetLcdDensityForDeviceScaleFactor(float device_scale_factor);

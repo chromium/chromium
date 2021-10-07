@@ -17,9 +17,7 @@
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_features.h"
 #include "components/exo/shell_surface_util.h"
@@ -57,71 +55,6 @@ constexpr char kDisabled[] = "disabled";
 // The value should match platform2/arc/vm/scripts/init/arcvm-ureadahead.conf
 // in Chrome OS.
 constexpr int kReadaheadTotalMinMemoryInKb = 7500000;
-
-void SetArcCpuRestrictionCallback(
-    login_manager::ContainerCpuRestrictionState state,
-    bool success) {
-  if (success)
-    return;
-  const char* message =
-      (state == login_manager::CONTAINER_CPU_RESTRICTION_BACKGROUND)
-          ? "unprioritize"
-          : "prioritize";
-  LOG(ERROR) << "Failed to " << message << " ARC";
-}
-
-void OnSetArcVmCpuRestriction(
-    absl::optional<vm_tools::concierge::SetVmCpuRestrictionResponse> response) {
-  if (!response) {
-    LOG(ERROR) << "Failed to call SetVmCpuRestriction";
-    return;
-  }
-  if (!response->success())
-    LOG(ERROR) << "SetVmCpuRestriction for ARCVM failed";
-}
-
-void SetArcVmCpuRestriction(CpuRestrictionState cpu_restriction_state) {
-  auto* client = chromeos::ConciergeClient::Get();
-  if (!client) {
-    LOG(ERROR) << "ConciergeClient is not available";
-    return;
-  }
-
-  vm_tools::concierge::SetVmCpuRestrictionRequest request;
-  request.set_cpu_cgroup(vm_tools::concierge::CPU_CGROUP_ARCVM);
-  switch (cpu_restriction_state) {
-    case CpuRestrictionState::CPU_RESTRICTION_FOREGROUND:
-      request.set_cpu_restriction_state(
-          vm_tools::concierge::CPU_RESTRICTION_FOREGROUND);
-      break;
-    case CpuRestrictionState::CPU_RESTRICTION_BACKGROUND:
-      request.set_cpu_restriction_state(
-          vm_tools::concierge::CPU_RESTRICTION_BACKGROUND);
-      break;
-  }
-
-  client->SetVmCpuRestriction(request,
-                              base::BindOnce(&OnSetArcVmCpuRestriction));
-}
-
-void SetArcContainerCpuRestriction(CpuRestrictionState cpu_restriction_state) {
-  if (!chromeos::SessionManagerClient::Get()) {
-    LOG(WARNING) << "SessionManagerClient is not available";
-    return;
-  }
-
-  login_manager::ContainerCpuRestrictionState state;
-  switch (cpu_restriction_state) {
-    case CpuRestrictionState::CPU_RESTRICTION_FOREGROUND:
-      state = login_manager::CONTAINER_CPU_RESTRICTION_FOREGROUND;
-      break;
-    case CpuRestrictionState::CPU_RESTRICTION_BACKGROUND:
-      state = login_manager::CONTAINER_CPU_RESTRICTION_BACKGROUND;
-      break;
-  }
-  chromeos::SessionManagerClient::Get()->SetArcCpuRestriction(
-      state, base::BindOnce(SetArcCpuRestrictionCallback, state));
-}
 
 // Decodes a job name that may have "_2d" e.g. |kArcCreateDataJobName|
 // and returns a decoded string.
@@ -359,20 +292,6 @@ absl::optional<int> GetWindowTaskOrSessionId(const aura::Window* window) {
     return absl::nullopt;
   auto task_id = GetTaskIdFromWindowAppId(*arc_app_id);
   return task_id ? *task_id : GetSessionIdFromWindowAppId(*arc_app_id);
-}
-
-void SetArcCpuRestriction(CpuRestrictionState cpu_restriction_state) {
-  // Ignore any calls to restrict the ARC container if the specified command
-  // line flag is set.
-  if (chromeos::switches::IsArcCpuRestrictionDisabled() &&
-      cpu_restriction_state == CpuRestrictionState::CPU_RESTRICTION_BACKGROUND)
-    return;
-
-  if (IsArcVmEnabled()) {
-    SetArcVmCpuRestriction(cpu_restriction_state);
-  } else {
-    SetArcContainerCpuRestriction(cpu_restriction_state);
-  }
 }
 
 bool IsArcForceCacheAppIcon() {
