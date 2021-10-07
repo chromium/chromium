@@ -65,6 +65,9 @@ PerformanceManagerLifetime::PerformanceManagerLifetime(
           performance_manager::PerformanceManagerRegistry::Create()) {}
 
 PerformanceManagerLifetime::~PerformanceManagerLifetime() {
+  // There may still be worker hosts, WebContents and RenderProcessHosts with
+  // attached user data, retaining WorkerNodes, PageNodes, FrameNodes and
+  // ProcessNodes. Tear down the registry to release these nodes.
   performance_manager_registry_->TearDown();
   performance_manager_registry_.reset();
   performance_manager::DestroyPerformanceManager(
@@ -81,13 +84,6 @@ void PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
 void PerformanceManagerLifetime::SetGraphFeaturesOverrideForTesting(
     const GraphFeatures& graph_features_override) {
   *GetGraphFeaturesOverride() = graph_features_override;
-}
-
-std::unique_ptr<PerformanceManager> CreatePerformanceManagerWithDefaultFeatures(
-    GraphCreatedCallback graph_created_callback) {
-  return PerformanceManagerImpl::Create(
-      base::BindOnce(&OnGraphCreated, GraphFeatures::WithDefault(),
-                     std::move(graph_created_callback)));
 }
 
 void DestroyPerformanceManager(std::unique_ptr<PerformanceManager> instance) {

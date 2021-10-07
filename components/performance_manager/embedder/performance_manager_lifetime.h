@@ -44,12 +44,6 @@ class PerformanceManagerLifetime {
   std::unique_ptr<PerformanceManagerRegistry> performance_manager_registry_;
 };
 
-// Creates a PerformanceManager with default decorators.
-// |graph_created_callback| is invoked on the PM sequence once the Graph is
-// created.
-std::unique_ptr<PerformanceManager> CreatePerformanceManagerWithDefaultFeatures(
-    GraphCreatedCallback graph_created_callback);
-
 // Unregisters |instance| and arranges for its deletion on its sequence.
 void DestroyPerformanceManager(std::unique_ptr<PerformanceManager> instance);
 

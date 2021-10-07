@@ -27,9 +27,8 @@ class Graph;
 class PageLiveStateDecoratorHelper;
 class PageLoadMetricsObserver;
 class PageLoadTrackerDecoratorHelper;
-class PerformanceManager;
 class PerformanceManagerFeatureObserverClient;
-class PerformanceManagerRegistry;
+class PerformanceManagerLifetime;
 }  // namespace performance_manager
 
 // Handles the initialization of the performance manager and a few dependent
@@ -71,8 +70,10 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
-  std::unique_ptr<performance_manager::PerformanceManager> performance_manager_;
-  std::unique_ptr<performance_manager::PerformanceManagerRegistry> registry_;
+  // Manages the lifetime of the PerformanceManager graph and registry for the
+  // browser process.
+  std::unique_ptr<performance_manager::PerformanceManagerLifetime>
+      performance_manager_lifetime_;
 
   const std::unique_ptr<
       performance_manager::PerformanceManagerFeatureObserverClient>
