@@ -2459,7 +2459,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             ChromePageInfo pageInfo = new ChromePageInfo(getModalDialogManagerSupplier(), null,
                     OpenedFromSource.MENU,
                     () -> mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier().get());
-            pageInfo.show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+            pageInfo.show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION,
+                    /*fromStoreIcon=*/false);
             return true;
         }
 

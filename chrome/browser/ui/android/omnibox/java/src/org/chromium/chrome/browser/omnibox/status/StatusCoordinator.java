@@ -47,11 +47,14 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class StatusCoordinator implements View.OnClickListener, LocationBarDataProvider.Observer {
     /** Interface for displaying page info popup on omnibox. */
     public interface PageInfoAction {
+        // TODO(crbug.com/1257656): Create a class to pass highlight info instead of adding more
+        // parameters.
         /**
          * @param tab Tab containing the content to show page info for.
          * @param highlightedPermission The ContentSettingsType to be highlighted on the page.
+         * @param fromStoreIcon Whether user enters page info via the store icon in omnibox.
          */
-        void show(Tab tab, @ContentSettingsType int highlightedPermission);
+        void show(Tab tab, @ContentSettingsType int highlightedPermission, boolean fromStoreIcon);
     }
 
     // TODO(crbug.com/1109369): Do not store the StatusView
@@ -296,7 +299,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             return;
         }
 
-        mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getLastPermission());
+        mPageInfoAction.show(mLocationBarDataProvider.getTab(), mMediator.getLastPermission(),
+                mMediator.isStoreIconShowing());
         mMediator.onPageInfoOpened();
     }
 

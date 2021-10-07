@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.merchant_viewer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.page_info.PageInfoAction;
+import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics;
+import org.chromium.components.page_info.PageInfoDiscoverabilityMetrics.DiscoverabilityAction;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
@@ -34,18 +37,24 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
     private final PageInfoMainController mMainController;
     private final PageInfoRowView mRowView;
     private final Context mContext;
+    private final boolean mPageInfoOpenedFromStoreIcon;
+    private final PageInfoDiscoverabilityMetrics mDiscoverabilityMetrics =
+            new PageInfoDiscoverabilityMetrics();
 
     public PageInfoStoreInfoController(PageInfoMainController mainController,
             PageInfoRowView rowView,
-            @Nullable Supplier<StoreInfoActionHandler> actionHandlerSupplier) {
+            @Nullable Supplier<StoreInfoActionHandler> actionHandlerSupplier,
+            boolean pageInfoOpenedFromStoreIcon) {
         mMainController = mainController;
         mRowView = rowView;
         mContext = mRowView.getContext();
         mActionHandlerSupplier = actionHandlerSupplier;
+        mPageInfoOpenedFromStoreIcon = pageInfoOpenedFromStoreIcon;
         new MerchantTrustSignalsDataProvider().getDataForUrl(
                 mMainController.getURL(), this::setupStoreInfoRow);
     }
 
+    @SuppressLint("ResourceType")
     private void setupStoreInfoRow(@Nullable MerchantTrustSignals trustSignals) {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         if (mActionHandlerSupplier == null || mActionHandlerSupplier.get() == null
@@ -58,7 +67,16 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
             rowParams.subtitle = getRowSubtitle(trustSignals);
             // The icons in PageInfo are tinted automatically.
             rowParams.iconResId = R.drawable.ic_storefront_blue;
+            // If user enters page info via the store icon in omnibox, highlight the "Store info"
+            // row.
+            if (mPageInfoOpenedFromStoreIcon) {
+                rowParams.rowTint = mContext.getResources().getColor(R.color.iph_highlight_blue);
+            }
             rowParams.clickCallback = () -> {
+                if (mPageInfoOpenedFromStoreIcon) {
+                    mDiscoverabilityMetrics.recordDiscoverabilityAction(
+                            DiscoverabilityAction.STORE_INFO_OPENED);
+                }
                 mMainController.recordAction(PageInfoAction.PAGE_INFO_STORE_INFO_CLICKED);
                 mActionHandlerSupplier.get().onStoreInfoClicked(trustSignals);
             };

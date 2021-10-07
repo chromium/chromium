@@ -121,15 +121,19 @@ public class PageInfoStoreInfoViewTest {
         doReturn(1L).when(mMockOptimizationGuideBridgeJni).init();
     }
 
-    private void openPageInfo() {
+    private void openPageInfoFromStoreIcon(boolean fromStoreIcon) {
         ChromeActivity activity = sActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
                     PageInfoController.OpenedFromSource.TOOLBAR, () -> mMockStoreInfoActionHandler)
-                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, fromStoreIcon);
         });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
+    }
+
+    private void openPageInfo() {
+        openPageInfoFromStoreIcon(false);
     }
 
     @Test
@@ -150,6 +154,17 @@ public class PageInfoStoreInfoViewTest {
         openPageInfo();
         verifyStoreRowShowing(true);
         renderTestForStoreInfoRow("page_info_store_info_row");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStoreInfoRowVisibleWithData_Highlight() throws IOException {
+        mockOptimizationGuideResponse(mMockOptimizationGuideBridgeJni,
+                OptimizationGuideDecision.TRUE, mAnyMerchantTrustSignals);
+        openPageInfoFromStoreIcon(true);
+        verifyStoreRowShowing(true);
+        renderTestForStoreInfoRow("page_info_store_info_row_highlight");
     }
 
     @Test

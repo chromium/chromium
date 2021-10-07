@@ -153,7 +153,8 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         mModalDialogManagerSupplier,
                         /*offlinePageLoadUrlDelegate=*/
                         new OfflinePageUtils.WebContentsOfflinePageLoadUrlDelegate(mWebContents),
-                        /*storeInfoActionHandlerSupplier=*/null),
+                        /*storeInfoActionHandlerSupplier=*/null,
+                        /*pageInfoOpenedFromStoreIcon=*/false),
                 PageInfoController.NO_HIGHLIGHTED_PERMISSION);
     }
 }

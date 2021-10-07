@@ -730,7 +730,8 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                 // For now we don't show "store info" row for custom tab.
                 new ChromePageInfo(mModalDialogManagerSupplier, getContentPublisher(),
                         OpenedFromSource.TOOLBAR, /*storeInfoActionHandlerSupplier=*/null)
-                        .show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                        .show(currentTab, PageInfoController.NO_HIGHLIGHTED_PERMISSION,
+                                /*fromStoreIcon=*/false);
             });
         }
 

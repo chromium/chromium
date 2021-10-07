@@ -19645,6 +19645,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebsiteSettings.Discoverability.TimeToClickHighlightStoreInfo"
+    units="ms" expires_after="M100">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the amount of time between when the page info is opened and the
+    highlighted store info section is clicked.
+  </summary>
+</histogram>
+
 <histogram name="WebsiteSettings.Discoverability.TimeToOpen" units="ms"
     expires_after="2022-04-10">
   <owner>eokoyomon@chromium.org</owner>
@@ -19652,6 +19662,16 @@ regressions. -->
   <summary>
     Records the amount of time the discoverability icon is shown in the omnibox
     before the user clicks into page info.
+  </summary>
+</histogram>
+
+<histogram name="WebsiteSettings.Discoverability.TimeToOpenFromStoreIcon"
+    units="ms" expires_after="M100">
+  <owner>zhiyuancai@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the amount of time the store icon is shown in the omnibox before the
+    user clicks into page info.
   </summary>
 </histogram>
 

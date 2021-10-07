@@ -690,6 +690,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
                                               -> updateLocationBarIcon(IconTransitionType.ROTATE),
                 PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
         mIsStoreIconShowing = true;
+        mDiscoverabilityMetrics.recordDiscoverabilityAction(DiscoverabilityAction.STORE_ICON_SHOWN);
     }
 
     // Reset all customized icons' status to avoid different icons' conflicts.
@@ -714,6 +715,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
         if (mLastPermission != ContentSettingsType.DEFAULT) {
             mDiscoverabilityMetrics.recordDiscoverabilityAction(
                     DiscoverabilityAction.PAGE_INFO_OPENED);
+        } else if (mIsStoreIconShowing) {
+            mDiscoverabilityMetrics.recordDiscoverabilityAction(
+                    DiscoverabilityAction.PAGE_INFO_OPENED_FROM_STORE_ICON);
         }
         resetCustomIconsStatus();
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -723,8 +727,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         return mLastPermission;
     }
 
-    @VisibleForTesting
-    boolean isStoreIconShowingForTesting() {
+    boolean isStoreIconShowing() {
         return mIsStoreIconShowing;
     }
 

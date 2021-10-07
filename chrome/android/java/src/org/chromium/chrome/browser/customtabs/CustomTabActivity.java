@@ -219,7 +219,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             String publisher = getToolbarManager().getContentPublisher();
             new ChromePageInfo(getModalDialogManagerSupplier(), publisher, OpenedFromSource.MENU,
                     () -> mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier().get())
-                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION,
+                            /*fromStoreIcon=*/false);
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);

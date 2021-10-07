@@ -191,7 +191,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
                 getLifecycleDispatcher(), overrideUrlLoadingDelegate, /*backKeyBehavior=*/this,
                 SearchEngineLogoUtils.getInstance(), /*launchAssistanceSettingsAction=*/() -> {},
-                /*pageInfoAction=*/(tab, permission) -> {},
+                /*pageInfoAction=*/(tab, permission, fromStoreIcon) -> {},
                 IntentHandler::bringTabToFront,
                 /*saveOfflineButtonState=*/(tab) -> false, /*omniboxUma*/(url, transition) -> {},
                 TabWindowManagerSingleton::getInstance, /*bookmarkState=*/(url) -> false,

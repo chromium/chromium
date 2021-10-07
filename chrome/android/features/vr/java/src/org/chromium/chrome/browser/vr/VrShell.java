@@ -604,7 +604,7 @@ public class VrShell extends GvrLayout
         if (tab == null) return;
         new ChromePageInfo(mModalDialogManagerSupplier, null, OpenedFromSource.VR,
                 /*storeInfoActionHandlerSupplier=*/null)
-                .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION);
+                .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, /*fromStoreIcon=*/false);
     }
 
     // Called because showing audio permission dialog isn't supported in VR. This happens when

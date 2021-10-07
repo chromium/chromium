@@ -74,13 +74,15 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     private final Context mContext;
     private final Profile mProfile;
     private final Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
+    private final boolean mPageInfoOpenedFromStoreIcon;
     private String mOfflinePageCreationDate;
     private OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
 
     public ChromePageInfoControllerDelegate(Context context, WebContents webContents,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
-            @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier) {
+            @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
+            boolean pageInfoOpenedFromStoreIcon) {
         super(new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 VrModuleProvider.getDelegate(),
                 /** isSiteSettingsAvailable= */
@@ -92,6 +94,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mProfile = Profile.fromWebContents(mWebContents);
         mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
+        mPageInfoOpenedFromStoreIcon = pageInfoOpenedFromStoreIcon;
 
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
@@ -241,8 +244,8 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
             storeInfoRow.setId(PageInfoStoreInfoController.STORE_INFO_ROW_ID);
             rowWrapper.addView(storeInfoRow);
-            controllers.add(new PageInfoStoreInfoController(
-                    mainController, storeInfoRow, mStoreInfoActionHandlerSupplier));
+            controllers.add(new PageInfoStoreInfoController(mainController, storeInfoRow,
+                    mStoreInfoActionHandlerSupplier, mPageInfoOpenedFromStoreIcon));
         }
         return controllers;
     }
