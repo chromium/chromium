@@ -209,13 +209,14 @@ class URLRequestHttpJobWithProxy {
     context_->Init();
   }
 
+  URLRequestHttpJobWithProxy(const URLRequestHttpJobWithProxy&) = delete;
+  URLRequestHttpJobWithProxy& operator=(const URLRequestHttpJobWithProxy&) =
+      delete;
+
   MockClientSocketFactory socket_factory_;
   TestNetworkDelegate network_delegate_;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service_;
   std::unique_ptr<TestURLRequestContext> context_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(URLRequestHttpJobWithProxy);
 };
 
 // Tests that when proxy is not used, the proxy server is set correctly on the

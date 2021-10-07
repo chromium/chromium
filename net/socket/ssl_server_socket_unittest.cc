@@ -109,6 +109,9 @@ class FakeDataChannel {
   FakeDataChannel()
       : read_buf_len_(0), closed_(false), write_called_after_close_(false) {}
 
+  FakeDataChannel(const FakeDataChannel&) = delete;
+  FakeDataChannel& operator=(const FakeDataChannel&) = delete;
+
   int Read(IOBuffer* buf, int buf_len, CompletionOnceCallback callback) {
     DCHECK(read_callback_.is_null());
     DCHECK(!read_buf_.get());
@@ -215,8 +218,6 @@ class FakeDataChannel {
   bool write_called_after_close_;
 
   base::WeakPtrFactory<FakeDataChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDataChannel);
 };
 
 class FakeSocket : public StreamSocket {

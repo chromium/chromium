@@ -5931,6 +5931,11 @@ class SameProxyWithDifferentSchemesProxyResolverFactory
   SameProxyWithDifferentSchemesProxyResolverFactory()
       : ProxyResolverFactory(false) {}
 
+  SameProxyWithDifferentSchemesProxyResolverFactory(
+      const SameProxyWithDifferentSchemesProxyResolverFactory&) = delete;
+  SameProxyWithDifferentSchemesProxyResolverFactory& operator=(
+      const SameProxyWithDifferentSchemesProxyResolverFactory&) = delete;
+
   int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
                           std::unique_ptr<ProxyResolver>* resolver,
                           CompletionOnceCallback callback,
@@ -5938,9 +5943,6 @@ class SameProxyWithDifferentSchemesProxyResolverFactory
     *resolver = std::make_unique<SameProxyWithDifferentSchemesProxyResolver>();
     return OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SameProxyWithDifferentSchemesProxyResolverFactory);
 };
 
 // Check that when different proxy schemes are all applied to a proxy at the

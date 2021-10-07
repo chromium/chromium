@@ -248,6 +248,10 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
       SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
       QuicCryptoClientStreamFactory* quic_crypto_client_stream_factory,
       QuicContext* context);
+
+  QuicStreamFactory(const QuicStreamFactory&) = delete;
+  QuicStreamFactory& operator=(const QuicStreamFactory&) = delete;
+
   ~QuicStreamFactory() override;
 
   // Returns true if there is an existing session for |session_key| or if the
@@ -620,8 +624,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   const bool use_network_isolation_key_for_crypto_configs_;
 
   base::WeakPtrFactory<QuicStreamFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicStreamFactory);
 };
 
 }  // namespace net

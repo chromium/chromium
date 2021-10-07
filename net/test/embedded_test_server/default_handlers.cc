@@ -737,6 +737,9 @@ class ExabyteResponse : public BasicHttpResponse {
  public:
   ExabyteResponse() {}
 
+  ExabyteResponse(const ExabyteResponse&) = delete;
+  ExabyteResponse& operator=(const ExabyteResponse&) = delete;
+
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override {
     // Use 10^18 bytes (exabyte) as the content length so that the client will
     // be expecting data.
@@ -762,8 +765,6 @@ class ExabyteResponse : public BasicHttpResponse {
   }
 
   base::WeakPtrFactory<ExabyteResponse> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExabyteResponse);
 };
 
 // /exabyte_response

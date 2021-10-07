@@ -141,6 +141,9 @@ class SQLitePersistentReportingAndNelStore::Backend
             client_task_runner),
         num_pending_(0) {}
 
+  Backend(const Backend&) = delete;
+  Backend& operator=(const Backend&) = delete;
+
   void LoadNelPolicies(NelPoliciesLoadedCallback loaded_callback);
   void AddNelPolicy(const NetworkErrorLoggingService::NelPolicy& policy);
   void UpdateNelPolicyAccessTime(
@@ -311,8 +314,6 @@ class SQLitePersistentReportingAndNelStore::Backend
 
   // Protects |num_pending_|, and all the pending operations queues.
   mutable base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(Backend);
 };
 
 namespace {

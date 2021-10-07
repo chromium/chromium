@@ -21,6 +21,9 @@ class NetworkDelegateErrorObserver::Core
   Core(NetworkDelegate* network_delegate,
        base::SingleThreadTaskRunner* origin_runner);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void NotifyPACScriptError(int line_number, const std::u16string& error);
 
   void Shutdown();
@@ -32,8 +35,6 @@ class NetworkDelegateErrorObserver::Core
 
   NetworkDelegate* network_delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 NetworkDelegateErrorObserver::Core::Core(

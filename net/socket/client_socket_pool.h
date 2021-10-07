@@ -168,6 +168,9 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
     SocketParams(std::unique_ptr<SSLConfig> ssl_config_for_origin,
                  std::unique_ptr<SSLConfig> ssl_config_for_proxy);
 
+    SocketParams(const SocketParams&) = delete;
+    SocketParams& operator=(const SocketParams&) = delete;
+
     // Creates a  SocketParams object with none of the fields populated. This
     // works for the HTTP case only.
     static scoped_refptr<SocketParams> CreateForHttpForTesting();
@@ -186,9 +189,10 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
 
     std::unique_ptr<SSLConfig> ssl_config_for_origin_;
     std::unique_ptr<SSLConfig> ssl_config_for_proxy_;
-
-    DISALLOW_COPY_AND_ASSIGN(SocketParams);
   };
+
+  ClientSocketPool(const ClientSocketPool&) = delete;
+  ClientSocketPool& operator=(const ClientSocketPool&) = delete;
 
   ~ClientSocketPool() override;
 
@@ -355,8 +359,6 @@ class NET_EXPORT ClientSocketPool : public LowerLayeredPool {
   const bool is_for_websockets_;
   const CommonConnectJobParams* const common_connect_job_params_;
   const std::unique_ptr<ConnectJobFactory> connect_job_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSocketPool);
 };
 
 }  // namespace net

@@ -32,6 +32,9 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
   // operation.
   explicit BackgroundIO(InFlightIO* controller);
 
+  BackgroundIO(const BackgroundIO&) = delete;
+  BackgroundIO& operator=(const BackgroundIO&) = delete;
+
   // This method signals the controller that this operation is finished, in the
   // original thread. In practice, this is a RunableMethod that allows
   // cancellation.
@@ -67,8 +70,6 @@ class BackgroundIO : public base::RefCountedThreadSafe<BackgroundIO> {
   base::WaitableEvent io_completed_;
   InFlightIO* controller_;  // The controller that tracks all operations.
   base::Lock controller_lock_;  // A lock protecting clearing of controller_.
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundIO);
 };
 
 // This class keeps track of asynchronous IO operations. A single instance

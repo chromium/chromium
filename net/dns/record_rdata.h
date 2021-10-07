@@ -250,7 +250,12 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
   static const uint16_t kType = dns_protocol::kTypeOPT;
 
   OptRecordRdata();
+
+  OptRecordRdata(const OptRecordRdata&) = delete;
+  OptRecordRdata& operator=(const OptRecordRdata&) = delete;
+
   OptRecordRdata(OptRecordRdata&& other);
+
   ~OptRecordRdata() override;
 
   OptRecordRdata& operator=(OptRecordRdata&& other);
@@ -273,8 +278,6 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
  private:
   std::vector<Opt> opts_;
   std::vector<char> buf_;
-
-  DISALLOW_COPY_AND_ASSIGN(OptRecordRdata);
 };
 
 // This class parses and serializes the INTEGRITY DNS record.

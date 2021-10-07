@@ -47,6 +47,10 @@ namespace {
 class SOCKS5ClientSocketTest : public PlatformTest, public WithTaskEnvironment {
  public:
   SOCKS5ClientSocketTest();
+
+  SOCKS5ClientSocketTest(const SOCKS5ClientSocketTest&) = delete;
+  SOCKS5ClientSocketTest& operator=(const SOCKS5ClientSocketTest&) = delete;
+
   // Create a SOCKSClientSocket on top of a MockSocket.
   std::unique_ptr<SOCKS5ClientSocket> BuildMockSocket(
       base::span<const MockRead> reads,
@@ -67,9 +71,6 @@ class SOCKS5ClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   StreamSocket* tcp_sock_;
   TestCompletionCallback callback_;
   std::unique_ptr<SocketDataProvider> data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SOCKS5ClientSocketTest);
 };
 
 SOCKS5ClientSocketTest::SOCKS5ClientSocketTest()

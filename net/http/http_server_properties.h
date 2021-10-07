@@ -186,6 +186,9 @@ class NET_EXPORT HttpServerProperties
    public:
     ServerInfoMap();
 
+    ServerInfoMap(const ServerInfoMap&) = delete;
+    ServerInfoMap& operator=(const ServerInfoMap&) = delete;
+
     // If there's an entry corresponding to |key|, brings that entry to the
     // front and returns an iterator to it. Otherwise, inserts an empty
     // ServerInfo using |key|, and returns an iterator to it.
@@ -195,9 +198,6 @@ class NET_EXPORT HttpServerProperties
     // data. The iterator must point to an entry in the map. Regardless of
     // whether the entry is removed or not, returns iterator for the next entry.
     iterator EraseIfEmpty(iterator server_info_it);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ServerInfoMap);
   };
 
   struct NET_EXPORT QuicServerInfoMapKey {
@@ -238,6 +238,9 @@ class NET_EXPORT HttpServerProperties
                        NetLog* net_log = nullptr,
                        const base::TickClock* tick_clock = nullptr,
                        base::Clock* clock = nullptr);
+
+  HttpServerProperties(const HttpServerProperties&) = delete;
+  HttpServerProperties& operator=(const HttpServerProperties&) = delete;
 
   ~HttpServerProperties() override;
 
@@ -637,8 +640,6 @@ class NET_EXPORT HttpServerProperties
   base::OneShotTimer prefs_update_timer_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServerProperties);
 };
 
 }  // namespace net

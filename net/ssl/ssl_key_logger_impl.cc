@@ -48,6 +48,9 @@ class SSLKeyLoggerImpl::Core
         {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   }
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   void SetFile(base::File file) {
     file_.reset(base::FileToFILE(std::move(file), "a"));
     if (!file_)
@@ -116,8 +119,6 @@ class SSLKeyLoggerImpl::Core
   base::Lock lock_;
   bool lines_dropped_ GUARDED_BY(lock_) = false;
   std::vector<std::string> buffer_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 SSLKeyLoggerImpl::SSLKeyLoggerImpl(const base::FilePath& path)

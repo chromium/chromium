@@ -60,6 +60,9 @@ class TestConnectJob : public ConnectJob {
     }
   }
 
+  TestConnectJob(const TestConnectJob&) = delete;
+  TestConnectJob& operator=(const TestConnectJob&) = delete;
+
   // From ConnectJob:
   LoadState GetLoadState() const override { return LOAD_STATE_IDLE; }
   bool HasEstablishedConnection() const override { return false; }
@@ -86,8 +89,6 @@ class TestConnectJob : public ConnectJob {
   const JobType job_type_;
   StaticSocketDataProvider socket_data_provider_;
   RequestPriority last_seen_priority_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectJob);
 };
 
 class ConnectJobTest : public testing::Test {

@@ -62,15 +62,15 @@ class ImmediatePollPolicy
  public:
   ImmediatePollPolicy() = default;
 
+  ImmediatePollPolicy(const ImmediatePollPolicy&) = delete;
+  ImmediatePollPolicy& operator=(const ImmediatePollPolicy&) = delete;
+
   Mode GetNextDelay(int error,
                     base::TimeDelta current_delay,
                     base::TimeDelta* next_delay) const override {
     *next_delay = base::Milliseconds(1);
     return MODE_USE_TIMER;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmediatePollPolicy);
 };
 
 // This polling policy chooses a fantastically large delay. In other words, it
@@ -79,15 +79,15 @@ class NeverPollPolicy : public ConfiguredProxyResolutionService::PacPollPolicy {
  public:
   NeverPollPolicy() = default;
 
+  NeverPollPolicy(const NeverPollPolicy&) = delete;
+  NeverPollPolicy& operator=(const NeverPollPolicy&) = delete;
+
   Mode GetNextDelay(int error,
                     base::TimeDelta current_delay,
                     base::TimeDelta* next_delay) const override {
     *next_delay = base::Days(60);
     return MODE_USE_TIMER;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NeverPollPolicy);
 };
 
 // This polling policy starts a poll immediately after network activity.
@@ -96,15 +96,17 @@ class ImmediateAfterActivityPollPolicy
  public:
   ImmediateAfterActivityPollPolicy() = default;
 
+  ImmediateAfterActivityPollPolicy(const ImmediateAfterActivityPollPolicy&) =
+      delete;
+  ImmediateAfterActivityPollPolicy& operator=(
+      const ImmediateAfterActivityPollPolicy&) = delete;
+
   Mode GetNextDelay(int error,
                     base::TimeDelta current_delay,
                     base::TimeDelta* next_delay) const override {
     *next_delay = base::TimeDelta();
     return MODE_START_AFTER_ACTIVITY;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImmediateAfterActivityPollPolicy);
 };
 
 // This test fixture is used to partially disable the background polling done by

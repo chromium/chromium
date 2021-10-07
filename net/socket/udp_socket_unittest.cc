@@ -848,14 +848,15 @@ class TestUDPSocketWin : public UDPSocketWin {
                    const net::NetLogSource& source)
       : UDPSocketWin(bind_type, net_log, source), qos_(qos) {}
 
+  TestUDPSocketWin(const TestUDPSocketWin&) = delete;
+  TestUDPSocketWin& operator=(const TestUDPSocketWin&) = delete;
+
   // Overriding GetQwaveApi causes the test class to use the injected mock
   // QwaveApi instance instead of the singleton.
   QwaveApi* GetQwaveApi() const override { return qos_; }
 
  private:
   QwaveApi* qos_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUDPSocketWin);
 };
 
 class MockQwaveApi : public QwaveApi {

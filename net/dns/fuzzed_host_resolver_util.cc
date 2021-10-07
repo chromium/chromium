@@ -157,6 +157,9 @@ class FuzzedHostResolverProc : public HostResolverProc {
         data_provider_(data_provider),
         network_task_runner_(base::ThreadTaskRunnerHandle::Get()) {}
 
+  FuzzedHostResolverProc(const FuzzedHostResolverProc&) = delete;
+  FuzzedHostResolverProc& operator=(const FuzzedHostResolverProc&) = delete;
+
   int Resolve(const std::string& host,
               AddressFamily address_family,
               HostResolverFlags host_resolver_flags,
@@ -215,8 +218,6 @@ class FuzzedHostResolverProc : public HostResolverProc {
 
   // Just used for thread-safety checks.
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FuzzedHostResolverProc);
 };
 
 const Error kMdnsErrors[] = {ERR_FAILED,

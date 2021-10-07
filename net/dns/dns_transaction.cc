@@ -206,6 +206,9 @@ class DnsUDPAttempt : public DnsAttempt {
         query_(std::move(query)),
         udp_tracker_(udp_tracker) {}
 
+  DnsUDPAttempt(const DnsUDPAttempt&) = delete;
+  DnsUDPAttempt& operator=(const DnsUDPAttempt&) = delete;
+
   // DnsAttempt methods.
 
   int Start(CompletionOnceCallback callback) override {
@@ -352,8 +355,6 @@ class DnsUDPAttempt : public DnsAttempt {
   std::unique_ptr<DnsResponse> response_;
 
   CompletionOnceCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsUDPAttempt);
 };
 
 class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
@@ -440,6 +441,9 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     request_->set_allow_credentials(false);
     request_->set_isolation_info(isolation_info);
   }
+
+  DnsHTTPAttempt(const DnsHTTPAttempt&) = delete;
+  DnsHTTPAttempt& operator=(const DnsHTTPAttempt&) = delete;
 
   // DnsAttempt overrides.
 
@@ -590,8 +594,6 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
   NetLogWithSource net_log_;
 
   base::WeakPtrFactory<DnsHTTPAttempt> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DnsHTTPAttempt);
 };
 
 void ConstructDnsHTTPAttempt(DnsSession* session,
@@ -637,6 +639,9 @@ class DnsTCPAttempt : public DnsAttempt {
         length_buffer_(
             base::MakeRefCounted<IOBufferWithSize>(sizeof(uint16_t))),
         response_length_(0) {}
+
+  DnsTCPAttempt(const DnsTCPAttempt&) = delete;
+  DnsTCPAttempt& operator=(const DnsTCPAttempt&) = delete;
 
   // DnsAttempt:
   int Start(CompletionOnceCallback callback) override {
@@ -867,8 +872,6 @@ class DnsTCPAttempt : public DnsAttempt {
   std::unique_ptr<DnsResponse> response_;
 
   CompletionOnceCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsTCPAttempt);
 };
 
 // ----------------------------------------------------------------------------

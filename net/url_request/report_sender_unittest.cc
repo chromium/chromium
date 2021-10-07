@@ -125,6 +125,11 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
         all_url_requests_destroyed_callback_(base::DoNothing()),
         num_requests_(0) {}
 
+  TestReportSenderNetworkDelegate(const TestReportSenderNetworkDelegate&) =
+      delete;
+  TestReportSenderNetworkDelegate& operator=(
+      const TestReportSenderNetworkDelegate&) = delete;
+
   void ExpectReport(const std::string& report) {
     expect_reports_.insert(report);
   }
@@ -194,8 +199,6 @@ class TestReportSenderNetworkDelegate : public NetworkDelegateImpl {
   std::set<std::string> expect_reports_;
   std::string expected_content_type_;
   NetworkIsolationKey expected_network_isolation_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportSenderNetworkDelegate);
 };
 
 class ReportSenderTest : public TestWithTaskEnvironment {

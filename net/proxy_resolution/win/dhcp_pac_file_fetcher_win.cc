@@ -57,6 +57,11 @@ bool IsDhcpCapableAdapter(IP_ADAPTER_ADDRESSES* adapter) {
 // GetCandidateAdapterNames() performed, for output to NetLog.
 struct DhcpAdapterNamesLoggingInfo {
   DhcpAdapterNamesLoggingInfo() = default;
+
+  DhcpAdapterNamesLoggingInfo(const DhcpAdapterNamesLoggingInfo&) = delete;
+  DhcpAdapterNamesLoggingInfo& operator=(const DhcpAdapterNamesLoggingInfo&) =
+      delete;
+
   ~DhcpAdapterNamesLoggingInfo() = default;
 
   // The error that iphlpapi!GetAdaptersAddresses returned.
@@ -79,9 +84,6 @@ struct DhcpAdapterNamesLoggingInfo {
   // The time when control returned to the origin thread
   // (OnGetCandidateAdapterNamesDone)
   base::TimeTicks origin_thread_end_time;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DhcpAdapterNamesLoggingInfo);
 };
 
 namespace {
@@ -111,6 +113,9 @@ constexpr base::TimeDelta kMaxWaitAfterFirstResult = base::Milliseconds(400);
 class TaskRunnerWithCap : public base::TaskRunner {
  public:
   TaskRunnerWithCap() = default;
+
+  TaskRunnerWithCap(const TaskRunnerWithCap&) = delete;
+  TaskRunnerWithCap& operator=(const TaskRunnerWithCap&) = delete;
 
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -194,8 +199,6 @@ class TaskRunnerWithCap : public base::TaskRunner {
 
   // Tasks that are waiting to be scheduled.
   base::queue<LocationAndTask> pending_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskRunnerWithCap);
 };
 
 base::Value NetLogGetAdaptersDoneParams(DhcpAdapterNamesLoggingInfo* info) {

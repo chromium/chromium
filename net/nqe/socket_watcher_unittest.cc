@@ -26,6 +26,12 @@ namespace internal {
 namespace {
 
 class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
+ public:
+  NetworkQualitySocketWatcherTest(const NetworkQualitySocketWatcherTest&) =
+      delete;
+  NetworkQualitySocketWatcherTest& operator=(
+      const NetworkQualitySocketWatcherTest&) = delete;
+
  protected:
   NetworkQualitySocketWatcherTest() { ResetExpectedCallbackParams(); }
   ~NetworkQualitySocketWatcherTest() override { ResetExpectedCallbackParams(); }
@@ -85,8 +91,6 @@ class NetworkQualitySocketWatcherTest : public TestWithTaskEnvironment {
   static absl::optional<IPHash> callback_host_;
   static bool callback_executed_;
   static bool should_notify_rtt_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitySocketWatcherTest);
 };
 
 base::TimeDelta NetworkQualitySocketWatcherTest::callback_rtt_ =

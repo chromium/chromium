@@ -184,6 +184,9 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  ConfigReader(const ConfigReader&) = delete;
+  ConfigReader& operator=(const ConfigReader&) = delete;
+
   void DoWork() override { dns_config_ = ReadDnsConfig(); }
 
   void OnWorkFinished() override {
@@ -204,8 +207,6 @@ class DnsConfigServicePosix::ConfigReader : public SerialWorker {
   DnsConfigServicePosix* const service_;
   // Written in DoWork, read in OnWorkFinished, no locking necessary.
   absl::optional<DnsConfig> dns_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigReader);
 };
 
 DnsConfigServicePosix::DnsConfigServicePosix()

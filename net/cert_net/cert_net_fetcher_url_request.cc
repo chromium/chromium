@@ -216,6 +216,9 @@ class CertNetFetcherURLRequest::RequestCore
                           base::WaitableEvent::InitialState::NOT_SIGNALED),
         task_runner_(std::move(task_runner)) {}
 
+  RequestCore(const RequestCore&) = delete;
+  RequestCore& operator=(const RequestCore&) = delete;
+
   void AttachedToJob(Job* job) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
     DCHECK(!job_);
@@ -280,12 +283,13 @@ class CertNetFetcherURLRequest::RequestCore
   base::WaitableEvent completion_event_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCore);
 };
 
 struct CertNetFetcherURLRequest::RequestParams {
   RequestParams();
+
+  RequestParams(const RequestParams&) = delete;
+  RequestParams& operator=(const RequestParams&) = delete;
 
   bool operator<(const RequestParams& other) const;
 
@@ -297,9 +301,6 @@ struct CertNetFetcherURLRequest::RequestParams {
   base::TimeDelta timeout;
 
   // IMPORTANT: When adding fields to this structure, update operator<().
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RequestParams);
 };
 
 CertNetFetcherURLRequest::RequestParams::RequestParams()

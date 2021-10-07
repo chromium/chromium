@@ -103,6 +103,11 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
         base::TimeDelta());
   }
 
+  WebSocketTransportClientSocketPoolTest(
+      const WebSocketTransportClientSocketPoolTest&) = delete;
+  WebSocketTransportClientSocketPoolTest& operator=(
+      const WebSocketTransportClientSocketPoolTest&) = delete;
+
   ~WebSocketTransportClientSocketPoolTest() override {
     RunUntilIdle();
     // ReleaseAllConnections() calls RunUntilIdle() after releasing each
@@ -148,9 +153,6 @@ class WebSocketTransportClientSocketPoolTest : public TestWithTaskEnvironment {
   const CommonConnectJobParams common_connect_job_params_;
   WebSocketTransportClientSocketPool pool_;
   ClientSocketPoolTest test_base_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketTransportClientSocketPoolTest);
 };
 
 TEST_F(WebSocketTransportClientSocketPoolTest, Basic) {

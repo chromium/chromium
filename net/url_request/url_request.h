@@ -210,6 +210,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     virtual ~Delegate() {}
   };
 
+  URLRequest(const URLRequest&) = delete;
+  URLRequest& operator=(const URLRequest&) = delete;
+
   // If destroyed after Start() has been called but while IO is pending,
   // then the request will be effectively canceled and the delegate
   // will not have any more of its methods called.
@@ -1035,8 +1038,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<URLRequest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequest);
 };
 
 }  // namespace net

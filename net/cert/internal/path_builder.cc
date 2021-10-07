@@ -169,6 +169,9 @@ class CertIssuersIter {
                   const TrustStore* trust_store,
                   base::SupportsUserData* debug_data);
 
+  CertIssuersIter(const CertIssuersIter&) = delete;
+  CertIssuersIter& operator=(const CertIssuersIter&) = delete;
+
   // Gets the next candidate issuer, or clears |*out| when all issuers have been
   // exhausted.
   void GetNextIssuer(IssuerEntry* out);
@@ -223,8 +226,6 @@ class CertIssuersIter {
       pending_async_requests_;
 
   base::SupportsUserData* debug_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertIssuersIter);
 };
 
 CertIssuersIter::CertIssuersIter(scoped_refptr<ParsedCertificate> in_cert,
@@ -454,6 +455,9 @@ class CertPathIter {
                const TrustStore* trust_store,
                base::SupportsUserData* debug_data);
 
+  CertPathIter(const CertPathIter&) = delete;
+  CertPathIter& operator=(const CertPathIter&) = delete;
+
   // Adds a CertIssuerSource to provide intermediates for use in path building.
   // The |*cert_issuer_source| must remain valid for the lifetime of the
   // CertPathIter.
@@ -483,8 +487,6 @@ class CertPathIter {
   const TrustStore* trust_store_;
 
   base::SupportsUserData* debug_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertPathIter);
 };
 
 CertPathIter::CertPathIter(scoped_refptr<ParsedCertificate> cert,

@@ -477,6 +477,9 @@ class InfiniteResponse : public BasicHttpResponse {
  public:
   InfiniteResponse() = default;
 
+  InfiniteResponse(const InfiniteResponse&) = delete;
+  InfiniteResponse& operator=(const InfiniteResponse&) = delete;
+
   void SendResponse(base::WeakPtr<HttpResponseDelegate> delegate) override {
     delegate->SendResponseHeaders(code(), GetHttpReasonPhrase(code()),
                                   BuildHeaders());
@@ -492,8 +495,6 @@ class InfiniteResponse : public BasicHttpResponse {
   }
 
   base::WeakPtrFactory<InfiniteResponse> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InfiniteResponse);
 };
 
 std::unique_ptr<HttpResponse> HandleInfiniteRequest(
@@ -650,6 +651,11 @@ class EmbeddedTestServerThreadingTestDelegate
         type_(config.type),
         protocol_(config.protocol) {}
 
+  EmbeddedTestServerThreadingTestDelegate(
+      const EmbeddedTestServerThreadingTestDelegate&) = delete;
+  EmbeddedTestServerThreadingTestDelegate& operator=(
+      const EmbeddedTestServerThreadingTestDelegate&) = delete;
+
   // base::PlatformThread::Delegate:
   void ThreadMain() override {
     std::unique_ptr<base::SingleThreadTaskExecutor> executor;
@@ -694,8 +700,6 @@ class EmbeddedTestServerThreadingTestDelegate
   const bool message_loop_present_on_shutdown_;
   const EmbeddedTestServer::Type type_;
   const HttpConnection::Protocol protocol_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedTestServerThreadingTestDelegate);
 };
 
 TEST_P(EmbeddedTestServerThreadingTest, RunTest) {

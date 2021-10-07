@@ -56,8 +56,12 @@ class NET_EXPORT_PRIVATE AddressInfo {
       const addrinfo& hints,
       std::unique_ptr<AddrInfoGetter> getter = nullptr);
 
+  AddressInfo(const AddressInfo&) = delete;
+  AddressInfo& operator=(const AddressInfo&) = delete;
+
   AddressInfo(AddressInfo&& other);
   AddressInfo& operator=(AddressInfo&& other);
+
   ~AddressInfo();
 
   // Accessors
@@ -76,8 +80,6 @@ class NET_EXPORT_PRIVATE AddressInfo {
   // Data.
   addrinfo* ai_;  // Never null (except after move)
   std::unique_ptr<AddrInfoGetter> getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressInfo);
 };
 
 // Encapsulates calls to getaddrinfo and freeaddrinfo for tests.

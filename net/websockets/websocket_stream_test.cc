@@ -455,6 +455,9 @@ class CommonAuthTestHelper {
  public:
   CommonAuthTestHelper() : reads_(), writes_() {}
 
+  CommonAuthTestHelper(const CommonAuthTestHelper&) = delete;
+  CommonAuthTestHelper& operator=(const CommonAuthTestHelper&) = delete;
+
   std::unique_ptr<SequencedSocketData> BuildAuthSocketData(
       std::string response1,
       std::string request2,
@@ -482,8 +485,6 @@ class CommonAuthTestHelper {
   std::string response2_;
   MockRead reads_[3];
   MockWrite writes_[2];
-
-  DISALLOW_COPY_AND_ASSIGN(CommonAuthTestHelper);
 };
 
 // Data and methods for BasicAuth tests.

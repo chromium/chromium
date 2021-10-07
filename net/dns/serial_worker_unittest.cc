@@ -39,6 +39,9 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
     SerialWorkerTest* test_;
   };
 
+  SerialWorkerTest(const SerialWorkerTest&) = delete;
+  SerialWorkerTest& operator=(const SerialWorkerTest&) = delete;
+
   // Mocks
 
   void OnWork() {
@@ -147,8 +150,6 @@ class SerialWorkerTest : public TestWithTaskEnvironment {
 
   std::string breakpoint_;
   base::RunLoop* run_loop_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialWorkerTest);
 };
 
 TEST_F(SerialWorkerTest, ExecuteAndSerializeReads) {

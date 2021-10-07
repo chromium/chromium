@@ -75,6 +75,10 @@ class TestReportingUploader : public ReportingUploader {
   };
 
   TestReportingUploader();
+
+  TestReportingUploader(const TestReportingUploader&) = delete;
+  TestReportingUploader& operator=(const TestReportingUploader&) = delete;
+
   ~TestReportingUploader() override;
 
   const std::vector<std::unique_ptr<PendingUpload>>& pending_uploads() const {
@@ -96,8 +100,6 @@ class TestReportingUploader : public ReportingUploader {
 
  private:
   std::vector<std::unique_ptr<PendingUpload>> pending_uploads_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingUploader);
 };
 
 // Allows all permissions unless set_disallow_report_uploads is called; uses
@@ -183,6 +185,10 @@ class TestReportingContext : public ReportingContext {
 // A unit test base class that provides a TestReportingContext and shorthand
 // getters.
 class ReportingTestBase : public TestWithTaskEnvironment {
+ public:
+  ReportingTestBase(const ReportingTestBase&) = delete;
+  ReportingTestBase& operator=(const ReportingTestBase&) = delete;
+
  protected:
   ReportingTestBase();
   ~ReportingTestBase() override;
@@ -283,14 +289,14 @@ class ReportingTestBase : public TestWithTaskEnvironment {
   base::SimpleTestTickClock tick_clock_;
   std::unique_ptr<TestReportingContext> context_;
   ReportingCache::PersistentReportingStore* store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingTestBase);
 };
 
 class TestReportingService : public ReportingService {
  public:
   struct Report {
     Report();
+
+    Report(const Report&) = delete;
 
     Report(Report&& other);
 
@@ -311,12 +317,12 @@ class TestReportingService : public ReportingService {
     std::string type;
     std::unique_ptr<const base::Value> body;
     int depth;
-
-   private:
-    DISALLOW_COPY(Report);
   };
 
   TestReportingService();
+
+  TestReportingService(const TestReportingService&) = delete;
+  TestReportingService& operator=(const TestReportingService&) = delete;
 
   const std::vector<Report>& reports() const { return reports_; }
 
@@ -366,8 +372,6 @@ class TestReportingService : public ReportingService {
  private:
   std::vector<Report> reports_;
   ReportingPolicy dummy_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReportingService);
 };
 
 }  // namespace net

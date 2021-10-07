@@ -112,6 +112,10 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // settings, and the interpretation of |cache_size| varies depending on
   // |impl|.
   TrustStoreMac(CFStringRef policy_oid, TrustImplType impl, size_t cache_size);
+
+  TrustStoreMac(const TrustStoreMac&) = delete;
+  TrustStoreMac& operator=(const TrustStoreMac&) = delete;
+
   ~TrustStoreMac() override;
 
   // Initializes the trust cache, if it isn't already initialized.
@@ -148,8 +152,6 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
       const ParsedCertificate* cert);
 
   std::unique_ptr<TrustImpl> trust_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustStoreMac);
 };
 
 }  // namespace net

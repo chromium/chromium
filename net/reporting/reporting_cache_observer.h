@@ -14,6 +14,9 @@ struct ReportingReport;
 
 class NET_EXPORT ReportingCacheObserver {
  public:
+  ReportingCacheObserver(const ReportingCacheObserver&) = delete;
+  ReportingCacheObserver& operator=(const ReportingCacheObserver&) = delete;
+
   // Called whenever any change is made to the reports in the ReportingCache.
   virtual void OnReportsUpdated();
 
@@ -34,8 +37,6 @@ class NET_EXPORT ReportingCacheObserver {
   ReportingCacheObserver();
 
   ~ReportingCacheObserver();
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingCacheObserver);
 };
 
 }  // namespace net

@@ -745,6 +745,9 @@ class MockClientSocket : public TransportClientSocket {
   // unique socket IDs.
   explicit MockClientSocket(const NetLogWithSource& net_log);
 
+  MockClientSocket(const MockClientSocket&) = delete;
+  MockClientSocket& operator=(const MockClientSocket&) = delete;
+
   // Socket implementation.
   int Read(IOBuffer* buf,
            int buf_len,
@@ -792,8 +795,6 @@ class MockClientSocket : public TransportClientSocket {
 
  private:
   base::WeakPtrFactory<MockClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockClientSocket);
 };
 
 class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
@@ -1255,11 +1256,14 @@ class ClientSocketPoolTest {
 
 class MockTransportSocketParams
     : public base::RefCounted<MockTransportSocketParams> {
+ public:
+  MockTransportSocketParams(const MockTransportSocketParams&) = delete;
+  MockTransportSocketParams& operator=(const MockTransportSocketParams&) =
+      delete;
+
  private:
   friend class base::RefCounted<MockTransportSocketParams>;
   ~MockTransportSocketParams() {}
-
-  DISALLOW_COPY_AND_ASSIGN(MockTransportSocketParams);
 };
 
 class MockTransportClientSocketPool : public TransportClientSocketPool {
@@ -1299,6 +1303,10 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
       int max_sockets,
       int max_sockets_per_group,
       const CommonConnectJobParams* common_connect_job_params);
+
+  MockTransportClientSocketPool(const MockTransportClientSocketPool&) = delete;
+  MockTransportClientSocketPool& operator=(
+      const MockTransportClientSocketPool&) = delete;
 
   ~MockTransportClientSocketPool() override;
 
@@ -1341,8 +1349,6 @@ class MockTransportClientSocketPool : public TransportClientSocketPool {
   RequestPriority last_request_priority_;
   int release_count_;
   int cancel_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTransportClientSocketPool);
 };
 
 // WrappedStreamSocket is a base class that wraps an existing StreamSocket,
@@ -1428,6 +1434,11 @@ class MockTaggingClientSocketFactory : public MockClientSocketFactory {
  public:
   MockTaggingClientSocketFactory() = default;
 
+  MockTaggingClientSocketFactory(const MockTaggingClientSocketFactory&) =
+      delete;
+  MockTaggingClientSocketFactory& operator=(
+      const MockTaggingClientSocketFactory&) = delete;
+
   // ClientSocketFactory implementation.
   std::unique_ptr<DatagramClientSocket> CreateDatagramClientSocket(
       DatagramSocket::BindType bind_type,
@@ -1450,8 +1461,6 @@ class MockTaggingClientSocketFactory : public MockClientSocketFactory {
  private:
   MockTaggingStreamSocket* tcp_socket_ = nullptr;
   MockUDPClientSocket* udp_socket_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTaggingClientSocketFactory);
 };
 
 // Host / port used for SOCKS4 test strings.

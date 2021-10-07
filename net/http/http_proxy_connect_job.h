@@ -52,6 +52,9 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
                         const NetworkTrafficAnnotationTag traffic_annotation,
                         const NetworkIsolationKey& network_isolation_key);
 
+  HttpProxySocketParams(const HttpProxySocketParams&) = delete;
+  HttpProxySocketParams& operator=(const HttpProxySocketParams&) = delete;
+
   const scoped_refptr<TransportSocketParams>& transport_params() const {
     return transport_params_;
   }
@@ -79,8 +82,6 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   const bool tunnel_;
   const NetworkIsolationKey network_isolation_key_;
   const NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpProxySocketParams);
 };
 
 // HttpProxyConnectJob optionally establishes a tunnel through the proxy

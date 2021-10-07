@@ -55,6 +55,9 @@ class AddressSorterWin : public AddressSorter {
           base::BindOnce(&Job::OnComplete, job));
     }
 
+    Job(const Job&) = delete;
+    Job& operator=(const Job&) = delete;
+
    private:
     friend class base::RefCountedThreadSafe<Job>;
 
@@ -137,8 +140,6 @@ class AddressSorterWin : public AddressSorter {
     std::unique_ptr<SOCKET_ADDRESS_LIST, base::FreeDeleter> input_buffer_;
     std::unique_ptr<SOCKET_ADDRESS_LIST, base::FreeDeleter> output_buffer_;
     bool success_;
-
-    DISALLOW_COPY_AND_ASSIGN(Job);
   };
 };
 

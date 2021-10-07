@@ -77,6 +77,10 @@ class MockPersistentCookieStore : public CookieMonster::PersistentCookieStore {
 
   MockPersistentCookieStore();
 
+  MockPersistentCookieStore(const MockPersistentCookieStore&) = delete;
+  MockPersistentCookieStore& operator=(const MockPersistentCookieStore&) =
+      delete;
+
   // When set, Load() and LoadCookiesForKey() calls are store in the command
   // list, rather than being automatically executed. Defaults to false.
   void set_store_load_commands(bool store_load_commands) {
@@ -125,8 +129,6 @@ class MockPersistentCookieStore : public CookieMonster::PersistentCookieStore {
   // Indicates if the store has been fully loaded to avoid returning duplicate
   // cookies.
   bool loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPersistentCookieStore);
 };
 
 // Helper to build a single CanonicalCookie.

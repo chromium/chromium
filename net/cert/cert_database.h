@@ -55,6 +55,9 @@ class NET_EXPORT CertDatabase {
   // Returns the CertDatabase singleton.
   static CertDatabase* GetInstance();
 
+  CertDatabase(const CertDatabase&) = delete;
+  CertDatabase& operator=(const CertDatabase&) = delete;
+
   // Registers |observer| to receive notifications of certificate changes.  The
   // thread on which this is called is the thread on which |observer| will be
   // called back with notifications.
@@ -91,8 +94,6 @@ class NET_EXPORT CertDatabase {
   friend class Notifier;
   Notifier* notifier_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(CertDatabase);
 };
 
 }  // namespace net

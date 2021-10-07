@@ -85,6 +85,9 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
                       const HttpAuthPreferences* http_auth_preferences);
 #endif
 
+  HttpAuthHandlerNTLM(const HttpAuthHandlerNTLM&) = delete;
+  HttpAuthHandlerNTLM& operator=(const HttpAuthHandlerNTLM&) = delete;
+
   // HttpAuthHandler
   bool NeedsIdentity() override;
   bool AllowsDefaultCredentials() override;
@@ -118,8 +121,6 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
 #endif
 
   std::string channel_bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthHandlerNTLM);
 };
 
 }  // namespace net

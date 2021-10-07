@@ -175,6 +175,9 @@ class WebSocketChannel::ConnectDelegate
  public:
   explicit ConnectDelegate(WebSocketChannel* creator) : creator_(creator) {}
 
+  ConnectDelegate(const ConnectDelegate&) = delete;
+  ConnectDelegate& operator=(const ConnectDelegate&) = delete;
+
   void OnCreateRequest(URLRequest* request) override {
     creator_->OnCreateURLRequest(request);
   }
@@ -224,8 +227,6 @@ class WebSocketChannel::ConnectDelegate
   // cancels the connect process, deleting this object and preventing its
   // callbacks from being called.
   WebSocketChannel* const creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectDelegate);
 };
 
 WebSocketChannel::WebSocketChannel(

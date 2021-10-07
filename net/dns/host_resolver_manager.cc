@@ -1297,6 +1297,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     DCHECK(delegate_);
   }
 
+  DnsTask(const DnsTask&) = delete;
+  DnsTask& operator=(const DnsTask&) = delete;
+
   // The number of transactions required for the specified query type. Does not
   // change as transactions are completed.
   int num_needed_transactions() const { return num_needed_transactions_; }
@@ -1925,8 +1928,6 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
   // task completes unsuccessfully. Used as a signal that underlying
   // transactions should timeout more quickly.
   bool fallback_available_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsTask);
 };
 
 //-----------------------------------------------------------------------------

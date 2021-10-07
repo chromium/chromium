@@ -24,6 +24,10 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
         done_closure_(std::move(done_closure)),
         action_flags_(data_provider_->ConsumeIntegral<uint8_t>()) {}
 
+  WaitTillHttpCloseDelegate(const WaitTillHttpCloseDelegate&) = delete;
+  WaitTillHttpCloseDelegate& operator=(const WaitTillHttpCloseDelegate&) =
+      delete;
+
   void set_server(net::HttpServer* server) { server_ = server; }
 
   void OnConnect(int connection_id) override {
@@ -89,8 +93,6 @@ class WaitTillHttpCloseDelegate : public net::HttpServer::Delegate {
   FuzzedDataProvider* const data_provider_;
   base::OnceClosure done_closure_;
   const uint8_t action_flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitTillHttpCloseDelegate);
 };
 
 }  // namespace

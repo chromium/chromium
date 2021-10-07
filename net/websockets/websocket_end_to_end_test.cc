@@ -91,6 +91,10 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
  public:
   ConnectTestingEventInterface();
 
+  ConnectTestingEventInterface(const ConnectTestingEventInterface&) = delete;
+  ConnectTestingEventInterface& operator=(const ConnectTestingEventInterface&) =
+      delete;
+
   void WaitForResponse();
 
   bool failed() const { return failed_; }
@@ -158,8 +162,6 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
   std::string extensions_;
   std::string failure_message_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectTestingEventInterface);
 };
 
 ConnectTestingEventInterface::ConnectTestingEventInterface() : failed_(false) {
@@ -248,6 +250,11 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
  public:
   TestProxyDelegateWithProxyInfo() = default;
 
+  TestProxyDelegateWithProxyInfo(const TestProxyDelegateWithProxyInfo&) =
+      delete;
+  TestProxyDelegateWithProxyInfo& operator=(
+      const TestProxyDelegateWithProxyInfo&) = delete;
+
   struct ResolvedProxyInfo {
     GURL url;
     ProxyInfo proxy_info;
@@ -279,8 +286,6 @@ class TestProxyDelegateWithProxyInfo : public ProxyDelegate {
 
  private:
   ResolvedProxyInfo resolved_proxy_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProxyDelegateWithProxyInfo);
 };
 
 class WebSocketEndToEndTest : public TestWithTaskEnvironment {

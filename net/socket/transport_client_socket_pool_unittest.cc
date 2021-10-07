@@ -100,6 +100,11 @@ class SOCKS5MockData {
 
 class TransportClientSocketPoolTest : public ::testing::Test,
                                       public WithTaskEnvironment {
+ public:
+  TransportClientSocketPoolTest(const TransportClientSocketPoolTest&) = delete;
+  TransportClientSocketPoolTest& operator=(
+      const TransportClientSocketPoolTest&) = delete;
+
  protected:
   // Constructor that allows mocking of the time.
   explicit TransportClientSocketPoolTest(
@@ -217,9 +222,6 @@ class TransportClientSocketPoolTest : public ::testing::Test,
   std::unique_ptr<TransportClientSocketPool> pool_for_real_sockets_;
 
   ClientSocketPoolTest test_base_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransportClientSocketPoolTest);
 };
 
 TEST_F(TransportClientSocketPoolTest, Basic) {
@@ -2573,13 +2575,16 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
 // Class that enables tests to set mock time.
 class TransportClientSocketPoolMockNowSourceTest
     : public TransportClientSocketPoolTest {
+ public:
+  TransportClientSocketPoolMockNowSourceTest(
+      const TransportClientSocketPoolMockNowSourceTest&) = delete;
+  TransportClientSocketPoolMockNowSourceTest& operator=(
+      const TransportClientSocketPoolMockNowSourceTest&) = delete;
+
  protected:
   TransportClientSocketPoolMockNowSourceTest()
       : TransportClientSocketPoolTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransportClientSocketPoolMockNowSourceTest);
 };
 
 // Tests that changing the idle unused socket timeout using the experiment

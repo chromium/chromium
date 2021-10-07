@@ -28,6 +28,10 @@ enum SerializationFormatVersion {
 // lifetime of the browser.
 class NET_EXPORT BackoffEntrySerializer {
  public:
+  BackoffEntrySerializer() = delete;
+  BackoffEntrySerializer(const BackoffEntrySerializer&) = delete;
+  BackoffEntrySerializer& operator=(const BackoffEntrySerializer&) = delete;
+
   // Serializes the release time and failure count into a ListValue that can
   // later be passed to Deserialize to re-create the given BackoffEntry. It
   // always serializes using the latest format version. The Policy is not
@@ -53,9 +57,6 @@ class NET_EXPORT BackoffEntrySerializer {
       const BackoffEntry::Policy* policy,
       const base::TickClock* clock,
       base::Time time_now);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(BackoffEntrySerializer);
 };
 
 }  // namespace net

@@ -170,6 +170,9 @@ class BaseTestServer {
   // Initialize a TestServer with a specific set of SSLOptions for HTTPS or WSS.
   BaseTestServer(Type type, const SSLOptions& ssl_options);
 
+  BaseTestServer(const BaseTestServer&) = delete;
+  BaseTestServer& operator=(const BaseTestServer&) = delete;
+
   // Starts the server blocking until the server is ready.
   bool Start() WARN_UNUSED_RESULT;
 
@@ -322,8 +325,6 @@ class BaseTestServer {
   bool redirect_connect_to_localhost_ = false;
 
   std::unique_ptr<ScopedPortException> allowed_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(BaseTestServer);
 };
 
 }  // namespace net

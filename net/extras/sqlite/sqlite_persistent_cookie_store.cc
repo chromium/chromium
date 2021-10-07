@@ -261,6 +261,9 @@ class SQLitePersistentCookieStore::Backend
         total_priority_requests_(0),
         crypto_(crypto_delegate) {}
 
+  Backend(const Backend&) = delete;
+  Backend& operator=(const Backend&) = delete;
+
   // Creates or loads the SQLite database.
   void Load(LoadedCallback loaded_callback);
 
@@ -433,8 +436,6 @@ class SQLitePersistentCookieStore::Backend
   //
   // Not owned.
   CookieCryptoDelegate* crypto_;
-
-  DISALLOW_COPY_AND_ASSIGN(Backend);
 };
 
 namespace {

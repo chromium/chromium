@@ -99,6 +99,10 @@ class MockCertVerifyProc : public CertVerifyProc {
  public:
   explicit MockCertVerifyProc(const CertVerifyResult& result)
       : result_(result) {}
+
+  MockCertVerifyProc(const MockCertVerifyProc&) = delete;
+  MockCertVerifyProc& operator=(const MockCertVerifyProc&) = delete;
+
   // CertVerifyProc implementation:
   bool SupportsAdditionalTrustAnchors() const override { return false; }
 
@@ -117,8 +121,6 @@ class MockCertVerifyProc : public CertVerifyProc {
                      const NetLogWithSource& net_log) override;
 
   const CertVerifyResult result_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCertVerifyProc);
 };
 
 int MockCertVerifyProc::VerifyInternal(

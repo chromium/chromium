@@ -27,6 +27,9 @@ class CertErrorParams2Der : public CertErrorParams {
         name2_(name2),
         der2_(der2.AsString()) {}
 
+  CertErrorParams2Der(const CertErrorParams2Der&) = delete;
+  CertErrorParams2Der& operator=(const CertErrorParams2Der&) = delete;
+
   std::string ToDebugString() const override {
     std::string result;
     AppendDer(name1_, der1_, &result);
@@ -50,8 +53,6 @@ class CertErrorParams2Der : public CertErrorParams {
 
   const char* name2_;
   std::string der2_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertErrorParams2Der);
 };
 
 // Parameters subclass for describing (and pretty-printing) a single size_t.
@@ -60,6 +61,9 @@ class CertErrorParams1SizeT : public CertErrorParams {
   CertErrorParams1SizeT(const char* name, size_t value)
       : name_(name), value_(value) {}
 
+  CertErrorParams1SizeT(const CertErrorParams1SizeT&) = delete;
+  CertErrorParams1SizeT& operator=(const CertErrorParams1SizeT&) = delete;
+
   std::string ToDebugString() const override {
     return name_ + std::string(": ") + base::NumberToString(value_);
   }
@@ -67,8 +71,6 @@ class CertErrorParams1SizeT : public CertErrorParams {
  private:
   const char* name_;
   size_t value_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertErrorParams1SizeT);
 };
 
 // Parameters subclass for describing (and pretty-printing) two size_t
@@ -81,6 +83,9 @@ class CertErrorParams2SizeT : public CertErrorParams {
                         size_t value2)
       : name1_(name1), value1_(value1), name2_(name2), value2_(value2) {}
 
+  CertErrorParams2SizeT(const CertErrorParams2SizeT&) = delete;
+  CertErrorParams2SizeT& operator=(const CertErrorParams2SizeT&) = delete;
+
   std::string ToDebugString() const override {
     return name1_ + std::string(": ") + base::NumberToString(value1_) + "\n" +
            name2_ + std::string(": ") + base::NumberToString(value2_);
@@ -91,8 +96,6 @@ class CertErrorParams2SizeT : public CertErrorParams {
   size_t value1_;
   const char* name2_;
   size_t value2_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertErrorParams2SizeT);
 };
 
 }  // namespace

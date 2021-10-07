@@ -76,6 +76,9 @@ class NET_EXPORT URLRequestThrottlerEntry
                            double jitter_factor,
                            int maximum_backoff_ms);
 
+  URLRequestThrottlerEntry(const URLRequestThrottlerEntry&) = delete;
+  URLRequestThrottlerEntry& operator=(const URLRequestThrottlerEntry&) = delete;
+
   // Used by the manager, returns true if the entry needs to be garbage
   // collected.
   bool IsEntryOutdated() const;
@@ -150,8 +153,6 @@ class NET_EXPORT URLRequestThrottlerEntry
   std::string url_id_;
 
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestThrottlerEntry);
 };
 
 }  // namespace net

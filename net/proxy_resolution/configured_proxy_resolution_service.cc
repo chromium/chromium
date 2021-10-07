@@ -162,6 +162,9 @@ class DefaultPollPolicy
  public:
   DefaultPollPolicy() = default;
 
+  DefaultPollPolicy(const DefaultPollPolicy&) = delete;
+  DefaultPollPolicy& operator=(const DefaultPollPolicy&) = delete;
+
   Mode GetNextDelay(int initial_error,
                     base::TimeDelta current_delay,
                     base::TimeDelta* next_delay) const override {
@@ -194,9 +197,6 @@ class DefaultPollPolicy
       return MODE_START_AFTER_ACTIVITY;
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultPollPolicy);
 };
 
 // Config getter that always returns direct settings.
@@ -256,6 +256,10 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
       : MultiThreadedProxyResolverFactory(max_num_threads,
                                           false /*expects_pac_bytes*/) {}
 
+  ProxyResolverFactoryForSystem(const ProxyResolverFactoryForSystem&) = delete;
+  ProxyResolverFactoryForSystem& operator=(
+      const ProxyResolverFactoryForSystem&) = delete;
+
   std::unique_ptr<ProxyResolverFactory> CreateProxyResolverFactory() override {
 #if defined(OS_WIN)
     return std::make_unique<ProxyResolverFactoryWinHttp>();
@@ -274,14 +278,16 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
     return false;
 #endif
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryForSystem);
 };
 
 class ProxyResolverFactoryForNullResolver : public ProxyResolverFactory {
  public:
   ProxyResolverFactoryForNullResolver() : ProxyResolverFactory(false) {}
+
+  ProxyResolverFactoryForNullResolver(
+      const ProxyResolverFactoryForNullResolver&) = delete;
+  ProxyResolverFactoryForNullResolver& operator=(
+      const ProxyResolverFactoryForNullResolver&) = delete;
 
   // ProxyResolverFactory overrides.
   int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
@@ -291,15 +297,17 @@ class ProxyResolverFactoryForNullResolver : public ProxyResolverFactory {
     *resolver = std::make_unique<ProxyResolverNull>();
     return OK;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryForNullResolver);
 };
 
 class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
  public:
   explicit ProxyResolverFactoryForPacResult(const std::string& pac_string)
       : ProxyResolverFactory(false), pac_string_(pac_string) {}
+
+  ProxyResolverFactoryForPacResult(const ProxyResolverFactoryForPacResult&) =
+      delete;
+  ProxyResolverFactoryForPacResult& operator=(
+      const ProxyResolverFactoryForPacResult&) = delete;
 
   // ProxyResolverFactory override.
   int CreateProxyResolver(const scoped_refptr<PacFileData>& pac_script,
@@ -312,8 +320,6 @@ class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
 
  private:
   const std::string pac_string_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverFactoryForPacResult);
 };
 
 // Returns NetLog parameters describing a proxy configuration change.
@@ -659,6 +665,9 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
     TryToStartNextPoll(false);
   }
 
+  PacFileDeciderPoller(const PacFileDeciderPoller&) = delete;
+  PacFileDeciderPoller& operator=(const PacFileDeciderPoller&) = delete;
+
   void OnLazyPoll() {
     // We have just been notified of network activity. Use this opportunity to
     // see if we can start our next poll.
@@ -809,8 +818,6 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
   bool quick_check_enabled_;
 
   base::WeakPtrFactory<PacFileDeciderPoller> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PacFileDeciderPoller);
 };
 
 // static

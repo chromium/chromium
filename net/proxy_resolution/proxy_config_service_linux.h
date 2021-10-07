@@ -176,6 +176,9 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
              absl::optional<std::unique_ptr<SettingGetter>> setting_getter,
              absl::optional<NetworkTrafficAnnotationTag> traffic_annotation);
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     // Synchronously obtains the proxy configuration. If gconf,
     // gsettings, or kioslaverc are used, also enables notifications for
     // setting changes. gconf/gsettings must only be accessed from the
@@ -274,8 +277,6 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
     base::ObserverList<Observer>::Unchecked observers_;
 
     MutableNetworkTrafficAnnotationTag traffic_annotation_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Thin wrapper shell around Delegate.
@@ -291,6 +292,9 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
       std::unique_ptr<base::Environment> env_var_getter,
       SettingGetter* setting_getter,  // TODO(eroman): Use std::unique_ptr.
       const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  ProxyConfigServiceLinux(const ProxyConfigServiceLinux&) = delete;
+  ProxyConfigServiceLinux& operator=(const ProxyConfigServiceLinux&) = delete;
 
   ~ProxyConfigServiceLinux() override;
 
@@ -314,8 +318,6 @@ class NET_EXPORT_PRIVATE ProxyConfigServiceLinux : public ProxyConfigService {
 
  private:
   scoped_refptr<Delegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceLinux);
 };
 
 }  // namespace net

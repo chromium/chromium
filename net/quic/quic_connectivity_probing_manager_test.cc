@@ -135,6 +135,11 @@ class QuicConnectivityProbingManagerTest : public ::testing::Test {
         bound_test_net_log_.bound());
   }
 
+  QuicConnectivityProbingManagerTest(
+      const QuicConnectivityProbingManagerTest&) = delete;
+  QuicConnectivityProbingManagerTest& operator=(
+      const QuicConnectivityProbingManagerTest&) = delete;
+
  protected:
   // All tests will run inside the scope of |test_task_runner_|.
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -154,8 +159,6 @@ class QuicConnectivityProbingManagerTest : public ::testing::Test {
   MockClientSocketFactory socket_factory_;
   RecordingTestNetLog net_log_;
   RecordingBoundTestNetLog bound_test_net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicConnectivityProbingManagerTest);
 };
 
 TEST_F(QuicConnectivityProbingManagerTest, ReceiveProbingResponseOnSamePath) {

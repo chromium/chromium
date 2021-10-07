@@ -90,6 +90,10 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   // The default limit here is half of what's available on our target OS where
   // Chrome has the lowest limit.
   SimpleFileTracker(int file_limit = 512);
+
+  SimpleFileTracker(const SimpleFileTracker&) = delete;
+  SimpleFileTracker& operator=(const SimpleFileTracker&) = delete;
+
   ~SimpleFileTracker();
 
   // Established |file| as what's backing |subfile| for |owner|. This is
@@ -221,8 +225,6 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   // number of threads, and getting it exact would require re-acquiring the
   // lock after closing the file.
   int open_files_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleFileTracker);
 };
 
 }  // namespace disk_cache

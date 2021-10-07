@@ -576,6 +576,11 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log);
+
+  QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
+  QuicChromiumClientSession& operator=(const QuicChromiumClientSession&) =
+      delete;
+
   ~QuicChromiumClientSession() override;
 
   void Initialize() override;
@@ -1083,8 +1088,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   base::flat_map<url::Origin, std::string> accept_ch_entries_received_via_alps_;
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumClientSession);
 };
 
 }  // namespace net

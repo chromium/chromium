@@ -154,6 +154,10 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
       bool is_for_websockets,
       const CommonConnectJobParams* common_connect_job_params);
 
+  TransportClientSocketPool(const TransportClientSocketPool&) = delete;
+  TransportClientSocketPool& operator=(const TransportClientSocketPool&) =
+      delete;
+
   // Creates a socket pool with an alternative ConnectJobFactory, for use in
   // testing.
   //
@@ -793,8 +797,6 @@ class NET_EXPORT_PRIVATE TransportClientSocketPool
   SSLClientContext* const ssl_client_context_;
 
   base::WeakPtrFactory<TransportClientSocketPool> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransportClientSocketPool);
 };
 
 }  // namespace net

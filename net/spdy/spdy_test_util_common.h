@@ -249,13 +249,14 @@ class SpdySessionPoolPeer {
  public:
   explicit SpdySessionPoolPeer(SpdySessionPool* pool);
 
+  SpdySessionPoolPeer(const SpdySessionPoolPeer&) = delete;
+  SpdySessionPoolPeer& operator=(const SpdySessionPoolPeer&) = delete;
+
   void RemoveAliases(const SpdySessionKey& key);
   void SetEnableSendingInitialData(bool enabled);
 
  private:
   SpdySessionPool* const pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpdySessionPoolPeer);
 };
 
 class SpdyTestUtil {

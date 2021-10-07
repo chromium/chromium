@@ -70,6 +70,9 @@ class ChildrenDeleter
   ChildrenDeleter(disk_cache::BackendImpl* backend, const std::string& name)
       : backend_(backend->GetWeakPtr()), name_(name), signature_(0) {}
 
+  ChildrenDeleter(const ChildrenDeleter&) = delete;
+  ChildrenDeleter& operator=(const ChildrenDeleter&) = delete;
+
   void OnFileIOComplete(int bytes_copied) override;
 
   // Two ways of deleting the children: if we have the children map, use Start()
@@ -88,7 +91,6 @@ class ChildrenDeleter
   disk_cache::Bitmap children_map_;
   int64_t signature_;
   std::unique_ptr<char[]> buffer_;
-  DISALLOW_COPY_AND_ASSIGN(ChildrenDeleter);
 };
 
 // This is the callback of the file operation.

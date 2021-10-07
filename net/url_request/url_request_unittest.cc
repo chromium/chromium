@@ -374,6 +374,9 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
   // Creates a delegate which does not block at all.
   explicit BlockingNetworkDelegate(BlockMode block_mode);
 
+  BlockingNetworkDelegate(const BlockingNetworkDelegate&) = delete;
+  BlockingNetworkDelegate& operator=(const BlockingNetworkDelegate&) = delete;
+
   // Runs the message loop until the delegate blocks.
   void RunUntilBlocked();
 
@@ -451,8 +454,6 @@ class BlockingNetworkDelegate : public TestNetworkDelegate {
   base::OnceClosure on_blocked_;
 
   base::WeakPtrFactory<BlockingNetworkDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingNetworkDelegate);
 };
 
 BlockingNetworkDelegate::BlockingNetworkDelegate(BlockMode block_mode)
@@ -4898,6 +4899,9 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
  public:
   using Callback = base::OnceCallback<void()>;
 
+  AsyncDelegateLogger(const AsyncDelegateLogger&) = delete;
+  AsyncDelegateLogger& operator=(const AsyncDelegateLogger&) = delete;
+
   // Each time delegate information is added to the URLRequest, the resulting
   // load state is checked.  The expected load state after each request is
   // passed in as an argument.
@@ -5003,8 +5007,6 @@ class AsyncDelegateLogger : public base::RefCounted<AsyncDelegateLogger> {
   const int expected_second_load_state_;
   const int expected_third_load_state_;
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncDelegateLogger);
 };
 
 // NetworkDelegate that logs delegate information before a request is started,

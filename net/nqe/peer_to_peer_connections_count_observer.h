@@ -13,15 +13,17 @@ namespace net {
 // Observes changes in the count of peer to peer connections.
 class NET_EXPORT_PRIVATE PeerToPeerConnectionsCountObserver {
  public:
+  PeerToPeerConnectionsCountObserver(
+      const PeerToPeerConnectionsCountObserver&) = delete;
+  PeerToPeerConnectionsCountObserver& operator=(
+      const PeerToPeerConnectionsCountObserver&) = delete;
+
   // Called when there is a change in the count of peer to peer connections.
   virtual void OnPeerToPeerConnectionsCountChange(uint32_t count) = 0;
 
  protected:
   PeerToPeerConnectionsCountObserver() {}
   virtual ~PeerToPeerConnectionsCountObserver() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PeerToPeerConnectionsCountObserver);
 };
 
 }  // namespace net

@@ -2365,6 +2365,9 @@ class CookieCallback {
     loop_to_quit_->Quit();
   }
 
+  CookieCallback(const CookieCallback&) = delete;
+  CookieCallback& operator=(const CookieCallback&) = delete;
+
   void GetCookieListCallback(
       const net::CookieAccessResultList& list,
       const net::CookieAccessResultList& excluded_cookies) {
@@ -2382,7 +2385,6 @@ class CookieCallback {
   net::CookieList list_;
   bool result_;
   std::unique_ptr<base::RunLoop> loop_to_quit_;
-  DISALLOW_COPY_AND_ASSIGN(CookieCallback);
 };
 
 TEST_F(DnsTransactionTest, HttpsPostTestNoCookies) {

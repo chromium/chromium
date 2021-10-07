@@ -47,6 +47,9 @@ class NET_EXPORT_PRIVATE EVRootCAMetadata {
 
   static EVRootCAMetadata* GetInstance();
 
+  EVRootCAMetadata(const EVRootCAMetadata&) = delete;
+  EVRootCAMetadata& operator=(const EVRootCAMetadata&) = delete;
+
   // Returns true if policy_oid is an EV policy OID of some root CA.
   bool IsEVPolicyOID(PolicyOID policy_oid) const;
 
@@ -95,8 +98,6 @@ class NET_EXPORT_PRIVATE EVRootCAMetadata {
   PolicyOIDMap ev_policy_;
   std::set<std::string> policy_oids_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(EVRootCAMetadata);
 };
 
 }  // namespace net

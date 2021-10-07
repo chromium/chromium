@@ -33,6 +33,9 @@ class FuzzerDelegate : public net::SpdyStream::Delegate {
   explicit FuzzerDelegate(base::OnceClosure done_closure)
       : done_closure_(std::move(done_closure)) {}
 
+  FuzzerDelegate(const FuzzerDelegate&) = delete;
+  FuzzerDelegate& operator=(const FuzzerDelegate&) = delete;
+
   void OnHeadersSent() override {}
   void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override {}
   void OnHeadersReceived(
@@ -50,7 +53,6 @@ class FuzzerDelegate : public net::SpdyStream::Delegate {
 
  private:
   base::OnceClosure done_closure_;
-  DISALLOW_COPY_AND_ASSIGN(FuzzerDelegate);
 };
 
 }  // namespace

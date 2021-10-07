@@ -152,6 +152,9 @@ class MockClientSocket : public StreamSocket {
         net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)),
         was_used_to_convey_data_(false) {}
 
+  MockClientSocket(const MockClientSocket&) = delete;
+  MockClientSocket& operator=(const MockClientSocket&) = delete;
+
   // Sets whether the socket has unread data. If true, the next call to Read()
   // will return 1 byte and IsConnectedAndIdle() will return false.
   void set_has_unread_data(bool has_unread_data) {
@@ -223,8 +226,6 @@ class MockClientSocket : public StreamSocket {
   bool has_unread_data_;
   NetLogWithSource net_log_;
   bool was_used_to_convey_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockClientSocket);
 };
 
 class TestConnectJob;
@@ -342,6 +343,9 @@ class TestConnectJob : public ConnectJob {
         load_state_(LOAD_STATE_IDLE),
         has_established_connection_(false),
         store_additional_error_state_(false) {}
+
+  TestConnectJob(const TestConnectJob&) = delete;
+  TestConnectJob& operator=(const TestConnectJob&) = delete;
 
   void Signal() {
     DoConnect(waiting_success_, true /* async */, false /* recoverable */);
@@ -537,8 +541,6 @@ class TestConnectJob : public ConnectJob {
   bool store_additional_error_state_;
 
   base::WeakPtrFactory<TestConnectJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectJob);
 };
 
 class TestConnectJobFactory : public ConnectJobFactory {

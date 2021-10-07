@@ -55,6 +55,10 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
       bool restore_old_session_cookies,
       CookieCryptoDelegate* crypto_delegate);
 
+  SQLitePersistentCookieStore(const SQLitePersistentCookieStore&) = delete;
+  SQLitePersistentCookieStore& operator=(const SQLitePersistentCookieStore&) =
+      delete;
+
   // Deletes the cookies whose origins match those given in |cookies|.
   void DeleteAllInList(const std::list<CookieOrigin>& cookies);
 
@@ -88,8 +92,6 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
 
   const scoped_refptr<Backend> backend_;
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SQLitePersistentCookieStore);
 };
 
 }  // namespace net

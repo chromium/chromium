@@ -54,6 +54,9 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
                  URLFetcherDelegate* d,
                  net::NetworkTrafficAnnotationTag traffic_annotation);
 
+  URLFetcherCore(const URLFetcherCore&) = delete;
+  URLFetcherCore& operator=(const URLFetcherCore&) = delete;
+
   // Starts the load. It's important that this not happen in the constructor
   // because it causes the IO thread to begin AddRef()ing and Release()ing
   // us. If our caller hasn't had time to fully construct us and take a
@@ -360,8 +363,6 @@ class URLFetcherCore : public base::RefCountedThreadSafe<URLFetcherCore>,
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   static base::LazyInstance<Registry>::DestructorAtExit g_registry;
-
-  DISALLOW_COPY_AND_ASSIGN(URLFetcherCore);
 };
 
 }  // namespace net

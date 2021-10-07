@@ -217,6 +217,9 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   MDnsClientImpl(base::Clock* clock,
                  std::unique_ptr<base::OneShotTimer> cleanup_timer);
 
+  MDnsClientImpl(const MDnsClientImpl&) = delete;
+  MDnsClientImpl& operator=(const MDnsClientImpl&) = delete;
+
   ~MDnsClientImpl() override;
 
   // MDnsClient implementation:
@@ -242,8 +245,6 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   std::unique_ptr<base::OneShotTimer> cleanup_timer_;
 
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsClientImpl);
 };
 
 class MDnsListenerImpl : public MDnsListener,

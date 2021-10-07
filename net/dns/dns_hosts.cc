@@ -30,6 +30,9 @@ class HostsParser {
         token_is_ip_(false),
         comma_mode_(comma_mode) {}
 
+  HostsParser(const HostsParser&) = delete;
+  HostsParser& operator=(const HostsParser&) = delete;
+
   // Advances to the next token (IP or hostname).  Returns whether another
   // token was available.  |token_is_ip| and |token| can be used to find out
   // the type and text of the token.
@@ -126,8 +129,6 @@ class HostsParser {
   bool token_is_ip_;
 
   const ParseHostsCommaMode comma_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostsParser);
 };
 
 void ParseHostsWithCommaMode(const std::string& contents,

@@ -47,6 +47,9 @@ class CompletionHandler : public base::MessagePumpForIO::IOHandler,
   CompletionHandler() : base::MessagePumpForIO::IOHandler(FROM_HERE) {}
   static CompletionHandler* Get();
 
+  CompletionHandler(const CompletionHandler&) = delete;
+  CompletionHandler& operator=(const CompletionHandler&) = delete;
+
  private:
   friend class base::RefCounted<CompletionHandler>;
   ~CompletionHandler() override {}
@@ -55,8 +58,6 @@ class CompletionHandler : public base::MessagePumpForIO::IOHandler,
   void OnIOCompleted(base::MessagePumpForIO::IOContext* context,
                      DWORD actual_bytes,
                      DWORD error) override;
-
-  DISALLOW_COPY_AND_ASSIGN(CompletionHandler);
 };
 
 class CompletionHandlerHolder {

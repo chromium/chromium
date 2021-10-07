@@ -51,6 +51,9 @@ class CloseResultWaiter {
         have_result_(false),
         waiting_for_result_(false) {}
 
+  CloseResultWaiter(const CloseResultWaiter&) = delete;
+  CloseResultWaiter& operator=(const CloseResultWaiter&) = delete;
+
   int WaitForResult() {
     CHECK(!waiting_for_result_);
     while (!have_result_) {
@@ -72,8 +75,6 @@ class CloseResultWaiter {
   int result_;
   bool have_result_;
   bool waiting_for_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloseResultWaiter);
 };
 
 class MockHttpStream : public HttpStream {

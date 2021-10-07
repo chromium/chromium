@@ -40,6 +40,9 @@ class CacheCreator {
                base::OnceClosure post_cleanup_callback,
                net::CompletionOnceCallback callback);
 
+  CacheCreator(const CacheCreator&) = delete;
+  CacheCreator& operator=(const CacheCreator&) = delete;
+
   net::Error TryCreateCleanupTrackerAndRun();
 
   // Creates the backend, the cleanup context for it having been already
@@ -68,8 +71,6 @@ class CacheCreator {
   std::unique_ptr<disk_cache::Backend> created_cache_;
   net::NetLog* net_log_;
   scoped_refptr<disk_cache::BackendCleanupTracker> cleanup_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheCreator);
 };
 
 CacheCreator::CacheCreator(

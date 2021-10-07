@@ -149,10 +149,12 @@ class DiskCacheLPMFuzzer {
  private:
   struct EntryInfo {
     EntryInfo() = default;
+
+    EntryInfo(const EntryInfo&) = delete;
+    EntryInfo& operator=(const EntryInfo&) = delete;
+
     disk_cache::Entry* entry_ptr = nullptr;
     std::unique_ptr<TestEntryResultCompletionCallback> tcb;
-
-    DISALLOW_COPY_AND_ASSIGN(EntryInfo);
   };
   void RunTaskForTest(base::OnceClosure closure);
 

@@ -209,6 +209,12 @@ std::unique_ptr<HttpServerProperties::ServerInfoMap> ValueToServerInfoMap(
 
 class HttpServerPropertiesManagerTest : public testing::Test,
                                         public WithTaskEnvironment {
+ public:
+  HttpServerPropertiesManagerTest(const HttpServerPropertiesManagerTest&) =
+      delete;
+  HttpServerPropertiesManagerTest& operator=(
+      const HttpServerPropertiesManagerTest&) = delete;
+
  protected:
   HttpServerPropertiesManagerTest()
       : WithTaskEnvironment(
@@ -280,9 +286,6 @@ class HttpServerPropertiesManagerTest : public testing::Test,
   std::unique_ptr<HttpServerProperties> http_server_props_;
   base::Time one_day_from_now_;
   quic::ParsedQuicVersionVector advertised_versions_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpServerPropertiesManagerTest);
 };
 
 TEST_F(HttpServerPropertiesManagerTest, BadCachedHostPortPair) {

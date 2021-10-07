@@ -33,6 +33,9 @@ class NET_EXPORT URLRequestContextGetter
     : public base::RefCountedThreadSafe<URLRequestContextGetter,
                                         URLRequestContextGetterTraits> {
  public:
+  URLRequestContextGetter(const URLRequestContextGetter&) = delete;
+  URLRequestContextGetter& operator=(const URLRequestContextGetter&) = delete;
+
   // Returns the URLRequestContextGetter's URLRequestContext. Must only be
   // called on the network task runner. Once NotifyContextShuttingDown() is
   // invoked, must always return nullptr. Does not transfer ownership of
@@ -84,8 +87,6 @@ class NET_EXPORT URLRequestContextGetter
   void OnDestruct() const;
 
   base::ObserverList<URLRequestContextGetterObserver>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextGetter);
 };
 
 struct URLRequestContextGetterTraits {

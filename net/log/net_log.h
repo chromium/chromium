@@ -103,6 +103,9 @@ class NET_EXPORT NetLog {
     // NetLog is destroyed.
     ThreadSafeObserver();
 
+    ThreadSafeObserver(const ThreadSafeObserver&) = delete;
+    ThreadSafeObserver& operator=(const ThreadSafeObserver&) = delete;
+
     // Returns the capture mode for events this observer wants to
     // receive. It is only valid to call this while observing a NetLog.
     NetLogCaptureMode capture_mode() const;
@@ -136,8 +139,6 @@ class NET_EXPORT NetLog {
     // Both of these values are only modified by the NetLog.
     NetLogCaptureMode capture_mode_;
     NetLog* net_log_;
-
-    DISALLOW_COPY_AND_ASSIGN(ThreadSafeObserver);
   };
 
   // An observer that is notified of changes in the capture mode set, and has
@@ -145,6 +146,11 @@ class NET_EXPORT NetLog {
   class NET_EXPORT ThreadSafeCaptureModeObserver {
    public:
     ThreadSafeCaptureModeObserver();
+
+    ThreadSafeCaptureModeObserver(const ThreadSafeCaptureModeObserver&) =
+        delete;
+    ThreadSafeCaptureModeObserver& operator=(
+        const ThreadSafeCaptureModeObserver&) = delete;
 
     virtual void OnCaptureModeUpdated(NetLogCaptureModeSet modes) = 0;
 
@@ -169,8 +175,6 @@ class NET_EXPORT NetLog {
 
     // This value is only modified by the NetLog.
     NetLog* net_log_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(ThreadSafeCaptureModeObserver);
   };
 
   // Returns the singleton NetLog object, which is never destructed and which
@@ -189,6 +193,9 @@ class NET_EXPORT NetLog {
   // TODO(crbug.com/177538): Remove TestNetLog class, make tests use the global
   // NetLog.
   explicit NetLog(base::PassKey<TestNetLog>);
+
+  NetLog(const NetLog&) = delete;
+  NetLog& operator=(const NetLog&) = delete;
 
   // TODO(crbug.com/177538): make the destructor = delete once there are no
   // tests instantiating TestNetLogs.
@@ -423,8 +430,6 @@ class NET_EXPORT NetLog {
   std::vector<ThreadSafeObserver*> observers_;
 
   std::vector<ThreadSafeCaptureModeObserver*> capture_mode_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetLog);
 };
 
 }  // namespace net

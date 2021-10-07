@@ -35,6 +35,9 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
       : path_string_(path_string),
         port_string_(port_string) {}
 
+  OrphanedTestServerFilter(const OrphanedTestServerFilter&) = delete;
+  OrphanedTestServerFilter& operator=(const OrphanedTestServerFilter&) = delete;
+
   bool Includes(const base::ProcessEntry& entry) const override {
     if (entry.parent_pid() != 1)
       return false;
@@ -53,7 +56,6 @@ class OrphanedTestServerFilter : public base::ProcessFilter {
  private:
   std::string path_string_;
   std::string port_string_;
-  DISALLOW_COPY_AND_ASSIGN(OrphanedTestServerFilter);
 };
 
 // Given a file descriptor, reads into |buffer| until |bytes_max|

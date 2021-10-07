@@ -50,6 +50,9 @@ class UDPSocketWin::Core : public base::RefCounted<Core> {
  public:
   explicit Core(UDPSocketWin* socket);
 
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   // Start watching for the end of a read or write operation.
   void WatchForRead();
   void WatchForWrite();
@@ -109,8 +112,6 @@ class UDPSocketWin::Core : public base::RefCounted<Core> {
   base::win::ObjectWatcher read_watcher_;
   // |write_watcher_| watches for events from Write();
   base::win::ObjectWatcher write_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 UDPSocketWin::Core::Core(UDPSocketWin* socket)

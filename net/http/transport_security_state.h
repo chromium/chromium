@@ -367,6 +367,9 @@ class NET_EXPORT TransportSecurityState {
   explicit TransportSecurityState(
       std::vector<std::string> hsts_host_bypass_list);
 
+  TransportSecurityState(const TransportSecurityState&) = delete;
+  TransportSecurityState& operator=(const TransportSecurityState&) = delete;
+
   ~TransportSecurityState();
 
   // These functions search for static and dynamic STS and PKP states, and
@@ -745,8 +748,6 @@ class NET_EXPORT TransportSecurityState {
   base::Time ct_log_list_last_update_time_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TransportSecurityState);
 };
 
 }  // namespace net

@@ -37,6 +37,9 @@ namespace test {
 
 class QuicStreamFactoryPeer {
  public:
+  QuicStreamFactoryPeer(const QuicStreamFactoryPeer&) = delete;
+  QuicStreamFactoryPeer& operator=(const QuicStreamFactoryPeer&) = delete;
+
   static const quic::QuicConfig* GetConfig(QuicStreamFactory* factory);
 
   static std::unique_ptr<QuicCryptoClientConfigHandle> GetCryptoConfig(
@@ -105,9 +108,6 @@ class QuicStreamFactoryPeer {
   static void SetAlarmFactory(
       QuicStreamFactory* factory,
       std::unique_ptr<quic::QuicAlarmFactory> alarm_factory);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuicStreamFactoryPeer);
 };
 
 }  // namespace test

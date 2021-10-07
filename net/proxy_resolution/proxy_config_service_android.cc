@@ -286,6 +286,9 @@ class ProxyConfigServiceAndroid::Delegate
         exclude_pac_url_(false),
         has_proxy_override_(false) {}
 
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   void SetupJNI() {
     DCHECK(InJNISequence());
     JNIEnv* env = AttachCurrentThread();
@@ -489,8 +492,6 @@ class ProxyConfigServiceAndroid::Delegate
   bool exclude_pac_url_;
   // This may only be accessed or modified on the JNI thread
   bool has_proxy_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 ProxyConfigServiceAndroid::ProxyConfigServiceAndroid(

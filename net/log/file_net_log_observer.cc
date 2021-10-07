@@ -142,6 +142,9 @@ class FileNetLogObserver::WriteQueue
   // is overwritten.
   explicit WriteQueue(uint64_t memory_max);
 
+  WriteQueue(const WriteQueue&) = delete;
+  WriteQueue& operator=(const WriteQueue&) = delete;
+
   // Adds |event| to |queue_|. Also manages the size of |memory_|; if it
   // exceeds |memory_max_|, then old events are dropped from |queue_| without
   // being written to file.
@@ -189,8 +192,6 @@ class FileNetLogObserver::WriteQueue
   // for the queue in the event that the file task runner lags significantly
   // behind the main thread in writing events to file.
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(WriteQueue);
 };
 
 // FileWriter is responsible for draining events from a WriteQueue and writing

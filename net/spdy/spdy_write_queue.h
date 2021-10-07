@@ -97,12 +97,14 @@ class NET_EXPORT_PRIVATE SpdyWriteQueue {
                  std::unique_ptr<SpdyBufferProducer> frame_producer,
                  const base::WeakPtr<SpdyStream>& stream,
                  const MutableNetworkTrafficAnnotationTag& traffic_annotation);
-    ~PendingWrite();
+
+    PendingWrite(const PendingWrite&) = delete;
+    PendingWrite& operator=(const PendingWrite&) = delete;
+
     PendingWrite(PendingWrite&& other);
     PendingWrite& operator=(PendingWrite&& other);
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(PendingWrite);
+    ~PendingWrite();
   };
 
   bool removing_writes_;

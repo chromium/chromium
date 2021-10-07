@@ -221,6 +221,9 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
  public:
   StreamRequestWaiter() : error_status_(OK) {}
 
+  StreamRequestWaiter(const StreamRequestWaiter&) = delete;
+  StreamRequestWaiter& operator=(const StreamRequestWaiter&) = delete;
+
   // HttpStreamRequest::Delegate
 
   void OnStreamReady(const SSLConfig& used_ssl_config,
@@ -318,8 +321,6 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   SSLConfig used_ssl_config_;
   ProxyInfo used_proxy_info_;
   int error_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamRequestWaiter);
 };
 
 class WebSocketBasicHandshakeStream : public MockWebSocketHandshakeStream {

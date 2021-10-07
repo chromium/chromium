@@ -49,6 +49,9 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // them. Never returns nullptr.
   static std::unique_ptr<URLRequestJob> Create(URLRequest* request);
 
+  URLRequestHttpJob(const URLRequestHttpJob&) = delete;
+  URLRequestHttpJob& operator=(const URLRequestHttpJob&) = delete;
+
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
   void SetEarlyResponseHeadersCallback(
       ResponseHeadersCallback callback) override;
@@ -273,8 +276,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   ResponseHeadersCallback response_headers_callback_;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestHttpJob);
 };
 
 }  // namespace net

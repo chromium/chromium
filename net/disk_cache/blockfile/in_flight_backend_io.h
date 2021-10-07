@@ -45,6 +45,9 @@ class BackendIO : public BackgroundIO {
             BackendImpl* backend,
             RangeResultCallback callback);
 
+  BackendIO(const BackendIO&) = delete;
+  BackendIO& operator=(const BackendIO&) = delete;
+
   // Runs the actual operation on the background thread.
   void ExecuteOperation();
 
@@ -180,8 +183,6 @@ class BackendIO : public BackgroundIO {
   int64_t offset64_;
   base::TimeTicks start_time_;
   base::OnceClosure task_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackendIO);
 };
 
 // The specialized controller that keeps track of current operations.

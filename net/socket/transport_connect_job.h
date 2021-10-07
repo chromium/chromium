@@ -48,6 +48,9 @@ class NET_EXPORT_PRIVATE TransportSocketParams
                         SecureDnsPolicy secure_dns_policy,
                         OnHostResolutionCallback host_resolution_callback);
 
+  TransportSocketParams(const TransportSocketParams&) = delete;
+  TransportSocketParams& operator=(const TransportSocketParams&) = delete;
+
   const Endpoint& destination() const { return destination_; }
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
@@ -65,8 +68,6 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   const NetworkIsolationKey network_isolation_key_;
   const SecureDnsPolicy secure_dns_policy_;
   const OnHostResolutionCallback host_resolution_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TransportSocketParams);
 };
 
 // TransportConnectJob handles the host resolution necessary for socket creation

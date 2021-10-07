@@ -77,6 +77,9 @@ class DiscreteTimeSimulation {
 
   DiscreteTimeSimulation() = default;
 
+  DiscreteTimeSimulation(const DiscreteTimeSimulation&) = delete;
+  DiscreteTimeSimulation& operator=(const DiscreteTimeSimulation&) = delete;
+
   // Adds an |actor| to the simulation. The client of the simulation maintains
   // ownership of |actor| and must ensure its lifetime exceeds that of the
   // simulation. Actors should be added in the order you wish for them to
@@ -108,8 +111,6 @@ class DiscreteTimeSimulation {
 
  private:
   std::vector<Actor*> actors_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscreteTimeSimulation);
 };
 
 // Represents a web server in a simulation of a server under attack by
@@ -128,6 +129,9 @@ class Server : public DiscreteTimeSimulation::Actor {
                                              DEFAULT_PRIORITY,
                                              nullptr,
                                              TRAFFIC_ANNOTATION_FOR_TESTS)) {}
+
+  Server(const Server&) = delete;
+  Server& operator=(const Server&) = delete;
 
   void SetDowntime(const TimeTicks& start_time,
                    const base::TimeDelta& duration) {
@@ -295,8 +299,6 @@ class Server : public DiscreteTimeSimulation::Actor {
 
   TestURLRequestContext context_;
   std::unique_ptr<URLRequest> mock_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(Server);
 };
 
 // Mock throttler entry used by Requester class.
@@ -405,6 +407,9 @@ class Requester : public DiscreteTimeSimulation::Actor {
     DCHECK(server_);
   }
 
+  Requester(const Requester&) = delete;
+  Requester& operator=(const Requester&) = delete;
+
   void AdvanceTime(const TimeTicks& absolute_time) override {
     if (time_of_last_success_.is_null())
       time_of_last_success_ = absolute_time;
@@ -474,8 +479,6 @@ class Requester : public DiscreteTimeSimulation::Actor {
   base::TimeDelta last_downtime_duration_;
   Server* const server_;
   RequesterResults* const results_;  // May be NULL.
-
-  DISALLOW_COPY_AND_ASSIGN(Requester);
 };
 
 void SimulateAttack(Server* server,

@@ -141,6 +141,9 @@ class MockHostResolverProc : public HostResolverProc {
         requests_waiting_(&lock_),
         slots_available_(&lock_) {}
 
+  MockHostResolverProc(const MockHostResolverProc&) = delete;
+  MockHostResolverProc& operator=(const MockHostResolverProc&) = delete;
+
   // Waits until |count| calls to |Resolve| are blocked. Returns false when
   // timed out.
   bool WaitFor(unsigned count) {
@@ -266,8 +269,6 @@ class MockHostResolverProc : public HostResolverProc {
   unsigned num_slots_available_;
   base::ConditionVariable requests_waiting_;
   base::ConditionVariable slots_available_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockHostResolverProc);
 };
 
 class ResolveHostResponseHelper {
@@ -294,6 +295,10 @@ class ResolveHostResponseHelper {
                        base::BindOnce(&ResolveHostResponseHelper::OnComplete,
                                       base::Unretained(this))));
   }
+
+  ResolveHostResponseHelper(const ResolveHostResponseHelper&) = delete;
+  ResolveHostResponseHelper& operator=(const ResolveHostResponseHelper&) =
+      delete;
 
   bool complete() const { return top_level_result_error_ != ERR_IO_PENDING; }
 
@@ -338,8 +343,6 @@ class ResolveHostResponseHelper {
   std::unique_ptr<HostResolverManager::CancellableResolveHostRequest> request_;
   int top_level_result_error_ = ERR_IO_PENDING;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResolveHostResponseHelper);
 };
 
 // Using LookupAttemptHostResolverProc simulate very long lookups, and control

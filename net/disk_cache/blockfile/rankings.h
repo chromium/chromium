@@ -106,6 +106,10 @@ class Rankings {
   };
 
   Rankings();
+
+  Rankings(const Rankings&) = delete;
+  Rankings& operator=(const Rankings&) = delete;
+
   ~Rankings();
 
   bool Init(BackendImpl* backend, bool count_lists);
@@ -209,8 +213,6 @@ class Rankings {
   BackendImpl* backend_;
   LruData* control_data_;  // Data related to the LRU lists.
   IteratorList iterators_;
-
-  DISALLOW_COPY_AND_ASSIGN(Rankings);
 };
 
 }  // namespace disk_cache

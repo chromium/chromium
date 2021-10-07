@@ -720,6 +720,9 @@ class MockStreamSocket : public StreamSocket {
  public:
   MockStreamSocket() : connected_(true), read_buf_(nullptr), read_buf_len_(0) {}
 
+  MockStreamSocket(const MockStreamSocket&) = delete;
+  MockStreamSocket& operator=(const MockStreamSocket&) = delete;
+
   // StreamSocket
   int Connect(CompletionOnceCallback callback) override {
     return ERR_NOT_IMPLEMENTED;
@@ -810,8 +813,6 @@ class MockStreamSocket : public StreamSocket {
   CompletionOnceCallback read_callback_;
   std::string pending_read_data_;
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockStreamSocket);
 };
 
 TEST_F(HttpServerTest, RequestWithBodySplitAcrossPackets) {

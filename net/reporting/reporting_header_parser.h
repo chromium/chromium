@@ -45,6 +45,10 @@ class NET_EXPORT ReportingHeaderParser {
     kMaxValue = kReportingEndpointsInvalid,
   };
 
+  ReportingHeaderParser() = delete;
+  ReportingHeaderParser(const ReportingHeaderParser&) = delete;
+  ReportingHeaderParser& operator=(const ReportingHeaderParser&) = delete;
+
   static void ParseReportToHeader(
       ReportingContext* context,
       const NetworkIsolationKey& network_isolation_key,
@@ -59,9 +63,6 @@ class NET_EXPORT ReportingHeaderParser {
       base::flat_map<std::string, std::string> parsed_header);
 
   static void RecordReportingHeaderType(ReportingHeaderType header_type);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ReportingHeaderParser);
 };
 
 }  // namespace net

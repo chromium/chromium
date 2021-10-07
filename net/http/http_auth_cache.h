@@ -126,6 +126,10 @@ class NET_EXPORT HttpAuthCache {
   // HttpAuth::AUTH_SERVER operations are keyed by NetworkIsolationKey.
   // Otherwise, NetworkIsolationKey arguments are ignored.
   explicit HttpAuthCache(bool key_server_entries_by_network_isolation_key);
+
+  HttpAuthCache(const HttpAuthCache&) = delete;
+  HttpAuthCache& operator=(const HttpAuthCache&) = delete;
+
   ~HttpAuthCache();
 
   // Sets whether server entries are keyed by NetworkIsolationKey.
@@ -268,8 +272,6 @@ class NET_EXPORT HttpAuthCache {
   bool key_server_entries_by_network_isolation_key_;
 
   EntryMap entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpAuthCache);
 };
 
 // An authentication realm entry.

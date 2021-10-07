@@ -31,6 +31,9 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
                       base::OnceClosure done_callback)
       : owner_(owner), done_callback_(std::move(done_callback)) {}
 
+  TestConnectDelegate(const TestConnectDelegate&) = delete;
+  TestConnectDelegate& operator=(const TestConnectDelegate&) = delete;
+
   void OnCreateRequest(URLRequest* request) override {
     owner_->url_request_ = request;
   }
@@ -87,7 +90,6 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
  private:
   WebSocketStreamCreateTestBase* owner_;
   base::OnceClosure done_callback_;
-  DISALLOW_COPY_AND_ASSIGN(TestConnectDelegate);
 };
 
 WebSocketStreamCreateTestBase::WebSocketStreamCreateTestBase()

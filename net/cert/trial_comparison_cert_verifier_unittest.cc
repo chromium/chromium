@@ -111,6 +111,9 @@ class FakeCertVerifyProc : public CertVerifyProc {
         result_(result),
         main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
+  FakeCertVerifyProc(const FakeCertVerifyProc&) = delete;
+  FakeCertVerifyProc& operator=(const FakeCertVerifyProc&) = delete;
+
   void WaitForVerifyCall() { verify_called_.WaitForResult(); }
   int num_verifications() const { return num_verifications_; }
 
@@ -139,8 +142,6 @@ class FakeCertVerifyProc : public CertVerifyProc {
   int num_verifications_ = 0;
   RepeatedTestClosure verify_called_;
   scoped_refptr<base::TaskRunner> main_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCertVerifyProc);
 };
 
 int FakeCertVerifyProc::VerifyInternal(
@@ -169,6 +170,9 @@ class NotCalledCertVerifyProc : public CertVerifyProc {
  public:
   NotCalledCertVerifyProc() = default;
 
+  NotCalledCertVerifyProc(const NotCalledCertVerifyProc&) = delete;
+  NotCalledCertVerifyProc& operator=(const NotCalledCertVerifyProc&) = delete;
+
   // CertVerifyProc implementation:
   bool SupportsAdditionalTrustAnchors() const override { return false; }
 
@@ -185,8 +189,6 @@ class NotCalledCertVerifyProc : public CertVerifyProc {
                      const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;
-
-  DISALLOW_COPY_AND_ASSIGN(NotCalledCertVerifyProc);
 };
 
 int NotCalledCertVerifyProc::VerifyInternal(
@@ -210,6 +212,10 @@ void NotCalledCallback(int error) {
 class MockCertVerifyProc : public CertVerifyProc {
  public:
   MockCertVerifyProc() = default;
+
+  MockCertVerifyProc(const MockCertVerifyProc&) = delete;
+  MockCertVerifyProc& operator=(const MockCertVerifyProc&) = delete;
+
   // CertVerifyProc implementation:
   bool SupportsAdditionalTrustAnchors() const override { return false; }
   MOCK_METHOD9(VerifyInternal,
@@ -225,8 +231,6 @@ class MockCertVerifyProc : public CertVerifyProc {
 
  protected:
   ~MockCertVerifyProc() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCertVerifyProc);
 };
 
 struct TrialReportInfo {

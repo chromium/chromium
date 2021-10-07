@@ -300,6 +300,10 @@ class CheckLoadTimingDelegate : public TestDelegate {
  public:
   CheckLoadTimingDelegate(bool session_reused)
       : session_reused_(session_reused) {}
+
+  CheckLoadTimingDelegate(const CheckLoadTimingDelegate&) = delete;
+  CheckLoadTimingDelegate& operator=(const CheckLoadTimingDelegate&) = delete;
+
   void OnResponseStarted(URLRequest* request, int error) override {
     TestDelegate::OnResponseStarted(request, error);
     LoadTimingInfo load_timing_info;
@@ -333,8 +337,6 @@ class CheckLoadTimingDelegate : public TestDelegate {
   }
 
   bool session_reused_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckLoadTimingDelegate);
 };
 
 // A TestNetworkDelegate that invokes |all_requests_completed_callback| when
@@ -348,6 +350,11 @@ class WaitForCompletionNetworkDelegate : public net::TestNetworkDelegate {
             std::move(all_requests_completed_callback)),
         num_expected_requests_(num_expected_requests) {}
 
+  WaitForCompletionNetworkDelegate(const WaitForCompletionNetworkDelegate&) =
+      delete;
+  WaitForCompletionNetworkDelegate& operator=(
+      const WaitForCompletionNetworkDelegate&) = delete;
+
   void OnCompleted(URLRequest* request, bool started, int net_error) override {
     net::TestNetworkDelegate::OnCompleted(request, started, net_error);
     num_expected_requests_--;
@@ -358,7 +365,6 @@ class WaitForCompletionNetworkDelegate : public net::TestNetworkDelegate {
  private:
   base::OnceClosure all_requests_completed_callback_;
   size_t num_expected_requests_;
-  DISALLOW_COPY_AND_ASSIGN(WaitForCompletionNetworkDelegate);
 };
 
 }  // namespace

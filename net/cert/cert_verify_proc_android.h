@@ -19,6 +19,9 @@ class NET_EXPORT CertVerifyProcAndroid : public CertVerifyProc {
  public:
   explicit CertVerifyProcAndroid(scoped_refptr<CertNetFetcher> net_fetcher);
 
+  CertVerifyProcAndroid(const CertVerifyProcAndroid&) = delete;
+  CertVerifyProcAndroid& operator=(const CertVerifyProcAndroid&) = delete;
+
   bool SupportsAdditionalTrustAnchors() const override;
 
  protected:
@@ -36,8 +39,6 @@ class NET_EXPORT CertVerifyProcAndroid : public CertVerifyProc {
                      const NetLogWithSource& net_log) override;
 
   scoped_refptr<CertNetFetcher> cert_net_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(CertVerifyProcAndroid);
 };
 
 }  // namespace net

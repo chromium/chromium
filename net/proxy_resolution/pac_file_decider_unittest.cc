@@ -724,6 +724,10 @@ class SynchronousSuccessDhcpFetcher : public DhcpPacFileFetcher {
   explicit SynchronousSuccessDhcpFetcher(const std::u16string& expected_text)
       : gurl_("http://dhcppac/"), expected_text_(expected_text) {}
 
+  SynchronousSuccessDhcpFetcher(const SynchronousSuccessDhcpFetcher&) = delete;
+  SynchronousSuccessDhcpFetcher& operator=(
+      const SynchronousSuccessDhcpFetcher&) = delete;
+
   int Fetch(std::u16string* utf16_text,
             CompletionOnceCallback callback,
             const NetLogWithSource& net_log,
@@ -743,8 +747,6 @@ class SynchronousSuccessDhcpFetcher : public DhcpPacFileFetcher {
  private:
   GURL gurl_;
   std::u16string expected_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(SynchronousSuccessDhcpFetcher);
 };
 
 // All of the tests above that use PacFileDecider have tested

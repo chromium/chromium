@@ -70,6 +70,9 @@ class NET_EXPORT ThreadedSSLPrivateKey : public SSLPrivateKey {
       std::unique_ptr<Delegate> delegate,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
+  ThreadedSSLPrivateKey(const ThreadedSSLPrivateKey&) = delete;
+  ThreadedSSLPrivateKey& operator=(const ThreadedSSLPrivateKey&) = delete;
+
   // SSLPrivateKey implementation.
   std::string GetProviderName() override;
   std::vector<uint16_t> GetAlgorithmPreferences() override;
@@ -84,8 +87,6 @@ class NET_EXPORT ThreadedSSLPrivateKey : public SSLPrivateKey {
   scoped_refptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<ThreadedSSLPrivateKey> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedSSLPrivateKey);
 };
 
 }  // namespace net

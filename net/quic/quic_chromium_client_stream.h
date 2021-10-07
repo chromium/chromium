@@ -228,6 +228,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
       const NetLogWithSource& net_log,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
+  QuicChromiumClientStream(const QuicChromiumClientStream&) = delete;
+  QuicChromiumClientStream& operator=(const QuicChromiumClientStream&) = delete;
+
   ~QuicChromiumClientStream() override;
 
   // quic::QuicSpdyStream
@@ -348,8 +351,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   base::circular_deque<EarlyHints> early_hints_;
 
   base::WeakPtrFactory<QuicChromiumClientStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumClientStream);
 };
 
 }  // namespace net

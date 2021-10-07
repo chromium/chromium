@@ -370,6 +370,9 @@ class TrustDomainCache {
     DCHECK(policy_oid_);
   }
 
+  TrustDomainCache(const TrustDomainCache&) = delete;
+  TrustDomainCache& operator=(const TrustDomainCache&) = delete;
+
   // (Re-)Initializes the cache with the certs in |domain_| set to UNKNOWN trust
   // status.
   void Initialize() {
@@ -437,8 +440,6 @@ class TrustDomainCache {
   const SecTrustSettingsDomain domain_;
   const CFStringRef policy_oid_;
   base::flat_map<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustDomainCache);
 };
 
 SHA256HashValue CalculateFingerprint256(const der::Input& buffer) {
@@ -454,6 +455,11 @@ SHA256HashValue CalculateFingerprint256(const der::Input& buffer) {
 // function pointer and different contexts.
 class KeychainTrustSettingsChangedNotifier {
  public:
+  KeychainTrustSettingsChangedNotifier(
+      const KeychainTrustSettingsChangedNotifier&) = delete;
+  KeychainTrustSettingsChangedNotifier& operator=(
+      const KeychainTrustSettingsChangedNotifier&) = delete;
+
   // Registers |callback| to be run when the keychain trust settings change.
   // Must be called on the network notification thread.  |callback| will be run
   // on the network notification thread. The returned subscription must be
@@ -493,8 +499,6 @@ class KeychainTrustSettingsChangedNotifier {
   }
 
   base::RepeatingClosureList callback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeychainTrustSettingsChangedNotifier);
 };
 
 // Observes keychain events and increments the value returned by Iteration()

@@ -42,10 +42,11 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
   class DynamicNonceGenerator : public NonceGenerator {
    public:
     DynamicNonceGenerator();
-    std::string GenerateNonce() const override;
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(DynamicNonceGenerator);
+    DynamicNonceGenerator(const DynamicNonceGenerator&) = delete;
+    DynamicNonceGenerator& operator=(const DynamicNonceGenerator&) = delete;
+
+    std::string GenerateNonce() const override;
   };
 
   // FixedNonceGenerator always uses the same string specified at
@@ -54,11 +55,13 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
    public:
     explicit FixedNonceGenerator(const std::string& nonce);
 
+    FixedNonceGenerator(const FixedNonceGenerator&) = delete;
+    FixedNonceGenerator& operator=(const FixedNonceGenerator&) = delete;
+
     std::string GenerateNonce() const override;
 
    private:
     const std::string nonce_;
-    DISALLOW_COPY_AND_ASSIGN(FixedNonceGenerator);
   };
 
   class NET_EXPORT_PRIVATE Factory : public HttpAuthHandlerFactory {

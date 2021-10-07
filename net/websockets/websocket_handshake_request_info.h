@@ -15,16 +15,19 @@ namespace net {
 
 struct NET_EXPORT WebSocketHandshakeRequestInfo {
   WebSocketHandshakeRequestInfo(const GURL& url, base::Time request_time);
+
+  WebSocketHandshakeRequestInfo(const WebSocketHandshakeRequestInfo&) = delete;
+  WebSocketHandshakeRequestInfo& operator=(
+      const WebSocketHandshakeRequestInfo&) = delete;
+
   ~WebSocketHandshakeRequestInfo();
+
   // The request URL
   GURL url;
   // HTTP request headers
   HttpRequestHeaders headers;
   // The time that this request is sent
   base::Time request_time;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeRequestInfo);
 };
 
 }  // namespace net

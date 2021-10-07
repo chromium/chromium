@@ -66,6 +66,10 @@ class WaitingURLFetcherDelegate : public URLFetcherDelegate {
  public:
   WaitingURLFetcherDelegate() : did_complete_(false) {}
 
+  WaitingURLFetcherDelegate(const WaitingURLFetcherDelegate&) = delete;
+  WaitingURLFetcherDelegate& operator=(const WaitingURLFetcherDelegate&) =
+      delete;
+
   void CreateFetcher(
       const GURL& url,
       URLFetcher::RequestType request_type,
@@ -155,8 +159,6 @@ class WaitingURLFetcherDelegate : public URLFetcherDelegate {
       base::SequencedTaskRunnerHandle::Get();
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure on_complete_or_cancel_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitingURLFetcherDelegate);
 };
 
 namespace {
@@ -203,12 +205,14 @@ class FetcherTestURLRequestContext : public TestURLRequestContext {
     Init();
   }
 
+  FetcherTestURLRequestContext(const FetcherTestURLRequestContext&) = delete;
+  FetcherTestURLRequestContext& operator=(const FetcherTestURLRequestContext&) =
+      delete;
+
   MockHostResolver* mock_resolver() { return mock_resolver_; }
 
  private:
   MockHostResolver* mock_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(FetcherTestURLRequestContext);
 };
 
 class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
@@ -219,6 +223,11 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
       : network_task_runner_(network_task_runner),
         hanging_domain_(hanging_domain),
         shutting_down_(false) {}
+
+  FetcherTestURLRequestContextGetter(
+      const FetcherTestURLRequestContextGetter&) = delete;
+  FetcherTestURLRequestContextGetter& operator=(
+      const FetcherTestURLRequestContextGetter&) = delete;
 
   // Sets callback to be invoked when the getter is destroyed.
   void set_on_destruction_callback(base::OnceClosure on_destruction_callback) {
@@ -334,8 +343,6 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
   bool shutting_down_;
 
   base::OnceClosure on_destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FetcherTestURLRequestContextGetter);
 };
 
 }  // namespace

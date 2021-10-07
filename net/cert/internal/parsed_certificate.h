@@ -85,6 +85,9 @@ class NET_EXPORT ParsedCertificate
       const ParseCertificateOptions& options,
       CertErrors* errors);
 
+  ParsedCertificate(const ParsedCertificate&) = delete;
+  ParsedCertificate& operator=(const ParsedCertificate&) = delete;
+
   // Returns the DER-encoded certificate data for this cert.
   const der::Input& der_cert() const { return cert_; }
 
@@ -348,8 +351,6 @@ class NET_EXPORT ParsedCertificate
 
   // All of the extensions.
   ExtensionsMap extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParsedCertificate);
 };
 
 }  // namespace net

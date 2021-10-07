@@ -84,6 +84,9 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
                MemEntryImpl* parent,
                net::NetLog* net_log);
 
+  MemEntryImpl(const MemEntryImpl&) = delete;
+  MemEntryImpl& operator=(const MemEntryImpl&) = delete;
+
   void Open();
   bool InUse() const;
 
@@ -195,8 +198,6 @@ class NET_EXPORT_PRIVATE MemEntryImpl final
   bool doomed_;               // True if this entry was removed from the cache.
 
   net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemEntryImpl);
 };
 
 }  // namespace disk_cache

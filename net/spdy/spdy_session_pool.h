@@ -144,6 +144,10 @@ class NET_EXPORT SpdySessionPool
                   bool enable_priority_update,
                   SpdySessionPool::TimeFunc time_func,
                   NetworkQualityEstimator* network_quality_estimator);
+
+  SpdySessionPool(const SpdySessionPool&) = delete;
+  SpdySessionPool& operator=(const SpdySessionPool&) = delete;
+
   ~SpdySessionPool() override;
 
   // In the functions below, a session is "available" if this pool has
@@ -477,8 +481,6 @@ class NET_EXPORT SpdySessionPool
   NetworkQualityEstimator* network_quality_estimator_;
 
   base::WeakPtrFactory<SpdySessionPool> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpdySessionPool);
 };
 
 }  // namespace net

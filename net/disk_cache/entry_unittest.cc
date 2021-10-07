@@ -2291,6 +2291,10 @@ class SparseTestCompletionCallback: public net::TestCompletionCallback {
       std::unique_ptr<disk_cache::Backend> cache)
       : cache_(std::move(cache)) {}
 
+  SparseTestCompletionCallback(const SparseTestCompletionCallback&) = delete;
+  SparseTestCompletionCallback& operator=(const SparseTestCompletionCallback&) =
+      delete;
+
  private:
   void SetResult(int result) override {
     cache_.reset();
@@ -2298,7 +2302,6 @@ class SparseTestCompletionCallback: public net::TestCompletionCallback {
   }
 
   std::unique_ptr<disk_cache::Backend> cache_;
-  DISALLOW_COPY_AND_ASSIGN(SparseTestCompletionCallback);
 };
 
 // Tests that we don't crash when the backend is deleted while we are working

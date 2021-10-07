@@ -59,6 +59,9 @@ class NET_EXPORT TrustStore : public CertIssuerSource {
  public:
   TrustStore();
 
+  TrustStore(const TrustStore&) = delete;
+  TrustStore& operator=(const TrustStore&) = delete;
+
   // Returns the trusted of |cert|, which must be non-null.
   //
   // Optionally, if |debug_data| is non-null, debug information may be added
@@ -74,9 +77,6 @@ class NET_EXPORT TrustStore : public CertIssuerSource {
   // TODO(mattm): Pass debug_data here too.
   void AsyncGetIssuersOf(const ParsedCertificate* cert,
                          std::unique_ptr<Request>* out_req) final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TrustStore);
 };
 
 }  // namespace net

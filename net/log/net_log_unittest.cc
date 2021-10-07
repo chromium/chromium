@@ -241,6 +241,9 @@ class NetLogTestThread : public base::SimpleThread {
         net_log_(nullptr),
         start_event_(nullptr) {}
 
+  NetLogTestThread(const NetLogTestThread&) = delete;
+  NetLogTestThread& operator=(const NetLogTestThread&) = delete;
+
   // We'll wait for |start_event| to be triggered before calling a subclass's
   // subclass's RunTestThread() function.
   void Init(NetLog* net_log, base::WaitableEvent* start_event) {
@@ -264,8 +267,6 @@ class NetLogTestThread : public base::SimpleThread {
   // Only triggered once all threads have been created, to make it less likely
   // each thread completes before the next one starts.
   base::WaitableEvent* start_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetLogTestThread);
 };
 
 // A thread that adds a bunch of events to the NetLog.

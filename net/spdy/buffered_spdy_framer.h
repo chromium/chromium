@@ -29,6 +29,11 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
  public:
   BufferedSpdyFramerVisitorInterface() {}
 
+  BufferedSpdyFramerVisitorInterface(
+      const BufferedSpdyFramerVisitorInterface&) = delete;
+  BufferedSpdyFramerVisitorInterface& operator=(
+      const BufferedSpdyFramerVisitorInterface&) = delete;
+
   // Called if an error is detected in the spdy::SpdySerializedFrame protocol.
   virtual void OnError(
       http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error) = 0;
@@ -119,9 +124,6 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramerVisitorInterface {
 
  protected:
   virtual ~BufferedSpdyFramerVisitorInterface() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BufferedSpdyFramerVisitorInterface);
 };
 
 class NET_EXPORT_PRIVATE BufferedSpdyFramer

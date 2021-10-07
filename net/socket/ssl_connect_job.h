@@ -47,6 +47,9 @@ class NET_EXPORT_PRIVATE SSLSocketParams
                   PrivacyMode privacy_mode,
                   NetworkIsolationKey network_isolation_key);
 
+  SSLSocketParams(const SSLSocketParams&) = delete;
+  SSLSocketParams& operator=(const SSLSocketParams&) = delete;
+
   // Returns the type of the underlying connection.
   ConnectionType GetConnectionType() const;
 
@@ -78,8 +81,6 @@ class NET_EXPORT_PRIVATE SSLSocketParams
   const SSLConfig ssl_config_;
   const PrivacyMode privacy_mode_;
   const NetworkIsolationKey network_isolation_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLSocketParams);
 };
 
 // SSLConnectJob establishes a connection, through a proxy if needed, and then

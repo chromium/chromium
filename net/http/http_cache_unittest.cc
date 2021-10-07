@@ -175,6 +175,10 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
   explicit DeleteCacheCompletionCallback(MockHttpCache* cache)
       : cache_(cache) {}
 
+  DeleteCacheCompletionCallback(const DeleteCacheCompletionCallback&) = delete;
+  DeleteCacheCompletionCallback& operator=(
+      const DeleteCacheCompletionCallback&) = delete;
+
   CompletionOnceCallback callback() {
     return base::BindOnce(&DeleteCacheCompletionCallback::OnComplete,
                           base::Unretained(this));
@@ -187,8 +191,6 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
   }
 
   MockHttpCache* cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteCacheCompletionCallback);
 };
 
 //-----------------------------------------------------------------------------

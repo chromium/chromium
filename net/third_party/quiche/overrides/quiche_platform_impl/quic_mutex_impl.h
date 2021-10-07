@@ -64,6 +64,9 @@ class QUIC_LOCKABLE_IMPL QUIC_EXPORT_PRIVATE QuicLockImpl {
  public:
   QuicLockImpl() = default;
 
+  QuicLockImpl(const QuicLockImpl&) = delete;
+  QuicLockImpl& operator=(const QuicLockImpl&) = delete;
+
   // Block until lock_ is free, then acquire it exclusively.
   void WriterLock() EXCLUSIVE_LOCK_FUNCTION();
 
@@ -81,8 +84,6 @@ class QUIC_LOCKABLE_IMPL QUIC_EXPORT_PRIVATE QuicLockImpl {
 
  private:
   base::Lock lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicLockImpl);
 };
 
 // A Notification allows threads to receive notification of a single occurrence

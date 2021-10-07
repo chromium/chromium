@@ -768,6 +768,9 @@ class NET_EXPORT CookieMonster::PersistentCookieStore
       std::vector<std::unique_ptr<CanonicalCookie>>)>
       LoadedCallback;
 
+  PersistentCookieStore(const PersistentCookieStore&) = delete;
+  PersistentCookieStore& operator=(const PersistentCookieStore&) = delete;
+
   // Initializes the store and retrieves the existing cookies. This will be
   // called only once at startup. The callback will return all the cookies
   // that are not yet returned to CookieMonster by previous priority loads.
@@ -810,7 +813,6 @@ class NET_EXPORT CookieMonster::PersistentCookieStore
 
  private:
   friend class base::RefCountedThreadSafe<PersistentCookieStore>;
-  DISALLOW_COPY_AND_ASSIGN(PersistentCookieStore);
 };
 
 }  // namespace net

@@ -70,6 +70,9 @@ class NET_EXPORT QwaveApi {
  public:
   QwaveApi();
 
+  QwaveApi(const QwaveApi&) = delete;
+  QwaveApi& operator=(const QwaveApi&) = delete;
+
   static QwaveApi* GetDefault();
 
   virtual bool qwave_supported() const;
@@ -103,8 +106,6 @@ class NET_EXPORT QwaveApi {
   AddSocketToFlowFn add_socket_to_flow_func_;
   RemoveSocketFromFlowFn remove_socket_from_flow_func_;
   SetFlowFn set_flow_func_;
-
-  DISALLOW_COPY_AND_ASSIGN(QwaveApi);
 };
 
 //-----------------------------------------------------------------------------

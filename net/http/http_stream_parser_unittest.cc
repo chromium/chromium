@@ -75,6 +75,10 @@ class ReadErrorUploadDataStream : public UploadDataStream {
   explicit ReadErrorUploadDataStream(FailureMode mode)
       : UploadDataStream(true, 0), async_(mode) {}
 
+  ReadErrorUploadDataStream(const ReadErrorUploadDataStream&) = delete;
+  ReadErrorUploadDataStream& operator=(const ReadErrorUploadDataStream&) =
+      delete;
+
  private:
   void CompleteRead() { UploadDataStream::OnReadCompleted(ERR_FAILED); }
 
@@ -96,8 +100,6 @@ class ReadErrorUploadDataStream : public UploadDataStream {
   const FailureMode async_;
 
   base::WeakPtrFactory<ReadErrorUploadDataStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadErrorUploadDataStream);
 };
 
 TEST(HttpStreamParser, DataReadErrorSynchronous) {
@@ -204,6 +206,10 @@ class InitAsyncUploadDataStream : public ChunkedUploadDataStream {
   explicit InitAsyncUploadDataStream(int64_t identifier)
       : ChunkedUploadDataStream(identifier) {}
 
+  InitAsyncUploadDataStream(const InitAsyncUploadDataStream&) = delete;
+  InitAsyncUploadDataStream& operator=(const InitAsyncUploadDataStream&) =
+      delete;
+
  private:
   void CompleteInit() { UploadDataStream::OnInitCompleted(OK); }
 
@@ -215,8 +221,6 @@ class InitAsyncUploadDataStream : public ChunkedUploadDataStream {
   }
 
   base::WeakPtrFactory<InitAsyncUploadDataStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InitAsyncUploadDataStream);
 };
 
 TEST(HttpStreamParser, InitAsynchronousUploadDataStream) {

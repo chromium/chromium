@@ -196,6 +196,10 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
     quic::QuicEnableVersion(version_);
   }
 
+  QuicProxyClientSocketTest(const QuicProxyClientSocketTest&) = delete;
+  QuicProxyClientSocketTest& operator=(const QuicProxyClientSocketTest&) =
+      delete;
+
   void SetUp() override {}
 
   void TearDown() override {
@@ -649,8 +653,6 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
   TestCompletionCallback write_callback_;
 
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicProxyClientSocketTest);
 };
 
 TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {

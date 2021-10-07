@@ -29,6 +29,9 @@ class TestTaskRunner : public base::SequencedTaskRunner {
  public:
   explicit TestTaskRunner(quic::MockClock* clock);
 
+  TestTaskRunner(const TestTaskRunner&) = delete;
+  TestTaskRunner& operator=(const TestTaskRunner&) = delete;
+
   // base::TaskRunner implementation.
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -66,8 +69,6 @@ class TestTaskRunner : public base::SequencedTaskRunner {
 
   quic::MockClock* const clock_;
   std::vector<PostedTask> tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTaskRunner);
 };
 
 }  // namespace test

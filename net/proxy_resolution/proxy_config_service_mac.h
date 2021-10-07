@@ -52,6 +52,9 @@ class ProxyConfigServiceMac : public ProxyConfigService {
     explicit Forwarder(ProxyConfigServiceMac* proxy_config_service)
         : proxy_config_service_(proxy_config_service) {}
 
+    Forwarder(const Forwarder&) = delete;
+    Forwarder& operator=(const Forwarder&) = delete;
+
     // NetworkConfigWatcherMac::Delegate implementation:
     void StartReachabilityNotifications() override {}
     void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store) override;
@@ -59,7 +62,6 @@ class ProxyConfigServiceMac : public ProxyConfigService {
 
    private:
     ProxyConfigServiceMac* const proxy_config_service_;
-    DISALLOW_COPY_AND_ASSIGN(Forwarder);
   };
 
   // Methods directly called by the NetworkConfigWatcherMac::Delegate:

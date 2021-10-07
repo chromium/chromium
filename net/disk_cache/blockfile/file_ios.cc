@@ -38,6 +38,9 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
         buf_(buf), buf_len_(buf_len), offset_(offset) {
   }
 
+  FileBackgroundIO(const FileBackgroundIO&) = delete;
+  FileBackgroundIO& operator=(const FileBackgroundIO&) = delete;
+
   disk_cache::FileIOCallback* callback() {
     return callback_;
   }
@@ -63,8 +66,6 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
   const void* buf_;
   size_t buf_len_;
   size_t offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileBackgroundIO);
 };
 
 

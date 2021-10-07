@@ -287,6 +287,8 @@ class QuicStreamFactory::CryptoClientConfigHandle
   explicit CryptoClientConfigHandle(const CryptoClientConfigHandle& other)
       : CryptoClientConfigHandle(other.map_iterator_) {}
 
+  CryptoClientConfigHandle& operator=(const CryptoClientConfigHandle&) = delete;
+
   ~CryptoClientConfigHandle() override {
     DCHECK_GT(map_iterator_->second->num_refs(), 0);
     map_iterator_->second->ReleaseRef();
@@ -302,8 +304,6 @@ class QuicStreamFactory::CryptoClientConfigHandle
 
  private:
   QuicCryptoClientConfigMap::iterator map_iterator_;
-
-  DISALLOW_ASSIGN(CryptoClientConfigHandle);
 };
 
 // Responsible for creating a new QUIC session to the specified server, and

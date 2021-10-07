@@ -533,13 +533,13 @@ class ReadableFakeWebSocketStream : public FakeWebSocketStream {
              std::vector<std::unique_ptr<WebSocketFrame>> frames)
         : async(async), error(error), frames(std::move(frames)) {}
 
+    // Bad things will happen if we attempt to copy or assign |frames|.
+    Response(const Response&) = delete;
+    Response& operator=(const Response&) = delete;
+
     IsSync async;
     int error;
     std::vector<std::unique_ptr<WebSocketFrame>> frames;
-
-   private:
-    // Bad things will happen if we attempt to copy or assign |frames|.
-    DISALLOW_COPY_AND_ASSIGN(Response);
   };
   std::vector<std::unique_ptr<Response>> responses_;
 

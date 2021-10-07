@@ -79,6 +79,10 @@ class ReadErrorUploadDataStream : public UploadDataStream {
   explicit ReadErrorUploadDataStream(FailureMode mode)
       : UploadDataStream(true, 0), async_(mode) {}
 
+  ReadErrorUploadDataStream(const ReadErrorUploadDataStream&) = delete;
+  ReadErrorUploadDataStream& operator=(const ReadErrorUploadDataStream&) =
+      delete;
+
  private:
   void CompleteRead() { UploadDataStream::OnReadCompleted(ERR_FAILED); }
 
@@ -100,8 +104,6 @@ class ReadErrorUploadDataStream : public UploadDataStream {
   const FailureMode async_;
 
   base::WeakPtrFactory<ReadErrorUploadDataStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ReadErrorUploadDataStream);
 };
 
 class CancelStreamCallback : public TestCompletionCallbackBase {
