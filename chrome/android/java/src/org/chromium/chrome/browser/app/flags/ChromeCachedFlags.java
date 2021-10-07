@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.notifications.chime.ChimeFeatures;
 import org.chromium.chrome.browser.page_annotations.PageAnnotationsServiceConfig;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewHelper;
-import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
@@ -147,8 +146,6 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.USER_CLICK_THRESHOLD);
                         add(StartSurfaceConfiguration.WARM_UP_RENDERER);
                         add(StartupPaintPreviewHelper.ACCESSIBILITY_SUPPORT_PARAM);
-                        add(CommerceSubscriptionsServiceConfig.STALE_TAB_LOWER_BOUND_SECONDS);
-                        add(CommerceSubscriptionsServiceConfig.SUBSCRIPTIONS_SERVICE_BASE_URL);
                         add(PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION);
                         add(PriceTrackingUtilities.ENABLE_PRICE_TRACKING);
                         add(TabContentManager.ALLOW_TO_REFETCH_TAB_THUMBNAIL_VARIATION);

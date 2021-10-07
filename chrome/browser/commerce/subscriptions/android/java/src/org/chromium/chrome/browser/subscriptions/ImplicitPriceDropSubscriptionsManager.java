@@ -36,10 +36,7 @@ public class ImplicitPriceDropSubscriptionsManager {
     @VisibleForTesting
     public static final String CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP =
             ChromePreferenceKeys.COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP;
-    @VisibleForTesting
-    public static final long CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS =
-            TimeUnit.SECONDS.toMillis(
-                    CommerceSubscriptionsServiceConfig.STALE_TAB_LOWER_BOUND_SECONDS.getValue());
+
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -75,6 +72,7 @@ public class ImplicitPriceDropSubscriptionsManager {
             @Override
             public void onPauseWithNative() {}
         };
+
         mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mPriceDropNotificationManager = new PriceDropNotificationManager();
@@ -114,14 +112,18 @@ public class ImplicitPriceDropSubscriptionsManager {
             if (!hasOfferId(tab)) {
                 continue;
             }
+
             CommerceSubscription subscription =
                     new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                             ShoppingPersistedTabData.from(tab).getMainOfferId(),
                             SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
             subscriptions.add(subscription);
         }
-        mSubscriptionManager.subscribe(subscriptions,
-                (didSucceed) -> { assert didSucceed : "Failed to create subscriptions."; });
+
+        mSubscriptionManager.subscribe(subscriptions, (status) -> {
+            // TODO: Add histograms for implicit tabs creation.
+            assert status == SubscriptionsManager.StatusCode.OK;
+        });
     }
 
     private void unsubscribe(Tab tab) {
@@ -133,8 +135,8 @@ public class ImplicitPriceDropSubscriptionsManager {
                 new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                         ShoppingPersistedTabData.from(tab).getMainOfferId(),
                         SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-        mSubscriptionManager.unsubscribe(subscription,
-                (didSucceed) -> { assert didSucceed : "Failed to remove subscriptions."; });
+        mSubscriptionManager.unsubscribe(
+                subscription, (status) -> { assert status == SubscriptionsManager.StatusCode.OK; });
     }
 
     private boolean hasOfferId(Tab tab) {
@@ -145,13 +147,13 @@ public class ImplicitPriceDropSubscriptionsManager {
     // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time
     // limit a field parameter.
     private boolean isStaleTab(Tab tab) {
-        long tabLastOpenTime = System.currentTimeMillis()
+        long timeSinceLastOpened = System.currentTimeMillis()
                 - CriticalPersistedTabData.from(tab).getTimestampMillis();
-        return tabLastOpenTime
+
+        return timeSinceLastOpened
                 <= TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
-                && tabLastOpenTime
-                >= TimeUnit.SECONDS.toMillis(CommerceSubscriptionsServiceConfig
-                                                     .STALE_TAB_LOWER_BOUND_SECONDS.getValue());
+                && timeSinceLastOpened >= TimeUnit.SECONDS.toMillis(
+                           CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds());
     }
 
     private boolean shouldInitializeSubscriptions() {
@@ -159,7 +161,7 @@ public class ImplicitPriceDropSubscriptionsManager {
                 || (System.currentTimeMillis()
                                 - mSharedPreferencesManager.readLong(
                                         CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
-                        < CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS)) {
+                        < CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds())) {
             return false;
         }
         mSharedPreferencesManager.writeLong(

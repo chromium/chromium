@@ -24,11 +24,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
+import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.BrowserContextHandle;
-
 /**
  * Unit tests for {@link CommerceSubscriptionsServiceFactory}.
  */
@@ -50,12 +51,17 @@ public class CommerceSubscriptionsServiceFactoryUnitTest {
     @Mock
     private CommerceSubscriptionsStorage.Natives mCommerceSubscriptionsStorageJni;
 
+    @Mock
+    EndpointFetcher.Natives mEndpointFetcherJniMock;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(false).when(mProfileOne).isOffTheRecord();
         doReturn(false).when(mProfileTwo).isOffTheRecord();
         mMocker.mock(CommerceSubscriptionsStorageJni.TEST_HOOKS, mCommerceSubscriptionsStorageJni);
+        mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
+
         doAnswer(new Answer<Void>() {
             @Override
             public Void answer(InvocationOnMock invocation) {

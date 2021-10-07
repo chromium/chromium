@@ -125,7 +125,6 @@ public class CommerceSubscriptionsStorage {
      * Generate the key for a {@link CommerceSubscription} used to store it in database.
      * @param subscription The {@link CommerceSubscription} whose key we want to generate.
      */
-    @VisibleForTesting
     public static String getKey(CommerceSubscription subscription) {
         return String.format("%s_%s_%s", subscription.getType(), subscription.getTrackingIdType(),
                 subscription.getTrackingId());

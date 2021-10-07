@@ -136,8 +136,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         mSharedPreferencesManager.writeLong(
                 ImplicitPriceDropSubscriptionsManager.CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP,
                 System.currentTimeMillis()
-                        - ImplicitPriceDropSubscriptionsManager
-                                  .CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS);
+                        - CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds());
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(true);
         mMockNotificationManager = new MockNotificationManagerProxy();
