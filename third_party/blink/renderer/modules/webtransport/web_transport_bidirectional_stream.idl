@@ -6,6 +6,7 @@
 
 [ Exposed=(Window,Worker),
   RuntimeEnabled=WebTransport,
+  SecureContext,
   ImplementedAs=BidirectionalStream ]
 interface WebTransportBidirectionalStream {
   readonly attribute ReadableStream readable;

@@ -3946,10 +3946,11 @@ class WebTransportBackForwardCacheBrowserTest
 // https://github.com/w3c/webtransport/issues/326 is resolved.
 IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
                        ActiveWebTransportEvictsPage) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
@@ -3980,10 +3981,11 @@ IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
 // Pages with inactive WebTransport should be cached.
 IN_PROC_BROWSER_TEST_F(WebTransportBackForwardCacheBrowserTest,
                        WebTransportCachedIfClosed) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  CreateHttpsServer();
+  ASSERT_TRUE(https_server()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
   ASSERT_TRUE(NavigateToURL(shell(), url_a));

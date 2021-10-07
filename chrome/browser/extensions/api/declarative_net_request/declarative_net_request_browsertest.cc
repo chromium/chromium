@@ -610,6 +610,13 @@ class DeclarativeNetRequestBrowserTest
         std::make_unique<RulesetManagerObserver>(ruleset_manager());
   }
 
+  net::EmbeddedTestServer* https_server() {
+    if (!https_server_)
+      InitializeHttpsServer();
+
+    return https_server_.get();
+  }
+
  private:
   enum class RulesetScope { kDynamic, kSession };
   void UpdateRules(const ExtensionId& extension_id,
@@ -801,6 +808,18 @@ class DeclarativeNetRequestBrowserTest
     return ExecuteScriptInBackgroundPage(extension_id, script);
   }
 
+  void InitializeHttpsServer() {
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+
+    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+    https_server_->AddDefaultHandlers();
+    https_server_->ServeFilesFromDirectory(GetHttpServerPath());
+    https_server_->RegisterRequestMonitor(
+        base::BindRepeating(&DeclarativeNetRequestBrowserTest::MonitorRequest,
+                            base::Unretained(this)));
+  }
+
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
 
@@ -822,6 +841,9 @@ class DeclarativeNetRequestBrowserTest
 
   // Path to the PEM file for the last installed packed extension.
   base::FilePath last_pem_path_;
+
+  // Most tests don't use this, so it is initialized lazily.
+  std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
 using DeclarativeNetRequestBrowserTest_Packed =
@@ -6225,6 +6247,8 @@ class DeclarativeNetRequestWebTransportTest
 // Tests that the "requestMethods" and "excludedRequestMethods" properties of a
 // rule condition are considered properly for WebTransport requests.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
+  ASSERT_TRUE(https_server()->Start());
+
   // Load an extension with some rules that have different request method
   // conditions.
   std::vector<TestRule> rules;
@@ -6245,6 +6269,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
   rules.push_back(rule4);
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/echo")));
 
   const char kOpenWebTransportScript[] = R"((
     async () =>
@@ -6287,25 +6314,17 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   const char kAddedHeaderName[] = "Header-Name";
   const char kAddedHeaderValue[] = "Header-Value";
 
-  net::EmbeddedTestServer https_server(
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
-  https_server.AddDefaultHandlers();
-  https_server.ServeFilesFromDirectory(GetHttpServerPath());
-  https_server.RegisterRequestMonitor(
-      base::BindRepeating(&DeclarativeNetRequestBrowserTest::MonitorRequest,
-                          base::Unretained(this)));
-  ASSERT_TRUE(https_server.Start());
+  ASSERT_TRUE(https_server()->Start());
 
   ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), https_server.GetURL("/echo")));
+      ui_test_utils::NavigateToURL(browser(), https_server()->GetURL("/echo")));
 
   GURL bidding_logic_url =
-      https_server.GetURL("/interest_group/bidding_logic.js");
+      https_server()->GetURL("/interest_group/bidding_logic.js");
   GURL decision_logic_url =
-      https_server.GetURL("/interest_group/decision_logic.js");
-  GURL bidder_report_url = https_server.GetURL("/echo?bidder_report");
-  GURL decision_report_url = https_server.GetURL("/echo?decision_report");
+      https_server()->GetURL("/interest_group/decision_logic.js");
+  GURL bidder_report_url = https_server()->GetURL("/echo?bidder_report");
+  GURL decision_report_url = https_server()->GetURL("/echo?decision_report");
 
   // Add an interest group.
   EXPECT_EQ("done", content::EvalJs(
@@ -6413,7 +6432,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, FledgeAuctionScripts) {
   redirect_bidding_logic_rule.action->type = "redirect";
   redirect_bidding_logic_rule.action->redirect.emplace();
   redirect_bidding_logic_rule.action->redirect->url =
-      https_server.GetURL("/interest_group/bidding_logic2.js").spec();
+      https_server()->GetURL("/interest_group/bidding_logic2.js").spec();
 
   ASSERT_NO_FATAL_FAILURE(
       LoadExtensionWithRules({redirect_bidding_logic_rule}, "test_extension3",

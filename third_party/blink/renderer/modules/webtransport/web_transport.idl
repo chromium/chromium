@@ -6,6 +6,7 @@
 [
     ActiveScriptWrappable,
     Exposed=(Window,Worker),
+    SecureContext,
     RuntimeEnabled=WebTransport
 ] interface WebTransport {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebTransport] constructor(USVString url, optional WebTransportOptions options = {});
