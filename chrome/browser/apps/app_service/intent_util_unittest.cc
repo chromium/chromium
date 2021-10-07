@@ -17,6 +17,7 @@
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/intent_filter.h"
 #include "components/arc/mojom/intent_helper.mojom.h"
+#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
@@ -465,6 +466,48 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_AddsMissingPath) {
       apps_util::ConvertArcToAppServiceIntentFilter(filter_without_path);
 
   ASSERT_EQ(app_service_filter1, app_service_filter2);
+}
+
+TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
+  const char* kPackageName = "com.foo.bar";
+  const char* kHost = "www.google.com";
+  const char* kScheme = "https";
+
+  std::vector<arc::IntentFilter::AuthorityEntry> authorities;
+  authorities.emplace_back(kHost, 0);
+
+  std::vector<arc::IntentFilter::PatternMatcher> patterns;
+
+  patterns.emplace_back("/foo.*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back(".*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back("/foo/.*/bar",
+                        arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+  patterns.emplace_back("/..*", arc::mojom::PatternType::PATTERN_SIMPLE_GLOB);
+
+  arc::IntentFilter filter_with_path(kPackageName, {arc::kIntentActionView},
+                                     std::move(authorities),
+                                     std::move(patterns), {kScheme}, {});
+
+  IntentFilterPtr app_service_filter =
+      apps_util::ConvertArcToAppServiceIntentFilter(filter_with_path);
+
+  for (auto& condition : app_service_filter->conditions) {
+    if (condition->condition_type == apps::mojom::ConditionType::kPattern) {
+      EXPECT_EQ(4u, condition->condition_values.size());
+      EXPECT_EQ(apps_util::MakeConditionValue(
+                    "/foo", apps::mojom::PatternMatchType::kPrefix),
+                condition->condition_values[0]);
+      EXPECT_EQ(apps_util::MakeConditionValue(
+                    std::string(), apps::mojom::PatternMatchType::kPrefix),
+                condition->condition_values[1]);
+      EXPECT_EQ(apps_util::MakeConditionValue(
+                    "/foo/.*/bar", apps::mojom::PatternMatchType::kGlob),
+                condition->condition_values[2]);
+      EXPECT_EQ(apps_util::MakeConditionValue(
+                    "/..*", apps::mojom::PatternMatchType::kGlob),
+                condition->condition_values[3]);
+    }
+  }
 }
 
 #if defined(OS_CHROMEOS)

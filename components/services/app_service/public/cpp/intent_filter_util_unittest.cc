@@ -317,3 +317,24 @@ TEST_F(IntentFilterUtilTest, PatternMatchOverlap) {
   ASSERT_FALSE(
       apps_util::FiltersHaveOverlap(foo_prefix_filter, bar_prefix_filter));
 }
+
+TEST_F(IntentFilterUtilTest, PatternGlobAndLiteralOverlap) {
+  auto literal_pattern_filter1 =
+      MakeFilter("https", "maps.google.com", "/u/0/maps",
+                 apps::mojom::PatternMatchType::kLiteral);
+  auto literal_pattern_filter2 =
+      MakeFilter("https", "maps.google.com", "/maps",
+                 apps::mojom::PatternMatchType::kLiteral);
+
+  auto glob_pattern_filter =
+      MakeFilter("https", "maps.google.com", "/u/.*/maps",
+                 apps::mojom::PatternMatchType::kGlob);
+
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(literal_pattern_filter1,
+                                            glob_pattern_filter));
+  ASSERT_TRUE(apps_util::FiltersHaveOverlap(glob_pattern_filter,
+                                            literal_pattern_filter1));
+
+  ASSERT_FALSE(apps_util::FiltersHaveOverlap(literal_pattern_filter2,
+                                             glob_pattern_filter));
+}

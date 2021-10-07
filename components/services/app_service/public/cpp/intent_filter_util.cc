@@ -4,40 +4,40 @@
 
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "url/url_constants.h"
 
 namespace {
 
+// Returns true if |value1| has overlapping values with |value2|. This method
+// should be called twice, with |value1| and |value2| swapped.
 bool ConditionValuesHaveOverlap(const apps::mojom::ConditionValuePtr& value1,
                                 const apps::mojom::ConditionValuePtr& value2) {
   if (value1 == value2) {
     return true;
   }
 
-  if (value1->match_type == apps::mojom::PatternMatchType::kPrefix &&
-      value2->match_type == apps::mojom::PatternMatchType::kLiteral) {
-    return base::StartsWith(/*str=*/value2->value,
-                            /*search_for=*/value1->value);
+  if (value1->match_type == apps::mojom::PatternMatchType::kLiteral) {
+    if (value2->match_type == apps::mojom::PatternMatchType::kPrefix) {
+      return base::StartsWith(/*str=*/value1->value,
+                              /*search_for=*/value2->value);
+    } else if (value2->match_type == apps::mojom::PatternMatchType::kGlob) {
+      return apps_util::MatchGlob(/*value=*/value1->value,
+                                  /*pattern=*/value2->value);
+    }
   }
 
-  if (value1->match_type == apps::mojom::PatternMatchType::kLiteral &&
-      value2->match_type == apps::mojom::PatternMatchType::kPrefix) {
-    return base::StartsWith(/*str=*/value1->value,
-                            /*search_for=*/value2->value);
-  }
-
-  if (value1->match_type == apps::mojom::PatternMatchType::kPrefix &&
-      value2->match_type == apps::mojom::PatternMatchType::kPrefix) {
+  else if (value1->match_type == apps::mojom::PatternMatchType::kPrefix &&
+           value2->match_type == apps::mojom::PatternMatchType::kPrefix) {
     return base::StartsWith(/*str=*/value1->value,
                             /*search_for=*/value2->value) ||
            base::StartsWith(/*str=*/value2->value,
                             /*search_for=*/value1->value);
   }
-
-  // TODO(crbug.com/1251530): Handle more cases where values are overlapping.
 
   return false;
 }
@@ -51,7 +51,8 @@ bool ConditionsHaveOverlap(const apps::mojom::ConditionPtr& condition1,
   // is an overlap.
   for (auto& value1 : condition1->condition_values) {
     for (auto& value2 : condition2->condition_values) {
-      if (ConditionValuesHaveOverlap(value1, value2)) {
+      if (ConditionValuesHaveOverlap(value1, value2) ||
+          ConditionValuesHaveOverlap(value2, value1)) {
         return true;
       }
     }

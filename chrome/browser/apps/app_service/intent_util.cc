@@ -213,6 +213,54 @@ const char* ConvertAppServiceToArcIntentAction(const std::string& action) {
     return arc::kIntentActionView;
   }
 }
+
+// Returns true if |pattern| is a Glob (as in PatternMatchType::kGlob) which
+// behaves like a Prefix pattern. That is, the only special characters are a
+// ".*" at the end of the string.
+bool IsPrefixOnlyGlob(base::StringPiece pattern) {
+  if (!base::EndsWith(pattern, ".*")) {
+    return false;
+  }
+
+  size_t i = 0;
+  while (i < pattern.size() - 2) {
+    if (pattern[i] == '.' || pattern[i] == '*') {
+      return false;
+    }
+    i++;
+  }
+  return true;
+}
+
+apps::mojom::ConditionValuePtr ConvertArcPatternMatcherToConditionValue(
+    const arc::IntentFilter::PatternMatcher& path) {
+  apps::mojom::PatternMatchType match_type;
+
+  switch (path.match_type()) {
+    case arc::mojom::PatternType::PATTERN_LITERAL:
+      match_type = apps::mojom::PatternMatchType::kLiteral;
+      break;
+    case arc::mojom::PatternType::PATTERN_PREFIX:
+      match_type = apps::mojom::PatternMatchType::kPrefix;
+      break;
+    case arc::mojom::PatternType::PATTERN_SIMPLE_GLOB:
+      match_type = apps::mojom::PatternMatchType::kGlob;
+
+      // It's common for Globs to be used to encode patterns which are actually
+      // prefixes. Detect and convert these, since prefix matching is easier &
+      // cheaper.
+      if (IsPrefixOnlyGlob(path.pattern())) {
+        DCHECK(path.pattern().size() >= 2);
+        return apps_util::MakeConditionValue(
+            path.pattern().substr(0, path.pattern().size() - 2),
+            apps::mojom::PatternMatchType::kPrefix);
+      }
+      break;
+  }
+
+  return apps_util::MakeConditionValue(path.pattern(), match_type);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
@@ -584,20 +632,8 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
 
   std::vector<apps::mojom::ConditionValuePtr> path_condition_values;
   for (auto& path : arc_intent_filter.paths()) {
-    apps::mojom::PatternMatchType match_type;
-    switch (path.match_type()) {
-      case arc::mojom::PatternType::PATTERN_LITERAL:
-        match_type = apps::mojom::PatternMatchType::kLiteral;
-        break;
-      case arc::mojom::PatternType::PATTERN_PREFIX:
-        match_type = apps::mojom::PatternMatchType::kPrefix;
-        break;
-      case arc::mojom::PatternType::PATTERN_SIMPLE_GLOB:
-        match_type = apps::mojom::PatternMatchType::kGlob;
-        break;
-    }
     path_condition_values.push_back(
-        apps_util::MakeConditionValue(path.pattern(), match_type));
+        ConvertArcPatternMatcherToConditionValue(path));
   }
 
   // For ARC apps, specifying a path is optional. For any intent filters which
