@@ -366,13 +366,14 @@ void ProxyMain::BeginMainFrame(
                        source_frame_number, hold_commit_for_activation));
     completion.Wait();
   }
-  layer_tree_host_->CommitComplete();
 
   // For Blink implementations, this updates frame throttling and
   // delivers IntersectionObserver events for Chromium-internal customers
   // but *not* script-created IntersectionObserver. See
   // blink::LocalFrameView::RunPostLifecycleSteps.
   layer_tree_host_->DidBeginMainFrame();
+
+  layer_tree_host_->CommitComplete();
 
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,

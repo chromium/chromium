@@ -161,8 +161,8 @@ class LayerTreeHostTestFrameOrdering : public LayerTreeHostTest {
   enum MainOrder : int {
     MAIN_START = 1,
     MAIN_LAYOUT,
-    MAIN_COMMIT_COMPLETE,
     MAIN_DID_BEGIN_FRAME,
+    MAIN_COMMIT_COMPLETE,
     MAIN_END,
   };
 
@@ -230,6 +230,34 @@ class LayerTreeHostTestFrameOrdering : public LayerTreeHostTest {
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestFrameOrdering);
+
+// This tests that the frame ordering is the same for an update-layers-only
+// frame as for a fully committed frame.
+class LayerTreeHostTestUpdateLayersFrameOrdering
+    : public LayerTreeHostTestFrameOrdering {
+  void DidCommit() override {
+    EXPECT_TRUE(CheckStep(MAIN_COMMIT_COMPLETE, &main_));
+    if (main_iteration_++ == 0) {
+      main_ = MAIN_START;
+    } else {
+      EndTest();
+    }
+  }
+  void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
+    EXPECT_TRUE(CheckStep(IMPL_DRAW, &impl_));
+    impl_ = IMPL_START;
+    if (impl_iteration_++ == 0) {
+      PostSetNeedsUpdateLayersToMainThread();
+    }
+  }
+  void AfterTest() override { EXPECT_TRUE(CheckStep(MAIN_END, &main_)); }
+
+ private:
+  int main_iteration_ = 0;
+  int impl_iteration_ = 0;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestUpdateLayersFrameOrdering);
 
 class LayerTreeHostTestRequestedMainFrame : public LayerTreeHostTest {
  public:
