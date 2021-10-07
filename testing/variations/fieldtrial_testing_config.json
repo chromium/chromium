@@ -8065,7 +8065,8 @@
                 {
                     "name": "Control",
                     "disable_features": [
-                        "V8ScriptAblation"
+                        "V8ScriptAblation",
+                        "V8SlowHistogramsScriptAblation"
                     ]
                 },
                 {
@@ -8074,7 +8075,8 @@
                         "V8ScriptDelayOnceMs": "50"
                     },
                     "enable_features": [
-                        "V8ScriptAblation"
+                        "V8ScriptAblation",
+                        "V8SlowHistogramsScriptAblation"
                     ]
                 }
             ]
@@ -8094,12 +8096,14 @@
                 {
                     "name": "Disabled",
                     "disable_features": [
+                        "V8SlowHistogramsSparkplugAndroid",
                         "V8Sparkplug"
                     ]
                 },
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "V8SlowHistogramsSparkplugAndroid",
                         "V8Sparkplug"
                     ]
                 }
