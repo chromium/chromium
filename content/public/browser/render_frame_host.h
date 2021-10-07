@@ -994,6 +994,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void GetCanonicalUrl(
       base::OnceCallback<void(const absl::optional<GURL>&)> callback) = 0;
 
+  // Returns true if the last navigation in this RenderFrameHost has committed
+  // an error document that is a placeholder document installed when the
+  // navigation failed or was blocked, containing an error message like "This
+  // site can’t be reached".
+  // This can't be called for pending commit RFH because the value is set
+  // during call to RenderFrameHostImpl::DidNavigate which happens after commit.
+  virtual bool IsErrorDocument() = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;

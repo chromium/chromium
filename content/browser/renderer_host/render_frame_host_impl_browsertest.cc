@@ -6218,4 +6218,56 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, ErrorDocuments) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/empty.html"));
+  {
+    // Block the navigation.
+    std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+        URLLoaderInterceptor::SetupRequestFailForURL(
+            main_url, net::ERR_BLOCKED_BY_CLIENT);
+    TestNavigationManager manager(web_contents(), main_url);
+    shell()->LoadURL(main_url);
+    manager.WaitForNavigationFinished();
+  }
+
+  EXPECT_TRUE(web_contents()->GetMainFrame()->IsErrorDocument());
+
+  // Reload with no blocking.
+  shell()->Reload();
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  EXPECT_FALSE(web_contents()->GetMainFrame()->IsErrorDocument());
+
+  std::string script =
+      "let child = document.createElement('iframe');"
+      "child.src = $1;"
+      "document.body.appendChild(child);";
+
+  // Create an iframe.
+  EXPECT_TRUE(
+      ExecJs(web_contents()->GetMainFrame(), JsReplace(script, "title1.html")));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  {
+    // Block the navigation.
+    GURL child_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+    std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+        URLLoaderInterceptor::SetupRequestFailForURL(
+            child_url, net::ERR_BLOCKED_BY_CLIENT);
+    // Create an iframe but block the navigation.
+    EXPECT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+                       JsReplace(script, "title1.html")));
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  }
+
+  RenderFrameHostImpl* main_rfh = web_contents()->GetMainFrame();
+  EXPECT_EQ(2U, main_rfh->child_count());
+
+  RenderFrameHost* child_a = main_rfh->child_at(0)->current_frame_host();
+  RenderFrameHost* child_b = main_rfh->child_at(1)->current_frame_host();
+  EXPECT_FALSE(web_contents()->GetMainFrame()->IsErrorDocument());
+  EXPECT_FALSE(child_a->IsErrorDocument());
+  EXPECT_TRUE(child_b->IsErrorDocument());
+}
+
 }  // namespace content

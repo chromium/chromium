@@ -3505,7 +3505,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
   // current URL by the time this navigation commits.
   bool has_pending_cross_document_commit =
       node->render_manager()->HasPendingCommitForCrossDocumentNavigation();
-  bool is_currently_error_page = node->current_frame_host()->is_error_page();
+  bool is_currently_error_page = node->current_frame_host()->IsErrorDocument();
 
   blink::mojom::NavigationType navigation_type = GetNavigationType(
       /*old_url=*/node->current_url(),
@@ -3684,7 +3684,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
       frame_tree_node->render_manager()
           ->HasPendingCommitForCrossDocumentNavigation();
   bool is_currently_error_page =
-      frame_tree_node->current_frame_host()->is_error_page();
+      frame_tree_node->current_frame_host()->IsErrorDocument();
 
   blink::mojom::NavigationType navigation_type = GetNavigationType(
       /*old_url=*/frame_tree_node->current_url(),
