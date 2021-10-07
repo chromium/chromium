@@ -558,16 +558,14 @@ INSTANTIATE_TEST_SUITE_P(
                 {kOptimizedRealtimeThreadingMacBusy.name, "0.7"},
                 {kOptimizedRealtimeThreadingMacBusyLimit.name, "0.7"}},
             FieldTrialParams{
-                {kOptimizedRealtimeThreadingMacBusy.name, "1.0"},
+                {kOptimizedRealtimeThreadingMacBusy.name, "0.5"},
                 {kOptimizedRealtimeThreadingMacBusyLimit.name, "1.0"}}),
         testing::Values(TimeDelta(),
                         Seconds(256.0 / 48000),
                         Milliseconds(5),
                         Milliseconds(10),
-                        Seconds(1024.0 / 44100)
-                        // TODO(crbug.com/1256631): Fix and enable.
-                        // Seconds(1024.0 / 16000)
-                        )));
+                        Seconds(1024.0 / 44100),
+                        Seconds(1024.0 / 16000))));
 
 }  // namespace
 
