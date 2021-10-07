@@ -136,6 +136,11 @@ extern const char kEnableSignedExchangeSubresourcePrefetchDescription[];
 extern const char kEnableSignedExchangePrefetchCacheForNavigationsName[];
 extern const char kEnableSignedExchangePrefetchCacheForNavigationsDescription[];
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+extern const char kWebFilterInterstitialRefreshName[];
+extern const char kWebFilterInterstitialRefreshDescription[];
+#endif  // ENABLE_SUPERVISED_USERS
+
 extern const char kU2FPermissionPromptName[];
 extern const char kU2FPermissionPromptDescription[];
 
@@ -2773,6 +2778,9 @@ extern const char kLimitShelfItemsToActiveDeskDescription[];
 
 extern const char kListAllDisplayModesName[];
 extern const char kListAllDisplayModesDescription[];
+
+extern const char kLocalWebApprovalsName[];
+extern const char kLocalWebApprovalsDescription[];
 
 extern const char kEnableHardwareMirrorModeName[];
 extern const char kEnableHardwareMirrorModeDescription[];

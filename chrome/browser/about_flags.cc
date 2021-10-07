@@ -258,6 +258,10 @@
 #include "printing/printing_features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
+#endif  // ENABLE_SUPERVISED_USERS
+
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_switches.h"
 #endif  // USE_OZONE
@@ -5979,6 +5983,20 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableAssistantRoutinesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::assistant::features::kAssistantRoutines)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-local-web-approvals", flag_descriptions::kLocalWebApprovalsName,
+     flag_descriptions::kLocalWebApprovalsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(supervised_users::kLocalWebApprovals)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+    {"enable-web-filter-interstitial-refresh",
+     flag_descriptions::kWebFilterInterstitialRefreshName,
+     flag_descriptions::kWebFilterInterstitialRefreshDescription,
+     kOsCrOS | kOsAndroid,
+     FEATURE_VALUE_TYPE(supervised_users::kWebFilterInterstitialRefresh)},
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     {"notification-scheduler", flag_descriptions::kNotificationSchedulerName,
      flag_descriptions::kNotificationSchedulerDescription, kOsAndroid,

@@ -202,6 +202,14 @@ const char kU2FPermissionPromptDescription[] =
     "information, refer to the deprecation announcement at "
     "https://groups.google.com/a/chromium.org/g/blink-dev/c/xHC3AtU_65A";
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+const char kWebFilterInterstitialRefreshName[] =
+    "Web filter interstitial refresh.";
+const char kWebFilterInterstitialRefreshDescription[] =
+    "Enable web filter interstitial refresh for Family Link users on Chrome "
+    "OS.";
+#endif  // ENABLE_SUPERVISED_USERS
+
 const char kU2FSecurityKeyAPIName[] = "Enable the U2F Security Key API";
 const char kU2FSecurityKeyAPIDescription[] =
     "Enable the legacy U2F Security Key API (CryptoToken). The U2F Security "
@@ -4820,6 +4828,11 @@ const char kLimitShelfItemsToActiveDeskDescription[] =
 const char kListAllDisplayModesName[] = "List all display modes";
 const char kListAllDisplayModesDescription[] =
     "Enables listing all external displays' modes in the display settings.";
+
+const char kLocalWebApprovalsName[] = "Local web approvals";
+const char kLocalWebApprovalsDescription[] =
+    "Enable local web approvals for Family Link users on Chrome OS. Web filter "
+    "interstitial refresh needs to also be enabled.";
 
 const char kEnableHardwareMirrorModeName[] = "Enable Hardware Mirror Mode";
 const char kEnableHardwareMirrorModeDescription[] =

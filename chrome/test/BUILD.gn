@@ -7734,6 +7734,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/supervised_user:test_support",
       "//chrome/browser/supervised_user/supervised_user_error_page:unit_tests",
+      "//chrome/browser/supervised_user/supervised_user_features:unit_tests",
     ]
   }
   if (safe_browsing_mode == 1 && enable_extensions) {

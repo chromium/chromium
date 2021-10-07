@@ -2125,6 +2125,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-local-web-approvals",
+    "owners": [ "agawronska@chromium.org", "courtneywong@chromium.org", "danan@chromium.org" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-lock-screen-notification",
     "owners": [ "tengs" ],
     "expiry_milestone": 80
@@ -2735,6 +2740,11 @@
     "name": "enable-web-bluetooth-new-permissions-backend",
     "owners": [ "web-bluetooth@google.com" ],
     "expiry_milestone": 100
+  },
+  {
+    "name": "enable-web-filter-interstitial-refresh",
+    "owners": [ "agawronska@chromium.org", "courtneywong@chromium.org", "danan@chromium.org" ],
+    "expiry_milestone": 98
   },
   {
     "name": "enable-web-payments-experimental-features",

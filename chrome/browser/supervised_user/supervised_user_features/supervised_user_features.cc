@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_features/supervised_user_features.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 
 namespace supervised_users {
@@ -11,6 +12,16 @@ namespace supervised_users {
 const base::Feature kEduCoexistenceFlowV2{"EduCoexistenceV2",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables refreshed version of the website filter interstitial that is shown to
+// Family Link users when the navigate to the blocked website.
+// This feature is a prerequisite for `kLocalWebApproval` feature.
+const base::Feature kWebFilterInterstitialRefresh{
+    "WebFilterInterstitialRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables local parent approvals for the blocked website on the Family Link
+// user's device.
+// This feature requires a refreshed layout and `kWebFilterInterstitialRefresh`
+// to be enabled.
 const base::Feature kLocalWebApprovals{"LocalWebApprovals",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -18,8 +29,15 @@ bool IsEduCoexistenceFlowV2Enabled() {
   return base::FeatureList::IsEnabled(kEduCoexistenceFlowV2);
 }
 
+bool IsWebFilterInterstitialRefreshEnabled() {
+  DCHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
+         !base::FeatureList::IsEnabled(kLocalWebApprovals));
+  return base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh);
+}
+
 bool IsLocalWebApprovalsEnabled() {
-  return base::FeatureList::IsEnabled(kLocalWebApprovals);
+  return IsWebFilterInterstitialRefreshEnabled() &&
+         base::FeatureList::IsEnabled(kLocalWebApprovals);
 }
 
 }  // namespace supervised_users

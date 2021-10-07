@@ -10,3 +10,14 @@ static_library("supervised_user_features") {
 
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "supervised_user_features_unittest.cc" ]
+  deps = [
+    ":supervised_user_features",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

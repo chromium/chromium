@@ -69,7 +69,9 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   base::test::ScopedFeatureList scoped_feature_list_;
   if (param.is_local_web_approvals_enabled) {
     scoped_feature_list_.InitWithFeatures(
-        {supervised_users::kLocalWebApprovals}, {});
+        /* enabled_features */ {supervised_users::kWebFilterInterstitialRefresh,
+                                supervised_users::kLocalWebApprovals},
+        /* disabled_features */ {});
   }
   std::string result =
       BuildHtml(param.allow_access_requests, param.profile_image_url,

@@ -338,8 +338,11 @@ class SupervisedUserIframeFilterTest
  protected:
   SupervisedUserIframeFilterTest() {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          supervised_users::kLocalWebApprovals);
+      scoped_feature_list_.InitWithFeatures(
+          /* enabled_features */ {supervised_users::
+                                      kWebFilterInterstitialRefresh,
+                                  supervised_users::kLocalWebApprovals},
+          /* disabled_features */ {});
     }
   }
 
