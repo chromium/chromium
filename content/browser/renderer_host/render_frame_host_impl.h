@@ -2322,6 +2322,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   static const char* LifecycleStateImplToString(LifecycleStateImpl state);
 
+  // Computes the nonce to be used for isolation info and storage key.
+  absl::optional<base::UnguessableToken> ComputeNonce(bool anonymous);
+
  protected:
   friend class RenderFrameHostFactory;
 

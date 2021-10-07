@@ -1238,13 +1238,11 @@ NavigationRequest::CreateForSynchronousRendererCommit(
 
   // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
   // top frame origin.
+  absl::optional<base::UnguessableToken> nonce =
+      render_frame_host->ComputeNonce(navigation_request->anonymous());
   navigation_request->commit_params_->storage_key =
-      navigation_request->anonymous()
-          ? blink::StorageKey::CreateWithNonce(origin,
-                                               render_frame_host->GetMainFrame()
-                                                   ->GetPage()
-                                                   .anonymous_iframes_nonce())
-          : blink::StorageKey(origin);
+      nonce ? blink::StorageKey::CreateWithNonce(origin, nonce.value())
+            : blink::StorageKey(origin);
   navigation_request->web_bundle_navigation_info_ =
       std::move(web_bundle_navigation_info);
   if (subresource_web_bundle_navigation_info) {
@@ -4197,12 +4195,11 @@ void NavigationRequest::CommitNavigation() {
   // TODO(https://crbug.com/888079): The storage key's origin is ignored at the
   // moment. We will be able to use it once the browser can compute the origin
   // to commit.
-  commit_params_->storage_key =
-      anonymous() ? blink::StorageKey::CreateWithNonce(
-                        GetOriginToCommit(), render_frame_host_->GetMainFrame()
-                                                 ->GetPage()
-                                                 .anonymous_iframes_nonce())
-                  : blink::StorageKey(GetOriginToCommit());
+  absl::optional<base::UnguessableToken> nonce =
+      render_frame_host_->ComputeNonce(anonymous());
+  commit_params_->storage_key = nonce ? blink::StorageKey::CreateWithNonce(
+                                            GetOriginToCommit(), nonce.value())
+                                      : blink::StorageKey(GetOriginToCommit());
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();

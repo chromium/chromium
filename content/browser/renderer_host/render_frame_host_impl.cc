@@ -3701,10 +3701,15 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
     candidate_site_for_cookies = net::SiteForCookies(top_frame_site);
   }
 
-  const base::UnguessableToken* nonce = nullptr;
+  absl::optional<base::UnguessableToken> nonce = ComputeNonce(anonymous);
+  return net::IsolationInfo::Create(
+      request_type, top_frame_origin, frame_origin, candidate_site_for_cookies,
+      std::move(party_context), nonce ? &nonce.value() : nullptr);
+}
 
-  absl::optional<base::UnguessableToken> fenced_frame_nonce =
-      frame_tree_node_->fenced_frame_nonce();
+absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
+    bool anonymous) {
+  absl::optional<base::UnguessableToken> nonce;
 
   // If it's an anonymous frame tree, use its nonce even if it's within a fenced
   // frame tree to maintain the guarantee that an anonymous frame tree has
@@ -3715,14 +3720,12 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
   // DOM version and will lead to the anonymous iframe nonce being used
   // (crbug.com/1249865).
   if (anonymous) {
-    nonce = &GetPage().anonymous_iframes_nonce();
-  } else if (fenced_frame_nonce.has_value()) {
-    nonce = &(fenced_frame_nonce.value());
+    nonce = GetPage().anonymous_iframes_nonce();
+  } else {
+    nonce = frame_tree_node_->fenced_frame_nonce();
   }
 
-  return net::IsolationInfo::Create(request_type, top_frame_origin,
-                                    frame_origin, candidate_site_for_cookies,
-                                    std::move(party_context), nonce);
+  return nonce;
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
@@ -3744,13 +3747,13 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       new_frame_origin, net::IsolationInfo::RequestType::kOther, anonymous());
   SetLastCommittedOrigin(new_frame_origin);
 
+  absl::optional<base::UnguessableToken> nonce = ComputeNonce(anonymous());
+
   // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
   // top frame origin.
-  SetStorageKey(anonymous()
-                    ? blink::StorageKey::CreateWithNonce(
-                          new_frame_origin,
-                          GetMainFrame()->GetPage().anonymous_iframes_nonce())
-                    : blink::StorageKey(new_frame_origin));
+  SetStorageKey(nonce ? blink::StorageKey::CreateWithNonce(new_frame_origin,
+                                                           nonce.value())
+                      : blink::StorageKey(new_frame_origin));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
