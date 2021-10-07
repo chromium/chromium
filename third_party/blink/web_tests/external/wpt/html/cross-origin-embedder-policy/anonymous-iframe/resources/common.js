@@ -4,7 +4,7 @@ const newAnonymousIframe = (child_origin) => {
   const sub_document_token = token();
   let iframe = document.createElement('iframe');
   iframe.src = child_origin + executor_path + `&uuid=${sub_document_token}`;
-  iframe.crossOrigin = 'anonymous';
+  iframe.anonymous = true;
   document.body.appendChild(iframe);
   return sub_document_token;
 };
