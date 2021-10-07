@@ -3809,11 +3809,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "muting-compromised-credentials",
-    "owners": [ "vsemeniuk", "vasilii" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "nearby-keep-alive-fix",
     "owners": [ "danlee@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 98
