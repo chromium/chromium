@@ -116,12 +116,12 @@ export class VideoResult {
   /**
    * @param {{
    *     resolution: !Resolution,
-   *     duration: (number|undefined),
+   *     duration: number,
    *     videoSaver: !VideoSaver,
    *     everPaused: boolean,
    * }} params
    */
-  constructor({resolution, duration = 0, videoSaver, everPaused}) {
+  constructor({resolution, duration, videoSaver, everPaused}) {
     /**
      * @const {!Resolution}
      * @public
@@ -132,7 +132,7 @@ export class VideoResult {
      * @const {number}
      * @public
      */
-    this.duration = duration || 0;
+    this.duration = duration;
 
     /**
      * @const {!VideoSaver}
@@ -147,6 +147,16 @@ export class VideoResult {
     this.everPaused = everPaused;
   }
 }
+
+/**
+ * @typedef {{
+ *   name: string,
+ *   blob: !Blob,
+ *   resolution: !Resolution,
+ *   duration: number,
+ * }}
+ */
+export let GifResult;
 
 /**
  * Provides functions with external dependency used by video mode and handles
@@ -171,12 +181,11 @@ export class VideoHandler {
 
   /**
    * Handles the result gif video.
-   * @param {!Blob} blob Captured gif blob.
-   * @param {string} name Name of captured gif.
+   * @param {!GifResult} result
    * @return {!Promise}
    * @abstract
    */
-  handleResultGif(blob, name) {}
+  handleResultGif(result) {}
 
   /**
    * Handles the result video snapshot.
@@ -521,7 +530,12 @@ export class Video extends ModeBase {
 
       // TODO(b:191950622): Close capture stream before handleResultGif()
       // opening preview page when multi-stream recording enabled.
-      await this.handler_.handleResultGif(blob, gifName);
+      await this.handler_.handleResultGif({
+        blob,
+        name: gifName,
+        resolution: this.captureResolution_,
+        duration: this.gifRecordTime_.inMilliseconds(),
+      });
     } else {
       this.recordTime_.start({resume: false});
       let /** ?VideoSaver */ videoSaver = null;
@@ -559,7 +573,7 @@ export class Video extends ModeBase {
       try {
         await this.handler_.handleResultVideo(new VideoResult({
           resolution: this.captureResolution_,
-          duration: this.recordTime_.inMinutes(),
+          duration: this.recordTime_.inMilliseconds(),
           videoSaver,
           everPaused: this.everPaused_,
         }));

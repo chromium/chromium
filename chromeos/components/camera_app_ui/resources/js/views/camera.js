@@ -840,6 +840,7 @@ export class Camera extends View {
    */
   async handleResultVideo({resolution, duration, videoSaver, everPaused}) {
     metrics.sendCaptureEvent({
+      recordType: metrics.RecordType.NORMAL_VIDEO,
       facing: this.facingMode_,
       duration,
       resolution,
@@ -857,11 +858,23 @@ export class Camera extends View {
   /**
    * @override
    */
-  async handleResultGif(blob, name) {
+  async handleResultGif({blob, name, resolution, duration}) {
+    const sendEvent = (gifResult) => {
+      metrics.sendCaptureEvent({
+        recordType: metrics.RecordType.GIF,
+        facing: this.facingMode_,
+        resolution,
+        duration,
+        shutterType: this.shutterType_,
+        gifResult,
+      });
+    };
+
     const options = new review.Options(
         new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
         new review.Option(I18nString.LABEL_SHARE, {
           callback: async () => {
+            sendEvent(metrics.GifResultType.SHARE);
             const file = new File([blob], name, {type: MimeType.GIF});
             const shareData = {files: [file]};
             try {
@@ -878,7 +891,10 @@ export class Camera extends View {
     );
     const result = await this.doReview_(blob, options);
     if (result) {
+      sendEvent(metrics.GifResultType.SAVE);
       await this.resultSaver_.saveGif(blob, name);
+    } else {
+      sendEvent(metrics.GifResultType.RETAKE);
     }
   }
 

@@ -81,6 +81,8 @@ export async function setMetricsEnabled(enabled) {
   await (await gaHelper).setMetricsEnabled(GA_ID, enabled);
 }
 
+const SCHEMA_VERSION = 1;
+
 /**
  * Initializes metrics with parameters.
  */
@@ -92,6 +94,7 @@ export async function initMetrics() {
   baseDimen = new Map([
     [1, boardName],
     [2, osVer],
+    [31, SCHEMA_VERSION],
   ]);
 
   const GA_LOCAL_STORAGE_KEY = 'google-analytics.analytics.user-id';
@@ -146,6 +149,27 @@ export const DocResultType = {
 };
 
 /**
+ * Types of gif recording result dimension.
+ * @enum {number}
+ */
+export const GifResultType = {
+  NOT_GIF_RESULT: 0,
+  RETAKE: 1,
+  SHARE: 2,
+  SAVE: 3,
+};
+
+/**
+ * Types of recording in video mode.
+ * @enum {number}
+ */
+export const RecordType = {
+  NOT_RECORDING: 0,
+  NORMAL_VIDEO: 1,
+  GIF: 2,
+};
+
+/**
  * Types of different ways to trigger shutter button.
  * @enum {string}
  */
@@ -173,7 +197,8 @@ export class CaptureEventParam {
     this.facing;
 
     /**
-     * @type {(number|undefined)} Length of 1 minute buckets for captured video.
+     * @type {(number|undefined)} Length of duration for captured motion result
+     *     in milliseconds.
      */
     this.duration;
 
@@ -208,6 +233,16 @@ export class CaptureEventParam {
      * @type {!DocResultType|undefined}
      */
     this.docResult;
+
+    /**
+     * @type {!GifResultType|undefined}
+     */
+    this.gifResult;
+
+    /**
+     * @type {!RecordType|undefined}
+     */
+    this.recordType;
   }
 }
 
@@ -224,6 +259,8 @@ export function sendCaptureEvent({
   isVideoSnapshot = false,
   everPaused = false,
   docResult = DocResultType.NOT_DOCUMENT,
+  recordType = RecordType.NOT_RECORDING,
+  gifResult = GifResultType.NOT_GIF_RESULT,
 }) {
   /**
    * @param {!Array<!state.StateUnion>} states
@@ -268,6 +305,9 @@ export function sendCaptureEvent({
         [22, isVideoSnapshot],
         [23, everPaused],
         [27, docResult],
+        [28, recordType],
+        [29, gifResult],
+        [30, duration],
       ]));
 }
 

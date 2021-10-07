@@ -146,14 +146,6 @@ class RecordTimeBase {
   }
 
   /**
-   * Returns the recorded duration in minutes.
-   * @return {number}
-   */
-  inMinutes() {
-    return Math.ceil(this.totalDuration_ / 1000 / 60);
-  }
-
-  /**
    * Returns the recorded duration in milliseconds.
    * @return {number}
    */
