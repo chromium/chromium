@@ -65,6 +65,10 @@ views::BubbleBorder::Arrow MapToBubbleBorderArrow(
 
 }  // namespace
 
+// static
+bool FeaturePromoControllerViews::active_window_check_blocked_for_testing =
+    false;
+
 FeaturePromoControllerViews::FeaturePromoControllerViews(
     BrowserView* browser_view,
     FeaturePromoBubbleOwner* bubble_owner)
@@ -246,6 +250,16 @@ FeaturePromoControllerViews::CloseBubbleAndContinuePromo(
   return PromoHandle(weak_ptr_factory_.GetWeakPtr());
 }
 
+// static
+void FeaturePromoControllerViews::BlockActiveWindowCheckForTesting() {
+  active_window_check_blocked_for_testing = true;
+}
+
+// static
+bool FeaturePromoControllerViews::IsActiveWindowCheckBlockedForTesting() {
+  return active_window_check_blocked_for_testing;
+}
+
 void FeaturePromoControllerViews::BlockPromosForTesting() {
   promos_blocked_for_testing_ = true;
 
@@ -271,6 +285,11 @@ bool FeaturePromoControllerViews::MaybeShowPromoImpl(
   // the IPH backend ignores incognito and writes to the parent profile.
   // See https://bugs.chromium.org/p/chromium/issues/detail?id=1128728#c30
   if (browser_view_->GetProfile()->IsIncognitoProfile())
+    return false;
+
+  // Don't show IPH if the anchor view is in an inactive window
+  if (!active_window_check_blocked_for_testing &&
+      !anchor_view->GetWidget()->ShouldPaintAsActive())
     return false;
 
   // Some checks should not be done in demo mode, because we absolutely want to

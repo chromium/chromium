@@ -102,6 +102,14 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // Gets the IPH backend. Provided for convenience.
   feature_engagement::Tracker* feature_engagement_tracker() { return tracker_; }
 
+  // Blocks a check that the anchor view for the IPH is in an active window
+  // before showing the IPH. Intended for browser and unit tests.
+  static void BlockActiveWindowCheckForTesting();
+
+  // Returns true if the IPH should be allowed to show in an inactive window.
+  // False by default, but browser and unit tests may modify this behavior.
+  static bool IsActiveWindowCheckBlockedForTesting();
+
   // Blocks any further promos from showing. Additionally cancels the
   // current promo unless an outstanding PromoHandle from
   // CloseBubbleAndContinuePromo exists. Intended for browser tests.
@@ -166,6 +174,7 @@ class FeaturePromoControllerViews : public FeaturePromoController {
   // it.
   views::ViewTracker anchor_view_tracker_;
 
+  static bool active_window_check_blocked_for_testing;
   bool promos_blocked_for_testing_ = false;
 
   base::WeakPtrFactory<FeaturePromoControllerViews> weak_ptr_factory_{this};

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -59,6 +60,11 @@ class FeaturePromoDialogTest : public DialogBrowserTest {
   void SetUp() override {
     webapps::TestAppBannerManagerDesktop::SetUp();
     DialogBrowserTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+    browser()->window()->Activate();
+    ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   }
 
   ~FeaturePromoDialogTest() override = default;
@@ -156,6 +162,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_DesktopPwaInstall) {
                   ->page_action_icon_controller()
                   ->GetIconView(PageActionIconType::kPwaInstall)
                   ->GetVisible());
+  browser()->window()->Activate();
+  ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
 
   ShowAndVerifyUi();
 }

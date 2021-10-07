@@ -2883,7 +2883,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_browsertest.cc",
         "../browser/ui/views/translate/translate_language_browsertest.cc",
-        "../browser/ui/views/user_education/feature_promo_dialog_browsertest.cc",
         "../browser/ui/views/user_education/tip_marquee_view_browsertest.cc",
         "../browser/ui/views/user_education/tutorial_dialog_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
@@ -8425,6 +8424,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/ui/views/translate/translate_bubble_test_utils_views.cc",
         "../browser/ui/views/translate/translate_bubble_view_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_bubble_view_interactive_uitest.cc",
+        "../browser/ui/views/user_education/feature_promo_dialog_interactive_uitest.cc",
         "../browser/ui/views/user_education/feature_promo_snooze_interactive_uitest.cc",
         "../browser/ui/views/user_education/interaction_sequence_interactive_uitest.cc",
       ]

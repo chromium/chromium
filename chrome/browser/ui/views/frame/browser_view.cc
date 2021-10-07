@@ -1894,7 +1894,9 @@ void BrowserView::MaybeShowWebUITabStripIPH() {
 }
 
 void BrowserView::MaybeShowReadingListInSidePanelIPH() {
-  if (!base::FeatureList::IsEnabled(features::kSidePanel))
+  if (!base::FeatureList::IsEnabled(features::kSidePanel) ||
+      !(browser_->window()->IsActive() ||
+        FeaturePromoControllerViews::IsActiveWindowCheckBlockedForTesting()))
     return;
 
   PrefService* pref_service = browser()->profile()->GetPrefs();

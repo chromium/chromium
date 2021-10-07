@@ -799,6 +799,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, OpenProfile) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
+  FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
   // Create a second profile.
   base::FilePath other_path = CreateNewProfileWithoutBrowser();

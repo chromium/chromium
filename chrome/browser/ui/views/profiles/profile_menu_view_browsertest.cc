@@ -291,6 +291,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 // Regression test for https://crbug.com/1205901
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
   // Display the IPH.
+  FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
   FeaturePromoControllerViews* promo_controller =
       BrowserView::GetBrowserViewForBrowser(browser())
           ->feature_promo_controller();

@@ -78,6 +78,7 @@ IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProfileCustomizationBubbleBrowserTest, IPH) {
   AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(base::Seconds(0));
+  FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
   // Create the customization bubble, owned by the view hierarchy.
   ProfileCustomizationBubbleView* bubble =
       ProfileCustomizationBubbleView::CreateBubble(browser()->profile(),

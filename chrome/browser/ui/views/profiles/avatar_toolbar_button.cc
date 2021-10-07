@@ -355,8 +355,10 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPHInitialized(bool success) {
 
   DCHECK(
       feature_promo_controller_->feature_engagement_tracker()->IsInitialized());
-  feature_promo_controller_->MaybeShowPromo(
-      feature_engagement::kIPHProfileSwitchFeature);
+  if (browser_->window()->IsActive() ||
+      FeaturePromoControllerViews::IsActiveWindowCheckBlockedForTesting())
+    feature_promo_controller_->MaybeShowPromo(
+        feature_engagement::kIPHProfileSwitchFeature);
 }
 
 BEGIN_METADATA(AvatarToolbarButton, ToolbarButton)

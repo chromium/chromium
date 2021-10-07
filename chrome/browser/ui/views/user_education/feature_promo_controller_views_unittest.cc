@@ -49,6 +49,7 @@ class FeaturePromoControllerViewsTest : public TestWithBrowserView {
   void SetUp() override {
     TestWithBrowserView::SetUp();
     controller_ = browser_view()->feature_promo_controller();
+    FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
 
     mock_tracker_ =
         static_cast<NiceMock<feature_engagement::test::MockTracker>*>(
