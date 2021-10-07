@@ -236,7 +236,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
   __weak NewTabPageViewController* weakSelf = self;
 
   CGFloat yOffsetBeforeRotation = self.collectionView.contentOffset.y;
-  BOOL isScrolledToTopBeforeRotation = [self isNTPScrolledToTop];
+  CGFloat heightAboveFeedBeforeRotation =
+      [self adjustedContentSuggestionsHeight];
 
   void (^alongsideBlock)(id<UIViewControllerTransitionCoordinatorContext>) = ^(
       id<UIViewControllerTransitionCoordinatorContext> context) {
@@ -251,14 +252,14 @@ const CGFloat kOffsetToPinOmnibox = 100;
     [self.contentSuggestionsViewController.view setNeedsLayout];
     [self.contentSuggestionsViewController.view layoutIfNeeded];
 
+    CGFloat heightAboveFeedDifference =
+        [self adjustedContentSuggestionsHeight] - heightAboveFeedBeforeRotation;
+
     // Rotating the device can change the content suggestions height. This
     // ensures that it is adjusted if necessary.
-    // TODO(crbug.com/1170995): Remove once the Feed supports a custom
-    // header.
-    if (isScrolledToTopBeforeRotation &&
-        -yOffsetBeforeRotation < [weakSelf adjustedContentSuggestionsHeight]) {
+    if (yOffsetBeforeRotation < 0) {
       weakSelf.collectionView.contentOffset =
-          CGPointMake(0, -[weakSelf adjustedContentSuggestionsHeight]);
+          CGPointMake(0, yOffsetBeforeRotation - heightAboveFeedDifference);
       [weakSelf updateContentSuggestionForCurrentLayout];
     } else {
       [weakSelf.contentSuggestionsViewController.collectionView

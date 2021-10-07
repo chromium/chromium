@@ -722,8 +722,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Test to ensure that initial position and content are maintained when rotating
 // the device back and forth.
-// TODO(crbug.com/1255548): Flaky on ios-simulator-noncq.
-- (void)DISABLED_testInitialPositionAndOrientationChange {
+- (void)testInitialPositionAndOrientationChange {
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
 
   [self testNTPInitialPositionAndContent:collectionView];
