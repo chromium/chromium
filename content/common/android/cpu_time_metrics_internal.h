@@ -115,11 +115,16 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   void OnVisibilityChangedOnThreadPool(bool visible);
   void PerformFullCollectionOnThreadPool();
   void CollectHighLevelMetricsOnThreadPool();
+  void ReportAverageCpuLoad(base::TimeDelta cumulative_cpu_time);
 
   // Sample CPU time after a certain number of main-thread task to balance
   // overhead of sampling and loss at process termination.
   static constexpr int kReportAfterEveryNTasksPersistentProcess = 2500;
   static constexpr int kReportAfterEveryNTasksOtherProcess = 1000;
+  static constexpr base::TimeDelta kAvgCpuLoadReportInterval =
+      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kIdleCpuLoadReportInterval =
+      base::TimeDelta::FromSeconds(5);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   power_scheduler::PowerModeArbiter* const arbiter_;
@@ -136,6 +141,10 @@ class CONTENT_EXPORT ProcessCpuTimeMetrics
   absl::optional<power_scheduler::PowerMode> power_mode_;
   ProcessTypeForUma process_type_;
   base::TimeDelta reported_cpu_time_;
+  base::TimeDelta cpu_time_on_last_load_report_;
+  base::TimeTicks cpu_load_report_time_;
+  base::TimeDelta cpu_time_for_idle_cpu_;
+  base::TimeTicks timestamp_for_idle_cpu_;
 
   // Lives on |task_runner_| after construction.
   std::unique_ptr<DetailedCpuTimeMetrics> detailed_metrics_;

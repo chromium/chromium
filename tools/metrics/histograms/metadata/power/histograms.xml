@@ -82,6 +82,24 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
 </histogram>
 
+<histogram name="Power.AvgCpuLoad.{ProcessType}" units="%"
+    expires_after="2022-10-04">
+  <owner>eseckler@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
+  <summary>
+    Records the average CPU load caused by the corresponding process over the
+    last 30 (or more) seconds. Emitted at the end of each such period, so not
+    more often that once in 30 sec. Note that CPU load can be greater than 100%
+    on milti-core systems.
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser"/>
+    <variant name="GPU"/>
+    <variant name="Other"/>
+    <variant name="Renderer"/>
+  </token>
+</histogram>
+
 <histogram name="Power.BacklightLevelOnAC" units="%" expires_after="2022-01-02">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -761,6 +779,24 @@ Also used in tools/metrics/histograms/metadata/others/histograms.xml
   </summary>
   <token key="ProcessType">
     <variant name="Browser"/>
+    <variant name="Renderer"/>
+  </token>
+</histogram>
+
+<histogram name="Power.IdleCpuLoad.{ProcessType}" units="%"
+    expires_after="2022-10-04">
+  <owner>eseckler@chromium.org</owner>
+  <owner>khokhlov@chromium.org</owner>
+  <summary>
+    Records the average CPU load caused by the corresponding process over the
+    last 5 sec (or more) of Idle power mode. Emitted at the end of each such
+    period, so not more often that once in 5 sec. Note that CPU load can be
+    greater than 100% on milti-core systems.
+  </summary>
+  <token key="ProcessType">
+    <variant name="Browser"/>
+    <variant name="GPU"/>
+    <variant name="Other"/>
     <variant name="Renderer"/>
   </token>
 </histogram>

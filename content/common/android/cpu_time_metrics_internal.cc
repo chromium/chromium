@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/no_destructor.h"
@@ -105,6 +106,41 @@ const char* GetPowerModeChangeHistogramNameForProcessType(
     default:
       return "Power.PowerScheduler.ProcessPowerModeChange.Other";
   }
+}
+
+const char* GetAvgCpuLoadHistogramNameForProcessType(ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.AvgCpuLoad.Browser";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.AvgCpuLoad.Renderer";
+    case ProcessTypeForUma::kGpu:
+      return "Power.AvgCpuLoad.GPU";
+    default:
+      return "Power.AvgCpuLoad.Other";
+  }
+}
+
+const char* GetIdleCpuLoadHistogramNameForProcessType(ProcessTypeForUma type) {
+  switch (type) {
+    case ProcessTypeForUma::kBrowser:
+      return "Power.IdleCpuLoad.Browser";
+    case ProcessTypeForUma::kRenderer:
+      return "Power.IdleCpuLoad.Renderer";
+    case ProcessTypeForUma::kGpu:
+      return "Power.IdleCpuLoad.GPU";
+    default:
+      return "Power.IdleCpuLoad.Other";
+  }
+}
+
+// Return whether the power mode is considered idle for the purpose of the CPU
+// load reporting. "Idle" in this case means that nothing CPU-intensive is
+// expected to be happening while in this mode.
+bool IsIdleMode(power_scheduler::PowerMode power_mode) {
+  return power_mode == power_scheduler::PowerMode::kIdle ||
+         power_mode == power_scheduler::PowerMode::kNopAnimation ||
+         power_mode == power_scheduler::PowerMode::kBackground;
 }
 
 PowerModeForUma GetPowerModeForUma(power_scheduler::PowerMode power_mode) {
@@ -865,6 +901,66 @@ void ProcessCpuTimeMetrics::CollectHighLevelMetricsOnThreadPool() {
     }
 
     reported_cpu_time_ = cumulative_cpu_time;
+
+    ReportAverageCpuLoad(cumulative_cpu_time);
+  }
+}
+
+void ProcessCpuTimeMetrics::ReportAverageCpuLoad(
+    base::TimeDelta cumulative_cpu_time) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (cpu_load_report_time_ == base::TimeTicks()) {
+    cpu_load_report_time_ = now;
+    cpu_time_on_last_load_report_ = cumulative_cpu_time;
+  }
+
+  base::TimeDelta time_since_report = now - cpu_load_report_time_;
+  if (time_since_report >= kAvgCpuLoadReportInterval) {
+    base::TimeDelta cpu_time_since_report =
+        cumulative_cpu_time - cpu_time_on_last_load_report_;
+    int load = 100LL * cpu_time_since_report.InMilliseconds() /
+               time_since_report.InMilliseconds();
+    static const char* histogram_name =
+        GetAvgCpuLoadHistogramNameForProcessType(process_type_);
+    // CPU load can be greater than 100% because of multiple cores.
+    // That's why we use UmaHistogramCounts, not UmaHistogramPercentage.
+    base::UmaHistogramCounts1000(histogram_name, load);
+
+    cpu_load_report_time_ = now;
+    cpu_time_on_last_load_report_ = cumulative_cpu_time;
+  }
+
+  // When the power mode changes, this function is called first, and the
+  // power_mode_ variable is modified after that. So at this point power_mode_
+  // reflects the mode that has been active before now (and might be active
+  // still).
+  // timestamp_for_idle_cpu_ is used to determine the duration of the idle
+  // power mode. It is updated when the "old" mode is not idle, so when the
+  // mode is idle, it contains the timestamp of the idle mode start.
+  // It's also updated after the cpu load over last 5 idle seconds has been
+  // reported, and a new 5-sec period is started.
+  if (power_mode_.has_value() && IsIdleMode(*power_mode_) &&
+      timestamp_for_idle_cpu_ != base::TimeTicks()) {
+    base::TimeDelta time_in_idle = now - timestamp_for_idle_cpu_;
+    if (time_since_report >= kIdleCpuLoadReportInterval) {
+      base::TimeDelta cpu_time_in_idle =
+          cumulative_cpu_time - cpu_time_for_idle_cpu_;
+      int idle_load = 100LL * cpu_time_in_idle.InMilliseconds() /
+                      time_in_idle.InMilliseconds();
+      static const char* histogram_name =
+          GetIdleCpuLoadHistogramNameForProcessType(process_type_);
+      base::UmaHistogramCounts1000(histogram_name, idle_load);
+
+      timestamp_for_idle_cpu_ = now;
+      cpu_time_for_idle_cpu_ = cumulative_cpu_time;
+    }
+  } else {
+    // When this function is called next time, we'll know whether the new power
+    // mode is idle or not. If it's idle, we'll use timestamp_for_idle_cpu_
+    // to determine idle mode duration. If it's not, we'll just update
+    // timestamp_for_idle_cpu_ once again.
+    timestamp_for_idle_cpu_ = now;
+    cpu_time_for_idle_cpu_ = cumulative_cpu_time;
   }
 }
 
