@@ -28,6 +28,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   NavigationRequestInfo(
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::BeginNavigationParamsPtr begin_params,
+      network::mojom::WebSandboxFlags sandbox_flags,
       const net::IsolationInfo& isolation_info,
       bool is_main_frame,
       bool are_ancestors_secure,
@@ -49,6 +50,16 @@ struct CONTENT_EXPORT NavigationRequestInfo {
 
   blink::mojom::CommonNavigationParamsPtr common_params;
   blink::mojom::BeginNavigationParamsPtr begin_params;
+
+  // Sandbox flags inherited from the frame where this navigation occurs. In
+  // particular, this does not include:
+  // - Sandbox flags inherited from the creator via the PolicyContainer.
+  // - Sandbox flags forced for MHTML documents.
+  // - Sandbox flags from the future response via CSP.
+  // It is used by the ExternalProtocolHandler to ensure sandboxed iframe won't
+  // navigate the user toward a different application, which can be seen as a
+  // main frame navigation somehow.
+  const network::mojom::WebSandboxFlags sandbox_flags;
 
   // Contains information used to prevent sharing information from a navigation
   // request across first party contexts. In particular, tracks the

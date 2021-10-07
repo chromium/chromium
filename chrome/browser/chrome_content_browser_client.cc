@@ -33,6 +33,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
@@ -291,6 +292,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -1035,9 +1037,18 @@ bool ShouldHonorPolicies() {
 #endif  // defined(OS_WIN)
 }
 
-void LaunchURL(const GURL& url,
+// Used by Enterprise policy. Disable blocking of navigations toward external
+// applications from a sandboxed iframe.
+// https://chromestatus.com/feature/5680742077038592
+const char kDisableSandboxExternalProtocolSwitch[] =
+    "disable-sandbox-external-protocols";
+
+void LaunchURL(base::WeakPtr<ChromeContentBrowserClient> client,
+               const GURL& url,
                content::WebContents::Getter web_contents_getter,
                ui::PageTransition page_transition,
+               bool is_main_frame,
+               network::mojom::WebSandboxFlags sandbox_flags,
                bool has_user_gesture,
                const absl::optional<url::Origin>& initiating_origin) {
   // If there is no longer a WebContents, the request may have raced with tab
@@ -1063,6 +1074,52 @@ void LaunchURL(const GURL& url,
   if (protocol_handler_registry &&
       protocol_handler_registry->IsHandledProtocol(url.scheme()))
     return;
+
+  // Sandbox flags
+  // =============
+  //
+  // Navigations to external protocol in iframe can be seen as "top-level"
+  // navigations somehow, because they cause the user to switch from Chrome's
+  // page toward a different application.
+  //
+  // Internally in Chrome, they are seen as aborted iframe navigation, so the
+  // regular sandbox logic do not really apply.
+  //
+  // This block adds an extra logic, gating external protocol in iframes to have
+  // one of:
+  // - 'allow-popups'
+  // - 'allow-top-navigation'
+  // - 'allow-top-navigation-by-user-navigation' + user-activation
+  //
+  // See https://crbug.com/1148777
+  if (!is_main_frame) {
+    using SandboxFlags = network::mojom::WebSandboxFlags;
+    auto allow = [&](SandboxFlags flag) {
+      return (sandbox_flags & flag) == SandboxFlags::kNone;
+    };
+    bool allowed = (allow(SandboxFlags::kPopups)) ||
+                   (allow(SandboxFlags::kTopNavigation)) ||
+                   (allow(SandboxFlags::kTopNavigationByUserActivation) &&
+                    has_user_gesture);
+
+    if (!allowed) {
+      content::RenderFrameHost* rfh = web_contents->GetMainFrame();
+      if (client) {
+        client->LogWebFeatureForCurrentPage(
+            rfh, blink::mojom::WebFeature::kExternalProtocolBlockedBySandbox);
+      }
+
+      if (base::FeatureList::IsEnabled(
+              features::kSandboxExternalProtocolBlocked) &&
+          !base::CommandLine::ForCurrentProcess()->HasSwitch(
+              kDisableSandboxExternalProtocolSwitch)) {
+        rfh->AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kError,
+            "Navigation to external protocol blocked by sandbox.");
+        return;
+      }
+    }
+  }
 
   bool is_allowlisted = false;
   PolicyBlocklistService* service =
@@ -1230,6 +1287,7 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kSharedArrayBufferUnrestrictedAccessAllowed, false);
 #endif
+  registry->RegisterBooleanPref(prefs::kSandboxExternalProtocolBlocked, true);
   registry->RegisterBooleanPref(
       prefs::kCrossOriginWebAssemblyModuleSharingEnabled, false);
   registry->RegisterBooleanPref(prefs::kDisplayCapturePermissionsPolicyEnabled,
@@ -2243,6 +2301,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             switches::kSharedArrayBufferUnrestrictedAccessAllowed);
       }
 #endif
+      if (!prefs->GetBoolean(prefs::kSandboxExternalProtocolBlocked))
+        command_line->AppendSwitch(kDisableSandboxExternalProtocolSwitch);
 
       if (prefs->GetBoolean(
               prefs::kCrossOriginWebAssemblyModuleSharingEnabled)) {
@@ -3358,9 +3418,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
       web_prefs->picture_in_picture_enabled =
           delegate->IsPictureInPictureEnabled();
-
-      web_prefs->force_dark_mode_enabled =
-          delegate->IsForceDarkWebContentEnabled();
     }
 #endif  // defined(OS_ANDROID)
 
@@ -5419,6 +5476,7 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
     int frame_tree_node_id,
     content::NavigationUIData* navigation_data,
     bool is_main_frame,
+    network::mojom::WebSandboxFlags sandbox_flags,
     ui::PageTransition page_transition,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
@@ -5445,9 +5503,10 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
 #endif  // defined(ANDROID)
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LaunchURL, url, std::move(web_contents_getter),
-                     page_transition, has_user_gesture, initiating_origin));
+      FROM_HERE, base::BindOnce(&LaunchURL, weak_factory_.GetWeakPtr(), url,
+                                std::move(web_contents_getter), page_transition,
+                                is_main_frame, sandbox_flags, has_user_gesture,
+                                initiating_origin));
   return true;
 }
 

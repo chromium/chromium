@@ -11,6 +11,7 @@ namespace content {
 NavigationRequestInfo::NavigationRequestInfo(
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::BeginNavigationParamsPtr begin_params,
+    network::mojom::WebSandboxFlags sandbox_flags,
     const net::IsolationInfo& isolation_info,
     bool is_main_frame,
     bool are_ancestors_secure,
@@ -29,6 +30,7 @@ NavigationRequestInfo::NavigationRequestInfo(
     bool is_pdf)
     : common_params(std::move(common_params)),
       begin_params(std::move(begin_params)),
+      sandbox_flags(sandbox_flags),
       isolation_info(isolation_info),
       is_main_frame(is_main_frame),
       are_ancestors_secure(are_ancestors_secure),

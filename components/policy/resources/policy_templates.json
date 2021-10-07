@@ -19187,6 +19187,45 @@
       cross-origin isolated.''',
     },
     {
+      'name': 'SandboxExternalProtocolBlocked',
+      'owners': ['arthursonzogni@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:96-', 'chrome_os:96-'],
+      'device_only': False,
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Chrome to block navigations to external protocols inside sandboxed iframe',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent Chrome to block navigations to external protocols inside sandboxed iframe',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 913,
+      'caption': 'Allow Chrome to block navigations toward external protocols in sandboxed iframes',
+      'tags': ['system-security'],
+      'desc': '''Chrome will block navigations toward external protocols inside
+      sandboxed iframe. See https://chromestatus.com/features/5680742077038592.
+
+      When True, this lets Chrome blocks those navigations.
+
+      When False, this prevents Chrome from blocking those navigations.
+
+      This defaults to True: security feature enabled.
+
+      This can be used by Enterprise affected by these restrictions to
+      temporarily lift it.
+      ''',
+    },
+    {
       'name': 'CrossOriginWebAssemblyModuleSharingEnabled',
       'owners': ['ahaas@chromium.org', 'clamy@chromium.org', 'vahl@chromium.org'],
       'type': 'main',
@@ -29291,6 +29330,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 912,
+  'highest_id_currently_used': 913,
   'highest_atomic_group_id_currently_used': 41
 }

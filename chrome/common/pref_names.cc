@@ -3107,6 +3107,11 @@ const char kAutoplayWhitelist[] = "media.autoplay_whitelist";
 const char kBlockAutoplayEnabled[] = "media.block_autoplay";
 #endif  // !defined(OS_ANDROID)
 
+// Boolean allowing Chrome to block external protocol navigation in sandboxed
+// iframes.
+const char kSandboxExternalProtocolBlocked[] =
+    "profile.sandbox_external_protocol_blocked";
+
 #if defined(OS_LINUX)
 // Boolean that indicates if native notifications are allowed to be used in
 // place of Chrome notifications. Will be replaced by kAllowSystemNotifications.

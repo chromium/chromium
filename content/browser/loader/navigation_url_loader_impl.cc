@@ -88,6 +88,7 @@
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/cpp/url_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -664,6 +665,7 @@ NavigationURLLoaderImpl::PrepareForNonInterceptedRequest(
           navigation_ui_data_.get(),
           resource_request_->resource_type ==
               static_cast<int>(blink::mojom::ResourceType::kMainFrame),
+          request_info_->sandbox_flags,
           static_cast<ui::PageTransition>(resource_request_->transition_type),
           resource_request_->has_user_gesture, initiating_origin,
           &loader_factory);

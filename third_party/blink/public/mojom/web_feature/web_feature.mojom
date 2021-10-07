@@ -3365,6 +3365,7 @@ enum WebFeature {
   kRegionCapture = 4055,
   kAppHistory = 4056,
   kFlexboxAlignSingleLineDifference = 4057,
+  kExternalProtocolBlockedBySandbox = 4058,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

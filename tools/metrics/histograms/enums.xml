@@ -26485,6 +26485,7 @@ Called by update_document_policy_enum.py.-->
   <int value="910" label="DeskTemplatesEnabled"/>
   <int value="911" label="PreconfiguredDeskTemplates"/>
   <int value="912" label="FastPairEnabled"/>
+  <int value="913" label="SandboxExternalProtocol"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
@@ -34766,6 +34767,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4055" label="RegionCapture"/>
   <int value="4056" label="AppHistory"/>
   <int value="4057" label="FlexboxAlignSingleLineDifference"/>
+  <int value="4058" label="ExternalProtocolBlockedBySandbox"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

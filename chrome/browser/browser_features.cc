@@ -70,6 +70,24 @@ const base::Feature kUserDataSnapshot{"UserDataSnapshot",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Gates sandboxed iframe navigation toward external protocol behind any of:
+// - allow-popups
+// - allow-top-navigation
+// - allow-top-navigation-with-user-gesture (+ user gesture)
+//
+// Motivation:
+// Developers are surprised that a sandboxed iframe can navigate and/or
+// redirect the user toward an external application.
+// General iframe navigation in sandboxed iframe are not blocked normally,
+// because they stay within the iframe. However they can be seen as a popup or
+// a top-level navigation when it leads to opening an external application. In
+// this case, it makes sense to extend the scope of sandbox flags, to block
+// malvertising.
+//
+// Implementation bug: https://crbug.com/1253379
+const base::Feature kSandboxExternalProtocolBlocked{
+    "SandboxExternalProtocolBlocked", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables migration of the network context data from `unsandboxed_data_path` to
 // `data_path`. See the explanation in network_context.mojom.
 const base::Feature kTriggerNetworkDataMigration{
