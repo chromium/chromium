@@ -10,6 +10,7 @@
 #include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -23,15 +24,27 @@ ui::DeskExtension* GetDeskExtension(aura::Window* window) {
 
 class DesksHelperLacros : public chromeos::DesksHelper {
  public:
-  DesksHelperLacros(aura::Window* window) : window_(window) {}
+  explicit DesksHelperLacros(aura::Window* window) : window_(window) {}
   DesksHelperLacros(const DesksHelperLacros&) = delete;
   DesksHelperLacros& operator=(const DesksHelperLacros&) = delete;
   ~DesksHelperLacros() override = default;
 
   // chromeos::DesksHelper:
   bool BelongsToActiveDesk(aura::Window* window) override {
-    NOTIMPLEMENTED();
-    return false;
+    views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+    DCHECK(widget);
+    // If the window is on all workspaces or unassigned, we should consider that
+    // the window belongs to active desk.
+    if (widget->IsVisibleOnAllWorkspaces())
+      return true;
+    const std::string& workspace = widget->GetWorkspace();
+    if (workspace.empty())
+      return true;
+
+    int desk_index;
+    if (!base::StringToInt(workspace, &desk_index))
+      return false;
+    return GetActiveDeskIndex() == desk_index;
   }
   int GetActiveDeskIndex() const override {
     return GetDeskExtension(window_)->GetActiveDeskIndex();
