@@ -41,7 +41,7 @@ bool OpenTypeMathSupport::HasMathData(const HarfBuzzFace* harfbuzz_face) {
     return false;
 
   hb_font_t* font =
-      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout);
+      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout);
   DCHECK(font);
   hb_face_t* face = hb_font_get_face(font);
   DCHECK(face);
@@ -56,7 +56,7 @@ absl::optional<float> OpenTypeMathSupport::MathConstant(
     return absl::nullopt;
 
   hb_font_t* font =
-      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout);
+      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout);
   DCHECK(font);
 
   hb_position_t harfbuzz_value = hb_ot_math_get_constant(
@@ -134,7 +134,7 @@ absl::optional<float> OpenTypeMathSupport::MathItalicCorrection(
     return absl::nullopt;
 
   hb_font_t* font =
-      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout);
+      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout);
 
   return absl::optional<float>(HarfBuzzUnitsToFloat(
       hb_ot_math_get_glyph_italics_correction(font, glyph)));
@@ -162,7 +162,7 @@ Vector<RecordType> GetHarfBuzzMathRecord(
     HarfBuzzMathRecordConverter<HarfBuzzRecordType, RecordType> converter,
     absl::optional<RecordType> prepended_record) {
   hb_font_t* hb_font =
-      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout);
+      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout);
   DCHECK(hb_font);
 
   hb_direction_t hb_stretch_axis = HarfBuzzDirection(stretch_axis);
@@ -242,7 +242,7 @@ OpenTypeMathSupport::GetGlyphPartRecords(
           absl::optional<OpenTypeMathStretchData::GlyphPartRecord>());
   if (italic_correction && !parts.IsEmpty()) {
     hb_font_t* hb_font =
-        harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout);
+        harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::kNoVerticalLayout);
     // A GlyphAssembly subtable exists for the specified font, glyph and stretch
     // axis since it has been possible to retrieve the GlyphPartRecords. This
     // means that the following call is guaranteed to get an italic correction.

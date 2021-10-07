@@ -333,7 +333,7 @@ int NGSvgTextQuery::CharacterNumberAtPosition(
           hit_item->ScaleInlineOffset(hit_item->IsHorizontal()
                                           ? transformed_point.left
                                           : transformed_point.top),
-          BreakGlyphs);
+          BreakGlyphsOption(true));
   return addressable_code_unit_count + offset_in_item;
 }
 

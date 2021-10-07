@@ -300,12 +300,12 @@ float ShapeResult::RunInfo::XPositionForOffset(
 // In some ways, CharacterIndexForXPosition is the reverse of
 // XPositionForOffset. Given a target pixel distance on screen space, returns a
 // character index for the end of the interval that would be included within
-// that space. @break_glyphs_option controls wether we use grapheme information
+// that space. @break_glyphs controls whether we use grapheme information
 // to break glyphs into grapheme clusters and return character that are a part
 // of a glyph.
 void ShapeResult::RunInfo::CharacterIndexForXPosition(
     float target_x,
-    BreakGlyphsOption break_glyphs_option,
+    BreakGlyphsOption break_glyphs,
     GlyphIndexResult* result) const {
   DCHECK(target_x >= 0 && target_x <= width_);
 
@@ -353,8 +353,7 @@ void ShapeResult::RunInfo::CharacterIndexForXPosition(
   // representing a sequence of glyphs, of size glyph_sequence_advance. We
   // linearly interpolate how much space each character takes, and reduce the
   // sequence to only match the character size.
-  if (break_glyphs_option == BreakGlyphs &&
-      glyph_sequence_end > glyph_sequence_start) {
+  if (break_glyphs && glyph_sequence_end > glyph_sequence_start) {
     int graphemes = NumGraphemes(glyph_sequence_start, glyph_sequence_end);
     if (graphemes > 1) {
       float unit_size = result->advance / graphemes;
@@ -499,7 +498,7 @@ unsigned ShapeResult::PreviousSafeToBreakOffset(unsigned index) const {
 // If the position is outside of the result, returns the start or the end offset
 // depends on the position.
 void ShapeResult::OffsetForPosition(float target_x,
-                                    BreakGlyphsOption break_glyphs_option,
+                                    BreakGlyphsOption break_glyphs,
                                     GlyphIndexResult* result) const {
   if (target_x <= 0) {
     if (IsRtl()) {
@@ -522,8 +521,7 @@ void ShapeResult::OffsetForPosition(float target_x,
     float offset_for_run = target_x - current_x;
     if (offset_for_run >= 0 && offset_for_run < run->width_) {
       // The x value in question is within this script run.
-      run->CharacterIndexForXPosition(offset_for_run, break_glyphs_option,
-                                      result);
+      run->CharacterIndexForXPosition(offset_for_run, break_glyphs, result);
       result->characters_on_left_runs = characters_so_far;
       if (IsRtl()) {
         result->left_character_index =
@@ -560,11 +558,10 @@ void ShapeResult::OffsetForPosition(float target_x,
   DCHECK_LE(result->right_character_index, NumCharacters() + 1);
 }
 
-unsigned ShapeResult::OffsetForPosition(
-    float x,
-    BreakGlyphsOption break_glyphs_option) const {
+unsigned ShapeResult::OffsetForPosition(float x,
+                                        BreakGlyphsOption break_glyphs) const {
   GlyphIndexResult result;
-  OffsetForPosition(x, break_glyphs_option, &result);
+  OffsetForPosition(x, break_glyphs, &result);
 
   // For LTR, the offset is always the left one.
   if (IsLtr())
@@ -582,7 +579,7 @@ unsigned ShapeResult::CaretOffsetForHitTest(
     float x,
     const StringView& text,
     BreakGlyphsOption break_glyphs_option) const {
-  if (break_glyphs_option == BreakGlyphs)
+  if (break_glyphs_option)
     EnsureGraphemes(text);
 
   GlyphIndexResult result;
@@ -595,7 +592,7 @@ unsigned ShapeResult::CaretOffsetForHitTest(
 
 unsigned ShapeResult::OffsetToFit(float x, TextDirection line_direction) const {
   GlyphIndexResult result;
-  OffsetForPosition(x, DontBreakGlyphs, &result);
+  OffsetForPosition(x, BreakGlyphsOption(false), &result);
 
   if (blink::IsLtr(line_direction))
     return result.left_character_index;

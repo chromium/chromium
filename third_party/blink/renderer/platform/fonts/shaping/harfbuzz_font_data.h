@@ -25,8 +25,8 @@ struct HarfBuzzFontData {
  public:
   HarfBuzzFontData()
       : font_(),
-        space_in_gpos_(SpaceGlyphInOpenTypeTables::Unknown),
-        space_in_gsub_(SpaceGlyphInOpenTypeTables::Unknown),
+        space_in_gpos_(SpaceGlyphInOpenTypeTables::kUnknown),
+        space_in_gsub_(SpaceGlyphInOpenTypeTables::kUnknown),
         vertical_data_(nullptr),
         range_set_(nullptr) {}
   HarfBuzzFontData(const HarfBuzzFontData&) = delete;
@@ -46,7 +46,7 @@ struct HarfBuzzFontData {
     font_ = SkFont();
     platform_data.SetupSkFont(&font_);
 
-    if (UNLIKELY(vertical_layout == HarfBuzzFace::PrepareForVerticalLayout)) {
+    if (UNLIKELY(vertical_layout == HarfBuzzFace::kPrepareForVerticalLayout)) {
       FontMetrics::AscentDescentWithHacks(
           ascent, descent, dummy_ascent_inflation, dummy_descent_inflation,
           platform_data, font_);
@@ -99,7 +99,7 @@ struct HarfBuzzFontData {
   float ascent_fallback_;
   float height_fallback_;
 
-  enum class SpaceGlyphInOpenTypeTables { Unknown, Present, NotPresent };
+  enum class SpaceGlyphInOpenTypeTables { kUnknown, kPresent, kNotPresent };
 
   SpaceGlyphInOpenTypeTables space_in_gpos_;
   SpaceGlyphInOpenTypeTables space_in_gsub_;

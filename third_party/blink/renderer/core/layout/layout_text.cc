@@ -976,8 +976,9 @@ PositionWithAffinity LayoutText::PositionForPoint(
         ShouldAffinityBeDownstream should_affinity_be_downstream;
         if (LineDirectionPointFitsInBox(point_line_direction.ToInt(), box,
                                         should_affinity_be_downstream)) {
-          const int offset = box->OffsetForPosition(
-              point_line_direction, IncludePartialGlyphs, BreakGlyphs);
+          const int offset = box->OffsetForPosition(point_line_direction,
+                                                    kIncludePartialGlyphs,
+                                                    BreakGlyphsOption(true));
           return CreatePositionWithAffinityForBoxAfterAdjustingOffsetForBiDi(
               box, offset, should_affinity_be_downstream);
         }
@@ -988,7 +989,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
 
   if (last_box) {
     const int offset = last_box->OffsetForPosition(
-        point_line_direction, IncludePartialGlyphs, BreakGlyphs);
+        point_line_direction, kIncludePartialGlyphs, BreakGlyphsOption(true));
     ShouldAffinityBeDownstream should_affinity_be_downstream;
     LineDirectionPointFitsInBox(point_line_direction.ToInt(), last_box,
                                 should_affinity_be_downstream);

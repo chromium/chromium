@@ -57,7 +57,7 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
   HarfBuzzFace& operator=(const HarfBuzzFace&) = delete;
   ~HarfBuzzFace();
 
-  enum VerticalLayoutCallbacks { PrepareForVerticalLayout, NoVerticalLayout };
+  enum VerticalLayoutCallbacks { kPrepareForVerticalLayout, kNoVerticalLayout };
 
   // In order to support the restricting effect of unicode-range optionally a
   // range restriction can be passed in, which will restrict which glyphs we

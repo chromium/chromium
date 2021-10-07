@@ -304,8 +304,8 @@ inline bool ShapeRange(hb_buffer_t* buffer,
   hb_font_t* hb_font =
       face->GetScaledFont(std::move(current_font_range_set),
                           HB_DIRECTION_IS_VERTICAL(direction)
-                              ? HarfBuzzFace::PrepareForVerticalLayout
-                              : HarfBuzzFace::NoVerticalLayout,
+                              ? HarfBuzzFace::kPrepareForVerticalLayout
+                              : HarfBuzzFace::kNoVerticalLayout,
                           specified_size);
   hb_shape(hb_font, buffer, font_features, font_features_size);
   if (!face->ShouldSubpixelPosition())

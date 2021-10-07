@@ -392,9 +392,9 @@ LayoutUnit InlineTextBox::PlaceEllipsisBox(bool flow_is_ltr,
     // more accurate position in rtl text.
     // TODO(crbug.com/722043: This doesn't always give the best results.
     bool ltr = IsLeftToRightDirection();
-    int offset = OffsetForPosition(ellipsis_x,
-                                   ltr ? OnlyFullGlyphs : IncludePartialGlyphs,
-                                   DontBreakGlyphs);
+    int offset = OffsetForPosition(
+        ellipsis_x, ltr ? kOnlyFullGlyphs : kIncludePartialGlyphs,
+        BreakGlyphsOption(false));
 
     // Full truncation is only necessary when we're flowing left-to-right.
     if (flow_is_ltr && offset == 0 && ltr == flow_is_ltr) {

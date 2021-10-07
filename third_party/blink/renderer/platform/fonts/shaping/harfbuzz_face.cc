@@ -242,7 +242,7 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
   // Check whether computing is needed and compute for gpos/gsub.
   if (features & kKerning &&
       harfbuzz_font_data_->space_in_gpos_ ==
-          HarfBuzzFontData::SpaceGlyphInOpenTypeTables::Unknown) {
+          HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kUnknown) {
     if (space == kInvalidCodepoint && !GetSpaceGlyph(unscaled_font_, space))
       return false;
     // Compute for gpos.
@@ -251,15 +251,15 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
     harfbuzz_font_data_->space_in_gpos_ =
         hb_ot_layout_has_positioning(face) &&
                 TableHasSpace(face, glyphs.get(), HB_OT_TAG_GPOS, space)
-            ? HarfBuzzFontData::SpaceGlyphInOpenTypeTables::Present
-            : HarfBuzzFontData::SpaceGlyphInOpenTypeTables::NotPresent;
+            ? HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kPresent
+            : HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kNotPresent;
   }
 
   hb_set_clear(glyphs.get());
 
   if (features & kLigatures &&
       harfbuzz_font_data_->space_in_gsub_ ==
-          HarfBuzzFontData::SpaceGlyphInOpenTypeTables::Unknown) {
+          HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kUnknown) {
     if (space == kInvalidCodepoint && !GetSpaceGlyph(unscaled_font_, space))
       return false;
     // Compute for gpos.
@@ -268,16 +268,16 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
     harfbuzz_font_data_->space_in_gsub_ =
         hb_ot_layout_has_substitution(face) &&
                 TableHasSpace(face, glyphs.get(), HB_OT_TAG_GSUB, space)
-            ? HarfBuzzFontData::SpaceGlyphInOpenTypeTables::Present
-            : HarfBuzzFontData::SpaceGlyphInOpenTypeTables::NotPresent;
+            ? HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kPresent
+            : HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kNotPresent;
   }
 
   return (features & kKerning &&
           harfbuzz_font_data_->space_in_gpos_ ==
-              HarfBuzzFontData::SpaceGlyphInOpenTypeTables::Present) ||
+              HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kPresent) ||
          (features & kLigatures &&
           harfbuzz_font_data_->space_in_gsub_ ==
-              HarfBuzzFontData::SpaceGlyphInOpenTypeTables::Present);
+              HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kPresent);
 }
 
 unsigned HarfBuzzFace::UnitsPerEmFromHeadTable() {

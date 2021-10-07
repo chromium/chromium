@@ -88,7 +88,8 @@ int SVGInlineTextBox::OffsetForPositionInFragment(
   TextRun text_run = ConstructTextRun(line_layout_item.StyleRef(), fragment);
   return fragment.character_offset - Start() +
          line_layout_item.ScaledFont().OffsetForPosition(
-             text_run, position, IncludePartialGlyphs, BreakGlyphs);
+             text_run, position, kIncludePartialGlyphs,
+             BreakGlyphsOption(true));
 }
 
 LayoutUnit SVGInlineTextBox::PositionForOffset(int) const {
