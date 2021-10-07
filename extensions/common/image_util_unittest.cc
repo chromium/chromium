@@ -35,13 +35,13 @@ void RunFailHexTest(const std::string& css_string) {
 
 void RunPassHslTest(const std::string& hsl_string, SkColor expected) {
   SkColor color = 0;
-  EXPECT_TRUE(image_util::ParseHslColorString(hsl_string, &color));
+  EXPECT_TRUE(image_util::ParseCssColorString(hsl_string, &color));
   EXPECT_EQ(color, expected);
 }
 
 void RunFailHslTest(const std::string& hsl_string) {
   SkColor color = 0;
-  EXPECT_FALSE(image_util::ParseHslColorString(hsl_string, &color));
+  EXPECT_FALSE(image_util::ParseCssColorString(hsl_string, &color));
 }
 
 void RunPassRgbTest(const std::string& rgb_string, SkColor expected) {

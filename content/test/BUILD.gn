@@ -2263,6 +2263,7 @@ test("content_unittests") {
     "../browser/xr/metrics/session_tracker_unittest.cc",
     "../child/blink_platform_impl_unittest.cc",
     "../common/background_fetch/background_fetch_mojom_traits_unittest.cc",
+    "../common/color_parser_unittest.cc",
     "../common/common_param_traits_unittest.cc",
     "../common/content_switches_internal_unittest.cc",
     "../common/cursors/webcursor_unittest.cc",
