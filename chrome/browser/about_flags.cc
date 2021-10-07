@@ -5638,6 +5638,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowDisableMouseAccelerationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAllowDisableMouseAcceleration)},
 
+    {"allow-disable-touchpad-haptic-feedback",
+     flag_descriptions::kAllowDisableTouchpadHapticFeedbackName,
+     flag_descriptions::kAllowDisableTouchpadHapticFeedbackDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAllowDisableTouchpadHapticFeedback)},
+
     {"allow-repeated-updates", flag_descriptions::kAllowRepeatedUpdatesName,
      flag_descriptions::kAllowRepeatedUpdatesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kAllowRepeatedUpdates)},

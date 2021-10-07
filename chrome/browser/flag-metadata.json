@@ -93,6 +93,11 @@
     "expiry_milestone": 82
   },
   {
+    "name": "allow-disable-touchpad-haptic-feedback",
+    "owners": [ "gavinwill", "cros-peripherals@google.com" ],
+    "expiry_milestone": 101
+  },
+  {
     "name": "allow-insecure-localhost",
     "owners": [ "security-dev" ],
     "expiry_milestone": 95

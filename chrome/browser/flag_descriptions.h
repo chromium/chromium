@@ -2301,6 +2301,9 @@ extern const char kAcceleratedMjpegDecodeDescription[];
 extern const char kAllowDisableMouseAccelerationName[];
 extern const char kAllowDisableMouseAccelerationDescription[];
 
+extern const char kAllowDisableTouchpadHapticFeedbackName[];
+extern const char kAllowDisableTouchpadHapticFeedbackDescription[];
+
 extern const char kAllowRepeatedUpdatesName[];
 extern const char kAllowRepeatedUpdatesDescription[];
 

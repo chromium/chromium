@@ -4013,6 +4013,11 @@ const char kAllowDisableMouseAccelerationName[] =
 const char kAllowDisableMouseAccelerationDescription[] =
     "Shows a setting to disable mouse acceleration.";
 
+const char kAllowDisableTouchpadHapticFeedbackName[] =
+    "Allow disabling touchpad haptic feedback";
+const char kAllowDisableTouchpadHapticFeedbackDescription[] =
+    "Shows settings to adjust and disable touchpad haptic feedback.";
+
 const char kAllowRepeatedUpdatesName[] =
     "Continue checking for updates before reboot and after initial update.";
 const char kAllowRepeatedUpdatesDescription[] =
