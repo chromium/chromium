@@ -79,9 +79,18 @@
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/add_bookmark_menu_id"
+            android:title="@string/menu_add_bookmark"
+            android:icon="@drawable/btn_star_filled"/>
+        <item android:id="@+id/edit_bookmark_menu_id"
+            android:title="@string/menu_edit_bookmark"
+            android:icon="@drawable/btn_star"/>
         <item android:id="@+id/add_to_reading_list_menu_id"
             android:title="@string/menu_add_to_reading_list"
             android:icon="@drawable/ic_reading_list_add_24dp" />
+        <item android:id="@+id/delete_from_reading_list_menu_id"
+            android:title="@string/menu_delete_from_reading_list"
+            android:icon="@drawable/ic_reading_list_folder_24dp" />
         <item android:id="@+id/edit_reading_list_menu_id"
             android:title="@string/menu_edit_reading_list"
             android:icon="@drawable/ic_reading_list_folder_24dp" />

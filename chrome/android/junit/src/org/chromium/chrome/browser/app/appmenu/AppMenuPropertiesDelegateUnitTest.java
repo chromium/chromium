@@ -76,7 +76,7 @@ import java.util.List;
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.READ_LATER})
+@Features.EnableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.BOOKMARKS_REFRESH})
 public class AppMenuPropertiesDelegateUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();

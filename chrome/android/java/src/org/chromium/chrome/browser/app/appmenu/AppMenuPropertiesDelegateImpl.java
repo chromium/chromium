@@ -36,6 +36,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
+import org.chromium.chrome.browser.bookmarks.BookmarkFeatures;
 import org.chromium.chrome.browser.bookmarks.ReadingListFeatures;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.device.DeviceClassManager;
@@ -400,9 +401,21 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 .setVisible(isHttpOrHttpsScheme
                         && ReadingListFeatures.isAddToReadingListAppMenuItemEnabled());
         // TODO(crbug.com/1252228): Show this only on URLs already on the Reading List.
+        menu.findItem(R.id.delete_from_reading_list_menu_id)
+                .setVisible(isHttpOrHttpsScheme
+                        && ReadingListFeatures.isDeleteFromReadingListAppMenuItemEnabled());
+        // TODO(crbug.com/1252228): Show this only on URLs already on the Reading List.
         menu.findItem(R.id.edit_reading_list_menu_id)
                 .setVisible(isHttpOrHttpsScheme
                         && ReadingListFeatures.isEditReadingListAppMenuItemEnabled());
+
+        // TODO(crbug.com/1257406): Show this only if the current page is not in bookmarks.
+        menu.findItem(R.id.add_bookmark_menu_id)
+                .setVisible(isHttpOrHttpsScheme && BookmarkFeatures.isAddBookmarkMenuItemEnabled());
+        // TODO(crbug.com/1257406): Show this only if the current page is in bookmarks.
+        menu.findItem(R.id.edit_bookmark_menu_id)
+                .setVisible(
+                        isHttpOrHttpsScheme && BookmarkFeatures.isEditBookmarkMenuItemEnabled());
 
         // Don't allow either "chrome://" pages or interstitial pages to be shared.
         menu.findItem(R.id.share_row_menu_id).setVisible(mShareUtils.shouldEnableShare(currentTab));

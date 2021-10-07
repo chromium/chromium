@@ -7,7 +7,17 @@ package org.chromium.chrome.browser.bookmarks;
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
-/** Self-documenting feature class for bookmarks. */
+/**
+ * Self-documenting feature class for bookmarks.
+ *
+ * <p>{@link ChromeFeatureList#BOOKMARKS_REFRESH}
+ * <ul>
+ * <li>{@code add_bookmark_in_app_menu}: boolean; show "Bookmark" as a standalone item in the app
+ * menu. Default: {@code false}</li>
+ * <li>{@code edit_bookmark_in_app_menu}: boolean; show "Edit Bookmark" in the app menu. Default:
+ * {@code false}</li>
+ * </ul>
+ */
 public class BookmarkFeatures {
     private static final boolean IMPROVED_SAVE_FLOW_AUTODISMISS_ENABLED_DEFAULT = true;
     // This is the same as the default dismiss time for snackbars.
@@ -35,5 +45,22 @@ public class BookmarkFeatures {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.BOOKMARKS_IMPROVED_SAVE_FLOW, AUTODISMISS_LENGTH_PARAM_NAME,
                 IMPROVED_SAVE_FLOW_AUTODISMISS_TIME_MS_DEFAULT);
+    }
+
+    public static boolean isBookmarksRefreshEnabled() {
+        return FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.BOOKMARKS_REFRESH);
+    }
+
+    public static boolean isAddBookmarkMenuItemEnabled() {
+        return isBookmarksRefreshEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.BOOKMARKS_REFRESH, "add_bookmark_in_app_menu", false);
+    }
+
+    public static boolean isEditBookmarkMenuItemEnabled() {
+        return isBookmarksRefreshEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.BOOKMARKS_REFRESH, "edit_bookmark_in_app_menu", false);
     }
 }
