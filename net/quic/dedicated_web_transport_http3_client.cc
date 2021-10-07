@@ -30,6 +30,10 @@ namespace {
 // https://wicg.github.io/web-transport/#dom-quictransportconfiguration-server_certificate_fingerprints
 constexpr int kCustomCertificateMaxValidityDays = 14;
 
+// The time the client would wait for the server to acknowledge the session
+// being closed.
+constexpr base::TimeDelta kMaxCloseTimeout = base::TimeDelta::FromSeconds(2);
+
 std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
   std::set<std::string> hosts;
   for (const auto& origin : origins) {
@@ -85,7 +89,21 @@ class ConnectStream : public quic::QuicSpdyClientStream {
 
   void OnClose() override {
     quic::QuicSpdyClientStream::OnClose();
-    client_->OnConnectStreamClosed();
+    if (fin_received() && fin_sent()) {
+      // Clean close.
+      return;
+    }
+    if (stream_error() == quic::QUIC_STREAM_CONNECTION_ERROR) {
+      // If stream is closed due to the connection error, OnConnectionClosed()
+      // will populate the correct error details.
+      return;
+    }
+    client_->OnConnectStreamAborted();
+  }
+
+  void OnWriteSideInDataRecvdState() override {
+    quic::QuicSpdyClientStream::OnWriteSideInDataRecvdState();
+    client_->OnConnectStreamWriteSideInDataRecvdState();
   }
 
  private:
@@ -237,9 +255,20 @@ void DedicatedWebTransportHttp3Client::Connect() {
 
 void DedicatedWebTransportHttp3Client::Close(
     const absl::optional<WebTransportCloseInfo>& close_info) {
-  // TODO(vasilvv): Implement this.
-  // For now, immediately transition to CLOSED in order to avoid leaks.
-  TransitionToState(WebTransportState::CLOSED);
+  base::TimeDelta probe_timeout = base::TimeDelta::FromMicroseconds(
+      connection_->sent_packet_manager().GetPtoDelay().ToMicroseconds());
+  // Wait for at least three PTOs similar to what's used in
+  // https://www.rfc-editor.org/rfc/rfc9000.html#name-immediate-close
+  base::TimeDelta close_timeout = std::min(3 * probe_timeout, kMaxCloseTimeout);
+  close_timeout_timer_.Start(
+      FROM_HERE, close_timeout,
+      base::BindOnce(&DedicatedWebTransportHttp3Client::OnCloseTimeout,
+                     weak_factory_.GetWeakPtr()));
+  if (close_info.has_value()) {
+    session()->CloseSession(close_info->code, close_info->reason);
+  } else {
+    session()->CloseSession(0, "");
+  }
 }
 
 quic::WebTransportSession* DedicatedWebTransportHttp3Client::session() {
@@ -478,8 +507,21 @@ void DedicatedWebTransportHttp3Client::OnHeadersComplete() {
   DoLoop(OK);
 }
 
-void DedicatedWebTransportHttp3Client::OnConnectStreamClosed() {
+void DedicatedWebTransportHttp3Client::
+    OnConnectStreamWriteSideInDataRecvdState() {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DedicatedWebTransportHttp3Client::TransitionToState,
+                     weak_factory_.GetWeakPtr(), WebTransportState::CLOSED));
+}
+
+void DedicatedWebTransportHttp3Client::OnConnectStreamAborted() {
   SetErrorIfNecessary(session_ready_ ? ERR_FAILED : ERR_METHOD_NOT_SUPPORTED);
+  TransitionToState(WebTransportState::FAILED);
+}
+
+void DedicatedWebTransportHttp3Client::OnCloseTimeout() {
+  SetErrorIfNecessary(ERR_TIMED_OUT);
   TransitionToState(WebTransportState::FAILED);
 }
 
@@ -549,7 +591,10 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
 
     case WebTransportState::CLOSED:
       DCHECK_EQ(last_state, WebTransportState::CONNECTED);
-      visitor_->OnClosed(/*close_info=*/absl::nullopt);
+      connection_->CloseConnection(quic::QUIC_NO_ERROR,
+                                   "WebTransport client terminated",
+                                   quic::ConnectionCloseBehavior::SILENT_CLOSE);
+      visitor_->OnClosed(close_info_);
       break;
 
     case WebTransportState::FAILED:
@@ -559,6 +604,11 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
         break;
       }
       DCHECK_EQ(last_state, WebTransportState::CONNECTED);
+      // Ensure the connection is properly closed before deleting it.
+      connection_->CloseConnection(
+          quic::QUIC_INTERNAL_ERROR,
+          "WebTransportState::ERROR reached but the connection still open",
+          quic::ConnectionCloseBehavior::SILENT_CLOSE);
       visitor_->OnError(*error_);
       break;
 
@@ -588,6 +638,16 @@ void DedicatedWebTransportHttp3Client::OnSessionReady(
   http_response_info_ = std::make_unique<HttpResponseInfo>();
   SpdyHeadersToHttpResponse(spdy_headers, http_response_info_.get());
   DCHECK(http_response_info_->headers);
+}
+
+void DedicatedWebTransportHttp3Client::OnSessionClosed(
+    quic::WebTransportSessionError error_code,
+    const std::string& error_message) {
+  close_info_ = WebTransportCloseInfo(error_code, error_message);
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DedicatedWebTransportHttp3Client::TransitionToState,
+                     weak_factory_.GetWeakPtr(), WebTransportState::CLOSED));
 }
 
 void DedicatedWebTransportHttp3Client::
@@ -652,6 +712,13 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     quic::QuicErrorCode error,
     const std::string& error_details,
     quic::ConnectionCloseSource source) {
+  // If the session is already in a terminal state due to reasons other than
+  // connection close, we should ignore it; otherwise we risk re-entering the
+  // connection teardown process.
+  if (IsTerminalState(state_)) {
+    return;
+  }
+
   if (!retried_with_new_version_ &&
       session_->error() == quic::QUIC_INVALID_VERSION) {
     retried_with_new_version_ = true;
@@ -685,10 +752,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
     return;
   }
 
-  // `state_` can be FAILED when the stream associated with a WebTransport
-  // session is closed.
-  if (state_ != WebTransportState::FAILED)
-    TransitionToState(WebTransportState::FAILED);
+  TransitionToState(WebTransportState::FAILED);
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(

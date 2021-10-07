@@ -61,6 +61,10 @@ WebTransportCloseInfo::WebTransportCloseInfo(uint32_t code,
                                              base::StringPiece reason)
     : code(code), reason(reason) {}
 WebTransportCloseInfo::~WebTransportCloseInfo() = default;
+bool WebTransportCloseInfo::operator==(
+    const WebTransportCloseInfo& other) const {
+  return code == other.code && reason == other.reason;
+}
 
 WebTransportClientVisitor::~WebTransportClientVisitor() = default;
 

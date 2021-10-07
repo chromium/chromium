@@ -69,13 +69,15 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
 
   void OnSettingsReceived();
   void OnHeadersComplete();
-  void OnConnectStreamClosed();
+  void OnConnectStreamWriteSideInDataRecvdState();
+  void OnConnectStreamAborted();
+  void OnCloseTimeout();
   void OnDatagramProcessed(absl::optional<quic::MessageStatus> status);
 
   // QuicTransportClientSession::ClientVisitor methods.
   void OnSessionReady(const spdy::SpdyHeaderBlock&) override;
   void OnSessionClosed(quic::WebTransportSessionError error_code,
-                       const std::string& error_message) override {}
+                       const std::string& error_message) override;
   void OnIncomingBidirectionalStreamAvailable() override;
   void OnIncomingUnidirectionalStreamAvailable() override;
   void OnDatagramReceived(absl::string_view datagram) override;
@@ -179,6 +181,9 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   std::unique_ptr<QuicEventLogger> event_logger_;
   quic::QuicClientPushPromiseIndex push_promise_index_;
 
+  absl::optional<WebTransportCloseInfo> close_info_;
+
+  base::OneShotTimer close_timeout_timer_;
   base::WeakPtrFactory<DedicatedWebTransportHttp3Client> weak_factory_{this};
 };
 

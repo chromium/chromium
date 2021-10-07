@@ -4287,6 +4287,7 @@ test("net_unittests") {
     "quic/bidirectional_stream_quic_impl_unittest.cc",
     "quic/crypto/proof_test_chromium.cc",
     "quic/crypto/proof_verifier_chromium_test.cc",
+    "quic/dedicated_web_transport_http3_client_test.cc",
     "quic/mock_quic_data.cc",
     "quic/mock_quic_data.h",
     "quic/network_connection_unittest.cc",

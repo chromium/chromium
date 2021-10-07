@@ -60,6 +60,8 @@ struct NET_EXPORT WebTransportCloseInfo final {
 
   uint32_t code = 0;
   std::string reason;
+
+  bool operator==(const WebTransportCloseInfo& other) const;
 };
 
 // A visitor that gets notified about events that happen to a WebTransport
