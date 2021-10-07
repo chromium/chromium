@@ -1356,6 +1356,40 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "android-marshmallow-x86-rel-orchestrator",
+    builderless = False,
+    cores = 4,
+    executable = "recipe:chromium/orchestrator",
+    main_list_view = "try",
+    use_java_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    properties = {
+        "$build/chromium_orchestrator": {
+            "compilator": "android-marshmallow-x86-rel-compilator",
+            "compilator_watcher_git_revision": compilator_watcher_git_revision,
+        },
+    },
+    service_account = "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+try_.chromium_android_builder(
+    name = "android-marshmallow-x86-rel-compilator",
+    builderless = False,
+    cores = 32,
+    executable = "recipe:chromium/compilator",
+    goma_jobs = goma.jobs.J300,
+    ssd = True,
+    use_java_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    properties = {
+        "orchestrator": {
+            "builder_name": "android-marshmallow-x86-rel-orchestrator",
+            "builder_group": "tryserver.chromium.android",
+        },
+    },
+)
+
+try_.chromium_linux_builder(
     name = "linux-rel-reclient",
     branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
