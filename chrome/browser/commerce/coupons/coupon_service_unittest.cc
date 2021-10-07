@@ -268,3 +268,12 @@ TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
       &CouponServiceTest::GetEvaluationCoupons, base::Unretained(this),
       run_loop[0].QuitClosure(), kEmptyExpected));
 }
+
+TEST_F(CouponServiceTest, TestIsUrlEligible) {
+  SetupCouponMap({{GURL("https://www.example.com"), kMockCouponDescriptionA,
+                   kMockCouponCodeA}});
+
+  EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com")));
+  EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com/first")));
+  EXPECT_FALSE(service_->IsUrlEligible(GURL("https://www.test.com")));
+}

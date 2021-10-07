@@ -43,6 +43,9 @@ class CouponService : public KeyedService,
   // list if there is no coupon data associated with this URL.
   Coupons GetFreeListingCouponsForUrl(const GURL& url) override;
 
+  // Check if CouponService has eligible coupons for |url|.
+  bool IsUrlEligible(const GURL& url) override;
+
  private:
   friend class CouponServiceFactory;
   friend class CouponServiceTest;
