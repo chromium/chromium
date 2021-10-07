@@ -26,14 +26,15 @@ struct CardUnmaskChallengeOption {
       default;
 
   // The unique identifier for the challenge option.
-  std::string id;
+  std::string id = std::string();
 
   // The type of the challenge option.
-  CardUnmaskChallengeOptionType type;
+  CardUnmaskChallengeOptionType type =
+      CardUnmaskChallengeOptionType::kUnknownType;
 
   // The user-facing text providing additional information for the challenge
   // option, such as the masked phone number that will receive an SMS, etc.
-  std::u16string challenge_info;
+  std::u16string challenge_info = std::u16string();
 };
 
 }  // namespace autofill

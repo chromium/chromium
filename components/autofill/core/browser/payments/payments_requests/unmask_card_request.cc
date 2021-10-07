@@ -53,9 +53,6 @@ CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
         base::UTF8ToUTF16(*masked_phone_number);
   }
 
-  // So far, the challenge option type should not be the default value.
-  DCHECK_NE(card_unmask_challenge_option.type,
-            CardUnmaskChallengeOptionType::kUnknownType);
   return card_unmask_challenge_option;
 }
 }  // namespace
@@ -224,8 +221,13 @@ void UnmaskCardRequest::ParseResponse(const base::Value& response) {
     std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
     for (const base::Value& challenge_option :
          challenge_option_list->GetList()) {
-      card_unmask_challenge_options.push_back(
-          ParseCardUnmaskChallengeOption(challenge_option));
+      CardUnmaskChallengeOption parsed_challenge_option =
+          ParseCardUnmaskChallengeOption(challenge_option);
+      // Only return successfully parsed challenge option.
+      if (parsed_challenge_option.type !=
+          CardUnmaskChallengeOptionType::kUnknownType) {
+        card_unmask_challenge_options.push_back(parsed_challenge_option);
+      }
     }
     response_details_.card_unmask_challenge_options =
         card_unmask_challenge_options;

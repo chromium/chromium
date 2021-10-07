@@ -698,6 +698,37 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse) {
   EXPECT_EQ(u"(***)-***-5678", challenge_option_2.challenge_info);
 }
 
+TEST_F(PaymentsClientTest,
+       VirtualCardRiskBasedYellowPathResponseWithUnknownType) {
+  StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{ \"fido_request_options\": { \"challenge\": \"fake_fido_challenge\" }, "
+      "\"context_token\": \"fake_context_token\", \"idv_challenge_options\": "
+      "[{ \"sms_otp_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_1\", \"masked_phone_number\": \"(***)-***-1234\" } "
+      "}, { \"unknown_new_challenge_option\": { \"challenge_id\": "
+      "\"fake_challenge_id_2\" } }] }");
+
+  // Ensure that it's not treated as failure when no pan is returned.
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
+  EXPECT_EQ("fake_context_token", unmask_response_details_->context_token);
+  // Verify the FIDO request challenge is correctly parsed.
+  EXPECT_EQ("fake_fido_challenge",
+            *unmask_response_details_->fido_request_options->FindStringKey(
+                "challenge"));
+  // Verify that the unknow new challenge option type won't break the parsing.
+  // We ignore the unknown new type, and only return the supported challenge
+  // option.
+  EXPECT_EQ(1u, unmask_response_details_->card_unmask_challenge_options.size());
+  const CardUnmaskChallengeOption& sms_challenge_option =
+      unmask_response_details_->card_unmask_challenge_options[0];
+  EXPECT_EQ(CardUnmaskChallengeOptionType::kSmsOtp, sms_challenge_option.type);
+  EXPECT_EQ("fake_challenge_id_1", sms_challenge_option.id);
+  EXPECT_EQ(u"(***)-***-1234", sms_challenge_option.challenge_info);
+}
+
 TEST_F(PaymentsClientTest, VirtualCardRiskBasedThenFido) {
   StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based_then_fido());
   IssueOAuthToken();
