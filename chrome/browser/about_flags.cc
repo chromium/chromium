@@ -2431,7 +2431,6 @@ const FeatureEntry::Choice kHdrNetOverrideChoices[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kCrostiniContainerChoices[] = {
     {"Default", "", ""},
-    {"Stretch", crostini::kCrostiniContainerFlag, "stretch"},
     {"Buster", crostini::kCrostiniContainerFlag, "buster"},
     {"Bullseye", crostini::kCrostiniContainerFlag, "bullseye"},
 };
