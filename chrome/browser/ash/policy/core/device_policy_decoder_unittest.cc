@@ -187,12 +187,7 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceLoginLogout) {
       policies.GetValue(key::kReportDeviceLoginLogout);
   ASSERT_NE(report_device_login_logout_value, nullptr);
   ASSERT_TRUE(report_device_login_logout_value->is_bool());
-
-  bool report_device_login_logout_bool = false;
-  report_device_login_logout_value->GetAsBoolean(
-      &report_device_login_logout_bool);
-
-  EXPECT_TRUE(report_device_login_logout_bool);
+  EXPECT_TRUE(report_device_login_logout_value->GetBool());
 }
 
 TEST_F(DevicePolicyDecoderTest, EnableDeviceGranularReporting) {
@@ -210,12 +205,7 @@ TEST_F(DevicePolicyDecoderTest, EnableDeviceGranularReporting) {
       policies.GetValue(key::kEnableDeviceGranularReporting);
   ASSERT_NE(enable_granular_reporting_value, nullptr);
   ASSERT_TRUE(enable_granular_reporting_value->is_bool());
-
-  bool enable_granular_reporting_bool = false;
-  enable_granular_reporting_value->GetAsBoolean(
-      &enable_granular_reporting_bool);
-
-  EXPECT_TRUE(enable_granular_reporting_bool);
+  EXPECT_TRUE(enable_granular_reporting_value->GetBool());
 }
 
 TEST_F(DevicePolicyDecoderTest, ReportDeviceAudioStatus) {
@@ -233,12 +223,7 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceAudioStatus) {
       policies.GetValue(key::kReportDeviceAudioStatus);
   ASSERT_NE(report_device_audio_status_value, nullptr);
   ASSERT_TRUE(report_device_audio_status_value->is_bool());
-
-  bool report_device_audio_status_bool = false;
-  report_device_audio_status_value->GetAsBoolean(
-      &report_device_audio_status_bool);
-
-  EXPECT_TRUE(report_device_audio_status_bool);
+  EXPECT_TRUE(report_device_audio_status_value->GetBool());
 }
 
 TEST_F(DevicePolicyDecoderTest, ReportDeviceSecurityStatus) {
@@ -256,12 +241,7 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceSecurityStatus) {
       policies.GetValue(key::kReportDeviceSecurityStatus);
   ASSERT_NE(report_device_security_status_value, nullptr);
   ASSERT_TRUE(report_device_security_status_value->is_bool());
-
-  bool report_device_security_status_bool = false;
-  report_device_security_status_value->GetAsBoolean(
-      &report_device_security_status_bool);
-
-  EXPECT_TRUE(report_device_security_status_bool);
+  EXPECT_TRUE(report_device_security_status_value->GetBool());
 }
 
 TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkConfiguration) {
@@ -280,12 +260,7 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkConfiguration) {
       policies.GetValue(key::kReportDeviceNetworkConfiguration);
   ASSERT_NE(report_device_network_configuration_value, nullptr);
   ASSERT_TRUE(report_device_network_configuration_value->is_bool());
-
-  bool report_device_network_configuration_bool = false;
-  report_device_network_configuration_value->GetAsBoolean(
-      &report_device_network_configuration_bool);
-
-  EXPECT_TRUE(report_device_network_configuration_bool);
+  EXPECT_TRUE(report_device_network_configuration_value->GetBool());
 }
 
 TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkStatus) {
@@ -303,12 +278,7 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkStatus) {
       policies.GetValue(key::kReportDeviceNetworkStatus);
   ASSERT_NE(report_device_network_status_value, nullptr);
   ASSERT_TRUE(report_device_network_status_value->is_bool());
-
-  bool report_device_network_status_bool = false;
-  report_device_network_status_value->GetAsBoolean(
-      &report_device_network_status_bool);
-
-  EXPECT_TRUE(report_device_network_status_bool);
+  EXPECT_TRUE(report_device_network_status_value->GetBool());
 }
 
 TEST_F(DevicePolicyDecoderTest, kReportDeviceOsUpdateStatus) {
@@ -326,12 +296,7 @@ TEST_F(DevicePolicyDecoderTest, kReportDeviceOsUpdateStatus) {
       policies.GetValue(key::kReportDeviceOsUpdateStatus);
   ASSERT_NE(report_device_os_update_status_value, nullptr);
   ASSERT_TRUE(report_device_os_update_status_value->is_bool());
-
-  bool report_device_os_update_status_bool = false;
-  report_device_os_update_status_value->GetAsBoolean(
-      &report_device_os_update_status_bool);
-
-  EXPECT_TRUE(report_device_os_update_status_bool);
+  EXPECT_TRUE(report_device_os_update_status_value->GetBool());
 }
 
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
