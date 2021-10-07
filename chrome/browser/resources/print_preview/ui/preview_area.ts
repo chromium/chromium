@@ -154,13 +154,6 @@ export class PrintPreviewPreviewAreaElement extends
     this.nativeLayer_ = NativeLayerImpl.getInstance();
     this.addWebUIListener(
         'page-preview-ready', this.onPagePreviewReady_.bind(this));
-
-    if (!this.pluginProxy_.checkPluginCompatibility(
-            assert(this.shadowRoot!.querySelector(
-                '.preview-area-compatibility-object-out-of-process')!))) {
-      this.error = Error.NO_PLUGIN;
-      this.previewState = PreviewAreaState.ERROR;
-    }
   }
 
   private computePreviewLoaded_(): boolean {

@@ -30,12 +30,6 @@ export interface PDFPlugin extends HTMLElement {
  * An interface to the PDF plugin.
  */
 export interface PluginProxy {
-  /**
-   * @param oopCompatObj The out of process compatibility element.
-   * @return Whether the plugin exists and is compatible.
-   */
-  checkPluginCompatibility(oopCompatObj: Element): boolean;
-
   /** @return Whether the plugin is ready. */
   pluginReady(): boolean;
 
@@ -98,13 +92,6 @@ export interface PluginProxy {
 
 export class PluginProxyImpl implements PluginProxy {
   private plugin_: PDFPlugin|null = null;
-
-  checkPluginCompatibility(oopCompatObj: Element) {
-    const isOOPCompatible = (oopCompatObj as any).postMessage;
-    oopCompatObj.parentElement!.removeChild(oopCompatObj);
-
-    return isOOPCompatible;
-  }
 
   pluginReady() {
     return !!this.plugin_;

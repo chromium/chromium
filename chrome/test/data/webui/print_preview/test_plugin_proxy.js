@@ -22,18 +22,8 @@ export class TestPluginProxy extends TestBrowserProxy {
     /** @type {?Function} The callback to call when the viewport changes. */
     this.viewportChangedCallback_ = null;
 
-    /** @type {boolean} Whether the plugin is compatible. */
-    this.compatible_ = true;
-
     /** @type {?HTMLDivElement} */
     this.fakePlugin_ = null;
-  }
-
-  /**
-   * @param {boolean} compatible Whether the PDF plugin should be compatible.
-   */
-  setPluginCompatible(compatible) {
-    this.compatible_ = compatible;
   }
 
   /** @override */
@@ -53,11 +43,6 @@ export class TestPluginProxy extends TestBrowserProxy {
   /** @override */
   setViewportChangedCallback(viewportChangedCallback) {
     this.viewportChangedCallback_ = viewportChangedCallback;
-  }
-
-  /** @override */
-  checkPluginCompatibility(oopCompatObj) {
-    return this.compatible_;
   }
 
   /** @override */

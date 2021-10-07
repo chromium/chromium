@@ -581,12 +581,6 @@ var PrintPreviewInvalidSettingsBrowserTest = class extends PrintPreviewTest {
 };
 
 TEST_F(
-    'PrintPreviewInvalidSettingsBrowserTest', 'NoPDFPluginError', function() {
-      this.runMochaTest(
-          invalid_settings_browsertest.TestNames.NoPDFPluginError);
-    });
-
-TEST_F(
     'PrintPreviewInvalidSettingsBrowserTest', 'InvalidSettingsError',
     function() {
       this.runMochaTest(

@@ -52,7 +52,6 @@ suite(print_button_test.suiteName, function() {
     nativeLayer.setLocalDestinations(localDestinationInfos);
 
     const pluginProxy = new TestPluginProxy();
-    pluginProxy.setPluginCompatible(true);
     PluginProxyImpl.setInstance(pluginProxy);
 
     page = document.createElement('print-preview-app');

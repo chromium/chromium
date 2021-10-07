@@ -23,7 +23,6 @@ const invalid_settings_browsertest = window.invalid_settings_browsertest;
 invalid_settings_browsertest.suiteName = 'InvalidSettingsBrowserTest';
 /** @enum {string} */
 invalid_settings_browsertest.TestNames = {
-  NoPDFPluginError: 'no pdf plugin error',
   InvalidSettingsError: 'invalid settings error',
   InvalidCertificateError: 'invalid certificate error',
   InvalidCertificateErrorReselectDestination: 'invalid certificate reselect',
@@ -84,15 +83,11 @@ suite(invalid_settings_browsertest.suiteName, function() {
    * given by |initialSettings| and |localDestinationInfos|. Also creates
    * the fake plugin. Moved out of setup so tests can set those parameters
    * differently.
-   * @param {boolean} pluginCompatible Whether the plugin should be set to
-   *     appear compatible.
    */
-  function createPage(pluginCompatible) {
+  function createPage() {
     nativeLayer.setInitialSettings(initialSettings);
     nativeLayer.setLocalDestinations(localDestinationInfos);
-    const pluginProxy = new TestPluginProxy();
-    pluginProxy.setPluginCompatible(pluginCompatible);
-    PluginProxyImpl.setInstance(pluginProxy);
+    PluginProxyImpl.setInstance(new TestPluginProxy());
 
     page = /** @type {!PrintPreviewAppElement} */ (
         document.createElement('print-preview-app'));
@@ -123,39 +118,10 @@ suite(invalid_settings_browsertest.suiteName, function() {
     localDestinationInfos = [];
 
     loadTimeData.overrideValues({isEnterpriseManaged: false});
-    createPage(true);
+    createPage();
 
     printers.forEach(printer => cloudPrintInterface.setPrinter(printer));
   }
-
-  // Test that error message is displayed when plugin doesn't exist.
-  test(
-      assert(invalid_settings_browsertest.TestNames.NoPDFPluginError),
-      function() {
-        createPage(false);
-        const previewArea = /** @type {!PrintPreviewPreviewAreaElement} */ (
-            page.shadowRoot.querySelector('#previewArea'));
-
-        return nativeLayer.whenCalled('getInitialSettings').then(function() {
-          const overlayEl = previewArea.shadowRoot.querySelector(
-              '.preview-area-overlay-layer');
-          const messageEl =
-              previewArea.shadowRoot.querySelector('.preview-area-message');
-          assertEquals(State.FATAL_ERROR, page.state);
-
-          // Make sure the overlay is visible.
-          assertFalse(overlayEl.classList.contains('invisible'));
-
-          // Make sure the correct text is shown.
-          const expectedMessageChromium = 'Chromium cannot show the print ' +
-              'preview when the built-in PDF viewer is missing.';
-          const expectedMessageChrome = 'Google Chrome cannot show the print ' +
-              'preview when the built-in PDF viewer is missing.';
-          assertTrue(
-              messageEl.textContent.includes(expectedMessageChromium) ||
-              messageEl.textContent.includes(expectedMessageChrome));
-        });
-      });
 
   // Tests that when a printer cannot be communicated with correctly the
   // preview area displays an invalid printer error message and printing
@@ -164,7 +130,7 @@ suite(invalid_settings_browsertest.suiteName, function() {
   test(
       assert(invalid_settings_browsertest.TestNames.InvalidSettingsError),
       function() {
-        createPage(true);
+        createPage();
         const barDevice = getCddTemplate('BarDevice');
         nativeLayer.setLocalDestinationCapabilities(barDevice);
 
