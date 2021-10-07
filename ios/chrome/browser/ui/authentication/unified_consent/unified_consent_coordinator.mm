@@ -109,10 +109,8 @@
   return HasManagedSyncDataType(self.browser->GetBrowserState());
 }
 
-- (BOOL)hasRestrictedAccounts {
-  return ChromeAccountManagerServiceFactory::GetForBrowserState(
-             self.browser->GetBrowserState())
-      ->HasRestrictedIdentities();
+- (BOOL)hasAccountRestrictions {
+  return IsRestrictAccountsToPatternsEnabled();
 }
 
 #pragma mark - Private

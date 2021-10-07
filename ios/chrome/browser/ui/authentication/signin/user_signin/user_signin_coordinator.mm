@@ -279,8 +279,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   return self.unifiedConsentCoordinator.hasManagedSyncDataType;
 }
 
-- (BOOL)unifiedConsentCoordinatorHasRestrictedAccounts {
-  return self.unifiedConsentCoordinator.hasRestrictedAccounts;
+- (BOOL)unifiedConsentCoordinatorhasAccountRestrictions {
+  return self.unifiedConsentCoordinator.hasAccountRestrictions;
 }
 
 - (void)userSigninViewControllerDidTapOnAddAccount {

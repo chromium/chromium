@@ -271,7 +271,7 @@ enum AuthenticationButtonType {
 
   NSMutableArray* bottomViews = [[NSMutableArray alloc] init];
   if (self.delegate.unifiedConsentCoordinatorHasManagedSyncDataType ||
-      self.delegate.unifiedConsentCoordinatorHasRestrictedAccounts) {
+      self.delegate.unifiedConsentCoordinatorhasAccountRestrictions) {
     UITextView* noticeTextView = [self
         noticeViewForMessageID:IDS_IOS_ENTERPRISE_MANAGED_SIGNIN_LEARN_MORE
                            URL:GURL(kChromeUIManagementURL)];

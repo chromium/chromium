@@ -64,8 +64,8 @@
 @property(nonatomic, assign, getter=isUIDisabled) BOOL uiDisabled;
 // Returns true if there are policies disabling Sync for at least one data type.
 @property(nonatomic, readonly) BOOL hasManagedSyncDataType;
-// Returns true if there are policies restricting some accounts.
-@property(nonatomic, readonly) BOOL hasRestrictedAccounts;
+// Returns true if there are account restrictions.
+@property(nonatomic, readonly) BOOL hasAccountRestrictions;
 
 // List of string ids used for the user consent. The string ids order matches
 // the way they appear on the screen.
