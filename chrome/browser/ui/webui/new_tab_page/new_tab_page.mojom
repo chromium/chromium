@@ -121,7 +121,7 @@ struct AllModeImageDoodle {
   ImageDoodle light;
   ImageDoodle? dark;
   // URL opened in new tab when the doodle is clicked.
-  url.mojom.Url on_click_url;
+  url.mojom.Url? on_click_url;
   // URL displayed to users, which they can use to share the doodle.
   url.mojom.Url share_url;
 };

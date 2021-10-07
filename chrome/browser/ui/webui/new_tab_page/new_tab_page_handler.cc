@@ -977,7 +977,9 @@ void NewTabPageHandler::OnLogoAvailable(
           logo->metadata.dark_share_button_opacity, logo->metadata.dark_log_url,
           logo->metadata.dark_cta_log_url);
     }
-    image_doodle->on_click_url = logo->metadata.on_click_url;
+    if (logo->metadata.on_click_url.is_valid()) {
+      image_doodle->on_click_url = logo->metadata.on_click_url;
+    }
     image_doodle->share_url = logo->metadata.short_link;
     doodle->image = std::move(image_doodle);
   } else if (logo->metadata.type ==
