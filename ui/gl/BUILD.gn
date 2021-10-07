@@ -406,11 +406,6 @@ component("gl") {
     }
   }
   if (is_android) {
-    sources += [
-      "gl_image_surface_texture.cc",
-      "gl_image_surface_texture.h",
-    ]
-
     defines += [
       "GL_GLEXT_PROTOTYPES",
       "EGL_EGLEXT_PROTOTYPES",
