@@ -80,6 +80,8 @@ class ProfileShortcutManagerWin : public ProfileShortcutManager,
     UPDATE_NON_PROFILE_SHORTCUTS,
   };
 
+  static void DisableUnpinningForUnitTests();
+
   explicit ProfileShortcutManagerWin(ProfileManager* manager);
   ProfileShortcutManagerWin(const ProfileShortcutManagerWin&) = delete;
   ProfileShortcutManagerWin& operator=(const ProfileShortcutManagerWin&) =

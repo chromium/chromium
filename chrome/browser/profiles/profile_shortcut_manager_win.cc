@@ -77,6 +77,9 @@ const int kMaxProfileShortcutFileNameLength = 64;
 // change, etc).
 const int kCurrentProfileIconVersion = 7;
 
+bool disabled_for_unit_tests = false;
+bool disable_unpinning_for_unit_tests = false;
+
 // Updates the preferences with the current icon version on icon creation
 // success.
 void OnProfileIconCreateSuccess(base::FilePath profile_path) {
@@ -520,37 +523,18 @@ bool ChromeDesktopShortcutsExist(const base::FilePath& chrome_exe) {
   return false;
 }
 
-// Deletes all desktop shortcuts for the specified profile. If
-// |ensure_shortcuts_remain| is true, then a regular non-profile shortcut will
-// be created if this function would otherwise delete the last Chrome desktop
-// shortcut(s). File and COM operations must be allowed on the calling thread.
-// |default_profile_path| is used to create the command line for the shortcut
-// created if |ensure_shortcuts_remain| is true and the last desktop shortcut
-// was deleted.
 void DeleteDesktopShortcuts(
-    const base::FilePath& profile_path,
+    const std::set<base::FilePath>& shortcuts,
+    bool ensure_shortcuts_remain,
     const absl::optional<base::FilePath>& default_profile_path,
-    bool ensure_shortcuts_remain) {
+    const base::FilePath& chrome_exe) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED();
-    return;
-  }
-
-  const std::wstring command_line =
-      profiles::internal::CreateProfileShortcutFlags(profile_path);
-  ChromeCommandLineFilter filter(chrome_exe, command_line, false);
-  const std::set<base::FilePath> shortcuts = ListUserDesktopContents(&filter);
-
   for (const auto& shortcut : shortcuts) {
     // Use base::DeleteFile() instead of ShellUtil::RemoveShortcuts(), as the
     // latter causes non-profile taskbar shortcuts to be removed since it
     // doesn't consider the command-line of the shortcuts it deletes.
     // TODO(huangs): Refactor with ShellUtil::RemoveShortcuts().
-    base::win::UnpinShortcutFromTaskbar(shortcut);
     base::DeleteFile(shortcut);
     // Notify the shell that the shortcut was deleted to ensure desktop refresh.
     SHChangeNotify(SHCNE_DELETE, SHCNF_PATH, shortcut.value().c_str(), nullptr);
@@ -574,6 +558,47 @@ void DeleteDesktopShortcuts(
         ShellUtil::SHORTCUT_LOCATION_DESKTOP, properties,
         ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL);
   }
+}
+
+// Deletes all desktop shortcuts for the specified profile, and unpins them,
+// if pinned. If |ensure_shortcuts_remain| is true, then a regular non-profile
+// shortcut will be created if this function would otherwise delete the last
+// Chrome desktop shortcut(s). File and COM operations must be allowed on the
+// calling thread. |default_profile_path| is used to create the command line for
+// the shortcutcreated if |ensure_shortcuts_remain| is true and the last desktop
+// shortcut was deleted.
+void UnpinAndDeleteDesktopShortcuts(
+    const base::FilePath& profile_path,
+    const absl::optional<base::FilePath>& default_profile_path,
+    bool ensure_shortcuts_remain) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  base::FilePath chrome_exe;
+  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
+    NOTREACHED();
+    return;
+  }
+
+  const std::wstring command_line =
+      profiles::internal::CreateProfileShortcutFlags(profile_path);
+  ChromeCommandLineFilter filter(chrome_exe, command_line, false);
+  const std::set<base::FilePath> shortcuts = ListUserDesktopContents(&filter);
+  if (shortcuts.empty())
+    return;
+
+  std::vector<base::FilePath> shortcuts_vector(shortcuts.begin(),
+                                               shortcuts.end());
+  // Unpinning is done out-of-process, which isn't allowed in unit tests.
+  if (disable_unpinning_for_unit_tests) {
+    DeleteDesktopShortcuts(shortcuts, ensure_shortcuts_remain,
+                           default_profile_path, chrome_exe);
+    return;
+  }
+  shell_integration::win::UnpinShortcuts(
+      shortcuts_vector, base::BindOnce(&DeleteDesktopShortcuts, shortcuts,
+                                       ensure_shortcuts_remain,
+                                       default_profile_path, chrome_exe));
 }
 
 // Returns true if profile at |profile_path| has any shortcuts. Does not
@@ -710,10 +735,6 @@ std::wstring CreateProfileShortcutFlags(const base::FilePath& profile_path,
 }  // namespace internal
 }  // namespace profiles
 
-namespace {
-bool disabled_for_unit_tests = false;
-}
-
 void ProfileShortcutManager::DisableForUnitTests() {
   disabled_for_unit_tests = true;
 }
@@ -757,6 +778,10 @@ ProfileShortcutManagerWin::~ProfileShortcutManagerWin() {
   profile_manager_->GetProfileAttributesStorage().RemoveObserver(this);
 }
 
+void ProfileShortcutManagerWin::DisableUnpinningForUnitTests() {
+  disable_unpinning_for_unit_tests = true;
+}
+
 void ProfileShortcutManagerWin::CreateOrUpdateProfileIcon(
     const base::FilePath& profile_path) {
   CreateOrUpdateShortcutsForProfileAtPath(
@@ -784,7 +809,7 @@ void ProfileShortcutManagerWin::CreateProfileShortcut(
 void ProfileShortcutManagerWin::RemoveProfileShortcuts(
     const base::FilePath& profile_path) {
   base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
-      ->PostTask(FROM_HERE, base::BindOnce(&DeleteDesktopShortcuts,
+      ->PostTask(FROM_HERE, base::BindOnce(&UnpinAndDeleteDesktopShortcuts,
                                            profile_path, absl::nullopt, false));
 }
 
@@ -869,7 +894,7 @@ void ProfileShortcutManagerWin::OnProfileWasRemoved(
     first_profile_path = all_profiles[0]->GetPath();
 
   base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()})
-      ->PostTask(FROM_HERE, base::BindOnce(&DeleteDesktopShortcuts,
+      ->PostTask(FROM_HERE, base::BindOnce(&UnpinAndDeleteDesktopShortcuts,
                                            profile_path, first_profile_path,
                                            deleting_down_to_last_profile));
 }

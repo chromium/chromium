@@ -47,6 +47,7 @@ class ProfileShortcutManagerTest : public testing::Test {
   }
 
   void SetUp() override {
+    ProfileShortcutManagerWin::DisableUnpinningForUnitTests();
     TestingBrowserProcess* browser_process =
         TestingBrowserProcess::GetGlobal();
     profile_manager_ = std::make_unique<TestingProfileManager>(browser_process);
