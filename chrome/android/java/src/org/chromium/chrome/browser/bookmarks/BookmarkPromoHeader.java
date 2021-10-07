@@ -68,7 +68,7 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
 
     private @Nullable ProfileDataCache mProfileDataCache;
     private final @Nullable SigninPromoController mSigninPromoController;
-    private @PromoState int mPromoState;
+    private @PromoState int mPromoState = PromoState.PROMO_NONE;
     private final @Nullable SyncService mSyncService;
 
     /**
@@ -88,12 +88,6 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
 
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
-        mPromoState = calculatePromoState();
-        if (mPromoState == PromoState.PROMO_SYNC) {
-            SharedPreferencesManager.getInstance().incrementInt(
-                    ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
-        }
-
         if (SigninPromoController.canShowSyncPromo(SigninAccessPoint.BOOKMARK_MANAGER)) {
             mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
             mProfileDataCache.addObserver(this);
@@ -104,6 +98,7 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
             mProfileDataCache = null;
             mSigninPromoController = null;
         }
+        updatePromoState();
     }
 
     /**
@@ -218,23 +213,42 @@ class BookmarkPromoHeader implements SyncService.SyncStateChangedListener, SignI
         return PromoState.PROMO_NONE;
     }
 
+    private void updatePromoState() {
+        final @PromoState int newState = calculatePromoState();
+        if (newState == mPromoState) return;
+
+        // PROMO_SYNC state and it's impression counts is not tracked by SigninPromoController.
+        final boolean hasSyncPromoStateChangedtoShown =
+                (mPromoState == PromoState.PROMO_NONE || mPromoState == PromoState.PROMO_SYNC)
+                && (newState == PromoState.PROMO_SIGNIN_PERSONALIZED
+                        || newState == PromoState.PROMO_SYNC_PERSONALIZED);
+        if (mSigninPromoController != null && hasSyncPromoStateChangedtoShown) {
+            mSigninPromoController.increasePromoShowCount();
+        }
+        if (newState == PromoState.PROMO_SYNC) {
+            SharedPreferencesManager.getInstance().incrementInt(
+                    ChromePreferenceKeys.SIGNIN_AND_SYNC_PROMO_SHOW_COUNT);
+        }
+        mPromoState = newState;
+    }
+
     // SyncService.SyncStateChangedListener implementation.
     @Override
     public void syncStateChanged() {
-        mPromoState = calculatePromoState();
+        updatePromoState();
         triggerPromoUpdate();
     }
 
     // SignInStateObserver implementation.
     @Override
     public void onSignedIn() {
-        mPromoState = calculatePromoState();
+        updatePromoState();
         triggerPromoUpdate();
     }
 
     @Override
     public void onSignedOut() {
-        mPromoState = calculatePromoState();
+        updatePromoState();
         triggerPromoUpdate();
     }
 

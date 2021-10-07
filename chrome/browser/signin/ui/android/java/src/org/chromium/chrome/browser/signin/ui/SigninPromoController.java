@@ -58,6 +58,7 @@ public class SigninPromoController {
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
 
     /** Suffix strings for promo shown count preference. */
+    private static final String BOOKMARKS = "Bookmarks";
     private static final String SETTINGS = "Settings";
 
     private @Nullable DisplayableProfileData mProfileData;
@@ -130,7 +131,9 @@ public class SigninPromoController {
     private static boolean canShowBookmarkPromo() {
         boolean isPromoDismissed = SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, false);
-        return getSigninPromoImpressionsCountBookmarks() < MAX_IMPRESSIONS_BOOKMARKS
+        return SharedPreferencesManager.getInstance().readInt(
+                       getPromoShowCountPreferenceName(SigninAccessPoint.BOOKMARK_MANAGER))
+                < MAX_IMPRESSIONS_BOOKMARKS
                 && !isPromoDismissed;
     }
 
@@ -202,6 +205,8 @@ public class SigninPromoController {
     @VisibleForTesting
     public static String getPromoShowCountPreferenceName(@AccessPoint int accessPoint) {
         switch (accessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER:
+                return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(BOOKMARKS);
             case SigninAccessPoint.SETTINGS:
                 return ChromePreferenceKeys.SIGNIN_PROMO_SHOW_COUNT.createKey(SETTINGS);
             default:
@@ -413,9 +418,7 @@ public class SigninPromoController {
         }
     }
 
-    /**
-     * Increases promo show count by one.
-     */
+    /** Increases promo show count by one. */
     public void increasePromoShowCount() {
         SharedPreferencesManager.getInstance().incrementInt(
                 getPromoShowCountPreferenceName(mAccessPoint));
@@ -529,24 +532,10 @@ public class SigninPromoController {
         }
     }
 
-    // TODO(https://crbug.com/1254399): Merge this method with getPromoShowCountPreferenceName
-    @VisibleForTesting
-    public static void setSigninPromoImpressionsCountBookmarksForTests(int count) {
-        SharedPreferencesManager.getInstance().writeInt(
-                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_BOOKMARKS, count);
-    }
-
     @VisibleForTesting
     public static void setPrefSigninPromoDeclinedBookmarksForTests(boolean isDeclined) {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, isDeclined);
-    }
-
-    // TODO(https://crbug.com/1254399): Merge this method with getPromoShowCountPreferenceName
-    @VisibleForTesting
-    public static int getSigninPromoImpressionsCountBookmarks() {
-        return SharedPreferencesManager.getInstance().readInt(
-                ChromePreferenceKeys.SIGNIN_PROMO_IMPRESSIONS_COUNT_BOOKMARKS);
     }
 
     @VisibleForTesting
