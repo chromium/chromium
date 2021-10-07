@@ -45,8 +45,13 @@
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ui/base/window_properties.h"
+#else
+#include "chrome/browser/ui/ash/window_pin_util.h"
 #endif
 
 using content::OpenURLParams;
@@ -379,8 +384,13 @@ aura::Window* GetCurrentWindow() {
 }
 
 chromeos::WindowPinType GetCurrentWindowPinType() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::WindowPinType type =
       GetCurrentWindow()->GetProperty(chromeos::kWindowPinTypeKey);
+#else
+  chromeos::WindowPinType type = GetWindowPinType(GetCurrentWindow());
+#endif
+
   return type;
 }
 
@@ -388,7 +398,11 @@ chromeos::WindowPinType GetCurrentWindowPinType() {
 // work. Will enable after this landed.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void SetCurrentWindowPinType(chromeos::WindowPinType type) {
-  GetCurrentWindow()->SetProperty(chromeos::kWindowPinTypeKey, type);
+  if (type == chromeos::WindowPinType::kNone) {
+    UnpinWindow(GetCurrentWindow());
+  } else {
+    PinWindow(GetCurrentWindow(), /*trusted=*/true);
+  }
 }
 #endif
 
