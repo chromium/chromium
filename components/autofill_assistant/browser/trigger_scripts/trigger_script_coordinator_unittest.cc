@@ -1466,7 +1466,7 @@ TEST_F(TriggerScriptCoordinatorTest, RecordIfPrimaryPageFailed) {
   coordinator_->Start(GURL(kFakeDeepLink), std::make_unique<TriggerContext>(),
                       mock_callback_.Get());
 
-  // Start prerendering a page.
+  // Navigate to the primary page.
   EXPECT_CALL(mock_callback_,
               Run(Metrics::TriggerScriptFinishedState::NAVIGATION_ERROR, _, _))
       .Times(1);
@@ -1475,7 +1475,7 @@ TEST_F(TriggerScriptCoordinatorTest, RecordIfPrimaryPageFailed) {
   simulator->Fail(net::ERR_TIMED_OUT);
   simulator->CommitErrorPage();
 
-  // UKM should not be recorded by the prerendering's fail response.
+  // UKM should be recorded by the primary page's fail response.
   EXPECT_THAT(GetUkmTriggerScriptFinished(ukm_recorder_),
               ElementsAreArray(ToHumanReadableMetrics(
                   {{navigation_ids_[0],
