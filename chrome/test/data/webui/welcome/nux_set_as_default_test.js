@@ -48,7 +48,7 @@ suite('SetAsDefaultTest', function() {
   test(
       'click set-default button and finishes setting default',
       async function() {
-        testElement.$$('.action-button').click();
+        testElement.shadowRoot.querySelector('.action-button').click();
 
         await Promise.all([
           testSetAsDefaultProxy.whenCalled('recordBeginSetDefault'),
@@ -69,7 +69,7 @@ suite('SetAsDefaultTest', function() {
       });
 
   test('click set-default button but gives up and skip', async function() {
-    testElement.$$('.action-button').click();
+    testElement.shadowRoot.querySelector('.action-button').click();
 
     await Promise.all([
       testSetAsDefaultProxy.whenCalled('recordBeginSetDefault'),
