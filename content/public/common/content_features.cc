@@ -539,7 +539,7 @@ const base::Feature kPepperCrossOriginRedirectRestriction{
 
 // Enable in-browser script loading for a brand new service worker.
 const base::Feature kPlzServiceWorker{"PlzServiceWorker",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables process sharing for sites that do not require a dedicated process
 // by using a default SiteInstance. Default SiteInstances will only be used
