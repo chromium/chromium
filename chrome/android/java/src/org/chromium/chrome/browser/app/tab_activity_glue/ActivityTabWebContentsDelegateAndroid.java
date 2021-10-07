@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.notifications.WebPlatformNotificationMetrics;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -397,7 +398,17 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                     ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
             return false;
         }
-        return isNightModeEnabled() && WebContentsDarkModeController.isGlobalUserSettingsEnabled();
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) {
+            return false;
+        }
+        Profile profile = Profile.fromWebContents(mTab.getWebContents());
+        if (profile == null) {
+            return false;
+        }
+        return isNightModeEnabled()
+                && WebContentsDarkModeController.isEnabledForUrl(
+                        profile, webContents.getVisibleUrl());
     }
 
     @Override

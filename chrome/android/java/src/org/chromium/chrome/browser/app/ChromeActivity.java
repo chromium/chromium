@@ -2532,6 +2532,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // Flip auto dark state.
             boolean isEnabled = WebContentsDarkModeController.isEnabledForUrl(profile, url);
             WebContentsDarkModeController.setEnabledForUrl(profile, url, !isEnabled);
+            currentTab.getWebContents().notifyRendererPreferenceUpdate();
 
             // Show dialog informing user how to disable the feature globally and give feedback if
             // disabling through the app menu for the nth time (determined by feature engagement).

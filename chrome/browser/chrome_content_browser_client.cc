@@ -3418,6 +3418,9 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
 
       web_prefs->picture_in_picture_enabled =
           delegate->IsPictureInPictureEnabled();
+
+      web_prefs->force_dark_mode_enabled =
+          delegate->IsForceDarkWebContentEnabled();
     }
 #endif  // defined(OS_ANDROID)
 
@@ -3625,7 +3628,24 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
   bool preferred_color_scheme_updated = UpdatePreferredColorScheme(
       prefs, web_contents->GetLastCommittedURL(), web_contents, GetWebTheme());
 
+#if defined(OS_ANDROID)
+  bool force_dark_mode_changed = false;
+  auto* delegate = TabAndroid::FromWebContents(web_contents)
+                       ? static_cast<android::TabWebContentsDelegateAndroid*>(
+                             web_contents->GetDelegate())
+                       : nullptr;
+  if (delegate) {
+    bool force_dark_mode_new_state = delegate->IsForceDarkWebContentEnabled();
+    force_dark_mode_changed =
+        prefs->force_dark_mode_enabled != force_dark_mode_new_state;
+    prefs->force_dark_mode_enabled = force_dark_mode_new_state;
+  }
+#endif
+
   return new_autoplay_policy_needed || extra_parts_need_update ||
+#if defined(OS_ANDROID)
+         force_dark_mode_changed ||
+#endif
          preferred_color_scheme_updated;
 }
 
