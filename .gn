@@ -57,6 +57,10 @@ default_args = {
   angle_vulkan_validation_layers_dir =
       "//third_party/vulkan-deps/vulkan-validation-layers/src"
 
+  # Overwrite default arg declared in the Fuchsia sdk
+  fuchsia_sdk_readelf_exec =
+      "//third_party/llvm-build/Release+Asserts/bin/llvm-readelf"
+
   devtools_visibility = [ "*" ]
 }
 
