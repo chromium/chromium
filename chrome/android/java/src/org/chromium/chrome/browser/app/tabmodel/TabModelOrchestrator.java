@@ -8,6 +8,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
 
@@ -18,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStor
 public abstract class TabModelOrchestrator {
     protected TabPersistentStore mTabPersistentStore;
     protected TabModelSelectorBase mTabModelSelector;
+    protected TabPersistencePolicy mTabPersistencePolicy;
     private boolean mTabModelsInitialized;
 
     /**
@@ -64,7 +66,8 @@ public abstract class TabModelOrchestrator {
 
     public void onNativeLibraryReady(TabContentManager tabContentManager) {
         mTabModelSelector.onNativeLibraryReady(tabContentManager);
-        mTabPersistentStore.onNativeLibraryReady(tabContentManager);
+        mTabPersistencePolicy.setTabContentManager(tabContentManager);
+        mTabPersistentStore.onNativeLibraryReady();
     }
 
     /**

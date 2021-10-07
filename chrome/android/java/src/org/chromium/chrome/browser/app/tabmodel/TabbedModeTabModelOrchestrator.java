@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
-import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
 import org.chromium.ui.widget.Toast;
@@ -73,10 +72,10 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         // Instantiate TabPersistentStore
         int maxSelectors = TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors();
-        TabPersistencePolicy tabPersistencePolicy = new TabbedModeTabPersistencePolicy(
+        mTabPersistencePolicy = new TabbedModeTabPersistencePolicy(
                 assignedIndex, mergeTabsOnStartup, mTabMergingEnabled, maxSelectors);
         mTabPersistentStore =
-                new TabPersistentStore(tabPersistencePolicy, mTabModelSelector, tabCreatorManager);
+                new TabPersistentStore(mTabPersistencePolicy, mTabModelSelector, tabCreatorManager);
 
         wireSelectorAndStore();
         markTabModelsInitialized();

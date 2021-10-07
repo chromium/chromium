@@ -32,7 +32,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -112,9 +111,7 @@ public class TabPersistentStore {
         int OTHER = 2;
     }
 
-    public void onNativeLibraryReady(TabContentManager tabContentManager) {
-        setTabContentManager(tabContentManager);
-
+    public void onNativeLibraryReady() {
         mTabModelSelector.addObserver(new TabModelSelectorObserver() {
             @Override
             public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
@@ -336,14 +333,6 @@ public class TabPersistentStore {
     @VisibleForTesting
     public void waitForMigrationToFinish() {
         mPersistencePolicy.waitForInitializationToFinish();
-    }
-
-    /**
-     * Sets the {@link TabContentManager} to use.
-     * @param cache The {@link TabContentManager} to use.
-     */
-    public void setTabContentManager(TabContentManager cache) {
-        mPersistencePolicy.setTabContentManager(cache);
     }
 
     public void saveState() {
