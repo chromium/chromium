@@ -119,6 +119,7 @@ class MockBinaryFCMService : public BinaryFCMService {
   MOCK_METHOD2(UnregisterInstanceID,
                void(const std::string& token,
                     BinaryFCMService::UnregisterInstanceIDCallback callback));
+  MOCK_METHOD0(Connected, bool());
 };
 
 class BinaryUploadServiceTest : public testing::Test {
@@ -134,6 +135,8 @@ class BinaryUploadServiceTest : public testing::Test {
     // URLLoaderFactory, so pass nullptr here.
     service_ = std::make_unique<BinaryUploadService>(nullptr, &profile_,
                                                      std::move(fcm_service));
+
+    EXPECT_CALL(*fcm_service_, Connected()).WillRepeatedly(Return(true));
   }
   ~BinaryUploadServiceTest() override {
     MultipartUploadRequest::RegisterFactoryForTests(nullptr);
@@ -188,6 +191,10 @@ class BinaryUploadServiceTest : public testing::Test {
   void ServiceWithNoFCMConnection() {
     service_ = std::make_unique<BinaryUploadService>(
         nullptr, &profile_, std::unique_ptr<BinaryFCMService>(nullptr));
+  }
+
+  void ServiceWithDisconnectedFCM() {
+    EXPECT_CALL(*fcm_service_, Connected()).WillRepeatedly(Return(false));
   }
 
   std::unique_ptr<MockRequest> MakeRequest(
@@ -552,6 +559,26 @@ TEST_F(BinaryUploadServiceTest, OnGetSynchronousResponse) {
 
 TEST_F(BinaryUploadServiceTest, ReturnsAsynchronouslyWithNoFCM) {
   ServiceWithNoFCMConnection();
+
+  BinaryUploadService::Result scanning_result =
+      BinaryUploadService::Result::UNKNOWN;
+  enterprise_connectors::ContentAnalysisResponse scanning_response;
+  std::unique_ptr<MockRequest> request =
+      MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
+  request->add_tag("dlp");
+  request->add_tag("malware");
+
+  UploadForDeepScanning(std::move(request));
+
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNKNOWN);
+
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
+}
+
+TEST_F(BinaryUploadServiceTest, ReturnsAsynchronouslyWithDisconnectedFCM) {
+  ServiceWithDisconnectedFCM();
 
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;

@@ -113,6 +113,8 @@ class FakeBinaryFCMService : public BinaryFCMService {
     // Always successfully unregister.
     std::move(callback).Run(true);
   }
+
+  bool Connected() override { return true; }
 };
 
 // Integration tests for download deep scanning behavior, only mocking network

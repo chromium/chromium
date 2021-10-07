@@ -310,7 +310,7 @@ void BinaryUploadService::UploadForDeepScanning(
   active_tokens_[raw_request] = token;
   raw_request->set_request_token(token);
 
-  if (!binary_fcm_service_) {
+  if (!binary_fcm_service_ || !binary_fcm_service_->Connected()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BinaryUploadService::FinishRequest,

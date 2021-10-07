@@ -79,6 +79,10 @@ class BinaryFCMService : public gcm::GCMAppHandler {
                           const std::string& message_id) override;
   bool CanHandle(const std::string& app_id) const override;
 
+  // Indicates if the underlying implementation is in a state allowing messages
+  // to be received and propagated to `message_token_map_` callbacks.
+  virtual bool Connected();
+
   static const char kInvalidId[];
 
   void SetQueuedOperationDelayForTesting(base::TimeDelta delay);
