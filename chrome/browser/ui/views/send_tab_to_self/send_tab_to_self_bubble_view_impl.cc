@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -140,7 +141,8 @@ void SendTabToSelfBubbleViewImpl::Init() {
                      views::GridLayout::kFixedSize,
                      views::GridLayout::ColumnSize::kFixed, width, width);
 
-  if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2)) {
+  if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
+      share::AreUpcomingSharingFeaturesEnabled()) {
     CreateHintTextLabel(layout);
   }
 

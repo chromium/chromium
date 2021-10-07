@@ -272,7 +272,8 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
 
         Resources res = mContext.getResources();
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_V2)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_V2)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.UPCOMING_SHARING_FEATURES)) {
             String deviceType = res.getString(R.string.send_tab_to_self_device_type_generic);
             if (targetDeviceInfo.deviceType == TargetDeviceInfo.DeviceType.PHONE) {
                 deviceType = res.getString(R.string.send_tab_to_self_device_type_phone);

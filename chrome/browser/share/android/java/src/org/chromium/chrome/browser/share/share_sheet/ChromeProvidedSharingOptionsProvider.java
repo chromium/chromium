@@ -256,11 +256,14 @@ public class ChromeProvidedSharingOptionsProvider {
      * mOrderedFirstPartyOptions} in the order they should appear.
      */
     private void initializeFirstPartyOptionsInOrder() {
+        boolean enableAllUpcomingSharingFeatures =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.UPCOMING_SHARING_FEATURES);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEBNOTES_STYLIZE)) {
             mOrderedFirstPartyOptions.add(createWebNotesStylizeFirstPartyOption());
         }
         mOrderedFirstPartyOptions.add(createScreenshotFirstPartyOption());
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
+                || enableAllUpcomingSharingFeatures) {
             mOrderedFirstPartyOptions.add(createLongScreenshotsFirstPartyOption());
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LIGHTWEIGHT_REACTIONS)) {

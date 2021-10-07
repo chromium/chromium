@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -32,12 +33,14 @@ bool SharingHubAppMenuEnabled(content::BrowserContext* context) {
 }
 
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
-  return base::FeatureList::IsEnabled(kSharingHubDesktopOmnibox) &&
+  return (base::FeatureList::IsEnabled(kSharingHubDesktopOmnibox) ||
+          share::AreUpcomingSharingFeaturesEnabled()) &&
          IsEnterprisePolicyEnabled(context);
 }
 
 bool DesktopScreenshotsFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kDesktopScreenshots);
+  return base::FeatureList::IsEnabled(kDesktopScreenshots) ||
+         share::AreUpcomingSharingFeaturesEnabled();
 }
 
 const base::Feature kSharingHubDesktopAppMenu{

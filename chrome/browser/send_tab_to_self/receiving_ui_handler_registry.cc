@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
+#include "chrome/browser/share/share_features.h"
 #include "components/send_tab_to_self/features.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
@@ -41,7 +42,8 @@ void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
 
   // If STTS 2.0 is enabled the handler will be created when the toolbar
   // button registers itself as the delegate.
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfV2)) {
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfV2) &&
+      !share::AreUpcomingSharingFeaturesEnabled()) {
     applicable_handlers_.push_back(
         std::make_unique<send_tab_to_self::DesktopNotificationHandler>(
             profile));

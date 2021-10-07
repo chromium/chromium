@@ -61,6 +61,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_desktop_util.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/share/share_features.h"
 #include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_context_menu_observer.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
@@ -609,7 +610,8 @@ absl::optional<web_app::SystemAppType> GetLinkSystemAppType(Profile* profile,
 }
 
 bool ShouldUseShareMenu() {
-  return base::FeatureList::IsEnabled(share::kShareMenu);
+  return base::FeatureList::IsEnabled(share::kShareMenu) ||
+         share::AreUpcomingSharingFeaturesEnabled();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) ||    \
