@@ -1186,7 +1186,7 @@ const absl::optional<net::IsolationInfo>& DownloadItemImpl::GetIsolationInfo()
 void DownloadItemImpl::OnContentCheckCompleted(DownloadDangerType danger_type,
                                                DownloadInterruptReason reason) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(AllDataSaved());
+  DCHECK(AllDataSaved() || IsSavePackageDownload());
 
   // Danger type is only allowed to be set on an active download after all data
   // has been saved. This excludes all other states. In particular,
@@ -1975,7 +1975,6 @@ void DownloadItemImpl::SwapDownloadSchedule(
 // mark downloads complete.
 void DownloadItemImpl::MaybeCompleteDownload() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!IsSavePackageDownload());
 
   if (!IsDownloadReadyForCompletion(
           base::BindRepeating(&DownloadItemImpl::MaybeCompleteDownload,
@@ -2783,7 +2782,8 @@ bool DownloadItemImpl::IsValidSavePackageStateTransition(
       return false;
 
     case IN_PROGRESS_INTERNAL:
-      return to == CANCELLED_INTERNAL || to == COMPLETE_INTERNAL;
+      return to == CANCELLED_INTERNAL || to == COMPLETE_INTERNAL ||
+             to == INTERRUPTED_INTERNAL;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
       NOTREACHED();

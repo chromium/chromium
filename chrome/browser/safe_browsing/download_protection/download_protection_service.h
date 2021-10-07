@@ -27,8 +27,8 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_observer.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/download_protection/download_reporter.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -364,8 +364,9 @@ class DownloadProtectionService {
   // Rate of allowlisted downloads we sample to send out download ping.
   double allowlist_sample_rate_;
 
-  // DownloadReporter to send real time reports for dangerous download events.
-  DownloadReporter download_reporter_;
+  // DownloadProtectionObserver to send real time reports for dangerous download
+  // events and handle special user actions on the download.
+  DownloadProtectionObserver download_protection_observer_;
 
   base::WeakPtrFactory<DownloadProtectionService> weak_ptr_factory_;
 };

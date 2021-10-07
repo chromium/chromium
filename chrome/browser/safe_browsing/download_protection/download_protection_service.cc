@@ -37,6 +37,7 @@
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/download_type_util.h"
 #include "chrome/common/url_constants.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
@@ -509,7 +510,7 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
 void DownloadProtectionService::ReportDelayedBypassEvent(
     download::DownloadItem* download,
     download::DownloadDangerType danger_type) {
-  download_reporter_.ReportDelayedBypassEvent(download, danger_type);
+  download_protection_observer_.ReportDelayedBypassEvent(download, danger_type);
 }
 
 std::unique_ptr<ReferrerChainData>

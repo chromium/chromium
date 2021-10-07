@@ -328,8 +328,11 @@ class DownloadTestItemCreationObserver
 class SavePackageFinishedObserver : public download::DownloadItem::Observer,
                                     public DownloadManager::Observer {
  public:
-  SavePackageFinishedObserver(DownloadManager* manager,
-                              base::OnceClosure callback);
+  SavePackageFinishedObserver(
+      DownloadManager* manager,
+      base::OnceClosure callback,
+      std::set<download::DownloadItem::DownloadState> final_states = {
+          download::DownloadItem::COMPLETE, download::DownloadItem::CANCELLED});
 
   SavePackageFinishedObserver(const SavePackageFinishedObserver&) = delete;
   SavePackageFinishedObserver& operator=(const SavePackageFinishedObserver&) =
@@ -350,6 +353,7 @@ class SavePackageFinishedObserver : public download::DownloadItem::Observer,
   DownloadManager* download_manager_;
   download::DownloadItem* download_;
   base::OnceClosure callback_;
+  std::set<download::DownloadItem::DownloadState> final_states_;
 };
 
 }  // namespace content`

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_REPORTER_H_
-#define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_REPORTER_H_
+#ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_OBSERVER_H_
+#define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_OBSERVER_H_
 
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
@@ -16,19 +16,21 @@
 namespace safe_browsing {
 
 // This class is responsible for observing download events and reporting them as
-// appropriate.
-class DownloadReporter
+// appropriate. For save package scans, this also runs the correct callback when
+// the user bypasses a scan.
+class DownloadProtectionObserver
     : public download::DownloadItem::Observer,
       public download::SimpleDownloadManagerCoordinator::Observer,
       public ProfileManagerObserver,
       public ProfileObserver {
  public:
-  DownloadReporter();
+  DownloadProtectionObserver();
 
-  DownloadReporter(const DownloadReporter&) = delete;
-  DownloadReporter& operator=(const DownloadReporter&) = delete;
+  DownloadProtectionObserver(const DownloadProtectionObserver&) = delete;
+  DownloadProtectionObserver& operator=(const DownloadProtectionObserver&) =
+      delete;
 
-  ~DownloadReporter() override;
+  ~DownloadProtectionObserver() override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -45,6 +47,7 @@ class DownloadReporter
   // DownloadItem::Observer:
   void OnDownloadDestroyed(download::DownloadItem* download) override;
   void OnDownloadUpdated(download::DownloadItem* download) override;
+  void OnDownloadRemoved(download::DownloadItem* download) override;
 
   // Reports the bypass event for this download because it was opened before the
   // verdict was available. |danger_type| is the danger type returned by the
@@ -73,4 +76,4 @@ class DownloadReporter
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_REPORTER_H_
+#endif  // CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DOWNLOAD_PROTECTION_OBSERVER_H_

@@ -1425,6 +1425,45 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
     return;
   }
 
+  // We only mark the content as being sensitive if the download's danger state
+  // has not been set yet.  We don't want to show two warnings.
+  if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT ||
+      item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+    download::DownloadDangerType danger_type = SavePackageDangerType(result);
+    if (item->GetState() == DownloadItem::COMPLETE &&
+        item->GetDangerType() ==
+            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
+      // If the save package was opened during async scanning, we override the
+      // danger type, since the user can no longer discard the download.
+      if (danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
+        item->OnAsyncScanningCompleted(
+            download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS);
+
+        // Because the file has been opened before the verdict was available,
+        // the reporter must be manually notified that it needs to record the
+        // bypass. This is because the bypass wasn't reported on open to avoid
+        // sending a bypass event for a non-dangerous/sensitive file.
+        GetDownloadProtectionService()->ReportDelayedBypassEvent(item,
+                                                                 danger_type);
+      } else {
+        item->OnAsyncScanningCompleted(danger_type);
+      }
+    } else if (IsDangerTypeBlocked(danger_type)) {
+      item->OnContentCheckCompleted(
+          danger_type, download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+    } else {
+      item->OnContentCheckCompleted(danger_type,
+                                    download::DOWNLOAD_INTERRUPT_REASON_NONE);
+    }
+  }
+
+  // RunSavePackageScanningCallback is called after OnAsyncScanningCompleted or
+  // OnContentCheckCompleted so that the package completes correctly after a
+  // scanning-specific UI has been applie to `item`.
   switch (result) {
     // These results imply the scanning is either not done or that the Save
     // Package being allowed/blocked depends on user action following a
@@ -1457,35 +1496,6 @@ void ChromeDownloadManagerDelegate::CheckSavePackageScanningDone(
       break;
   }
 
-  // We only mark the content as being sensitive if the download's danger state
-  // has not been set yet.  We don't want to show two warnings.
-  if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS ||
-      item->GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT ||
-      item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
-      item->GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
-    download::DownloadDangerType danger_type = SavePackageDangerType(result);
-    if (item->GetState() == DownloadItem::COMPLETE &&
-        item->GetDangerType() ==
-            download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
-      // If the save package was opened during async scanning, we override the
-      // danger type, since the user can no longer discard the download.
-      if (danger_type != download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS) {
-        item->OnAsyncScanningCompleted(
-            download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS);
-
-        // Because the file has been opened before the verdict was available,
-        // the reporter must be manually notified that it needs to record the
-        // bypass. This is because the bypass wasn't reported on open to avoid
-        // sending a bypass event for a non-dangerous/sensitive file.
-        GetDownloadProtectionService()->ReportDelayedBypassEvent(item,
-                                                                 danger_type);
-      } else {
-        item->OnAsyncScanningCompleted(danger_type);
-      }
-    }
-  }
 }
 #endif  // FULL_SAFE_BROWSING
 

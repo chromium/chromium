@@ -832,12 +832,18 @@ bool DownloadItemModel::IsExtensionDownload() const {
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 void DownloadItemModel::CompleteSafeBrowsingScan() {
-  ChromeDownloadManagerDelegate::SafeBrowsingState* state =
-      static_cast<ChromeDownloadManagerDelegate::SafeBrowsingState*>(
-          download_->GetUserData(
-              &ChromeDownloadManagerDelegate::SafeBrowsingState::
-                  kSafeBrowsingUserDataKey));
-  state->CompleteDownload();
+  if (download_->IsSavePackageDownload()) {
+    download_->OnAsyncScanningCompleted(
+        download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED);
+    enterprise_connectors::RunSavePackageScanningCallback(download_, true);
+  } else {
+    ChromeDownloadManagerDelegate::SafeBrowsingState* state =
+        static_cast<ChromeDownloadManagerDelegate::SafeBrowsingState*>(
+            download_->GetUserData(
+                &ChromeDownloadManagerDelegate::SafeBrowsingState::
+                    kSafeBrowsingUserDataKey));
+    state->CompleteDownload();
+  }
 }
 #endif
 

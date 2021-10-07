@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/download_protection/download_reporter.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_observer.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -138,49 +138,53 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
 
 }  // namespace
 
-DownloadReporter::DownloadReporter() {
+DownloadProtectionObserver::DownloadProtectionObserver() {
   // Profile manager can be null in unit tests.
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->AddObserver(this);
 }
 
-DownloadReporter::~DownloadReporter() {
+DownloadProtectionObserver::~DownloadProtectionObserver() {
   if (g_browser_process->profile_manager())
     g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
-void DownloadReporter::OnProfileAdded(Profile* profile) {
+void DownloadProtectionObserver::OnProfileAdded(Profile* profile) {
   observed_profiles_.AddObservation(profile);
   observed_coordinators_.AddObservation(
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
           profile->GetProfileKey()));
 }
 
-void DownloadReporter::OnOffTheRecordProfileCreated(Profile* off_the_record) {
+void DownloadProtectionObserver::OnOffTheRecordProfileCreated(
+    Profile* off_the_record) {
   OnProfileAdded(off_the_record);
 }
 
-void DownloadReporter::OnProfileWillBeDestroyed(Profile* profile) {
+void DownloadProtectionObserver::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
 }
 
-void DownloadReporter::OnManagerGoingDown(
+void DownloadProtectionObserver::OnManagerGoingDown(
     download::SimpleDownloadManagerCoordinator* coordinator) {
   observed_coordinators_.RemoveObservation(coordinator);
 }
 
-void DownloadReporter::OnDownloadCreated(download::DownloadItem* download) {
+void DownloadProtectionObserver::OnDownloadCreated(
+    download::DownloadItem* download) {
   danger_types_[download] = download->GetDangerType();
   if (!observed_downloads_.IsObservingSource(download))
     observed_downloads_.AddObservation(download);
 }
 
-void DownloadReporter::OnDownloadDestroyed(download::DownloadItem* download) {
+void DownloadProtectionObserver::OnDownloadDestroyed(
+    download::DownloadItem* download) {
   observed_downloads_.RemoveObservation(download);
   danger_types_.erase(download);
 }
 
-void DownloadReporter::OnDownloadUpdated(download::DownloadItem* download) {
+void DownloadProtectionObserver::OnDownloadUpdated(
+    download::DownloadItem* download) {
   // If the update isn't a change in danger type, we can ignore it.
   if (danger_types_[download] == download->GetDangerType())
     return;
@@ -202,12 +206,25 @@ void DownloadReporter::OnDownloadUpdated(download::DownloadItem* download) {
           download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING &&
       current_danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
     ReportAnalysisConnectorWarningBypassed(download);
+
+    // This is called when a SavePackage warning is bypassed so that the final
+    // renaming takes place.
+    if (download->IsSavePackageDownload())
+      enterprise_connectors::RunSavePackageScanningCallback(download, true);
   }
 
   danger_types_[download] = current_danger_type;
 }
 
-void DownloadReporter::ReportDelayedBypassEvent(
+void DownloadProtectionObserver::OnDownloadRemoved(
+    download::DownloadItem* download) {
+  // This needs to run if a SavePackage is discarded after a scan so that it
+  // can cleanup temporary files.
+  if (download->IsSavePackageDownload())
+    enterprise_connectors::RunSavePackageScanningCallback(download, false);
+}
+
+void DownloadProtectionObserver::ReportDelayedBypassEvent(
     download::DownloadItem* download,
     download::DownloadDangerType danger_type) {
   // Because the file was opened before the verdict was available, it's possible
@@ -222,7 +239,8 @@ void DownloadReporter::ReportDelayedBypassEvent(
   }
 }
 
-void DownloadReporter::AddBypassEventToPref(download::DownloadItem* download) {
+void DownloadProtectionObserver::AddBypassEventToPref(
+    download::DownloadItem* download) {
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -236,9 +254,10 @@ void DownloadReporter::AddBypassEventToPref(download::DownloadItem* download) {
   }
 }
 
-void DownloadReporter::ReportAndRecordDangerousDownloadWarningBypassed(
-    download::DownloadItem* download,
-    download::DownloadDangerType danger_type) {
+void DownloadProtectionObserver::
+    ReportAndRecordDangerousDownloadWarningBypassed(
+        download::DownloadItem* download,
+        download::DownloadDangerType danger_type) {
   AddBypassEventToPref(download);
   ReportDangerousDownloadWarningBypassed(download, danger_type);
   RecordDangerousDownloadWarningBypassed(

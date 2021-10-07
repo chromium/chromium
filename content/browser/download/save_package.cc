@@ -803,6 +803,10 @@ void SavePackage::Finish() {
                                 std::unique_ptr<crypto::SecureHash>());
     }
     download_->MarkAsComplete();
+
+    if (download_->GetOpenWhenComplete())
+      download_->OpenDownload();
+
     FinalizeDownloadEntry();
   }
 }
