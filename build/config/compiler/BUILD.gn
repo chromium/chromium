@@ -1529,13 +1529,10 @@ config("default_warnings") {
             # TODO(https://crbug.com/1203071): Clean up and enable.
             "-Wno-unused-but-set-parameter",
             "-Wno-unused-but-set-variable",
+
+            # TODO(https://crbug.com/1255745): Clean up, enable.
+            "-Wno-bitwise-instead-of-logical",
           ]
-          if (llvm_force_head_revision) {
-            cflags += [
-              # TODO(https://crbug.com/1255745): Clean up, enable.
-              "-Wno-bitwise-instead-of-logical",
-            ]
-          }
         }
 
         if (is_fuchsia) {
