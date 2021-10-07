@@ -10,7 +10,7 @@ if (is_android) {
 }
 if (is_chromeos_ash) {
   import("//chromeos/dbus/use_real_dbus_clients.gni")
-} else if (use_dbus) {
+} else if (use_bluez) {
   use_real_dbus_clients = false
 }
 
@@ -309,7 +309,7 @@ component("bluetooth") {
   }
 
   if (is_chromeos || is_linux) {
-    if (use_dbus) {
+    if (use_bluez) {
       if (!force_cast_bluetooth) {
         sources += [ "bluetooth_adapter_chromeos.cc" ]
       }
@@ -515,7 +515,7 @@ component("bluetooth") {
 
     # force_cast_bluetooth is used to compile with both cast & BlueZ, by
     # omitting the stubs that would otherwise be added in.
-    if (!use_dbus || force_cast_bluetooth) {
+    if (!use_bluez || force_cast_bluetooth) {
       if (is_chromecast && (is_linux || is_chromeos)) {
         sources += [
           "cast/bluetooth_adapter_cast.cc",
