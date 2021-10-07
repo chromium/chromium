@@ -43,6 +43,7 @@
   "enable-hardware-secure-decryption",
   "enable-input-event-logging",
   "enable-javascript-harmony",
+  "enable-libinput-to-handle-touchpad",
   "enable-lite-video",
   "enable-logging-js-console-messages",
   "enable-network-logging-to-file",

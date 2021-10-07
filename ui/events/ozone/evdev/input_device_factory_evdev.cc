@@ -126,8 +126,16 @@ std::unique_ptr<EventConverterEvdev> CreateConverter(
 #if defined(USE_LIBINPUT)
   // Use LibInputEventConverter for odd touchpads
   if (devinfo.HasTouchpad()) {
-    if (!devinfo.HasMultitouch() || !devinfo.HasValidMTAbsXY() ||
-        !devinfo.IsSemiMultitouch() || IsForceLibinput(devinfo)) {
+    bool useLibinput = false;
+    auto overridden_state =
+        base::FeatureList::GetStateIfOverridden(ui::kLibinputHandleTouchpad);
+    if (overridden_state.has_value()) {
+      useLibinput = overridden_state.value();
+    } else {
+      useLibinput = !devinfo.HasMultitouch() || !devinfo.HasValidMTAbsXY() ||
+                    !devinfo.IsSemiMultitouch() || IsForceLibinput(devinfo);
+    }
+    if (useLibinput) {
       return LibInputEventConverter::Create(params.path, params.id, devinfo,
                                             params.cursor, params.dispatcher);
     }

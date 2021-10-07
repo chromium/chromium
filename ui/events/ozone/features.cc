@@ -28,6 +28,10 @@ const base::Feature kEnablePalmOnToolTypePalm{"EnablePalmOnToolTypePalm",
 const base::Feature kEnablePalmSuppression{"EnablePalmSuppression",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether libinput is used to handle touchpad.
+const base::Feature kLibinputHandleTouchpad{"LibinputHandleTouchpad",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 extern const base::FeatureParam<std::string> kNeuralPalmRadiusPolynomial{
     &kEnableNeuralPalmDetectionFilter, "neural_palm_radius_polynomial", ""};
 

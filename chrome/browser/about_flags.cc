@@ -7648,7 +7648,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebBluetoothBondOnDemandName,
      flag_descriptions::kWebBluetoothBondOnDemandDescription, kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(features::kWebBluetoothBondOnDemand)},
-  
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-libinput-to-handle-touchpad",
+     flag_descriptions::kEnableLibinputToHandleTouchpadName,
+     flag_descriptions::kEnableLibinputToHandleTouchpadDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kLibinputHandleTouchpad)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

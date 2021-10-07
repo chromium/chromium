@@ -2566,6 +2566,9 @@ extern const char kEnableInputNoiseCancellationUiDescription[];
 extern const char kEnableLauncherSearchNormalizationName[];
 extern const char kEnableLauncherSearchNormalizationDescription[];
 
+extern const char kEnableLibinputToHandleTouchpadName[];
+extern const char kEnableLibinputToHandleTouchpadDescription[];
+
 extern const char kNewDragSpecInLauncherName[];
 extern const char kNewDragSpecInLauncherDescription[];
 
