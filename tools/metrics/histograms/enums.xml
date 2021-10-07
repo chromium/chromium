@@ -49035,6 +49035,8 @@ from previous Chrome versions.
       label="CryptAuthV2DeviceActivityStatusUseConnectivity:enabled"/>
   <int value="-1156179600" label="OmniboxRichEntitySuggestions:enabled"/>
   <int value="-1155543191" label="CopylessPaste:disabled"/>
+  <int value="-1155071457"
+      label="CCTResizableAllowResizeByUserGesture:disabled"/>
   <int value="-1154834060" label="OmniboxRichAutocompletion:disabled"/>
   <int value="-1154819618" label="FilesNG:enabled"/>
   <int value="-1154343236" label="VrBrowsingTabsView:disabled"/>
@@ -51668,6 +51670,7 @@ from previous Chrome versions.
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
   <int value="913855453" label="VirtualKeyboardFloatingResizable:disabled"/>
+  <int value="914708297" label="CCTResizableAllowResizeByUserGesture:enabled"/>
   <int value="916316159" label="disable-new-app-list-mixer"/>
   <int value="917285134" label="AutofillAddressProfileSavePrompt:enabled"/>
   <int value="917561046" label="ConversionMeasurement:disabled"/>

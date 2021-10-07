@@ -74,6 +74,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY);
                 add(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS);
                 add(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT);
+                add(ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE);
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES);
                 add(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
                 add(ChromeFeatureList.CLOSE_TAB_SUGGESTIONS);

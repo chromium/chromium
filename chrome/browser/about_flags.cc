@@ -5269,6 +5269,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCCTResizable90MaximumHeightName,
      flag_descriptions::kCCTResizable90MaximumHeightDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTResizable90MaximumHeight)},
+    {"cct-resizable-allow-resize-by-user-gesture",
+     flag_descriptions::kCCTResizableAllowResizeByUserGestureName,
+     flag_descriptions::kCCTResizableAllowResizeByUserGestureDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCCTResizableAllowResizeByUserGesture)},
     {"cct-resizable-for-first-parties",
      flag_descriptions::kCCTResizableForFirstPartiesName,
      flag_descriptions::kCCTResizableForFirstPartiesDescription, kOsAndroid,

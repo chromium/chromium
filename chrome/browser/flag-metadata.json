@@ -624,6 +624,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "cct-resizable-allow-resize-by-user-gesture",
+    "owners": ["ctzsm", "peconn"],
+    "expiry_milestone": 105
+  },
+  {
     "name": "cct-resizable-for-first-parties",
     "owners": ["ctzsm", "peconn"],
     "expiry_milestone": 105

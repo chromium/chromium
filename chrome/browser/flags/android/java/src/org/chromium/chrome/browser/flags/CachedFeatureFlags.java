@@ -89,9 +89,10 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false)
                     .put(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION, false)
                     .put(ChromeFeatureList.NEW_WINDOW_APP_MENU, true)
+                    .put(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false)
+                    .put(ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE, false)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES, true)
                     .put(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES, false)
-                    .put(ChromeFeatureList.CCT_RESIZABLE_90_MAXIMUM_HEIGHT, false)
                     .put(ChromeFeatureList.INSTANCE_SWITCHER, true)
                     .put(ChromeFeatureList.WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT, true)
                     .build();

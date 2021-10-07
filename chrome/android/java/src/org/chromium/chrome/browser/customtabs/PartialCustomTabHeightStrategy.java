@@ -120,6 +120,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
+            if (!CachedFeatureFlags.isEnabled(
+                        ChromeFeatureList.CCT_RESIZABLE_ALLOW_RESIZE_BY_USER_GESTURE)) {
+                return false;
+            }
+
             if (mStatus == HeightStatus.TRANSITION) {
                 return true;
             }
