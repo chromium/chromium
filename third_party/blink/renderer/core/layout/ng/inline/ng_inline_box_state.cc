@@ -114,8 +114,12 @@ void NGInlineBoxState::ResetStyle(const ComputedStyle& style_ref,
 }
 
 void NGInlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
-                                          const Font& fontref) {
-  const auto baseline_type = styleref.GetFontBaseline();
+                                          const Font& fontref,
+                                          FontBaseline ifc_baseline) {
+  const auto baseline_type =
+      styleref.CssDominantBaseline() == EDominantBaseline::kAuto
+          ? ifc_baseline
+          : styleref.GetFontBaseline();
   if (const SimpleFontData* font_data = fontref.PrimaryFont()) {
     if (is_svg_text) {
       text_metrics =
@@ -153,9 +157,10 @@ void NGInlineBoxState::ResetTextMetrics() {
 }
 
 void NGInlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
-                                         const Font& fontref) {
+                                         const Font& fontref,
+                                         FontBaseline ifc_baseline) {
   if (text_metrics.IsEmpty())
-    ComputeTextMetrics(styleref, fontref);
+    ComputeTextMetrics(styleref, fontref, ifc_baseline);
 }
 
 void NGInlineBoxState::AccumulateUsedFonts(
@@ -239,7 +244,8 @@ NGInlineBoxState* NGInlineLayoutStateStack::OnBeginPlaceItems(
     // line height properties) as the initial metrics for the line box.
     // https://drafts.csswg.org/css2/visudet.html#strut
     if (!line_height_quirk) {
-      line_box_state.ComputeTextMetrics(line_style, *line_box_state.font);
+      line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,
+                                        baseline_type);
     }
   }
 
