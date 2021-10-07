@@ -26,7 +26,6 @@ import android.view.View.OnClickListener;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
@@ -217,16 +216,10 @@ public class LogoView extends FrameLayout implements OnClickListener {
         String contentDescription = TextUtils.isEmpty(logo.altText)
                 ? null
                 : getResources().getString(R.string.accessibility_google_doodle, logo.altText);
-        updateLogo(
-                logo.image, contentDescription, /* isDefaultLogo = */ false, isLogoClickable(logo));
+        updateLogo(logo.image, contentDescription, false);
     }
 
-    private static boolean isLogoClickable(Logo logo) {
-        return !TextUtils.isEmpty(logo.animatedLogoUrl) || !TextUtils.isEmpty(logo.onClickUrl);
-    }
-
-    private void updateLogo(Bitmap logo, final String contentDescription, boolean isDefaultLogo,
-            boolean isClickable) {
+    private void updateLogo(Bitmap logo, final String contentDescription, boolean isDefaultLogo) {
         assert logo != null;
 
         if (mFadeAnimation != null) mFadeAnimation.end();
@@ -262,8 +255,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
                 mTransitionAmount = 0f;
                 mFadeAnimation = null;
                 setContentDescription(contentDescription);
-                setClickable(isClickable);
-                setFocusable(isClickable || !TextUtils.isEmpty(contentDescription));
+                setClickable(!mNewLogoIsDefault);
             }
 
             @Override
@@ -282,7 +274,7 @@ public class LogoView extends FrameLayout implements OnClickListener {
     private boolean maybeShowDefaultLogo() {
         Bitmap defaultLogo = getDefaultLogo();
         if (defaultLogo != null) {
-            updateLogo(defaultLogo, null, /* isDefaultLogo = */ true, /* isClickable = */ false);
+            updateLogo(defaultLogo, null, true);
             return true;
         }
         return false;
@@ -418,10 +410,5 @@ public class LogoView extends FrameLayout implements OnClickListener {
         if (view == this && mDelegate != null && !isTransitioning()) {
             mDelegate.onLogoClicked(isAnimatedLogoShowing());
         }
-    }
-
-    @VisibleForTesting
-    void endAnimationsForTesting() {
-        mFadeAnimation.end();
     }
 }
