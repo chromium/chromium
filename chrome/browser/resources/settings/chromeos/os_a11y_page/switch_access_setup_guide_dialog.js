@@ -409,9 +409,6 @@ Polymer({
       if (this.switchCount_ >= 2) {
         this['$']['closing-instructions'].textContent =
             this.i18n('switchAccessSetupClosingManualScanInstructions');
-      } else {
-        this['$']['closing-instructions'].textContent =
-            this.i18n('switchAccessSetupClosingAutoScanInstructions');
       }
     }
   },

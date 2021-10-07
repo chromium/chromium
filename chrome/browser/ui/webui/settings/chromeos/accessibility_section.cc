@@ -651,8 +651,6 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SWITCH_ACCESS_SETUP_ASSIGN_PREVIOUS_TITLE},
       {"switchAccessSetupClosingTitle",
        IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_TITLE},
-      {"switchAccessSetupClosingAutoScanInstructions",
-       IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_AUTO_SCAN_INSTRUCTIONS},
       {"switchAccessSetupClosingManualScanInstructions",
        IDS_SETTINGS_SWITCH_ACCESS_SETUP_CLOSING_MANUAL_SCAN_INSTRUCTIONS},
       {"switchAccessSetupClosingInfo",
