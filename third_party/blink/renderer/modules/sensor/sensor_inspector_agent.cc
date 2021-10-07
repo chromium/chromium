@@ -27,9 +27,9 @@ void FillQuaternion(double alpha,
                     double beta,
                     double gamma,
                     device::SensorReadingQuat* reading) {
-  double half_x_angle = deg2rad(beta) * 0.5;
-  double half_y_angle = deg2rad(gamma) * 0.5;
-  double half_z_angle = deg2rad(alpha) * 0.5;
+  double half_x_angle = Deg2rad(beta) * 0.5;
+  double half_y_angle = Deg2rad(gamma) * 0.5;
+  double half_z_angle = Deg2rad(alpha) * 0.5;
 
   double cos_z = cos(half_z_angle);
   double sin_z = sin(half_z_angle);

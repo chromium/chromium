@@ -170,7 +170,7 @@ DOMFloat32Array* XRRay::matrix() {
     } else {
       // Rotation needed - create it from axis-angle.
       matrix.Rotate3d(axis.X(), axis.Y(), axis.Z(),
-                      rad2deg(std::acos(cos_angle)));
+                      Rad2deg(std::acos(cos_angle)));
     }
 
     // Step 7: Let matrix be the result of premultiplying rotation from the left

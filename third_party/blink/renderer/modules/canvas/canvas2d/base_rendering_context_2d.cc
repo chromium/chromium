@@ -835,7 +835,7 @@ void BaseRenderingContext2D::rotate(double angle_in_radians) {
   }
 
   TransformationMatrix new_transform = GetState().GetTransform();
-  new_transform.Rotate(rad2deg(angle_in_radians));
+  new_transform.Rotate(Rad2deg(angle_in_radians));
   if (GetState().GetTransform() == new_transform)
     return;
 
@@ -858,11 +858,11 @@ void BaseRenderingContext2D::rotate3d(double rx, double ry, double rz) {
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   TransformationMatrix rotation_matrix =
-      TransformationMatrix().Rotate3d(rad2deg(rx), rad2deg(ry), rad2deg(rz));
+      TransformationMatrix().Rotate3d(Rad2deg(rx), Rad2deg(ry), Rad2deg(rz));
 
   // Check if the transformation is a no-op and early out if that is the case.
   TransformationMatrix new_transform =
-      GetState().GetTransform().Rotate3d(rad2deg(rx), rad2deg(ry), rad2deg(rz));
+      GetState().GetTransform().Rotate3d(Rad2deg(rx), Rad2deg(ry), Rad2deg(rz));
   if (GetState().GetTransform() == new_transform)
     return;
 
@@ -890,11 +890,11 @@ void BaseRenderingContext2D::rotateAxis(double axisX,
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   TransformationMatrix rotation_matrix = TransformationMatrix().Rotate3d(
-      axisX, axisY, axisZ, rad2deg(angle_in_radians));
+      axisX, axisY, axisZ, Rad2deg(angle_in_radians));
 
   // Check if the transformation is a no-op and early out if that is the case.
   TransformationMatrix new_transform = GetState().GetTransform().Rotate3d(
-      axisX, axisY, axisZ, rad2deg(angle_in_radians));
+      axisX, axisY, axisZ, Rad2deg(angle_in_radians));
   if (GetState().GetTransform() == new_transform)
     return;
 
@@ -2044,7 +2044,7 @@ CanvasGradient* BaseRenderingContext2D::createConicGradient(double startAngle,
 
   // convert |startAngle| from radians to degree and rotate 90 degree, so
   // |startAngle| at 0 starts from x-axis.
-  a = rad2deg(a) + 90;
+  a = Rad2deg(a) + 90;
 
   auto* gradient = MakeGarbageCollected<CanvasGradient>(a, FloatPoint(x, y));
   gradient->SetExecutionContext(

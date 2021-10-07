@@ -151,8 +151,8 @@ void SVGMarkerDataBuilder::EmitSegment(const PathSegmentData& segment) {
 double SVGMarkerDataBuilder::CurrentAngle(AngleType type) const {
   // For details of this calculation, see:
   // http://www.w3.org/TR/SVG/single-page.html#painting-MarkerElement
-  double in_angle = rad2deg(FloatPoint(in_slope_).SlopeAngleRadians());
-  double out_angle = rad2deg(FloatPoint(out_slope_).SlopeAngleRadians());
+  double in_angle = Rad2deg(FloatPoint(in_slope_).SlopeAngleRadians());
+  double out_angle = Rad2deg(FloatPoint(out_slope_).SlopeAngleRadians());
   switch (type) {
     case kOutbound:
       return out_angle;

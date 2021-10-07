@@ -210,7 +210,7 @@ void PathTraversalState::ProcessSegment() {
       float offset = desired_length_ - total_length_;
       current_.Move(offset * cosf(slope), offset * sinf(slope));
     } else {
-      normal_angle_ = rad2deg(slope);
+      normal_angle_ = Rad2deg(slope);
     }
     success_ = true;
   }

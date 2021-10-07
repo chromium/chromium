@@ -87,8 +87,8 @@ sk_sp<PaintFilter> FELighting::CreateImageFilter() {
     case LS_DISTANT: {
       DistantLightSource* distant_light_source =
           static_cast<DistantLightSource*>(light_source_.get());
-      float azimuth_rad = deg2rad(distant_light_source->Azimuth());
-      float elevation_rad = deg2rad(distant_light_source->Elevation());
+      float azimuth_rad = Deg2rad(distant_light_source->Azimuth());
+      float elevation_rad = Deg2rad(distant_light_source->Elevation());
       const SkPoint3 direction = SkPoint3::Make(
           cosf(azimuth_rad) * cosf(elevation_rad),
           sinf(azimuth_rad) * cosf(elevation_rad), sinf(elevation_rad));

@@ -427,7 +427,7 @@ static bool RotationOfCharacterCallback(QueryData* query_data,
     fragment_transform.Scale(1 / fragment_transform.XScale(),
                              1 / fragment_transform.YScale());
     data->rotation = clampTo<float>(
-        rad2deg(atan2(fragment_transform.B(), fragment_transform.A())));
+        Rad2deg(atan2(fragment_transform.B(), fragment_transform.A())));
   }
   return true;
 }

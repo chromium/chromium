@@ -1051,7 +1051,7 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double x,
   }
 
   // Angles are in degrees. Switch to radians.
-  angle = deg2rad(angle);
+  angle = Deg2rad(angle);
 
   double sin_theta = std::sin(angle);
   double cos_theta = std::cos(angle);
@@ -1131,9 +1131,9 @@ TransformationMatrix& TransformationMatrix::Rotate3d(double rx,
                                                      double ry,
                                                      double rz) {
   // Angles are in degrees. Switch to radians.
-  rx = deg2rad(rx);
-  ry = deg2rad(ry);
-  rz = deg2rad(rz);
+  rx = Deg2rad(rx);
+  ry = Deg2rad(ry);
+  rz = Deg2rad(rz);
 
   TransformationMatrix mat;
 
@@ -1250,8 +1250,8 @@ TransformationMatrix& TransformationMatrix::PostTranslate3d(double tx,
 
 TransformationMatrix& TransformationMatrix::Skew(double sx, double sy) {
   // angles are in degrees. Switch to radians
-  sx = deg2rad(sx);
-  sy = deg2rad(sy);
+  sx = Deg2rad(sx);
+  sy = Deg2rad(sy);
 
   TransformationMatrix mat;
   mat.matrix_[0][1] =

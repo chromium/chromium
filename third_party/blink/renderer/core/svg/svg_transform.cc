@@ -178,7 +178,7 @@ String SVGTransform::ValueAsString() const {
     case SVGTransformType::kRotate: {
       arguments[argument_count++] = angle_;
 
-      double angle_in_rad = deg2rad(angle_);
+      double angle_in_rad = Deg2rad(angle_);
       double cos_angle = cos(angle_in_rad);
       double sin_angle = sin(angle_in_rad);
       float cx = clampTo<float>(

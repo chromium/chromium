@@ -101,11 +101,11 @@ double CSSNumericLiteralValue::ComputeDegrees() const {
     case UnitType::kDegrees:
       return num_;
     case UnitType::kRadians:
-      return rad2deg(num_);
+      return Rad2deg(num_);
     case UnitType::kGradians:
-      return grad2deg(num_);
+      return Grad2deg(num_);
     case UnitType::kTurns:
-      return turn2deg(num_);
+      return Turn2deg(num_);
     default:
       NOTREACHED();
       return 0;

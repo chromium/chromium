@@ -200,7 +200,7 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
                  RoundToInt(box.Y() - layout_list_marker_.LogicalHeight())));
     state_saver.Save();
     context.Translate(marker.X(), marker.MaxY());
-    context.Rotate(static_cast<float>(deg2rad(90.)));
+    context.Rotate(Deg2rad(90.0f));
     context.Translate(-marker.X(), -marker.MaxY());
   }
 

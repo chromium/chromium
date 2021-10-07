@@ -36,7 +36,7 @@ const double kAngleEpsilon = 1e-4;
 
 Quaternion ComputeQuaternion(const Rotation& rotation) {
   return Quaternion::FromAxisAngle(rotation.axis.X(), rotation.axis.Y(),
-                                   rotation.axis.Z(), deg2rad(rotation.angle));
+                                   rotation.axis.Z(), Deg2rad(rotation.angle));
 }
 
 FloatPoint3D NormalizeAxis(FloatPoint3D axis) {
@@ -53,7 +53,7 @@ FloatPoint3D NormalizeAxis(FloatPoint3D axis) {
 
 Rotation ComputeRotation(Quaternion q) {
   double cos_half_angle = q.w();
-  double interpolated_angle = rad2deg(2 * std::acos(cos_half_angle));
+  double interpolated_angle = Rad2deg(2 * std::acos(cos_half_angle));
   FloatPoint3D interpolated_axis =
       NormalizeAxis(FloatPoint3D(q.x(), q.y(), q.z()));
   return Rotation(interpolated_axis, interpolated_angle);

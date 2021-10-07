@@ -967,7 +967,7 @@ int GetRotationAngle(LayoutObject* layout_object) {
   double theta = atan2(abs_b.X() - abs_a.X(), abs_a.Y() - abs_b.Y());
   if (theta < 0.0)
     theta += kTwoPiDouble;
-  int bearing = std::round(rad2deg(theta));
+  int bearing = std::round(Rad2deg(theta));
   return bearing - local_vector_bearing;
 }
 

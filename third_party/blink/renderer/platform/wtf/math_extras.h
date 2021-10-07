@@ -59,71 +59,71 @@ constexpr float kPiOverFourFloat = static_cast<float>(M_PI_4);
 constexpr double kTwoPiDouble = kPiDouble * 2.0;
 constexpr float kTwoPiFloat = kPiFloat * 2.0f;
 
-constexpr double deg2rad(double d) {
+constexpr double Deg2rad(double d) {
   return d * (kPiDouble / 180.0);
 }
-constexpr double rad2deg(double r) {
+constexpr double Rad2deg(double r) {
   return r * (180.0 / kPiDouble);
 }
-constexpr double deg2grad(double d) {
+constexpr double Deg2grad(double d) {
   return d * (400.0 / 360.0);
 }
-constexpr double grad2deg(double g) {
+constexpr double Grad2deg(double g) {
   return g * (360.0 / 400.0);
 }
-constexpr double turn2deg(double t) {
+constexpr double Turn2deg(double t) {
   return t * 360.0;
 }
-constexpr double deg2turn(double d) {
+constexpr double Deg2turn(double d) {
   return d * (1.0 / 360.0);
 }
-constexpr double rad2grad(double r) {
+constexpr double Rad2grad(double r) {
   return r * (200.0 / kPiDouble);
 }
-constexpr double grad2rad(double g) {
+constexpr double Grad2rad(double g) {
   return g * (kPiDouble / 200.0);
 }
-constexpr double turn2grad(double t) {
+constexpr double Turn2grad(double t) {
   return t * 400;
 }
-constexpr double grad2turn(double g) {
+constexpr double Grad2turn(double g) {
   return g * (1.0 / 400.0);
 }
-constexpr double rad2turn(double r) {
+constexpr double Rad2turn(double r) {
   return r * (1.0 / kTwoPiDouble);
 }
-constexpr double turn2rad(double t) {
+constexpr double Turn2rad(double t) {
   return t * kTwoPiDouble;
 }
 
-constexpr float deg2rad(float d) {
+constexpr float Deg2rad(float d) {
   return d * (kPiFloat / 180.0f);
 }
-constexpr float rad2deg(float r) {
+constexpr float Rad2deg(float r) {
   return r * (180.0f / kPiFloat);
 }
-constexpr float deg2grad(float d) {
+constexpr float Deg2grad(float d) {
   return d * (400.0f / 360.0f);
 }
-constexpr float grad2deg(float g) {
+constexpr float Grad2deg(float g) {
   return g * (360.0f / 400.0f);
 }
-constexpr float turn2deg(float t) {
+constexpr float Turn2deg(float t) {
   return t * 360.0f;
 }
-constexpr float deg2turn(float d) {
+constexpr float Deg2turn(float d) {
   return d * (1.0f / 360.0f);
 }
-constexpr float rad2grad(float r) {
+constexpr float Rad2grad(float r) {
   return r * (200.0f / kPiFloat);
 }
-constexpr float grad2rad(float g) {
+constexpr float Grad2rad(float g) {
   return g * (kPiFloat / 200.0f);
 }
-constexpr float turn2grad(float t) {
+constexpr float Turn2grad(float t) {
   return t * 400;
 }
-constexpr float grad2turn(float g) {
+constexpr float Grad2turn(float g) {
   return g * (1.0f / 400.0f);
 }
 

@@ -171,7 +171,7 @@ AffineTransform& AffineTransform::PreMultiply(const AffineTransform& other) {
 
 AffineTransform& AffineTransform::Rotate(double a) {
   // angle is in degree. Switch to radian
-  return RotateRadians(deg2rad(a));
+  return RotateRadians(Deg2rad(a));
 }
 
 AffineTransform& AffineTransform::RotateRadians(double a) {
@@ -237,15 +237,15 @@ AffineTransform& AffineTransform::Shear(double sx, double sy) {
 }
 
 AffineTransform& AffineTransform::Skew(double angle_x, double angle_y) {
-  return Shear(tan(deg2rad(angle_x)), tan(deg2rad(angle_y)));
+  return Shear(tan(Deg2rad(angle_x)), tan(Deg2rad(angle_y)));
 }
 
 AffineTransform& AffineTransform::SkewX(double angle) {
-  return Shear(tan(deg2rad(angle)), 0);
+  return Shear(tan(Deg2rad(angle)), 0);
 }
 
 AffineTransform& AffineTransform::SkewY(double angle) {
-  return Shear(0, tan(deg2rad(angle)));
+  return Shear(0, tan(Deg2rad(angle)));
 }
 
 void AffineTransform::Map(double x, double y, double& x2, double& y2) const {
@@ -400,7 +400,7 @@ String AffineTransform::ToString(bool as_matrix) const {
       "remainder(%lg,%lg,%lg,%lg)",
       decomposition.translate_x, decomposition.translate_y,
       decomposition.scale_x, decomposition.scale_y,
-      rad2deg(decomposition.angle), decomposition.remainder_a,
+      Rad2deg(decomposition.angle), decomposition.remainder_a,
       decomposition.remainder_b, decomposition.remainder_c,
       decomposition.remainder_d);
 }

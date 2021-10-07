@@ -352,8 +352,8 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
     } break;
   }
 
-  double min_radians = deg2rad(from_degrees);
-  double max_radians = deg2rad(to_degrees);
+  double min_radians = Deg2rad(from_degrees);
+  double max_radians = Deg2rad(to_degrees);
   // Once we have the candidates, we now filter them down to ones that
   // actually live on the arc, rather than the entire circle.
   for (int i = 0; i < num_candidates; ++i) {
@@ -367,7 +367,7 @@ static void BoundingBoxForArc(const FloatPoint3D& point,
       continue;
 
     TransformationMatrix rotation;
-    rotation.Rotate3d(axis.X(), axis.Y(), axis.Z(), rad2deg(radians));
+    rotation.Rotate3d(axis.X(), axis.Y(), axis.Z(), Rad2deg(radians));
     box.ExpandTo(rotation.MapPoint(point));
   }
 }

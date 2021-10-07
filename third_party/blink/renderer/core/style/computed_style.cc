@@ -1356,7 +1356,7 @@ void ComputedStyle::ApplyMotionPathTransform(
     // Use clampTo() to convert infinite values to min/max finite ones.
     path_position.tangent_in_degrees =
         clampTo<float, float>(To<StyleRay>(*path).Angle() - 90);
-    float tangent_in_radians = deg2rad(path_position.tangent_in_degrees);
+    float tangent_in_radians = Deg2rad(path_position.tangent_in_degrees);
     path_position.point.SetX(float_distance * cos(tangent_in_radians));
     path_position.point.SetY(float_distance * sin(tangent_in_radians));
   } else {
