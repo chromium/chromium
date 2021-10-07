@@ -100,6 +100,7 @@ class FakeDownloadItem : public download::DownloadItem {
   const download::DownloadItemRerouteInfo& GetRerouteInfo() const override;
   bool IsDangerous() const override;
   bool IsMixedContent() const override;
+  bool ShouldShowIncognitoWarning() const override;
   download::DownloadDangerType GetDangerType() const override;
   download::DownloadItem::MixedContentStatus GetMixedContentStatus()
       const override;
@@ -128,6 +129,7 @@ class FakeDownloadItem : public download::DownloadItem {
       download::DownloadInterruptReason reason) override;
   void ValidateDangerousDownload() override;
   void ValidateMixedContentDownload() override;
+  void AcceptIncognitoWarning() override;
   void StealDangerousDownload(bool delete_file_afterward,
                               AcquireFileCallback callback) override;
   void Rename(const base::FilePath& name,

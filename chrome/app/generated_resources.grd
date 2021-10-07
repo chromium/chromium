@@ -1915,9 +1915,13 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown in the download shelf when Chrome recommends uploading the file for additional scanning">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google Advanced Protection for scanning?
       </message>
-        <message name="IDS_PROMPT_DEEP_SCANNING"
+      <message name="IDS_PROMPT_DEEP_SCANNING"
         desc="Message shown in the download shelf for all Advanced Protection and Enhanced Safe Browsing users when Chrome recommends uploading the file for additional scanning.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google for scanning?
+      </message>
+      <message name="IDS_PROMPT_INCOGNITO_WARNING"
+        desc="Message shown in the download shelf when Incognito Download warning is displayed">
+        Download <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>? Anyone using the device can see it.
       </message>
       <message name="IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD"
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is uncommon.">
@@ -1934,6 +1938,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_BLOCK_REASON_MIXED_CONTENT"
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is mixed-content.">
         This file can't be downloaded securely
+      </message>
+      <message name="IDS_INCOGNITO_DOWNLOAD_WARNING"
+         desc="Message shown to the user on chrome://downloads page to explain that downloaded file will stay after incognito session will end">
+        This file will be stored on the device and everyone will be able to see it.
       </message>
       <message name="IDS_BLOCK_REASON_DEEP_SCANNING"
         desc="Message shown on chrome://downloads when a download is being scanned">
@@ -2036,6 +2044,10 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_CONTINUE_EXTENSION_DOWNLOAD"
                desc="Text for the button used to validate the installation of an extension.">
         Continue
+      </message>
+      <message name="IDS_DOWNLOAD_ANYWAY"
+               desc="Text for the button used to acknowledge incognito download warning">
+        Download Anyway
       </message>
       <message name="IDS_DISCARD_DOWNLOAD"
                desc="Text for the button used to stop a dangerous download.">

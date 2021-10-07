@@ -238,7 +238,8 @@ bool is_mixed_content(download::DownloadItemMode mode) {
 
 // Whether a warning label is visible.
 bool has_warning_label(download::DownloadItemMode mode) {
-  return is_download_warning(mode) || is_mixed_content(mode);
+  return is_download_warning(mode) || is_mixed_content(mode) ||
+         mode == download::DownloadItemMode::kIncognitoWarning;
 }
 
 float GetDPIScaleForView(views::View* view) {
@@ -897,7 +898,8 @@ void DownloadItemView::UpdateButtons() {
 
   save_button_->SetVisible(
       (mode_ == download::DownloadItemMode::kDangerous) ||
-      (mode_ == download::DownloadItemMode::kMixedContentWarn));
+      (mode_ == download::DownloadItemMode::kMixedContentWarn) ||
+      (mode_ == download::DownloadItemMode::kIncognitoWarning));
   save_button_->SetText(model_->GetWarningConfirmButtonText());
 
   discard_button_->SetVisible(
@@ -1098,6 +1100,10 @@ ui::ImageModel DownloadItemView::GetIcon() const {
   const auto kError = ui::ImageModel::FromVectorIcon(
       vector_icons::kErrorIcon, ui::kColorAlertHighSeverity,
       UseNewWarnings() ? 20 : 24);
+
+  if (model_->ShouldShowIncognitoWarning()) {
+    return kWarning;
+  }
 
   const auto danger_type = model_->GetDangerType();
   const auto kInfo = ui::ImageModel::FromVectorIcon(

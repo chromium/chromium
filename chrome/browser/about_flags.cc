@@ -6883,7 +6883,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"incognito-downloads-warning",
      flag_descriptions::kIncognitoDownloadsWarningName,
      flag_descriptions::kIncognitoDownloadsWarningDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kIncognitoDownloadsWarning)},
+     FEATURE_VALUE_TYPE(download::features::kIncognitoDownloadsWarning)},
 
     {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,
      flag_descriptions::kIncognitoNtpRevampDescription, kOsAll,

@@ -227,9 +227,31 @@ std::u16string DownloadUIModel::GetTooltipText() const {
   return tooltip;
 }
 
+// Ordering of the warning texts should be the same as order in the
+// GetDesiredDownloadItemMode() method.
 std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
                                                size_t* offset) const {
   *offset = std::string::npos;
+
+  if (ShouldShowIncognitoWarning()) {
+    return l10n_util::GetStringFUTF16(IDS_PROMPT_INCOGNITO_WARNING, filename,
+                                      offset);
+  }
+
+  switch (GetMixedContentStatus()) {
+    case download::DownloadItem::MixedContentStatus::BLOCK:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED, filename, offset);
+    case download::DownloadItem::MixedContentStatus::WARN:
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_WARNING, filename, offset);
+    case download::DownloadItem::MixedContentStatus::UNKNOWN:
+    case download::DownloadItem::MixedContentStatus::SAFE:
+    case download::DownloadItem::MixedContentStatus::VALIDATED:
+    case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
+      break;
+  }
+
   switch (GetDangerType()) {
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return l10n_util::GetStringUTF16(IDS_PROMPT_MALICIOUS_DOWNLOAD_URL);
@@ -296,29 +318,20 @@ std::u16string DownloadUIModel::GetWarningText(const std::u16string& filename,
       break;
   }
 
-  switch (GetMixedContentStatus()) {
-    case download::DownloadItem::MixedContentStatus::BLOCK:
-      return l10n_util::GetStringFUTF16(
-          IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_BLOCKED, filename, offset);
-    case download::DownloadItem::MixedContentStatus::WARN:
-      return l10n_util::GetStringFUTF16(
-          IDS_PROMPT_DOWNLOAD_MIXED_CONTENT_WARNING, filename, offset);
-    case download::DownloadItem::MixedContentStatus::UNKNOWN:
-    case download::DownloadItem::MixedContentStatus::SAFE:
-    case download::DownloadItem::MixedContentStatus::VALIDATED:
-    case download::DownloadItem::MixedContentStatus::SILENT_BLOCK:
-      break;
-  }
-
   return std::u16string();
 }
 
 std::u16string DownloadUIModel::GetWarningConfirmButtonText() const {
   const auto kDangerousFile = download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE;
-  return l10n_util::GetStringUTF16(
-      (GetDangerType() == kDangerousFile && IsExtensionDownload())
-          ? IDS_CONTINUE_EXTENSION_DOWNLOAD
-          : IDS_CONFIRM_DOWNLOAD);
+
+  int warningConfirmButtonTextId = IDS_CONFIRM_DOWNLOAD;
+  if (ShouldShowIncognitoWarning()) {
+    warningConfirmButtonTextId = IDS_DOWNLOAD_ANYWAY;
+  } else if (GetDangerType() == kDangerousFile && IsExtensionDownload()) {
+    warningConfirmButtonTextId = IDS_CONTINUE_EXTENSION_DOWNLOAD;
+  }
+
+  return l10n_util::GetStringUTF16(warningConfirmButtonTextId);
 }
 
 std::u16string DownloadUIModel::GetShowInFolderText() const {
@@ -370,6 +383,10 @@ bool DownloadUIModel::IsMalicious() const {
 }
 
 bool DownloadUIModel::IsMixedContent() const {
+  return false;
+}
+
+bool DownloadUIModel::ShouldShowIncognitoWarning() const {
   return false;
 }
 
