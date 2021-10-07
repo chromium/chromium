@@ -1240,9 +1240,6 @@ and Ctrl+Alt+Brightness down to zoom out.
   <message name="IDS_SETTINGS_SWITCH_ASSIGN_OPTION_SPACE" desc="Label for the option to assign the spacebar as a switch.">
     Space
   </message>
-  <message name="IDS_SETTINGS_SWITCH_ASSIGN_OPTION_ENTER" desc="Label for the option to assign the enter key as a switch.">
-    Enter
-  </message>
   <message name="IDS_SETTINGS_ASSIGN_SELECT_SWITCH_LABEL" desc="Label for the setting to assign a switch to the action 'Select', which selects the currently focused element and begins an interaction (which varies depending on the element/other settings).">
     Select
   </message>
