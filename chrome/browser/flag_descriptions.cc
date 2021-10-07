@@ -5190,6 +5190,11 @@ const char kWifiSyncAndroidDescription[] =
     "Enables the option to sync Wi-Fi network configurations between Chrome OS "
     "devices and a connected Android phone";
 
+const char kWindowControlMenu[] = "Float current active window";
+const char kWindowControlMenuDescription[] =
+    "Enables the accelerator (Control + Alt + F) to float current active "
+    "window.";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

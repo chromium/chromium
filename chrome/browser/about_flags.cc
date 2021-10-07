@@ -5490,7 +5490,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshEnablePipRoundedCornersName,
      flag_descriptions::kAshEnablePipRoundedCornersDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPipRoundedCorners)},
-
+    {"ash-enable-floating-window", flag_descriptions::kWindowControlMenu,
+     flag_descriptions::kWindowControlMenuDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWindowControlMenu)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

@@ -2990,6 +2990,9 @@ extern const char kWifiSyncAllowDeletesDescription[];
 extern const char kWifiSyncAndroidName[];
 extern const char kWifiSyncAndroidDescription[];
 
+extern const char kWindowControlMenu[];
+extern const char kWindowControlMenuDescription[];
+
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)

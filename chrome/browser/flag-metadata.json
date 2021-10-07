@@ -281,6 +281,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "ash-enable-floating-window",
+    "owners": [ "shidi", "afakhry" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "ash-enable-pip-rounded-corners",
     "owners": [ "edcourtney" ],
     "expiry_milestone": 96
