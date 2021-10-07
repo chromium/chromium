@@ -317,8 +317,10 @@ preprocess_if_expr("copy_browser_settings_tsc") {
     "i18n_setup.js",
     "icons.js",
     "lifetime_browser_proxy.js",
+    "people_page/signout_dialog.js",
     "people_page/sync_account_control.js",
     "people_page/sync_controls.js",
+    "people_page/sync_encryption_options.js",
     "people_page/sync_page.js",
     "prefs/prefs.js",
     "prefs/prefs_mixin.js",
@@ -560,8 +562,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/route_origin_behavior.m.js",
     "chromeos/search_handler.m.js",
     "chromeos/settings_scheduler_slider/settings_scheduler_slider.js",
-    "people_page/signout_dialog.js",
-    "people_page/sync_encryption_options.js",
   ]
 }
 

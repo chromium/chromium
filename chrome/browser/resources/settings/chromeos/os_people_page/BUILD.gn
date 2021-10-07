@@ -136,7 +136,6 @@ js_library("os_people_page.m") {
     "../../people_page:account_manager_browser_proxy",
     "../parental_controls_page:parental_controls_page.m",
     "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy",
-    "//chrome/browser/resources/settings/people_page:signout_dialog",
     "//chrome/browser/resources/settings/people_page:sync_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
@@ -228,6 +227,7 @@ js_library("users_add_user_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/os_people_page/users_add_user_dialog.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]

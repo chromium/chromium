@@ -16,23 +16,23 @@ import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared_css.js';
 
-import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from '//resources/js/web_ui_listener_behavior.m.js';
-import {html, microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
+import {html, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {WebUIListenerBehaviorInterface}
- */
-const SettingsSignoutDialogElementBase =
-    mixinBehaviors([WebUIListenerBehavior], PolymerElement);
+export interface SettingsSignoutDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
 
-/** @polymer */
+const SettingsSignoutDialogElementBase = WebUIListenerMixin(PolymerElement);
+
 export class SettingsSignoutDialogElement extends
     SettingsSignoutDialogElementBase {
   static get is() {
@@ -47,7 +47,6 @@ export class SettingsSignoutDialogElement extends
     return {
       /**
        * The current sync status, supplied by the parent.
-       * @type {?SyncStatus}
        */
       syncStatus: {
         type: Object,
@@ -56,13 +55,11 @@ export class SettingsSignoutDialogElement extends
 
       /**
        * True if the checkbox to delete the profile has been checked.
-       * @private
        */
       deleteProfile_: Boolean,
 
       /**
        * True if the profile deletion warning is visible.
-       * @private
        */
       deleteProfileWarningVisible_: Boolean,
 
@@ -70,13 +67,16 @@ export class SettingsSignoutDialogElement extends
        * The profile deletion warning. The message indicates the number of
        * profile stats that will be deleted if a non-zero count for the profile
        * stats is returned from the browser.
-       * @private
        */
       deleteProfileWarning_: String,
     };
   }
 
-  /** @override */
+  syncStatus: SyncStatus|null;
+  private deleteProfile_: boolean;
+  private deleteProfileWarningVisible_: boolean;
+  private deleteProfileWarning_: string;
+
   connectedCallback() {
     super.connectedCallback();
 
@@ -91,22 +91,17 @@ export class SettingsSignoutDialogElement extends
   }
 
   /**
-   * Returns true when the user selected 'Confirm'.
-   * @return {boolean}
+   * @return true when the user selected 'Confirm'.
    */
-  wasConfirmed() {
-    return /** @type {!CrDialogElement} */ (this.$.dialog)
-               .getNative()
-               .returnValue === 'success';
+  wasConfirmed(): boolean {
+    return this.$.dialog.getNative().returnValue === 'success';
   }
 
   /**
    * Handler for when the profile stats count is pushed from the browser.
-   * @param {number} count
-   * @private
    */
-  handleProfileStatsCount_(count) {
-    const username = this.syncStatus.signedInUsername || '';
+  private handleProfileStatsCount_(count: number) {
+    const username = this.syncStatus!.signedInUsername || '';
     if (count === 0) {
       this.deleteProfileWarning_ = loadTimeData.getStringF(
           'deleteProfileWarningWithoutCounts', username);
@@ -121,40 +116,38 @@ export class SettingsSignoutDialogElement extends
 
   /**
    * Polymer observer for syncStatus.
-   * @private
    */
-  syncStatusChanged_() {
-    if (!this.syncStatus.signedIn && this.$.dialog.open) {
+  private syncStatusChanged_() {
+    if (!this.syncStatus!.signedIn && this.$.dialog.open) {
       this.$.dialog.close();
     }
   }
 
-  /**
-   * @private
-   * @param {string} domain
-   * @return {string}
-   */
-  getDisconnectExplanationHtml_(domain) {
-    // <if expr="not chromeos">
+  // <if expr="not chromeos">
+  private getDisconnectExplanationHtml_(domain: string): string {
     if (domain) {
       return loadTimeData.getStringF(
           'syncDisconnectManagedProfileExplanation',
           '<span id="managed-by-domain-name">' + domain + '</span>');
     }
-    // </if>
     return loadTimeData.getString('syncDisconnectExplanation');
   }
+  // </if>
 
-  /** @private */
-  onDisconnectCancel_() {
-    /** @type {!CrDialogElement} */ (this.$.dialog).cancel();
+  // <if expr="chromeos">
+  private getDisconnectExplanationHtml_(_domain: string): string {
+    return loadTimeData.getString('syncDisconnectExplanation');
+  }
+  // </if>
+
+  private onDisconnectCancel_() {
+    this.$.dialog.cancel();
   }
 
-  /** @private */
-  onDisconnectConfirm_() {
+  private onDisconnectConfirm_() {
     this.$.dialog.close();
     // <if expr="not chromeos">
-    const deleteProfile = !!this.syncStatus.domain || this.deleteProfile_;
+    const deleteProfile = !!this.syncStatus!.domain || this.deleteProfile_;
     SyncBrowserProxyImpl.getInstance().signOut(deleteProfile);
     // </if>
     // <if expr="chromeos">

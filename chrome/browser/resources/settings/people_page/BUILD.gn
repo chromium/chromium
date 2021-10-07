@@ -13,9 +13,7 @@ js_type_check("closure_compile") {
   deps = [
     ":account_manager_browser_proxy",
     ":profile_info_browser_proxy",
-    ":signout_dialog",
     ":sync_browser_proxy",
-    ":sync_encryption_options",
   ]
 }
 
@@ -27,38 +25,18 @@ js_library("profile_info_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
-js_library("signout_dialog") {
-  deps = [
-    ":profile_info_browser_proxy",
-    ":sync_browser_proxy",
-    "..:i18n_setup",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:web_ui_listener_behavior.m",
-  ]
-}
-
 js_library("sync_browser_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
 }
 
-js_library("sync_encryption_options") {
-  deps = [
-    ":sync_browser_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
 html_to_js("web_components") {
   js_files = [
     "people_page.ts",
-    "signout_dialog.js",
+    "signout_dialog.ts",
     "sync_account_control.ts",
     "sync_controls.ts",
-    "sync_encryption_options.js",
+    "sync_encryption_options.ts",
     "sync_page.ts",
   ]
 
