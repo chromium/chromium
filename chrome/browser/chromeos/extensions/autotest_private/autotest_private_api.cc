@@ -143,6 +143,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/variations/pref_names.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
@@ -478,6 +479,12 @@ std::string SetWhitelistedPref(Profile* profile,
   // profile.
   if (pref_name == prefs::kEnableAdbSideloadingRequested) {
     DCHECK(value.is_bool());
+    g_browser_process->local_state()->Set(pref_name, value);
+    return std::string();
+  }
+  if (pref_name == variations::prefs::kVariationsCompressedSeed ||
+      pref_name == variations::prefs::kVariationsSeedSignature) {
+    DCHECK(value.is_string());
     g_browser_process->local_state()->Set(pref_name, value);
     return std::string();
   }
