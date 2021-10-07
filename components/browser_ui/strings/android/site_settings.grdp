@@ -69,9 +69,8 @@
   <message name="IDS_VR_PERMISSION_TITLE" desc="Title of the permission to use Virtual Reality [CHAR_LIMIT=32]">
     Virtual reality
   </message>
-  <!-- TODO(https://crbug.com/1245338): Update the placeholders. -->
-  <message name="IDS_AUTO_DARK_WEB_CONTENT_TITLE" translateable="false" desc="Title of the permission auto darken web content [CHAR_LIMIT=32]">
-    Auto-darken web content
+  <message name="IDS_AUTO_DARK_WEB_CONTENT_TITLE" desc="Title of the permission auto darken web content [CHAR_LIMIT=32]">
+    Dark theme for sites
   </message>
   <message name="IDS_DESKTOP_SITE_TITLE" desc="Title of the permission to request the desktop view of a site by default [CHAR_LIMIT=32]">
     Desktop site
@@ -542,18 +541,14 @@
   </message>
 
   <!-- Auto-darken web content -->
-  <!-- TODO(https://crbug.com/1245338): Update the placeholders. -->
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_ALLOWED" translateable="false" desc="Summary text explaining that sites are alllowed to be darkend with Chrome branded darkening algorithm.">
-    Allow auto darken the web content in dark theme. [Placeholder]
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_ALLOWED" desc="Summary text explaining that sites are alllowed to be darkend with Chrome branded darkening algorithm.">
+    Apply dark theme to sites when Chrome uses dark theme, when possible
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_BLOCKED" translateable="false" desc="Summary text explaining that sites are blocked to be darkend with Chrome branded darkening algorithm.">
-    Block auto darken the web content in dark theme. [Placeholder]
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_AUTO_DARK_BLOCKED" desc="Summary text explaining that sites are blocked to be darkend with Chrome branded darkening algorithm.">
+    Don’t apply dark theme to sites
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_AUTO_DARK_ALLOW" translateable="false" desc="The description for the allow auto darken for website dialog.">
-    Allow auto darken the web content for a specific site. [Placeholder]
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_AUTO_DARK_BLOCK" translateable="false" desc="The description for the block auto darken for website dialog.">
-    Block auto darken the web content for a specific site. [Placeholder]
+  <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_AUTO_DARK_BLOCK" desc="The description for the block auto darken for a specific website dialog.">
+    Don’t apply dark theme for a specific site
   </message>
 
 </grit-part>

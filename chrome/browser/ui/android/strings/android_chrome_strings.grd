@@ -736,7 +736,7 @@ CHAR_LIMIT guidelines:
         Turn on dark theme when your device's dark theme or Battery Saver is on
       </message>
       <message name="IDS_DARKEN_WEBSITES" desc="Title for the Darken websites option. [CHAR_LIMIT=32]">
-        Darken websites
+        Apply dark theme to sites, when possible
       </message>
 
       <!-- Privacy and security preferences -->
@@ -5152,15 +5152,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <!-- Auto-darken web content -->
-      <!-- TODO(https://crbug.com/1248571): Update the placeholders. -->
-      <message name="IDS_AUTO_DARK_MESSAGE_TITLE" translateable="false" desc="Message shown that informs the user auto darkening of website contents has been enabled.">
-        Auto Dark web contents enabled
+      <message name="IDS_AUTO_DARK_MESSAGE_TITLE" desc="Message shown that informs the user auto darkening of website contents has been enabled.">
+        Dark theme for sites is on in Chrome
       </message>
-      <message name="IDS_AUTO_DARK_MESSAGE_DESCRIPTION" translateable="false" desc="Description shown that informs the user on how to disable auto darkening of website contents.">
-        This can be disabled per-site in the 3-dot menu or globally in theme settings
-      </message>
-      <message name="IDS_AUTO_DARK_MESSAGE_BUTTON" translateable="false" desc="The label for the button to enter theme settings.">
-        Open theme settings
+      <message name="IDS_AUTO_DARK_MESSAGE_BUTTON" desc="The label for the button to enter theme settings.">
+        Open settings
       </message>
 
       <!-- Profile Management strings -->

@@ -86,8 +86,6 @@ public class WebContentsDarkModeMessageController {
                                 MessageBannerProperties.TINT_NONE)
                         .with(MessageBannerProperties.TITLE,
                                 resources.getString(R.string.auto_dark_message_title))
-                        .with(MessageBannerProperties.DESCRIPTION,
-                                resources.getString(R.string.auto_dark_message_description))
                         .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(R.string.auto_dark_message_button))
                         .with(MessageBannerProperties.ON_PRIMARY_ACTION,

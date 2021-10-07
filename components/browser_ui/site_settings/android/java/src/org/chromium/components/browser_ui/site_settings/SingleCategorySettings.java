@@ -591,10 +591,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         : R.string.website_settings_add_site_description_cookies_allow;
             }
         } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)) {
-            resource = WebsitePreferenceBridge.isCategoryEnabled(
-                               browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT)
-                    ? R.string.website_settings_add_site_description_auto_dark_allow
-                    : R.string.website_settings_add_site_description_auto_dark_block;
+            assert WebsitePreferenceBridge.isCategoryEnabled(
+                    browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
+            resource = R.string.website_settings_add_site_description_auto_dark_block;
         }
         assert resource > 0;
         return getString(resource);

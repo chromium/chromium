@@ -529,6 +529,14 @@ public class ContentSettingsResources {
     }
 
     /**
+     * Returns the allowed/blocked summary for the auto dark web content, which should be used for
+     * display in the site settings list only.
+     */
+    public static int getAutoDarkWebContentListSummary(boolean enabled) {
+        return enabled ? R.string.text_on : R.string.text_off;
+    }
+
+    /**
      * Returns the resources IDs for descriptions for Allowed, Ask and Blocked states, in that
      * order, on a tri-state setting.
      *
