@@ -74,7 +74,7 @@ namespace {
 
 password_manager::PasswordStoreInterface* GetProfilePasswordStore(
     content::WebContents* web_contents) {
-  return PasswordStoreFactory::GetInterfaceForProfile(
+  return PasswordStoreFactory::GetForProfile(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
              ServiceAccessType::EXPLICIT_ACCESS)
       .get();
@@ -82,7 +82,7 @@ password_manager::PasswordStoreInterface* GetProfilePasswordStore(
 
 password_manager::PasswordStoreInterface* GetAccountPasswordStore(
     content::WebContents* web_contents) {
-  return AccountPasswordStoreFactory::GetInterfaceForProfile(
+  return AccountPasswordStoreFactory::GetForProfile(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()),
              ServiceAccessType::EXPLICIT_ACCESS)
       .get();

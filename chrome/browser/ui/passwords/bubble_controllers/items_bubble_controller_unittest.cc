@@ -62,8 +62,7 @@ class ItemsBubbleControllerTest : public ::testing::Test {
   password_manager::MockPasswordStoreInterface* GetStore() {
     return static_cast<password_manager::MockPasswordStoreInterface*>(
         PasswordStoreFactory::GetInstance()
-            ->GetInterfaceForProfile(profile(),
-                                     ServiceAccessType::EXPLICIT_ACCESS)
+            ->GetForProfile(profile(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 

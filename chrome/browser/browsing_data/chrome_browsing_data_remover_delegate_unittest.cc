@@ -547,8 +547,8 @@ class RemovePasswordsTester {
                     password_manager::MockPasswordStoreInterface>>));
 
     profile_store_ = static_cast<password_manager::MockPasswordStoreInterface*>(
-        PasswordStoreFactory::GetInterfaceForProfile(
-            testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
+        PasswordStoreFactory::GetForProfile(testing_profile,
+                                            ServiceAccessType::EXPLICIT_ACCESS)
             .get());
 
     if (base::FeatureList::IsEnabled(
@@ -563,7 +563,7 @@ class RemovePasswordsTester {
 
       account_store_ =
           static_cast<password_manager::MockPasswordStoreInterface*>(
-              AccountPasswordStoreFactory::GetInterfaceForProfile(
+              AccountPasswordStoreFactory::GetForProfile(
                   testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
                   .get());
     }

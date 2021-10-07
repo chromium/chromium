@@ -38,7 +38,7 @@
       anyScene.interfaceProvider.mainInterface.browserState;
   DCHECK(browserState);
   scoped_refptr<password_manager::PasswordStoreInterface> store =
-      IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+      IOSChromePasswordStoreFactory::GetForBrowserState(
           browserState, ServiceAccessType::IMPLICIT_ACCESS);
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
   self.migrator =

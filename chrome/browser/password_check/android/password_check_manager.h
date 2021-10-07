@@ -225,9 +225,8 @@ class PasswordCheckManager
   // Handle to the password store, powering both `saved_passwords_presenter_`
   // and `insecure_credentials_manager_`.
   scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile_,
-          ServiceAccessType::EXPLICIT_ACCESS);
+      PasswordStoreFactory::GetForProfile(profile_,
+                                          ServiceAccessType::EXPLICIT_ACCESS);
 
   // Used to check whether autofill assistant scripts are available for
   // the specified domain.

@@ -125,23 +125,10 @@ void SyncEnabledOrDisabled(Profile* profile) {
       base::BindOnce(&UpdateAllFormManagersAndPasswordReuseManager, profile));
 #endif  // defined(OS_ANDROID)
 }
-
-// TODO(crbug.com/1218413): Delete this method when the migration to
-// PasswordStoreInterface is complete and rename the method below to
-// GetForProfile.
-// static
-scoped_refptr<PasswordStore> AccountPasswordStoreFactory::GetForProfile(
-    Profile* profile,
-    ServiceAccessType access_type) {
-  return base::WrapRefCounted(static_cast<PasswordStore*>(
-      GetInterfaceForProfile(profile, access_type).get()));
-}
-
 // static
 scoped_refptr<PasswordStoreInterface>
-AccountPasswordStoreFactory::GetInterfaceForProfile(
-    Profile* profile,
-    ServiceAccessType access_type) {
+AccountPasswordStoreFactory::GetForProfile(Profile* profile,
+                                           ServiceAccessType access_type) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kEnablePasswordsAccountStorage)) {
     return nullptr;

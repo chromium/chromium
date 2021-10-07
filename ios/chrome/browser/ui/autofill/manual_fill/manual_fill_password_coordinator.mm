@@ -58,9 +58,8 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
-    auto passwordStore =
-        IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
-            browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+    auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
+        browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(
             browser->GetBrowserState());

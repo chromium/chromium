@@ -13,7 +13,6 @@
 enum class ServiceAccessType;
 
 namespace password_manager {
-class PasswordStore;
 class PasswordStoreInterface;
 }
 
@@ -26,13 +25,9 @@ class WebViewBrowserState;
 class WebViewPasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
-      WebViewBrowserState* browser_state,
-      ServiceAccessType access_type);
-
   static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetInterfaceForBrowserState(WebViewBrowserState* browser_state,
-                              ServiceAccessType access_type);
+  GetForBrowserState(WebViewBrowserState* browser_state,
+                     ServiceAccessType access_type);
 
   static WebViewPasswordStoreFactory* GetInstance();
 

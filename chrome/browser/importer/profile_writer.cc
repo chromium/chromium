@@ -93,8 +93,8 @@ void ProfileWriter::AddPasswordForm(
 
   if (profile_->GetPrefs()->GetBoolean(
           password_manager::prefs::kCredentialsEnableService)) {
-    PasswordStoreFactory::GetInterfaceForProfile(
-        profile_, ServiceAccessType::EXPLICIT_ACCESS)
+    PasswordStoreFactory::GetForProfile(profile_,
+                                        ServiceAccessType::EXPLICIT_ACCESS)
         ->AddLogin(form);
   }
 }

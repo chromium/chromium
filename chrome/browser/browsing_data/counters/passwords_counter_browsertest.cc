@@ -33,7 +33,7 @@ class PasswordsCounterTest : public InProcessBrowserTest {
     finished_ = false;
     time_ = base::Time::Now();
     times_used_ = 0;
-    store_ = PasswordStoreFactory::GetInterfaceForProfile(
+    store_ = PasswordStoreFactory::GetForProfile(
                  browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
                  .get();
     SetPasswordsDeletionPref(true);
@@ -163,9 +163,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, SameDomain) {
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetInterfaceForProfile(
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
@@ -186,9 +186,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, blocklisted) {
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetInterfaceForProfile(
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       SyncServiceFactory::GetForProfile(profile));
 
@@ -211,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PrefChanged) {
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetInterfaceForProfile(
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
@@ -233,9 +233,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, StoreChanged) {
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetInterfaceForProfile(
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
@@ -269,9 +269,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, PeriodChanged) {
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetInterfaceForProfile(
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),
@@ -318,9 +318,9 @@ IN_PROC_BROWSER_TEST_F(PasswordsCounterTest, MostCommonDomains) {
 
   Profile* profile = browser()->profile();
   browsing_data::PasswordsCounter counter(
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS),
-      AccountPasswordStoreFactory::GetInterfaceForProfile(
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS),
+      AccountPasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       SyncServiceFactory::GetForProfile(profile));
   counter.Init(profile->GetPrefs(),

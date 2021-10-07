@@ -57,11 +57,11 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  private:
   void StartMetricsReporting() {
     password_manager::PasswordStoreInterface* profile_store =
-        PasswordStoreFactory::GetInterfaceForProfile(
-            profile_, ServiceAccessType::EXPLICIT_ACCESS)
+        PasswordStoreFactory::GetForProfile(profile_,
+                                            ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     password_manager::PasswordStoreInterface* account_store =
-        AccountPasswordStoreFactory::GetInterfaceForProfile(
+        AccountPasswordStoreFactory::GetForProfile(
             profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     syncer::SyncService* sync_service =
@@ -101,12 +101,12 @@ password_manager::PasswordStoreInterface* GetPasswordStore(
     Profile* profile,
     bool use_account_store) {
   if (use_account_store) {
-    return AccountPasswordStoreFactory::GetInterfaceForProfile(
+    return AccountPasswordStoreFactory::GetForProfile(
                profile, ServiceAccessType::EXPLICIT_ACCESS)
         .get();
   }
-  return PasswordStoreFactory::GetInterfaceForProfile(
-             profile, ServiceAccessType::EXPLICIT_ACCESS)
+  return PasswordStoreFactory::GetForProfile(profile,
+                                             ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 

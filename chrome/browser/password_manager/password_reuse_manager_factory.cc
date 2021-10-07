@@ -80,10 +80,10 @@ KeyedService* PasswordReuseManagerFactory::BuildServiceInstanceFor(
   password_manager::PasswordReuseManager* reuse_manager =
       new password_manager::PasswordReuseManagerImpl();
   reuse_manager->Init(profile->GetPrefs(),
-                      PasswordStoreFactory::GetInterfaceForProfile(
+                      PasswordStoreFactory::GetForProfile(
                           profile, ServiceAccessType::EXPLICIT_ACCESS)
                           .get(),
-                      AccountPasswordStoreFactory::GetInterfaceForProfile(
+                      AccountPasswordStoreFactory::GetForProfile(
                           profile, ServiceAccessType::EXPLICIT_ACCESS)
                           .get());
 

@@ -30,13 +30,9 @@ namespace ios_web_view {
 class WebViewAccountPasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
-      WebViewBrowserState* browser_state,
-      ServiceAccessType access_type);
-
   static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetInterfaceForBrowserState(WebViewBrowserState* browser_state,
-                              ServiceAccessType access_type);
+  GetForBrowserState(WebViewBrowserState* browser_state,
+                     ServiceAccessType access_type);
 
   static WebViewAccountPasswordStoreFactory* GetInstance();
 

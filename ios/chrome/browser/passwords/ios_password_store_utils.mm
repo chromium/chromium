@@ -43,7 +43,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  private:
   void StartMetricsReporting() {
     password_manager::PasswordStoreInterface* profile_store =
-        IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+        IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     syncer::SyncService* sync_service =

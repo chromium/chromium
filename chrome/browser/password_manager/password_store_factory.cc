@@ -40,21 +40,10 @@
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 
-// TODO(crbug.com/1218413): Delete this method when the migration to
-// PasswordStoreInterface is complete and rename the method below to
-// GetForProfile.
 // static
-scoped_refptr<PasswordStore> PasswordStoreFactory::GetForProfile(
+scoped_refptr<PasswordStoreInterface> PasswordStoreFactory::GetForProfile(
     Profile* profile,
     ServiceAccessType access_type) {
-  return base::WrapRefCounted(static_cast<PasswordStore*>(
-      GetInterfaceForProfile(profile, access_type).get()));
-}
-
-// static
-scoped_refptr<PasswordStoreInterface>
-PasswordStoreFactory::GetInterfaceForProfile(Profile* profile,
-                                             ServiceAccessType access_type) {
   // |profile| gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
   // result in traces in the normal profile without the user knowing it.

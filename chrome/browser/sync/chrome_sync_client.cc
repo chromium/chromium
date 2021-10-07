@@ -212,9 +212,9 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
   DCHECK(!account_web_data_service_ ||
          web_data_service_thread_ ==
              account_web_data_service_->GetDBTaskRunner());
-  profile_password_store_ = PasswordStoreFactory::GetInterfaceForProfile(
+  profile_password_store_ = PasswordStoreFactory::GetForProfile(
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  account_password_store_ = AccountPasswordStoreFactory::GetInterfaceForProfile(
+  account_password_store_ = AccountPasswordStoreFactory::GetForProfile(
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
   component_factory_ = std::make_unique<ProfileSyncComponentsFactoryImpl>(

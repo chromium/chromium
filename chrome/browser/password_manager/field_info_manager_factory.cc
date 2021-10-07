@@ -41,6 +41,6 @@ FieldInfoManagerFactory::~FieldInfoManagerFactory() = default;
 KeyedService* FieldInfoManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  return new FieldInfoManagerImpl(PasswordStoreFactory::GetInterfaceForProfile(
+  return new FieldInfoManagerImpl(PasswordStoreFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS));
 }

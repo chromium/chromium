@@ -55,11 +55,10 @@ IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(
   std::unique_ptr<password_manager::PasswordReuseManager> reuse_manager =
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
 
-  reuse_manager->Init(
-      ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
-      IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
-          .get());
+  reuse_manager->Init(ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
+                      IOSChromePasswordStoreFactory::GetForBrowserState(
+                          browser_state, ServiceAccessType::EXPLICIT_ACCESS)
+                          .get());
   return reuse_manager;
 }
 

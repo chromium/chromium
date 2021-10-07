@@ -710,7 +710,7 @@ password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetProfilePasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
   // itself when it shouldn't access the PasswordStore.
-  return IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+  return IOSChromePasswordStoreFactory::GetForBrowserState(
              browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }

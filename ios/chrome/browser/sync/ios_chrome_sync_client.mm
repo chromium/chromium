@@ -99,7 +99,7 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
   db_thread_ = profile_web_data_service_
                    ? profile_web_data_service_->GetDBTaskRunner()
                    : nullptr;
-  password_store_ = IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+  password_store_ = IOSChromePasswordStoreFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
 
   component_factory_ =

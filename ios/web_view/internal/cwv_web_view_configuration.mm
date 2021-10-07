@@ -132,9 +132,8 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
         ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
             self.browserState);
     scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
-        ios_web_view::WebViewAccountPasswordStoreFactory::
-            GetInterfaceForBrowserState(self.browserState,
-                                        ServiceAccessType::EXPLICIT_ACCESS);
+        ios_web_view::WebViewAccountPasswordStoreFactory::GetForBrowserState(
+            self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
     _autofillDataManager = [[CWVAutofillDataManager alloc]
         initWithPersonalDataManager:personalDataManager
                       passwordStore:passwordStore.get()];

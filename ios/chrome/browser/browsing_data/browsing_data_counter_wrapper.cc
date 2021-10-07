@@ -47,7 +47,7 @@ CreateCounterForBrowserStateAndPref(ChromeBrowserState* browser_state,
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {
     return std::make_unique<browsing_data::PasswordsCounter>(
-        IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+        IOSChromePasswordStoreFactory::GetForBrowserState(
             browser_state, ServiceAccessType::EXPLICIT_ACCESS),
         /*account_store=*/nullptr,
         SyncServiceFactory::GetForBrowserState(browser_state));

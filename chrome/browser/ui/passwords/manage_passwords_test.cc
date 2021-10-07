@@ -140,7 +140,7 @@ void ManagePasswordsTest::SetupSafeState() {
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).ToDoubleT());
   SetupPendingPassword();
-  scoped_refptr<password_manager::PasswordStore> password_store =
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
   password_store->AddLogin(password_form_);
@@ -157,7 +157,7 @@ void ManagePasswordsTest::SetupMoreToFixState() {
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
       (base::Time::Now() - base::Minutes(1)).ToDoubleT());
-  scoped_refptr<password_manager::PasswordStore> password_store =
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       PasswordStoreFactory::GetForProfile(browser()->profile(),
                                           ServiceAccessType::IMPLICIT_ACCESS);
   // This is an unrelated insecure credential that should still be fixed.

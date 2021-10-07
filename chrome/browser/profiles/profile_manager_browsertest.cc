@@ -713,8 +713,8 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
   form.blocked_by_user = false;
 
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile, ServiceAccessType::EXPLICIT_ACCESS)
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS)
           .get();
   ASSERT_TRUE(password_store.get());
 

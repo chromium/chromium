@@ -64,7 +64,7 @@ WebViewPasswordReuseManagerFactory::BuildServiceInstanceFor(
       std::make_unique<password_manager::PasswordReuseManagerImpl>();
 
   reuse_manager->Init(browser_state->GetPrefs(),
-                      WebViewPasswordStoreFactory::GetInterfaceForBrowserState(
+                      WebViewPasswordStoreFactory::GetForBrowserState(
                           browser_state, ServiceAccessType::EXPLICIT_ACCESS)
                           .get());
   return reuse_manager;

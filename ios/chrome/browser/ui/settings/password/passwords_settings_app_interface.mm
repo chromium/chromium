@@ -39,7 +39,7 @@ scoped_refptr<password_manager::PasswordStoreInterface> GetPasswordStore() {
   // This test does not deal with Incognito, and should not run in Incognito
   // context. Therefore IMPLICIT_ACCESS is used to let the test fail if in
   // Incognito context.
-  return IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+  return IOSChromePasswordStoreFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState(),
       ServiceAccessType::IMPLICIT_ACCESS);
 }

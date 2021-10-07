@@ -1944,8 +1944,8 @@ void ProfileManager::OnLoadProfileForProfileDeletion(
 
     // Some platforms store passwords in keychains. They should be removed.
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
-        PasswordStoreFactory::GetInterfaceForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS)
+        PasswordStoreFactory::GetForProfile(profile,
+                                            ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     if (password_store.get()) {
       password_store->RemoveLoginsCreatedBetween(

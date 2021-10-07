@@ -511,16 +511,16 @@ void PasswordManagerBrowserTestBase::GetNewTab(
 
 // static
 void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
-  scoped_refptr<password_manager::PasswordStore> profile_password_store =
-      PasswordStoreFactory::GetForProfile(browser->profile(),
-                                          ServiceAccessType::IMPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store = PasswordStoreFactory::GetForProfile(
+          browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   PasswordStoreResultsObserver profile_syncer;
   profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
       &profile_syncer);
   profile_syncer.WaitForResults();
 
-  scoped_refptr<password_manager::PasswordStore> account_password_store =
-      AccountPasswordStoreFactory::GetForProfile(
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store = AccountPasswordStoreFactory::GetForProfile(
           browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   if (account_password_store) {
     PasswordStoreResultsObserver account_syncer;

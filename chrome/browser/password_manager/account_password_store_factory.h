@@ -13,21 +13,14 @@
 
 class Profile;
 
-namespace password_manager {
-class PasswordStore;
-}
-
 // Singleton that owns all Gaia-account-scoped PasswordStores and associates
 // them with Profiles.
 class AccountPasswordStoreFactory
     : public RefcountedBrowserContextKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStore> GetForProfile(
+  static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
       Profile* profile,
       ServiceAccessType set);
-
-  static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetInterfaceForProfile(Profile* profile, ServiceAccessType set);
 
   static AccountPasswordStoreFactory* GetInstance();
 

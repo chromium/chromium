@@ -178,7 +178,7 @@ PrefService* IOSChromePasswordManagerClient::GetPrefs() const {
 
 PasswordStoreInterface*
 IOSChromePasswordManagerClient::GetProfilePasswordStore() const {
-  return IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+  return IOSChromePasswordStoreFactory::GetForBrowserState(
              bridge_.browserState, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }

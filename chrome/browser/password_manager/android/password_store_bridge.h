@@ -67,9 +67,8 @@ class PasswordStoreBridge
 
   // Handle to the password store, powering `saved_passwords_presenter_`.
   scoped_refptr<password_manager::PasswordStoreInterface> password_store_ =
-      PasswordStoreFactory::GetInterfaceForProfile(
-          ProfileManager::GetLastUsedProfile(),
-          ServiceAccessType::EXPLICIT_ACCESS);
+      PasswordStoreFactory::GetForProfile(ProfileManager::GetLastUsedProfile(),
+                                          ServiceAccessType::EXPLICIT_ACCESS);
 
   // Used to fetch and edit passwords.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{

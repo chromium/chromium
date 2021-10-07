@@ -1744,8 +1744,8 @@ password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetProfilePasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
   // itself when it shouldn't access the PasswordStoreInterface.
-  return PasswordStoreFactory::GetInterfaceForProfile(
-             profile_, ServiceAccessType::EXPLICIT_ACCESS)
+  return PasswordStoreFactory::GetForProfile(profile_,
+                                             ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }
 
@@ -1753,7 +1753,7 @@ password_manager::PasswordStoreInterface*
 ChromePasswordProtectionService::GetAccountPasswordStore() const {
   // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
   // itself when it shouldn't access the PasswordStoreInterface.
-  return AccountPasswordStoreFactory::GetInterfaceForProfile(
+  return AccountPasswordStoreFactory::GetForProfile(
              profile_, ServiceAccessType::EXPLICIT_ACCESS)
       .get();
 }

@@ -97,8 +97,8 @@ void PasswordImportConsumer::ConsumePassword(
     return;
 
   scoped_refptr<password_manager::PasswordStoreInterface> store(
-      PasswordStoreFactory::GetInterfaceForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS));
+      PasswordStoreFactory::GetForProfile(profile_,
+                                          ServiceAccessType::EXPLICIT_ACCESS));
   for (const auto& pwd : seq) {
     if (store)
       store->AddLogin(pwd.ParseValid());

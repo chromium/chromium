@@ -14,7 +14,6 @@ class ChromeBrowserState;
 enum class ServiceAccessType;
 
 namespace password_manager {
-class PasswordStore;
 class PasswordStoreInterface;
 }
 
@@ -23,13 +22,9 @@ class PasswordStoreInterface;
 class IOSChromePasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
-      ChromeBrowserState* browser_state,
-      ServiceAccessType access_type);
-
   static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetInterfaceForBrowserState(ChromeBrowserState* browser_state,
-                              ServiceAccessType access_type);
+  GetForBrowserState(ChromeBrowserState* browser_state,
+                     ServiceAccessType access_type);
 
   static IOSChromePasswordStoreFactory* GetInstance();
 

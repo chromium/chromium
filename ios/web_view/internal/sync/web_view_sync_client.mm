@@ -61,10 +61,10 @@ std::unique_ptr<WebViewSyncClient> WebViewSyncClient::Create(
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
-      WebViewPasswordStoreFactory::GetInterfaceForBrowserState(
+      WebViewPasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
-      WebViewAccountPasswordStoreFactory::GetInterfaceForBrowserState(
+      WebViewAccountPasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS)
           .get(),
       browser_state->GetPrefs(),

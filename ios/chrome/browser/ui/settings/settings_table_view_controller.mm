@@ -1033,7 +1033,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
         base::mac::ObjCCastStrict<TableViewDetailIconCell>(cell);
     if (itemType == SettingsItemTypePasswords) {
       scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
-          IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
+          IOSChromePasswordStoreFactory::GetForBrowserState(
               _browserState, ServiceAccessType::EXPLICIT_ACCESS);
       if (!passwordStore) {
         // The password store factory returns a NULL password store if something

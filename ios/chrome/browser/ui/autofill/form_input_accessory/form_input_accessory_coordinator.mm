@@ -110,9 +110,8 @@
       [[FormInputAccessoryViewController alloc]
           initWithManualFillAccessoryViewControllerDelegate:self];
 
-  auto passwordStore =
-      IOSChromePasswordStoreFactory::GetInterfaceForBrowserState(
-          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
+      self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
 
   // There is no personal data manager in OTR (incognito). Get the original
   // one for manual fallback.
