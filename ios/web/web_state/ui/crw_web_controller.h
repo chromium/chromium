@@ -95,15 +95,6 @@ class WebStateImpl;
 // stored in navigation context.
 - (web::NavigationItemImpl*)lastPendingItemForNewNavigation;
 
-// Replaces the currently displayed content with |contentView|.  The content
-// view will be dismissed for the next navigation.
-- (void)showTransientContentView:(UIView<CRWScrollableContent>*)contentView;
-
-// Clear the transient content view, if one is shown. This is a delegate
-// method for WebStateImpl::ClearTransientContent(). Callers should use the
-// WebStateImpl API instead of calling this method directly.
-- (void)clearTransientContentView;
-
 // Removes the back WebView. DANGER: this method is exposed for the sole purpose
 // of allowing NavigationManagerImpl to reset the back-forward history. Please
 // reconsider before using this method.

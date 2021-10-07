@@ -536,24 +536,6 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return context->GetItem();
 }
 
-- (void)showTransientContentView:(UIView<CRWScrollableContent>*)contentView {
-  DCHECK(contentView);
-  DCHECK(contentView.scrollView);
-  // TODO(crbug.com/556848) Reenable DCHECK when |CRWWebControllerContainerView|
-  // is restructured so that subviews are not added during |layoutSubviews|.
-  // DCHECK([contentView.scrollView isDescendantOfView:contentView]);
-  [_containerView displayTransientContent:contentView];
-}
-
-- (void)clearTransientContentView {
-  // Early return if there is no transient content view.
-  if (![_containerView transientContentView])
-    return;
-
-  // Remove the transient content view from the hierarchy.
-  [_containerView clearTransientContentView];
-}
-
 // Caller must reset the delegate before calling.
 - (void)close {
   self.webStateImpl->CancelDialogs();
