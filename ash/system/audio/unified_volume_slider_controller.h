@@ -18,7 +18,7 @@ class UnifiedVolumeSliderController : public UnifiedSliderListener {
     virtual void OnAudioSettingsButtonClicked() = 0;
   };
 
-  UnifiedVolumeSliderController(Delegate* delegate, bool in_bubble);
+  explicit UnifiedVolumeSliderController(Delegate* delegate);
 
   UnifiedVolumeSliderController(const UnifiedVolumeSliderController&) = delete;
   UnifiedVolumeSliderController& operator=(
@@ -37,9 +37,6 @@ class UnifiedVolumeSliderController : public UnifiedSliderListener {
 
  private:
   Delegate* const delegate_;
-
-  // Whether the volume slider is in the bubble, as opposed to the system tray.
-  const bool in_bubble_;
 };
 
 }  // namespace ash
