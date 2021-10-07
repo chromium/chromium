@@ -17,6 +17,8 @@ import("../../build/crashpad_buildconfig.gni")
 config("lss_config") {
   if (crashpad_is_in_chromium) {
     defines = [ "CRASHPAD_LSS_SOURCE_EXTERNAL" ]
+  } else if (crashpad_is_in_fuchsia) {
+    defines = [ "CRASHPAD_LSS_SOURCE_FUCHSIA" ]
   } else {
     defines = [ "CRASHPAD_LSS_SOURCE_EMBEDDED" ]
   }

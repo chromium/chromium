@@ -169,6 +169,11 @@ if (!crashpad_is_ios) {
       if (crashpad_is_in_chromium || crashpad_is_in_dart) {
         remove_configs = [ "//build/config/win:console" ]
         configs = [ "//build/config/win:windowed" ]
+      } else if (crashpad_is_external) {
+        remove_configs =
+            [ "//../../mini_chromium/mini_chromium/build/config:win_console" ]
+        configs =
+            [ "//../../mini_chromium/mini_chromium/build/config:win_windowed" ]
       } else {
         remove_configs = [
           "//third_party/mini_chromium/mini_chromium/build/config:win_console",

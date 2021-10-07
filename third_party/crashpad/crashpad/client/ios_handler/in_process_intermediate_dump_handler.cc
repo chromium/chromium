@@ -747,7 +747,9 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
       writer, IntermediateDumpKey::kThreads);
 
   // Exception thread ID.
+#if defined(ARCH_CPU_ARM64)
   uint64_t exception_thread_id = 0;
+#endif
   thread_identifier_info identifier_info;
   mach_msg_type_number_t count = THREAD_IDENTIFIER_INFO_COUNT;
   kern_return_t kr =
@@ -756,7 +758,9 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
                   reinterpret_cast<thread_info_t>(&identifier_info),
                   &count);
   if (kr == KERN_SUCCESS) {
+#if defined(ARCH_CPU_ARM64)
     exception_thread_id = identifier_info.thread_id;
+#endif
   } else {
     CRASHPAD_RAW_LOG_ERROR(kr, "thread_info::THREAD_IDENTIFIER_INFO");
   }
@@ -803,7 +807,9 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
     }
 
     // Thread ID.
+#if defined(ARCH_CPU_ARM64)
     uint64_t thread_id;
+#endif
     thread_identifier_info identifier_info;
     count = THREAD_IDENTIFIER_INFO_COUNT;
     kr = thread_info(thread,
@@ -811,7 +817,9 @@ void InProcessIntermediateDumpHandler::WriteThreadInfo(
                      reinterpret_cast<thread_info_t>(&identifier_info),
                      &count);
     if (kr == KERN_SUCCESS) {
+#if defined(ARCH_CPU_ARM64)
       thread_id = identifier_info.thread_id;
+#endif
       WriteProperty(
           writer, IntermediateDumpKey::kThreadID, &identifier_info.thread_id);
       WriteProperty(writer,
