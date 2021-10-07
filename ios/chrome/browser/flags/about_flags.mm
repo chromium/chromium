@@ -509,6 +509,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kOptimizationGuideMetadataValidation)},
+    {"enable-optimization-hints-fetching-msbb",
+     flag_descriptions::kEnableOptimizationHintsFetchingMSBBName,
+     flag_descriptions::kEnableOptimizationHintsFetchingMSBBDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::
+             kRemoteOptimizationGuideFetchingAnonymousDataConsent)},
     {"legacy-tls-interstitial",
      flag_descriptions::kIOSLegacyTLSInterstitialsName,
      flag_descriptions::kIOSLegacyTLSInterstitialsDescription, flags_ui::kOsIos,

@@ -204,6 +204,11 @@ extern const char kEnableOptimizationGuideDescription[];
 extern const char kEnableOptimizationGuideMetadataValidationName[];
 extern const char kEnableOptimizationGuideMetadataValidationDescription[];
 
+// Title and description for the flag to enable optimization guide hints
+// fetching for MSBB users.
+extern const char kEnableOptimizationHintsFetchingMSBBName[];
+extern const char kEnableOptimizationHintsFetchingMSBBDescription[];
+
 // Title and description for the flag to enable an expanded tab strip.
 extern const char kExpandedTabStripName[];
 extern const char kExpandedTabStripDescription[];

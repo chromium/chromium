@@ -2316,6 +2316,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-optimization-hints-fetching-msbb",
+    "owners": [ "rajendrant", "robertogden", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-os-feedback",
     "owners": [ "xiangdongkong", "cros-telemetry@google.com" ],
     "expiry_milestone": 96

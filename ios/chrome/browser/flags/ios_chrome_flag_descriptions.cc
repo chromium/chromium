@@ -233,6 +233,12 @@ const char kEnableOptimizationGuideMetadataValidationDescription[] =
     "Enables the validation of optimization guide metadata fetch and "
     "allowlist/blocklist bloom filter.";
 
+const char kEnableOptimizationHintsFetchingMSBBName[] =
+    "Enable MSBB optimization hints fetching";
+const char kEnableOptimizationHintsFetchingMSBBDescription[] =
+    "Enable optimization hints fetching for users who have enabled the 'Make "
+    "Searches and Browsing Better' setting.";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"
