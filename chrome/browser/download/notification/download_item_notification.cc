@@ -195,6 +195,9 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
       base::RecordAction(
           UserMetricsAction("DownloadNotification.Button_BypassDeepScanning"));
       break;
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -861,6 +864,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::LEARN_MORE_INTERRUPTED:
     case DownloadCommands::BYPASS_DEEP_SCANNING:
+    case DownloadCommands::MAX:
       // Only for menu.
       NOTREACHED();
       return std::u16string();

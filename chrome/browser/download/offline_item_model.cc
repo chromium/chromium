@@ -255,6 +255,9 @@ bool OfflineItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      return false;
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::PLATFORM_OPEN:
@@ -283,6 +286,9 @@ bool OfflineItemModel::IsCommandChecked(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      return false;
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:
       NOTIMPLEMENTED();
@@ -310,6 +316,9 @@ bool OfflineItemModel::IsCommandChecked(
 void OfflineItemModel::ExecuteCommand(DownloadCommands* download_commands,
                                       DownloadCommands::Command command) {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::SHOW_IN_FOLDER:
     case DownloadCommands::OPEN_WHEN_COMPLETE:
     case DownloadCommands::ALWAYS_OPEN_TYPE:

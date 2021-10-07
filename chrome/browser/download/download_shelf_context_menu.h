@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -53,6 +54,7 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   friend class DownloadShelfContextMenuTest;
   FRIEND_TEST_ALL_PREFIXES(DownloadShelfContextMenuTest,
                            InvalidDownloadWontCrashContextMenu);
+  FRIEND_TEST_ALL_PREFIXES(DownloadShelfContextMenuTest, RecordCommandsEnabled);
 
   // Detaches self from |download_item_|. Called when the DownloadItem is
   // destroyed or when this object is being destroyed.
@@ -72,6 +74,8 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
 
   void AddAutoOpenToMenu(ui::SimpleMenuModel* model);
 
+  void RecordCommandsEnabled(ui::SimpleMenuModel* model);
+
   // We show slightly different menus if the download is in progress vs. if the
   // download has finished.
   std::unique_ptr<ui::SimpleMenuModel> in_progress_download_menu_model_;
@@ -82,6 +86,10 @@ class DownloadShelfContextMenu : public ui::SimpleMenuModel::Delegate,
   std::unique_ptr<ui::SimpleMenuModel> malicious_download_menu_model_;
   std::unique_ptr<ui::SimpleMenuModel> deep_scanning_menu_model_;
   std::unique_ptr<ui::SimpleMenuModel> mixed_content_download_menu_model_;
+
+  // Whether or not a histogram has been emitted recording which
+  // Download commands were enabled
+  bool download_commands_enabled_recorded_ = false;
 
   // Information source.
   // Use WeakPtr because the context menu may outlive |download_|.

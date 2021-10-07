@@ -36,6 +36,7 @@ class DownloadCommands {
     ANNOTATE,                  // Open an app to annotate the image.
     DEEP_SCAN,                 // Send file to Safe Browsing for deep scanning.
     BYPASS_DEEP_SCANNING,      // Bypass the prompt to deep scan.
+    MAX
   };
 
   // |model| must outlive DownloadCommands.

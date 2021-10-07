@@ -22944,6 +22944,43 @@ Called by update_document_policy_enum.py.-->
   <int value="4" label="Write to already failed file"/>
 </enum>
 
+<enum name="DownloadShelfContextMenuAction">
+  <int value="0" label="Drop down shown"/>
+  <int value="1" label="Drop down enabled"/>
+  <int value="2" label="Show in folder enabled"/>
+  <int value="3" label="Show in folder clicked"/>
+  <int value="4" label="Open when complete enabled"/>
+  <int value="5" label="Open when complete clicked"/>
+  <int value="6" label="Always open type enabled"/>
+  <int value="7" label="Always open type clicked"/>
+  <int value="8" label="Open enabled"/>
+  <int value="9" label="Open clicked"/>
+  <int value="10" label="Cancel enabled"/>
+  <int value="11" label="Cancel clicked"/>
+  <int value="12" label="Pause enabled"/>
+  <int value="13" label="Pause clicked"/>
+  <int value="14" label="Resume Enabled"/>
+  <int value="15" label="Resume clicked"/>
+  <int value="16" label="Discard Enabled"/>
+  <int value="17" label="Discard Clicked"/>
+  <int value="18" label="Keep Enabled"/>
+  <int value="19" label="Keep Clicked"/>
+  <int value="20" label="Learn more scanning enabled"/>
+  <int value="21" label="Learn more scanning clicked"/>
+  <int value="22" label="Learn more interrupted enabled"/>
+  <int value="23" label="Learn more interrupted clicked"/>
+  <int value="24" label="Learn more mixed content enabled"/>
+  <int value="25" label="Learn more mixed content clicked"/>
+  <int value="26" label="Copy to clipboard enabled"/>
+  <int value="27" label="Copy to clipboard clicked"/>
+  <int value="28" label="Annotate enabled"/>
+  <int value="29" label="Annotate clicked"/>
+  <int value="30" label="Deep scan enabled"/>
+  <int value="31" label="Deep scan clicked"/>
+  <int value="32" label="Bypass deep scanning enabled"/>
+  <int value="33" label="Bypass deep scanning clicked"/>
+</enum>
+
 <enum name="DownloadSource">
   <int value="0" label="Initiated by Save Package on Non-HTML content"/>
   <int value="1" label="Initiated by Drag-and-drop"/>

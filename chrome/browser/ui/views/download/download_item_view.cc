@@ -909,6 +909,12 @@ void DownloadItemView::UpdateButtons() {
   review_button_->SetVisible(prompt_to_review);
 
   dropdown_button_->SetVisible(model_->ShouldShowDropdown());
+  if (dropdown_button_->GetVisible() && !dropdown_button_shown_recorded_) {
+    dropdown_button_shown_recorded_ = true;
+    base::UmaHistogramEnumeration(
+        "Download.ShelfContextMenuAction",
+        DownloadShelfContextMenuAction::kDropDownShown);
+  }
 }
 
 void DownloadItemView::UpdateAccessibleAlertAndAnimationsForNormalMode() {
@@ -1304,6 +1310,12 @@ void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
   SetDropdownPressed(true);
   ShowContextMenuImpl(dropdown_button_->GetBoundsInScreen(),
                       ui::GetMenuSourceTypeForEvent(event));
+  if (!dropdown_button_pressed_recorded_) {
+    base::UmaHistogramEnumeration(
+        "Download.ShelfContextMenuAction",
+        DownloadShelfContextMenuAction::kDropDownPressed);
+    dropdown_button_pressed_recorded_ = true;
+  }
 }
 
 void DownloadItemView::ReviewButtonPressed() {

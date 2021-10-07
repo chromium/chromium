@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notreached.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 
@@ -105,3 +106,66 @@ void RecordDownloadNotificationSuppressed() {
   base::UmaHistogramBoolean("Download.Notification.Suppressed", true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+DownloadShelfContextMenuAction DownloadCommandToShelfAction(
+    DownloadCommands::Command download_command,
+    bool clicked) {
+  switch (download_command) {
+    case DownloadCommands::Command::MAX:
+      NOTREACHED();
+      return DownloadShelfContextMenuAction::kMaxValue;
+    case DownloadCommands::Command::SHOW_IN_FOLDER:
+      return clicked ? DownloadShelfContextMenuAction::kShowInFolderClicked
+                     : DownloadShelfContextMenuAction::kShowInFolderEnabled;
+    case DownloadCommands::Command::OPEN_WHEN_COMPLETE:
+      return clicked ? DownloadShelfContextMenuAction::kOpenWhenCompleteClicked
+                     : DownloadShelfContextMenuAction::kOpenWhenCompleteEnabled;
+    case DownloadCommands::Command::ALWAYS_OPEN_TYPE:
+      return clicked ? DownloadShelfContextMenuAction::kAlwaysOpenTypeClicked
+                     : DownloadShelfContextMenuAction::kAlwaysOpenTypeEnabled;
+    case DownloadCommands::Command::PLATFORM_OPEN:
+      return clicked ? DownloadShelfContextMenuAction::kPlatformOpenClicked
+                     : DownloadShelfContextMenuAction::kPlatformOpenEnabled;
+    case DownloadCommands::Command::CANCEL:
+      return clicked ? DownloadShelfContextMenuAction::kCancelClicked
+                     : DownloadShelfContextMenuAction::kCancelEnabled;
+    case DownloadCommands::Command::PAUSE:
+      return clicked ? DownloadShelfContextMenuAction::kPauseClicked
+                     : DownloadShelfContextMenuAction::kPauseEnabled;
+    case DownloadCommands::Command::RESUME:
+      return clicked ? DownloadShelfContextMenuAction::kResumeClicked
+                     : DownloadShelfContextMenuAction::kResumeEnabled;
+    case DownloadCommands::Command::DISCARD:
+      return clicked ? DownloadShelfContextMenuAction::kDiscardClicked
+                     : DownloadShelfContextMenuAction::kDiscardEnabled;
+    case DownloadCommands::Command::KEEP:
+      return clicked ? DownloadShelfContextMenuAction::kKeepClicked
+                     : DownloadShelfContextMenuAction::kKeepEnabled;
+    case DownloadCommands::Command::LEARN_MORE_SCANNING:
+      return clicked
+                 ? DownloadShelfContextMenuAction::kLearnMoreScanningClicked
+                 : DownloadShelfContextMenuAction::kLearnMoreScanningEnabled;
+    case DownloadCommands::Command::LEARN_MORE_INTERRUPTED:
+      return clicked
+                 ? DownloadShelfContextMenuAction::kLearnMoreInterruptedClicked
+                 : DownloadShelfContextMenuAction::kLearnMoreInterruptedEnabled;
+    case DownloadCommands::Command::LEARN_MORE_MIXED_CONTENT:
+      return clicked
+                 ? DownloadShelfContextMenuAction::kLearnMoreMixedContentClicked
+                 : DownloadShelfContextMenuAction::
+                       kLearnMoreMixedContentEnabled;
+    case DownloadCommands::Command::COPY_TO_CLIPBOARD:
+      return clicked ? DownloadShelfContextMenuAction::kCopyToClipboardClicked
+                     : DownloadShelfContextMenuAction::kCopyToClipboardEnabled;
+    case DownloadCommands::Command::ANNOTATE:
+      return clicked ? DownloadShelfContextMenuAction::kAnnotateClicked
+                     : DownloadShelfContextMenuAction::kAnnotateEnabled;
+    case DownloadCommands::Command::DEEP_SCAN:
+      return clicked ? DownloadShelfContextMenuAction::kDeepScanClicked
+                     : DownloadShelfContextMenuAction::kDeepScanEnabled;
+    case DownloadCommands::Command::BYPASS_DEEP_SCANNING:
+      return clicked
+                 ? DownloadShelfContextMenuAction::kBypassDeepScanningClicked
+                 : DownloadShelfContextMenuAction::kBypassDeepScanningEnabled;
+  }
+}

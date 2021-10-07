@@ -583,6 +583,9 @@ bool DownloadItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::SHOW_IN_FOLDER:
       return download_->CanShowInFolder();
     case DownloadCommands::OPEN_WHEN_COMPLETE:
@@ -624,6 +627,9 @@ bool DownloadItemModel::IsCommandChecked(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {
   switch (command) {
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::OPEN_WHEN_COMPLETE:
       return download_->GetOpenWhenComplete() ||
              download_crx_util::IsExtensionDownload(*download_);
@@ -765,6 +771,9 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
 #endif
       break;
     }
+    case DownloadCommands::MAX:
+      NOTREACHED();
+      break;
     case DownloadCommands::PLATFORM_OPEN:
     case DownloadCommands::CANCEL:
     case DownloadCommands::DISCARD:

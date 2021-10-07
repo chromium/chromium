@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
+#include "chrome/browser/download/download_stats.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/vector_icons/vector_icons.h"
@@ -39,6 +41,31 @@ DownloadShelfContextMenu::DownloadShelfContextMenu(
     : download_(download), download_commands_(new DownloadCommands(download)) {
   DCHECK(download_);
   download_->AddObserver(this);
+}
+
+void DownloadShelfContextMenu::RecordCommandsEnabled(
+    ui::SimpleMenuModel* model) {
+  // Meant to be kept up-to-date with DownloadCommands::Command
+
+  if (download_commands_enabled_recorded_) {
+    return;
+  }
+
+  for (int command_int = 1;
+       command_int < DownloadCommands::Command::BYPASS_DEEP_SCANNING;
+       command_int++) {
+    if (model->GetIndexOfCommandId(command_int) != -1 &&
+        IsCommandIdEnabled(command_int)) {
+      DownloadCommands::Command download_command =
+          static_cast<DownloadCommands::Command>(command_int);
+      base::UmaHistogramEnumeration(
+          "Download.ShelfContextMenuAction",
+          DownloadCommandToShelfAction(download_command,
+                                       /*clicked=*/false));
+    }
+  }
+
+  download_commands_enabled_recorded_ = true;
 }
 
 ui::SimpleMenuModel* DownloadShelfContextMenu::GetMenuModel() {
@@ -72,7 +99,7 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetMenuModel() {
   } else {
     model = GetInProgressMenuModel(is_download);
   }
-
+  RecordCommandsEnabled(model);
   return model;
 }
 
@@ -179,6 +206,9 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
       break;
     case DownloadCommands::BYPASS_DEEP_SCANNING:
       id = IDS_OPEN_DOWNLOAD_NOW;
+      break;
+    case DownloadCommands::MAX:
+      NOTREACHED();
       break;
   }
   CHECK(id != -1);

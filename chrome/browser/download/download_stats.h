@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -181,5 +182,49 @@ void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status);
 // Records that a notification for a download was suppressed.
 void RecordDownloadNotificationSuppressed();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+enum class DownloadShelfContextMenuAction {
+  // Drop down button for download shelf context menu is visible
+  kDropDownShown = 0,
+  // Drop down button was pressed
+  kDropDownPressed = 1,
+  kShowInFolderEnabled = 2,
+  kShowInFolderClicked = 3,
+  kOpenWhenCompleteEnabled = 4,
+  kOpenWhenCompleteClicked = 5,
+  kAlwaysOpenTypeEnabled = 6,
+  kAlwaysOpenTypeClicked = 7,
+  kPlatformOpenEnabled = 8,
+  kPlatformOpenClicked = 9,
+  kCancelEnabled = 10,
+  kCancelClicked = 11,
+  kPauseEnabled = 12,
+  kPauseClicked = 13,
+  kResumeEnabled = 14,
+  kResumeClicked = 15,
+  kDiscardEnabled = 16,
+  kDiscardClicked = 17,
+  kKeepEnabled = 18,
+  kKeepClicked = 19,
+  kLearnMoreScanningEnabled = 20,
+  kLearnMoreScanningClicked = 21,
+  kLearnMoreInterruptedEnabled = 22,
+  kLearnMoreInterruptedClicked = 23,
+  kLearnMoreMixedContentEnabled = 24,
+  kLearnMoreMixedContentClicked = 25,
+  kCopyToClipboardEnabled = 26,
+  kCopyToClipboardClicked = 27,
+  kAnnotateEnabled = 28,
+  kAnnotateClicked = 29,
+  kDeepScanEnabled = 30,
+  kDeepScanClicked = 31,
+  kBypassDeepScanningEnabled = 32,
+  kBypassDeepScanningClicked = 33,
+  kMaxValue = kBypassDeepScanningClicked
+};
+
+DownloadShelfContextMenuAction DownloadCommandToShelfAction(
+    DownloadCommands::Command download_command,
+    bool clicked);
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_STATS_H_

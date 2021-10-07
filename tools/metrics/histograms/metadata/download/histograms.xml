@@ -1199,6 +1199,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Download.ShelfContextMenuAction"
+    enum="DownloadShelfContextMenuAction" expires_after="2022-10-11">
+  <owner>anise@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
+  <summary>
+    This histogram is used to record the different actions and events associated
+    with the download shelf context menu on Linux, MacOS, and Windows.
+    Specifically, it records when the dropdown button was clicked as well when
+    DownloadCommands were enabled or executed. Each action or enable event is
+    only emitted once; as a result, it is safe to compute a ratio by dividing
+    enabled events by clicked events.
+  </summary>
+</histogram>
+
 <histogram name="Download.ShowDangerousDownloadConfirmationPrompt"
     enum="DownloadItem.DangerType" expires_after="M77">
   <owner>dtrainor@chromium.org</owner>
