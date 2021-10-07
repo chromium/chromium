@@ -85,7 +85,7 @@
           <template is="dom-if" if="[[enableConsolidatedSiteStorageControls_]]">
             <div class="separator"></div>
             <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
-                title$="[[i18n('siteSettingsRemoveSite', model.site)]]"
+                title$="[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
                 on-click="onRemove_" focus-row-control focus-type="remove">
             </cr-icon-button>
           </template>
@@ -155,8 +155,7 @@
                       <div class="separator"></div>
                       <cr-icon-button class="icon-delete-gray"
                           id="removeOriginButton"
-                          title$="[[i18n('siteSettingsRemoveSite',
-                              model.site)]]"
+                          title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
                           data-origin$="[[item.origin]]" data-context="origin"
                           on-click="onRemove_" focus-row-control
                           focus-type="remove">

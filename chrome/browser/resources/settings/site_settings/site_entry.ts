@@ -19,6 +19,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -52,8 +53,11 @@ interface SiteEntryElement {
 
 const SiteEntryElementBase =
     mixinBehaviors(
-        [FocusRowBehavior], BaseMixin(SiteSettingsMixin(PolymerElement))) as
-    {new (): PolymerElement & SiteSettingsMixinInterface & BaseMixinInterface};
+        [FocusRowBehavior],
+        BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement)))) as {
+      new (): PolymerElement & I18nMixinInterface & SiteSettingsMixinInterface &
+      BaseMixinInterface
+    };
 
 class SiteEntryElement extends SiteEntryElementBase {
   static get is() {
@@ -420,6 +424,11 @@ class SiteEntryElement extends SiteEntryElementBase {
    */
   private getClassForIndex_(index: number): string {
     return index > 0 ? 'hr' : '';
+  }
+
+  private getRemoveOriginButtonTitle_(origin: string): string {
+    return this.i18n(
+        'siteSettingsCookieRemoveSite', this.originRepresentation(origin));
   }
 
   /**
