@@ -82,6 +82,8 @@ class WEBDATA_EXPORT WebDatabaseService
   virtual void ScheduleDBTask(const base::Location& from_here, WriteTask task);
 
   // Schedule a read task on the DB sequence.
+  // Retrieves a WeakPtr to the |consumer| so that |consumer| does not have to
+  // outlive the WebDatabaseService.
   virtual WebDataServiceBase::Handle ScheduleDBTaskWithResult(
       const base::Location& from_here,
       ReadTask task,

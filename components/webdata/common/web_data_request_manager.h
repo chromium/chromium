@@ -15,6 +15,7 @@
 #include "base/atomicops.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "components/webdata/common/web_data_results.h"
@@ -77,7 +78,7 @@ class WebDataRequest {
   base::subtle::AtomicWord atomic_manager_;
 
   // The originator of the service request.
-  WebDataServiceConsumer* const consumer_;
+  base::WeakPtr<WebDataServiceConsumer> consumer_;
 
   // Identifier for this request.
   const WebDataServiceBase::Handle handle_;
@@ -99,6 +100,8 @@ class WebDataRequestManager
   WebDataRequestManager();
 
   // Factory function to create a new WebDataRequest.
+  // Retrieves a WeakPtr to the |consumer| so that |consumer| does not have to
+  // outlive the WebDataRequestManager.
   std::unique_ptr<WebDataRequest> NewRequest(WebDataServiceConsumer* consumer);
 
   // Cancel any pending request.
