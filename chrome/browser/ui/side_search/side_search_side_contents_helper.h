@@ -35,6 +35,9 @@ class SideSearchSideContentsHelper
     // updated.
     virtual void LastSearchURLUpdated(const GURL& url) = 0;
 
+    // Called when the side panel contents has terminated.
+    virtual void SidePanelProcessGone() = 0;
+
     // Passthrough for the side content's WebContentsDelegate.
     virtual bool HandleKeyboardEvent(
         content::WebContents* source,
@@ -56,6 +59,7 @@ class SideSearchSideContentsHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void RenderProcessGone(base::TerminationStatus status) override;
 
   // content::WebContentsDelegate:
   bool CanDragEnter(content::WebContents* source,

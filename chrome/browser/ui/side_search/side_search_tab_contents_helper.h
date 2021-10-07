@@ -39,8 +39,11 @@ class SideSearchTabContentsHelper
 
     // Notifies the delegate that the side panel's availability has changed.
     // This is called in response to validating that the side panel SRP is
-    // available in `TestSRPAvailability()`.
-    virtual void SidePanelAvailabilityChanged() = 0;
+    // available in `TestSRPAvailability()`. `should_close` determines whether
+    // the side panel should be closed. This allows the helper to signal
+    // delegates that they should close the feature when something exceptional
+    // has happened.
+    virtual void SidePanelAvailabilityChanged(bool should_close) = 0;
   };
 
   ~SideSearchTabContentsHelper() override;
@@ -48,6 +51,7 @@ class SideSearchTabContentsHelper
   // SideContentsWrapper::Delegate:
   void NavigateInTabContents(const content::OpenURLParams& params) override;
   void LastSearchURLUpdated(const GURL& url) override;
+  void SidePanelProcessGone() override;
   bool HandleKeyboardEvent(
       content::WebContents* source,
       const content::NativeWebKeyboardEvent& event) override;

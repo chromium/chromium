@@ -217,4 +217,11 @@ TEST_F(SideSearchTabContentsHelperTest, ClearsSidePanelContentsWhenAsked) {
   EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
 }
 
+TEST_F(SideSearchTabContentsHelperTest,
+       SidePanelProcessGoneResetsSideContents) {
+  EXPECT_NE(nullptr, helper()->side_panel_contents_for_testing());
+  helper()->SidePanelProcessGone();
+  EXPECT_EQ(nullptr, helper()->side_panel_contents_for_testing());
+}
+
 }  // namespace test

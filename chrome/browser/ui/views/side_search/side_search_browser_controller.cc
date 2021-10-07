@@ -199,8 +199,13 @@ content::WebContents* SideSearchBrowserController::OpenURLFromTab(
   return browser_view_->browser()->OpenURL(params);
 }
 
-void SideSearchBrowserController::SidePanelAvailabilityChanged() {
-  UpdateSidePanel();
+void SideSearchBrowserController::SidePanelAvailabilityChanged(
+    bool should_close) {
+  if (should_close) {
+    CloseSidePanel();
+  } else {
+    UpdateSidePanel();
+  }
 }
 
 void SideSearchBrowserController::DidFinishNavigation(

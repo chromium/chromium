@@ -75,6 +75,16 @@ void SideSearchTabContentsHelper::DidFinishNavigation(
   }
 }
 
+void SideSearchTabContentsHelper::SidePanelProcessGone() {
+  ClearSidePanelContents();
+  // For state-per-tab we want to toggle the helper closed to ensure its toggled
+  // state is updated correctly in the case the renderer crashes but it is not
+  // currently being hosted in the side panel.
+  toggled_open_ = false;
+  if (delegate_)
+    delegate_->SidePanelAvailabilityChanged(true);
+}
+
 content::WebContents* SideSearchTabContentsHelper::GetSidePanelContents() {
   if (!side_panel_contents_)
     CreateSidePanelContents();
@@ -204,7 +214,7 @@ void SideSearchTabContentsHelper::OnResponseLoaded(
   // side panel SRP is available to give it the opportunity to update
   // appropriately.
   if (delegate_)
-    delegate_->SidePanelAvailabilityChanged();
+    delegate_->SidePanelAvailabilityChanged(false);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SideSearchTabContentsHelper);

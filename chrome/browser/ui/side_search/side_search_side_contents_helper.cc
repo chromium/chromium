@@ -115,6 +115,12 @@ void SideSearchSideContentsHelper::DidFinishNavigation(
   ++navigation_within_side_search_count_;
 }
 
+void SideSearchSideContentsHelper::RenderProcessGone(
+    base::TerminationStatus status) {
+  DCHECK(delegate_);
+  return delegate_->SidePanelProcessGone();
+}
+
 bool SideSearchSideContentsHelper::CanDragEnter(
     content::WebContents* source,
     const content::DropData& data,

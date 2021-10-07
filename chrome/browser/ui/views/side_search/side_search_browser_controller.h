@@ -48,7 +48,7 @@ class SideSearchBrowserController
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
       const content::OpenURLParams& params) override;
-  void SidePanelAvailabilityChanged() override;
+  void SidePanelAvailabilityChanged(bool should_close) override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(

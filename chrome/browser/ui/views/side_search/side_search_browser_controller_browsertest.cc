@@ -17,7 +17,11 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "ui/views/controls/button/image_button.h"
@@ -104,6 +108,12 @@ class SideSearchBrowserControllerTest : public InProcessBrowserTest {
 
   SidePanel* GetSidePanelFor(Browser* browser) {
     return BrowserViewFor(browser)->left_aligned_side_panel_for_testing();
+  }
+
+  content::WebContents* GetSidePanelContentsFor(Browser* browser, int index) {
+    auto* tab_contents_helper = SideSearchTabContentsHelper::FromWebContents(
+        browser->tab_strip_model()->GetWebContentsAt(index));
+    return tab_contents_helper->side_panel_contents_for_testing();
   }
 
   void NavigateToSRPAndNonGoogleUrl(Browser* browser) {
@@ -366,6 +376,36 @@ IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
   EXPECT_FALSE(side_panel->Contains(focus_manager->GetFocusedView()));
 }
 
+IN_PROC_BROWSER_TEST_F(SideSearchBrowserControllerTest,
+                       SidePanelCrashesCloseSidePanel) {
+  // Navigate to a Google SRP and then a non-Google page. The side panel will be
+  // available but closed.
+  NavigateToSRPAndOpenSidePanel(browser());
+
+  auto* side_panel = GetSidePanelFor(browser());
+
+  // Side panel should be open with a hosted WebContents.
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+
+  // Simulate a crash in the side panel contents.
+  auto* rph =
+      GetSidePanelContentsFor(browser(), 0)->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer(
+      rph, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(rph->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer.Wait();
+
+  // Side panel should be closed and the WebContents cleared.
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
+
+  // Reopening the side panel should restore the side panel and its contents.
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
+}
+
 class SideSearchStatePerTabBrowserControllerTest
     : public SideSearchBrowserControllerTest {
  public:
@@ -508,4 +548,51 @@ IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
   // become available again but should not automatically reopen.
   NavigateActiveTab(browser(), kGoogleSearchURL);
   EXPECT_FALSE(side_panel->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SideSearchStatePerTabBrowserControllerTest,
+                       SidePanelCrashesCloseSidePanel) {
+  // Open two tabs with the side panel open.
+  NavigateToSRPAndOpenSidePanel(browser());
+  AppendTab(browser(), kNonGoogleURL);
+  ActivateTabAt(browser(), 1);
+  NavigateToSRPAndOpenSidePanel(browser());
+
+  auto* side_panel = GetSidePanelFor(browser());
+
+  // Side panel should be open with the side contents present.
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 1));
+
+  // Simulate a crash in the hosted side panel contents.
+  auto* rph_second_tab =
+      GetSidePanelContentsFor(browser(), 1)->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer_second_tab(
+      rph_second_tab,
+      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(rph_second_tab->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer_second_tab.Wait();
+
+  // Side panel should be closed and the WebContents cleared.
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 1));
+
+  // Simulate a crash in the side panel contents of the first tab which is not
+  // currently active.
+  auto* rph_first_tab =
+      GetSidePanelContentsFor(browser(), 0)->GetMainFrame()->GetProcess();
+  content::RenderProcessHostWatcher crash_observer_first_tab(
+      rph_first_tab, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  EXPECT_TRUE(rph_first_tab->Shutdown(content::RESULT_CODE_KILLED));
+  crash_observer_first_tab.Wait();
+
+  // Switch to the first tab, the side panel should still be closed.
+  ActivateTabAt(browser(), 0);
+  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
+
+  // Reopening the side panel should restore the side panel and its contents.
+  NotifyButtonClick(browser());
+  EXPECT_TRUE(side_panel->GetVisible());
+  EXPECT_NE(nullptr, GetSidePanelContentsFor(browser(), 0));
 }
