@@ -43,14 +43,13 @@ ios_appex_bundle("content_widget_extension") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
   ]
 
   assert_no_deps = ios_extension_assert_no_deps
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id.ContentTodayExtension"
+  bundle_identifier = "$chromium_bundle_id.ContentTodayExtension"
 }
 
 source_set("content_widget") {

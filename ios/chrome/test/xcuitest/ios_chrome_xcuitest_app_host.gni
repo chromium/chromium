@@ -34,12 +34,11 @@ template("ios_chrome_xcuitest_app_host") {
     }
 
     if (ios_use_shared_bundle_id_for_test_apps) {
-      _test_app_bundle_id = "gtest.unittests"
+      bundle_identifier = "$ios_app_bundle_id_prefix.gtest.unittests"
     } else {
-      _test_app_bundle_id = "gtest.$_output_name"
+      bundle_identifier = "$ios_app_bundle_id_prefix.gtest." +
+                          string_replace(_output_name, "_", "-")
     }
-
-    xcode_product_bundle_id = "$ios_app_bundle_id_prefix.$_test_app_bundle_id"
 
     if (!defined(deps)) {
       deps = []
@@ -60,14 +59,14 @@ template("ios_chrome_xcuitest_app_host") {
 
     info_plist_target = ":$_tweak_info_plist"
     extra_substitutions = [
+      "CHROMIUM_BUNDLE_ID=$bundle_identifier",
       "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
       "CHROMIUM_SHORT_NAME=$target_name",
       "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CHROMIUM_BUNDLE_ID=$_test_app_bundle_id",
-      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
+      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$bundle_identifier.ContentTodayExtension",
       "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
       "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
     ]

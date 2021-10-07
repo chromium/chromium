@@ -64,9 +64,7 @@ ios_appex_bundle("widget_kit_extension") {
   ]
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id.WidgetKitExtension"
-
-  extra_substitutions = [ "PRODUCT_BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$xcode_product_bundle_id" ]
+  bundle_identifier = "$chromium_bundle_id.WidgetKitExtension"
 }
 
 extension_repack_all_locales("packed_resources") {
