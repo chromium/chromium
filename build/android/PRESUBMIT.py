@@ -63,8 +63,21 @@ def CommonChecks(input_api, output_api):
           files_to_skip=[
               r'.*_pb2\.py',
               r'.*_pb2\.py',
+              r'.*create_unwind_table\.py',
+              r'.*create_unwind_table_tests\.py',
           ],
           extra_paths_list=[J('gyp'), J('gn')]))
+
+  tests.extend(
+      input_api.canned_checks.GetPylint(
+          input_api,
+          output_api,
+          files_to_check=[
+              r'.*create_unwind_table\.py',
+              r'.*create_unwind_table_tests\.py',
+          ],
+          extra_paths_list=[J('gyp'), J('gn')],
+          version='2.6'))
   # yapf: enable
 
   # Disabled due to http://crbug.com/410936
