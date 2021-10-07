@@ -24,7 +24,7 @@
 
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/background_tab_manager.h"
-#include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #else

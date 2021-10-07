@@ -980,7 +980,7 @@
     },
     'feed': {
       'filepath': 'chrome/android/feed|' \
-                  'chrome/browser/android/feed/|' \
+                  'chrome/browser/feed/|' \
                   'components/feed/'
     },
     'feedback': {

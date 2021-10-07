@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/feed/v2/feed_service_bridge.h"
+#include "chrome/browser/feed/android/feed_service_bridge.h"
 
 #include <vector>
 
@@ -13,8 +13,8 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
-#include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "chrome/browser/feed/android/jni_headers/FeedServiceBridge_jni.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"

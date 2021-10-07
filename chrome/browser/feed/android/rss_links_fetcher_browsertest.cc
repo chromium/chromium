@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/feed/v2/rss_links_fetcher.h"
+#include "chrome/browser/feed/android/rss_links_fetcher.h"
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"

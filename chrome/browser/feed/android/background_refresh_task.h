@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_FEED_V2_BACKGROUND_REFRESH_TASK_H_
-#define CHROME_BROWSER_ANDROID_FEED_V2_BACKGROUND_REFRESH_TASK_H_
+#ifndef CHROME_BROWSER_FEED_ANDROID_BACKGROUND_REFRESH_TASK_H_
+#define CHROME_BROWSER_FEED_ANDROID_BACKGROUND_REFRESH_TASK_H_
 
 #include "components/background_task_scheduler/background_task.h"
 #include "components/feed/core/v2/public/types.h"
@@ -40,4 +40,4 @@ class BackgroundRefreshTask : public background_task::BackgroundTask {
 };
 
 }  // namespace feed
-#endif  // CHROME_BROWSER_ANDROID_FEED_V2_BACKGROUND_REFRESH_TASK_H_
+#endif  // CHROME_BROWSER_FEED_ANDROID_BACKGROUND_REFRESH_TASK_H_

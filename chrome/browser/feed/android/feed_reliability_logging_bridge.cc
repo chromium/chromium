@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/feed/v2/feed_reliability_logging_bridge.h"
+#include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
 #include "base/android/jni_android.h"
 #include "base/time/time.h"
 #include "chrome/browser/feed/android/jni_headers/FeedReliabilityLoggingBridge_jni.h"

@@ -821,8 +821,7 @@ if (is_android) {
     }
 
     if (enable_feed_v2) {
-      sources +=
-          [ "../browser/android/feed/v2/rss_links_fetcher_browsertest.cc" ]
+      sources += [ "../browser/feed/android/rss_links_fetcher_browsertest.cc" ]
       deps += [
         "//components/feed:feature_list",
         "//components/feed/core/v2:feed_core_v2",
@@ -4840,8 +4839,6 @@ test("unit_tests") {
       "../browser/android/explore_sites/ntp_json_fetcher_unittest.cc",
       "../browser/android/explore_sites/record_site_click_task_unittest.cc",
       "../browser/android/favicon_helper_unittest.cc",
-      "../browser/android/feed/v2/feed_service_factory_unittest.cc",
-      "../browser/android/feed/v2/rss_links_fetcher_unittest.cc",
       "../browser/android/history/history_deletion_bridge_unittest.cc",
       "../browser/android/history_report/data_observer_unittest.cc",
       "../browser/android/history_report/delta_file_backend_leveldb_unittest.cc",
@@ -4863,6 +4860,8 @@ test("unit_tests") {
       "../browser/device_reauth/android/biometric_authenticator_android_unittest.cc",
       "../browser/download/android/available_offline_content_provider_unittest.cc",
       "../browser/download/android/download_manager_service_unittest.cc",
+      "../browser/feed/android/feed_service_factory_unittest.cc",
+      "../browser/feed/android/rss_links_fetcher_unittest.cc",
       "../browser/metrics/thread_watcher_android_unittest.cc",
       "../browser/notifications/notification_channels_provider_android_unittest.cc",
       "../browser/optimization_guide/android/optimization_guide_tab_url_provider_android_unittest.cc",

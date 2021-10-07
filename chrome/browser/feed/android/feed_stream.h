@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_H_
-#define CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_H_
+#ifndef CHROME_BROWSER_FEED_ANDROID_FEED_STREAM_H_
+#define CHROME_BROWSER_FEED_ANDROID_FEED_STREAM_H_
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "chrome/browser/android/feed/v2/feed_reliability_logging_bridge.h"
+#include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
 
@@ -126,4 +126,4 @@ class FeedStream : public ::feed::FeedStreamSurface {
 }  // namespace android
 }  // namespace feed
 
-#endif  // CHROME_BROWSER_ANDROID_FEED_V2_FEED_STREAM_H_
+#endif  // CHROME_BROWSER_FEED_ANDROID_FEED_STREAM_H_

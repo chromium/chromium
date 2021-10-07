@@ -757,7 +757,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
   <owner>vincb@google.com</owner>
   <owner>feed@chromium.org</owner>
-  <owner>src/chrome/browser/android/feed/OWNERS</owner>
+  <owner>src/components/feed/OWNERS</owner>
   <summary>Actions related to the feed controls.</summary>
 </histogram>
 

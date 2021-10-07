@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_FEED_V2_FEED_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_ANDROID_FEED_V2_FEED_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_FEED_ANDROID_FEED_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_FEED_ANDROID_FEED_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -46,4 +46,4 @@ class FeedServiceFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace feed
 
-#endif  // CHROME_BROWSER_ANDROID_FEED_V2_FEED_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_FEED_ANDROID_FEED_SERVICE_FACTORY_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/feed/v2/feed_stream.h"
+#include "chrome/browser/feed/android/feed_stream.h"
 
 #include <string>
 #include <vector>
@@ -13,8 +13,8 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string_piece.h"
 #include "chrome/android/chrome_jni_headers/FeedStream_jni.h"
-#include "chrome/browser/android/feed/v2/feed_reliability_logging_bridge.h"
-#include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
+#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/feed/core/proto/v2/ui.pb.h"

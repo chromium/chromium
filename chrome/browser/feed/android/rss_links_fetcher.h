@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_FEED_V2_RSS_LINKS_FETCHER_H_
-#define CHROME_BROWSER_ANDROID_FEED_V2_RSS_LINKS_FETCHER_H_
+#ifndef CHROME_BROWSER_FEED_ANDROID_RSS_LINKS_FETCHER_H_
+#define CHROME_BROWSER_FEED_ANDROID_RSS_LINKS_FETCHER_H_
 
 #include <vector>
 
-#include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/feed/android/feed_service_factory.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/mojom/rss_link_reader.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,4 +33,4 @@ void FetchRssLinks(const GURL& url,
 
 }  // namespace feed
 
-#endif  // CHROME_BROWSER_ANDROID_FEED_V2_RSS_LINKS_FETCHER_H_
+#endif  // CHROME_BROWSER_FEED_ANDROID_RSS_LINKS_FETCHER_H_
