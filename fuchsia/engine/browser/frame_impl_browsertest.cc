@@ -21,7 +21,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
-#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -1336,32 +1335,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessagePassMessagePort) {
   }
 }
 
-// Waits for devicePixelRatio to be updated to the specified value.
-void ExpectDevicePixelRatio(fuchsia::web::Frame* frame, double expected_dpr) {
-  const base::TimeDelta kDelayBetweenAttempts =
-      base::TimeDelta::FromMilliseconds(100);
-  size_t attempts = TestTimeouts::action_timeout() / kDelayBetweenAttempts;
-  while (true) {
-    absl::optional<base::Value> dpr =
-        cr_fuchsia::ExecuteJavaScript(frame, "window.devicePixelRatio");
-    ASSERT_TRUE(dpr);
-    if (dpr->GetDouble() == expected_dpr)
-      return;
-
-    attempts--;
-    if (attempts == 0) {
-      ADD_FAILURE() << "devicePixelRatio was expected to be updated to "
-                    << expected_dpr;
-      return;
-    }
-
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), kDelayBetweenAttempts);
-    run_loop.Run();
-  }
-}
-
 // TODO(crbug.com/1058247): Re-enable this test on Arm64 when femu is available
 // for that architecture. This test requires Vulkan and Scenic to properly
 // signal the Views visibility.
@@ -1370,7 +1343,9 @@ void ExpectDevicePixelRatio(fuchsia::web::Frame* frame, double expected_dpr) {
 #else
 #define MAYBE_SetPageScale SetPageScale
 #endif
-IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
+// TODO(crbug.com/1239135): SetPageScale/ExecuteJavaScript is racey, causing
+// the test to flake.
+IN_PROC_BROWSER_TEST_F(FrameImplTest, DISABLED_SetPageScale) {
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
 
   auto view_tokens = scenic::ViewTokenPair::New();
@@ -1395,13 +1370,21 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
       url.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url, "done");
 
-  ExpectDevicePixelRatio(frame.ptr().get(), 1.0f);
+  absl::optional<base::Value> default_dpr = cr_fuchsia::ExecuteJavaScript(
+      frame.ptr().get(), "window.devicePixelRatio");
+  ASSERT_TRUE(default_dpr);
+
+  EXPECT_EQ(default_dpr->GetDouble(), 1.0f);
 
   // Update scale and verify that devicePixelRatio is updated accordingly.
   const float kZoomInScale = 1.5;
   frame->SetPageScale(kZoomInScale);
 
-  ExpectDevicePixelRatio(frame.ptr().get(), kZoomInScale);
+  absl::optional<base::Value> scaled_dpr = cr_fuchsia::ExecuteJavaScript(
+      frame.ptr().get(), "window.devicePixelRatio");
+  ASSERT_TRUE(scaled_dpr);
+
+  EXPECT_EQ(scaled_dpr->GetDouble(), kZoomInScale);
 
   // Navigate to the same page on http://localhost. This is a different site,
   // so it will be loaded in a new renderer process. Page scale value should be
@@ -1413,18 +1396,31 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
       url2.spec()));
   frame.navigation_listener().RunUntilUrlAndTitleEquals(url2, "done");
 
-  ExpectDevicePixelRatio(frame.ptr().get(), kZoomInScale);
+  absl::optional<base::Value> dpr_after_navigation =
+      cr_fuchsia::ExecuteJavaScript(frame.ptr().get(),
+                                    "window.devicePixelRatio");
+  ASSERT_TRUE(scaled_dpr);
+
+  EXPECT_EQ(dpr_after_navigation, scaled_dpr);
 
   // Reset the scale to 1.0 (default) and verify that reported DPR is updated
   // to 1.0.
   frame->SetPageScale(1.0);
-  ExpectDevicePixelRatio(frame.ptr().get(), 1.0);
+  absl::optional<base::Value> dpr_after_reset = cr_fuchsia::ExecuteJavaScript(
+      frame.ptr().get(), "window.devicePixelRatio");
+  ASSERT_TRUE(dpr_after_reset);
+
+  EXPECT_EQ(dpr_after_reset->GetDouble(), 1.0);
 
   // Zoom out by setting scale to 0.5.
   const float kZoomOutScale = 0.5;
   frame->SetPageScale(kZoomOutScale);
 
-  ExpectDevicePixelRatio(frame.ptr().get(), kZoomOutScale);
+  absl::optional<base::Value> zoomed_out_dpr = cr_fuchsia::ExecuteJavaScript(
+      frame.ptr().get(), "window.devicePixelRatio");
+  ASSERT_TRUE(zoomed_out_dpr);
+
+  EXPECT_EQ(zoomed_out_dpr->GetDouble(), kZoomOutScale);
 
   // Create another frame. Verify that the scale factor is not applied to the
   // new frame.
@@ -1441,7 +1437,11 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_SetPageScale) {
       url.spec()));
   frame2.navigation_listener().RunUntilUrlAndTitleEquals(url, "done");
 
-  ExpectDevicePixelRatio(frame2.ptr().get(), 1.0f);
+  absl::optional<base::Value> frame2_dpr = cr_fuchsia::ExecuteJavaScript(
+      frame2.ptr().get(), "window.devicePixelRatio");
+  ASSERT_TRUE(frame2_dpr);
+
+  EXPECT_EQ(frame2_dpr->GetDouble(), 1.0);
 }
 
 // Send a MessagePort to the content, then perform bidirectional messaging
