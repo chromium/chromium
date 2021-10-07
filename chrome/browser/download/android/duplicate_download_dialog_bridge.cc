@@ -62,14 +62,17 @@ void DuplicateDownloadDialogBridge::Show(
       j_otr_profile_id = otr_profile_id->ConvertToJavaOTRProfileID(env);
     }
   }
+  // Copy |callback| on the heap to pass the pointer through JNI. This callback
+  // will be deleted when it's run.
+  CHECK(!callback.is_null());
+  jlong callback_id = reinterpret_cast<jlong>(
+      new DuplicateDownloadDialogCallback(std::move(callback)));
   Java_DuplicateDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
       base::android::ConvertUTF16ToJavaString(env,
                                               base::UTF8ToUTF16(file_path)),
       base::android::ConvertUTF16ToJavaString(env, base::UTF8ToUTF16(page_url)),
-      total_bytes, duplicate_request_exists, j_otr_profile_id,
-      reinterpret_cast<intptr_t>(
-          new DuplicateDownloadDialogCallback(std::move(callback))));
+      total_bytes, duplicate_request_exists, j_otr_profile_id, callback_id);
 }
 
 void DuplicateDownloadDialogBridge::OnConfirmed(JNIEnv* env,
@@ -78,5 +81,6 @@ void DuplicateDownloadDialogBridge::OnConfirmed(JNIEnv* env,
   // Convert java long long int to c++ pointer, take ownership.
   std::unique_ptr<DuplicateDownloadDialogCallback> cb(
       reinterpret_cast<DuplicateDownloadDialogCallback*>(callback_id));
+  CHECK(cb.get() && !cb.get()->is_null());
   std::move(*cb).Run(accepted);
 }

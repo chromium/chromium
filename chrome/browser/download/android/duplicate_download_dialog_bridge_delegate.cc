@@ -58,7 +58,7 @@ void DuplicateDownloadDialogBridgeDelegate::CreateDialog(
       download_item->GetTotalBytes(), false /*duplicate_request_exists*/,
       web_contents,
       base::BindOnce(&DuplicateDownloadDialogBridgeDelegate::OnConfirmed,
-                     base::Unretained(this), download_item->GetGuid(),
+                     weak_factory_.GetWeakPtr(), download_item->GetGuid(),
                      file_path, std::move(file_selected_callback)));
 }
 

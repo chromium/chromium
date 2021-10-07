@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_target_determiner_delegate.h"
 #include "components/download/public/common/download_item.h"
 
@@ -51,6 +52,9 @@ class DuplicateDownloadDialogBridgeDelegate
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
   std::vector<download::DownloadItem*> download_items_;
+
+  base::WeakPtrFactory<DuplicateDownloadDialogBridgeDelegate> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DUPLICATE_DOWNLOAD_DIALOG_BRIDGE_DELEGATE_H_
