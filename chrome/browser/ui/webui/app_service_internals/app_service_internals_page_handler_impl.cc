@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/intent_constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
 AppServiceInternalsPageHandlerImpl::AppServiceInternalsPageHandlerImpl(
@@ -72,9 +73,14 @@ void AppServiceInternalsPageHandlerImpl::GetPreferredApps(
   for (const auto& kv : debug_info_map) {
     auto ptr = mojom::app_service_internals::PreferredAppInfo::New();
     ptr->id = kv.first;
-    proxy->AppRegistryCache().ForOneApp(
-        kv.first,
-        [&ptr](const apps::AppUpdate& update) { ptr->name = update.Name(); });
+
+    if (ptr->id == apps::kUseBrowserForLink) {
+      ptr->name = ptr->id;
+    } else {
+      proxy->AppRegistryCache().ForOneApp(
+          kv.first,
+          [&ptr](const apps::AppUpdate& update) { ptr->name = update.Name(); });
+    }
     ptr->preferred_filters = kv.second.str();
     result.push_back(std::move(ptr));
   }
