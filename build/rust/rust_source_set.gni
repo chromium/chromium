@@ -29,6 +29,20 @@ import("//build/config/rust.gni")
 #     discovered source files must match this list. (This is not yet enforced,
 #     but will be.)
 #
+#   epoch (optional)
+#     The major version of the library, which is used to differentiate between
+#     multiple versions of the same library name. This includes all leading 0s
+#     and the first non-zero value in the crate's version. This should be left
+#     as the default, which is "0", for first-party code unless there are
+#     multiple versions of a crate present. For third-party code, the version
+#     epoch (matching the directory it is found in) should be specified.
+#
+#     Examples:
+#       1.0.2 => epoch = "1"
+#       4.2.0 => epoch = "4"
+#       0.2.7 => epoch = "0.2"
+#       0.0.3 => epoch = "0.0.3"
+#
 #   edition (optional)
 #     Edition of the Rust language to be used.
 #     Options are "2015" and "2018". Defaults to "2018".
@@ -141,6 +155,18 @@ template("rust_source_set") {
   if (defined(invoker.deps)) {
     _deps += invoker.deps
   }
+  _build_unit_tests = build_rust_unit_tests
+  if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
+    _build_unit_tests = false
+  }
+
+  # TODO(danakj): This could be a hash generated from the input crate, such as
+  # from its path, in which case the BUILD.gn would not need to specify
+  # anything. But GN doesn't give us a hash function to make that easy.
+  _metadata = "0"
+  if (defined(invoker.epoch)) {
+    _metadata = invoker.epoch
+  }
 
   # We require that all source files are listed, even though this is
   # not a requirement for rustc. The reason is to ensure that tools
@@ -174,6 +200,11 @@ template("rust_source_set") {
     configs += _configs
     deps = _deps
     rustflags = _features
+    rustflags += [ string_join("",
+                               [
+                                 "-Cmetadata=",
+                                 _metadata,
+                               ]) ]
     forward_variables_from(invoker,
                            "*",
                            [
@@ -191,8 +222,7 @@ template("rust_source_set") {
     ]
   }
 
-  if (build_rust_unit_tests &&
-      !(defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true)) {
+  if (_build_unit_tests) {
     # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
     # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source sets.
     # This is important in cases where Rust tests may depend upon C/C++
