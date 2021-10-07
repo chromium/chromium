@@ -162,14 +162,15 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   if (SupportsClientFrameShadow()) {
     // Set the frame decoration insets.
     auto insets = layout->MirroredFrameBorderInsets();
-    insets = gfx::ScaleToCeiledInsets(insets, scale);
-    window->SetDecorationInsets(showing_frame ? &insets : nullptr);
+    window->SetDecorationInsets(showing_frame
+                                    ? gfx::ScaleToCeiledInsets(insets, scale)
+                                    : gfx::Insets());
 
     // Set the input region.
     gfx::Rect input_bounds(widget_size);
-    input_bounds.Inset(insets + layout->GetInputInsets());
-    input_bounds = gfx::ScaleToEnclosingRect(input_bounds, scale);
-    window->SetInputRegion(showing_frame ? &input_bounds : nullptr);
+    if (showing_frame)
+      input_bounds.Inset(insets + layout->GetInputInsets());
+    window->SetInputRegion(gfx::ScaleToEnclosingRect(input_bounds, scale));
   }
 
   if (window->IsTranslucentWindowOpacitySupported()) {
@@ -215,9 +216,11 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
       std::vector<gfx::Rect> opaque_region;
       for (SkRegion::Iterator i(region); !i.done(); i.next())
         opaque_region.push_back(gfx::SkIRectToRect(i.rect()));
-      window->SetOpaqueRegion(&opaque_region);
+      window->SetOpaqueRegion(opaque_region);
     } else {
-      window->SetOpaqueRegion(nullptr);
+      gfx::RectF opaque_bounds((gfx::Rect(widget_size)));
+      opaque_bounds.Scale(scale);
+      window->SetOpaqueRegion({gfx::ToEnclosedRect(opaque_bounds)});
     }
   }
 
