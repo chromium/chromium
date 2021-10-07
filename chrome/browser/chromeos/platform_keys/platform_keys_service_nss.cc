@@ -156,9 +156,11 @@ class GenerateRSAKeyState : public NSSOperationState {
  public:
   GenerateRSAKeyState(ServiceWeakPtr weak_ptr,
                       unsigned int modulus_length_bits,
+                      bool sw_backed,
                       GenerateKeyCallback callback)
       : NSSOperationState(weak_ptr),
         modulus_length_bits_(modulus_length_bits),
+        sw_backed_(sw_backed),
         callback_(std::move(callback)) {}
 
   ~GenerateRSAKeyState() override = default;
@@ -173,6 +175,7 @@ class GenerateRSAKeyState : public NSSOperationState {
   }
 
   const unsigned int modulus_length_bits_;
+  const bool sw_backed_;
 
  private:
   void CallBack(const base::Location& from,
@@ -719,6 +722,8 @@ void GenerateRSAKeyOnWorkerThread(std::unique_ptr<GenerateRSAKeyState> state) {
 
   crypto::ScopedSECKEYPublicKey public_key;
   crypto::ScopedSECKEYPrivateKey private_key;
+  // TODO(https://crbug.com/1252410): Generate a software-backed key if
+  // |state->sw_backed_| is true.
   if (!crypto::GenerateRSAKeyPairNSS(
           state->slot_.get(), state->modulus_length_bits_, true /* permanent */,
           &public_key, &private_key)) {
@@ -1478,10 +1483,12 @@ void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
 
 void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
                                              unsigned int modulus_length_bits,
+                                             bool sw_backed,
                                              GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto state = std::make_unique<GenerateRSAKeyState>(
-      weak_factory_.GetWeakPtr(), modulus_length_bits, std::move(callback));
+      weak_factory_.GetWeakPtr(), modulus_length_bits, sw_backed,
+      std::move(callback));
   if (delegate_->IsShutDown()) {
     state->OnError(FROM_HERE, Status::kErrorShutDown);
     return;

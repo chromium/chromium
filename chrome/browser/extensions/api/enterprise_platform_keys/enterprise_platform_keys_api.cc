@@ -146,15 +146,27 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::
 
 ExtensionFunction::ResponseAction
 EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
+  std::unique_ptr<api_epki::GenerateKey::Params> params(
+      api_epki::GenerateKey::Params::Create(args()));
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
   // implemented for secondary profiles in Lacros.
   if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
     return RespondNow(Error(kUnsupportedProfile));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  std::unique_ptr<api_epki::GenerateKey::Params> params(
-      api_epki::GenerateKey::Params::Create(args()));
+  if (params->software_backed) {
+    // Software-backed RSA keys are only supported starting with KeyStore
+    // interface version 16.
+    // TODO(https://crbug.com/1252410): Remove this code with M-100.
+    const uint32_t kSoftwareBackedRsaMinVersion = 16;
+    std::string error =
+        ValidateCrosapi(kSoftwareBackedRsaMinVersion, browser_context());
+    if (!error.empty()) {
+      return RespondNow(Error(error));
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   EXTENSION_FUNCTION_VALIDATE(params);
   absl::optional<chromeos::platform_keys::TokenId> platform_keys_token_id =
@@ -173,7 +185,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
                                 *(params->algorithm.modulus_length) >= 0);
     service->GenerateRSAKey(
         platform_keys_token_id.value(), *(params->algorithm.modulus_length),
-        extension_id(),
+        params->software_backed, extension_id(),
         base::BindOnce(
             &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
             this));

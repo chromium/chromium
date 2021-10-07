@@ -234,13 +234,16 @@ struct StatusCallbackObserver {
 TEST_F(KeystoreServiceAshTest, GenerateUserRsaKeySuccess) {
   const unsigned int modulus_length = 2048;
 
-  EXPECT_CALL(platform_keys_service_,
-              GenerateRSAKey(TokenId::kUser, modulus_length, /*callback=*/_))
-      .WillOnce(RunOnceCallback<2>(GetPublicKeyStr(), Status::kSuccess));
+  EXPECT_CALL(
+      platform_keys_service_,
+      GenerateRSAKey(TokenId::kUser, modulus_length, /*sw_backed=*/false,
+                     /*callback=*/_))
+      .WillOnce(RunOnceCallback<3>(GetPublicKeyStr(), Status::kSuccess));
   CallbackObserver<mojom::KeystoreBinaryResultPtr> observer;
-  keystore_service_.GenerateKey(mojom::KeystoreType::kUser,
-                                MakeRsaKeystoreSigningAlgorithm(modulus_length),
-                                observer.GetCallback());
+  keystore_service_.GenerateKey(
+      mojom::KeystoreType::kUser,
+      MakeRsaKeystoreSigningAlgorithm(modulus_length, /*sw_backed=*/false),
+      observer.GetCallback());
 
   ASSERT_TRUE(observer.result.has_value() && observer.result.value());
   AssertBlobEq(observer.result.value(), GetPublicKeyBin());

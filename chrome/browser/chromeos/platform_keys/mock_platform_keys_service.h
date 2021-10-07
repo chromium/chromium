@@ -39,6 +39,7 @@ class MockPlatformKeysService : public PlatformKeysService {
               GenerateRSAKey,
               (TokenId token_id,
                unsigned int modulus_length_bits,
+               bool sw_backed,
                GenerateKeyCallback callback),
               (override));
 

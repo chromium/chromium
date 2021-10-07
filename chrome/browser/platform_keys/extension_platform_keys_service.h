@@ -83,12 +83,14 @@ class ExtensionPlatformKeysService : public KeyedService {
 
   // Generates an RSA key pair with |modulus_length_bits| and registers the key
   // to allow a single sign operation by the given extension. |token_id|
-  // specifies the token to store the key pair on. If the generation was
+  // specifies the token to store the key pair on. If |sw_backed| is true, the
+  // generated RSA key pair will be software-backed. If the generation was
   // successful, |callback| will be invoked with the resulting public key. If it
   // failed, the resulting public key will be empty. Will only call back during
   // the lifetime of this object.
   void GenerateRSAKey(platform_keys::TokenId token_id,
                       unsigned int modulus_length_bits,
+                      bool sw_backed,
                       const std::string& extension_id,
                       GenerateKeyCallback callback);
 

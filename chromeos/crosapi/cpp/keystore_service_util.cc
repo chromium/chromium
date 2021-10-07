@@ -91,11 +91,13 @@ SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
 }
 
 mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(
-    unsigned int modulus_length) {
+    unsigned int modulus_length,
+    bool sw_backed) {
   mojom::KeystoreSigningAlgorithmPtr algorithm =
       mojom::KeystoreSigningAlgorithm::New();
   mojom::KeystorePKCS115ParamsPtr params = mojom::KeystorePKCS115Params::New();
   params->modulus_length = modulus_length;
+  params->sw_backed = sw_backed;
   algorithm->set_pkcs115(std::move(params));
   return algorithm;
 }

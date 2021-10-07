@@ -96,6 +96,7 @@ class KeyPermissionsManagerBrowserTestBase
     test_util::GenerateKeyExecutionWaiter generate_key_waiter;
     GetPlatformKeysService()->GenerateRSAKey(GetToken(),
                                              /*modulus_length_bits=*/2048,
+                                             /*sw_backed=*/false,
                                              generate_key_waiter.GetCallback());
     generate_key_waiter.Wait();
     return generate_key_waiter.public_key_spki_der();

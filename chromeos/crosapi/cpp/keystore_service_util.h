@@ -41,7 +41,8 @@ SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary);
 // union and populates the modulus_length field with |modulus_length|.
 COMPONENT_EXPORT(CROSAPI)
 mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(
-    unsigned int modulus_length);
+    unsigned int modulus_length,
+    bool sw_backed);
 
 // Creates the KeystoreECDSAParams variant of the KeystoreSigningAlgorithm
 // union and populates the named_curve field with |modulus_length|.

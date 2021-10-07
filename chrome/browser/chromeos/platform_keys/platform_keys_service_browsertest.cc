@@ -194,6 +194,7 @@ class PlatformKeysServiceBrowserTestBase
   std::string GenerateKeyPair(TokenId token_id, unsigned int key_size) {
     test_util::GenerateKeyExecutionWaiter generate_key_waiter;
     platform_keys_service()->GenerateRSAKey(token_id, key_size,
+                                            /*sw_backed=*/false,
                                             generate_key_waiter.GetCallback());
     generate_key_waiter.Wait();
 
@@ -427,6 +428,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const TokenId token_id = GetParam().token_id;
   test_util::GenerateKeyExecutionWaiter generate_key_waiter;
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
+                                          /*sw_backed=*/false,
                                           generate_key_waiter.GetCallback());
   generate_key_waiter.Wait();
   EXPECT_EQ(generate_key_waiter.status(), Status::kSuccess);
@@ -761,6 +763,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerUnavailableTokenBrowserTest,
   const TokenId token_id = GetParam().token_id;
   test_util::GenerateKeyExecutionWaiter generate_key_waiter;
   platform_keys_service()->GenerateRSAKey(token_id, kKeySize,
+                                          /*sw_backed=*/false,
                                           generate_key_waiter.GetCallback());
   generate_key_waiter.Wait();
   EXPECT_NE(generate_key_waiter.status(), Status::kSuccess);

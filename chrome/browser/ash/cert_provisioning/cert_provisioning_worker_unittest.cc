@@ -621,9 +621,10 @@ TEST_F(CertProvisioningWorkerTest, NoVaSuccess) {
 
     EXPECT_CALL(*platform_keys_service_,
                 GenerateRSAKey(TokenId::kUser, kNonVaKeyModulusLengthBits,
+                               /*sw_backed=*/false,
                                /*callback=*/_))
         .Times(1)
-        .WillOnce(RunOnceCallback<2>(GetPublicKey(), Status::kSuccess));
+        .WillOnce(RunOnceCallback<3>(GetPublicKey(), Status::kSuccess));
 
     EXPECT_START_CSR_OK_WITHOUT_VA(
         ClientCertProvisioningStartCsr(kCertScopeStrUser, kCertProfileId,

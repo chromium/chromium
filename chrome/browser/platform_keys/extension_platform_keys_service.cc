@@ -343,11 +343,13 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
   // The generated key will be passed to |callback|.
   GenerateRSAKeyTask(platform_keys::TokenId token_id,
                      unsigned int modulus_length,
+                     bool sw_backed,
                      const std::string& extension_id,
                      GenerateKeyCallback callback,
                      ExtensionPlatformKeysService* service)
       : GenerateKeyTask(token_id, extension_id, std::move(callback), service),
-        modulus_length_(modulus_length) {}
+        modulus_length_(modulus_length),
+        sw_backed_(sw_backed) {}
 
   ~GenerateRSAKeyTask() override {}
 
@@ -356,10 +358,12 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
   void GenerateKey(KeystoreService::GenerateKeyCallback callback) override {
     service_->keystore_service_->GenerateKey(
         KeystoreTypeFromTokenId(token_id_),
-        MakeRsaKeystoreSigningAlgorithm(modulus_length_), std::move(callback));
+        MakeRsaKeystoreSigningAlgorithm(modulus_length_, sw_backed_),
+        std::move(callback));
   }
 
   const unsigned int modulus_length_;
+  const bool sw_backed_;
 };
 
 class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
@@ -902,11 +906,13 @@ void ExtensionPlatformKeysService::SetSelectDelegate(
 void ExtensionPlatformKeysService::GenerateRSAKey(
     platform_keys::TokenId token_id,
     unsigned int modulus_length,
+    bool sw_backed,
     const std::string& extension_id,
     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   StartOrQueueTask(std::make_unique<GenerateRSAKeyTask>(
-      token_id, modulus_length, extension_id, std::move(callback), this));
+      token_id, modulus_length, sw_backed, extension_id, std::move(callback),
+      this));
 }
 
 void ExtensionPlatformKeysService::GenerateECKey(

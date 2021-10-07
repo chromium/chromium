@@ -136,6 +136,7 @@ class PlatformKeysService : public KeyedService {
   // resulting public key or an error status.
   virtual void GenerateRSAKey(TokenId token_id,
                               unsigned int modulus_length_bits,
+                              bool sw_backed,
                               GenerateKeyCallback callback) = 0;
 
   // Generates a EC key pair with |named_curve|. |token_id| specifies the token
@@ -329,6 +330,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
   void RemoveObserver(PlatformKeysServiceObserver* observer) override;
   void GenerateRSAKey(TokenId token_id,
                       unsigned int modulus_length_bits,
+                      bool sw_backed,
                       GenerateKeyCallback callback) override;
   void GenerateECKey(TokenId token_id,
                      const std::string& named_curve,

@@ -831,7 +831,7 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionGenerateKey(
           std::move(callback));
       ext_platform_keys_service->GenerateRSAKey(
           token_id.value(), algorithm->get_pkcs115()->modulus_length,
-          *extension_id, std::move(c));
+          algorithm->get_pkcs115()->sw_backed, *extension_id, std::move(c));
       break;
     }
     case mojom::KeystoreSigningAlgorithm::Tag::ECDSA: {
@@ -987,6 +987,7 @@ void KeystoreServiceAsh::GenerateKey(
     case Tag::kPkcs115: {
       platform_keys_service->GenerateRSAKey(
           token_id.value(), algorithm->get_pkcs115()->modulus_length,
+          algorithm->get_pkcs115()->sw_backed,
           base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
                          std::move(callback)));
       return;
