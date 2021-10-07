@@ -46,7 +46,7 @@ public class MerchantViewerConfig {
         return defaultDelay;
     }
 
-    public static int getTrustSignalsMessageWindowDurationSeconds() {
+    public static int getTrustSignalsMessageWindowDurationMilliSeconds() {
         int defaultDuration = (int) TimeUnit.DAYS.toMillis(365);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(

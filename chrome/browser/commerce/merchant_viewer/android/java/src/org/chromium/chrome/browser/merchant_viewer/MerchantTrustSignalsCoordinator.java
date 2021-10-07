@@ -39,8 +39,6 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Coordinator for managing merchant trust signals experience.
  */
@@ -161,8 +159,7 @@ public class MerchantTrustSignalsCoordinator
             if (event == null) {
                 scheduleMessage(trustSignals, item, shouldExpediteMessage);
             } else if (System.currentTimeMillis() - event.getTimestamp()
-                    > TimeUnit.SECONDS.toMillis(
-                            MerchantViewerConfig.getTrustSignalsMessageWindowDurationSeconds())) {
+                    > MerchantViewerConfig.getTrustSignalsMessageWindowDurationMilliSeconds()) {
                 storage.delete(event);
                 scheduleMessage(trustSignals, item, shouldExpediteMessage);
             }
