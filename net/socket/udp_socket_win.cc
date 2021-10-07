@@ -775,7 +775,6 @@ int UDPSocketWin::InternalRecvFromOverlapped(IOBuffer* buf,
   DWORD flags = 0;
   DWORD num;
   CHECK_NE(INVALID_SOCKET, socket_);
-  AssertEventNotSignaled(core_->read_overlapped_.hEvent);
   int rv = WSARecvFrom(socket_, &read_buffer, 1, &num, &flags, storage.addr,
                        &storage.addr_len, &core_->read_overlapped_, nullptr);
   if (rv == 0) {
@@ -834,7 +833,6 @@ int UDPSocketWin::InternalSendToOverlapped(IOBuffer* buf,
 
   DWORD flags = 0;
   DWORD num;
-  AssertEventNotSignaled(core_->write_overlapped_.hEvent);
   int rv = WSASendTo(socket_, &write_buffer, 1, &num, flags, addr,
                      storage.addr_len, &core_->write_overlapped_, nullptr);
   if (rv == 0) {

@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -564,8 +565,6 @@ int TCPSocketWin::Write(
   write_buffer.len = buf_len;
   write_buffer.buf = buf->data();
 
-  // TODO(wtc): Remove the assertion after enough testing.
-  AssertEventNotSignaled(core_->write_overlapped_.hEvent);
   DWORD num;
   int rv = WSASend(socket_, &write_buffer, 1, &num, 0,
                    &core_->write_overlapped_, nullptr);
