@@ -150,6 +150,11 @@ void WebRTCInternalsMessageHandler::OnDOMLoadDone(const base::ListValue* args) {
 void WebRTCInternalsMessageHandler::OnUpdate(const std::string& event_name,
                                              const base::Value* event_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!IsJavascriptAllowed()) {
+    // Javascript is disallowed, either due to the page still loading, or in the
+    // process of being unloaded. Skip this update.
+    return;
+  }
 
   RenderFrameHost* host = GetWebRTCInternalsHost();
   if (!host)
