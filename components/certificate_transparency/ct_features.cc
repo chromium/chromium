@@ -4,12 +4,20 @@
 
 #include "components/certificate_transparency/ct_features.h"
 
+#include "build/build_config.h"
+
 namespace certificate_transparency {
 namespace features {
 
+#if defined(OS_ANDROID)
 const base::Feature kCertificateTransparencyComponentUpdater{
     "CertificateTransparencyComponentUpdater",
     base::FEATURE_DISABLED_BY_DEFAULT};
+#else
+const base::Feature kCertificateTransparencyComponentUpdater{
+    "CertificateTransparencyComponentUpdater",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
 
 }  // namespace features
 }  // namespace certificate_transparency
