@@ -10,7 +10,6 @@
 #include "ui/message_center/views/notification_input_container.h"
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/notification_view_base.h"
-#include "ui/views/controls/button/image_button.h"
 
 namespace message_center {
 class Notification;
@@ -18,6 +17,8 @@ class Notification;
 
 namespace views {
 class BoxLayout;
+class ImageView;
+class LabelButton;
 }  // namespace views
 
 namespace ash {
@@ -72,6 +73,9 @@ class ASH_EXPORT AshNotificationView
   void OnThemeChanged() override;
   std::unique_ptr<message_center::NotificationInputContainer>
   GenerateNotificationInputContainer() override;
+  std::unique_ptr<views::LabelButton> GenerateNotificationLabelButton(
+      views::Button::PressedCallback callback,
+      const std::u16string& label) override;
   gfx::Size GetIconViewSize() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
 
