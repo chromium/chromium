@@ -888,9 +888,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     // Otherwise, set the variable to the number of logical cores minus the ones
     // disabled by chrome://flags/#scheduler-configuration.
     const int32_t cpus =
-        (chromeos::system::IsCoreSchedulingAvailable() &&
-         // TODO(yusukes): Remove this once b/200702094 is closed.
-         !base::FeatureList::IsEnabled(kMoreVcpusWithCoreScheduling))
+        chromeos::system::IsCoreSchedulingAvailable()
             ? chromeos::system::NumberOfProcessorsForCoreScheduling()
             : base::SysInfo::NumberOfProcessors() -
                   start_params_.num_cores_disabled;

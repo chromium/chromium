@@ -67,15 +67,6 @@ const base::Feature kImageCopyPasteCompatFeature{
 const base::Feature kKeyboardShortcutHelperIntegrationFeature{
     "ArcKeyboardShortcutHelperIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls the number of vCPUs ARCVM sets up on core-scheduling enabled devices
-// like poppy, rammus, and fizz. On these devices, ARCVM currently sets up N
-// vCPUs when N physical cores are available. When this feature is enabled,
-// the number of vCPUs ARCVM sets up will be the same number as the host's
-// *logical* CPU cores.
-// TODO(yusukes): Remove this once b/200702094 is closed.
-const base::Feature kMoreVcpusWithCoreScheduling{
-    "ArcMoreVcpusWithCoreScheduling", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls experimental 64-bit native bridge support for ARC on boards that
 // have 64-bit native bridge support available but not yet enabled.
 const base::Feature kNativeBridge64BitSupportExperimentFeature{

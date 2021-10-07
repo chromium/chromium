@@ -26,7 +26,6 @@ extern const base::Feature kGuestZram;
 extern const base::FeatureParam<int> kGuestZramSize;
 extern const base::Feature kImageCopyPasteCompatFeature;
 extern const base::Feature kKeyboardShortcutHelperIntegrationFeature;
-extern const base::Feature kMoreVcpusWithCoreScheduling;
 extern const base::Feature kNativeBridge64BitSupportExperimentFeature;
 extern const base::Feature kNativeBridgeToggleFeature;
 extern const base::Feature kPictureInPictureFeature;
