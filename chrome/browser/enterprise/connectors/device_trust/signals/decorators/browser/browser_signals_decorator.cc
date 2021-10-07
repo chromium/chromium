@@ -4,7 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h"
 
+#include <functional>
+
+#include "base/bind_post_task.h"
 #include "base/check.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -32,7 +37,8 @@ BrowserSignalsDecorator::BrowserSignalsDecorator(
 
 BrowserSignalsDecorator::~BrowserSignalsDecorator() = default;
 
-void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals) {
+void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals,
+                                       base::OnceClosure done_closure) {
   signals.set_device_id(dm_token_storage_->RetrieveClientId());
 
   if (cloud_policy_store_->has_policy()) {
@@ -40,8 +46,22 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals) {
         cloud_policy_store_->policy()->obfuscated_customer_id());
   }
 
-  // TODO(b/178421844): Fetch these signals at construction time and cache
-  // them.
+  // Wrap the done closure to ensure it gets invoked on the calling sequence.
+  base::OnceClosure wrapped_done = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(), std::move(done_closure));
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&BrowserSignalsDecorator::DecorateOnBackgroundThread,
+                     weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
+                     std::move(wrapped_done)));
+}
+
+void BrowserSignalsDecorator::DecorateOnBackgroundThread(
+    DeviceTrustSignals& signals,
+    base::OnceClosure done_closure) {
+  // TODO(b/178421844): Look into adding caching support for these signals, as
+  // they will never change throughout the browser's lifetime.
   enterprise_signals::DeviceInfo device_info = device_info_fetcher_->Fetch();
   signals.set_serial_number(device_info.serial_number);
   absl::optional<bool> is_disk_encrypted =
@@ -49,6 +69,8 @@ void BrowserSignalsDecorator::Decorate(DeviceTrustSignals& signals) {
   if (is_disk_encrypted.has_value()) {
     signals.set_is_disk_encrypted(is_disk_encrypted.value());
   }
+
+  std::move(done_closure).Run();
 }
 
 }  // namespace enterprise_connectors

@@ -26,7 +26,8 @@ CommonSignalsDecorator::CommonSignalsDecorator(
 
 CommonSignalsDecorator::~CommonSignalsDecorator() = default;
 
-void CommonSignalsDecorator::Decorate(SignalsType& signals) {
+void CommonSignalsDecorator::Decorate(SignalsType& signals,
+                                      base::OnceClosure done_closure) {
   signals.set_os(policy::GetOSPlatform());
   signals.set_os_version(policy::GetOSVersion());
   signals.set_device_model(policy::GetDeviceModel());
@@ -65,6 +66,8 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals) {
     signals.set_password_protection_warning_trigger(
         static_cast<int32_t>(password_protection_warning_trigger.value()));
   }
+
+  std::move(done_closure).Run();
 }
 
 }  // namespace enterprise_connectors

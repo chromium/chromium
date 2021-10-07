@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
 
 namespace enterprise_connectors {
@@ -14,10 +15,14 @@ namespace enterprise_connectors {
 // Service in charge of retrieving context-aware signals for its consumers.
 class SignalsService {
  public:
+  using CollectSignalsCallback =
+      base::OnceCallback<void(std::unique_ptr<SignalsType>)>;
+
   virtual ~SignalsService() = default;
 
-  // Collects the signals based on the current environment and returns them.
-  virtual std::unique_ptr<SignalsType> CollectSignals() = 0;
+  // Collects the signals based on the current environment and asynchronously
+  // returns them via `callback`.
+  virtual void CollectSignals(CollectSignalsCallback callback) = 0;
 };
 
 }  // namespace enterprise_connectors

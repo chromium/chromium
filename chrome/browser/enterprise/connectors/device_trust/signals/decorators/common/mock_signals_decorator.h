@@ -16,7 +16,7 @@ class MockSignalsDecorator : public SignalsDecorator {
   MockSignalsDecorator();
   ~MockSignalsDecorator() override;
 
-  MOCK_METHOD1(Decorate, void(SignalsType&));
+  MOCK_METHOD(void, Decorate, (SignalsType&, base::OnceClosure), (override));
 };
 
 }  // namespace test

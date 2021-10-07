@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
 
+#include "base/callback.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -66,8 +68,12 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
   fake_profile_prefs_.SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                  safe_browsing::PASSWORD_REUSE);
 
+  bool done_called = false;
+  base::OnceClosure done_closure =
+      base::BindLambdaForTesting([&done_called]() { done_called = true; });
+
   SignalsType signals;
-  decorator_->Decorate(signals);
+  decorator_->Decorate(signals, std::move(done_closure));
 
   EXPECT_TRUE(signals.has_os());
   EXPECT_TRUE(signals.has_os_version());
@@ -79,6 +85,8 @@ TEST_F(CommonSignalsDecoratorTest, Decorate_StaticValuesPresent) {
   EXPECT_TRUE(signals.has_safe_browsing_protection_level());
   EXPECT_TRUE(signals.has_remote_desktop_available());
   EXPECT_TRUE(signals.has_password_protection_warning_trigger());
+
+  EXPECT_TRUE(done_called);
 
 #if defined(OS_WIN)
   EXPECT_TRUE(signals.has_chrome_cleanup_enabled());

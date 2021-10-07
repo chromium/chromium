@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
 namespace policy {
@@ -30,12 +31,18 @@ class BrowserSignalsDecorator : public SignalsDecorator {
   ~BrowserSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(DeviceTrustSignals& signals) override;
+  void Decorate(DeviceTrustSignals& signals,
+                base::OnceClosure done_closure) override;
 
  private:
+  void DecorateOnBackgroundThread(DeviceTrustSignals& signals,
+                                  base::OnceClosure done_closure);
+
   policy::BrowserDMTokenStorage* const dm_token_storage_;
   policy::CloudPolicyStore* const cloud_policy_store_;
   std::unique_ptr<enterprise_signals::DeviceInfoFetcher> device_info_fetcher_;
+
+  base::WeakPtrFactory<BrowserSignalsDecorator> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors

@@ -5,7 +5,10 @@
 source_set("signals") {
   public = [ "signals_service.h" ]
 
-  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+  ]
 }
 
 source_set("test_support") {

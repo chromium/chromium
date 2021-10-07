@@ -16,7 +16,7 @@ class MockSignalsService : public SignalsService {
   MockSignalsService();
   ~MockSignalsService() override;
 
-  MOCK_METHOD(std::unique_ptr<SignalsType>, CollectSignals, (), (override));
+  MOCK_METHOD(void, CollectSignals, (CollectSignalsCallback), (override));
 };
 
 }  // namespace test

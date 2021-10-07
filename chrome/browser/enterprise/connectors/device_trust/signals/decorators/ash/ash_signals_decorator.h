@@ -21,7 +21,8 @@ class AshSignalsDecorator : public SignalsDecorator {
   ~AshSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(attestation::DeviceTrustSignals& signals) override;
+  void Decorate(attestation::DeviceTrustSignals& signals,
+                base::OnceClosure done_closure) override;
 
  private:
   policy::BrowserPolicyConnectorAsh* const browser_policy_connector_;

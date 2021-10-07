@@ -21,7 +21,7 @@ class CommonSignalsDecorator : public SignalsDecorator {
   ~CommonSignalsDecorator() override;
 
   // SignalsDecorator:
-  void Decorate(SignalsType& signals) override;
+  void Decorate(SignalsType& signals, base::OnceClosure done_closure) override;
 
  private:
   PrefService* local_state_;

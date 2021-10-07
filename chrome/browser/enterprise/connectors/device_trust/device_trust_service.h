@@ -54,8 +54,9 @@ class DeviceTrustService : public KeyedService {
   virtual void BuildChallengeResponse(const std::string& challenge,
                                       AttestationCallback callback);
 
-  // Collects device trust signals and returns them.
-  std::unique_ptr<SignalsType> GetSignals();
+  // Collects device trust signals and returns them via `callback`.
+  void GetSignals(
+      base::OnceCallback<void(std::unique_ptr<SignalsType>)> callback);
 
   // Register a `callback` that listens for changes in the trust URL patterns.
   // The callback may be run synchronously for initialization purposes.
@@ -72,6 +73,10 @@ class DeviceTrustService : public KeyedService {
 
  private:
   void OnPolicyUpdated();
+
+  void OnSignalsCollected(const std::string& challenge,
+                          AttestationCallback callback,
+                          std::unique_ptr<SignalsType> signals);
 
   PrefChangeRegistrar pref_observer_;
 

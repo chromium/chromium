@@ -29,9 +29,23 @@ ConnectorsInternalsPageHandler::~ConnectorsInternalsPageHandler() = default;
 
 void ConnectorsInternalsPageHandler::GetZeroTrustState(
     GetZeroTrustStateCallback callback) {
+  if (!device_trust_service_) {
+    auto state = connectors_internals::mojom::ZeroTrustState::New(
+        false, base::flat_map<std::string, std::string>());
+    std::move(callback).Run(std::move(state));
+    return;
+  }
+  device_trust_service_->GetSignals(
+      base::BindOnce(&ConnectorsInternalsPageHandler::OnSignalsCollected,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ConnectorsInternalsPageHandler::OnSignalsCollected(
+    GetZeroTrustStateCallback callback,
+    std::unique_ptr<SignalsType> signals) {
   auto state = connectors_internals::mojom::ZeroTrustState::New(
       device_trust_service_->IsEnabled(),
-      utils::SignalsToMap(device_trust_service_->GetSignals()));
+      utils::SignalsToMap(std::move(signals)));
   std::move(callback).Run(std::move(state));
 }
 

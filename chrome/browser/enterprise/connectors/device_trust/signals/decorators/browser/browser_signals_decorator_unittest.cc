@@ -4,6 +4,9 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/browser/browser_signals_decorator.h"
 
+#include "base/callback.h"
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/signals/device_info_fetcher.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -43,6 +46,7 @@ class BrowserSignalsDecoratorTest : public testing::Test {
     EXPECT_EQ(signals.is_disk_encrypted(), false);
   }
 
+  base::test::TaskEnvironment task_environment_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   policy::MockCloudPolicyStore mock_cloud_policy_store_;
   enterprise_signals::DeviceInfoFetcher* stub_device_info_fetcher_;
@@ -52,16 +56,24 @@ class BrowserSignalsDecoratorTest : public testing::Test {
 TEST_F(BrowserSignalsDecoratorTest, Decorate_WithCustomerId) {
   SetFakeCustomerId();
 
+  base::RunLoop run_loop;
+
   DeviceTrustSignals signals;
-  decorator_->Decorate(signals);
+  decorator_->Decorate(signals, run_loop.QuitClosure());
+
+  run_loop.Run();
 
   ValidateStaticSignals(signals);
   EXPECT_EQ(kFakeCustomerId, signals.obfuscated_customer_id());
 }
 
 TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutCustomerId) {
+  base::RunLoop run_loop;
+
   DeviceTrustSignals signals;
-  decorator_->Decorate(signals);
+  decorator_->Decorate(signals, run_loop.QuitClosure());
+
+  run_loop.Run();
 
   ValidateStaticSignals(signals);
   EXPECT_FALSE(signals.has_obfuscated_customer_id());

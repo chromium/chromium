@@ -14,6 +14,8 @@
 
 namespace enterprise_connectors {
 
+using CollectSignalsCallback = SignalsService::CollectSignalsCallback;
+
 namespace {
 
 const base::ListValue& GetTrustedUrlPatterns(PrefService* prefs) {
@@ -66,12 +68,21 @@ void DeviceTrustService::OnPolicyUpdated() {
 
 void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
                                                 AttestationCallback callback) {
-  attestation_service_->BuildChallengeResponseForVAChallenge(
-      challenge, GetSignals(), std::move(callback));
+  GetSignals(base::BindOnce(&DeviceTrustService::OnSignalsCollected,
+                            weak_factory_.GetWeakPtr(), challenge,
+                            std::move(callback)));
 }
 
-std::unique_ptr<SignalsType> DeviceTrustService::GetSignals() {
-  return signals_service_->CollectSignals();
+void DeviceTrustService::GetSignals(CollectSignalsCallback callback) {
+  return signals_service_->CollectSignals(std::move(callback));
+}
+
+void DeviceTrustService::OnSignalsCollected(
+    const std::string& challenge,
+    AttestationCallback callback,
+    std::unique_ptr<SignalsType> signals) {
+  attestation_service_->BuildChallengeResponseForVAChallenge(
+      challenge, std::move(signals), std::move(callback));
 }
 
 base::CallbackListSubscription
