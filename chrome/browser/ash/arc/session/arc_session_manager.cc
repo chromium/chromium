@@ -1118,10 +1118,6 @@ bool ArcSessionManager::RequestEnableImpl() {
 
   if (start_arc_directly) {
     StartArc();
-    // When in ARC kiosk mode, there's no Chrome tabs to restore. Remove the
-    // cgroups now.
-    if (IsArcKioskMode())
-      SetArcCpuRestriction(CpuRestrictionState::CPU_RESTRICTION_FOREGROUND);
     // Check Android management in parallel.
     // Note: StartBackgroundAndroidManagementCheck() may call
     // OnBackgroundAndroidManagementChecked() synchronously (or
