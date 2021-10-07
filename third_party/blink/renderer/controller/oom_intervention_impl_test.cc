@@ -156,7 +156,7 @@ TEST_F(OomInterventionImplTest, BlinkThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -174,7 +174,7 @@ TEST_F(OomInterventionImplTest, PmfThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -192,7 +192,7 @@ TEST_F(OomInterventionImplTest, SwapThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -210,7 +210,29 @@ TEST_F(OomInterventionImplTest, VmSizeThresholdDetection) {
   Page* page = DetectOnceOnBlankPage();
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
+  EXPECT_FALSE(page->Paused());
+}
+
+TEST_F(OomInterventionImplTest, MojoDisconnection) {
+  mojo::Remote<mojom::blink::OomIntervention> remote_host;
+  intervention_->Bind(remote_host.BindNewPipeAndPassReceiver());
+
+  MemoryUsage usage;
+  usage.v8_bytes = 0;
+  usage.blink_gc_bytes = 0;
+  usage.partition_alloc_bytes = 0;
+  usage.private_footprint_bytes = 0;
+  usage.swap_bytes = 0;
+  // Set value more than the threshold to trigger intervention.
+  usage.vm_size_bytes = kTestVmSizeThreshold + 1024;
+  intervention_->mock_memory_usage_monitor()->SetMockMemoryUsage(usage);
+
+  Page* page = DetectOnceOnBlankPage();
+
+  EXPECT_TRUE(page->Paused());
+  remote_host.reset();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(page->Paused());
 }
 
@@ -297,7 +319,7 @@ TEST_F(OomInterventionImplTest, V1DetectionAdsNavigation) {
   RunDetection(true, true, false);
 
   EXPECT_TRUE(page->Paused());
-  intervention_.reset();
+  intervention_->Reset();
 
   // The about:blank navigation won't actually happen until the page unpauses.
   frame_test_helpers::PumpPendingRequestsForFrameToLoad(
