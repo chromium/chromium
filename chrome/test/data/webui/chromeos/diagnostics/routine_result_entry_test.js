@@ -78,6 +78,16 @@ export function routineResultEntryTestSuite() {
   }
 
   /**
+   * @suppress {visibility}
+   * @return {string}
+   */
+  function getAnnoucedText() {
+    assertTrue(!!routineResultEntryElement);
+
+    return routineResultEntryElement.announcedText_;
+  }
+
+  /**
    * Returns the routine name element text content.
    * @return {string}
    */
@@ -244,5 +254,66 @@ export function routineResultEntryTestSuite() {
           getFailedTestContainer(),
           loadTimeData.getString('lanConnectivityFailedText'));
     });
+  });
+
+  test('AnnouncesForRunningAndFailure', () => {
+    const routine = RoutineType.kLanConnectivity;
+    let item = new ResultStatusItem(routine, ExecutionProgress.kNotStarted);
+    let expectedAnnounceText = '';
+
+    return initializeEntryWithItem(item)
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = createCompletedStatus(
+              routine, /* @type {!RoutineResult} */ ({
+                simpleResult: StandardRoutineResult.kTestPassed
+              }));
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.kSkipped);
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.kCancelled);
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.kWarning);
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = new ResultStatusItem(routine, ExecutionProgress.kRunning);
+          expectedAnnounceText = 'Lan Connectivity test - RUNNING';
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+
+          item = createCompletedStatus(
+              routine, /* @type {!RoutineResult} */ ({
+                simpleResult: StandardRoutineResult.kTestFailed
+              }));
+          expectedAnnounceText = 'Lan Connectivity test - FAILED';
+
+          return updateItem(item);
+        })
+        .then(() => {
+          assertEquals(expectedAnnounceText, getAnnoucedText());
+        });
   });
 }

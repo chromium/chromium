@@ -107,6 +107,16 @@ Polymer({
   _template: html`{__html_template__}`,
 
   properties: {
+    /**
+     * Added to support testing of announce behavior.
+     * @private
+     * @type {string}
+     */
+    announcedText_: {
+      type: String,
+      value: '',
+    },
+
     /** @type {RoutineGroup|ResultStatusItem} */
     item: {
       type: Object,
@@ -186,7 +196,6 @@ Polymer({
       case ExecutionProgress.kCancelled:
         this.setBadgeTypeAndText_(
             BadgeType.STOPPED, loadTimeData.getString('testStoppedBadgeText'));
-        this.announceRoutineStatus_();
         break;
       case ExecutionProgress.kCompleted:
         this.testCompleted_ = true;
@@ -195,7 +204,6 @@ Polymer({
           this.setBadgeTypeAndText_(
               BadgeType.WARNING,
               loadTimeData.getString('testWarningBadgeText'));
-          this.announceRoutineStatus_();
           return;
         }
 
@@ -208,17 +216,17 @@ Polymer({
         const badgeText = loadTimeData.getString(
             testPassed ? 'testSucceededBadgeText' : 'testFailedBadgeText');
         this.setBadgeTypeAndText_(badgeType, badgeText);
-        this.announceRoutineStatus_();
+        if (!testPassed) {
+          this.announceRoutineStatus_();
+        }
         break;
       case ExecutionProgress.kSkipped:
         this.setBadgeTypeAndText_(
             BadgeType.SKIPPED, loadTimeData.getString('testSkippedBadgeText'));
-        this.announceRoutineStatus_();
         break;
       case ExecutionProgress.kWarning:
         this.setBadgeTypeAndText_(
             BadgeType.WARNING, loadTimeData.getString('testWarningBadgeText'));
-        this.announceRoutineStatus_();
         break;
       default:
         assertNotReached();
@@ -239,8 +247,8 @@ Polymer({
 
   /** @private */
   announceRoutineStatus_() {
-    this.fire(
-        'iron-announce', {text: this.routineType_ + ' - ' + this.badgeText_});
+    this.announcedText_ = this.routineType_ + ' - ' + this.badgeText_;
+    this.fire('iron-announce', {text: `${this.announcedText_}`});
   },
 
   /**
