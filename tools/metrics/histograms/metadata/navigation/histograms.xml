@@ -759,7 +759,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Navigation.EngagementTime.HTTP" units="ms" expires_after="M94">
+<histogram name="Navigation.EngagementTime.HTTP" units="ms"
+    expires_after="2022-01-09">
   <owner>estark@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -934,17 +935,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.MainFrameHasRTLDomain2" enum="Boolean"
-    expires_after="M92">
+    expires_after="2022-04-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
     Whether the main-frame navigation was to a URL with an RTL domain name. This
-    is only recorded for finished navigations and not attempts.
+    is only recorded for finished navigations and not attempts. Warning: this
+    histogram was expired from M92 through M95; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Navigation.MainFrameHasRTLDomainDifferentPage2" enum="Boolean"
-    expires_after="2021-12-12">
+    expires_after="2022-04-12">
   <owner>cthomp@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -967,12 +969,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Navigation.MainFrameScheme2" enum="NavigationScheme"
-    expires_after="2021-06-01">
+    expires_after="2022-02-06">
   <owner>elawrence@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
     The scheme of the URL for each main-frame navigation. This is only recorded
-    for finished navigations and not attempts.
+    for finished navigations and not attempts. Warning: this histogram was
+    expired from 2021-06-01 through M95; data may be missing.
   </summary>
 </histogram>
 
