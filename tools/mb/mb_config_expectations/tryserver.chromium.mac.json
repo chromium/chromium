@@ -488,8 +488,10 @@
     "gn_args": {
       "blink_enable_generated_code_formatting": false,
       "dcheck_always_on": true,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 0,
       "target_cpu": "arm64",
       "use_goma": true

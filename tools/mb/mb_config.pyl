@@ -549,7 +549,7 @@
       'ios-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-full-configs': 'ios_simulator_debug_static_bot_xctest',
       'ios-simulator-noncq': 'ios_simulator_debug_static_bot_xctest',
-      'mac-arm64-rel': 'mac_arm64_release_bot',
+      'mac-arm64-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
     },
 
     'chromium.memory': {
@@ -1147,7 +1147,7 @@
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac-rel-rts': 'gpu_tests_release_trybot_no_symbols',
-      'mac11-arm64-rel': 'mac_arm64_release_trybot',
+      'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
     },
 
     'tryserver.chromium.perf': {
@@ -2596,6 +2596,10 @@
       'cfm', 'release_trybot', 'chromeos',
     ],
 
+    'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl': [
+      'arm64', 'gpu_tests', 'release_bot', 'minimal_symbols', 'disable_nacl',
+    ],
+
     'mac_arm64_release_bot': [
       'release_bot', 'arm64',
     ],
@@ -2604,8 +2608,8 @@
       'release_bot_reclient', 'arm64',
     ],
 
-    'mac_arm64_release_trybot': [
-      'release_trybot', 'arm64',
+    'mac_arm64_gpu_tests_release_trybot_no_symbols': [
+      'arm64', 'gpu_tests', 'release_trybot', 'no_symbols',
     ],
 
     'mac_clang_tot_official': [
