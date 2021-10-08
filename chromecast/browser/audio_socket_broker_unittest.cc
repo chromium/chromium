@@ -4,6 +4,9 @@
 
 #include "chromecast/browser/audio_socket_broker.h"
 
+#include <fcntl.h>
+#include <sys/socket.h>
+
 #include <cstring>
 #include <memory>
 #include <string>
@@ -12,6 +15,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
@@ -89,6 +93,10 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
     EXPECT_EQ(result, net::OK);
     char buffer[16];
     std::vector<base::ScopedFD> fds;
+    const int flags = fcntl(accepted_descriptor_, F_GETFL);
+    ASSERT_NE(
+        HANDLE_EINTR(fcntl(accepted_descriptor_, F_SETFL, flags & ~O_NONBLOCK)),
+        -1);
     EXPECT_EQ(static_cast<size_t>(base::UnixDomainSocket::RecvMsg(
                   accepted_descriptor_, buffer, sizeof(buffer), &fds)),
               sizeof(kSocketMsg));
