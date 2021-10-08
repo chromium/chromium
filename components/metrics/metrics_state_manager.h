@@ -82,9 +82,6 @@ class MetricsStateManager final {
   // sampling, and this client isn't in the sample.
   bool IsMetricsReportingEnabled();
 
-  // Returns the install date of the application, in seconds since the epoch.
-  int64_t GetInstallDate() const;
-
   // Returns the client ID for this client, or the empty string if the user is
   // not opted in to metrics reporting.
   const std::string& client_id() const { return client_id_; }

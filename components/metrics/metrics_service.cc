@@ -297,10 +297,6 @@ std::string MetricsService::GetClientId() const {
   return state_manager_->client_id();
 }
 
-int64_t MetricsService::GetInstallDate() {
-  return state_manager_->GetInstallDate();
-}
-
 bool MetricsService::WasLastShutdownClean() const {
   return state_manager_->clean_exit_beacon()->exited_cleanly();
 }

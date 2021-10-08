@@ -100,9 +100,6 @@ class MetricsService : public base::HistogramFlattener {
   // recording is not currently running.
   std::string GetClientId() const;
 
-  // Returns the install date of the application, in seconds since the epoch.
-  int64_t GetInstallDate();
-
   // Returns the date at which the current metrics client ID was created as
   // an int64_t containing seconds since the epoch.
   int64_t GetMetricsReportingEnabledDate();

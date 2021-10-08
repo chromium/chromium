@@ -19,6 +19,7 @@
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -86,7 +87,7 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
   std::string accept_languages =
       user_prefs->GetString(::language::prefs::kAcceptLanguages);
   base::Time install_time = base::Time::FromTimeT(
-      g_browser_process->metrics_service()->GetInstallDate());
+      g_browser_process->local_state()->GetInt64(metrics::prefs::kInstallDate));
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   risk::GetFingerprint(obfuscated_gaia_id, window_bounds, web_contents,

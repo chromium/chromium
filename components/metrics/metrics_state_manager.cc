@@ -355,10 +355,6 @@ bool MetricsStateManager::IsMetricsReportingEnabled() {
   return enabled_state_provider_->IsReportingEnabled();
 }
 
-int64_t MetricsStateManager::GetInstallDate() const {
-  return ReadInstallDate(local_state_);
-}
-
 int MetricsStateManager::GetLowEntropySource() {
   return entropy_state_.GetLowEntropySource();
 }
