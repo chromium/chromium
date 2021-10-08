@@ -1263,6 +1263,7 @@ if (!is_android && !is_fuchsia) {
       "//components/user_manager",
       "//components/variations/service",
       "//components/variations/service:constants",
+      "//components/version_info",
       "//components/webapps/browser",
       "//components/webrtc",
       "//components/webrtc_logging/browser",

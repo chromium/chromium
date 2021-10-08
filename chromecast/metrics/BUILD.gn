@@ -23,6 +23,10 @@ cast_source_set("metrics") {
     "//components/metrics",
     "//components/metrics:net",
     "//components/prefs",
+
+    # TODO(crbug.com/1241702): Clean up version_info when the Variations Safe
+    # Mode experiment is over.
+    "//components/version_info",
     "//services/network/public/cpp",
   ]
 }

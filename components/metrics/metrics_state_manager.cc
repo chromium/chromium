@@ -259,6 +259,7 @@ MetricsStateManager::MetricsStateManager(
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
     StartupVisibility startup_visibility,
+    version_info::Channel channel,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
     base::StringPiece external_client_id)
@@ -266,7 +267,10 @@ MetricsStateManager::MetricsStateManager(
       enabled_state_provider_(enabled_state_provider),
       store_client_info_(std::move(store_client_info)),
       load_client_info_(std::move(retrieve_client_info)),
-      clean_exit_beacon_(backup_registry_key, user_data_dir, local_state),
+      clean_exit_beacon_(backup_registry_key,
+                         user_data_dir,
+                         local_state,
+                         channel),
       external_client_id_(external_client_id),
       entropy_state_(local_state),
       entropy_source_returned_(ENTROPY_SOURCE_NONE),
@@ -588,6 +592,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
     const std::wstring& backup_registry_key,
     const base::FilePath& user_data_dir,
     StartupVisibility startup_visibility,
+    version_info::Channel channel,
     StoreClientInfoCallback store_client_info,
     LoadClientInfoCallback retrieve_client_info,
     base::StringPiece external_client_id) {
@@ -596,7 +601,7 @@ std::unique_ptr<MetricsStateManager> MetricsStateManager::Create(
   if (!instance_exists_) {
     result.reset(new MetricsStateManager(
         local_state, enabled_state_provider, backup_registry_key, user_data_dir,
-        startup_visibility,
+        startup_visibility, channel,
         store_client_info.is_null() ? base::DoNothing()
                                     : std::move(store_client_info),
         retrieve_client_info.is_null()

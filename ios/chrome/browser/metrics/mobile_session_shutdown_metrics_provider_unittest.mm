@@ -90,9 +90,7 @@ class MobileSessionShutdownMetricsProviderTest
   void InitializeMetrics() {
     metrics_state_ = metrics::MetricsStateManager::Create(
         &local_state_, new metrics::TestEnabledStateProvider(false, false),
-        std::wstring(), base::FilePath(), metrics::StartupVisibility::kUnknown,
-        metrics::MetricsStateManager::StoreClientInfoCallback(),
-        metrics::MetricsStateManager::LoadClientInfoCallback());
+        std::wstring(), base::FilePath());
     metrics_state_->InstantiateFieldTrialList();
     metrics_service_.reset(new metrics::MetricsService(
         metrics_state_.get(), &metrics_client_, &local_state_));

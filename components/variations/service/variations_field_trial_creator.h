@@ -176,6 +176,18 @@ class VariationsFieldTrialCreator {
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // TODO(crbug/1248239, crbug/1255305): Remove ifdef once the Extended
+  // Variations Safe Mode experiment is enabled on Clank and re-enabled on iOS.
+ protected:
+  // If the client is in an Extended Variations Safe Mode experiment group,
+  // applies group-specific behavior. Does nothing if the client is not in the
+  // experiment. See CleanExitBeacon::Initialize() for group assignment details.
+  // Protected and virtual for testing.
+  virtual void MaybeExtendVariationsSafeMode(
+      metrics::MetricsStateManager* metrics_state_manager);
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is
   // one that (a) was fetched over |kMaxVariationsSeedAgeDays| ago and (b) is
@@ -208,14 +220,6 @@ class VariationsFieldTrialCreator {
 
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   Study::Platform GetPlatform();
-
-#if !defined(OS_ANDROID)
-  // On channels that support the ExtendedVariationsSafeMode experiment, (a)
-  // assigns the client to an experiment group and (b) applies group-specific
-  // behavior. Does nothing if the channel does not support the experiment.
-  void MaybeExtendVariationsSafeMode(
-      metrics::MetricsStateManager* metrics_state_manager) const;
-#endif
 
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }

@@ -189,8 +189,9 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
   DCHECK(platform_field_trials);
   DCHECK(safe_seed_manager);
 
-#if !defined(OS_ANDROID)
-  // TODO(crbug/1248239): Enable Extended Variations Safe Mode on Android.
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // TODO(crbug/1248239): Enable Extended Variations Safe Mode on Clank.
+  // TODO(crbug/1255305): Re-enable it on iOS.
   if (extend_variations_safe_mode &&
       !metrics_state_manager->is_background_session()) {
     // If the session is expected to be a background session, then do not extend
@@ -200,7 +201,7 @@ bool VariationsFieldTrialCreator::SetupFieldTrials(
     // crashes.
     MaybeExtendVariationsSafeMode(metrics_state_manager);
   }
-#endif
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
   // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is
   // in MetricsStateManager::InstantiateFieldTrialList(). It's not ideal that
@@ -446,6 +447,29 @@ bool VariationsFieldTrialCreator::IsOverrideResourceMapEmpty() {
   return overridden_strings_map_.empty();
 }
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
+    metrics::MetricsStateManager* metrics_state_manager) {
+  const std::string group_name =
+      base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
+  if (group_name.empty() || group_name == kControlGroup ||
+      group_name == kDefaultGroup) {
+    return;
+  }
+
+  // For clients in the SignalAndWrite* groups, the beacon is updated and a
+  // synchronous write is performed. Conversely, for clients in the
+  // WriteSynchronouslyViaPrefService group, prefs are written synchronously
+  // without updating the beacon, i.e. without signaling that Chrome should
+  // start watching for crashes.
+  bool update_beacon = group_name != kWriteSynchronouslyViaPrefServiceGroup;
+
+  metrics_state_manager->LogHasSessionShutdownCleanly(
+      /*has_session_shutdown_cleanly=*/false,
+      /*write_synchronously=*/true, update_beacon);
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+
 bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
   const base::Time fetch_time = is_safe_seed
                                     ? GetSeedStore()->GetSafeSeedFetchTime()
@@ -606,44 +630,5 @@ Study::Platform VariationsFieldTrialCreator::GetPlatform() {
     return platform_override_;
   return ClientFilterableState::GetCurrentPlatform();
 }
-
-#if !defined(OS_ANDROID)
-void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
-    metrics::MetricsStateManager* metrics_state_manager) const {
-  version_info::Channel channel = client_->GetChannelForVariations();
-  if (channel != version_info::Channel::UNKNOWN &&
-      channel != version_info::Channel::CANARY &&
-      channel != version_info::Channel::DEV) {
-    return;
-  }
-
-  int default_group;
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::FactoryGetFieldTrial(
-          kExtendedSafeModeTrial, 100, kDefaultGroup,
-          base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
-
-  const int control_group = trial->AppendGroup(kControlGroup, 25);
-  const int write_only_group =
-      trial->AppendGroup(kWriteSynchronouslyViaPrefServiceGroup, 25);
-  trial->AppendGroup(kSignalAndWriteSynchronouslyViaPrefServiceGroup, 25);
-  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 25);
-  const int assigned_group = trial->group();
-
-  if (assigned_group == control_group)
-    return;
-
-  // For clients in the SignalAndWrite* groups, the beacon is updated and a
-  // synchronous write is performed. Conversely, for clients in
-  // |write_only_group|, i.e. the WriteSynchronouslyViaPrefService group, prefs
-  // are written synchronously without updating the beacon, i.e. without
-  // signaling that Chrome should start watching for crashes.
-  bool update_beacon = assigned_group != write_only_group;
-
-  metrics_state_manager->LogHasSessionShutdownCleanly(
-      /*has_session_shutdown_cleanly=*/false, /*write_synchronously=*/true,
-      update_beacon);
-}
-#endif  // !defined(OS_ANDROID)
 
 }  // namespace variations

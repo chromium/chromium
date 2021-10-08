@@ -31,6 +31,7 @@
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if defined(OS_ANDROID)
@@ -310,7 +311,7 @@ void CastMetricsServiceClient::InitializeMetricsService() {
       // Pass an empty file path since Chromecast does not use the Variations
       // framework.
       /*user_data_dir=*/base::FilePath(),
-      ::metrics::StartupVisibility::kUnknown,
+      ::metrics::StartupVisibility::kUnknown, version_info::Channel::UNKNOWN,
       base::BindRepeating(&CastMetricsServiceClient::StoreClientInfo,
                           base::Unretained(this)),
       base::BindRepeating(&CastMetricsServiceClient::LoadClientInfo,

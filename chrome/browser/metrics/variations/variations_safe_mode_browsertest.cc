@@ -36,6 +36,7 @@
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
+#include "components/version_info/channel.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -263,7 +264,8 @@ class FieldTrialTest : public ::testing::TestWithParam<std::string> {
       PrefService* pref_service) {
     static constexpr wchar_t kDummyWindowsRegistryKey[] = L"";
     auto clean_exit_beacon = std::make_unique<metrics::CleanExitBeacon>(
-        kDummyWindowsRegistryKey, user_data_dir(), pref_service);
+        kDummyWindowsRegistryKey, user_data_dir(), pref_service,
+        version_info::Channel::UNKNOWN);
     clean_exit_beacon->Initialize();
     return clean_exit_beacon;
   }

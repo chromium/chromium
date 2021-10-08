@@ -238,6 +238,9 @@ void AndroidMetricsServiceClient::Initialize(
 
   pref_service_ = pref_service;
 
+  // TODO(crbug/1245347): If and when the Extended Variations Safe Mode
+  // experiment is enabled on Android WebLayer, pass the channel to the
+  // MetricsStateManager.
   metrics_state_manager_ = MetricsStateManager::Create(
       pref_service_, this, std::wstring(), user_data_dir);
 
