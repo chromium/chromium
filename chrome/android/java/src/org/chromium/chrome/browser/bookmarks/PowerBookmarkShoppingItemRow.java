@@ -49,12 +49,19 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
         mImageFetcher = imageFetcher;
     }
 
+    // BookmarkItemRow overrides:
     @Override
     BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
         BookmarkItem bookmarkItem = super.setBookmarkId(bookmarkId, location);
         // TODO(crbug.com/1243383): Retrieve power bookmark data and use it to populate fields.
         // TODO(crbug.com/1243383): Create the currency formatter according to the currency code.
         return bookmarkItem;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mCurrencyFormatter != null) mCurrencyFormatter.destroy();
     }
 
     @VisibleForTesting
