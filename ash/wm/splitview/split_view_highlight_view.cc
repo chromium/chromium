@@ -62,6 +62,7 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
       DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor));
   layer()->SetRoundedCornerRadius(kHighlightScreenRoundRectRadii);
   layer()->SetIsFastRoundedCorner(true);
+  // TODO(crbug/1249666): Add border highlight that supports dark/light mode.
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;
