@@ -129,10 +129,10 @@ PositionInFlatTreeWithAffinity PositionWithAffinityOfHitTestResult(
       hit_test_result.GetPosition());
 }
 
-DocumentMarker* SpellCheckMarkerAtPosition(
+DocumentMarkerGroup* SpellCheckMarkerGroupAtPosition(
     DocumentMarkerController& document_marker_controller,
     const PositionInFlatTree& position) {
-  return document_marker_controller.FirstMarkerAroundPosition(
+  return document_marker_controller.FirstMarkerGroupAroundPosition(
       position, DocumentMarker::MarkerTypes::Misspelling());
 }
 
@@ -701,9 +701,10 @@ void SelectionController::SelectClosestMisspellingFromHitTestResult(
 
   const PositionInFlatTree& marker_position =
       pos.GetPosition().ParentAnchoredEquivalent();
-  const DocumentMarker* const marker = SpellCheckMarkerAtPosition(
-      inner_node->GetDocument().Markers(), marker_position);
-  if (!marker) {
+  const DocumentMarkerGroup* const marker_group =
+      SpellCheckMarkerGroupAtPosition(inner_node->GetDocument().Markers(),
+                                      marker_position);
+  if (!marker_group) {
     UpdateSelectionForMouseDownDispatchingSelectStart(
         inner_node, SelectionInFlatTree(),
         SetSelectionOptions::Builder()
@@ -712,12 +713,12 @@ void SelectionController::SelectClosestMisspellingFromHitTestResult(
     return;
   }
 
-  Node* const container_node = marker_position.ComputeContainerNode();
-  const PositionInFlatTree start(container_node, marker->StartOffset());
-  const PositionInFlatTree end(container_node, marker->EndOffset());
   const SelectionInFlatTree new_selection =
       CreateVisibleSelection(
-          SelectionInFlatTree::Builder().Collapse(start).Extend(end).Build())
+          SelectionInFlatTree::Builder()
+              .Collapse(marker_group->StartPositionInFlatTree())
+              .Extend(marker_group->EndPositionInFlatTree())
+              .Build())
           .AsSelection();
   const SelectionInFlatTree& adjusted_selection =
       append_trailing_whitespace == AppendTrailingWhitespace::kShouldAppend
@@ -1199,7 +1200,7 @@ static bool HitTestResultIsMisspelled(const HitTestResult& result) {
       pos_with_affinity.GetPosition().ParentAnchoredEquivalent();
   if (!SpellChecker::IsSpellCheckingEnabledAt(marker_position))
     return false;
-  return SpellCheckMarkerAtPosition(
+  return SpellCheckMarkerGroupAtPosition(
       result.InnerPossiblyPseudoNode()->GetDocument().Markers(),
       ToPositionInFlatTree(marker_position));
 }

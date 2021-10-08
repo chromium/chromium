@@ -201,6 +201,8 @@ blink_core_sources_editing = [
   "markers/document_marker.h",
   "markers/document_marker_controller.cc",
   "markers/document_marker_controller.h",
+  "markers/document_marker_group.cc",
+  "markers/document_marker_group.h",
   "markers/document_marker_list.cc",
   "markers/document_marker_list.h",
   "markers/grammar_marker.cc",

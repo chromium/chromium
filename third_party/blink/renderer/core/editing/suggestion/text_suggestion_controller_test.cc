@@ -460,8 +460,7 @@ TEST_F(TextSuggestionControllerTest,
   EXPECT_NE(nullptr, GetDocument()
                          .GetFrame()
                          ->GetSpellChecker()
-                         .GetSpellCheckMarkerUnderSelection()
-                         .first);
+                         .GetSpellCheckMarkerGroupUnderSelection());
 
   // Add "embiggen" to the dictionary
   GetDocument()
@@ -472,8 +471,7 @@ TEST_F(TextSuggestionControllerTest,
   EXPECT_EQ(nullptr, GetDocument()
                          .GetFrame()
                          ->GetSpellChecker()
-                         .GetSpellCheckMarkerUnderSelection()
-                         .first);
+                         .GetSpellCheckMarkerGroupUnderSelection());
 }
 
 TEST_F(TextSuggestionControllerTest, CallbackHappensAfterDocumentDestroyed) {

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/document_marker_group.h"
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -144,6 +145,19 @@ class CORE_EXPORT DocumentMarkerController final
       unsigned start_offset,
       unsigned end_offset,
       DocumentMarker::MarkerTypes);
+  // Wrappers for FirstMarker functions that return the DocumentMarkerGroup for
+  // the found DocumentMarker.
+  DocumentMarkerGroup* FirstMarkerGroupAroundPosition(
+      const PositionInFlatTree&,
+      DocumentMarker::MarkerTypes);
+  DocumentMarkerGroup* FirstMarkerGroupIntersectingEphemeralRange(
+      const EphemeralRange&,
+      DocumentMarker::MarkerTypes);
+  DocumentMarkerGroup* FirstMarkerGroupIntersectingOffsetRange(
+      const Text&,
+      unsigned start_offset,
+      unsigned end_offset,
+      DocumentMarker::MarkerTypes);
   // If the given position is either at the boundary or inside a word, expands
   // the position to the surrounding word and then looks for all markers having
   // the specified type. If the position is neither at the boundary or inside a
@@ -192,6 +206,7 @@ class CORE_EXPORT DocumentMarkerController final
       std::function<DocumentMarker*(int, int)> create_marker_from_offsets,
       const TextIteratorBehavior& iterator_behavior = {});
   void AddMarkerToNode(const Text&, DocumentMarker*);
+  DocumentMarkerGroup* GetMarkerGroupForMarker(const DocumentMarker* marker);
 
   using MarkerLists = HeapVector<Member<DocumentMarkerList>,
                                  DocumentMarker::kMarkerTypeIndexesCount>;
@@ -214,6 +229,10 @@ class CORE_EXPORT DocumentMarkerController final
   void DidProcessMarkerMap(const LivenessBroker&);
 
   MarkerMap markers_;
+
+  using MarkerGroup = HeapHashMap<WeakMember<const DocumentMarker>,
+                                  Member<DocumentMarkerGroup>>;
+  MarkerGroup marker_groups_;
   // Provide a quick way to determine whether a particular marker type is absent
   // without going through the map.
   DocumentMarker::MarkerTypes possibly_existing_marker_types_;

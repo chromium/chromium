@@ -438,8 +438,8 @@ void SpellChecker::RemoveSpellingAndGrammarMarkers(const HTMLElement& element,
   }
 }
 
-std::pair<Node*, SpellCheckMarker*>
-SpellChecker::GetSpellCheckMarkerUnderSelection() const {
+DocumentMarkerGroup* SpellChecker::GetSpellCheckMarkerGroupUnderSelection()
+    const {
   const VisibleSelection& selection =
       GetFrame().Selection().ComputeVisibleSelectionInDOMTree();
   if (selection.IsNone())
@@ -448,24 +448,18 @@ SpellChecker::GetSpellCheckMarkerUnderSelection() const {
   // Caret and range selections always return valid normalized ranges.
   const EphemeralRange& selection_range = FirstEphemeralRangeOf(selection);
 
-  DocumentMarker* const marker =
-      GetFrame().GetDocument()->Markers().FirstMarkerIntersectingEphemeralRange(
+  return GetFrame()
+      .GetDocument()
+      ->Markers()
+      .FirstMarkerGroupIntersectingEphemeralRange(
           selection_range, DocumentMarker::MarkerTypes::Misspelling());
-  if (!marker)
-    return {};
-
-  return std::make_pair(selection_range.StartPosition().ComputeContainerNode(),
-                        To<SpellCheckMarker>(marker));
 }
 
 std::pair<String, String> SpellChecker::SelectMisspellingAsync() {
-  const std::pair<Node*, SpellCheckMarker*>& node_and_marker =
-      GetSpellCheckMarkerUnderSelection();
-  if (!node_and_marker.first)
+  const DocumentMarkerGroup* const marker_group =
+      GetSpellCheckMarkerGroupUnderSelection();
+  if (!marker_group)
     return {};
-
-  Node* const marker_node = node_and_marker.first;
-  const SpellCheckMarker* const marker = node_and_marker.second;
 
   const VisibleSelection& selection =
       GetFrame().Selection().ComputeVisibleSelectionInDOMTree();
@@ -474,30 +468,29 @@ std::pair<String, String> SpellChecker::SelectMisspellingAsync() {
   const EphemeralRange& selection_range =
       selection.ToNormalizedEphemeralRange();
 
-  const EphemeralRange marker_range(
-      Position(marker_node, marker->StartOffset()),
-      Position(marker_node, marker->EndOffset()));
+  const EphemeralRange marker_range(marker_group->StartPosition(),
+                                    marker_group->EndPosition());
   const String& marked_text = PlainText(marker_range);
   if (marked_text.StripWhiteSpace(&IsWhiteSpaceOrPunctuation) !=
       PlainText(selection_range).StripWhiteSpace(&IsWhiteSpaceOrPunctuation))
     return {};
-
+  const Text* text_node =
+      To<Text>(selection_range.StartPosition().ComputeContainerNode());
+  const SpellCheckMarker* marker =
+      To<SpellCheckMarker>(marker_group->GetMarkerForText(text_node));
   return std::make_pair(marked_text, marker->Description());
 }
 
 void SpellChecker::ReplaceMisspelledRange(const String& text) {
-  const std::pair<Node*, SpellCheckMarker*>& node_and_marker =
-      GetSpellCheckMarkerUnderSelection();
-  if (!node_and_marker.first)
+  const DocumentMarkerGroup* const marker_group =
+      GetSpellCheckMarkerGroupUnderSelection();
+  if (!marker_group)
     return;
-
-  Node* const container_node = node_and_marker.first;
-  const SpellCheckMarker* const marker = node_and_marker.second;
 
   GetFrame().Selection().SetSelectionAndEndTyping(
       SelectionInDOMTree::Builder()
-          .Collapse(Position(container_node, marker->StartOffset()))
-          .Extend(Position(container_node, marker->EndOffset()))
+          .Collapse(marker_group->StartPosition())
+          .Extend(marker_group->EndPosition())
           .Build());
 
   Document& current_document = *GetFrame().GetDocument();

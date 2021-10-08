@@ -307,6 +307,8 @@ void DocumentMarkerController::AddMarkerInternal(
     const EphemeralRange& range,
     std::function<DocumentMarker*(int, int)> create_marker_from_offsets,
     const TextIteratorBehavior& iterator_behavior) {
+  DocumentMarkerGroup* new_marker_group =
+      MakeGarbageCollected<DocumentMarkerGroup>();
   for (TextIterator marked_text(range.StartPosition(), range.EndPosition(),
                                 iterator_behavior);
        !marked_text.AtEnd(); marked_text.Advance()) {
@@ -333,6 +335,8 @@ void DocumentMarkerController::AddMarkerInternal(
     DocumentMarker* const new_marker = create_marker_from_offsets(
         start_offset_in_current_container, end_offset_in_current_container);
     AddMarkerToNode(*text_node, new_marker);
+    new_marker_group->Set(new_marker, text_node);
+    marker_groups_.insert(new_marker, new_marker_group);
   }
 }
 
@@ -394,8 +398,14 @@ void DocumentMarkerController::MoveMarkers(const Text& src_node,
       ListForType(dst_markers, type) = CreateListForType(type);
 
     DocumentMarkerList* const dst_list = ListForType(dst_markers, type);
-    if (src_list->MoveMarkers(length, dst_list))
+    if (src_list->MoveMarkers(length, dst_list)) {
       doc_dirty = true;
+      for (const auto& marker : dst_list->GetMarkers()) {
+        auto it = marker_groups_.find(marker);
+        if (it != marker_groups_.end())
+          it->value->Set(marker, &dst_node);
+      }
+    }
   }
 
   if (!doc_dirty)
@@ -433,6 +443,17 @@ void DocumentMarkerController::RemoveMarkersInternal(
     if (!marker_types.Contains(type))
       continue;
 
+    const unsigned end_offset = start_offset + length;
+    for (const Member<DocumentMarker>& marker : list->GetMarkers()) {
+      if (marker->EndOffset() > start_offset &&
+          marker->StartOffset() < end_offset) {
+        auto it = marker_groups_.find(marker);
+        if (it != marker_groups_.end()) {
+          it->value->Erase(marker);
+          marker_groups_.erase(marker);
+        }
+      }
+    }
     if (list->RemoveMarkers(start_offset, length))
       doc_dirty = true;
 
@@ -518,11 +539,6 @@ DocumentMarker* DocumentMarkerController::FirstMarkerIntersectingEphemeralRange(
       range.StartPosition().ComputeContainerNode();
   const Node* const end_container = range.EndPosition().ComputeContainerNode();
 
-  // We don't currently support the case where a marker spans multiple nodes.
-  // See crbug.com/720065
-  if (start_container != end_container)
-    return nullptr;
-
   auto* text_node = DynamicTo<Text>(start_container);
   if (!text_node)
     return nullptr;
@@ -530,7 +546,9 @@ DocumentMarker* DocumentMarkerController::FirstMarkerIntersectingEphemeralRange(
   const unsigned start_offset =
       range.StartPosition().ComputeOffsetInContainerNode();
   const unsigned end_offset =
-      range.EndPosition().ComputeOffsetInContainerNode();
+      start_container == end_container
+          ? range.EndPosition().ComputeOffsetInContainerNode()
+          : text_node->length();
 
   return FirstMarkerIntersectingOffsetRange(*text_node, start_offset,
                                             end_offset, types);
@@ -567,6 +585,40 @@ DocumentMarker* DocumentMarkerController::FirstMarkerIntersectingOffsetRange(
       return found_marker;
   }
 
+  return nullptr;
+}
+
+DocumentMarkerGroup* DocumentMarkerController::FirstMarkerGroupAroundPosition(
+    const PositionInFlatTree& position,
+    DocumentMarker::MarkerTypes types) {
+  return GetMarkerGroupForMarker(FirstMarkerAroundPosition(position, types));
+}
+
+DocumentMarkerGroup*
+DocumentMarkerController::FirstMarkerGroupIntersectingEphemeralRange(
+    const EphemeralRange& range,
+    DocumentMarker::MarkerTypes types) {
+  return GetMarkerGroupForMarker(
+      FirstMarkerIntersectingEphemeralRange(range, types));
+}
+
+DocumentMarkerGroup*
+DocumentMarkerController::FirstMarkerGroupIntersectingOffsetRange(
+    const Text& node,
+    unsigned start_offset,
+    unsigned end_offset,
+    DocumentMarker::MarkerTypes types) {
+  return GetMarkerGroupForMarker(FirstMarkerIntersectingOffsetRange(
+      node, start_offset, end_offset, types));
+}
+
+DocumentMarkerGroup* DocumentMarkerController::GetMarkerGroupForMarker(
+    const DocumentMarker* marker) {
+  if (marker) {
+    auto it = marker_groups_.find(marker);
+    if (it != marker_groups_.end())
+      return it->value;
+  }
   return nullptr;
 }
 
@@ -945,6 +997,7 @@ void DocumentMarkerController::Trace(Visitor* visitor) const {
       DocumentMarkerController, &DocumentMarkerController::DidProcessMarkerMap>(
       this);
   visitor->Trace(markers_);
+  visitor->Trace(marker_groups_);
   visitor->Trace(document_);
   SynchronousMutationObserver::Trace(visitor);
 }
