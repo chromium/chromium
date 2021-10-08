@@ -129,7 +129,7 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
     }
 
     void destroy() {
-        mAccountPickerDelegate.onDismiss();
+        mAccountPickerDelegate.destroy();
         mProfileDataCache.removeObserver(this);
         mAccountManagerFacade.removeObserver(this);
     }

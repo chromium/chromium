@@ -11,23 +11,15 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
  * This interface is used in web sign-in flow for the account picker bottom sheet.
  */
 public interface AccountPickerDelegate {
-    /**
-     * Called when the delegate is dismissed to release resources used by this class.
-     */
-    void onDismiss();
+    /** Releases resources used by this class. */
+    void destroy();
 
-    /**
-     * Signs in the user with the given account.
-     */
+    /** Signs in the user with the given account. */
     void signIn(String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback);
 
-    /**
-     * Adds account to device.
-     */
+    /** Adds account to device. */
     void addAccount(Callback<String> callback);
 
-    /**
-     * Updates credentials of the given account name.
-     */
+    /** Updates credentials of the given account name. */
     void updateCredentials(String accountName, Callback<Boolean> onUpdateCredentialsCallback);
 }

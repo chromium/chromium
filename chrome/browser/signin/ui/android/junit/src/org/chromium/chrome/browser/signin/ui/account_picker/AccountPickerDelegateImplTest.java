@@ -124,7 +124,7 @@ public class AccountPickerDelegateImplTest {
 
     @After
     public void tearDown() {
-        mDelegate.onDismiss();
+        mDelegate.destroy();
     }
 
     @Test

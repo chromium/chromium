@@ -66,11 +66,9 @@ public class AccountPickerDelegateImpl implements AccountPickerDelegate {
                 Profile.getLastUsedRegularProfile());
     }
 
-    /**
-     * Releases resources used by this class.
-     */
+    /** Releases resources used by this class. */
     @Override
-    public void onDismiss() {
+    public void destroy() {
         destroyWebSigninBridge();
     }
 

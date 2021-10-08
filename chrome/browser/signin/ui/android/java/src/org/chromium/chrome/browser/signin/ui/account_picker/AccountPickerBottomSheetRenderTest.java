@@ -78,7 +78,7 @@ public class AccountPickerBottomSheetRenderTest {
         }
 
         @Override
-        public void onDismiss() {}
+        public void destroy() {}
 
         @Override
         public void signIn(
