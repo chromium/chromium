@@ -329,7 +329,7 @@ crbug.com/1126305 virtual/prerender/http/tests/inspector-protocol/prerender/* [ 
 ## prerender test: the File System Access API is not supported on Android ##
 crbug.com/1182032 [ Android ] virtual/prerender/wpt_internal/prerender/restriction-local-file-system-access.https.html [ Skip ]
 ## prerender test: Notification constructor is not supported on Android ##
-crbug.com/1198110 [ Android ] virtual/prerender/wpt_internal/prerender/restriction-notification.https.html [ Skip ]
+crbug.com/1198110 [ Android ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-notification.https.html [ Skip ]
 
 # These tests require BFCache, which is currently disabled by default on Desktop.
 # Keep this in sync with VirtualTestSuites.

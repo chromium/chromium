@@ -15,6 +15,8 @@ TODO(https://crbug.com/1198110): Add the following tests:
 <body>
 <script>
 
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const bc = new BroadcastChannel('test-channel');
   t.add_cleanup(_ => bc.close());
