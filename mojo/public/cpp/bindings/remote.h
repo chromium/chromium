@@ -159,7 +159,10 @@ class Remote {
   }
 
   // A convenient helper that resets this Remote on disconnect. Note that this
-  // replaces any previously set disconnection handler.
+  // replaces any previously set disconnection handler. Must be called on a
+  // bound Remote object. If the Remote is connected, a callback is set to reset
+  // it after it is disconnected. If Remote is bound but disconnected then reset
+  // is called immediately.
   void reset_on_disconnect() {
     if (!is_connected()) {
       reset();

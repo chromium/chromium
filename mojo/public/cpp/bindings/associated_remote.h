@@ -95,8 +95,8 @@ class AssociatedRemote {
   // being "connected" (see |is_connected()| below). An AssociatedRemote is
   // NEVER passively unbound and the only way for it to become unbound is to
   // explicitly call |reset()| or |Unbind()|. As such, unless you make explicit
-  // calls to those methods, it is always safe to assume that a AssociatedRemote
-  // you've bound will remain bound and callable.
+  // calls to those methods, it is always safe to assume that an
+  // AssociatedRemote you've bound will remain bound and callable.
   bool is_bound() const { return internal_state_.is_bound(); }
   explicit operator bool() const { return is_bound(); }
 
@@ -122,8 +122,8 @@ class AssociatedRemote {
   // receiver. This can happen if the corresponding AssociatedReceiver (or
   // unconsumed PendingAssociatedReceiver) is destroyed, or if the
   // AssociatedReceiver sends a malformed or otherwise unexpected response
-  // message to this AssociatedRemote. Must only be called
-  // on a bound AssociatedRemote object, and only remains set as long as the
+  // message to this AssociatedRemote. Must only be called on a bound
+  // AssociatedRemote object, and only remains set as long as the
   // AssociatedRemote is both bound and connected.
   //
   // If invoked at all, |handler| will be scheduled asynchronously using the
@@ -139,6 +139,20 @@ class AssociatedRemote {
       ConnectionErrorWithReasonCallback handler) {
     internal_state_.set_connection_error_with_reason_handler(
         std::move(handler));
+  }
+
+  // A convenient helper that resets this AssociatedRemote on disconnect. Note
+  // that this replaces any previously set disconnection handler. Must be called
+  // on a bound AssociatedRemote object. If the AssociatedRemote is connected,
+  // a callback is set to reset it after it is disconnected. If AssociatedRemote
+  // is bound but disconnected then reset is called immediately.
+  void reset_on_disconnect() {
+    if (!is_connected()) {
+      reset();
+      return;
+    }
+    set_disconnect_handler(
+        base::BindOnce(&AssociatedRemote::reset, base::Unretained(this)));
   }
 
   // Resets this AssociatedRemote to an unbound state. To reset the
@@ -184,7 +198,7 @@ class AssociatedRemote {
   // Binds this AssociatedRemote by consuming |pending_remote|.
   //
   // Any response callbacks or disconnection notifications will be scheduled to
-  // run on |task_runner|. If |task_runner| is null, defaults ot the current
+  // run on |task_runner|. If |task_runner| is null, defaults to the current
   // SequencedTaskRunner.
   void Bind(PendingAssociatedRemote<Interface> pending_remote,
             scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
@@ -232,7 +246,7 @@ class AssociatedRemote {
   // elsewhere.
   //
   // Note that it is an error (the bad, crashy kind of error) to attempt to
-  // |Unbind()| a AssociatedRemote which is awaiting one or more responses to
+  // |Unbind()| an AssociatedRemote which is awaiting one or more responses to
   // previously issued Interface method calls. Calling this method should only
   // be considered in cases where satisfaction of that constraint can be proven.
   //

@@ -187,12 +187,7 @@ void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
   // however in cases where the network process crashes, we want to ensure that
   // |remoting_host_control_| is reset so it can be reused after the network
   // process is relaunched.
-  // TODO(joedow): Implement reset_on_disconnect() for mojo::AssociatedRemote.
-  remoting_host_control_.set_disconnect_handler(base::BindOnce(
-      [](DaemonProcessWin* daemon_process_win) {
-        daemon_process_win->remoting_host_control_.reset();
-      },
-      base::Unretained(this)));
+  remoting_host_control_.reset_on_disconnect();
 
   if (!InitializePairingRegistry()) {
     CrashNetworkProcess(FROM_HERE);
