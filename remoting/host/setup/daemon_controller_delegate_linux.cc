@@ -27,6 +27,7 @@
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/usage_stats_consent.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -146,19 +147,22 @@ DaemonController::State DaemonControllerDelegateLinux::GetState() {
 
 std::unique_ptr<base::DictionaryValue>
 DaemonControllerDelegateLinux::GetConfig() {
-  std::unique_ptr<base::DictionaryValue> config(
+  absl::optional<base::Value> host_config(
       HostConfigFromJsonFile(GetConfigPath()));
-  if (!config)
+  if (!host_config.has_value())
     return nullptr;
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  std::string value;
-  if (config->GetString(kHostIdConfigPath, &value)) {
-    result->SetString(kHostIdConfigPath, value);
+  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue);
+  std::string* value = host_config->FindStringKey(kHostIdConfigPath);
+  if (value) {
+    result->SetString(kHostIdConfigPath, *value);
   }
-  if (config->GetString(kXmppLoginConfigPath, &value)) {
-    result->SetString(kXmppLoginConfigPath, value);
+
+  value = host_config->FindStringKey(kXmppLoginConfigPath);
+  if (value) {
+    result->SetString(kXmppLoginConfigPath, *value);
   }
+
   return result;
 }
 
@@ -213,11 +217,17 @@ void DaemonControllerDelegateLinux::SetConfigAndStart(
 void DaemonControllerDelegateLinux::UpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
     DaemonController::CompletionCallback done) {
-  std::unique_ptr<base::DictionaryValue> new_config(
+  absl::optional<base::Value> new_config(
       HostConfigFromJsonFile(GetConfigPath()));
-  if (new_config)
-    new_config->MergeDictionary(config.get());
-  if (!new_config || !HostConfigToJsonFile(*new_config, GetConfigPath())) {
+  if (!new_config.has_value()) {
+    LOG(ERROR) << "Failed to read existing config file.";
+    std::move(done).Run(DaemonController::RESULT_FAILED);
+    return;
+  }
+
+  new_config->MergeDictionary(config.get());
+
+  if (!HostConfigToJsonFile(new_config.value(), GetConfigPath())) {
     LOG(ERROR) << "Failed to update config file.";
     std::move(done).Run(DaemonController::RESULT_FAILED);
     return;

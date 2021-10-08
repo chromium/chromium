@@ -104,6 +104,7 @@
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/remoting_log_to_server.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 #if defined(OS_POSIX)
@@ -609,15 +610,14 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
 void HostProcess::OnConfigUpdated(const std::string& serialized_config) {
   HOST_LOG << "Parsing new host configuration.";
 
-  std::unique_ptr<base::DictionaryValue> config(
-      HostConfigFromJson(serialized_config));
-  if (!config) {
+  absl::optional<base::Value> config(HostConfigFromJson(serialized_config));
+  if (!config.has_value()) {
     LOG(ERROR) << "Invalid configuration.";
     ShutdownHost(kInvalidHostConfigurationExitCode);
     return;
   }
 
-  OnConfigParsed(base::Value::FromUniquePtrValue(std::move(config)));
+  OnConfigParsed(std::move(config.value()));
 }
 
 void HostProcess::OnConfigParsed(base::Value config) {

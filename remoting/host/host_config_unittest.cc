@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -53,23 +54,22 @@ TEST_F(HostConfigTest, Read) {
   ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
   base::FilePath test_file = test_dir_.GetPath().AppendASCII("read.json");
   WriteTestFile(test_file);
-  std::unique_ptr<base::DictionaryValue> target(
-      HostConfigFromJsonFile(test_file));
-  ASSERT_TRUE(target);
+  absl::optional<base::Value> target(HostConfigFromJsonFile(test_file));
+  ASSERT_TRUE(target.has_value());
 
-  std::string value;
-  EXPECT_TRUE(target->GetString(kXmppLoginConfigPath, &value));
-  EXPECT_EQ("test@gmail.com", value);
-  EXPECT_TRUE(target->GetString(kOAuthRefreshTokenConfigPath, &value));
-  EXPECT_EQ("TEST_REFRESH_TOKEN", value);
-  EXPECT_TRUE(target->GetString(kHostIdConfigPath, &value));
-  EXPECT_EQ("TEST_HOST_ID", value);
-  EXPECT_TRUE(target->GetString(kHostNameConfigPath, &value));
-  EXPECT_EQ("TEST_MACHINE_NAME", value);
-  EXPECT_TRUE(target->GetString(kPrivateKeyConfigPath, &value));
-  EXPECT_EQ("TEST_PRIVATE_KEY", value);
+  std::string* value = target->FindStringKey(kXmppLoginConfigPath);
+  EXPECT_EQ("test@gmail.com", *value);
+  value = target->FindStringKey(kOAuthRefreshTokenConfigPath);
+  EXPECT_EQ("TEST_REFRESH_TOKEN", *value);
+  value = target->FindStringKey(kHostIdConfigPath);
+  EXPECT_EQ("TEST_HOST_ID", *value);
+  value = target->FindStringKey(kHostNameConfigPath);
+  EXPECT_EQ("TEST_MACHINE_NAME", *value);
+  value = target->FindStringKey(kPrivateKeyConfigPath);
+  EXPECT_EQ("TEST_PRIVATE_KEY", *value);
 
-  EXPECT_FALSE(target->GetString("non_existent_value", &value));
+  value = target->FindStringKey("non_existent_value");
+  EXPECT_EQ(nullptr, value);
 }
 
 TEST_F(HostConfigTest, Write) {
@@ -77,30 +77,27 @@ TEST_F(HostConfigTest, Write) {
 
   base::FilePath test_file = test_dir_.GetPath().AppendASCII("write.json");
   WriteTestFile(test_file);
-  std::unique_ptr<base::DictionaryValue> target(
-      HostConfigFromJsonFile(test_file));
-  ASSERT_TRUE(target);
+  absl::optional<base::Value> target(HostConfigFromJsonFile(test_file));
+  ASSERT_TRUE(target.has_value());
 
   std::string new_refresh_token_value = "NEW_REFRESH_TOKEN";
-  target->SetString(kOAuthRefreshTokenConfigPath, new_refresh_token_value);
+  target->SetStringKey(kOAuthRefreshTokenConfigPath, new_refresh_token_value);
   ASSERT_TRUE(HostConfigToJsonFile(*target, test_file));
 
   // Now read the file again and check that the value has been written.
-  std::unique_ptr<base::DictionaryValue> reader(
-      HostConfigFromJsonFile(test_file));
+  absl::optional<base::Value> reader(HostConfigFromJsonFile(test_file));
   ASSERT_TRUE(reader);
 
-  std::string value;
-  EXPECT_TRUE(reader->GetString(kXmppLoginConfigPath, &value));
-  EXPECT_EQ("test@gmail.com", value);
-  EXPECT_TRUE(reader->GetString(kOAuthRefreshTokenConfigPath, &value));
-  EXPECT_EQ(new_refresh_token_value, value);
-  EXPECT_TRUE(reader->GetString(kHostIdConfigPath, &value));
-  EXPECT_EQ("TEST_HOST_ID", value);
-  EXPECT_TRUE(reader->GetString(kHostNameConfigPath, &value));
-  EXPECT_EQ("TEST_MACHINE_NAME", value);
-  EXPECT_TRUE(reader->GetString(kPrivateKeyConfigPath, &value));
-  EXPECT_EQ("TEST_PRIVATE_KEY", value);
+  std::string* value = target->FindStringKey(kXmppLoginConfigPath);
+  EXPECT_EQ("test@gmail.com", *value);
+  value = target->FindStringKey(kOAuthRefreshTokenConfigPath);
+  EXPECT_EQ(new_refresh_token_value, *value);
+  value = target->FindStringKey(kHostIdConfigPath);
+  EXPECT_EQ("TEST_HOST_ID", *value);
+  value = target->FindStringKey(kHostNameConfigPath);
+  EXPECT_EQ("TEST_MACHINE_NAME", *value);
+  value = target->FindStringKey(kPrivateKeyConfigPath);
+  EXPECT_EQ("TEST_PRIVATE_KEY", *value);
 }
 
 }  // namespace remoting
