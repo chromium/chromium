@@ -20,6 +20,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
@@ -183,6 +184,8 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
     blink::features::kPortals,
     // TODO(crbug.com/1144912): Support BackForwardCache on WebLayer.
     ::features::kBackForwardCache,
+    // TODO(crbug.com/1247836): Enable TFLite/Optimization Guide on WebLayer.
+    translate::kTFLiteLanguageDetectionEnabled,
 
 #if defined(OS_ANDROID)
     // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.

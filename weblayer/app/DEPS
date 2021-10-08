@@ -5,6 +5,7 @@ include_rules = [
   "+components/variations",
   "+components/version_info",
   "+components/viz/common",
+  "+components/translate/core/common",
   "+content/public",
   "+device/base/features.h",
   "+media/base/media_switches.h",
