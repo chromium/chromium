@@ -46119,6 +46119,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
 </enum>
 
+<enum name="LanguageUsage.UI.Android.LocaleUpdateStatus">
+  <int value="0" label="No change"/>
+  <int value="1" label="Override language changed"/>
+  <int value="2" label="Overriden system locales changed"/>
+  <int value="3" label="No override top locale changed"/>
+  <int value="4" label="No override other locales changed"/>
+  <int value="5" label="First run, locales initiated"/>
+</enum>
+
 <enum name="LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage">
   <int value="0" label="Different base language"/>
   <int value="1" label="Same base language"/>

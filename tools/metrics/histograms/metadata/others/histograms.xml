@@ -8954,6 +8954,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="LanguageUsage.UI.Android.IsLocaleUpdated"
+    enum="LanguageUsage.UI.Android.LocaleUpdateStatus"
+    expires_after="2022-01-30">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Records if and how the system or override locale has changed. The status is
+    found by comparing the current system locale to the previous system locale.
+    The system locale is a list of locales and if overriden the override locale
+    is prepended to the front.
+
+    This histogram is recorded during onForgroundStart() for Android.
+  </summary>
+</histogram>
+
 <histogram name="LanguageUsage.UI.Android.OverrideLanguage"
     enum="LocaleCodeISO639" expires_after="2022-04-03">
   <owner>perrier@chromium.org</owner>
