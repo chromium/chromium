@@ -39,6 +39,8 @@ const base::Feature kEnableArcNearbyShare{"ArcNearbySharing",
 //    green (it should always be because arc.Boot is a critical test.)
 // 2) Change the default value of this feature to FEATURE_DISABLED_BY_DEFAULT.
 // 3) Monitor arc.Boot.vm at go/stainless after Chrome is rolled.
+// 4) Ask ARC team (//components/arc/OWNERS) to update arc.CPUSet.vm test so the
+//    Tast test uses the updated ArcEnablePerVmCoreScheduling setting.
 const base::Feature kEnablePerVmCoreScheduling{
     "ArcEnablePerVmCoreScheduling", base::FEATURE_ENABLED_BY_DEFAULT};
 
