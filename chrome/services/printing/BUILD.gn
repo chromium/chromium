@@ -37,7 +37,6 @@ source_set("lib") {
       "//printing",
       "//printing/backend",
       "//printing/mojom",
-      "//ui/gfx",
     ]
   }
 
@@ -70,7 +69,10 @@ source_set("lib") {
       "pdf_to_emf_converter_factory.h",
     ]
 
-    deps += [ "//skia" ]
+    deps += [
+      "//skia",
+      "//ui/gfx",
+    ]
   }
 
   if (enable_oop_printing) {
@@ -88,6 +90,7 @@ source_set("lib") {
     deps += [
       "//chrome/common/printing",
       "//components/crash/core/common",
+      "//ui/gfx",
     ]
   }
 }
