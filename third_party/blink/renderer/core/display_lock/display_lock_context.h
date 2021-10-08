@@ -465,6 +465,10 @@ class CORE_EXPORT DisplayLockContext final
   // slot or the hidden=until-found attribute, then this lock must activate
   // during find-in-page.
   bool activate_for_find_in_page_ = false;
+
+  // If we have pending subtree checks, it means we should check for selection
+  // and focus at the start of the next frame.
+  bool has_pending_subtree_checks_ = false;
 };
 
 }  // namespace blink

@@ -118,6 +118,10 @@ class DisplayLockContextTest
     return web_view_helper_.LocalMainFrame();
   }
 
+  FrameSelection& Selection() {
+    return LocalMainFrame()->GetFrame()->Selection();
+  }
+
   void UpdateAllLifecyclePhasesForTest() {
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   }
@@ -170,6 +174,11 @@ class DisplayLockContextTest
 
   bool ReattachWasBlocked(DisplayLockContext* context) {
     return context->blocked_child_recalc_change_.ReattachLayoutTree();
+  }
+
+  bool HasSelection(DisplayLockContext* context) {
+    return context->render_affecting_state_[static_cast<int>(
+        DisplayLockContext::RenderAffectingState::kSubtreeHasSelection)];
   }
 
   const int FAKE_FIND_ID = 1;
@@ -3572,4 +3581,45 @@ TEST_F(DisplayLockContextTest, DisconnectedElementIsUnlocked) {
   EXPECT_FALSE(context->IsLocked());
   EXPECT_EQ(context->GetState(), EContentVisibility::kVisible);
 }
+
+TEST_F(DisplayLockContextTest, ConnectedElementDefersSubtreeChecks) {
+  ResizeAndFocus();
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    .spacer { height: 3000px; }
+    .locked { content-visibility: auto; }
+    </style>
+    <div id="s1" class="spacer">first spacer</div>
+    <div id="s2" class="spacer">second spacer</div>
+    <div id="locked" class="locked">locked container</div>
+  )HTML");
+
+  auto* locked = GetDocument().getElementById("locked");
+  auto* context = locked->GetDisplayLockContext();
+  ASSERT_TRUE(context);
+  EXPECT_TRUE(context->IsLocked());
+
+  auto* range = GetDocument().createRange();
+  range->setStart(GetDocument().getElementById("s1")->firstChild(), 0);
+  range->setEnd(GetDocument().getElementById("s2")->firstChild(), 5);
+
+  Selection().SetSelectionAndEndTyping(
+      SelectionInDOMTree::Builder()
+          .SetBaseAndExtent(EphemeralRange(range))
+          .Build());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(HasSelection(context));
+
+  GetDocument().body()->insertBefore(locked,
+                                     GetDocument().getElementById("s2"));
+
+  EXPECT_FALSE(HasSelection(context));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(HasSelection(context));
+}
+
 }  // namespace blink

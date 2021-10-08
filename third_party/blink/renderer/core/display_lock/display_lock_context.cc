@@ -261,7 +261,8 @@ void DisplayLockContext::UpdateActivationObservationIfNeeded() {
 bool DisplayLockContext::NeedsLifecycleNotifications() const {
   return needs_deferred_not_intersecting_signal_ ||
          render_affecting_state_[static_cast<int>(
-             RenderAffectingState::kAutoStateUnlockedUntilLifecycle)];
+             RenderAffectingState::kAutoStateUnlockedUntilLifecycle)] ||
+         has_pending_subtree_checks_;
 }
 
 void DisplayLockContext::UpdateLifecycleNotificationRegistration() {
@@ -874,6 +875,14 @@ void DisplayLockContext::WillStartLifecycleUpdate(const LocalFrameView& view) {
     DCHECK(!render_affecting_state_[static_cast<int>(
         RenderAffectingState::kAutoStateUnlockedUntilLifecycle)]);
   }
+
+  if (has_pending_subtree_checks_) {
+    DetermineIfSubtreeHasFocus();
+    DetermineIfSubtreeHasSelection();
+
+    has_pending_subtree_checks_ = false;
+    UpdateLifecycleNotificationRegistration();
+  }
 }
 
 void DisplayLockContext::NotifyWillDisconnect() {
@@ -898,8 +907,14 @@ void DisplayLockContext::ElementDisconnected() {
 void DisplayLockContext::ElementConnected() {
   // When connecting the element, we should not have a style.
   DCHECK(!element_->GetComputedStyle());
-  DetermineIfSubtreeHasFocus();
-  DetermineIfSubtreeHasSelection();
+
+  // We can't check for subtree selection / focus here, since we are likely in
+  // slot reassignment forbidden scope. However, walking the subtree may need
+  // this reassignment. This is fine, since the state check can be deferred
+  // until the beginning of the next frame.
+  has_pending_subtree_checks_ = true;
+  UpdateLifecycleNotificationRegistration();
+  ScheduleAnimation();
 }
 
 void DisplayLockContext::ScheduleAnimation() {
