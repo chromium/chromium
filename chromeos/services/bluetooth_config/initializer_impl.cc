@@ -31,9 +31,11 @@ std::unique_ptr<DeviceNameManager> InitializerImpl::CreateDeviceNameManager(
 
 std::unique_ptr<DeviceCache> InitializerImpl::CreateDeviceCache(
     AdapterStateController* adapter_state_controller,
-    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceNameManager* device_name_manager) {
   return std::make_unique<DeviceCacheImpl>(adapter_state_controller,
-                                           std::move(bluetooth_adapter));
+                                           std::move(bluetooth_adapter),
+                                           device_name_manager);
 }
 
 std::unique_ptr<DiscoverySessionManager>

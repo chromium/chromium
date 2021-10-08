@@ -9,6 +9,7 @@
 #include "base/scoped_observation.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
+#include "chromeos/services/bluetooth_config/device_name_manager.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -24,10 +25,12 @@ namespace bluetooth_config {
 // returned unless Bluetooth is enabled or enabling.
 class DeviceCacheImpl : public DeviceCache,
                         public AdapterStateController::Observer,
-                        public device::BluetoothAdapter::Observer {
+                        public device::BluetoothAdapter::Observer,
+                        public DeviceNameManager::Observer {
  public:
   DeviceCacheImpl(AdapterStateController* adapter_state_controller,
-                  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
+                  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+                  DeviceNameManager* device_name_manager);
   ~DeviceCacheImpl() override;
 
  private:
@@ -72,15 +75,12 @@ class DeviceCacheImpl : public DeviceCache,
       device::BluetoothDevice* device,
       absl::optional<uint8_t> new_battery_percentage) override;
 
+  // DeviceNameManager::Observer:
+  void OnDeviceNicknameChanged(const std::string& device_id) override;
+
   // Fetches all known devices from BluetoothAdapter and populates them into
   // |paired_devices_| and |unpaired_devices_|.
   void FetchInitialDeviceLists();
-
-  // Sorts |paired_devices_| based on connection state. This function is called
-  // each time a device is added to the list. This is not particularly
-  // efficient, but the list is expected to be small and is only sorted when its
-  // contents change.
-  void SortPairedDeviceList();
 
   // Adds |device| to |paired_devices_|, but only if |device| is paired. If the
   // device was already present in the list, this function updates its metadata
@@ -97,11 +97,11 @@ class DeviceCacheImpl : public DeviceCache,
   // Returns true if the device was updated in the list.
   bool AttemptUpdatePairedDeviceMetadata(device::BluetoothDevice* device);
 
-  // Sorts |unpaired_devices_| based on signal strength. This function is called
+  // Sorts |paired_devices_| based on connection state. This function is called
   // each time a device is added to the list. This is not particularly
   // efficient, but the list is expected to be small and is only sorted when its
   // contents change.
-  void SortUnpairedDeviceList();
+  void SortPairedDeviceList();
 
   // Adds |device| to |unpaired_devices_|, but only if |device| is unpaired. If
   // the device was already present in the list, this function updates its
@@ -118,7 +118,18 @@ class DeviceCacheImpl : public DeviceCache,
   // Returns true if the device was updated in the list.
   bool AttemptUpdateUnpairedDeviceMetadata(device::BluetoothDevice* device);
 
+  // Sorts |unpaired_devices_| based on signal strength. This function is called
+  // each time a device is added to the list. This is not particularly
+  // efficient, but the list is expected to be small and is only sorted when its
+  // contents change.
+  void SortUnpairedDeviceList();
+
+  mojom::PairedBluetoothDevicePropertiesPtr
+  GeneratePairedBluetoothDeviceProperties(
+      const device::BluetoothDevice* device);
+
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+  DeviceNameManager* device_name_manager_;
 
   // Sorted by connection status.
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices_;
@@ -132,6 +143,8 @@ class DeviceCacheImpl : public DeviceCache,
   base::ScopedObservation<device::BluetoothAdapter,
                           device::BluetoothAdapter::Observer>
       adapter_observation_{this};
+  base::ScopedObservation<DeviceNameManager, DeviceNameManager::Observer>
+      device_name_manager_observation_{this};
 };
 
 }  // namespace bluetooth_config
