@@ -1063,7 +1063,13 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
       // Fall back on the main data pack (shouldn't be any strings here except
       // in unittests).
       data = GetRawDataResource(resource_id);
-      CHECK(!data.empty()) << "Unable to find resource: " << resource_id;
+      CHECK(!data.empty())
+          << "Unable to find resource: " << resource_id
+          << ". If this happens in a browser test running on Windows, it may "
+             "be that dead-code elimination stripped out the code that uses the"
+             " resource, causing the resource to be stripped out because the "
+             "resource is not used by chrome.dll. See "
+             "https://crbug.com/1181150.";
     }
   }
 
