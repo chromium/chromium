@@ -166,7 +166,7 @@ class ShellVariationsServiceClient
     return nullptr;
   }
   version_info::Channel GetChannel() override {
-    return version_info::Channel::STABLE;
+    return version_info::Channel::UNKNOWN;
   }
   bool OverridesRestrictParameter(std::string* parameter) override {
     return false;
