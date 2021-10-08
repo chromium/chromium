@@ -85,7 +85,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -550,7 +549,6 @@ public class InstantStartTest {
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
         ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH,
         "force-fieldtrials=Study/Group",
         IMMEDIATE_RETURN_PARAMS +
             "/start_surface_variation/single" +
@@ -988,7 +986,6 @@ public class InstantStartTest {
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
             ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EXPLORE_SITES})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-            FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS +
                     "/start_surface_variation/single/exclude_mv_tiles/false"})
