@@ -533,11 +533,7 @@ template("ios_info_plist") {
 
   apple_info_plist(target_name) {
     format = "binary1"
-    extra_substitutions = []
-    if (defined(invoker.extra_substitutions)) {
-      extra_substitutions = invoker.extra_substitutions
-    }
-    extra_substitutions += [
+    extra_substitutions = [
       "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix",
       "IOS_PLATFORM_BUILD=$ios_platform_build",
       "IOS_PLATFORM_NAME=$ios_sdk_name",
@@ -550,6 +546,9 @@ template("ios_info_plist") {
       "XCODE_BUILD=$xcode_build",
       "XCODE_VERSION=$xcode_version",
     ]
+    if (defined(invoker.extra_substitutions)) {
+      extra_substitutions += invoker.extra_substitutions
+    }
     plist_templates = [
       "//build/config/ios/BuildInfo.plist",
       _info_plist,
@@ -830,18 +829,16 @@ template("ios_app_bundle") {
     ios_info_plist(_generate_info_plist) {
       forward_variables_from(invoker,
                              [
-                               "extra_substitutions",
                                "info_plist",
                                "info_plist_target",
                              ])
 
       executable_name = _output_name
 
-      if (!defined(extra_substitutions)) {
-        extra_substitutions = []
+      extra_substitutions = [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
+      if (defined(invoker.extra_substitutions)) {
+        extra_substitutions += invoker.extra_substitutions
       }
-
-      extra_substitutions += [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
     }
 
     if (!is_fat_secondary_toolchain) {
@@ -1557,16 +1554,14 @@ template("ios_framework_bundle") {
       executable_name = _output_name
       forward_variables_from(invoker,
                              [
-                               "extra_substitutions",
                                "info_plist",
                                "info_plist_target",
                              ])
 
-      if (!defined(extra_substitutions)) {
-        extra_substitutions = []
+      extra_substitutions = [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
+      if (defined(invoker.extra_substitutions)) {
+        extra_substitutions += invoker.extra_substitutions
       }
-
-      extra_substitutions += [ "BUNDLE_IDENTIFIER=$_bundle_identifier" ]
     }
 
     bundle_data(_info_plist_bundle) {
