@@ -74,6 +74,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.DeepScanType" enum="SBDeepScanType"
+    expires_after="2022-09-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the type of scan each time a download item starts a deep scan. This
+    is logged on every deep scan.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.DmgFileSuccessByType"
     enum="SBClientDownloadExtensions" expires_after="M90">
   <obsolete>
@@ -329,6 +339,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="VIDEO" summary="video"/>
     <variant name="WEB" summary="web"/>
   </token>
+</histogram>
+
+<histogram name="SBClientDownload.SavePackageFileCount" units="files"
+    expires_after="2022-09-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the number of files corresponding to a single save package being
+    scanned. This is logged on every save package deep scan.
+  </summary>
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt"

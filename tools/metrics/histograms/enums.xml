@@ -74607,6 +74607,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Enterprise policy"/>
 </enum>
 
+<enum name="SBDeepScanType">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Save Package"/>
+</enum>
+
 <enum name="SBDownloadFeedbackUploadResult">
   <int value="0" label="UPLOAD_SUCCESS"/>
   <int value="1" label="UPLOAD_CANCELLED"/>

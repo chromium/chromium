@@ -310,6 +310,8 @@ DeepScanningRequest::DeepScanningRequest(
       pending_scan_requests_(1),
       pre_scan_download_check_result_(pre_scan_download_check_result),
       weak_ptr_factory_(this) {
+  base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
+                                DeepScanType::NORMAL);
   item_->AddObserver(this);
 }
 
@@ -329,6 +331,10 @@ DeepScanningRequest::DeepScanningRequest(
       pending_scan_requests_(save_package_files_.size()),
       pre_scan_download_check_result_(pre_scan_download_check_result),
       weak_ptr_factory_(this) {
+  base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
+                                DeepScanType::SAVE_PACKAGE);
+  base::UmaHistogramCounts10000("SBClientDownload.SavePackageFileCount",
+                                save_package_files_.size());
   item_->AddObserver(this);
 }
 

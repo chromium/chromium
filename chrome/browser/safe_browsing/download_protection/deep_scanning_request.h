@@ -49,6 +49,19 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
     kMaxValue = TRIGGER_POLICY,
   };
 
+  // Enum representing the type of constructor that initiated scanning.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class DeepScanType {
+    // Scanning was initiated by a normal download from a web page.
+    NORMAL = 0,
+
+    // Scanning was initiated by a save package being saved on disk.
+    SAVE_PACKAGE = 1,
+
+    kMaxValue = SAVE_PACKAGE,
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     ~Observer() override = default;
