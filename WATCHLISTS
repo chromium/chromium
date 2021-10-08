@@ -489,6 +489,7 @@
       'filepath': 'third_party/blink/renderer/core/.*prerender' \
                   '|third_party/blink/renderer/core/loader/link_loader' \
                   '|third_party/blink/public/mojom/prerender/' \
+                  '|third_party/blink/web_tests/external/wpt/speculation-rules/prerender/' \
                   '|third_party/blink/web_tests/wpt_internal/prerender/'
     },
     'blink_public_api': {
@@ -1578,6 +1579,7 @@
     },
     'prerender': {
       'filepath': 'chrome/browser/chrome_content_browser_client_binder_policies' \
+                  '|chrome/browser/prerender/' \
                   '|content/browser/mojo_binder_policy' \
                   '|content/browser/prerender/'
     },
