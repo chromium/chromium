@@ -1540,6 +1540,9 @@ void V4L2SliceVideoDecodeAccelerator::ImportBufferForPictureTask(
   if (IsDestroyPending())
     return;
 
+  if (surface_set_change_pending_)
+    return;
+
   const auto iter =
       std::find_if(output_buffer_map_.begin(), output_buffer_map_.end(),
                    [picture_buffer_id](const OutputRecord& output_record) {
