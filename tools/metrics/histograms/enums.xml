@@ -19564,6 +19564,7 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="Keyboard shortcut"/>
   <int value="2" label="Desks restore on first signin"/>
   <int value="3" label="Template Launched"/>
+  <int value="4" label="Drag and drop window on the new desk button"/>
 </enum>
 
 <enum name="DesksMoveWindowFromActiveDeskSource">

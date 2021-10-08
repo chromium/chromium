@@ -385,6 +385,10 @@ const base::Feature kDockedMagnifier{"DockedMagnifier",
 const base::Feature kDragUnpinnedAppToPin{"DragUnpinnedAppToPin",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables dragging and dropping an existing window to new desk in overview.
+const base::Feature kDragWindowToNewDesk{"DragWindowToNewDesk",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, DriveFS will be used for Drive sync.
 const base::Feature kDriveFs{"DriveFS", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -1359,6 +1363,10 @@ bool IsDisplayAlignmentAssistanceEnabled() {
 
 bool IsDragUnpinnedAppToPinEnabled() {
   return base::FeatureList::IsEnabled(kDragUnpinnedAppToPin);
+}
+
+bool IsDragWindowToNewDeskEnabled() {
+  return base::FeatureList::IsEnabled(kDragWindowToNewDesk);
 }
 
 bool IsEcheSWAEnabled() {

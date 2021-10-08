@@ -33,6 +33,8 @@ class ASH_EXPORT DeskButtonBase
                  int corner_radius);
   ~DeskButtonBase() override = default;
 
+  WmHighlightItemBorder* border_ptr() { return border_ptr_; }
+
   // LabelButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;

@@ -33,6 +33,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -189,7 +190,6 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
   // views::LayoutManager:
   void Layout(views::View* host) override {
     const gfx::Rect scroll_bounds = bar_view_->scroll_view_->bounds();
-
 
     // |host| here is |scroll_view_contents_|.
     // TODO(crbug.com/1255185): Make templates button compatible with zero
@@ -357,14 +357,16 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
           this, &kDesksNewDeskButtonIcon,
           l10n_util::GetStringUTF16(IDS_ASH_DESKS_NEW_DESK_BUTTON),
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
-                              base::Unretained(this))));
+                              base::Unretained(this),
+                              DesksCreationRemovalSource::kButton)));
   zero_state_default_desk_button_ = scroll_view_contents_->AddChildView(
       std::make_unique<ZeroStateDefaultDeskButton>(this));
   zero_state_new_desk_button_ =
       scroll_view_contents_->AddChildView(std::make_unique<ZeroStateIconButton>(
           &kDesksNewDeskButtonIcon,
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
-                              base::Unretained(this))));
+                              base::Unretained(this),
+                              DesksCreationRemovalSource::kButton)));
   if (features::AreDesksTemplatesEnabled()) {
     // TODO(sophiewen): u"Templates" should be replaced with the localized name
     // for the "Templates" desk label.
@@ -496,6 +498,11 @@ void DesksBarView::SetDragDetails(const gfx::Point& screen_location,
 
   for (auto* mini_view : mini_views_)
     mini_view->UpdateBorderColor();
+
+  if (features::IsDragWindowToNewDeskEnabled() &&
+      DesksController::Get()->CanCreateDesks()) {
+    expanded_state_new_desk_button()->UpdateBorderColor();
+  }
 }
 
 bool DesksBarView::IsZeroState() const {
@@ -649,6 +656,16 @@ void DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   } else {
     FinalizeDragDesk();
   }
+}
+
+void DesksBarView::OnNewDeskButtonPressed(
+    DesksCreationRemovalSource desks_creation_removal_source) {
+  auto* controller = DesksController::Get();
+  if (!controller->CanCreateDesks())
+    return;
+  set_should_name_nudge(true);
+  controller->NewDesk(desks_creation_removal_source);
+  expanded_state_new_desk_button_->UpdateButtonState();
 }
 
 void DesksBarView::FinalizeDragDesk() {
@@ -1130,15 +1147,6 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
       adjusted_position = mini_views_[i + 1]->bounds().x();
   }
   return adjusted_position;
-}
-
-void DesksBarView::OnNewDeskButtonPressed() {
-  auto* controller = DesksController::Get();
-  if (!controller->CanCreateDesks())
-    return;
-  set_should_name_nudge(true);
-  controller->NewDesk(DesksCreationRemovalSource::kButton);
-  expanded_state_new_desk_button_->UpdateButtonState();
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {

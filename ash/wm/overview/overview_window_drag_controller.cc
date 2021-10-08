@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/screen_util.h"
@@ -77,6 +78,11 @@ void UnpauseOcclusionTracker() {
 }
 
 bool GetVirtualDesksBarEnabled(OverviewItem* item) {
+  // If |kDragWindowToNewDesk| is enabled, we will allow drag and drop a window
+  // to a new desk even if the desks bar view is at zero state. Therefore no
+  // need to check |overview_grid()->IsDesksBarViewActive()| here.
+  if (features::IsDragWindowToNewDeskEnabled())
+    return desks_util::ShouldDesksBarBeCreated();
   return desks_util::ShouldDesksBarBeCreated() &&
          item->overview_grid()->IsDesksBarViewActive();
 }
@@ -298,6 +304,11 @@ void OverviewWindowDragController::StartNormalDragMode(
       OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW);
   original_scaled_size_ = item_->target_bounds().size();
   auto* overview_grid = item_->overview_grid();
+  // If |kDragWindowToNewDesk| is enabled, we need to transform desks bar view
+  // to expanded state if it's at zero state to make user be able to drop the
+  // dragged window on the expanded state new desk button.
+  if (features::IsDragWindowToNewDeskEnabled())
+    overview_grid->MaybeExpandDesksBarView();
   overview_grid->AddDropTargetForDraggingFromThisGrid(item_);
 
   if (should_allow_split_view_) {
@@ -642,8 +653,8 @@ OverviewWindowDragController::CompleteNormalDrag(
     item_->SetOpacity(original_opacity_);
 
     // Attempt to move a window to a different desk.
-    if (current_grid->MaybeDropItemOnDeskMiniView(rounded_screen_point,
-                                                  item_)) {
+    if (current_grid->MaybeDropItemOnDeskMiniViewOrNewDeskButton(
+            rounded_screen_point, item_)) {
       // Window was successfully moved to another desk, and |item_| was
       // removed from the grid. It may never be accessed after this.
       item_ = nullptr;

@@ -301,10 +301,17 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Updates the drag details for DesksBarView to end the drag and move the
   // window of |drag_item| to another desk if it was dropped on a mini_view of
-  // a desk that is different than that of the active desk.
-  // Returns true if the window was successfully moved to another desk.
-  bool MaybeDropItemOnDeskMiniView(const gfx::Point& screen_location,
-                                   OverviewItem* drag_item);
+  // a desk that is different than that of the active desk or if dropped on the
+  // new desk button. Returns true if the window was successfully moved to
+  // another desk.
+  bool MaybeDropItemOnDeskMiniViewOrNewDeskButton(
+      const gfx::Point& screen_location,
+      OverviewItem* drag_item);
+
+  // Updates |desks_bar_views| from zero state to expanded state. Called when a
+  // normal drag starts to enable user dragging a window and dropping it to the
+  // new desk.
+  void MaybeExpandDesksBarView();
 
   // Prepares the |scroll_offset_min_| as a limit for |scroll_offset| from
   // scrolling or positioning windows too far offscreen.
