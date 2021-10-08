@@ -609,19 +609,12 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     this.textEditHandler_ = null;
 
     chrome.automation.getFocus((focus) => {
-      const target = evt.target;
-
       // Desktop tabs get "selection" when there's a focused webview during
-      // tab switching. Read it, but don't steal focus which is on the
-      // omnibox. We have to resort to this check to get tab switching read out
-      // because on switching to a new tab, focus actually remains on the *same*
+      // tab switching. Read it, but don't steal focus which is usually on the
       // omnibox.
-      const currentRange = ChromeVoxState.instance.currentRange;
-      if (target.role === RoleType.TAB &&
-          target.root.role === RoleType.DESKTOP && currentRange &&
-          currentRange.start && currentRange.start.node &&
-          currentRange.start.node.className === 'OmniboxViewViews') {
-        const range = cursors.Range.fromNode(target);
+      if (evt.target.role === RoleType.TAB &&
+          evt.target.root.role === RoleType.DESKTOP) {
+        const range = cursors.Range.fromNode(evt.target);
         new Output()
             .withRichSpeechAndBraille(range, range, OutputEventType.NAVIGATE)
             .go();
@@ -630,35 +623,31 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
 
       let override = false;
       const isDesktop =
-          (target.root === focus.root && focus.root.role === RoleType.DESKTOP);
-
-      // TableView fires selection events on rows/cells
-      // and we want to ignore those because it also fires focus events.
-      if (isDesktop && target.role === RoleType.CELL ||
-          target.role === RoleType.ROW) {
-        return;
-      }
+          (evt.target.root === focus.root &&
+           focus.root.role === RoleType.DESKTOP);
 
       // Menu items and IME candidates always announce on selection events,
       // independent of focus.
-      if (AutomationPredicate.menuItem(target) ||
-          target.role === RoleType.IME_CANDIDATE) {
+      if (AutomationPredicate.menuItem(evt.target) ||
+          evt.target.role === RoleType.IME_CANDIDATE) {
         override = true;
       }
 
-      // Overview mode should allow selections.
+      // Selection events that happen in native UI (the desktop tree) should
+      // generally announce as long as focus isn't in some other tree; this is
+      // all first-party code that's firing the event for a good reason.
       if (isDesktop) {
-        let walker = target;
-        while (walker && walker.className !== 'VirtualDesksWidget' &&
-               walker.className !== 'OverviewModeLabel' &&
-               walker.className !== 'Desk_Container_A') {
-          walker = walker.parent;
+        // TableView is an exception; it fires selection events on rows/cells
+        // and we want to ignore those because it also fires focus events.
+        if (evt.target.role === RoleType.CELL ||
+            evt.target.role === RoleType.ROW) {
+          return;
         }
 
-        override = !!walker || override;
+        override = true;
       }
 
-      if (override || AutomationUtil.isDescendantOf(target, focus)) {
+      if (override || AutomationUtil.isDescendantOf(evt.target, focus)) {
         this.onEventDefault(evt);
       }
     });
@@ -791,13 +780,6 @@ DesktopAutomationHandler = class extends BaseAutomationHandler {
     if (pos && url.indexOf('chrome://') !== 0) {
       focusedRoot.hitTestWithReply(
           pos.x, pos.y, this.onHitTestResult.bind(this));
-      return;
-    }
-
-    // If range is already on |focus|, exit early to prevent duplicating output.
-    const currentRange = ChromeVoxState.instance.currentRange;
-    if (currentRange && currentRange.start && currentRange.start.node &&
-        currentRange.start.node === focus) {
       return;
     }
 
