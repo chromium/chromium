@@ -23,9 +23,6 @@ using GarbageCollected = cppgc::GarbageCollected<T>;
 // collected type.
 template <typename T, typename... Args>
 T* MakeGarbageCollected(Args&&... args) {
-  static_assert(alignof(T) <= 8,
-                "TODO(v8:12295): Oilpan does not yet support types with >8 "
-                "bytes of alignment.");
   return cppgc::MakeGarbageCollected<T>(
       ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
           ->allocation_handle(),
@@ -38,9 +35,6 @@ using AdditionalBytes = cppgc::AdditionalBytes;
 // version takes size which enables constructing inline objects.
 template <typename T, typename... Args>
 T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
-  static_assert(alignof(T) <= 8,
-                "TODO(v8:12295): Oilpan does not yet support types with >8 "
-                "bytes of alignment.");
   return cppgc::MakeGarbageCollected<T>(
       ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
           ->allocation_handle(),
