@@ -23,7 +23,7 @@
       "v8_enable_verify_heap": true
     }
   },
-  "ASAN Release Media (reclient_shadow)": {
+  "ASAN Release Media (reclient shadow)": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",
