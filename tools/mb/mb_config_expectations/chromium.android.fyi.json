@@ -60,6 +60,14 @@
       "use_goma": true
     }
   },
+  "android-annotator-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
   "android-pie-arm64-wpt-rel-non-cq": {
     "gn_args": {
       "dcheck_always_on": false,

@@ -5430,6 +5430,15 @@
       }
     ]
   },
+  "android-annotator-rel": {
+    "scripts": [
+      {
+        "name": "test_traffic_annotation_auditor",
+        "script": "test_traffic_annotation_auditor.py",
+        "swarming": {}
+      }
+    ]
+  },
   "android-cronet-x86-dbg-11-tests": {
     "gtest_tests": [
       {

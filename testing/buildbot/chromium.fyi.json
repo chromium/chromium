@@ -4187,15 +4187,6 @@
       }
     ]
   },
-  "android-annotator-rel": {
-    "scripts": [
-      {
-        "name": "test_traffic_annotation_auditor",
-        "script": "test_traffic_annotation_auditor.py",
-        "swarming": {}
-      }
-    ]
-  },
   "android-backuprefptr-arm-fyi-rel": {
     "gtest_tests": [
       {

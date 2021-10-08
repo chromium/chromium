@@ -1135,6 +1135,12 @@
           'gtest_tests': 'android_12_emulator_gtests',
         }
       },
+      'android-annotator-rel': {
+          'test_suites': {
+            'scripts': 'test_traffic_annotation_auditor_script',
+          },
+          'os_type': 'android',
+      },
       'android-cronet-x86-dbg-11-tests': {
         'mixins': [
           '11-x86-emulator',
@@ -2820,12 +2826,6 @@
           'gtest_tests': 'chromium_win10_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
-      },
-      'android-annotator-rel': {
-          'test_suites': {
-            'scripts': 'test_traffic_annotation_auditor_script',
-          },
-          'os_type': 'android',
       },
       'android-backuprefptr-arm-fyi-rel': {
         'test_suites': {
