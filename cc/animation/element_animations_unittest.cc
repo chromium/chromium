@@ -22,6 +22,7 @@
 #include "cc/test/animation_timelines_test_common.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
 namespace cc {

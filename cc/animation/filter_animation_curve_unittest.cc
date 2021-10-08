@@ -6,13 +6,11 @@
 
 #include <memory>
 
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/transform_operations.h"
-#include "ui/gfx/test/gfx_util.h"
 
 namespace cc {
 namespace {

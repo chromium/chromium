@@ -527,7 +527,6 @@ cc_test_static_library("test_support") {
     "test/fake_ui_resource_layer_tree_host_impl.h",
     "test/fake_video_frame_provider.cc",
     "test/fake_video_frame_provider.h",
-    "test/geometry_test_utils.h",
     "test/layer_test_common.cc",
     "test/layer_test_common.h",
     "test/layer_tree_impl_test_base.cc",

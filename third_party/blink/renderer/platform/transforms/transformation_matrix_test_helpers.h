@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_TRANSFORMATION_MATRIX_TEST_HELPERS_H_
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/test/transform_test_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace blink {
@@ -15,13 +15,11 @@ namespace blink {
 // accommodate precision errors.
 constexpr double kFloatingPointErrorTolerance = 1e-6;
 
-#define EXPECT_TRANSFORMATION_MATRIX(expected, actual) \
-  do {                                                 \
-    SCOPED_TRACE("");                                  \
-    gfx::ExpectTransformationMatrixNear(               \
-        TransformationMatrix::ToTransform(expected),   \
-        TransformationMatrix::ToTransform(actual),     \
-        kFloatingPointErrorTolerance);                 \
+#define EXPECT_TRANSFORMATION_MATRIX(expected, actual)                 \
+  do {                                                                 \
+    EXPECT_TRANSFORM_NEAR(TransformationMatrix::ToTransform(expected), \
+                          TransformationMatrix::ToTransform(actual),   \
+                          kFloatingPointErrorTolerance);               \
   } while (false)
 
 #define EXPECT_FLOAT(expected, actual) \

@@ -47,7 +47,6 @@
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/fake_scoped_ui_resource.h"
 #include "cc/test/fake_video_frame_provider.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/push_properties_counting_layer.h"
@@ -88,6 +87,7 @@
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 #define EXPECT_SCOPED(statements) \
@@ -3737,9 +3737,8 @@ class LayerTreeHostTestDeviceScaleFactorScalesViewportAndLayers
     child_transform.Scale(child->MaximumTilingContentsScale(),
                           child->MaximumTilingContentsScale());
 
-    EXPECT_TRANSFORMATION_MATRIX_EQ(child_transform, child->DrawTransform());
-    EXPECT_TRANSFORMATION_MATRIX_EQ(child_transform,
-                                    child->ScreenSpaceTransform());
+    EXPECT_TRANSFORM_EQ(child_transform, child->DrawTransform());
+    EXPECT_TRANSFORM_EQ(child_transform, child->ScreenSpaceTransform());
 
     EndTest();
   }

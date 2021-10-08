@@ -17,7 +17,6 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/test/fake_output_surface_client.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/resource_provider_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/features.h"
@@ -50,6 +49,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/latency/latency_info.h"
 
 #if defined(USE_OZONE)
@@ -168,8 +168,8 @@ class DefaultOverlayProcessor : public TestOverlayProcessor {
               kAbsoluteError &&
           std::abs(r.height() - candidate.display_rect.height()) <=
               kAbsoluteError) {
-        EXPECT_FLOAT_RECT_EQ(BoundingRect(kUVTopLeft, kUVBottomRight),
-                             candidate.uv_rect);
+        EXPECT_RECTF_EQ(BoundingRect(kUVTopLeft, kUVBottomRight),
+                        candidate.uv_rect);
         if (candidate.clip_rect) {
           EXPECT_EQ(kOverlayClipRect, candidate.clip_rect);
         }
@@ -1152,7 +1152,7 @@ TEST_F(SingleOverlayOnTopTest, OpaqueOverlayDamageSubtract) {
         std::move(surface_damage_rect_list), nullptr, &candidate_list,
         &damage_rect_, &content_bounds_);
 
-    EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
+    EXPECT_EQ(damage_rect_, kExpectedDamage[i]);
   }
 }
 
@@ -1205,7 +1205,7 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayFirstFrameDamage) {
         render_pass_filters, render_pass_backdrop_filters,
         std::move(surface_damage_rect_list), nullptr, &candidate_list,
         &damage_rect_, &content_bounds_);
-    EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
+    EXPECT_EQ(damage_rect_, kExpectedDamage[i]);
   }
 }
 
@@ -1266,7 +1266,7 @@ TEST_F(SingleOverlayOnTopTest, NonOpaquePureOverlayNonOccludingDamage) {
         render_pass_filters, render_pass_backdrop_filters,
         std::move(surface_damage_rect_list), nullptr, &candidate_list,
         &damage_rect_, &content_bounds_);
-    EXPECT_RECT_EQ(damage_rect_, kExpectedDamage[i]);
+    EXPECT_EQ(damage_rect_, kExpectedDamage[i]);
   }
 }
 

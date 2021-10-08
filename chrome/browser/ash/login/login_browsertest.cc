@@ -51,12 +51,9 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/gfx/geometry/test/rect_test_util.h"
 
 namespace ash {
 namespace {
-
-using ::gfx::test::RectContains;
 
 const char kDomainAllowlist[] = "*@example.com";
 const test::UIPath kOfflineLoginBackButton = {"offline-login", "backButton"};
@@ -229,7 +226,7 @@ void TestSystemTrayIsVisible() {
   test::TestPredicateWaiter(
       base::BindRepeating(
           [](const aura::Window* primary_win, const TrayBackgroundView* tray) {
-            if (RectContains(primary_win->bounds(), tray->GetBoundsInScreen()))
+            if (primary_win->bounds().Contains(tray->GetBoundsInScreen()))
               return true;
             LOG(WARNING) << primary_win->bounds().ToString()
                          << " does not contain "

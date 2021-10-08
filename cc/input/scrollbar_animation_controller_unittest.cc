@@ -4,8 +4,9 @@
 
 #include "cc/input/scrollbar_animation_controller.h"
 
+#include <utility>
+
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"

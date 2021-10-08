@@ -12,7 +12,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -117,11 +117,7 @@ TEST(RectTest, Intersect) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
-    Rect ir = IntersectRects(r1, r2);
-    EXPECT_EQ(r3.x(), ir.x());
-    EXPECT_EQ(r3.y(), ir.y());
-    EXPECT_EQ(r3.width(), ir.width());
-    EXPECT_EQ(r3.height(), ir.height());
+    EXPECT_EQ(r3, IntersectRects(r1, r2));
   }
 }
 
@@ -166,11 +162,7 @@ TEST(RectTest, Union) {
     Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
-    Rect u = UnionRects(r1, r2);
-    EXPECT_EQ(r3.x(), u.x());
-    EXPECT_EQ(r3.y(), u.y());
-    EXPECT_EQ(r3.width(), u.width());
-    EXPECT_EQ(r3.height(), u.height());
+    EXPECT_EQ(r3, UnionRects(r1, r2));
   }
 }
 
@@ -220,10 +212,7 @@ TEST(RectTest, AdjustToFit) {
     Rect r3(tests[i].x3, tests[i].y3, tests[i].w3, tests[i].h3);
     Rect u = r1;
     u.AdjustToFit(r2);
-    EXPECT_EQ(r3.x(), u.x());
-    EXPECT_EQ(r3.y(), u.y());
-    EXPECT_EQ(r3.width(), u.width());
-    EXPECT_EQ(r3.height(), u.height());
+    EXPECT_EQ(r3, u);
   }
 }
 

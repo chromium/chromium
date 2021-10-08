@@ -5,9 +5,9 @@
 #include "cc/animation/scroll_offset_animation_curve.h"
 
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 using DurationBehavior = cc::ScrollOffsetAnimationCurve::DurationBehavior;
 

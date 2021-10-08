@@ -8,7 +8,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/content_input_delegate.h"
 #include "chrome/browser/vr/elements/invisible_hit_target.h"
 #include "chrome/browser/vr/elements/rect.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/vr/ui_scene_creator.h"
 #include "chrome/browser/vr/ui_unsupported_mode.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 using ::testing::_;
 using ::testing::InSequence;

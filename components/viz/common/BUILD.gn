@@ -413,6 +413,7 @@ viz_source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:color_space",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/latency",
   ]

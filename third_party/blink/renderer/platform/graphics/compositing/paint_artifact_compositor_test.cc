@@ -17,7 +17,6 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_client.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
@@ -41,6 +40,7 @@
 #include "third_party/blink/renderer/platform/testing/test_paint_artifact.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 
@@ -488,7 +488,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransform) {
     gfx::RectF rect(0, 0, 100, 100);
     layer->ScreenSpaceTransform().TransformRect(&rect);
     if (transform_is_flattened)
-      EXPECT_FLOAT_RECT_EQ(gfx::RectF(0, 0, 50, 100), rect);
+      EXPECT_RECTF_EQ(gfx::RectF(0, 0, 50, 100), rect);
     else
       EXPECT_TRUE(rect.IsEmpty());
   }
@@ -543,7 +543,7 @@ TEST_P(PaintArtifactCompositorTest, FlattensInheritedTransformWithAlias) {
     gfx::RectF rect(0, 0, 100, 100);
     layer->ScreenSpaceTransform().TransformRect(&rect);
     if (transform_is_flattened)
-      EXPECT_FLOAT_RECT_EQ(gfx::RectF(0, 0, 50, 100), rect);
+      EXPECT_RECTF_EQ(gfx::RectF(0, 0, 50, 100), rect);
     else
       EXPECT_TRUE(rect.IsEmpty());
   }

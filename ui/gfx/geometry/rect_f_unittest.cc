@@ -6,7 +6,7 @@
 
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace gfx {
 

@@ -25,7 +25,6 @@
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_layer_tree_host_client.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/stub_layer_tree_host_single_thread_client.h"
 #include "cc/test/test_task_graph_runner.h"
@@ -965,23 +964,20 @@ TEST_F(LayerTest, PushPropertiesAccumulatesUpdateRect) {
   LayerImpl* impl_layer_ptr = host_impl_.active_tree()->LayerById(1);
   test_layer->SetNeedsDisplayRect(gfx::Rect(5, 5));
   test_layer->PushPropertiesTo(impl_layer_ptr);
-  EXPECT_FLOAT_RECT_EQ(gfx::RectF(0.f, 0.f, 5.f, 5.f),
-                       impl_layer_ptr->update_rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 5, 5), impl_layer_ptr->update_rect());
 
   // The LayerImpl's update_rect() should be accumulated here, since we did not
   // do anything to clear it.
   test_layer->SetNeedsDisplayRect(gfx::Rect(10, 10, 5, 5));
   test_layer->PushPropertiesTo(impl_layer_ptr);
-  EXPECT_FLOAT_RECT_EQ(gfx::RectF(0.f, 0.f, 15.f, 15.f),
-                       impl_layer_ptr->update_rect());
+  EXPECT_EQ(gfx::Rect(0, 0, 15, 15), impl_layer_ptr->update_rect());
 
   // If we do clear the LayerImpl side, then the next update_rect() should be
   // fresh without accumulation.
   host_impl_.active_tree()->ResetAllChangeTracking();
   test_layer->SetNeedsDisplayRect(gfx::Rect(10, 10, 5, 5));
   test_layer->PushPropertiesTo(impl_layer_ptr);
-  EXPECT_FLOAT_RECT_EQ(gfx::RectF(10.f, 10.f, 5.f, 5.f),
-                       impl_layer_ptr->update_rect());
+  EXPECT_EQ(gfx::Rect(10, 10, 5, 5), impl_layer_ptr->update_rect());
 }
 
 TEST_F(LayerTest, PushPropertiesCausesLayerPropertyChangedForTransform) {

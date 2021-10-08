@@ -8,13 +8,13 @@
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/fake_raster_source.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {
 namespace {
@@ -1709,7 +1709,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
           test_point);
   EXPECT_FALSE(result_layer);
   EXPECT_FALSE(test_layer->contributes_to_drawn_render_surface());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       expected_screen_space_transform,
       draw_property_utils::ScreenSpaceTransform(
           test_layer,
@@ -1729,7 +1729,7 @@ TEST_F(LayerTreeImplTest, HitTestingTouchHandlerRegionsForLayerThatIsNotDrawn) {
   ASSERT_TRUE(result_layer);
   ASSERT_EQ(test_layer, result_layer);
   EXPECT_FALSE(result_layer->contributes_to_drawn_render_surface());
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       expected_screen_space_transform,
       draw_property_utils::ScreenSpaceTransform(
           test_layer,

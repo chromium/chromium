@@ -28,7 +28,6 @@
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_recording_source.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_layer_tree_host_base.h"
@@ -43,7 +42,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {
 namespace {
@@ -6153,7 +6152,7 @@ TEST_F(LegacySWPictureLayerImplTest, NoTilingsUsesScaleOne) {
   auto* shared_quad_state = render_pass->quad_list.begin()->shared_quad_state;
   // We should use scale 1 here, so the layer rect should be full layer bounds
   // and the transform should be identity.
-  EXPECT_RECT_EQ(gfx::Rect(1000, 10000), shared_quad_state->quad_layer_rect);
+  EXPECT_EQ(gfx::Rect(1000, 10000), shared_quad_state->quad_layer_rect);
   EXPECT_TRUE(shared_quad_state->quad_to_target_transform.IsIdentity());
 }
 

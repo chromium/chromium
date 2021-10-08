@@ -4,7 +4,6 @@
 
 #include "chrome/browser/vr/elements/disc_button.h"
 
-#include "cc/test/geometry_test_utils.h"
 #include "chrome/browser/vr/elements/rect.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/vector_icon.h"
@@ -12,6 +11,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_operation.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
@@ -51,11 +51,11 @@ TEST(DiscButton, SizePropagatesToSubElements) {
     switch (child->type()) {
       case kTypeButtonBackground:
       case kTypeButtonHitTarget:
-        EXPECT_SIZE_EQ(size, child->size());
+        EXPECT_SIZEF_EQ(size, child->size());
         EXPECT_FLOAT_EQ(size.width() * 0.5f, child->corner_radius());
         break;
       case kTypeButtonForeground:
-        EXPECT_SIZE_EQ(icon_size, child->size());
+        EXPECT_SIZEF_EQ(icon_size, child->size());
         break;
       default:
         NOTREACHED();

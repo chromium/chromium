@@ -27,8 +27,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/range/range.h"
-#include "ui/gfx/test/gfx_util.h"
 
 namespace chrome_pdf {
 

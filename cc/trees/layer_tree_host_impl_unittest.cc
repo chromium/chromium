@@ -57,7 +57,6 @@
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_recording_source.h"
 #include "cc/test/fake_video_frame_provider.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/test/skia_common.h"
@@ -100,6 +99,7 @@
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_operations.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
@@ -1199,8 +1199,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollUpdateAndEndNoOpWithoutBegin) {
         UpdateState(gfx::Point(), gfx::Vector2d(0, 10),
                     ui::ScrollInputType::kTouchscreen)
             .get());
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 10),
-                     CurrentScrollOffset(OuterViewportScrollLayer()));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 10),
+                        CurrentScrollOffset(OuterViewportScrollLayer()));
 
     GetInputHandler().ScrollEnd();
   }
@@ -2488,7 +2488,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollSnapOnX) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2515,7 +2515,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollSnapOnX) {
                            start_time + base::Milliseconds(1000));
 
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 0), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId()),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
@@ -2532,7 +2532,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollSnapOnY) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2559,7 +2559,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollSnapOnY) {
                            start_time + base::Milliseconds(1000));
 
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 50), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 50), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
@@ -2576,7 +2576,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollSnapOnBoth) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 
@@ -2602,7 +2602,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollSnapOnBoth) {
                            start_time + base::Milliseconds(1000));
 
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
@@ -2676,7 +2676,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollSnapAfterAnimatedScroll) {
   // Finish the animation.
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1500));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50), CurrentScrollOffset(overflow));
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
@@ -2694,7 +2694,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationTargetUpdated) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, y_delta, ui::ScrollInputType::kWheel)
@@ -2745,7 +2745,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationTargetUpdated) {
   // TargetSnapAreaElementIds.
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(), ElementId(10)),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 50), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 50), CurrentScrollOffset(overflow));
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationCancelledByScroll) {
@@ -2760,7 +2760,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationCancelledByScroll) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel)
@@ -2800,7 +2800,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationCancelledByScroll) {
 
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(150));
-  EXPECT_VECTOR_EQ(current_offset, CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(current_offset, CurrentScrollOffset(overflow));
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1000));
   // Ensure that the snap target was not updated at the end of the scroll
@@ -2822,7 +2822,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // There is a snap target at 50, scroll to it directly.
   GetInputHandler().ScrollUpdate(
@@ -2850,7 +2850,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(100));
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 0), CurrentScrollOffset(overflow));
   EXPECT_EQ(TargetSnapAreaElementIds(ElementId(10), ElementId()),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
@@ -2871,20 +2871,20 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // Should be (20, 20) in the scroller's coordinate.
   InputHandlerScrollResult result = GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, delta, ui::ScrollInputType::kWheel).get());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(overflow));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(4, 4), result.current_visual_offset);
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(4, 4), result.current_visual_offset);
 
   gfx::Vector2dF initial_offset, target_offset;
   EXPECT_TRUE(GetInputHandler().GetSnapFlingInfoAndSetAnimatingSnapTarget(
       gfx::Vector2dF(10, 10), &initial_offset, &target_offset));
   EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(4, 4), initial_offset);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 10), target_offset);
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(4, 4), initial_offset);
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 10), target_offset);
   // Snap targets shouldn't be set until the fling animation is complete.
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
@@ -2911,20 +2911,20 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // Should be (20, 20) in the scroller's coordinate.
   InputHandlerScrollResult result = GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, delta, ui::ScrollInputType::kWheel).get());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(overflow));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(4, 4), result.current_visual_offset);
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(4, 4), result.current_visual_offset);
 
   gfx::Vector2dF initial_offset, target_offset;
   EXPECT_TRUE(GetInputHandler().GetSnapFlingInfoAndSetAnimatingSnapTarget(
       gfx::Vector2dF(10, 10), &initial_offset, &target_offset));
   EXPECT_TRUE(GetInputHandler().animating_for_snap_for_testing());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(4, 4), initial_offset);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 10), target_offset);
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(4, 4), initial_offset);
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 10), target_offset);
   // Snap targets shouldn't be set until the fling animation is complete.
   EXPECT_EQ(TargetSnapAreaElementIds(),
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
@@ -2963,15 +2963,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(30, 30), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(30, 30),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 30), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 30),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetScrollNode(overflow)->overscroll_behavior = OverscrollBehavior(
       OverscrollBehavior::Type::kContain, OverscrollBehavior::Type::kAuto);
@@ -2987,15 +2989,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 30), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 30),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 30), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 30),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // OverscrollBehaviorContain on x shouldn't prevent propagations of
   // scroll on y.
@@ -3006,15 +3010,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 30), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 30),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, y_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // A scroll update with both x & y delta will adhere to the most restrictive
   // case.
@@ -3025,15 +3031,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, diagonal_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // Changing scroll-boundary-behavior to y axis.
   GetScrollNode(overflow)->overscroll_behavior = OverscrollBehavior(
@@ -3050,15 +3058,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(20, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(20, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // OverscrollBehaviorContain on y should prevent propagations of scroll
   // on y.
@@ -3069,15 +3079,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, y_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // A scroll update with both x & y delta will adhere to the most restrictive
   // case.
@@ -3088,15 +3100,17 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, diagonal_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   // Gesture scroll should latch to the first scroller that has non-auto
   // overscroll-behavior.
@@ -3112,8 +3126,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(pointer_position, x_delta, ui::ScrollInputType::kWheel)
@@ -3128,8 +3143,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       UpdateState(pointer_position, -y_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 10), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 10), CurrentScrollOffset(overflow));
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithUserUnscrollableLayers) {
@@ -3154,15 +3170,15 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithUserUnscrollableLayers) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(scroll_position, scroll_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 10), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 10), CurrentScrollOffset(overflow));
 
   GetScrollNode(overflow)->user_scrollable_horizontal = false;
 
@@ -3175,15 +3191,15 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithUserUnscrollableLayers) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 10), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 10), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(scroll_position, scroll_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(overflow));
 
   GetScrollNode(overflow)->user_scrollable_vertical = false;
   DrawFrame();
@@ -3195,15 +3211,16 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithUserUnscrollableLayers) {
                                  .get(),
                              ui::ScrollInputType::kWheel)
                 .thread);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(overflow));
 
   GetInputHandler().ScrollUpdate(
       UpdateState(scroll_position, scroll_delta, ui::ScrollInputType::kWheel)
           .get());
   GetInputHandler().ScrollEnd();
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 10), CurrentScrollOffset(scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(overflow));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 10),
+                      CurrentScrollOffset(scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(10, 20), CurrentScrollOffset(overflow));
 }
 
 // Test that if a scroll node doesn't have an associated Layer, scrolling
@@ -3686,8 +3703,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportScrollOrder) {
   inner_scroll_layer->SetDrawsContent(true);
   UpdateDrawProperties(host_impl_->active_tree());
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(500, 500),
-                   MaxScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(500, 500),
+                      MaxScrollOffset(outer_scroll_layer));
 
   GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
@@ -3700,10 +3717,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportScrollOrder) {
   GetInputHandler().ScrollEnd();
 
   // Sanity check - we're zoomed in, starting from the origin.
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(inner_scroll_layer));
 
   // Scroll down - only the inner viewport should scroll.
   GetInputHandler().ScrollBegin(
@@ -3717,10 +3734,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportScrollOrder) {
                                      .get());
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
 
   // Scroll down - outer viewport should start scrolling after the inner is at
   // its maximum.
@@ -3735,10 +3752,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportScrollOrder) {
                                      .get());
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(250, 250),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(300, 300),
-                   CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(250, 250),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(300, 300),
+                      CurrentScrollOffset(outer_scroll_layer));
 }
 
 // Make sure scrolls smaller than a unit applied to the viewport don't get
@@ -3758,10 +3775,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   UpdateDrawProperties(host_impl_->active_tree());
 
   // Sanity checks.
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(500, 500),
-                   MaxScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(500, 500),
+                      MaxScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(inner_scroll_layer));
 
   // Scroll only the layout viewport.
   GetInputHandler().ScrollBegin(
@@ -3816,8 +3835,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDuringPinchGesture) {
   inner_scroll_layer->SetDrawsContent(true);
   UpdateDrawProperties(host_impl_->active_tree());
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(500, 500),
-                   MaxScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(500, 500),
+                      MaxScrollOffset(outer_scroll_layer));
 
   GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(250, 250), gfx::Vector2dF(),
@@ -3827,10 +3846,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDuringPinchGesture) {
   GetInputHandler().PinchGestureBegin();
 
   GetInputHandler().PinchGestureUpdate(2, gfx::Point(250, 250));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(125, 125),
-                   CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(125, 125),
+                      CurrentScrollOffset(inner_scroll_layer));
 
   // Needed so that the pinch is accounted for in draw properties.
   DrawFrame();
@@ -3839,10 +3858,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDuringPinchGesture) {
                                              gfx::Vector2dF(10, 10),
                                              ui::ScrollInputType::kTouchscreen)
                                      .get());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(130, 130),
-                   CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(130, 130),
+                      CurrentScrollOffset(inner_scroll_layer));
 
   DrawFrame();
 
@@ -3850,10 +3869,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDuringPinchGesture) {
                                              gfx::Vector2dF(400, 400),
                                              ui::ScrollInputType::kTouchscreen)
                                      .get());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(80, 80),
-                   CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(250, 250),
-                   CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(80, 80),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(250, 250),
+                      CurrentScrollOffset(inner_scroll_layer));
 
   GetInputHandler().PinchGestureEnd(gfx::Point(250, 250), true);
   GetInputHandler().ScrollEnd();
@@ -3886,8 +3905,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
   GetInputHandler().PinchGestureEnd(anchor, true);
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(250, 250),
-                   CurrentScrollOffset(InnerViewportScrollLayer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(250, 250),
+                      CurrentScrollOffset(InnerViewportScrollLayer()));
 
   // Reset.
   host_impl_->active_tree()->SetPageScaleOnActiveTree(1);
@@ -3906,8 +3925,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
   GetInputHandler().PinchGestureEnd(anchor, true);
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(InnerViewportScrollLayer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(InnerViewportScrollLayer()));
 
   // Reset.
   host_impl_->active_tree()->SetPageScaleOnActiveTree(1);
@@ -3926,8 +3945,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
   GetInputHandler().PinchGestureEnd(anchor, true);
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                   CurrentScrollOffset(InnerViewportScrollLayer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                      CurrentScrollOffset(InnerViewportScrollLayer()));
 
   // Reset.
   host_impl_->active_tree()->SetPageScaleOnActiveTree(1);
@@ -3947,8 +3966,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
   GetInputHandler().PinchGestureEnd(anchor, true);
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(200, 200),
-                   CurrentScrollOffset(InnerViewportScrollLayer()));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(200, 200),
+                      CurrentScrollOffset(InnerViewportScrollLayer()));
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
@@ -3980,9 +3999,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                      .get());
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(5, 10),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(5, 10),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
 
   // Scroll by the inner viewport's max scroll extent, the remainder
   // should bubble up to the outer viewport.
@@ -3997,10 +4017,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                      .get());
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(5, 10),
-                   CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(5, 10),
+                      CurrentScrollOffset(outer_scroll_layer));
 
   // Scroll by the outer viewport's max scroll extent, it should all go to the
   // outer viewport.
@@ -4015,10 +4035,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                      .get());
   GetInputHandler().ScrollEnd();
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(100, 100),
-                   CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                   CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(100, 100),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                      CurrentScrollOffset(inner_scroll_layer));
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithSwapPromises) {
@@ -4089,16 +4109,18 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDoesntBubble) {
     GetInputHandler().ScrollEnd();
 
     // The child should be fully scrolled by the first ScrollUpdate.
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(5, 5), CurrentScrollOffset(scroll_child));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(5, 5),
+                        CurrentScrollOffset(scroll_child));
 
     // The scroll_parent shouldn't receive the second ScrollUpdate.
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(scroll_parent));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(scroll_parent));
 
     // The viewport shouldn't have been scrolled at all.
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(InnerViewportScrollLayer()));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(OuterViewportScrollLayer()));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(InnerViewportScrollLayer()));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(OuterViewportScrollLayer()));
   }
 
   {
@@ -4126,13 +4148,14 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDoesntBubble) {
     GetInputHandler().ScrollEnd();
 
     // The ScrollUpdate's should scroll the parent to its extent.
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(5, 5), CurrentScrollOffset(scroll_parent));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(5, 5),
+                        CurrentScrollOffset(scroll_parent));
 
     // The viewport shouldn't receive any scroll delta.
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(InnerViewportScrollLayer()));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(OuterViewportScrollLayer()));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(InnerViewportScrollLayer()));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(OuterViewportScrollLayer()));
   }
 }
 
@@ -4375,8 +4398,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SyncSubpixelScrollDelta) {
   // scroll layer.
   draw_property_utils::ComputeTransforms(
       &scroll_layer->layer_tree_impl()->property_trees()->transform_tree);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, -19),
-                   scroll_layer->ScreenSpaceTransform().To2dTranslation());
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, -19),
+                      scroll_layer->ScreenSpaceTransform().To2dTranslation());
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
@@ -4411,12 +4434,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                    ->property_trees()
                                    ->scroll_tree.GetScrollOffsetBaseForTesting(
                                        scroll_layer->element_id());
-  EXPECT_VECTOR_EQ(active_base, gfx::Vector2dF(0, 20.5));
+  EXPECT_VECTOR2DF_EQ(active_base, gfx::Vector2dF(0, 20.5));
   // Fractional active base should not affect the scroll delta.
   std::unique_ptr<CompositorCommitData> commit_data =
       host_impl_->ProcessCompositorDeltas();
-  EXPECT_VECTOR_EQ(commit_data->inner_viewport_scroll.scroll_delta,
-                   gfx::Vector2dF(0, -1));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, -1),
+                      commit_data->inner_viewport_scroll.scroll_delta);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
@@ -7198,8 +7221,8 @@ TEST_P(LayerTreeHostImplBrowserControlsTest, FixedContainerDelta) {
   host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta);
   host_impl_->browser_controls_manager()->ScrollBy(top_controls_scroll_delta);
   EXPECT_EQ(0, host_impl_->browser_controls_manager()->ContentTopOffset());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, top_controls_height_),
-                   property_trees->outer_viewport_container_bounds_delta());
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, top_controls_height_),
+                      property_trees->outer_viewport_container_bounds_delta());
   GetInputHandler().ScrollEnd();
 
   // Scroll in the direction to make the browser controls show.
@@ -7215,7 +7238,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest, FixedContainerDelta) {
   host_impl_->browser_controls_manager()->ScrollBy(-top_controls_scroll_delta);
   EXPECT_EQ(top_controls_scroll_delta.y(),
             host_impl_->browser_controls_manager()->ContentTopOffset());
-  EXPECT_VECTOR_EQ(
+  EXPECT_VECTOR2DF_EQ(
       gfx::Vector2dF(0, top_controls_height_ - top_controls_scroll_delta.y()),
       property_trees->outer_viewport_container_bounds_delta());
   host_impl_->browser_controls_manager()->ScrollEnd();
@@ -9059,10 +9082,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportUserScrollable) {
                                     ui::ScrollInputType::kTouchscreen);
     GetInputHandler().ScrollUpdate(update_state.get());
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(30, 0),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(30, 0),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
 
     // Continue scrolling. The inner viewport should scroll until its extent,
     // however, the outer viewport should not accept any scroll.
@@ -9076,10 +9099,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportUserScrollable) {
                                ui::ScrollInputType::kTouchscreen);
     GetInputHandler().ScrollUpdate(update_state.get());
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 0),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 0),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
 
     GetInputHandler().ScrollEnd();
   }
@@ -9118,10 +9141,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportUserScrollable) {
     ANIMATE(0);
     ANIMATE(200);
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(30, 0),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(30, 0),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
 
     // Continue scrolling. The inner viewport should scroll until its extent,
     // however, the outer viewport should not accept any scroll.
@@ -9130,10 +9153,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportUserScrollable) {
     ANIMATE(10);
     ANIMATE(200);
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 0),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 0),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
 
     // Continue scrolling. the outer viewport should still not scroll.
     update_state = AnimatedUpdateState(gfx::Point(), scroll_delta);
@@ -9141,10 +9164,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportUserScrollable) {
     ANIMATE(10);
     ANIMATE(200);
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 0),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 0),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
 
     // Fully scroll the inner viewport. We'll now try to start an animation on
     // the outer viewport in the vertical direction, which is scrollable. We'll
@@ -9161,8 +9184,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportUserScrollable) {
     ASSERT_LT(0, scroll_tree.current_scroll_offset(outer_element_id).y());
     ASSERT_GT(50, scroll_tree.current_scroll_offset(outer_element_id).y());
     ASSERT_EQ(0, scroll_tree.current_scroll_offset(outer_element_id).x());
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                     scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                        scroll_tree.current_scroll_offset(inner_element_id));
 
     // Now when we scroll we should do so by updating the ongoing animation
     // curve. Ensure this doesn't allow any horizontal scrolling.
@@ -9170,10 +9193,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportUserScrollable) {
     GetInputHandler().ScrollUpdate(update_state.get());
     ANIMATE(200);
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 100),
-                     scroll_tree.current_scroll_offset(outer_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                     scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 100),
+                        scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                        scroll_tree.current_scroll_offset(inner_element_id));
 
 #undef ANIMATE
 
@@ -9214,10 +9237,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SetRootScrollOffsetUserScrollable) {
 
     gfx::Vector2dF scroll_offset(25, 30);
     GetInputHandler().SetSynchronousInputHandlerRootScrollOffset(scroll_offset);
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(scroll_offset,
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(scroll_offset,
+                        scroll_tree.current_scroll_offset(outer_element_id));
     EXPECT_TRUE(did_request_redraw_);
 
     // Reset
@@ -9236,10 +9259,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SetRootScrollOffsetUserScrollable) {
 
     gfx::Vector2dF scroll_offset(120, 140);
     GetInputHandler().SetSynchronousInputHandlerRootScrollOffset(scroll_offset);
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
     EXPECT_TRUE(did_request_redraw_);
 
     // Reset
@@ -9260,10 +9283,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SetRootScrollOffsetUserScrollable) {
 
     gfx::Vector2dF scroll_offset(60, 70);
     GetInputHandler().SetSynchronousInputHandlerRootScrollOffset(scroll_offset);
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
     EXPECT_FALSE(did_request_redraw_);
 
     // Reset
@@ -9283,10 +9306,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SetRootScrollOffsetUserScrollable) {
 
     gfx::Vector2dF scroll_offset(60, 70);
     GetInputHandler().SetSynchronousInputHandlerRootScrollOffset(scroll_offset);
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                     scroll_tree.current_scroll_offset(inner_element_id));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(),
-                     scroll_tree.current_scroll_offset(outer_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                        scroll_tree.current_scroll_offset(inner_element_id));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        scroll_tree.current_scroll_offset(outer_element_id));
     EXPECT_FALSE(did_request_redraw_);
 
     // Reset
@@ -9768,10 +9791,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NoOverscrollOnNonViewportLayers) {
                     ui::ScrollInputType::kTouchscreen)
             .get());
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(100, 100),
-                     CurrentScrollOffset(scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(100, 100),
+                        CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
   }
 
   // Continue the scroll. Ensure that scrolling beyond the child's extent
@@ -9782,10 +9805,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NoOverscrollOnNonViewportLayers) {
                     ui::ScrollInputType::kTouchscreen)
             .get());
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(200, 200),
-                     CurrentScrollOffset(scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(200, 200),
+                        CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
     EXPECT_FALSE(result.did_overscroll_root);
   }
 
@@ -9797,10 +9820,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, NoOverscrollOnNonViewportLayers) {
                     ui::ScrollInputType::kTouchscreen)
             .get());
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(200, 200),
-                     CurrentScrollOffset(scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(200, 200),
+                        CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
     EXPECT_FALSE(result.did_overscroll_root);
   }
 
@@ -9894,10 +9917,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollFromOuterViewportSibling) {
     GetInputHandler().ScrollEnd();
 
     EXPECT_EQ(1, host_impl_->active_tree()->CurrentTopControlsShownRatio());
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(300, 300),
-                     CurrentScrollOffset(scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(inner_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(300, 300),
+                        CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
   }
 
   // Scrolling on the child now should chain up directly to the inner viewport.
@@ -9914,7 +9939,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollFromOuterViewportSibling) {
                     ui::ScrollInputType::kTouchscreen)
             .get());
     EXPECT_EQ(0, host_impl_->active_tree()->CurrentTopControlsShownRatio());
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(inner_scroll_layer));
 
     GetInputHandler().ScrollUpdate(
         UpdateState(gfx::Point(), scroll_delta,
@@ -9925,9 +9951,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollFromOuterViewportSibling) {
                     ui::ScrollInputType::kTouchscreen)
             .get());
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 10),
-                     CurrentScrollOffset(inner_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 10),
+                        CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
     GetInputHandler().ScrollEnd();
   }
 }
@@ -9976,8 +10003,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(200, 200),
-                     CurrentScrollOffset(child_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(200, 200),
+                        CurrentScrollOffset(child_scroll_layer));
 
     GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(0, 0), gfx::Vector2dF(200, 200),
@@ -9990,11 +10017,11 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(200, 200),
-                     CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(200, 200),
+                        CurrentScrollOffset(scroll_layer));
   }
 
   // Now that the nested scrolling layers are fully scrolled, further scrolls
@@ -10012,7 +10039,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
   }
 
   // Zoom into the page by a 2X factor so that the inner viewport becomes
@@ -10042,8 +10070,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                     CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                        CurrentScrollOffset(inner_scroll_layer));
 
     GetInputHandler().ScrollBegin(
         BeginState(gfx::Point(0, 0), gfx::Vector2dF(100, 100),
@@ -10056,9 +10084,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                     CurrentScrollOffset(outer_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50), CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                        CurrentScrollOffset(scroll_layer));
   }
 }
 
@@ -10110,9 +10139,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootScrollerScrollNonDescendant) {
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(600, 600),
-                     CurrentScrollOffset(sibling_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(600, 600),
+                        CurrentScrollOffset(sibling_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
 
     // Scrolling now should chain up but, since the outer viewport is a sibling
     // rather than an ancestor, we shouldn't chain to it.
@@ -10127,9 +10157,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootScrollerScrollNonDescendant) {
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(600, 600),
-                     CurrentScrollOffset(sibling_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(600, 600),
+                        CurrentScrollOffset(sibling_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
   }
 
   float min_page_scale = 1, max_page_scale = 4;
@@ -10158,23 +10189,24 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootScrollerScrollNonDescendant) {
     GetInputHandler().PinchGestureUpdate(page_scale_factor, anchor);
     GetInputHandler().PinchGestureEnd(anchor, true);
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(anchor.x() / 2, anchor.y() / 2),
-                     CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(anchor.x() / 2, anchor.y() / 2),
+                        CurrentScrollOffset(inner_scroll_layer));
 
     GetInputHandler().ScrollUpdate(
         UpdateState(anchor, viewport_size_vec,
                     ui::ScrollInputType::kTouchscreen)
             .get());
 
-    EXPECT_VECTOR_EQ(ScaleVector2d(viewport_size_vec, 1 / page_scale_factor),
-                     CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(
+        gfx::Vector2dF(ScaleVector2d(viewport_size_vec, 1 / page_scale_factor)),
+        CurrentScrollOffset(inner_scroll_layer));
     // TODO(bokan): This doesn't yet work but we'll probably want to fix this
     // at some point.
-    // EXPECT_VECTOR_EQ(
+    // EXPECT_VECTOR2DF_EQ(
     //     gfx::Vector2dF(),
     //     CurrentScrollOffset(outer_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(),
-                     CurrentScrollOffset(sibling_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(sibling_scroll_layer));
 
     GetInputHandler().ScrollEnd();
   }
@@ -10201,9 +10233,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootScrollerScrollNonDescendant) {
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(600, 600),
-                     CurrentScrollOffset(sibling_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(600, 600),
+                        CurrentScrollOffset(sibling_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(inner_scroll_layer));
 
     // Scrolling now should chain up to the inner viewport.
     GetInputHandler().ScrollBegin(
@@ -10217,9 +10250,11 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootScrollerScrollNonDescendant) {
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(ScaleVector2d(viewport_size_vec, 1 / page_scale_factor),
-                     CurrentScrollOffset(inner_scroll_layer));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(
+        gfx::Vector2dF(ScaleVector2d(viewport_size_vec, 1 / page_scale_factor)),
+        CurrentScrollOffset(inner_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
 
     // No more scrolling should be possible.
     GetInputHandler().ScrollBegin(
@@ -10233,7 +10268,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootScrollerScrollNonDescendant) {
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll_layer));
   }
 }
 
@@ -12262,7 +12298,8 @@ TEST_F(LayerTreeHostImplWithBrowserControlsTest,
                              ui::ScrollInputType::kWheel)
                 .thread);
   EXPECT_EQ(0, host_impl_->browser_controls_manager()->ControlsTopOffset());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(viewport_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(viewport_layer));
 
   // Wheel scrolls should not affect the browser controls, and should pass
   // directly through to the viewport.
@@ -12274,8 +12311,8 @@ TEST_F(LayerTreeHostImplWithBrowserControlsTest,
           .did_scroll);
   EXPECT_FLOAT_EQ(0,
                   host_impl_->browser_controls_manager()->ControlsTopOffset());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, delta),
-                   CurrentScrollOffset(viewport_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, delta),
+                      CurrentScrollOffset(viewport_layer));
 
   EXPECT_TRUE(
       GetInputHandler()
@@ -12285,8 +12322,8 @@ TEST_F(LayerTreeHostImplWithBrowserControlsTest,
           .did_scroll);
   EXPECT_FLOAT_EQ(0,
                   host_impl_->browser_controls_manager()->ControlsTopOffset());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, delta * 2),
-                   CurrentScrollOffset(viewport_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, delta * 2),
+                      CurrentScrollOffset(viewport_layer));
 }
 
 TEST_F(LayerTreeHostImplWithBrowserControlsTest,
@@ -12678,9 +12715,10 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
             .get());
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll));
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(100, 50),
-                     CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(outer_scroll));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(100, 50),
+                        CurrentScrollOffset(scroll_layer));
     EXPECT_EQ(0, layer_tree_impl->CurrentTopControlsShownRatio());
   }
 }
@@ -12735,11 +12773,11 @@ TEST_F(LayerTreeHostImplVirtualViewportTest,
   {
     gfx::Vector2dF inner_expected;
     gfx::Vector2dF outer_expected;
-    EXPECT_VECTOR_EQ(inner_expected, CurrentScrollOffset(inner_scroll));
-    EXPECT_VECTOR_EQ(outer_expected, CurrentScrollOffset(outer_scroll));
+    EXPECT_VECTOR2DF_EQ(inner_expected, CurrentScrollOffset(inner_scroll));
+    EXPECT_VECTOR2DF_EQ(outer_expected, CurrentScrollOffset(outer_scroll));
 
-    gfx::Vector2d scroll_delta(inner_viewport.width() / 2,
-                               inner_viewport.height() / 2);
+    gfx::Vector2dF scroll_delta(inner_viewport.width() / 2,
+                                inner_viewport.height() / 2);
 
     // Make sure the scroll goes to the inner viewport first.
     EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD,
@@ -12757,8 +12795,8 @@ TEST_F(LayerTreeHostImplVirtualViewportTest,
             .get());
     inner_expected += scroll_delta;
 
-    EXPECT_VECTOR_EQ(inner_expected, CurrentScrollOffset(inner_scroll));
-    EXPECT_VECTOR_EQ(outer_expected, CurrentScrollOffset(outer_scroll));
+    EXPECT_VECTOR2DF_EQ(inner_expected, CurrentScrollOffset(inner_scroll));
+    EXPECT_VECTOR2DF_EQ(outer_expected, CurrentScrollOffset(outer_scroll));
 
     // Now diagonal scroll across the outer viewport boundary in a single event.
     // The entirety of the scroll should be consumed, as bubbling between inner
@@ -12771,8 +12809,8 @@ TEST_F(LayerTreeHostImplVirtualViewportTest,
     inner_expected += scroll_delta;
     GetInputHandler().ScrollEnd();
 
-    EXPECT_VECTOR_EQ(inner_expected, CurrentScrollOffset(inner_scroll));
-    EXPECT_VECTOR_EQ(outer_expected, CurrentScrollOffset(outer_scroll));
+    EXPECT_VECTOR2DF_EQ(inner_expected, CurrentScrollOffset(inner_scroll));
+    EXPECT_VECTOR2DF_EQ(outer_expected, CurrentScrollOffset(outer_scroll));
   }
 }
 
@@ -12830,7 +12868,7 @@ TEST_F(LayerTreeHostImplVirtualViewportTest,
   DrawFrame();
 
   // Ensure inner viewport doesn't react to scrolls (test it's unscrollable).
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(inner_scroll));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(inner_scroll));
   EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD,
             GetInputHandler()
                 .ScrollBegin(BeginState(gfx::Point(), gfx::Vector2dF(0, 100),
@@ -12842,7 +12880,7 @@ TEST_F(LayerTreeHostImplVirtualViewportTest,
       UpdateState(gfx::Point(), gfx::Vector2dF(0, 100),
                   ui::ScrollInputType::kTouchscreen)
           .get());
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(inner_scroll));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), CurrentScrollOffset(inner_scroll));
 
   // When inner viewport is unscrollable, a fling gives zero overscroll.
   EXPECT_FALSE(scroll_result.did_overscroll_root);
@@ -12887,16 +12925,16 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                                  external_transform);
   host_impl_->OnDraw(external_transform, external_viewport,
                      resourceless_software_draw, false);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      external_transform, layer->draw_properties().target_space_transform);
+  EXPECT_TRANSFORM_EQ(external_transform,
+                      layer->draw_properties().target_space_transform);
 
   external_transform.Translate(20, 20);
   host_impl_->SetExternalTilePriorityConstraints(external_viewport,
                                                  external_transform);
   host_impl_->OnDraw(external_transform, external_viewport,
                      resourceless_software_draw, false);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
-      external_transform, layer->draw_properties().target_space_transform);
+  EXPECT_TRANSFORM_EQ(external_transform,
+                      layer->draw_properties().target_space_transform);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ExternalTransformSetNeedsRedraw) {
@@ -13412,8 +13450,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimated) {
   host_impl_->Animate();
   host_impl_->UpdateAnimationState(true);
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 100),
-                   CurrentScrollOffset(scrolling_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 100),
+                      CurrentScrollOffset(scrolling_layer));
   EXPECT_EQ(nullptr, host_impl_->CurrentlyScrollingNode());
   host_impl_->DidFinishImplFrame(begin_frame_args);
 }
@@ -15056,8 +15094,8 @@ TEST_F(LayerTreeHostImplTimelinesTest, ScrollAnimated) {
   host_impl_->Animate();
   host_impl_->UpdateAnimationState(true);
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 100),
-                   CurrentScrollOffset(scrolling_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 100),
+                      CurrentScrollOffset(scrolling_layer));
   EXPECT_EQ(nullptr, host_impl_->CurrentlyScrollingNode());
   host_impl_->DidFinishImplFrame(begin_frame_args);
 }
@@ -15102,11 +15140,12 @@ TEST_F(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimated) {
 
   begin_frame_args.frame_id.sequence_number++;
   BeginImplFrameAndAnimate(begin_frame_args, start_time);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(5, 10),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(5, 10),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
 
   // Scroll by the inner viewport's max scroll extent, the remainder
   // should bubble up to the outer viewport.
@@ -15120,10 +15159,10 @@ TEST_F(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimated) {
   begin_frame_args.frame_id.sequence_number++;
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(350));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(5, 10),
-                   CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(5, 10),
+                      CurrentScrollOffset(outer_scroll_layer));
 
   // Scroll by the outer viewport's max scroll extent, it should all go to the
   // outer viewport.
@@ -15137,10 +15176,10 @@ TEST_F(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimated) {
   begin_frame_args.frame_id.sequence_number++;
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(850));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(100, 100),
-                   CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(100, 100),
+                      CurrentScrollOffset(outer_scroll_layer));
 
   // Scroll upwards by the max scroll extent. The inner viewport should animate
   // and the remainder should bubble to the outer viewport.
@@ -15154,10 +15193,10 @@ TEST_F(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimated) {
   begin_frame_args.frame_id.sequence_number++;
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(1200));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(95, 90),
-                   CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(95, 90),
+                      CurrentScrollOffset(outer_scroll_layer));
 }
 
 // Test that the correct viewport scroll layer is updated when the target offset
@@ -15203,8 +15242,8 @@ TEST_F(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimatedUpdate) {
   float inner_y = CurrentScrollOffset(inner_scroll_layer).y();
   EXPECT_TRUE(inner_x > 0 && inner_x < 45);
   EXPECT_TRUE(inner_y > 0 && inner_y < 45);
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
 
   // Update target.
   GetInputHandler().ScrollUpdate(
@@ -15219,11 +15258,12 @@ TEST_F(LayerTreeHostImplTimelinesTest, ImplPinchZoomScrollAnimatedUpdate) {
   begin_frame_args.frame_id.sequence_number++;
   BeginImplFrameAndAnimate(begin_frame_args,
                            start_time + base::Milliseconds(350));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(50, 50),
-                   CurrentScrollOffset(inner_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0),
-                   CurrentScrollOffset(outer_scroll_layer));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(50, 50),
+                      CurrentScrollOffset(inner_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                      CurrentScrollOffset(outer_scroll_layer));
 }
 
 // Test that smooth scroll offset animation doesn't happen for non user
@@ -15300,8 +15340,8 @@ TEST_F(LayerTreeHostImplTimelinesTest, ScrollAnimatedNotUserScrollable) {
   host_impl_->Animate();
   host_impl_->UpdateAnimationState(true);
 
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 100),
-                   CurrentScrollOffset(scrolling_layer));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 100),
+                      CurrentScrollOffset(scrolling_layer));
   // The CurrentlyScrollingNode shouldn't be cleared until a GestureScrollEnd.
   EXPECT_EQ(scrolling_layer->scroll_tree_index(),
             host_impl_->CurrentlyScrollingNode()->id);
@@ -15463,13 +15503,15 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                    .get(),
                                ui::ScrollInputType::kWheel)
                   .thread);
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(), CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0),
+                        CurrentScrollOffset(scroll_layer));
 
     GetInputHandler().ScrollUpdate(
         UpdateState(gfx::Point(), scroll_delta, ui::ScrollInputType::kWheel)
             .get());
     GetInputHandler().ScrollEnd();
-    EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 2.5), CurrentScrollOffset(scroll_layer));
+    EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 2.5),
+                        CurrentScrollOffset(scroll_layer));
   }
 }
 

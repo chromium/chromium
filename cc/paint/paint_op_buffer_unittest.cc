@@ -23,7 +23,6 @@
 #include "cc/paint/shader_transfer_cache_entry.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_entry.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/paint_op_helper.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_options_provider.h"
@@ -36,6 +35,7 @@
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "third_party/skia/include/effects/SkLayerDrawLooper.h"
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 using testing::_;
 using testing::Property;
@@ -2190,8 +2190,8 @@ TEST(PaintOpSerializationTest, Preamble) {
       ASSERT_EQ(op->GetType(), PaintOpType::ClipRect)
           << PaintOpTypeToString(op->GetType());
       const auto* clip_op = static_cast<const ClipRectOp*>(op);
-      EXPECT_FLOAT_RECT_EQ(gfx::SkRectToRectF(clip_op->rect),
-                           preamble.playback_rect);
+      EXPECT_RECTF_EQ(gfx::SkRectToRectF(clip_op->rect),
+                      gfx::RectF(preamble.playback_rect));
       continue;
     }
 
@@ -3448,7 +3448,7 @@ TEST(PaintOpBufferTest, PaintRecordShaderSerialization) {
   auto* op = *it;
   ASSERT_TRUE(op->GetType() == PaintOpType::DrawRect);
   auto* rect_op = static_cast<DrawRectOp*>(op);
-  EXPECT_FLOAT_RECT_EQ(rect_op->rect, SkRect::MakeXYWH(1, 2, 3, 4));
+  EXPECT_SKRECT_EQ(rect_op->rect, SkRect::MakeXYWH(1, 2, 3, 4));
   EXPECT_TRUE(rect_op->flags == flags);
   EXPECT_TRUE(*rect_op->flags.getShader() == *flags.getShader());
 }
@@ -3492,7 +3492,7 @@ TEST(PaintOpBufferTest, DrawSkottieOpSerialization) {
   auto* op = *it;
   ASSERT_TRUE(op->GetType() == PaintOpType::DrawSkottie);
   auto* skottie_op = static_cast<DrawSkottieOp*>(op);
-  EXPECT_FLOAT_RECT_EQ(skottie_op->dst, input_rect);
+  EXPECT_SKRECT_EQ(skottie_op->dst, input_rect);
   EXPECT_FLOAT_EQ(skottie_op->t, input_t);
   EXPECT_EQ(skottie_op->skottie->id(), skottie->id());
   EXPECT_TRUE(skottie_op->skottie->is_valid());

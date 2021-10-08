@@ -5,7 +5,7 @@
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace viz {
 

@@ -9,7 +9,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/test/sk_color_eq.h"
 
 #if defined(OS_WIN)
 #include <float.h>
@@ -161,12 +162,8 @@ TEST(TweenTest, RectValueBetween) {
   constexpr gfx::Rect r1(0, 0, 10, 10);
   constexpr gfx::Rect r2(10, 10, 30, 30);
 
-  // TODO(pkasting): Move the geometry test helpers from
-  // cc/test/geometry_test_utils.h to ui/gfx/test/gfx_util.h or similar and use
-  // a rect-comparison function here.
   const gfx::Rect tweened = Tween::RectValueBetween(0.08, r1, r2);
-  EXPECT_EQ(11, tweened.width());
-  EXPECT_EQ(11, tweened.height());
+  EXPECT_EQ(gfx::Size(11, 11), tweened.size());
 }
 
 TEST(TweenTest, SizeValueBetween) {

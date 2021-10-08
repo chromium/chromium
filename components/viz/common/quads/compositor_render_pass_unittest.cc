@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "cc/test/geometry_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"

@@ -9,12 +9,12 @@
 #include <cmath>
 #include <limits>
 
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace cc {
@@ -145,8 +145,7 @@ TEST(MathUtilTest, EnclosingClippedRectUsesCorrectInitialBounds) {
 
   // Due to floating point math in ComputeClippedPointForEdge this result
   // is fairly imprecise.  0.15f was empirically determined.
-  EXPECT_RECT_NEAR(
-      gfx::RectF(gfx::PointF(-100, -100), gfx::SizeF(90, 90)), result, 0.15f);
+  EXPECT_RECTF_NEAR(gfx::RectF(-100, -100, 90, 90), result, 0.15f);
 }
 
 TEST(MathUtilTest, EnclosingClippedRectHandlesSmallPositiveW) {
@@ -200,8 +199,7 @@ TEST(MathUtilTest, EnclosingRectOfVerticesUsesCorrectInitialBounds) {
   gfx::RectF result =
       MathUtil::ComputeEnclosingRectOfVertices(vertices, num_vertices);
 
-  EXPECT_FLOAT_RECT_EQ(gfx::RectF(gfx::PointF(-100, -100), gfx::SizeF(90, 90)),
-                       result);
+  EXPECT_RECTF_EQ(gfx::RectF(-100, -100, 90, 90), result);
 }
 
 TEST(MathUtilTest, SmallestAngleBetweenVectors) {
@@ -236,15 +234,15 @@ TEST(MathUtilTest, VectorProjection) {
   gfx::Vector2dF test_vector(0.3f, 0.7f);
 
   // Orthogonal vectors project to a zero vector.
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(x, y));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(y, x));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(x, y));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(y, x));
 
   // Projecting a vector onto the orthonormal basis gives the corresponding
   // component of the vector.
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(test_vector.x(), 0),
-                   MathUtil::ProjectVector(test_vector, x));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, test_vector.y()),
-                   MathUtil::ProjectVector(test_vector, y));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(test_vector.x(), 0),
+                      MathUtil::ProjectVector(test_vector, x));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, test_vector.y()),
+                      MathUtil::ProjectVector(test_vector, y));
 
   // Finally check than an arbitrary vector projected to another one gives a
   // vector parallel to the second vector.

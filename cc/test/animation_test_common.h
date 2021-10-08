@@ -11,7 +11,6 @@
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
-#include "cc/test/geometry_test_utils.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/geometry/transform_operations.h"
 

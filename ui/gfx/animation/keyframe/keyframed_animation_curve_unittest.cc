@@ -9,9 +9,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/box_f.h"
-#include "ui/gfx/geometry/test/transform_test_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_operations.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/test/sk_color_eq.h"
 
 namespace gfx {
 namespace {
@@ -299,24 +299,24 @@ TEST(KeyframedAnimationCurveTest, DiscreteLinearTransformAnimation) {
 
   // Between 0 and 0.5 seconds, the first keyframe should be returned.
   result = curve->GetValue(base::Seconds(0.01f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::Seconds(0.49f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 
   // Between 0.5 and 1.5 seconds, the middle keyframe should be returned.
   result = curve->GetValue(base::Seconds(0.5f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(identity_matrix, result.Apply());
 
   result = curve->GetValue(base::Seconds(1.49f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(identity_matrix, result.Apply());
 
   // Between 1.5 and 2.0 seconds, the last keyframe should be returned.
   result = curve->GetValue(base::Seconds(1.5f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::Seconds(2.0f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 }
 
 TEST(KeyframedAnimationCurveTest, DiscreteCubicBezierTransformAnimation) {
@@ -349,24 +349,24 @@ TEST(KeyframedAnimationCurveTest, DiscreteCubicBezierTransformAnimation) {
   // Due to the cubic-bezier, the first keyframe is returned almost all the way
   // to 1 second.
   result = curve->GetValue(base::Seconds(0.01f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::Seconds(0.8f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 
   // Between ~0.85 and ~1.85 seconds, the middle keyframe should be returned.
   result = curve->GetValue(base::Seconds(0.85f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(identity_matrix, result.Apply());
 
   result = curve->GetValue(base::Seconds(1.8f));
-  ExpectTransformationMatrixEq(identity_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(identity_matrix, result.Apply());
 
   // Finally the last keyframe only takes effect after ~1.85 seconds.
   result = curve->GetValue(base::Seconds(1.85f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 
   result = curve->GetValue(base::Seconds(2.0f));
-  ExpectTransformationMatrixEq(non_invertible_matrix, result.Apply());
+  EXPECT_TRANSFORM_EQ(non_invertible_matrix, result.Apply());
 }
 
 // Tests that the keyframes may be added out of order.
