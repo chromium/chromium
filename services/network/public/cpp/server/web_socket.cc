@@ -118,15 +118,13 @@ WebSocket::ParseResult WebSocket::Read(std::string* message) {
     // can't proceed without an |encoder_|.
     return FRAME_ERROR;
   }
-  ParseResult result = FRAME_OK_MIDDLE;
   const std::string& read_buf = connection_->read_buf();
   base::StringPiece frame(read_buf);
-  while (result == FRAME_OK_MIDDLE) {
-    int bytes_consumed = 0;
-    result = encoder_->DecodeFrame(frame, &bytes_consumed, message);
-    frame = frame.substr(bytes_consumed);
-  }
-  connection_->read_buf().erase(0, frame.data() - read_buf.data());
+  int bytes_consumed = 0;
+  const ParseResult result =
+      encoder_->DecodeFrame(frame, &bytes_consumed, message);
+  frame = frame.substr(bytes_consumed);
+  connection_->read_buf().erase(0, bytes_consumed);
   if (result == FRAME_CLOSE)
     closed_ = true;
   if (result == FRAME_PING) {

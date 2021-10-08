@@ -277,7 +277,8 @@ void HttpServer::HandleReadResult(HttpConnection* connection, MojoResult rv) {
         Close(connection->id());
         return;
       }
-      delegate_->OnWebSocketMessage(connection->id(), std::move(message));
+      if (result == WebSocket::FRAME_OK_FINAL)
+        delegate_->OnWebSocketMessage(connection->id(), std::move(message));
       if (HasClosedConnection(connection)) {
         return;
       }

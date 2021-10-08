@@ -316,8 +316,10 @@ WebSocket::ParseResult WebSocketEncoder::DecodeFrame(
         result = WebSocket::FRAME_ERROR;
     }
   }
-  if (result != WebSocket::FRAME_OK_MIDDLE)
+  if (result != WebSocket::FRAME_OK_MIDDLE &&
+      result != WebSocket::FRAME_INCOMPLETE) {
     continuation_message_frames_.clear();
+  }
   return result;
 }
 
