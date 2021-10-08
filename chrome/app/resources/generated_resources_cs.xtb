@@ -4677,7 +4677,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}few{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}many{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}other{Abyste mohli nadále procházet web, požádejte administrátora o odstranění této aplikace.}}</translation>
 <translation id="5997337190805127100">Další informace o přístupu k webům</translation>
 <translation id="6000758707621254961">Výsledky pro dotaz <ph name="SEARCH_TEXT" /> (<ph name="RESULT_COUNT" />)</translation>
-<translation id="6001839398155993679">Jdeme na to</translation>
 <translation id="6001999913519612328">Spouštět diagnostické testy.</translation>
 <translation id="6002210667729577411">Přesunout skupinu do nového okna</translation>
 <translation id="6002452033851752583">Heslo bylo smazáno z účtu Google</translation>
@@ -6072,7 +6071,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="7509246181739783082">Ověření identity</translation>
 <translation id="7509539379068593709">Odinstalovat aplikaci</translation>
 <translation id="7511415964832680006">Když je tato možnost zapnutá, weby při poskytování obsahu a služeb mohou používat zde uvedené techniky zajišťující ochranu soukromí. Patří sem i alternativy ke sledování napříč weby. Časem mohou přibýt další zkušební funkce.</translation>
-<translation id="7514236770834963598">Zkontrolujte aktuální nastavení nejdůležitějších ovládacích prvků soukromí a zabezpečení</translation>
 <translation id="7514239104543605883">Kopírovat do zařízení</translation>
 <translation id="7514365320538308">Stáhnout</translation>
 <translation id="7514417110442087199">Přidat přiřazení</translation>

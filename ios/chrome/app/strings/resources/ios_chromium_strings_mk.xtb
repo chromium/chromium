@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1257458525759135959">За да ги зачувате сликите, допрете на „Поставки“ за да овозможите Chromium да додава фотографии</translation>
 <translation id="1289216811211435351">Префрлете на Chromium</translation>
+<translation id="1354592789402432496">Администраторот бара да се најавите со сметка на организација. Сметките што администраторот ги ограничил се сокриени.</translation>
 <translation id="1361748954329991663">Chromium е застарен. Ако нема достапно ажурирање во <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, можно е уредот веќе да не поддржува нови верзии на Chromium.</translation>
 <translation id="1370204544543370355">За да го извлечете максимумот од Chromium, најавете се на Chromium со вашата сметка на Google</translation>
 <translation id="1431818719585918472">Дозволете Chromium да ги заклучи вашите картички „Инкогнито“.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Најавете се на Chromium</translation>
 <translation id="5224391634244552924">Немате зачувани лозинки. Chromium може да ги проверува вашите лозинки ако ги зачувате.</translation>
 <translation id="5308226104666789935">Chromium не може да провери дали има ажурирања</translation>
+<translation id="5324242752415821224">Вашата организација бара да се најавите за да користите Chromium. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Да се постави Chromium како стандарден?</translation>
 <translation id="5521125884468363740">За да ги гледате картичките секаде каде што користите Chromium, најавете се и вклучете синхронизација</translation>
 <translation id="5573014823074921752">Совет за Chromium: за повеќе опции за картичките, допрете го и задржете го копчето „Прикажи ги картичките“ во алатникот, што се наоѓа најдолу или најгоре на екранот.</translation>
@@ -63,6 +65,7 @@
 2. Допрете „Стандардна апликација за прелистување“
 3. Изберете Chromium.</translation>
 <translation id="6155422572367400359">Најавете се на сајтов, на вашата сметка на Google и на Chromium. Синхронизацијата може да ја вклучите подоцна.</translation>
+<translation id="6183442264225539303">Најавете се на сајтов и на Chromium. Синхронизацијата може да ја вклучите подоцна.</translation>
 <translation id="6268381023930128611">Ќе се одјавите од Chromium?</translation>
 <translation id="632825460376924298">Дозволете најавување на Chromium</translation>
 <translation id="6337530241089703714">Дали сакате да ги избришете податоците од Chromium од уредов или да ги задржите?</translation>

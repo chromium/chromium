@@ -4679,7 +4679,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie tejto aplikácie.}few{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}many{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}other{Ak chcete zaistiť, že aj naďalej budete môcť prehliadať internet, požiadajte správcu o odstránenie týchto aplikácií.}}</translation>
 <translation id="5997337190805127100">Ďalšie informácie o prístupe k webom</translation>
 <translation id="6000758707621254961">Viacero výsledkov (<ph name="RESULT_COUNT" />) pre hľadaný výraz „<ph name="SEARCH_TEXT" />“</translation>
-<translation id="6001839398155993679">Poďme na to</translation>
 <translation id="6001999913519612328">Spustiť diagnostické testy</translation>
 <translation id="6002210667729577411">Presunúť skupinu do nového okna</translation>
 <translation id="6002452033851752583">Heslo bolo odstránené z vášho účtu Google</translation>
@@ -6074,7 +6073,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7509246181739783082">Overenie totožnosti</translation>
 <translation id="7509539379068593709">Odinštalovať aplikáciu</translation>
 <translation id="7511415964832680006">Keď je táto možnosť zapnutá, weby môžu pomocou uvedených techník na ochranu súkromia poskytovať obsah a služby. Zahrnujú alternatívy sledovania medzi webmi. Postupne môžu byť pridané ďalšie skúšobné funkcie.</translation>
-<translation id="7514236770834963598">Skontrolujte vo svojich aktuálnych nastaveniach najdôležitejšie ovládacie prvky ochrany súkromia a zabezpečenia</translation>
 <translation id="7514239104543605883">Kopírovať do zariadenia</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7514417110442087199">Pridať pridelenie</translation>

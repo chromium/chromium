@@ -3,6 +3,7 @@
 <translationbundle lang="az">
 <translation id="1096883626080133124">Sadə, etibarlı və həmişəkindən daha sürətli bir Google Chrome ilə daha çox iş görün</translation>
 <translation id="1282031177488366470">Chrome'un Funksiyalarını və Performansını təkmilləşdirməyə kömək edin</translation>
+<translation id="1354592789402432496">Administratorunuz təşkilat hesabı ilə daxil olmağınızı tələb edir. Administratorunuz tərəfindən məhdudlaşdırılan hesablar gizlədilib.</translation>
 <translation id="1479202195792305274">Google Hesabınız ilə daxil olduqda Chrome parollarınızı yoxlaya bilər.</translation>
 <translation id="1493827051843127077">Tablar, parollar və ödəniş məlumatlarınızı bütün cihazlarınızda sinxronlaşdırmaq üçün defolt olaraq Chrome'u ayarlayın</translation>
 <translation id="1504372625950710826">Chrome güncəlləmələri yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome məhsulunun foto və videolarınıza girişi yoxdur. iOS Ayarları &gt; Məxfilik &gt; Fotolar bölməsindən girişi aktiv edin.</translation>
 <translation id="4099578267706723511">İstifadə statistikası və qəza raportlarını Google'a göndərməklə Chrome'un gəlişməsini sağlayın.</translation>
 <translation id="417201473131094001">Chrome Canary'də dəstəklənmir</translation>
+<translation id="4214277427269650960">Bu sayta və Chrome'a daxil olun. Sinxronlaşdırmanı daha sonra aktiv edə bilərsiniz.</translation>
 <translation id="424864128008805179">Chrome'dan çıxılsın?</translation>
 <translation id="4249068189593983585">Chrome məsləhəti. Daha çox tab seçimləri üçün ekranın aşağı və yuxarı hissəsində alətlər panelində yerləşən "Tabları Göstərin" düyməsinə basıb saxlayın.</translation>
 <translation id="4523886039239821078">Bəzi addonlar Chrome'da xətaya səbəb olur. Lütfən, sistemdən silin:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="571296537125272375">Oflayndır, Chrome güncəlləmələri yoxlaya bilmir</translation>
 <translation id="5716154293141027663">Digər tətbiqlərdə istənilən vaxt keçidlərə toxunduqda Chrome açılsın</translation>
+<translation id="572883588166315317">Təşkilatınız Chrome'dan istifadə etmək üçün daxil olmağınızı tələb edir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome məsləhəti. Geri, İrəli və Axtarış kimi bəzi düymələr hazırda ekranın aşağısında yerləşir.</translation>
 <translation id="5876773482963502140">Chrome'un məkanınızı bilməsinə icazə versəniz, Chrome onu icazə verdiyiniz saytlara göndərir. Yaxınlıqdakı mağazalar və ya xəbərlər kimi sizə göstərəcək yerli məlumatlar olduqda saytlar məkanınızı tələb edə bilər.</translation>
 <translation id="6054613632208573261">Defolt olaraq Chrome istifadə edin</translation>

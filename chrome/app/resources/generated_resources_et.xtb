@@ -4683,7 +4683,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Kui soovite jätkuvalt veebi sirvida, paluge administraatoril see rakendus eemaldada.}other{Kui soovite jätkuvalt veebi sirvida, paluge administraatoril need rakendused eemaldada.}}</translation>
 <translation id="5997337190805127100">Lisateave saidile juurdepääsu kohta</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> tulemust otsingule „<ph name="SEARCH_TEXT" />”</translation>
-<translation id="6001839398155993679">Alustagem</translation>
 <translation id="6001999913519612328">Diagnostikatestide käitamine.</translation>
 <translation id="6002210667729577411">Teisalda grupp uude aknasse</translation>
 <translation id="6002452033851752583">Parool kustutati teie Google'i kontolt</translation>
@@ -6078,7 +6077,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7509246181739783082">Kinnitage oma isik</translation>
 <translation id="7509539379068593709">Desinstalli rakendus</translation>
 <translation id="7511415964832680006">Kui see on sisse lülitatud, võivad saidid oma sisu ja teenuste pakkumiseks kasutada siin kuvatud privaatsust säilitavaid meetodeid. Need hõlmavad saitidevahelise jälgimise alternatiive. Aja jooksul võidakse lisada rohkem prooviversioone.</translation>
-<translation id="7514236770834963598">Vaadake oma praegustes seadetes üle kõige kriitilisemad privaatsus- ja turvaseaded</translation>
 <translation id="7514239104543605883">Kopeeri seadmesse</translation>
 <translation id="7514365320538308">Laadi alla</translation>
 <translation id="7514417110442087199">Lisa määrang</translation>

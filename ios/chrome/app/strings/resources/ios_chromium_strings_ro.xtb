@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1257458525759135959">Pentru a salva imaginile, atinge Setări ca să permiți browserului Chromium să adauge fotografiile</translation>
 <translation id="1289216811211435351">Treci la Chromium</translation>
+<translation id="1354592789402432496">Administratorul solicită să te conectezi cu un cont de organizație. Conturile restricționate de administrator sunt ascunse.</translation>
 <translation id="1361748954329991663">Chromium nu este actualizat. Dacă nu este disponibilă nicio actualizare în <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, e posibil ca dispozitivul tău să nu mai accepte versiuni noi de Chromium.</translation>
 <translation id="1370204544543370355">Pentru a profita din plin de Chromium, conectează-te la Chromium folosind Contul Google</translation>
 <translation id="1431818719585918472">Permite ca Chromium să blocheze filele incognito.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Conectează-te la Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
+<translation id="5324242752415821224">Organizația îți solicită să te conectezi pentru a folosi Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="5521125884468363740">Pentru a vedea toate filele tale deschise în Chromium, conectează-te și activează sincronizarea</translation>
 <translation id="5573014823074921752">Sfat pentru Chromium: pentru mai multe opțiuni de file, atinge lung butonul Afișează filele din bara de instrumente, care se află în partea de sus sau de jos a ecranului.</translation>
@@ -63,6 +65,7 @@
 2. atinge Aplicația browser prestabilită;
 3. selectează Chromium.</translation>
 <translation id="6155422572367400359">Conectează-te la acest site, la Contul Google și la Chromium. Poți activa sincronizarea mai târziu.</translation>
+<translation id="6183442264225539303">Conectează-te la acest site și la Chromium. Poți activa sincronizarea mai târziu.</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
 <translation id="632825460376924298">Permite conectarea la Chromium</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>

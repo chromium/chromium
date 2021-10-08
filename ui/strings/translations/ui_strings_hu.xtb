@@ -30,6 +30,7 @@
 <translation id="1710340000377843106">most</translation>
 <translation id="1752946267035950200">{MINUTES,plural, =1{1 perc}other{# perc}}</translation>
 <translation id="1761785978543082658"><ph name="QUANTITY" /> bájt</translation>
+<translation id="1770726142253415363">Áthelyezve ide: <ph name="ROW_NUMBER" />. sor, <ph name="COLUMN_NUMBER" />. oszlop.</translation>
 <translation id="1801827354178857021">Pont</translation>
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 hónap}other{# hónap}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>

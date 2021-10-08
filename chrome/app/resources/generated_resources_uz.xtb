@@ -4680,7 +4680,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Initernetda ishlashda davom etish uchun administratordan bu ilovani olib tashlashni so‘rang.}other{Initernetda ishlashda davom etish uchun administratordan bu ilovalarni olib tashlashni so‘rang.}}</translation>
 <translation id="5997337190805127100">Saytga ruxsat haqida batafsil axborot</translation>
 <translation id="6000758707621254961">“<ph name="SEARCH_TEXT" />” uchun <ph name="RESULT_COUNT" /> ta natija</translation>
-<translation id="6001839398155993679">Boshlash</translation>
 <translation id="6001999913519612328">Diagnostika tekshiruvlarini bajarish.</translation>
 <translation id="6002210667729577411">Guruhni yangi oynaga olish</translation>
 <translation id="6002452033851752583">Parol Google hisobingizdan oʻchirib tashlandi</translation>
@@ -6076,7 +6075,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7509246181739783082">Shaxsni tasdiqlash</translation>
 <translation id="7509539379068593709">Ilovani oʻchirish</translation>
 <translation id="7511415964832680006">Agar yoqilsa, saytlar oʻzlarining kontent va xizmatlarini taqdim etish uchun bu yerda koʻrsatilgan maxfiylikni saqlash texnikalaridan foydalanishi mumkin. Bunga muqobil saytlararo kuzatuv ham kiradi. Vaqti-vaqti bilan koʻproq sinov funksiyalari kiritiladi.</translation>
-<translation id="7514236770834963598">Eng muhim maxfiylik va xavfsizlikni boshqarish uchun joriy sozlamalarni tekshiring</translation>
 <translation id="7514239104543605883">Qurilmaga nusxalash</translation>
 <translation id="7514365320538308">Yuklab olish</translation>
 <translation id="7514417110442087199">Tayinlash</translation>

@@ -4676,7 +4676,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{Web'e göz atmaya devam edebildiğinizden emin olmak için yöneticinizden bu uygulamayı kaldırmasını isteyin.}other{Web'e göz atmaya devam edebildiğinizden emin olmak için yöneticinizden bu uygulamaları kaldırmasını isteyin.}}</translation>
 <translation id="5997337190805127100">Site Erişimi Hakkında Daha Fazla Bilgi</translation>
 <translation id="6000758707621254961">"<ph name="SEARCH_TEXT" />" için bulunan <ph name="RESULT_COUNT" /> sonuç gösteriliyor</translation>
-<translation id="6001839398155993679">Başlayalım</translation>
 <translation id="6001999913519612328">Teşhis testlerini çalıştırır.</translation>
 <translation id="6002210667729577411">Grubu yeni pencereye taşı</translation>
 <translation id="6002452033851752583">Şifre Google Hesabınızdan silindi</translation>
@@ -6071,7 +6070,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7509246181739783082">Kimliğinizi doğrulayın</translation>
 <translation id="7509539379068593709">Uygulamayı Kaldır</translation>
 <translation id="7511415964832680006">Etkinleştirildiğinde, siteler içeriklerini ve hizmetlerini sunmak için burada gösterilen gizliliği koruma tekniklerini kullanabilir. Bu teknikler, siteler arası izlemeye alternatif çözümler sağlar. Zaman içinde başka denemeler de eklenebilir.</translation>
-<translation id="7514236770834963598">En önemli gizlilik ve güvenlik denetimlerinizle ilgili mevcut ayarlarınızı inceleyin</translation>
 <translation id="7514239104543605883">Cihazıma kopyala</translation>
 <translation id="7514365320538308">İndir</translation>
 <translation id="7514417110442087199">Atama ekle</translation>

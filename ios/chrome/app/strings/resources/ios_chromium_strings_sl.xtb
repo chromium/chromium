@@ -5,6 +5,7 @@
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1257458525759135959">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chromium dodaja fotografijam</translation>
 <translation id="1289216811211435351">Preklop na Chromium</translation>
+<translation id="1354592789402432496">Skrbnik zahteva, da se prijavite z računom organizacije. Računi, ki jih skrbnik omejuje, so skriti.</translation>
 <translation id="1361748954329991663">Chromium je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chromiuma.</translation>
 <translation id="1370204544543370355">Če želite kar najbolje izkoristiti Chromium, se prijavite z računom Google.</translation>
 <translation id="1431818719585918472">Naj Chromium zaklene anonimne zavihke.</translation>
@@ -50,6 +51,7 @@
 <translation id="5171868502429358653">Prijavite se v Chromium</translation>
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5308226104666789935">Chromium ne more preveriti, ali so na voljo posodobitve</translation>
+<translation id="5324242752415821224">Vaša organizacija zahteva, da se za uporabo Chromiuma prijavite. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" />.</translation>
 <translation id="5396916991083608703">Želite nastaviti Chromium kot privzeto možnost?</translation>
 <translation id="5521125884468363740">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chromium, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="5573014823074921752">Nasvet za Chromium. Če želite več možnosti za zavihke, pridržite gumb za prikaz zavihkov v orodni vrstici na dnu ali vrhu zaslona.</translation>
@@ -63,6 +65,7 @@
 2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.
 3. Izberite Chromium.</translation>
 <translation id="6155422572367400359">Prijavite se na tem spletnem mestu, v svoj račun Google in Chromium. Sinhronizacijo lahko vklopite pozneje.</translation>
+<translation id="6183442264225539303">Prijavite se na tem spletnem mestu in v Chromium. Sinhronizacijo lahko vklopite pozneje.</translation>
 <translation id="6268381023930128611">Se želite odjaviti iz Chromiuma?</translation>
 <translation id="632825460376924298">Omogočanje prijave v Chromium</translation>
 <translation id="6337530241089703714">Izberite, ali želite izbrisati podatke v Chromiumu iz te naprave ali jih obdržati.</translation>

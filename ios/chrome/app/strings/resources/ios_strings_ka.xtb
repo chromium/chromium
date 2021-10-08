@@ -16,6 +16,7 @@
 <translation id="1066060668811609597">სინქრონიზაციის მართვა</translation>
 <translation id="1076421457278169141">კოდი დასკანირდა</translation>
 <translation id="1084365883616172403">Facebook-ის პოსტი დასრულებულია.</translation>
+<translation id="1086486568852410168">ძიება Google Lens-ით</translation>
 <translation id="1103523840287552314">ყოველთვის თარგმნე ამ ენიდან: <ph name="LANGUAGE" /></translation>
 <translation id="1104948393051856124">მიღება და გაგრძელება</translation>
 <translation id="110724200315609752">გახსნილ ფანჯარაზე გადართვა</translation>
@@ -57,6 +58,7 @@
 <translation id="1400642268715879018">ბოლო 4 კვირა</translation>
 <translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="1430915738399379752">ბეჭდვა</translation>
+<translation id="1434356225517321998">თქვენი ბრაუზერი მართულია. <ph name="BEGIN_LINK" />დეტალურად<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">პაროლის დამალვა</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ელემენტი</translation>
 <translation id="149095475893949513">ეს ვებსაიტი კონფიგურაციის პროფილის ჩამოტვირთვას ცდილობს.</translation>
@@ -120,6 +122,7 @@
 <translation id="209018056901015185">დესკტოპის საიტის მოთხოვნა</translation>
 <translation id="2103075008456228677">history.google.com-ის გახსნა</translation>
 <translation id="2116625576999540962"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ელემენტი გადატანილია</translation>
+<translation id="2122754583996902531">თქვენი ბრაუზერი მართულია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="212623074644302906">შეკითხვა საკითხავ სიაში დამატებისას</translation>
 <translation id="2139867232736819575">თქვენ მიერ კოპირებული ტექსტის მოძიება</translation>
 <translation id="214201757571129614">შესვლა…</translation>
@@ -128,6 +131,7 @@
 <translation id="2218443599109088993">მასშტაბის შემცირება</translation>
 <translation id="2230173723195178503">ვებგვერდი ჩაიტვირთა</translation>
 <translation id="2239626343334228536">მიმდინარეობს დათვალიერების მონაცემების გასუფთავება…</translation>
+<translation id="2256933947031277845">თქვენი ორგანიზაცია სისტემაში მხოლოდ კონკრეტული ანგარიშებით შესვლის უფლებას გაძლებთ.</translation>
 <translation id="225943865679747347">შეცდომის კოდი: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">ანგარიშის დამატება</translation>
 <translation id="2268044343513325586">დახვეწა</translation>
@@ -258,6 +262,7 @@
 <translation id="345565170154308620">პაროლების მართვა…</translation>
 <translation id="3469166899695866866">გსურთ ჩამოტვირთვის შეწყვეტა?</translation>
 <translation id="3470502288861289375">კოპირება…</translation>
+<translation id="3472993688462687965">სინქრონიზაციის ჩართვის შემთხვევაში მონაცემები შეიძლება შეიზღუდოს იმის მიხედვით, თუ რა არის დაშვებული თქვენი ორგანიზაციის მიერ.</translation>
 <translation id="3474624961160222204">გაგრძელება, როგორც <ph name="NAME" /></translation>
 <translation id="3478058380795961209">ვადის გასვლის თვე</translation>
 <translation id="3482959374254649722">თქვენი ჩანართების სინქრონიზაცია…</translation>
@@ -369,10 +374,12 @@
 
 თქვენი მონაცემები დაშიფრულია საიდუმლო ფრაზის მეშვეობით. სინქრონიზაციის დასაწყებად, შეიყვანეთ საიდუმლო ფრაზა.</translation>
 <translation id="4689564913179979534">გადახდის მეთოდების მართვა…</translation>
+<translation id="469022783543509074">თქვენ გამოხვედით</translation>
 <translation id="470966556546083668">არ ჩაირთოს სინქრონიზაცია</translation>
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4747097190499141774">საიდუმლო ფრაზით დაშიფვრა არ მოიცავს Google Pay-ში შენახულ გადახდის მეთოდებსა და მისამართებს. თქვენი დაშიფრული მონაცემების წაკითხვა შეუძლია მხოლოდ მას, ვინც იცის თქვენი საიდუმლო ფრაზა. საიდუმლო ფრაზა არ იგზავნება Google-ში და არ ინახება მის მიერ. საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის შემთხვევაში, სინქრონიზაციის გადაყენება მოგიწევთ. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">ახალი ინკოგნიტო ჩანართი</translation>
+<translation id="4764612367328936189">თქვენი ორგანიზაცია სისტემაში მხოლოდ კონკრეტული ანგარიშებით შესვლის უფლებას გაძლებთ. ანგარიშები, რომელთა გამოყენებაც ნებადართული არ არის, დამალულია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="4775879719735953715">ნაგულისხმევი ბრაუზერი</translation>
 <translation id="4778644898150334464">სხვა პაროლის გამოყენება</translation>
 <translation id="4802417911091824046">საიდუმლო ფრაზით დაშიფვრა არ მოიცავს Google Pay-ში შენახულ გადახდის მეთოდებსა და მისამართებს.
@@ -829,6 +836,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="9081058212938299310">გსურთ <ph name="USERNAME" />-ის პაროლის განახლება?</translation>
 <translation id="9083392325882095631">1 ელემენტი</translation>
 <translation id="9083838294503912307">თქვენი ყველა მოწყობილობის სინქრონიზაციისთვისა და პერსონალიზებისთვის ჩართეთ სინქრონიზაცია.</translation>
+<translation id="9084677839771512880">თქვენი ორგანიზაცია ზღუდავს, რის სინქრონიზაცია შეგიძლიათ. <ph name="BEGIN_LINK" />დეტალურად<ph name="END_LINK" /></translation>
 <translation id="9087108903408689779">Chrome-ის შემოთავაზებული პაროლი:</translation>
 <translation id="9094033019050270033">პაროლის განახლება</translation>
 <translation id="9100610230175265781">აუცილებელია კოდური ფრაზის მითითება</translation>

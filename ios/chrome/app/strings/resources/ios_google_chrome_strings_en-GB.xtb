@@ -3,6 +3,7 @@
 <translationbundle lang="en-GB">
 <translation id="1096883626080133124">Get more done with a simple, secure and faster-than-ever Google Chrome</translation>
 <translation id="1282031177488366470">Help improve Chrome's features and performance</translation>
+<translation id="1354592789402432496">Your administrator requires you to sign in with an organisation account. Accounts that are restricted by your administrator are hidden.</translation>
 <translation id="1479202195792305274">Chrome can check your passwords when you sign in with your Google Account.</translation>
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
@@ -45,6 +46,7 @@
 <translation id="3988789688219830639">Google Chrome does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Help make Chrome better by sending usage statistics and crash reports to Google.</translation>
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
+<translation id="4214277427269650960">Sign in to this site and Chrome. You can turn on sync later.</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4249068189593983585">Chrome tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
 <translation id="4523886039239821078">Some add-ons cause Chrome to crash. Please uninstall:</translation>
@@ -59,6 +61,7 @@
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome can't check for updates</translation>
 <translation id="5716154293141027663">Open Chrome whenever you tap on links in other apps</translation>
+<translation id="572883588166315317">Your organisation requires you to sign in to use Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" />.</translation>
 <translation id="5854621639439811139">Chrome tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
 <translation id="5876773482963502140">If you allow Chrome to know your location, Chrome sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
 <translation id="6054613632208573261">Use Chrome by default</translation>
