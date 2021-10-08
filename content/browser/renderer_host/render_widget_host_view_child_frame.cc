@@ -942,18 +942,10 @@ RenderWidgetHostViewChildFrame::FilterInputEvent(
 
 void RenderWidgetHostViewChildFrame::GetScreenInfo(
     display::ScreenInfo* screen_info) {
-  // TODO(crbug.com/1182855): Propagate screen infos from the parent on changes
-  // and on connection init; avoid lazily updating the local cache like this.
-  if (frame_connector_)
-    UpdateScreenInfo();
   *screen_info = screen_infos_.current();
 }
 
 display::ScreenInfos RenderWidgetHostViewChildFrame::GetScreenInfos() {
-  // TODO(crbug.com/1182855): Propagate screen infos from the parent on changes
-  // and on connection init; avoid lazily updating the local cache like this.
-  if (frame_connector_)
-    UpdateScreenInfo();
   return screen_infos_;
 }
 

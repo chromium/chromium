@@ -197,6 +197,8 @@ void CrossProcessFrameConnector::SynchronizeVisualProperties(
   if (!view_)
     return;
 
+  view_->UpdateScreenInfo();
+
   RenderWidgetHostImpl* render_widget_host = view_->host();
   DCHECK(render_widget_host);
 
