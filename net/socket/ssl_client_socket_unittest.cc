@@ -3510,28 +3510,27 @@ TEST_F(SSLClientSocketTest, 3DES) {
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
-  // 3DES is allowed by default.
+  // 3DES is disabled by default.
   int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+
+  // Disabling 3DES at both the context and disable_legacy_crypto still disables
+  // 3DES.
+  SSLConfig config_no_legacy_crypto;
+  config_no_legacy_crypto.disable_legacy_crypto = true;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config_no_legacy_crypto, &rv));
+  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
+
+  // It may be re-enabled at the context.
+  SSLContextConfig context_config;
+  context_config.triple_des_enabled = true;
+  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
   EXPECT_THAT(rv, IsOk());
 
-  // disable_legacy_crypto, among other things, disables 3DES.
-  SSLConfig config;
-  config.disable_legacy_crypto = true;
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-
-  SSLContextConfig context_config;
-  context_config.triple_des_enabled = false;
-  ssl_config_service_->UpdateSSLConfigAndNotify(context_config);
-
-  // Disabling 3DES at both the context and disable_legacy_crypto disables 3DES.
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config, &rv));
-  EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-
-  // Use a fresh SSLConfig to test that disabling 3DES at the context alone also
-  // disables 3DES.
-  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  // disable_legacy_crypto still disables 3DES when the context enables it.
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(config_no_legacy_crypto, &rv));
   EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
 }
 
