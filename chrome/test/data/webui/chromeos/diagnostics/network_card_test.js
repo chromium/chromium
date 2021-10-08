@@ -7,6 +7,7 @@ import 'chrome://diagnostics/network_card.js';
 import {fakeCellularNetwork, fakeConnectingEthernetNetwork, fakeDisconnectedEthernetNetwork, fakeDisconnectedWifiNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakePortalWifiNetwork, fakeWifiNetwork, fakeWifiNetworkDisabled, fakeWifiNetworkInvalidNameServers, fakeWifiNetworkNoIpAddress} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.js';
@@ -181,6 +182,9 @@ export function networkCardTestSuite() {
       assertTrue(isVisible(getTroubleConnectingElement()));
       assertTrue(isVisible(getNetworkInfoElement()));
       assertTrue(isVisible(getIpConfigDrawerElement()));
+      dx_utils.assertTextContains(
+          loadTimeData.getStringF('troubleshootingText', 'Wi-Fi'),
+          getTroubleConnectingElement().troubleshootingInfo.header);
     });
   });
 

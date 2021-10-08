@@ -236,24 +236,6 @@ Polymer({
     }
   },
 
-  /** @protected */
-  computeShouldShowTroubleConnecting_() {
-    // Wait until the network is present before deciding.
-    if (!this.network) {
-      return false;
-    }
-
-    // Show the troubleshooting state when not connected or connecting.
-    switch (this.network.state) {
-      case NetworkState.kOnline:
-      case NetworkState.kConnected:
-      case NetworkState.kConnecting:
-        return false;
-      default:
-        return true;
-    }
-  },
-
   /**
    * @protected
    * @return {boolean}
@@ -327,7 +309,10 @@ Polymer({
     }
 
     let isDisabled = this.network.state === NetworkState.kDisabled;
-    let isNotConnected = this.network.state === NetworkState.kNotConnected;
+    // Show the not connected state for the Not Connected/Portal states.
+    let isNotConnected = [
+      NetworkState.kNotConnected, NetworkState.kPortal
+    ].includes(this.network.state);
     // Override the |troubleshootingState| value if necessary since the
     // disabled and not connected states take precedence.
     if (isNotConnected) {
