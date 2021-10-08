@@ -9,7 +9,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -154,10 +153,6 @@ void InitializeCrashKeysForTesting() {
 }
 
 void ResetCrashKeysForTesting() {
-  LOG(ERROR) << "ResetCrashKeysForTesting() does not work on Breakpad; "
-                "reliance on it may cause unexpected test failures. See "
-                "crbug.com/1041106 for details.";
-
   internal::ResetCrashKeyStorageForTesting();
   base::debug::SetCrashKeyImplementation(nullptr);
 }
