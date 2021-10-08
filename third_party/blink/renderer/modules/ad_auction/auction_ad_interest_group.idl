@@ -12,7 +12,7 @@ dictionary AuctionAdInterestGroup {
   USVString dailyUpdateUrl;
   USVString trustedBiddingSignalsUrl;
   sequence<USVString> trustedBiddingSignalsKeys;
-  object userBiddingSignals;
+  any userBiddingSignals;
   sequence<AuctionAd> ads;
   sequence<AuctionAd> adComponents;
 };
