@@ -23,6 +23,7 @@ namespace bluetooth_config {
 
 class AdapterStateController;
 class DeviceCache;
+class DeviceNameManager;
 class DeviceOperationHandler;
 class DiscoverySessionManager;
 class Initializer;
@@ -58,10 +59,13 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
   void Disconnect(const std::string& device_id,
                   DisconnectCallback callback) override;
   void Forget(const std::string& device_id, ForgetCallback callback) override;
+  void SetDeviceNickname(const std::string& device_id,
+                         const std::string& nickname) override;
 
   mojo::ReceiverSet<mojom::CrosBluetoothConfig> receivers_;
 
   std::unique_ptr<AdapterStateController> adapter_state_controller_;
+  std::unique_ptr<DeviceNameManager> device_name_manager_;
   std::unique_ptr<DeviceCache> device_cache_;
   std::unique_ptr<SystemPropertiesProvider> system_properties_provider_;
   std::unique_ptr<DiscoverySessionManager> discovery_session_manager_;

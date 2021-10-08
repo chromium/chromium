@@ -9,6 +9,8 @@
 
 #include "base/containers/flat_map.h"
 
+class PrefService;
+
 namespace chromeos {
 namespace bluetooth_config {
 

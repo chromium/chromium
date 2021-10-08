@@ -199,6 +199,14 @@ export class FakeBluetoothConfig {
     });
   }
 
+  /** @override */
+  setDeviceNickname(deviceId, nickname) {
+    const device = this.systemProperties_.pairedDevices.find(
+        d => d.deviceProperties.id === deviceId);
+    device.nickname = nickname;
+    this.updatePairedDevice(device);
+  }
+
   /**
    * @param {chromeos.bluetoothConfig.mojom.BluetoothSystemState} systemState
    */

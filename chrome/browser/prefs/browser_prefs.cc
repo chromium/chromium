@@ -375,6 +375,7 @@
 #include "chromeos/network/network_metadata_store.h"
 #include "chromeos/network/proxy/proxy_config_handler.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
+#include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/timezone/timezone_resolver.h"
@@ -1315,6 +1316,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
   chromeos::device_sync::RegisterProfilePrefs(registry);
+  chromeos::bluetooth_config::DeviceNameManagerImpl::RegisterPrefs(registry);
   ash::FamilyUserChromeActivityMetrics::RegisterProfilePrefs(registry);
   ash::FamilyUserMetricsService::RegisterProfilePrefs(registry);
   ash::FamilyUserSessionMetrics::RegisterProfilePrefs(registry);

@@ -6,6 +6,7 @@
 
 #include "chromeos/services/bluetooth_config/adapter_state_controller_impl.h"
 #include "chromeos/services/bluetooth_config/device_cache_impl.h"
+#include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/bluetooth_config/device_operation_handler_impl.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager_impl.h"
 
@@ -21,6 +22,11 @@ InitializerImpl::CreateAdapterStateController(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   return std::make_unique<AdapterStateControllerImpl>(
       std::move(bluetooth_adapter));
+}
+
+std::unique_ptr<DeviceNameManager> InitializerImpl::CreateDeviceNameManager(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  return std::make_unique<DeviceNameManagerImpl>(std::move(bluetooth_adapter));
 }
 
 std::unique_ptr<DeviceCache> InitializerImpl::CreateDeviceCache(

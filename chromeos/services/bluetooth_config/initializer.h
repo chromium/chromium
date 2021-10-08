@@ -18,6 +18,7 @@ namespace bluetooth_config {
 
 class AdapterStateController;
 class DeviceCache;
+class DeviceNameManager;
 class DeviceOperationHandler;
 class DiscoverySessionManager;
 
@@ -30,6 +31,8 @@ class Initializer {
   virtual ~Initializer() = default;
 
   virtual std::unique_ptr<AdapterStateController> CreateAdapterStateController(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
+  virtual std::unique_ptr<DeviceNameManager> CreateDeviceNameManager(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<DeviceCache> CreateDeviceCache(
       AdapterStateController* adapter_state_controller,

@@ -256,4 +256,8 @@ interface CrosBluetoothConfig {
   // Forgets the device with ID |device_id|, which in practice means
   // un-pairing from the device.
   Forget(string device_id) => (bool success);
+
+  // Sets a |nickname| for the device with ID |device_id|. The nickname is
+  // visible to all users of the device.
+  SetDeviceNickname(string device_id, string nickname);
 };

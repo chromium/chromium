@@ -8,10 +8,12 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/services/bluetooth_config/device_name_manager_impl.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_discovery_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_system_properties_observer.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,11 +35,15 @@ class CrosBluetoothConfigTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    DeviceNameManagerImpl::RegisterPrefs(test_pref_service_.registry());
+
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
     InitializerImpl initializer;
     cros_bluetooth_config_ =
         std::make_unique<CrosBluetoothConfig>(initializer, mock_adapter_);
+    cros_bluetooth_config_->SetPrefs(/*logged_in_profile_prefs=*/nullptr,
+                                     &test_pref_service_);
   }
 
   mojo::Remote<mojom::CrosBluetoothConfig> BindToInterface() {
@@ -51,6 +57,7 @@ class CrosBluetoothConfigTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   session_manager::SessionManager session_manager_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
+  sync_preferences::TestingPrefServiceSyncable test_pref_service_;
 
   std::unique_ptr<CrosBluetoothConfig> cros_bluetooth_config_;
 };
@@ -58,18 +65,21 @@ class CrosBluetoothConfigTest : public testing::Test {
 TEST_F(CrosBluetoothConfigTest, BindMultipleClients) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote1 = BindToInterface();
   mojo::Remote<mojom::CrosBluetoothConfig> remote2 = BindToInterface();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(CrosBluetoothConfigTest, CallApiFunction) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   FakeSystemPropertiesObserver fake_observer;
   remote->ObserveSystemProperties(fake_observer.GeneratePendingRemote());
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(CrosBluetoothConfigTest, CallPairingFunction) {
   mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
   auto delegate = std::make_unique<FakeBluetoothDiscoveryDelegate>();
   remote->StartDiscovery(delegate->GeneratePendingRemote());
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(CrosBluetoothConfigTest, CallDeviceManagementFunctions) {
@@ -95,6 +105,12 @@ TEST_F(CrosBluetoothConfigTest, CallDeviceManagementFunctions) {
                                 [&result](bool success) { result = success; }));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(result.value());
+}
+
+TEST_F(CrosBluetoothConfigTest, CallNamingFunction) {
+  mojo::Remote<mojom::CrosBluetoothConfig> remote = BindToInterface();
+  remote->SetDeviceNickname("device_id", "nickname");
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace bluetooth_config
