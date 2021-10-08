@@ -1579,6 +1579,21 @@ ci.chromium_builder(
     main_console_view = "main",
     notifies = ["linux-archive-rel"],
     os = os.LINUX_BIONIC_REMOVE,
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "archive_datas": [
+                {
+                    "files": [
+                        "chrome_100_percent.pak",
+                    ],
+                    "gcs_bucket": "chromium-browser-snapshots",
+                    "gcs_path": "experimental/Linux_x64/{%position%}",
+                    "archive_type": "ARCHIVE_TYPE_FILES",
+                },
+            ],
+        },
+    },
 )
 
 ci.chromium_builder(
