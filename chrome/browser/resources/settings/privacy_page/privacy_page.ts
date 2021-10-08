@@ -337,7 +337,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   private onPrivacyReviewClick_() {
     // TODO(crbug/1215630): Implement metrics.
-    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
+    Router.getInstance().navigateTo(
+        routes.PRIVACY_REVIEW, /* dynamicParams */ undefined,
+        /* removeSearch */ true);
   }
 
   private interactedWithPage_() {
