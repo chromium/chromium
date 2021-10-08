@@ -598,6 +598,36 @@ TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
   manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
+TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id2 = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id2(kFrameSinkIdRoot, local_surface_id2);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  manager_.EvictSurfaces({surface_id, surface_id2});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id2, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+
+  // Even though `surface_id2` was just submitted, Display should not reference
+  // it because it was evicted.
+  EXPECT_NE(surface_id2, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+}
+
 namespace {
 
 enum RegisterOrder { REGISTER_HIERARCHY_FIRST, REGISTER_CLIENTS_FIRST };

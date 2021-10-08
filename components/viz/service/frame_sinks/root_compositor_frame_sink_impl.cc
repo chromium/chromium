@@ -366,7 +366,8 @@ void RootCompositorFrameSinkImpl::SubmitCompositorFrame(
     CompositorFrame frame,
     absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
-  if (support_->last_activated_local_surface_id() != local_surface_id) {
+  if (support_->last_activated_local_surface_id() != local_surface_id &&
+      !support_->IsEvicted(local_surface_id)) {
     display_->SetLocalSurfaceId(local_surface_id, frame.device_scale_factor());
     // Resize the |display_| to the root compositor frame |output_rect| so that
     // we won't show root surface gutters.

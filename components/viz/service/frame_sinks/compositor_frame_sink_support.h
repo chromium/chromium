@@ -225,6 +225,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   void OnCompositorFrameTransitionDirectiveProcessed(uint32_t sequence_id);
 
+  bool IsEvicted(const LocalSurfaceId& local_surface_id) const;
+
  private:
   friend class CompositorFrameSinkSupportTest;
   friend class DisplayTest;
@@ -265,8 +267,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   void MaybeEvictSurfaces();
   void EvictLastActiveSurface();
   bool ShouldSendBeginFrame(base::TimeTicks timestamp);
-
-  bool IsEvicted(const LocalSurfaceId& local_surface_id) const;
 
   // Checks if any of the pending surfaces should activate now because their
   // deadline has passed. This is called every BeginFrame.

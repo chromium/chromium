@@ -1107,14 +1107,6 @@ bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
   return true;
 }
 
-bool CompositorFrameSinkSupport::IsEvicted(
-    const LocalSurfaceId& local_surface_id) const {
-  return local_surface_id.embed_token() ==
-             last_evicted_local_surface_id_.embed_token() &&
-         local_surface_id.parent_sequence_number() <=
-             last_evicted_local_surface_id_.parent_sequence_number();
-}
-
 void CompositorFrameSinkSupport::CheckPendingSurfaces() {
   if (pending_surfaces_.empty())
     return;
@@ -1134,6 +1126,14 @@ void CompositorFrameSinkSupport::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
   if (client_)
     client_->OnCompositorFrameTransitionDirectiveProcessed(sequence_id);
+}
+
+bool CompositorFrameSinkSupport::IsEvicted(
+    const LocalSurfaceId& local_surface_id) const {
+  return local_surface_id.embed_token() ==
+             last_evicted_local_surface_id_.embed_token() &&
+         local_surface_id.parent_sequence_number() <=
+             last_evicted_local_surface_id_.parent_sequence_number();
 }
 
 void CompositorFrameSinkSupport::DestroySelf() {
