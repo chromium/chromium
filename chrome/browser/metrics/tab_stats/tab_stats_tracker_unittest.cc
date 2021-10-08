@@ -42,7 +42,7 @@ std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
 class TestTabStatsObserver : public TabStatsObserver {
  public:
   // Functions used to update the counts.
-  void OnMainFrameNavigationCommitted(
+  void OnPrimaryMainFrameNavigationCommitted(
       content::WebContents* web_contents) override {
     ++main_frame_committed_navigations_count_;
   }

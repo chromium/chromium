@@ -76,7 +76,8 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
 
   void NavigateAndCommitTab(content::WebContents* contents, const GURL& gurl) {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(contents, gurl);
-    tab_usage_scenario_tracker_->OnMainFrameNavigationCommitted(contents);
+    tab_usage_scenario_tracker_->OnPrimaryMainFrameNavigationCommitted(
+        contents);
   }
 
  protected:

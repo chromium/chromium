@@ -24,9 +24,11 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
 #include "media/base/test_data_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/screen.h"
@@ -368,7 +370,8 @@ class LenientMockTabStatsObserver : public TabStatsObserver {
   MOCK_METHOD1(OnTabRemoved, void(content::WebContents*));
   MOCK_METHOD2(OnTabReplaced,
                void(content::WebContents*, content::WebContents*));
-  MOCK_METHOD1(OnMainFrameNavigationCommitted, void(content::WebContents*));
+  MOCK_METHOD1(OnPrimaryMainFrameNavigationCommitted,
+               void(content::WebContents*));
   MOCK_METHOD1(OnTabInteraction, void(content::WebContents*));
   MOCK_METHOD1(OnTabIsAudibleChanged, void(content::WebContents*));
   MOCK_METHOD1(OnTabVisibilityChanged, void(content::WebContents*));
@@ -415,7 +418,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   // created and its main frame will do a navigation.
   EXPECT_CALL(mock_observer, OnWindowAdded());
   EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
-  EXPECT_CALL(mock_observer, OnMainFrameNavigationCommitted(::testing::_));
+  EXPECT_CALL(mock_observer,
+              OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(::testing::_));
   Browser* window2 = CreateBrowser(ProfileManager::GetActiveUserProfile());
   ::testing::Mock::VerifyAndClear(&mock_observer);
@@ -437,7 +441,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   // Adding a tab to the second window will cause its previous frame to become
   // hidden.
   EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
-  EXPECT_CALL(mock_observer, OnMainFrameNavigationCommitted(::testing::_));
+  EXPECT_CALL(mock_observer,
+              OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window2_tab1));
   AddTabAtIndexToBrowser(window2, 1, GURL("about:blank"),
                          ui::PAGE_TRANSITION_TYPED, true);
@@ -491,7 +496,8 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, TabSwitch) {
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   EXPECT_CALL(mock_observer, OnTabAdded(::testing::_));
-  EXPECT_CALL(mock_observer, OnMainFrameNavigationCommitted(::testing::_));
+  EXPECT_CALL(mock_observer,
+              OnPrimaryMainFrameNavigationCommitted(::testing::_));
   EXPECT_CALL(mock_observer, OnTabVisibilityChanged(window1_tab1));
   AddTabAtIndexToBrowser(browser(), 1, GURL("about:blank"),
                          ui::PAGE_TRANSITION_TYPED, true);
@@ -569,6 +575,99 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest, AddObserverAudibleTab) {
 
   // Clean up.
   tab_stats_tracker_->RemoveObserver(&mock_observer);
+}
+
+namespace {
+
+class MockTabStatsObserverForPrerenderingTest : public TabStatsObserver {
+ public:
+  MockTabStatsObserverForPrerenderingTest() = default;
+  ~MockTabStatsObserverForPrerenderingTest() override = default;
+  MockTabStatsObserverForPrerenderingTest(
+      const MockTabStatsObserverForPrerenderingTest& other) = delete;
+  MockTabStatsObserverForPrerenderingTest& operator=(
+      const MockTabStatsObserverForPrerenderingTest&) = delete;
+
+  MOCK_METHOD1(OnPrimaryMainFrameNavigationCommitted,
+               void(content::WebContents*));
+};
+
+using MockTabStatsPrerenderingObserver =
+    testing::StrictMock<MockTabStatsObserverForPrerenderingTest>;
+
+}  // namespace
+
+class TabStatsTrackerPrerenderBrowserTest : public TabStatsTrackerBrowserTest {
+ public:
+  TabStatsTrackerPrerenderBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &TabStatsTrackerPrerenderBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
+  ~TabStatsTrackerPrerenderBrowserTest() override = default;
+  TabStatsTrackerPrerenderBrowserTest(
+      const TabStatsTrackerPrerenderBrowserTest&) = delete;
+
+  TabStatsTrackerPrerenderBrowserTest& operator=(
+      const TabStatsTrackerPrerenderBrowserTest&) = delete;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    TabStatsTrackerBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    TabStatsTrackerBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TabStatsTrackerPrerenderBrowserTest,
+    PrerenderingShouldNotCallOnPrimaryMainFrameNavigationCommitted) {
+  GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  std::unique_ptr<content::test::PrerenderHostObserver> host_observer;
+
+  // OnPrimaryMainFrameNavigationCommitted() should not be called in
+  // prerendering.
+  {
+    MockTabStatsPrerenderingObserver mock_observer;
+    tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
+    EXPECT_CALL(mock_observer,
+                OnPrimaryMainFrameNavigationCommitted(::testing::_))
+        .Times(0);
+    int host_id = prerender_test_helper().AddPrerender(prerender_url);
+    host_observer = std::make_unique<content::test::PrerenderHostObserver>(
+        *GetWebContents(), host_id);
+    EXPECT_FALSE(host_observer->was_activated());
+    tab_stats_tracker_->RemoveObserver(&mock_observer);
+  }
+
+  // OnPrimaryMainFrameNavigationCommitted() should be called after activating.
+  {
+    MockTabStatsPrerenderingObserver mock_observer;
+    tab_stats_tracker_->AddObserverAndSetInitialState(&mock_observer);
+    EXPECT_CALL(mock_observer,
+                OnPrimaryMainFrameNavigationCommitted(::testing::_))
+        .Times(1);
+    prerender_test_helper().NavigatePrimaryPage(prerender_url);
+    EXPECT_TRUE(host_observer->was_activated());
+    tab_stats_tracker_->RemoveObserver(&mock_observer);
+  }
 }
 
 }  // namespace metrics

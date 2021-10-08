@@ -286,11 +286,11 @@ class TabStatsTracker::WebContentsUsageObserver
     }
   }
 
+  // TODO(crbug.com/1245014): Change this to PrimaryPageChanged and use
+  // RFH::GetUkmPageSourceId instead of navigation_handle->GetNavigationId() for
+  // the Ukm source id.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-    // frames. This caller was converted automatically to the primary main frame
-    // to preserve its semantics. Follow up to confirm correctness.
     if (!navigation_handle->HasCommitted() ||
         !navigation_handle->IsInPrimaryMainFrame() ||
         navigation_handle->IsSameDocument()) {
@@ -304,7 +304,7 @@ class TabStatsTracker::WebContentsUsageObserver
     // Update observers.
     for (TabStatsObserver& tab_stats_observer :
          tab_stats_tracker_->tab_stats_observers_) {
-      tab_stats_observer.OnMainFrameNavigationCommitted(web_contents());
+      tab_stats_observer.OnPrimaryMainFrameNavigationCommitted(web_contents());
     }
   }
 
