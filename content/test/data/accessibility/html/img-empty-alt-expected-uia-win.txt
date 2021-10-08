@@ -1,5 +1,5 @@
 Document
 ++Group IsControlElement=false
 ++++Image IsControlElement=false
-++++Image
+++++Image Name='To get missing image descriptions, open the context menu.'
 ++++Image Name='full'

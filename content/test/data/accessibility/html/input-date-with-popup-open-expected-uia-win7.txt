@@ -19,7 +19,7 @@ Document
 ++++++++++++++++++++Text Name='September, 2008' IsControlElement=false
 ++++++++++++++++++++Image
 ++++++++++++++++Button Name='Show previous month'
-++++++++++++++++++Image
+++++++++++++++++++Image Name='To get missing image descriptions, open the context menu.'
 ++++++++++++++++Button Name='Show next month'
 ++++++++++++++++++Image
 ++++++++++++++++DataGrid Grid.ColumnCount=7 Grid.RowCount=6 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
