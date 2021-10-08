@@ -74,10 +74,11 @@ class PLATFORM_EXPORT FrameWidget {
   virtual void RequestDecode(const cc::PaintImage&,
                              base::OnceCallback<void(bool)>) = 0;
 
-  // Forwards to WebFrameWidget::NotifySwapAndPresentationTime().
-  // The |callback| will be fired when the corresponding renderer frame is
-  // submitted (still called "swapped") to the display compositor (either with
-  // DidSwap or DidNotSwap).
+  // Forwards to `WebFrameWidget::NotifyPresentationTime()`.
+  // `presentation_callback` will be fired when the corresponding renderer frame
+  // is presented to the user. If the presentation is successful, the argument
+  // passed to the callback is the presentation timestamp; otherwise, it would
+  // be timestamp of when the failure is detected.
   virtual void NotifyPresentationTimeInBlink(
       base::OnceCallback<void(base::TimeTicks)> presentation_callback) = 0;
 

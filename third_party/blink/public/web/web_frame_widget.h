@@ -131,11 +131,11 @@ class WebFrameWidget : public WebWidget {
       const cc::ApplyViewportChangesArgs& args) = 0;
 
   // The |callback| will be fired when the corresponding renderer frame is
-  // submitted (still called "swapped") to the display compositor (either with
-  // DidSwap or DidNotSwap).
-  virtual void NotifySwapAndPresentationTime(
-      base::OnceCallback<void(base::TimeTicks)> swap_callback,
-      base::OnceCallback<void(base::TimeTicks)> presentation_callback) = 0;
+  // presented to the user. If the presentation is successful, the argument
+  // passed to the callback is the presentation timestamp; otherwise, it would
+  // be timestamp of when the failure is detected.
+  virtual void NotifyPresentationTime(
+      base::OnceCallback<void(base::TimeTicks)> callback) = 0;
 
   // Instructs devtools to pause loading of the frame as soon as it's shown
   // until explicit command from the devtools client.

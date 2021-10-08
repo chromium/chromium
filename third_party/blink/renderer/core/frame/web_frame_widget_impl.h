@@ -181,6 +181,14 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   HitTestResult CoreHitTestResultAt(const gfx::PointF&);
 
+  // Registers callbacks for the corresponding renderer frame: `swap_callback`
+  // is fired with the submission (aka swap) timestamp when the frame is
+  // submitted to Viz; `presentation_callback` is fired with the presentation
+  // timestamp after the frame is presented to the user.
+  void NotifySwapAndPresentationTimeForTesting(
+      base::OnceCallback<void(base::TimeTicks)> swap_callback,
+      base::OnceCallback<void(base::TimeTicks)> presentation_callback);
+
   // FrameWidget overrides.
   cc::AnimationHost* AnimationHost() const final;
   void SetOverscrollBehavior(
@@ -299,9 +307,8 @@ class CORE_EXPORT WebFrameWidgetImpl
       const ApplyViewportChangesArgs& args) override;
   void ApplyViewportIntersectionForTesting(
       mojom::blink::ViewportIntersectionStatePtr intersection_state);
-  void NotifySwapAndPresentationTime(
-      base::OnceCallback<void(base::TimeTicks)> swap_callback,
-      base::OnceCallback<void(base::TimeTicks)> presentation_callback) override;
+  void NotifyPresentationTime(
+      base::OnceCallback<void(base::TimeTicks)> callback) override;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       override;
   void WaitForDebuggerWhenShown() override;
@@ -620,6 +627,10 @@ class CORE_EXPORT WebFrameWidgetImpl
  private:
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
+
+  void NotifySwapAndPresentationTime(
+      base::OnceCallback<void(base::TimeTicks)> swap_callback,
+      base::OnceCallback<void(base::TimeTicks)> presentation_callback);
 
   // WidgetBaseClient overrides.
   void BeginCommitCompositorFrame() override;

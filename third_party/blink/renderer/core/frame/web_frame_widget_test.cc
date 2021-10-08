@@ -497,22 +497,23 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
 
     // Register callbacks for swap and presentation times.
     base::TimeTicks swap_time;
-    MainFrame().FrameWidget()->NotifySwapAndPresentationTime(
-        base::BindOnce(
-            [](base::OnceClosure swap_quit_closure, base::TimeTicks* swap_time,
-               base::TimeTicks timestamp) {
-              DCHECK(!timestamp.is_null());
-              *swap_time = timestamp;
-              std::move(swap_quit_closure).Run();
-            },
-            swap_run_loop.QuitClosure(), &swap_time),
-        base::BindOnce(
-            [](base::OnceClosure presentation_quit_closure,
-               base::TimeTicks timestamp) {
-              DCHECK(!timestamp.is_null());
-              std::move(presentation_quit_closure).Run();
-            },
-            presentation_run_loop.QuitClosure()));
+    static_cast<WebFrameWidgetImpl*>(MainFrame().FrameWidget())
+        ->NotifySwapAndPresentationTimeForTesting(
+            base::BindOnce(
+                [](base::OnceClosure swap_quit_closure,
+                   base::TimeTicks* swap_time, base::TimeTicks timestamp) {
+                  DCHECK(!timestamp.is_null());
+                  *swap_time = timestamp;
+                  std::move(swap_quit_closure).Run();
+                },
+                swap_run_loop.QuitClosure(), &swap_time),
+            base::BindOnce(
+                [](base::OnceClosure presentation_quit_closure,
+                   base::TimeTicks timestamp) {
+                  DCHECK(!timestamp.is_null());
+                  std::move(presentation_quit_closure).Run();
+                },
+                presentation_run_loop.QuitClosure()));
 
     // Composite and wait for the swap to complete.
     Compositor().BeginFrame(/*time_delta_in_seconds=*/0.016, /*raster=*/true);
@@ -588,33 +589,34 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
   base::TimeTicks successful_presentation_time;
 
   // Register callbacks for swap and presentation times.
-  MainFrame().FrameWidget()->NotifySwapAndPresentationTime(
-      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-        DCHECK(!timestamp.is_null());
+  static_cast<WebFrameWidgetImpl*>(MainFrame().FrameWidget())
+      ->NotifySwapAndPresentationTimeForTesting(
+          base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
+            DCHECK(!timestamp.is_null());
 
-        // Now that the swap time is known, we can determine what timestamps
-        // should we use for the failed and the subsequent successful
-        // presentations.
-        DCHECK(failed_presentation_time.is_null());
-        failed_presentation_time = timestamp + swap_to_failed;
-        DCHECK(successful_presentation_time.is_null());
-        successful_presentation_time =
-            failed_presentation_time + failed_to_successful;
+            // Now that the swap time is known, we can determine what timestamps
+            // should we use for the failed and the subsequent successful
+            // presentations.
+            DCHECK(failed_presentation_time.is_null());
+            failed_presentation_time = timestamp + swap_to_failed;
+            DCHECK(successful_presentation_time.is_null());
+            successful_presentation_time =
+                failed_presentation_time + failed_to_successful;
 
-        swap_run_loop.Quit();
-      }),
-      base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
-        DCHECK(!timestamp.is_null());
-        DCHECK(!failed_presentation_time.is_null());
-        DCHECK(!successful_presentation_time.is_null());
+            swap_run_loop.Quit();
+          }),
+          base::BindLambdaForTesting([&](base::TimeTicks timestamp) {
+            DCHECK(!timestamp.is_null());
+            DCHECK(!failed_presentation_time.is_null());
+            DCHECK(!successful_presentation_time.is_null());
 
-        // Verify that this callback is run in response to the successful
-        // presentation, not the failed one before that.
-        EXPECT_NE(timestamp, failed_presentation_time);
-        EXPECT_EQ(timestamp, successful_presentation_time);
+            // Verify that this callback is run in response to the
+            // successful presentation, not the failed one before that.
+            EXPECT_NE(timestamp, failed_presentation_time);
+            EXPECT_EQ(timestamp, successful_presentation_time);
 
-        presentation_run_loop.Quit();
-      }));
+            presentation_run_loop.Quit();
+          }));
 
   // Composite and wait for the swap to complete.
   Compositor().BeginFrame(/*time_delta_in_seconds=*/0.016, /*raster=*/true);

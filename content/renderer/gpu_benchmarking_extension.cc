@@ -1427,10 +1427,8 @@ bool GpuBenchmarking::AddSwapCompletionEventListener(gin::Arguments* args) {
 
   auto callback_and_context = base::MakeRefCounted<CallbackAndContext>(
       args->isolate(), callback, context.web_frame()->MainWorldScriptContext());
-  context.web_frame()->FrameWidget()->NotifySwapAndPresentationTime(
-      base::NullCallback(),
-      base::BindOnce(&OnSwapCompletedHelper,
-                     base::RetainedRef(callback_and_context)));
+  context.web_frame()->FrameWidget()->NotifyPresentationTime(base::BindOnce(
+      &OnSwapCompletedHelper, base::RetainedRef(callback_and_context)));
   // Request a begin frame explicitly, as the test-api expects a 'swap' to
   // happen for the above queued swap promise even if there is no actual update.
   context.layer_tree_host()->SetNeedsAnimateIfNotInsideMainFrame();

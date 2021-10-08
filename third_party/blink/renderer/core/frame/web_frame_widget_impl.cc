@@ -2747,8 +2747,7 @@ void WebFrameWidgetImpl::AutoscrollEnd() {
 
 void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
   if (layout_type == blink::WebMeaningfulLayout::kVisuallyNonEmpty) {
-    NotifySwapAndPresentationTime(
-        base::NullCallback(),
+    NotifyPresentationTime(
         WTF::Bind(&WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout,
                   WrapWeakPersistent(this)));
   }
@@ -2959,10 +2958,23 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   uint32_t frame_token_ = 0;
 };
 
+void WebFrameWidgetImpl::NotifySwapAndPresentationTimeForTesting(
+    base::OnceCallback<void(base::TimeTicks)> swap_callback,
+    base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
+  NotifySwapAndPresentationTime(std::move(swap_callback),
+                                std::move(presentation_callback));
+}
+
 void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(
-    base::OnceCallback<void(base::TimeTicks)> presentation_time_callback) {
+    base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
   NotifySwapAndPresentationTime(base::NullCallback(),
-                                std::move(presentation_time_callback));
+                                std::move(presentation_callback));
+}
+
+void WebFrameWidgetImpl::NotifyPresentationTime(
+    base::OnceCallback<void(base::TimeTicks)> presentation_callback) {
+  NotifySwapAndPresentationTime(base::NullCallback(),
+                                std::move(presentation_callback));
 }
 
 void WebFrameWidgetImpl::NotifySwapAndPresentationTime(
