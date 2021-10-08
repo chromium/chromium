@@ -10,9 +10,13 @@ TypedStatus<T> should be specialized with a traits struct that defines:
   Codes - enum (usually enum class) that would be the return type, if we weren't
           using TypedStatus.
   static constexpr StatusGroupType Group() { return "NameOfStatus"; }
-  static constexpr absl::optional<Codes> DefaultEnumValue() {
-    return Codes::kCodeThatShouldBeSuperOptimizedEGSuccess;
-    // Can return nullopt to optimize none of them.  No idea why you'd do that.
+
+  // If DefaultEnumValue is present, then it returns the code that should be
+  // treated as the common, optimized case.  Generally, this is the "success"
+  // case, unless you are unlucky.  This function can be omitted if you do not
+  // want any of the codes to be optimized.
+  static constexpr Codes DefaultEnumValue() {
+    return Codes::kCodeThatShouldBeSuperOptimized;
   }
 
 Typically one would:

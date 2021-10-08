@@ -257,9 +257,6 @@ struct NoDefaultTypeTraits {
   static constexpr StatusGroupType Group() {
     return "GroupWithNoDefaultTypeForTests";
   }
-  static constexpr absl::optional<NoDefaultType> DefaultEnumValue() {
-    return absl::nullopt;
-  }
 };
 
 TEST_F(StatusTest, TypedStatusWithNoDefault) {

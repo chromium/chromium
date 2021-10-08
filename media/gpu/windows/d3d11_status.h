@@ -73,7 +73,7 @@ enum class D3D11StatusCode : StatusCodeType {  // D3D11VideoDecoder Errors: 0x03
 struct D3D11StatusTraits {
   using Codes = D3D11StatusCode;
   static constexpr StatusGroupType Group() { return "D3D11StatusCode"; }
-  static constexpr absl::optional<D3D11StatusCode> DefaultEnumValue() {
+  static constexpr D3D11StatusCode DefaultEnumValue() {
     return D3D11StatusCode::kOk;
   }
 };

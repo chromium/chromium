@@ -68,15 +68,47 @@ struct MEDIA_EXPORT StatusData {
   base::Value data;
 };
 
+// Helper class to allow traits with no default enum.
+template <typename T>
+struct StatusTraitsHelper {
+  // If T defines DefaultEnumValue(), then return it.  Otherwise, return an
+  // empty optional.
+  static constexpr absl::optional<typename T::Codes> DefaultEnumValue() {
+    return DefaultEnumValueImpl(0);
+  }
+
+ private:
+  // Call with an (ignored) int, which will choose the first one if it isn't
+  // removed by SFINAE, else will use the varargs one below.
+  template <typename X = T>
+  static constexpr typename std::enable_if<
+      std::is_pointer<decltype(&X::DefaultEnumValue)>::value,
+      absl::optional<typename T::Codes>>::type
+  DefaultEnumValueImpl(int) {
+    // Make sure the signature is correct, just for sanity.
+    static_assert(
+        std::is_same<decltype(T::DefaultEnumValue), typename T::Codes()>::value,
+        "TypedStatus Traits::DefaultEnumValue() must return Traits::Codes.");
+    return T::DefaultEnumValue();
+  }
+
+  static constexpr absl::optional<typename T::Codes> DefaultEnumValueImpl(...) {
+    return {};
+  }
+};
+
 }  // namespace internal
 
 // See media/base/status.md for details and instructions for using TypedStatus.
 template <typename T>
 class MEDIA_EXPORT TypedStatus {
   static_assert(std::is_enum<typename T::Codes>::value,
-                "TypedStatus must only be specialized with enum types.");
+                "TypedStatus Traits::Codes must be an enum type.");
+  static_assert(std::is_same<decltype(T::Group), StatusGroupType()>::value,
+                "TypedStatus Traits::Group() must return StatusGroupType.");
 
  public:
+  // Convenience aliases to allow, e.g., MyStatusType::Codes::kGreatDisturbance.
   using Traits = T;
   using Codes = typename T::Codes;
 
@@ -93,7 +125,7 @@ class MEDIA_EXPORT TypedStatus {
               const base::Location& location = base::Location::Current()) {
     // Note that |message| would be dropped when code is the default value,
     // so DCHECK that it is not set.
-    if (code == Traits::DefaultEnumValue()) {
+    if (code == internal::StatusTraitsHelper<Traits>::DefaultEnumValue()) {
       DCHECK(!!message.empty());
       return;
     }
@@ -119,7 +151,7 @@ class MEDIA_EXPORT TypedStatus {
 
   Codes code() const {
     if (!data_)
-      return *Traits::DefaultEnumValue();
+      return *internal::StatusTraitsHelper<Traits>::DefaultEnumValue();
     return static_cast<Codes>(data_->code);
   }
 
@@ -200,12 +232,14 @@ class MEDIA_EXPORT TypedStatus {
     // directly.
     Or(TypedStatus<T>&& error) : error_(std::move(error)) {
       // |T| must either not have a default code, or not be default
-      DCHECK(!Traits::DefaultEnumValue() ||
-             *Traits::DefaultEnumValue() != code());
+      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
+             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() !=
+                 code());
     }
     Or(const TypedStatus<T>& error) : error_(error) {
-      DCHECK(!Traits::DefaultEnumValue() ||
-             *Traits::DefaultEnumValue() != code());
+      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
+             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() !=
+                 code());
     }
 
     Or(OtherType&& value) : value_(std::move(value)) {}
@@ -213,8 +247,8 @@ class MEDIA_EXPORT TypedStatus {
     Or(typename T::Codes code,
        const base::Location& location = base::Location::Current())
         : error_(TypedStatus<T>(code, "", location)) {
-      DCHECK(!Traits::DefaultEnumValue() ||
-             *Traits::DefaultEnumValue() != code);
+      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
+             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() != code);
     }
 
     // Move- and copy- construction and assignment are okay.
@@ -256,8 +290,10 @@ class MEDIA_EXPORT TypedStatus {
       DCHECK(error_ || value_);
       // It is invalid to call |code()| on an |Or| with a value that
       // is specialized in a TypedStatus with no DefaultEnumValue.
-      DCHECK(error_ || Traits::DefaultEnumValue());
-      return error_ ? error_->code() : *Traits::DefaultEnumValue();
+      DCHECK(error_ ||
+             internal::StatusTraitsHelper<Traits>::DefaultEnumValue());
+      return error_ ? error_->code()
+                    : *internal::StatusTraitsHelper<Traits>::DefaultEnumValue();
     }
 
    private:
@@ -303,9 +339,7 @@ inline bool operator!=(typename T::Codes code, const TypedStatus<T>& status) {
 struct GeneralStatusTraits {
   using Codes = StatusCode;
   static constexpr StatusGroupType Group() { return "GeneralStatusCode"; }
-  static constexpr absl::optional<StatusCode> DefaultEnumValue() {
-    return StatusCode::kOk;
-  }
+  static constexpr StatusCode DefaultEnumValue() { return StatusCode::kOk; }
 };
 using Status = TypedStatus<GeneralStatusTraits>;
 template <typename T>
