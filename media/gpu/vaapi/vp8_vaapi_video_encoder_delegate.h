@@ -17,6 +17,7 @@
 
 namespace media {
 class VaapiWrapper;
+class VP8RateControl;
 
 class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
  public:
@@ -65,6 +66,7 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   size_t GetMaxNumOfRefFrames() const override;
   std::vector<gfx::Size> GetSVCLayerResolutions() override;
   bool PrepareEncodeJob(EncodeJob* encode_job) override;
+  void BitrateControlUpdate(uint64_t encoded_chunk_size_bytes) override;
 
  private:
   void InitializeFrameHeader();
@@ -73,6 +75,10 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   void Reset();
 
   scoped_refptr<VP8Picture> GetPicture(EncodeJob* job);
+  // Gets the encoded chunk size whose id is |buffer_id| and updates the bitrate
+  // control.
+  void NotifyEncodedChunkSize(VABufferID buffer_id,
+                              VASurfaceID sync_surface_id);
 
   bool SubmitFrameParameters(
       EncodeJob* job,
@@ -91,6 +97,8 @@ class VP8VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   Vp8FrameHeader current_frame_hdr_;
   Vp8ReferenceFrameVector reference_frames_;
+
+  std::unique_ptr<VP8RateControl> rate_ctrl_;
 };
 
 }  // namespace media

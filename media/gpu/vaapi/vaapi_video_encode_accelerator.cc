@@ -280,9 +280,10 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   output_codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
   DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
   if (!IsConfiguredForTesting()) {
-    const auto mode = output_codec_ == VideoCodec::kVP9
-                          ? VaapiWrapper::kEncodeConstantQuantizationParameter
-                          : VaapiWrapper::kEncodeConstantBitrate;
+    const auto mode =
+        (output_codec_ == VideoCodec::kVP9 || output_codec_ == VideoCodec::kVP8)
+            ? VaapiWrapper::kEncodeConstantQuantizationParameter
+            : VaapiWrapper::kEncodeConstantBitrate;
     vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
         mode, config.output_profile, EncryptionScheme::kUnencrypted,
         base::BindRepeating(&ReportVaapiErrorToUMA,
@@ -323,8 +324,8 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
             vaapi_wrapper_, error_cb);
       }
 
-      DCHECK_EQ(ave_config.bitrate_control,
-                VaapiVideoEncoderDelegate::BitrateControl::kConstantBitrate);
+      ave_config.bitrate_control = VaapiVideoEncoderDelegate::BitrateControl::
+          kConstantQuantizationParameter;
       break;
     case VideoCodec::kVP9:
       if (!IsConfiguredForTesting()) {
