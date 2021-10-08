@@ -10,6 +10,7 @@
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
+#include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/lacros_butter_bar.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
@@ -60,6 +61,9 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
 
   field_trial_observer_ = std::make_unique<FieldTrialObserver>();
   field_trial_observer_->Start();
+
+  force_installed_tracker_ = std::make_unique<ForceInstalledTrackerLacros>();
+  force_installed_tracker_->Start();
 
   metrics::structured::ChromeStructuredMetricsRecorder::Get()->Initialize();
 }

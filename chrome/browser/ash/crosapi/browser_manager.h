@@ -122,6 +122,15 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // See crosapi::mojom::BrowserService::RestoreTab for more details
   void RestoreTab();
 
+  // Initialize resources and start Lacros. This class provides two approaches
+  // to fulfill different requirements.
+  // - For most sessions, Lacros will be started automatically once
+  // `SessionState` is changed to active.
+  // - For Kiosk sessions, Lacros needs to be started earlier because all
+  // extensions and browser window should be well prepared before the user
+  // enters the session. This method should be called at the appropriate time.
+  void InitializeAndStart();
+
   // Returns true if crosapi interface supports GetFeedbackData API.
   bool GetFeedbackDataSupported() const;
 

@@ -399,6 +399,42 @@ void BrowserManager::RestoreTab() {
   browser_service_->service->RestoreTab(base::DoNothing());
 }
 
+void BrowserManager::InitializeAndStart() {
+  DCHECK_EQ(state_, State::NOT_INITIALIZED);
+
+  // Perform the UMA recording for the current Lacros mode of operation.
+  RecordLacrosLaunchMode();
+
+  // Ensure this isn't run multiple times.
+  session_manager::SessionManager::Get()->RemoveObserver(this);
+
+  // May be null in tests.
+  if (!component_manager_)
+    return;
+
+  PrepareLacrosPolicies();
+
+  DCHECK(!browser_loader_);
+  browser_loader_ = std::make_unique<BrowserLoader>(component_manager_);
+
+  // Must be checked after user session start because it depends on user type.
+  if (browser_util::IsLacrosEnabled()) {
+    SetState(State::MOUNTING);
+    browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
+                                         weak_factory_.GetWeakPtr()));
+  } else {
+    SetState(State::UNAVAILABLE);
+    browser_loader_->Unload();
+  }
+
+  // Post `RecordUserDataSizes()` to send UMA stats about sizes of files/dirs
+  // inside the profile data directory.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&user_data_stats_recorder::RecordUserDataSizes,
+                     ProfileManager::GetPrimaryUserProfile()->GetPath()));
+}
+
 bool BrowserManager::GetFeedbackDataSupported() const {
   return browser_service_.has_value() &&
          browser_service_->interface_version >=
@@ -799,11 +835,6 @@ void BrowserManager::OnLacrosChromeTerminated() {
 }
 
 void BrowserManager::OnSessionStateChanged() {
-  DCHECK_EQ(state_, State::NOT_INITIALIZED);
-
-  // Perform the UMA recording for the current Lacros mode of operation.
-  RecordLacrosLaunchMode();
-
   // Wait for session to become active.
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager->session_state() !=
@@ -813,34 +844,7 @@ void BrowserManager::OnSessionStateChanged() {
     return;
   }
 
-  // Ensure this isn't run multiple times.
-  session_manager::SessionManager::Get()->RemoveObserver(this);
-
-  // May be null in tests.
-  if (!component_manager_)
-    return;
-
-  PrepareLacrosPolicies();
-
-  DCHECK(!browser_loader_);
-  browser_loader_ = std::make_unique<BrowserLoader>(component_manager_);
-
-  // Must be checked after user session start because it depends on user type.
-  if (browser_util::IsLacrosEnabled()) {
-    SetState(State::MOUNTING);
-    browser_loader_->Load(base::BindOnce(&BrowserManager::OnLoadComplete,
-                                         weak_factory_.GetWeakPtr()));
-  } else {
-    SetState(State::UNAVAILABLE);
-    browser_loader_->Unload();
-  }
-
-  // Post `RecordUserDataSizes()` to send UMA stats about sizes of files/dirs
-  // inside the profile data directory.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&user_data_stats_recorder::RecordUserDataSizes,
-                     ProfileManager::GetPrimaryUserProfile()->GetPath()));
+  InitializeAndStart();
 }
 
 void BrowserManager::OnStoreLoaded(policy::CloudPolicyStore* store) {

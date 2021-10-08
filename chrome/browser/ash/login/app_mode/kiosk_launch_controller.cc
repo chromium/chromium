@@ -15,6 +15,8 @@
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/common/chrome_features.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"
@@ -122,6 +125,13 @@ bool IsExtensionInstallForcelistPolicyValid() {
   policy::PolicyErrorMap errors;
   handler.CheckPolicySettings(map, &errors);
   return errors.GetErrors(policy::key::kExtensionInstallForcelist).empty();
+}
+
+crosapi::ForceInstalledTrackerAsh* GetForceInstalledTrackerAsh() {
+  CHECK(crosapi::CrosapiManager::IsInitialized());
+  return crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->force_installed_tracker_ash();
 }
 
 // This is a not-owning wrapper around ArcKioskAppService which allows to be
@@ -371,18 +381,25 @@ void KioskLaunchController::OnAppPrepared() {
   }
 
   app_state_ = AppState::kInstallingExtensions;
+
+  // Launch lacros-chrome if the corresponding feature flags are enabled.
+  if (base::FeatureList::IsEnabled(features::kWebKioskEnableLacros) &&
+      crosapi::browser_util::IsLacrosEnabled()) {
+    // Start observing the installation status of extensions in Lacros.
+    observation_.Observe(GetForceInstalledTrackerAsh());
+    StartTimerToWaitForExtensions();
+
+    // Initialize and start Lacros for preparing force-installed extensions.
+    crosapi::BrowserManager::Get()->InitializeAndStart();
+    return;
+  }
+
   extensions::ForceInstalledTracker* tracker =
       GetForceInstalledTracker(profile_);
 
   if (tracker && !tracker->IsReady()) {
-    extension_wait_timer_.Start(
-        FROM_HERE, g_extension_wait_time, this,
-        &KioskLaunchController::OnExtensionWaitTimedOut);
     tracker->AddObserver(this);
-
-    splash_screen_view_->UpdateAppLaunchState(
-        AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
-    splash_screen_view_->Show();
+    StartTimerToWaitForExtensions();
   } else {
     OnForceInstalledExtensionsReady();
   }
@@ -424,6 +441,14 @@ void KioskLaunchController::OnNetworkWaitTimedOut() {
     std::move(*network_timeout_callback).Run();
     network_timeout_callback = nullptr;
   }
+}
+
+void KioskLaunchController::StartTimerToWaitForExtensions() {
+  extension_wait_timer_.Start(FROM_HERE, g_extension_wait_time, this,
+                              &KioskLaunchController::OnExtensionWaitTimedOut);
+  splash_screen_view_->UpdateAppLaunchState(
+      AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
+  splash_screen_view_->Show();
 }
 
 void KioskLaunchController::OnExtensionWaitTimedOut() {
@@ -542,10 +567,19 @@ void KioskLaunchController::OnOldEncryptionDetected(
 
 void KioskLaunchController::OnForceInstalledExtensionsReady() {
   app_state_ = AppState::kInstalled;
-  extensions::ForceInstalledTracker* tracker =
-      GetForceInstalledTracker(profile_);
-  if (tracker)
-    tracker->RemoveObserver(this);
+
+  // TODO (crbug.com/1257957): Extract the flag checking logic (for Web Kiosk)
+  // to a common file.
+  if (base::FeatureList::IsEnabled(features::kWebKioskEnableLacros) &&
+      crosapi::browser_util::IsLacrosEnabled()) {
+    observation_.Reset();
+  } else {
+    // TODO (crbug.com/1257958): use ScopedObservation for this tracker as well.
+    extensions::ForceInstalledTracker* tracker =
+        GetForceInstalledTracker(profile_);
+    if (tracker)
+      tracker->RemoveObserver(this);
+  }
 
   splash_screen_view_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);

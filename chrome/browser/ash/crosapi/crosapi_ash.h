@@ -37,6 +37,7 @@ class DriveIntegrationServiceAsh;
 class FeedbackAsh;
 class FieldTrialServiceAsh;
 class FileManagerAsh;
+class ForceInstalledTrackerAsh;
 class GeolocationServiceAsh;
 class IdentityManagerAsh;
 class IdleServiceAsh;
@@ -122,6 +123,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::FieldTrialService> receiver) override;
   void BindFileManager(
       mojo::PendingReceiver<mojom::FileManager> receiver) override;
+  void BindForceInstalledTracker(
+      mojo::PendingReceiver<mojom::ForceInstalledTracker> receiver) override;
   void BindGeolocationService(
       mojo::PendingReceiver<mojom::GeolocationService> receiver) override;
   void BindIdentityManager(
@@ -207,6 +210,10 @@ class CrosapiAsh : public mojom::Crosapi {
     return download_controller_ash_.get();
   }
 
+  ForceInstalledTrackerAsh* force_installed_tracker_ash() {
+    return force_installed_tracker_ash_.get();
+  }
+
   KioskSessionServiceAsh* kiosk_session_service() {
     return kiosk_session_service_ash_.get();
   }
@@ -254,6 +261,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
+  std::unique_ptr<ForceInstalledTrackerAsh> force_installed_tracker_ash_;
   std::unique_ptr<GeolocationServiceAsh> geolocation_service_ash_;
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;
   std::unique_ptr<IdleServiceAsh> idle_service_ash_;

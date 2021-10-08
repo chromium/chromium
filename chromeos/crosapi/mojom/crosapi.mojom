@@ -21,6 +21,7 @@ import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
+import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/geolocation.mojom";
 import "chromeos/crosapi/mojom/holding_space_service.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
@@ -77,8 +78,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 53
-// Next method id: 57
+// Next version: 54
+// Next method id: 58
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -186,6 +187,13 @@ interface Crosapi {
   // Added in M88.
   [MinVersion=5]
   BindFileManager@8(pending_receiver<FileManager> receiver);
+
+  // Binds the ForceInstalledTracker interface for track the status of
+  // force-installed extensions.
+  // Added in M96.
+  [MinVersion=53]
+  BindForceInstalledTracker@57(
+    pending_receiver<ForceInstalledTracker> receiver);
 
   // Binds the GeolocationService interface for getting network access point
   // information.

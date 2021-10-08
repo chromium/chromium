@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
+#include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 // TODO(https://crbug.com/1164001): use forward declaration.
@@ -161,6 +162,7 @@ class KioskLaunchController
   void HandleWebAppInstallFailed();
 
   void OnNetworkWaitTimedOut();
+  void StartTimerToWaitForExtensions();
   void OnExtensionWaitTimedOut();
   void OnTimerFire();
   void CloseSplashScreen();
@@ -203,6 +205,12 @@ class KioskLaunchController
   // A timer that fires when the force-installed extensions were not ready
   // within the allocated time.
   base::OneShotTimer extension_wait_timer_;
+
+  // Observe the installation status of extensions. This object is only used
+  // when Lacros is enabled.
+  base::ScopedObservation<crosapi::ForceInstalledTrackerAsh,
+                          extensions::ForceInstalledTracker::Observer>
+      observation_{this};
 
   base::WeakPtrFactory<KioskLaunchController> weak_ptr_factory_{this};
 };

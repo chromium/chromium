@@ -13,6 +13,7 @@ class AutomationManagerLacros;
 class BrowserServiceLacros;
 class DriveFsCache;
 class DownloadControllerClientLacros;
+class ForceInstalledTrackerLacros;
 class LacrosButterBar;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
@@ -51,6 +52,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Sends lacros download information to ash.
   std::unique_ptr<DownloadControllerClientLacros> download_controller_client_;
+
+  // Sends lacros installation status of force-installed extensions to ash.
+  std::unique_ptr<ForceInstalledTrackerLacros> force_installed_tracker_;
 
   // Manages the resources used in the web Kiosk session, and sends window
   // status changes of lacros-chrome to ash when necessary.

@@ -6325,6 +6325,7 @@ test("unit_tests") {
       "../browser/lacros/account_manager/account_profile_mapper_unittest.cc",
       "../browser/lacros/account_manager/profile_account_manager_unittest.cc",
       "../browser/lacros/client_cert_store_lacros_unittest.cc",
+      "../browser/lacros/force_installed_tracker_lacros_unittest.cc",
       "../browser/lacros/lacros_memory_pressure_evaluator_unittest.cc",
       "../browser/lacros/metrics_reporting_observer_unittest.cc",
       "../browser/lacros/net/network_settings_translation_unittest.cc",
