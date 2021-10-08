@@ -3557,27 +3557,25 @@ void RenderViewContextMenu::MediaPlayerActionAt(
 void RenderViewContextMenu::PluginActionAt(
     const gfx::Point& location,
     blink::mojom::PluginActionType plugin_action) {
+  content::RenderFrameHost* plugin_rfh = nullptr;
 #if BUILDFLAG(ENABLE_PDF)
   // A PDF plugin exists in a child frame embedded inside the extension's
   // main frame when Pepper-free PDF viewer is enabled. To trigger any plugin
   // action, we need to detect this child frame and trigger the actions from
   // there.
-  RenderFrameHost* pdf_rfh =
+  plugin_rfh =
       pdf_frame_util::FindPdfChildFrame(source_web_contents_->GetMainFrame());
-  if (pdf_rfh) {
-    // Calculate the local location in view coordinates before executing the
-    // plugin action from the PDF render frame.
-    gfx::PointF local_location =
-        pdf_rfh->GetView()->TransformRootPointToViewCoordSpace(
-            gfx::PointF(location));
-    pdf_rfh->ExecutePluginActionAtLocalLocation(
-        gfx::ToFlooredPoint(local_location), plugin_action);
-    return;
-  }
 #endif
-  source_web_contents_->GetMainFrame()
-      ->GetRenderViewHost()
-      ->ExecutePluginActionAtLocation(location, plugin_action);
+  if (!plugin_rfh)
+    plugin_rfh = source_web_contents_->GetMainFrame();
+
+  // TODO(crbug.com/776807): See if this needs to be done for OOPIFs as well.
+  // Calculate the local location in view coordinates inside the plugin before
+  // executing the plugin action.
+  gfx::Point local_location = gfx::ToFlooredPoint(
+      plugin_rfh->GetView()->TransformRootPointToViewCoordSpace(
+          gfx::PointF(location)));
+  plugin_rfh->ExecutePluginActionAtLocalLocation(local_location, plugin_action);
 }
 
 Browser* RenderViewContextMenu::GetBrowser() const {

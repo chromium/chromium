@@ -854,20 +854,6 @@ void RenderViewHostImpl::EnablePreferredSizeMode() {
   }
 }
 
-void RenderViewHostImpl::ExecutePluginActionAtLocation(
-    const gfx::Point& location,
-    blink::mojom::PluginActionType plugin_action) {
-  // TODO(wjmaclean): See if this needs to be done for OOPIFs as well.
-  // https://crbug.com/776807
-  gfx::PointF local_location_f =
-      GetWidget()->GetView()->TransformRootPointToViewCoordSpace(
-          gfx::PointF(location.x(), location.y()));
-  gfx::Point local_location(local_location_f.x(), local_location_f.y());
-
-  GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->PluginActionAt(
-      local_location, plugin_action);
-}
-
 void RenderViewHostImpl::PostRenderViewReady() {
   GetProcess()->PostTaskWhenProcessIsReady(base::BindOnce(
       &RenderViewHostImpl::RenderViewReady, weak_factory_.GetWeakPtr()));

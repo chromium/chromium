@@ -14,10 +14,6 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 
-namespace gfx {
-class Point;
-}
-
 namespace content {
 
 class RenderFrameHost;
@@ -71,12 +67,6 @@ class CONTENT_EXPORT RenderViewHost {
 
   // Instructs the RenderView to send back updates to the preferred size.
   virtual void EnablePreferredSizeMode() = 0;
-
-  // Tells the renderer to perform the given action on the plugin located at
-  // the given point.
-  virtual void ExecutePluginActionAtLocation(
-      const gfx::Point& location,
-      blink::mojom::PluginActionType action) = 0;
 
   // Returns true if the RenderView is active and has not crashed.
   virtual bool IsRenderViewLive() = 0;

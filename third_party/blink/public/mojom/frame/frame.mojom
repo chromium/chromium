@@ -1150,11 +1150,6 @@ interface LocalMainFrame {
   // onunload event handler.
   ClosePage() => ();
 
-  // Instructs the renderer to perform the given action on the plugin located at
-  // the given point.
-  PluginActionAt(gfx.mojom.Point location,
-                 blink.mojom.PluginActionType action);
-
   // Tells the renderer to focus the first (last if reverse is true) focusable
   // node.
   SetInitialFocus(bool reverse);

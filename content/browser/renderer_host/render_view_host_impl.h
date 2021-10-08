@@ -129,9 +129,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   RenderProcessHost* GetProcess() override;
   int GetRoutingID() override;
   void EnablePreferredSizeMode() override;
-  void ExecutePluginActionAtLocation(
-      const gfx::Point& location,
-      blink::mojom::PluginActionType action) override;
   bool IsRenderViewLive() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
 
