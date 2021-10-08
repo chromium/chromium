@@ -105,11 +105,11 @@ const base::Feature kOverrideSitePrefsForHrefTranslate{
 
 const base::Feature kOverrideUnsupportedPageLanguageForHrefTranslate{
     "OverrideUnsupportedPageLanguageForHrefTranslate",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kOverrideSimilarLanguagesForHrefTranslate{
     "OverrideSimilarLanguagesForHrefTranslate",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const char kForceAutoTranslateKey[] = "force-auto-translate";
 
@@ -1119,7 +1119,7 @@ void TranslateManager::FilterForHrefTranslate(
       decision->href_translate_source = translate::kUnknownLanguageCode;
       if (!base::GetFieldTrialParamByFeatureAsBool(
               kOverrideUnsupportedPageLanguageForHrefTranslate,
-              "force-auto-translate-for-unsupported-page-language", false)) {
+              "force-auto-translate-for-unsupported-page-language", true)) {
         decision->PreventAutoHrefTranslate();
       }
     } else {
@@ -1140,7 +1140,7 @@ void TranslateManager::FilterForHrefTranslate(
       decision->href_translate_source = translate::kUnknownLanguageCode;
       if (!base::GetFieldTrialParamByFeatureAsBool(
               kOverrideSimilarLanguagesForHrefTranslate,
-              "force-auto-translate-for-similar-languages", false)) {
+              "force-auto-translate-for-similar-languages", true)) {
         decision->PreventAutoHrefTranslate();
       }
     } else {
