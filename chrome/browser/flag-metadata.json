@@ -4956,7 +4956,7 @@
   {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb" ],
-    "expiry_milestone": 92
+    "expiry_milestone": 100
   },
   {
     "name": "show-overdraw-feedback",
