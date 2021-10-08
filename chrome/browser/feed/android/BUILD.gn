@@ -196,6 +196,7 @@ android_library("junit") {
   bypass_platform_checks = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/FeedPlaceholderLayoutTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedSliceViewTrackerTest.java",
     "java/src/org/chromium/chrome/browser/feed/NativeViewListRendererTest.java",
     "java/src/org/chromium/chrome/browser/feed/NtpListContentManagerTest.java",
