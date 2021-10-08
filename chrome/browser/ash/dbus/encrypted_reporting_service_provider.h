@@ -14,6 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
@@ -57,6 +58,13 @@ class EncryptedReportingServiceProvider
   void OnExported(const std::string& interface_name,
                   const std::string& method_name,
                   bool success);
+
+  // Generators of callbacks referring to MissivedClient by default.
+  // Can be overridden for testing purposes.
+  virtual ::reporting::UploadClient::ReportSuccessfulUploadCallback
+  GetReportSuccessUploadCallback();
+  virtual ::reporting::UploadClient::EncryptionKeyAttachedCallback
+  GetEncryptionKeyAttachedCallback();
 
   // Returns true if called on the origin thread.
   bool OnOriginThread() const;

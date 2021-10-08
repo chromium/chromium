@@ -40,8 +40,7 @@ using ::testing::WithArgs;
 TEST(DmServerUploadServiceTest, DeniesNullptrProfile) {
   content::BrowserTaskEnvironment task_envrionment;
   test::TestEvent<StatusOr<std::unique_ptr<DmServerUploadService>>> e;
-  DmServerUploadService::Create(/*client=*/nullptr, base::DoNothing(),
-                                base::DoNothing(), e.cb());
+  DmServerUploadService::Create(/*client=*/nullptr, e.cb());
   StatusOr<std::unique_ptr<DmServerUploadService>> result = e.result();
   EXPECT_THAT(result.status(),
               Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
@@ -94,6 +93,8 @@ class DmServerUploaderTest : public ::testing::TestWithParam<
   const base::TimeDelta kMaxDelay_ = base::Seconds(1);
 };
 
+using TestSuccessfulUpload = MockFunction<void(SequencingInformation,
+                                               /*force_confirm*/ bool)>;
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
 TEST_P(DmServerUploaderTest, ProcessesRecord) {
@@ -116,6 +117,10 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
                     .force_confirm = force_confirm_flag});
           })));
 
+  StrictMock<TestSuccessfulUpload> successful_upload;
+  EXPECT_CALL(successful_upload, Call(_, _)).Times(1);
+  auto successful_upload_cb = base::BindRepeating(
+      &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_))
       .Times(need_encryption_key() ? 1 : 0);
@@ -126,7 +131,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
-      callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
+      successful_upload_cb, encryption_key_attached_cb, callback_waiter.cb(),
+      sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
   EXPECT_OK(response);
@@ -164,6 +170,10 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
                     .force_confirm = force_confirm_flag});
           })));
 
+  StrictMock<TestSuccessfulUpload> successful_upload;
+  EXPECT_CALL(successful_upload, Call(_, _)).Times(1);
+  auto successful_upload_cb = base::BindRepeating(
+      &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_))
       .Times(need_encryption_key() ? 1 : 0);
@@ -174,7 +184,8 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
-      callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
+      successful_upload_cb, encryption_key_attached_cb, callback_waiter.cb(),
+      sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
   EXPECT_OK(response);
@@ -191,6 +202,10 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
                 Status(error::FAILED_PRECONDITION, "Fail for test"));
           })));
 
+  StrictMock<TestSuccessfulUpload> successful_upload;
+  EXPECT_CALL(successful_upload, Call(_, _)).Times(0);
+  auto successful_upload_cb = base::BindRepeating(
+      &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
   auto encryption_key_attached_cb =
@@ -200,7 +215,8 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
-      callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
+      successful_upload_cb, encryption_key_attached_cb, callback_waiter.cb(),
+      sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
   EXPECT_THAT(response.status(),
@@ -218,6 +234,10 @@ TEST_P(DmServerUploaderTest, ReportsFailureToUpload) {
                 Status(error::DEADLINE_EXCEEDED, "Fail for test"));
           })));
 
+  StrictMock<TestSuccessfulUpload> successful_upload;
+  EXPECT_CALL(successful_upload, Call(_, _)).Times(0);
+  auto successful_upload_cb = base::BindRepeating(
+      &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_)).Times(0);
   auto encryption_key_attached_cb =
@@ -227,7 +247,8 @@ TEST_P(DmServerUploaderTest, ReportsFailureToUpload) {
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
-      callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
+      successful_upload_cb, encryption_key_attached_cb, callback_waiter.cb(),
+      sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
   EXPECT_THAT(response.status(),
@@ -235,6 +256,11 @@ TEST_P(DmServerUploaderTest, ReportsFailureToUpload) {
 }
 
 TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
+  StrictMock<TestSuccessfulUpload> successful_upload;
+  EXPECT_CALL(successful_upload, Call(_, _))
+      .Times(need_encryption_key() ? 1 : 0);
+  auto successful_upload_cb = base::BindRepeating(
+      &TestSuccessfulUpload::Call, base::Unretained(&successful_upload));
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
   EXPECT_CALL(encryption_key_attached, Call(_))
       .Times(need_encryption_key() ? 1 : 0);
@@ -265,7 +291,8 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
   test::TestEvent<DmServerUploadService::CompletionResponse> callback_waiter;
   Start<DmServerUploadService::DmServerUploader>(
       need_encryption_key(), std::move(records_), handler_.get(),
-      callback_waiter.cb(), encryption_key_attached_cb, sequenced_task_runner_);
+      successful_upload_cb, encryption_key_attached_cb, callback_waiter.cb(),
+      sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
   if (need_encryption_key()) {

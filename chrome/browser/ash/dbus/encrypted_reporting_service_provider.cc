@@ -14,6 +14,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "components/reporting/proto/interface.pb.h"
@@ -90,6 +91,33 @@ void EncryptedReportingServiceProvider::OnExported(
                           << method_name;
 }
 
+::reporting::UploadClient::ReportSuccessfulUploadCallback
+EncryptedReportingServiceProvider::GetReportSuccessUploadCallback() {
+  MissiveClient* const missive_client = MissiveClient::Get();
+  return base::BindRepeating(
+      [](base::WeakPtr<MissiveClient> missive_client,
+         ::reporting::SequencingInformation sequencing_information,
+         bool force_confirm) {
+        if (missive_client) {
+          missive_client->ReportSuccess(sequencing_information, force_confirm);
+        }
+      },
+      missive_client->GetWeakPtr());
+}
+
+::reporting::UploadClient::EncryptionKeyAttachedCallback
+EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
+  MissiveClient* const missive_client = MissiveClient::Get();
+  return base::BindRepeating(
+      [](base::WeakPtr<MissiveClient> missive_client,
+         ::reporting::SignedEncryptionInfo signed_encryption_info) {
+        if (missive_client) {
+          missive_client->UpdateEncryptionKey(signed_encryption_info);
+        }
+      },
+      missive_client->GetWeakPtr());
+}
+
 void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
@@ -126,8 +154,22 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     records->push_back(std::move(record));
   }
   DCHECK(upload_provider_);
+  MissiveClient* const missive_client = MissiveClient::Get();
+  if (!missive_client) {
+    LOG(ERROR) << "No Missive client available";
+    SendStatusAsResponse(
+        std::move(response), std::move(response_sender),
+        reporting::Status(reporting::error::FAILED_PRECONDITION,
+                          "No Missive client available"));
+    return;
+  }
+
   upload_provider_->RequestUploadEncryptedRecords(
       request.need_encryption_keys(), std::move(records),
+      base::BindPostTask(missive_client->origin_task_runner(),
+                         GetReportSuccessUploadCallback()),
+      base::BindPostTask(missive_client->origin_task_runner(),
+                         GetEncryptionKeyAttachedCallback()),
       base::BindPostTask(
           origin_thread_runner_,
           base::BindOnce(&SendStatusAsResponse, std::move(response),
@@ -141,28 +183,6 @@ bool EncryptedReportingServiceProvider::OnOriginThread() const {
 // static
 std::unique_ptr<::reporting::EncryptedReportingUploadProvider>
 EncryptedReportingServiceProvider::GetDefaultUploadProvider() {
-  MissiveClient* const missive_client = MissiveClient::Get();
-  auto report_success_cb = base::BindRepeating(
-      [](base::WeakPtr<MissiveClient> missive_client,
-         ::reporting::SequencingInformation sequencing_information,
-         bool force_confirm) {
-        if (missive_client) {
-          missive_client->ReportSuccess(sequencing_information, force_confirm);
-        }
-      },
-      missive_client->GetWeakPtr());
-  auto update_encryption_key_cb = base::BindRepeating(
-      [](base::WeakPtr<MissiveClient> missive_client,
-         ::reporting::SignedEncryptionInfo signed_encryption_info) {
-        if (missive_client) {
-          missive_client->UpdateEncryptionKey(signed_encryption_info);
-        }
-      },
-      missive_client->GetWeakPtr());
-  return std::make_unique<::reporting::EncryptedReportingUploadProvider>(
-      base::BindPostTask(missive_client->origin_task_runner(),
-                         report_success_cb),
-      base::BindPostTask(missive_client->origin_task_runner(),
-                         update_encryption_key_cb));
+  return std::make_unique<::reporting::EncryptedReportingUploadProvider>();
 }
 }  // namespace ash

@@ -320,14 +320,24 @@ void ReportingClient::DeliverAsyncStartUploader(
             auto uploader = Uploader::Create(
                 reason,
                 base::BindOnce(
-                    [](EncryptedReportingUploadProvider* upload_provider,
+                    [](UploadClient::ReportSuccessfulUploadCallback
+                           report_success_upload_cb,
+                       UploadClient::EncryptionKeyAttachedCallback
+                           encryption_key_attached_cb,
+                       EncryptedReportingUploadProvider* upload_provider,
                        bool need_encryption_key,
                        std::unique_ptr<std::vector<EncryptedRecord>> records) {
                       upload_provider->RequestUploadEncryptedRecords(
                           need_encryption_key, std::move(records),
+                          report_success_upload_cb, encryption_key_attached_cb,
                           base::DoNothing());
                       return Status::StatusOK();
                     },
+                    base::BindRepeating(&StorageModuleInterface::ReportSuccess,
+                                        instance->storage_),
+                    base::BindRepeating(
+                        &StorageModuleInterface::UpdateEncryptionKey,
+                        instance->storage_),
                     base::Unretained(instance->upload_provider_.get())));
             std::move(start_uploader_cb).Run(std::move(uploader));
           },
@@ -338,28 +348,7 @@ std::unique_ptr<EncryptedReportingUploadProvider>
 ReportingClient::GetDefaultUploadProvider(
     GetCloudPolicyClientCallback build_cloud_policy_client_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-  auto report_success_cb = base::BindRepeating(
-      [](SequencingInformation sequencing_information, bool force_confirm) {
-        ReportingClient* const client = ReportingClient::GetInstance();
-        DCHECK_CALLED_ON_VALID_SEQUENCE(client->client_sequence_checker_);
-        if (client->storage_) {
-          client->storage_->ReportSuccess(std::move(sequencing_information),
-                                          force_confirm);
-        }
-      });
-  auto update_encryption_key_cb =
-      base::BindRepeating([](SignedEncryptionInfo signed_encryption_info) {
-        ReportingClient* const client = ReportingClient::GetInstance();
-        DCHECK_CALLED_ON_VALID_SEQUENCE(client->client_sequence_checker_);
-        if (client->storage_) {
-          client->storage_->UpdateEncryptionKey(
-              std::move(signed_encryption_info));
-        }
-      });
   return std::make_unique<::reporting::EncryptedReportingUploadProvider>(
-      base::BindPostTask(client_sequenced_task_runner_, report_success_cb),
-      base::BindPostTask(client_sequenced_task_runner_,
-                         update_encryption_key_cb),
       build_cloud_policy_client_cb);
 }
 

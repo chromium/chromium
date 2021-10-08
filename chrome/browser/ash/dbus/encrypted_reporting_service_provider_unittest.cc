@@ -117,8 +117,6 @@ class TestEncryptedReportingServiceProvider
       ReportSuccessfulUploadCallback report_successful_upload_cb,
       EncryptionKeyAttachedCallback encrypted_key_cb)
       : EncryptedReportingServiceProvider(std::make_unique<UploadProvider>(
-            report_successful_upload_cb,
-            encrypted_key_cb,
             /*build_cloud_policy_client_cb=*/
             base::BindRepeating(
                 [](policy::CloudPolicyClient* cloud_policy_client,
@@ -127,16 +125,29 @@ class TestEncryptedReportingServiceProvider
                 },
                 base::Unretained(cloud_policy_client)),
             /*upload_client_builder_cb=*/
-            base::BindRepeating(
-                [](policy::CloudPolicyClient* client,
-                   ReportSuccessfulUploadCallback report_successful_upload_cb,
-                   EncryptionKeyAttachedCallback encrypted_key_cb,
-                   ::reporting::UploadClient::CreatedCallback
-                       update_upload_client_cb) {
-                  ::reporting::FakeUploadClient::Create(
-                      client, report_successful_upload_cb, encrypted_key_cb,
-                      std::move(update_upload_client_cb));
-                }))) {}
+            base::BindRepeating([](policy::CloudPolicyClient* client,
+                                   ::reporting::UploadClient::CreatedCallback
+                                       update_upload_client_cb) {
+              ::reporting::FakeUploadClient::Create(
+                  client, std::move(update_upload_client_cb));
+            }))),
+        report_successful_upload_cb_(report_successful_upload_cb),
+        encrypted_key_cb_(encrypted_key_cb) {}
+  TestEncryptedReportingServiceProvider(
+      const TestEncryptedReportingServiceProvider& other) = delete;
+  TestEncryptedReportingServiceProvider& operator=(
+      const TestEncryptedReportingServiceProvider& other) = delete;
+
+ private:
+  ReportSuccessfulUploadCallback GetReportSuccessUploadCallback() override {
+    return report_successful_upload_cb_;
+  }
+  EncryptionKeyAttachedCallback GetEncryptionKeyAttachedCallback() override {
+    return encrypted_key_cb_;
+  }
+
+  ReportSuccessfulUploadCallback report_successful_upload_cb_;
+  EncryptionKeyAttachedCallback encrypted_key_cb_;
 };
 
 class EncryptedReportingServiceProviderTest : public ::testing::Test {
@@ -155,6 +166,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     MissiveClient::InitializeFake();
     cloud_policy_client_.SetDMToken(
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
+
     auto successful_upload_cb = base::BindRepeating(
         &EncryptedReportingServiceProviderTest::ReportSuccessfulUpload,
         base::Unretained(this));
@@ -162,8 +174,7 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
         &EncryptedReportingServiceProviderTest::EncryptionKeyCallback,
         base::Unretained(this));
     service_provider_ = std::make_unique<TestEncryptedReportingServiceProvider>(
-        &cloud_policy_client_, std::move(successful_upload_cb),
-        std::move(encryption_key_cb));
+        &cloud_policy_client_, successful_upload_cb, encryption_key_cb);
 
     record_.set_encrypted_wrapped_record("TEST_DATA");
 

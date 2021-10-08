@@ -214,29 +214,29 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                                                       force_confirm_flag));
           })));
 
-  test::TestMultiEvent<SequencingInformation, bool> upload_completion;
-  UploadClient::ReportSuccessfulUploadCallback completion_cb =
-      upload_completion.cb();
+  test::TestMultiEvent<SequencingInformation, bool> upload_success;
+  UploadClient::ReportSuccessfulUploadCallback upload_success_cb =
+      upload_success.cb();
 
   // Save last record seq info for verification.
   const SequencingInformation last_record_seq_info =
       records->back().sequencing_information();
 
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
-  UploadClient::Create(client.get(), completion_cb, encryption_key_attached_cb,
-                       e.cb());
+  UploadClient::Create(client.get(), e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 
   auto upload_client = std::move(upload_client_result.ValueOrDie());
-  auto enqueue_result =
-      upload_client->EnqueueUpload(need_encryption_key(), std::move(records));
+  auto enqueue_result = upload_client->EnqueueUpload(
+      need_encryption_key(), std::move(records), upload_success_cb,
+      encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
 
-  auto completion_result = upload_completion.result();
-  EXPECT_THAT(std::get<0>(completion_result),
+  auto upload_succes_result = upload_success.result();
+  EXPECT_THAT(std::get<0>(upload_succes_result),
               EqualsProto(last_record_seq_info));
-  EXPECT_THAT(std::get<1>(completion_result), Eq(force_confirm()));
+  EXPECT_THAT(std::get<1>(upload_succes_result), Eq(force_confirm()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

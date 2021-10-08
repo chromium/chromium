@@ -5,6 +5,7 @@
 #include "components/reporting/storage/missive_storage_module_delegate_impl.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"

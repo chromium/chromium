@@ -72,13 +72,15 @@ DmServerUploader::DmServerUploader(
     bool need_encryption_key,
     std::unique_ptr<std::vector<EncryptedRecord>> records,
     RecordHandler* handler,
-    CompletionCallback completion_cb,
+    ReportSuccessfulUploadCallback report_success_upload_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    CompletionCallback completion_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
       need_encryption_key_(need_encryption_key),
       encrypted_records_(std::move(records)),
+      report_success_upload_cb_(report_success_upload_cb),
       encryption_key_attached_cb_(encryption_key_attached_cb),
       handler_(handler) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -145,9 +147,20 @@ void DmServerUploader::HandleRecords() {
       encryption_key_attached_cb_);
 }
 
-void DmServerUploader::Complete(CompletionResponse completion_response) {
-  Schedule(&DmServerUploader::Response, base::Unretained(this),
-           completion_response);
+void DmServerUploader::Finalize(CompletionResponse upload_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (upload_result.ok()) {
+    report_success_upload_cb_.Run(
+        upload_result.ValueOrDie().sequencing_information,
+        upload_result.ValueOrDie().force_confirm);
+  } else {
+    LOG(WARNING) << upload_result.status();
+  }
+  Response(upload_result);
+}
+
+void DmServerUploader::Complete(CompletionResponse upload_result) {
+  Schedule(&DmServerUploader::Finalize, base::Unretained(this), upload_result);
 }
 
 Status DmServerUploader::IsRecordValid(
@@ -171,8 +184,6 @@ Status DmServerUploader::IsRecordValid(
 
 void DmServerUploadService::Create(
     policy::CloudPolicyClient* client,
-    ReportSuccessfulUploadCallback report_upload_success_cb,
-    EncryptionKeyAttachedCallback encryption_key_attached_cb,
     base::OnceCallback<void(StatusOr<std::unique_ptr<DmServerUploadService>>)>
         created_cb) {
   if (client == nullptr) {
@@ -181,30 +192,26 @@ void DmServerUploadService::Create(
     return;
   }
 
-  auto uploader = base::WrapUnique(new DmServerUploadService(
-      std::move(client), report_upload_success_cb, encryption_key_attached_cb));
+  auto uploader =
+      base::WrapUnique(new DmServerUploadService(std::move(client)));
   InitRecordHandler(std::move(uploader), std::move(created_cb));
 }
 
-DmServerUploadService::DmServerUploadService(
-    policy::CloudPolicyClient* client,
-    ReportSuccessfulUploadCallback upload_cb,
-    EncryptionKeyAttachedCallback encryption_key_attached_cb)
+DmServerUploadService::DmServerUploadService(policy::CloudPolicyClient* client)
     : client_(std::move(client)),
-      upload_cb_(upload_cb),
-      encryption_key_attached_cb_(encryption_key_attached_cb),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {}
 
 DmServerUploadService::~DmServerUploadService() = default;
 
 Status DmServerUploadService::EnqueueUpload(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records) {
-  Start<DmServerUploader>(
-      need_encryption_key, std::move(records), handler_.get(),
-      base::BindOnce(&DmServerUploadService::UploadCompletion,
-                     base::Unretained(this)),
-      encryption_key_attached_cb_, sequenced_task_runner_);
+    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    ReportSuccessfulUploadCallback report_upload_success_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb) {
+  Start<DmServerUploader>(need_encryption_key, std::move(records),
+                          handler_.get(), report_upload_success_cb,
+                          encryption_key_attached_cb, base::DoNothing(),
+                          sequenced_task_runner_);
   return Status::StatusOK();
 }
 
@@ -221,17 +228,6 @@ void DmServerUploadService::InitRecordHandler(
 
   uploader->handler_ = std::make_unique<RecordHandlerImpl>(client);
   std::move(created_cb).Run(std::move(uploader));
-}
-
-void DmServerUploadService::UploadCompletion(
-    CompletionResponse upload_result) const {
-  if (!upload_result.ok()) {
-    LOG(WARNING) << upload_result.status();
-    return;
-  }
-
-  upload_cb_.Run(upload_result.ValueOrDie().sequencing_information,
-                 upload_result.ValueOrDie().force_confirm);
 }
 
 CloudPolicyClient* DmServerUploadService::GetClient() {

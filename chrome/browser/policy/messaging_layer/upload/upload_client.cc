@@ -19,13 +19,10 @@ namespace reporting {
 // static
 void UploadClient::Create(
     policy::CloudPolicyClient* cloud_policy_client,
-    ReportSuccessfulUploadCallback report_upload_success_cb,
-    EncryptionKeyAttachedCallback encryption_key_attached_cb,
     CreatedCallback created_cb) {
   auto upload_client = base::WrapUnique(new UploadClient());
   DmServerUploadService::Create(
-      std::move(cloud_policy_client), report_upload_success_cb,
-      encryption_key_attached_cb,
+      std::move(cloud_policy_client),
       base::BindOnce(
           [](std::unique_ptr<UploadClient> upload_client,
              CreatedCallback created_cb,
@@ -43,15 +40,19 @@ void UploadClient::Create(
 
 Status UploadClient::EnqueueUpload(
     bool need_encryption_key,
-    std::unique_ptr<std::vector<EncryptedRecord>> records) {
+    std::unique_ptr<std::vector<EncryptedRecord>> records,
+    ReportSuccessfulUploadCallback report_upload_success_cb,
+    EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   DCHECK(records);
 
   if (records->empty() && !need_encryption_key) {
     return Status::StatusOK();
   }
 
-  return dm_server_upload_service_->EnqueueUpload(need_encryption_key,
-                                                  std::move(records));
+  return dm_server_upload_service_->EnqueueUpload(
+      need_encryption_key, std::move(records),
+      std::move(report_upload_success_cb),
+      std::move(encryption_key_attached_cb));
 }
 
 UploadClient::UploadClient() = default;

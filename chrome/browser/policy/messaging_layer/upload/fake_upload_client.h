@@ -17,24 +17,23 @@ class FakeUploadClient : public UploadClient {
   ~FakeUploadClient() override;
 
   static void Create(policy::CloudPolicyClient* cloud_policy_client,
-                     ReportSuccessfulUploadCallback report_upload_success_cb,
-                     EncryptionKeyAttachedCallback encryption_key_attached_cb,
                      CreatedCallback created_cb);
 
   Status EnqueueUpload(
       bool need_encryption_key,
-      std::unique_ptr<std::vector<EncryptedRecord>> records) override;
+      std::unique_ptr<std::vector<EncryptedRecord>> records,
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
 
  private:
-  FakeUploadClient(policy::CloudPolicyClient* cloud_policy_client,
-                   ReportSuccessfulUploadCallback report_upload_success_cb,
-                   EncryptionKeyAttachedCallback encryption_key_attached_cb);
+  explicit FakeUploadClient(policy::CloudPolicyClient* cloud_policy_client);
 
-  void OnUploadComplete(absl::optional<base::Value> response);
+  void OnUploadComplete(
+      ReportSuccessfulUploadCallback report_upload_success_cb,
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      absl::optional<base::Value> response);
 
   policy::CloudPolicyClient* const cloud_policy_client_;
-  ReportSuccessfulUploadCallback report_upload_success_cb_;
-  EncryptionKeyAttachedCallback encryption_key_attached_cb_;
 };
 
 }  // namespace reporting
