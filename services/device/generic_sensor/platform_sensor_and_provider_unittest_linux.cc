@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -975,6 +976,48 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
 
   auto sensor = CreateSensor(SensorType::RELATIVE_ORIENTATION_QUATERNION);
   EXPECT_TRUE(sensor);
+}
+
+// https://crbug.com/1254396: Make sure sensor enumeration steps happen in the
+// right order. This could be converted into a web test in the future if we
+// stop using mocks there (just setting window.ondevicemotion is enough to
+// trigger similar behavior).
+TEST_F(PlatformSensorAndProviderLinuxTest,
+       AccelerometerAndLinearAccelerationEnumeration) {
+  double sensor_values[kSensorValuesSize] = {0, 0, -base::kMeanGravityDouble};
+  InitializeSupportedSensor(SensorType::ACCELEROMETER,
+                            kAccelerometerFrequencyValue, kZero, kZero,
+                            sensor_values);
+
+  SetServiceStart();
+
+  base::RunLoop run_loop;
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(2, run_loop.QuitClosure());
+
+  // We cannot call PlatformSensorAndProviderLinuxTest::CreateSensor() like the
+  // other tests because we need more control over the RunLoop; both calls to
+  // PlatformSensorProviderBase::CreateSensor() must happen before the RunLoop
+  // runs (and therefore before sensor enumeration finishes).
+  scoped_refptr<PlatformSensor> accelerometer;
+  provider_->CreateSensor(
+      SensorType::ACCELEROMETER,
+      base::BindLambdaForTesting([&](scoped_refptr<PlatformSensor> sensor) {
+        accelerometer = std::move(sensor);
+        barrier_closure.Run();
+      }));
+  scoped_refptr<PlatformSensor> linear_acceleration;
+  provider_->CreateSensor(
+      SensorType::LINEAR_ACCELERATION,
+      base::BindLambdaForTesting([&](scoped_refptr<PlatformSensor> sensor) {
+        linear_acceleration = std::move(sensor);
+        barrier_closure.Run();
+      }));
+
+  run_loop.Run();
+
+  ASSERT_TRUE(accelerometer);
+  ASSERT_TRUE(linear_acceleration);
 }
 
 }  // namespace device
