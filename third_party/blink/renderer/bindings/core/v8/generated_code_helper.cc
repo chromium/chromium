@@ -139,12 +139,23 @@ void SetupIDLObservableArrayBackingListTemplate(
     const WrapperTypeInfo* wrapper_type_info,
     v8::Local<v8::ObjectTemplate> instance_template,
     v8::Local<v8::FunctionTemplate> interface_template) {
-  // TODO(crbug.com/1201744): Make the backing list object has
-  // %Array.prototype%.
   interface_template->SetClassName(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
 
   instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
+
+  // The target object of an observable array exotic object (= JS Proxy) must
+  // be a JS Array object.  Hence, make the object look like a JS Array.
+  // https://webidl.spec.whatwg.org/#creating-an-observable-array-exotic-object
+  v8::Local<v8::FunctionTemplate> intrinsic_array_prototype_interface_template =
+      v8::FunctionTemplate::New(isolate, /*callback=*/nullptr,
+                                /*data=*/v8::Local<v8::Value>(),
+                                v8::Local<v8::Signature>(), /*length=*/0,
+                                v8::ConstructorBehavior::kThrow);
+  intrinsic_array_prototype_interface_template->SetIntrinsicDataProperty(
+      V8AtomicString(isolate, "prototype"), v8::kArrayPrototype);
+  interface_template->SetPrototypeProviderTemplate(
+      intrinsic_array_prototype_interface_template);
 }
 
 absl::optional<size_t> FindIndexInEnumStringTable(
