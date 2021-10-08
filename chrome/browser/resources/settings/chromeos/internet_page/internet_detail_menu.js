@@ -199,6 +199,13 @@ Polymer({
    * @private
    */
   isDotsMenuButtonDisabled_() {
+    // Managed eSIM networks cannot be renamed or removed by user.
+    if (this.eSimNetworkState_ &&
+        this.eSimNetworkState_.source ===
+            chromeos.networkConfig.mojom.OncSource.kDevicePolicy) {
+      return true;
+    }
+
     if (!this.deviceState) {
       return false;
     }

@@ -64,11 +64,14 @@ suite('InternetDetailMenu', function() {
     await flushAsync();
   }
 
-  async function addEsimCellularNetwork(iccid, eid) {
+  async function addEsimCellularNetwork(iccid, eid, is_managed) {
     const cellular =
         getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
     cellular.typeProperties.cellular.iccid = iccid;
     cellular.typeProperties.cellular.eid = eid;
+    if (is_managed) {
+      cellular.source = mojom.OncSource.kDevicePolicy;
+    }
     mojoApi_.setManagedPropertiesForTest(cellular);
     await flushAsync();
   }
@@ -259,6 +262,27 @@ suite('InternetDetailMenu', function() {
       inhibitReason: mojom.InhibitReason.kNotInhibited,
     };
     assertFalse(tripleDot.disabled);
+  });
+
+  test('Menu is disabled on managed profile', async function() {
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111', true);
+    init();
+
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+
+    await flushAsync();
+    const tripleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!tripleDot);
+    assertFalse(tripleDot.disabled);
+
+    internetDetailMenu.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+    };
+    assertTrue(tripleDot.disabled);
   });
 
   test(

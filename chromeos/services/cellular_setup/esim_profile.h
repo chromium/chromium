@@ -104,6 +104,7 @@ class ESimProfile : public mojom::ESimProfile {
       HermesResponseStatus status);
   bool ProfileExistsOnEuicc();
   bool IsProfileInstalled();
+  bool IsProfileManaged();
 
   // Reference to Euicc that owns this profile.
   Euicc* euicc_;

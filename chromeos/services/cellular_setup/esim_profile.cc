@@ -136,6 +136,13 @@ void ESimProfile::UninstallProfile(UninstallProfileCallback callback) {
     return;
   }
 
+  if (IsProfileManaged()) {
+    NET_LOG(ERROR)
+        << "Profile uninstall failed: Cannot uninstall managed profile.";
+    std::move(callback).Run(mojom::ESimOperationResult::kFailure);
+    return;
+  }
+
   NET_LOG(USER) << "Uninstalling profile with path " << path().value();
   uninstall_callback_ = base::BindOnce(
       [](UninstallProfileCallback callback,
@@ -157,6 +164,12 @@ void ESimProfile::SetProfileNickname(const std::u16string& nickname,
                                      SetProfileNicknameCallback callback) {
   if (IsGuestModeActive()) {
     NET_LOG(ERROR) << "Cannot rename profile in guest mode.";
+    std::move(callback).Run(mojom::ESimOperationResult::kFailure);
+    return;
+  }
+
+  if (IsProfileManaged()) {
+    NET_LOG(ERROR) << "Cannot rename managed profile.";
     std::move(callback).Run(mojom::ESimOperationResult::kFailure);
     return;
   }
@@ -443,6 +456,18 @@ bool ESimProfile::ProfileExistsOnEuicc() {
 bool ESimProfile::IsProfileInstalled() {
   return properties_->state != mojom::ProfileState::kPending &&
          properties_->state != mojom::ProfileState::kInstalling;
+}
+
+bool ESimProfile::IsProfileManaged() {
+  NetworkStateHandler::NetworkStateList networks;
+  esim_manager_->network_state_handler()->GetNetworkListByType(
+      NetworkTypePattern::Cellular(),
+      /*configure_only=*/false, /*visible=*/false, /*limit=*/0, &networks);
+  for (const NetworkState* network : networks) {
+    if (network->iccid() == properties_->iccid)
+      return network->IsManagedByPolicy();
+  }
+  return false;
 }
 
 }  // namespace cellular_setup
