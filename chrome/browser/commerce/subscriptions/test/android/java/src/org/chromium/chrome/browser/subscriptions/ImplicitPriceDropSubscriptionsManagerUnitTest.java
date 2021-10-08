@@ -30,8 +30,10 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -104,6 +106,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     private SharedPreferencesManager mSharedPreferencesManager;
     private MockNotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
+    private FeatureList.TestValues mTestValues;
 
     @Before
     public void setUp() {
@@ -138,9 +141,14 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
                 System.currentTimeMillis()
                         - TimeUnit.SECONDS.toMillis(
                                 CommerceSubscriptionsServiceConfig.getStaleTabLowerBoundSeconds()));
-
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
-        PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(true);
+
+        mTestValues = new FeatureList.TestValues();
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "true");
+        FeatureList.setTestValues(mTestValues);
+
         mMockNotificationManager = new MockNotificationManagerProxy();
         mMockNotificationManager.setNotificationsEnabled(true);
         PriceDropNotificationManager.setNotificationManagerForTesting(mMockNotificationManager);
@@ -182,7 +190,10 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     public void testInitialSubscription_FeatureDisabled() {
         doReturn(2).when(mTabModel).getCount();
 
-        PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.setForTesting(false);
+        mTestValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                PriceTrackingUtilities.PRICE_NOTIFICATION_PARAM, "false");
+        FeatureList.setTestValues(mTestValues);
+
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
         verify(mSubscriptionsManager, times(0)).subscribe(any(List.class), any(Callback.class));

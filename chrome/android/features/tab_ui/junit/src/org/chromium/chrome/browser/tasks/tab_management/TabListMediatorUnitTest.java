@@ -86,6 +86,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
@@ -1117,7 +1118,7 @@ public class TabListMediatorUnitTest {
      * Set flags and initialize for verifying price drop behavior
      */
     private void prepareForPriceDrop() {
-        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        setPriceTrackingEnabledForTesting(true);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PersistedTabDataConfiguration.setUseTestConfig(true);
         initAndAssertAllProperties();
@@ -2270,7 +2271,7 @@ public class TabListMediatorUnitTest {
     // TODO(crbug.com/1177036): the assertThat in fetch callback is never reached.
     @Test
     public void testPriceTrackingProperty() {
-        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        setPriceTrackingEnabledForTesting(true);
         for (boolean signedInAndSyncEnabled : new boolean[] {false, true}) {
             for (boolean priceTrackingEnabled : new boolean[] {false, true}) {
                 for (boolean incognito : new boolean[] {false, true}) {
@@ -2626,7 +2627,7 @@ public class TabListMediatorUnitTest {
                 .getSpanSize(anyInt());
         mMediator.updateLayout();
         assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
-        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        setPriceTrackingEnabledForTesting(true);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
@@ -2701,7 +2702,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testListObserver_OnItemRangeInserted() {
-        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
@@ -2719,7 +2720,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testListObserver_OnItemRangeRemoved() {
-        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
                 mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
                 mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
@@ -3208,12 +3209,20 @@ public class TabListMediatorUnitTest {
 
     private void prepareTestMaybeShowPriceWelcomeMessage() {
         initAndAssertAllProperties();
-        PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        setPriceTrackingEnabledForTesting(true);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
         mPriceDrop = new PriceDrop("1", "2");
         mPriceTabData = new PriceTabData(TAB1_ID, mPriceDrop);
         doReturn(mPriceDrop).when(mShoppingPersistedTabData).getPriceDrop();
+    }
+
+    private static void setPriceTrackingEnabledForTesting(boolean value) {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                PriceTrackingUtilities.PRICE_TRACKING_PARAM, String.valueOf(value));
+        FeatureList.setTestValues(testValues);
     }
 }

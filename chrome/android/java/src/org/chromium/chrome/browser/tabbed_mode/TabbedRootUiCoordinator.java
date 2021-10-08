@@ -661,7 +661,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCommerceSubscriptionsService() {
-        if (!PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.getValue()) {
+        if (!PriceTrackingUtilities.getPriceTrackingNotificationsEnabled()) {
             return;
         }
 

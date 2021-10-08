@@ -116,7 +116,7 @@ public class PriceDropNotificationManager {
      *         which could influence the Chime registration.
      */
     public boolean isEnabled() {
-        return PriceTrackingUtilities.ENABLE_PRICE_NOTIFICATION.getValue();
+        return PriceTrackingUtilities.getPriceTrackingNotificationsEnabled();
     }
 
     /**
