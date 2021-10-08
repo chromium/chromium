@@ -1681,7 +1681,7 @@
 <translation id="2734760316755174687">屬於「<ph name="SITE_GROUP_NAME" />」的網站將會重設。</translation>
 <translation id="2735712963799620190">設定時段</translation>
 <translation id="2737363922397526254">收合…</translation>
-<translation id="2737916598897808047">「<ph name="APP_NAME" />」要求與 <ph name="TARGET_NAME" /> 分享螢幕內容。</translation>
+<translation id="2737916598897808047"><ph name="APP_NAME" /> 要求與 <ph name="TARGET_NAME" /> 分享螢幕內容。</translation>
 <translation id="2738030019664645674">不允許網站使用裝置上安裝的字型</translation>
 <translation id="2738771556149464852">此日期之前</translation>
 <translation id="2739191690716947896">偵錯</translation>

@@ -4624,7 +4624,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5942779427914696408">Vidljivost uređaja</translation>
 <translation id="5943127421590245687">Potvrda je uspješno izvršena. Da otključate i vratite lokalne podatke, unesite staru lozinku uređaja <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5945002094477276055">Fajl <ph name="FILE_NAME" /> može biti opasan. Poslati u Sigurno pretraživanje na Googleu radi skeniranja?</translation>
+<translation id="5945002094477276055">Fajl <ph name="FILE_NAME" /> može biti opasan. Poslati u Sigurno pregledanje na Googleu radi skeniranja?</translation>
 <translation id="5945363896952315544">Sigurnosni ključ ne može pohraniti više otisaka prstiju. Da dodate novi otisak, najprije izbrišite jedan postojeći.</translation>
 <translation id="5946591249682680882">ID izvještaja <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Povežite tastaturu ili miš, ili nastavite postavljanje koristeći ekran na dodir. Ako koristite Bluetooth uređaje, vodite računa da su uređaji spremni za uparivanje.</translation>
