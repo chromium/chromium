@@ -197,7 +197,10 @@ chrome_ios_eg2_test("ios_chrome_variations_smoke_eg2tests_module") {
   _variations_seed_abs_path =
       "//ios/chrome/test/data/variations/variations_seed_ios.json"
 
-  data = [ _variations_seed_abs_path ]
+  data = [
+    "//testing/scripts/variations_seed_access_helper.py",
+    _variations_seed_abs_path,
+  ]
 
   executable_args = [
     "--variations-seed-path",

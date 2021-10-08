@@ -17,6 +17,7 @@ import time
 import six.moves.urllib.error
 
 import common
+import variations_seed_access_helper as seed_helper
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir)
@@ -27,11 +28,6 @@ from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
-
-# Constants around the Local State file and variation keys.
-_LOCAL_STATE_FILE_NAME = 'Local State'
-_LOCAL_STATE_SEED_NAME = 'variations_compressed_seed'
-_LOCAL_STATE_SEED_SIGNATURE_NAME = 'variations_seed_signature'
 
 # Constants for the waiting for seed from finch server
 _MAX_ATTEMPTS = 2
@@ -71,71 +67,6 @@ def _get_platform():
   raise RuntimeError(
     'Unsupported platform: %s. Only Linux (linux*) and Mac (darwin) and '
     'Windows (win32 or cygwin) are supported' % sys.platform)
-
-
-def _parse_test_seed():
-  """Reads and parses the test variations seed.
-
-  There are 2 types of seeds used by this smoke test:
-  1. A provided seed under test, and when the test is running with this seed,
-     it's running as a TRY job and is triggered by the finch_smoke_test recipe
-     to test the Finch GCL config changes. The interface between the recipe and
-     this test is a json file named variations_seed.json located at the root of
-     the checkout.
-  2. A hard-coded seed, and when the test is running with this seed, it's
-     running on CI continuously to prevent regressions to this test itself.
-     These hard-coded seeds live in the //variations_smoke_test_data directory.
-
-  Returns:
-    A tuple of two strings: the compressed seed and the seed signature.
-  """
-  path_seed = os.path.join(_SRC_DIR, 'variations_seed.json')
-
-  if not os.path.isfile(path_seed):
-    path_seed = os.path.join(_THIS_DIR, 'variations_smoke_test_data',
-                             'variations_seed_beta_%s.json' % _get_platform())
-
-  logging.info('Parsing test seed from "%s"', path_seed)
-
-  with open(path_seed, 'r') as f:
-    seed_json = json.load(f)
-
-  return (seed_json.get(_LOCAL_STATE_SEED_NAME, None),
-          seed_json.get(_LOCAL_STATE_SEED_NAME, None))
-
-
-def _get_current_seed(user_data_dir):
-  """Gets the current seed.
-
-  Args:
-    user_data_dir (str): Path to the user data directory used to laucn Chrome.
-
-  Returns:
-    A tuple of two strings: the compressed seed and the seed signature.
-  """
-  with open(os.path.join(user_data_dir, _LOCAL_STATE_FILE_NAME)) as f:
-    local_state = json.load(f)
-
-  return local_state.get(_LOCAL_STATE_SEED_NAME, None), local_state.get(
-      _LOCAL_STATE_SEED_SIGNATURE_NAME, None)
-
-
-def _inject_test_seed(seed, signature, user_data_dir):
-  """Injects the given test seed.
-
-  Args:
-    seed (str): A variations seed.
-    signature (str): A seed signature.
-    user_data_dir (str): Path to the user data directory used to laucn Chrome.
-  """
-  with open(os.path.join(user_data_dir, _LOCAL_STATE_FILE_NAME)) as f:
-    local_state = json.load(f)
-
-  local_state[_LOCAL_STATE_SEED_NAME] = seed
-  local_state[_LOCAL_STATE_SEED_SIGNATURE_NAME] = signature
-
-  with open(os.path.join(user_data_dir, _LOCAL_STATE_FILE_NAME), 'w') as f:
-    json.dump(local_state, f)
 
 
 def _find_chrome_binary():
@@ -187,7 +118,8 @@ def _confirm_new_seed_downloaded(user_data_dir,
     # Exits Chrome so that Local State could be serialized to disk.
     driver.quit()
     # Checks the seed and signature.
-    current_seed, current_signature = _get_current_seed(user_data_dir)
+    current_seed, current_signature = seed_helper.get_current_seed(
+        user_data_dir)
     if current_seed != old_seed and current_signature != old_signature:
       return True
     attempt += 1
@@ -227,18 +159,19 @@ def _run_tests():
       return 1
 
     # Inject the test seed.
-    seed, signature = _parse_test_seed()
+    # This is a path as fallback when |seed_helper.load_test_seed_from_file()|
+    # can't find one under src root.
+    hardcoded_seed_path = os.path.join(_THIS_DIR, 'variations_smoke_test_data',
+                             'variations_seed_beta_%s.json' % _get_platform())
+    seed, signature = seed_helper.load_test_seed_from_file(hardcoded_seed_path)
     if not seed or not signature:
       logging.error(
           'Ill-formed test seed json file: "%s" and "%s" are required',
-          _LOCAL_STATE_SEED_NAME, _LOCAL_STATE_SEED_SIGNATURE_NAME)
+          seed_helper.LOCAL_STATE_SEED_NAME,
+          seed_helper.LOCAL_STATE_SEED_SIGNATURE_NAME)
       return 1
 
-    _inject_test_seed(seed, signature, user_data_dir)
-
-    # Verify the seed has been injected successfully.
-    current_seed, current_signature = _get_current_seed(user_data_dir)
-    if current_seed != seed or current_signature != signature:
+    if not seed_helper.inject_test_seed(seed, signature, user_data_dir):
       logging.error('Failed to inject the test seed')
       return 1
 

@@ -9806,6 +9806,7 @@ if (is_linux || is_mac || is_win) {
 
     data = [
       "//testing/scripts/run_variations_smoke_tests.py",
+      "//testing/scripts/variations_seed_access_helper.py",
       "//testing/scripts/variations_smoke_test_data/",
       "//third_party/webdriver/pylib/",
     ]
