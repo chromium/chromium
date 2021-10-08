@@ -1,4 +1,9 @@
 {
+  "$build/chromium_tests": {
+    "project_trigger_overrides": {
+      "chromium": "chromium-m96"
+    }
+  },
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?prod",

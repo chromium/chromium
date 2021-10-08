@@ -1,4 +1,9 @@
 {
+  "$build/chromium_tests": {
+    "project_trigger_overrides": {
+      "chromium": "chromium-m96"
+    }
+  },
   "$kitchen": {
     "devshell": true,
     "git_auth": true
