@@ -134,14 +134,15 @@ void NGSvgTextLayoutAlgorithm::SetFlags(
     // character as determined by the CSS renderer.
     const NGFragmentItem& item = *items[info.item_index];
     const LogicalOffset logical_offset = items[info.item_index].offset;
-    const auto& font_metrics = To<LayoutSVGInlineText>(item.GetLayoutObject())
-                                   ->ScaledFont()
-                                   .PrimaryFont()
-                                   ->GetFontMetrics();
-    FloatPoint offset(
-        logical_offset.inline_offset,
-        logical_offset.block_offset +
-            font_metrics.FixedAscent(item.Style().GetFontBaseline()));
+    LayoutUnit ascent;
+    if (const auto* font_data = To<LayoutSVGInlineText>(item.GetLayoutObject())
+                                    ->ScaledFont()
+                                    .PrimaryFont()) {
+      ascent = font_data->GetFontMetrics().FixedAscent(
+          item.Style().GetFontBaseline());
+    }
+    FloatPoint offset(logical_offset.inline_offset,
+                      logical_offset.block_offset + ascent);
     if (!horizontal_)
       offset.Set(-offset.Y(), offset.X());
     css_positions_.push_back(offset);
@@ -747,19 +748,24 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     NGFragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
     const auto* layout_object =
         To<LayoutSVGInlineText>(item->GetLayoutObject());
-    const auto font_baseline = item->Style().GetFontBaseline();
-    const auto& font_metrics =
-        layout_object->ScaledFont().PrimaryFont()->GetFontMetrics();
+    LayoutUnit ascent;
+    LayoutUnit descent;
+    if (const auto* font_data = layout_object->ScaledFont().PrimaryFont()) {
+      const auto& font_metrics = font_data->GetFontMetrics();
+      const auto font_baseline = item->Style().GetFontBaseline();
+      ascent = font_metrics.FixedAscent(font_baseline);
+      descent = font_metrics.FixedDescent(font_baseline);
+    }
     float x = *info.x;
     float y = *info.y;
     float width;
     float height;
     if (horizontal_) {
-      y -= font_metrics.FixedAscent(font_baseline);
+      y -= ascent;
       width = info.inline_size;
       height = item->Size().height;
     } else {
-      x -= font_metrics.FixedDescent(font_baseline);
+      x -= descent;
       width = item->Size().width;
       height = info.inline_size;
     }
