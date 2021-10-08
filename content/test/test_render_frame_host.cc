@@ -546,7 +546,6 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
          frame_tree_node()
              ->is_on_initial_empty_document_or_subsequent_empty_documents());
   }
-  params->gesture = NavigationGestureUser;
   params->contents_mime_type = "text/html";
   params->method = "GET";
   params->http_status_code = response_code;

@@ -2227,7 +2227,6 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
   params->referrer = blink::mojom::Referrer::New();
   params->transition = ui::PAGE_TRANSITION_LINK;
   params->should_update_history = true;
-  params->gesture = NavigationGestureUser;
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(url2);
   params->post_id = -1;
@@ -2254,7 +2253,6 @@ TEST_F(NavigationControllerTest, PushStateWithoutPreviousEntry) {
   params->method = "GET";
   params->should_update_history = true;
   params->post_id = -1;
-  params->gesture = NavigationGesture::NavigationGestureAuto;
   main_test_rfh()->SendRendererInitiatedNavigationRequest(
       url, false /* has_user_gesture */);
   main_test_rfh()->PrepareForCommit();

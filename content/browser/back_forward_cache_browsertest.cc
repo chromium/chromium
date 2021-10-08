@@ -11390,12 +11390,16 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_a));
     params_capturer.Wait();
     EXPECT_TRUE(params_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
   RenderFrameHostImpl* rfh_a = current_frame_host();
 
   // 2) Navigate to B. A should be stored in the back-forward cache.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_FALSE(root->current_frame_host()
+                   ->last_navigation_started_with_transient_activation());
 
   // 3) GoBack to A. RenderFrameHost of A should be restored from the
   // back-forward cache, and "has_user_gesture" is set to false correctly.
@@ -11413,6 +11417,8 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_EQ(rfh_a, current_frame_host());
     // The navigation doesn't have user gesture.
     EXPECT_FALSE(params_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 
   // 4) Same-document navigation to A#foo without user gesture. At this point
@@ -11426,6 +11432,8 @@ IN_PROC_BROWSER_TEST_F(
     params_capturer.Wait();
     // The navigation doesn't have user gesture.
     EXPECT_FALSE(params_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 }
 

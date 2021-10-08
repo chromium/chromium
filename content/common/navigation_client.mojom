@@ -86,9 +86,6 @@ struct DidCommitProvisionalLoadParams {
   // Whether this commit should replace the current entry.
   bool should_replace_current_entry;
 
-  // The gesture that initiated this navigation.
-  NavigationGesture gesture;
-
   // The HTTP method used by the navigation.
   string method;
 
@@ -175,6 +172,11 @@ struct DidCommitSameDocumentNavigationParams {
   // Whether the navigation is a result of a client redirect (e.g. a
   // script-initiated navigation) or not (e.g. a link click).
   bool is_client_redirect = false;
+
+  // Whether the navigation is started by a transient user activation or not.
+  // TODO(mustaq): Figure out if we can drop this and use the user activation
+  // state tracked in the browser instead.
+  bool started_with_transient_activation = false;
 };
 
 struct CookieManagerInfo {

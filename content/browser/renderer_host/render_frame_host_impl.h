@@ -690,6 +690,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns the POST ID of the last committed navigation.
   int64_t last_post_id() { return last_post_id_; }
 
+  // Returns true if last committed navigation's CommonNavigationParam's
+  // `has_user_gesture` is true. Should only be used to get the state of the
+  // lat navigation, and not the current state of user activation of this
+  // RenderFrameHost. See comment on the variable declaration for more details.
+  bool last_navigation_started_with_transient_activation() {
+    return last_navigation_started_with_transient_activation_;
+  }
+
   // Returns true if `dest_url_info` should be considered the same site as the
   // current contents of this frame. This is the primary entry point for
   // determining if a navigation to `dest_url_info` should stay in this
@@ -2809,7 +2817,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::ReferrerPtr referrer,
       const ui::PageTransition& transition,
       bool should_replace_current_entry,
-      const NavigationGesture& gesture,
+      bool has_user_gesture,
       const std::vector<GURL>& redirects,
       const GURL& original_request_url,
       bool is_same_document,
@@ -3266,6 +3274,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // The POST ID of the last committed navigation.
   int64_t last_post_id_ = 0;
+
+  // Whether the last committed navigation's CommonNavigationParams'
+  // `has_user_gesture` is true or not. Note that this is just the cached value
+  // of what happened during the last navigation, and does not reflect the
+  // user activation state of this RenderFrameHost. To get the current/live user
+  // activation state, get the value from FrameTreeNode's
+  // HasStickyUserActivation() or HasTransientUserActivation() instead.
+  bool last_navigation_started_with_transient_activation_ = false;
 
   // Whether the last committed navigation is to an error page.
   bool is_error_page_ = false;

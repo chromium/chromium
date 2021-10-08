@@ -1138,7 +1138,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
     const ui::PageTransition& transition,
     bool should_replace_current_entry,
     const std::string& method,
-    const NavigationGesture& gesture,
+    bool has_transient_activation,
     bool is_overriding_user_agent,
     const std::vector<GURL>& redirects,
     const GURL& original_url,
@@ -1163,8 +1163,8 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           blink::PreviewsTypes::PREVIEWS_UNSPECIFIED, base::TimeTicks::Now(),
           method /* method */, nullptr /* post_data */,
           network::mojom::SourceLocation::New(),
-          false /* started_from_context_menu */,
-          gesture == NavigationGestureUser, false /* has_text_fragment_token */,
+          false /* started_from_context_menu */, has_transient_activation,
+          false /* has_text_fragment_token */,
           network::mojom::CSPDisposition::CHECK,
           std::vector<int>() /* initiator_origin_trial_features */,
           std::string() /* href_translate */,
@@ -5980,8 +5980,6 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   params->navigation_token = commit_params().navigation_token;
   DCHECK_EQ(params->url, common_params().url);
   params->should_update_history = true;
-  params->gesture = common_params().has_user_gesture ? NavigationGestureUser
-                                                     : NavigationGestureAuto;
   DCHECK_EQ(params->method, common_params().method);
   params->item_sequence_number = frame_entry_item_sequence_number_;
   params->document_sequence_number = frame_entry_document_sequence_number_;

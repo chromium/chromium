@@ -856,12 +856,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                      bool navigation_is_within_page) override;
   void DidNavigateMainFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
-      const LoadCommittedDetails& details,
-      const mojom::DidCommitProvisionalLoadParams& params) override;
+      const LoadCommittedDetails& details) override;
   void DidNavigateAnyFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
-      const LoadCommittedDetails& details,
-      const mojom::DidCommitProvisionalLoadParams&) override;
+      const LoadCommittedDetails& details) override;
   void NotifyChangedNavigationState(InvalidateTypes changed_flags) override;
   bool ShouldAllowRendererInitiatedCrossProcessNavigation(
       bool is_main_frame_navigation) override;

@@ -1440,14 +1440,6 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
   params->url = navigation_url_;
   params->referrer = mojo::Clone(referrer_);
   params->contents_mime_type = contents_mime_type_;
-  if (request_) {
-    params->gesture = request_->common_params().has_user_gesture
-                          ? NavigationGestureUser
-                          : NavigationGestureAuto;
-  } else {
-    params->gesture =
-        has_user_gesture_ ? NavigationGestureUser : NavigationGestureAuto;
-  }
   params->history_list_was_cleared = history_list_was_cleared_;
 
   RenderFrameHostImpl* current_rfh = frame_tree_node_->current_frame_host();

@@ -426,7 +426,7 @@ void Navigator::DidNavigate(
   // run unload handlers.  Those unload handlers should still see the old
   // frame's origin.  See https://crbug.com/825283.
   frame_tree_node->render_manager()->DidNavigateFrame(
-      render_frame_host, params.gesture == NavigationGestureUser,
+      render_frame_host, navigation_request->common_params().has_user_gesture,
       was_within_same_document,
       navigation_request->coop_status()
           .require_browsing_instance_swap() /* clear_proxies_on_commit */,
@@ -574,12 +574,10 @@ void Navigator::DidNavigate(
   // Run post-commit tasks.
   if (delegate_) {
     if (details.is_main_frame) {
-      delegate_->DidNavigateMainFramePostCommit(render_frame_host, details,
-                                                params);
+      delegate_->DidNavigateMainFramePostCommit(render_frame_host, details);
     }
 
-    delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details,
-                                             params);
+    delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details);
   }
 }
 

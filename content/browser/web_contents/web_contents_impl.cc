@@ -5568,8 +5568,7 @@ void WebContentsImpl::DidNavigateMainFramePreCommit(
 
 void WebContentsImpl::DidNavigateMainFramePostCommit(
     RenderFrameHostImpl* render_frame_host,
-    const LoadCommittedDetails& details,
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const LoadCommittedDetails& details) {
   // The render_frame_host is always a main frame.
   DCHECK(render_frame_host->is_main_frame());
   OPTIONAL_TRACE_EVENT1("content,navigation",
@@ -5613,8 +5612,7 @@ void WebContentsImpl::DidNavigateMainFramePostCommit(
 
 void WebContentsImpl::DidNavigateAnyFramePostCommit(
     RenderFrameHostImpl* render_frame_host,
-    const LoadCommittedDetails& details,
-    const mojom::DidCommitProvisionalLoadParams& params) {
+    const LoadCommittedDetails& details) {
   OPTIONAL_TRACE_EVENT1("content,navigation",
                         "WebContentsImpl::DidNavigateAnyFramePostCommit",
                         "render_frame_host", render_frame_host);
@@ -5625,7 +5623,8 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
 
   // If this is a user-initiated navigation, start allowing JavaScript dialogs
   // again.
-  if (params.gesture == NavigationGestureUser && dialog_manager_) {
+  if (render_frame_host->last_navigation_started_with_transient_activation() &&
+      dialog_manager_) {
     dialog_manager_->CancelDialogs(this, /*reset_state=*/true);
   }
 }

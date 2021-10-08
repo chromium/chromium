@@ -382,7 +382,6 @@ TEST_F(WebContentsImplTest, UpdateTitle) {
   params->transition = ui::PAGE_TRANSITION_TYPED;
   params->should_update_history = false;
   params->did_create_new_entry = true;
-  params->gesture = NavigationGestureUser;
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(params->url);
 

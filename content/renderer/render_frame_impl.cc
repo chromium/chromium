@@ -3146,7 +3146,7 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     }
     bool is_client_redirect =
         !!(common_params->transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT);
-    bool has_transient_activation = common_params->has_user_gesture;
+    bool started_with_transient_activation = common_params->has_user_gesture;
 
     WebSecurityOrigin initiator_origin;
     if (common_params->initiator_origin)
@@ -3172,7 +3172,8 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     // Load the request.
     commit_status = frame_->CommitSameDocumentNavigation(
         url, load_type, item_for_history_navigation, is_client_redirect,
-        has_transient_activation, initiator_origin, std::move(document_state));
+        started_with_transient_activation, initiator_origin,
+        std::move(document_state));
 
     // The load of the URL can result in this frame being removed. Use a
     // WeakPtr as an easy way to detect whether this has occured. If so, this
@@ -4031,20 +4032,22 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
   TRACE_EVENT1("navigation,rail",
                "RenderFrameImpl::didFinishSameDocumentNavigation", "id",
                routing_id_);
+  WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   InternalDocumentStateData* data =
-      InternalDocumentStateData::FromDocumentLoader(
-          frame_->GetDocumentLoader());
+      InternalDocumentStateData::FromDocumentLoader(document_loader);
   if (is_synchronously_committed)
     data->set_navigation_state(NavigationState::CreateForSynchronousCommit());
   data->navigation_state()->set_was_within_same_document(true);
 
   ui::PageTransition transition =
-      GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
+      GetTransitionType(document_loader, IsMainFrame());
   auto same_document_params =
       mojom::DidCommitSameDocumentNavigationParams::New();
   same_document_params->same_document_navigation_type =
       same_document_navigation_type;
   same_document_params->is_client_redirect = is_client_redirect;
+  same_document_params->started_with_transient_activation =
+      document_loader->LastNavigationHadTransientUserActivation();
   DidCommitNavigationInternal(
       commit_type, transition,
       blink::ParsedPermissionsPolicy(),     // permissions_policy_header
@@ -4682,10 +4685,6 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   // should_update_history.
   params->should_update_history =
       !document_loader->HasUnreachableURL() && response.HttpStatusCode() != 404;
-
-  params->gesture = document_loader->LastNavigationHadTransientUserActivation()
-                        ? NavigationGestureUser
-                        : NavigationGestureAuto;
 
   // Make navigation state a part of the DidCommitProvisionalLoad message so
   // that committed entry has it at all times.  Send a single HistoryItem for

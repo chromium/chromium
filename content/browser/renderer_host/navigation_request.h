@@ -234,7 +234,7 @@ class CONTENT_EXPORT NavigationRequest
       const ui::PageTransition& transition,
       bool should_replace_current_entry,
       const std::string& method,
-      const NavigationGesture& gesture,
+      bool has_transient_activation,
       bool is_overriding_user_agent,
       const std::vector<GURL>& redirects,
       const GURL& original_url,

@@ -3548,6 +3548,11 @@ void RenderFrameHostImpl::DidNavigate(
   // the renderer process.
   last_http_status_code_ = params.http_status_code;
 
+  // Sets whether the last navigation has user gesture/transient activation or
+  // not.
+  last_navigation_started_with_transient_activation_ =
+      navigation_request->common_params().has_user_gesture;
+
   // Navigations that activate an existing bfcached or prerendered document do
   // not create a new document.
   bool did_create_new_document =
@@ -9683,7 +9688,7 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
     blink::mojom::ReferrerPtr referrer,
     const ui::PageTransition& transition,
     bool should_replace_current_entry,
-    const NavigationGesture& gesture,
+    bool has_user_gesture,
     const std::vector<GURL>& redirects,
     const GURL& original_request_url,
     bool is_same_document,
@@ -9754,8 +9759,9 @@ RenderFrameHostImpl::CreateNavigationRequestForSynchronousRendererCommit(
   return NavigationRequest::CreateForSynchronousRendererCommit(
       frame_tree_node_, this, is_same_document, url, origin, isolation_info,
       std::move(referrer), transition, should_replace_current_entry, method,
-      gesture, is_overriding_user_agent, redirects, original_request_url,
-      std::move(coep_reporter), std::move(web_bundle_navigation_info),
+      has_user_gesture, is_overriding_user_agent, redirects,
+      original_request_url, std::move(coep_reporter),
+      std::move(web_bundle_navigation_info),
       std::move(subresource_web_bundle_navigation_info), http_status_code);
 }
 
@@ -10269,12 +10275,21 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     }
     redirects.push_back(params->url);
 
+    // If this is a (renderer-initiated) same-document navigation, it might be
+    // started by a transient activation. The only way to know this is from the
+    // `started_with_transient_activation` value of `same_document_params`
+    // (because we don't know anything about this navigation before DidCommit).
+    bool started_with_transient_activation =
+        (is_same_document_navigation &&
+         same_document_params->started_with_transient_activation);
+
     // TODO(https://crbug.com/1131832): Do not use |params| to get the values,
     // depend on values known at commit time instead.
     navigation_request = CreateNavigationRequestForSynchronousRendererCommit(
         params->url, params->origin, params->referrer.Clone(),
         params->transition, params->should_replace_current_entry,
-        params->gesture, redirects, params->url, is_same_document_navigation,
+        started_with_transient_activation, redirects, params->url,
+        is_same_document_navigation,
         same_document_params &&
             same_document_params->same_document_navigation_type ==
                 blink::mojom::SameDocumentNavigationType::kHistoryApi);
@@ -10290,9 +10305,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   // TODO(clamy): We should get the correct page transition when starting the
   // request.
   navigation_request->set_transition(params->transition);
-
-  navigation_request->set_has_user_gesture(params->gesture ==
-                                           NavigationGestureUser);
 
   UpdateSiteURL(params->url, navigation_request->DidEncounterError());
 
@@ -11512,7 +11524,6 @@ void RenderFrameHostImpl::
   // - is_overriding_user_agent
   // - http_status_code
   // - should_update_history
-  // - gesture
   // - should_replace_current_entry
   // - url
   // - did_create_new_entry
@@ -11559,12 +11570,6 @@ void RenderFrameHostImpl::
   const bool browser_should_update_history =
       !browser_url_is_unreachable && browser_http_status_code != 404;
 
-  // Gesture will always be set to the CommonNavigationParams'
-  // has_user_gesture value.
-  const bool browser_gesture = request->common_params().has_user_gesture;
-  const bool renderer_gesture =
-      (params.gesture == NavigationGesture::NavigationGestureUser);
-
   const bool browser_should_replace_current_entry =
       CalculateShouldReplaceCurrentEntry(request, params);
 
@@ -11598,7 +11603,6 @@ void RenderFrameHostImpl::
        browser_http_status_code == params.http_status_code) &&
       (!ShouldVerify("should_update_history") ||
        browser_should_update_history == params.should_update_history) &&
-      (!ShouldVerify("gesture") || browser_gesture == renderer_gesture) &&
       (!ShouldVerify("should_replace_current_entry") ||
        browser_should_replace_current_entry ==
            params.should_replace_current_entry) &&
@@ -11673,9 +11677,8 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "suh_renderer",
                         params.should_update_history);
 
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture_browser", browser_gesture);
-  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture_renderer",
-                        renderer_gesture);
+  SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "gesture",
+                        request->common_params().has_user_gesture);
 
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_browser",
                         browser_should_replace_current_entry);
@@ -11803,7 +11806,6 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_is_overriding_user_agent, params.is_overriding_user_agent);
   DCHECK_EQ(browser_http_status_code, params.http_status_code);
   DCHECK_EQ(browser_should_update_history, params.should_update_history);
-  DCHECK_EQ(browser_gesture, renderer_gesture);
   DCHECK_EQ(browser_should_replace_current_entry,
             params.should_replace_current_entry);
   DCHECK_EQ(browser_url, params.url);
@@ -11837,10 +11839,6 @@ void RenderFrameHostImpl::
   if (browser_should_update_history != params.should_update_history) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kShouldUpdateHistory);
-  }
-  if (browser_gesture != renderer_gesture) {
-    LogVerifyDidCommitParamsDifference(
-        VerifyDidCommitParamsDifference::kGesture);
   }
   if (browser_should_replace_current_entry !=
       params.should_replace_current_entry) {

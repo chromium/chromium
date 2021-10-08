@@ -13987,7 +13987,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   params->url = bad_url;
   params->referrer = blink::mojom::Referrer::New();
   params->transition = ui::PAGE_TRANSITION_LINK;
-  params->gesture = NavigationGestureUser;
   params->page_state = blink::PageState::CreateFromURL(bad_url);
   params->method = "POST";
   params->post_id = 2;
@@ -14736,6 +14735,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url2));
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14744,6 +14745,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURL(shell(), url3));
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 }
 
@@ -14767,6 +14770,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url2));
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14775,6 +14780,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url3));
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 }
 
@@ -14798,6 +14805,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url2));
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14806,6 +14815,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURL(shell(), url3));
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 }
 
@@ -14829,6 +14840,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url2));
     url2_capturer.Wait();
     EXPECT_TRUE(url2_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14837,6 +14850,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url3));
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 }
 
@@ -14861,6 +14876,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURL(shell(), url1));
     url1_capturer.Wait();
     EXPECT_FALSE(url1_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14869,6 +14886,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url2));
     url2_capturer.Wait();
     EXPECT_FALSE(url2_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14877,6 +14896,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url3));
     url3_capturer.Wait();
     EXPECT_TRUE(url3_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14885,6 +14906,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURL(shell(), url4));
     url4_capturer.Wait();
     EXPECT_FALSE(url4_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14900,6 +14923,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
     url5_capturer.Wait();
     EXPECT_TRUE(url5_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 }
 
@@ -14930,6 +14955,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url1));
     url1_capturer.Wait();
     EXPECT_TRUE(url1_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14938,6 +14965,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRendererWithoutUserGesture(shell(), url2));
     url2_capturer.Wait();
     EXPECT_FALSE(url2_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14946,6 +14975,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURL(shell(), url3));
     url3_capturer.Wait();
     EXPECT_FALSE(url3_capturer.has_user_gesture());
+    EXPECT_FALSE(root->current_frame_host()
+                     ->last_navigation_started_with_transient_activation());
   }
 
   {
@@ -14961,6 +14992,8 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
     url4_capturer.Wait();
     EXPECT_TRUE(url4_capturer.has_user_gesture());
+    EXPECT_TRUE(root->current_frame_host()
+                    ->last_navigation_started_with_transient_activation());
   }
 }
 

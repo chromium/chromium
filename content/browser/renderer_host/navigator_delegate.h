@@ -68,12 +68,10 @@ class CONTENT_EXPORT NavigatorDelegate {
   // NavigationController's last committed entry is for this navigation.
   virtual void DidNavigateMainFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
-      const LoadCommittedDetails& details,
-      const mojom::DidCommitProvisionalLoadParams& params) = 0;
+      const LoadCommittedDetails& details) = 0;
   virtual void DidNavigateAnyFramePostCommit(
       RenderFrameHostImpl* render_frame_host,
-      const LoadCommittedDetails& details,
-      const mojom::DidCommitProvisionalLoadParams& params) = 0;
+      const LoadCommittedDetails& details) = 0;
 
   // Notification to the Navigator embedder that navigation state has
   // changed. This method corresponds to
