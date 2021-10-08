@@ -228,10 +228,10 @@ class WebAppBrowserTest_Tabbed : public WebAppBrowserTest {
 };
 
 // TODO(crbug.com/1257751): Stabilize the test.
-#if defined(OS_MAC)
-#define DISABLE_MAC(TEST) DISABLED_##TEST
+#if defined(OS_POSIX)
+#define DISABLE_POSIX(TEST) DISABLED_##TEST
 #else
-#define DISABLE_MAC(TEST) TEST
+#define DISABLE_POSIX(TEST) TEST
 #endif
 
 #if defined(OS_WIN)
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppLastLaunchTime) {
               before_launch);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithMinimalUiButtons) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_POSIX(WithMinimalUiButtons)) {
   EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kBrowser, absl::nullopt,
                                   /*open_as_window=*/true));
   EXPECT_TRUE(HasMinimalUiButtons(DisplayMode::kMinimalUi, absl::nullopt,
@@ -427,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WithoutMinimalUiButtons) {
                                    /*open_as_window=*/false));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_MAC(DisplayOverride)) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_POSIX(DisplayOverride)) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_display_override.json");
@@ -867,7 +867,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutMenuOptionsForCrashedTab) {
 }
 
 // Tests that an installed PWA is not used when out of scope by one path level.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MenuOptionsOutsideInstalledPwaScope) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       DISABLE_POSIX(MenuOptionsOutsideInstalledPwaScope)) {
   NavigateToURLAndWait(
       browser(),
       https_server()->GetURL("/banners/scope_is_start_url/index.html"));
@@ -883,7 +884,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MenuOptionsOutsideInstalledPwaScope) {
             kNotPresent);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_MAC(InstallInstallableSite)) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       DISABLE_POSIX(InstallInstallableSite)) {
   base::Time before_install_time = base::Time::Now();
   base::UserActionTester user_action_tester;
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
@@ -910,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_MAC(InstallInstallableSite)) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallOverTabPwa) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DISABLE_POSIX(CanInstallOverTabPwa)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   const AppId app_id = InstallPwaForCurrentUrl();
 
@@ -929,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallOverTabPwa) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
-                       DISABLE_MAC(CannotInstallOverWindowPwa)) {
+                       DISABLE_POSIX(CannotInstallOverWindowPwa)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   InstallPwaForCurrentUrl();
 
@@ -1001,7 +1003,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentWebAppForSecureActiveTab) {
 
 #if defined(OS_MAC) || defined(OS_WIN)
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
-                       DISABLE_MAC(ShortcutIconCorrectColor)) {
+                       DISABLE_POSIX(ShortcutIconCorrectColor)) {
   os_hooks_suppress_.reset();
   base::ScopedAllowBlockingForTesting allow_blocking;
 
@@ -1596,7 +1598,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
-                       DISABLE_MAC(WindowControlsOverlay)) {
+                       DISABLE_POSIX(WindowControlsOverlay)) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_window_controls_overlay.json");
@@ -1617,7 +1619,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Tabbed,
-                       DISABLE_MAC(TabbedDisplayOverride)) {
+                       DISABLE_POSIX(TabbedDisplayOverride)) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
@@ -1643,7 +1645,8 @@ class WebAppBrowserTest_RemoveStatusBar : public WebAppBrowserTest {
       features::kRemoveStatusBarInWebApps};
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_RemoveStatusBar, RemoveStatusBar) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_RemoveStatusBar,
+                       DISABLE_POSIX(RemoveStatusBar)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
   const AppId app_id = InstallPwaForCurrentUrl();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
@@ -1694,7 +1697,7 @@ class WebAppBrowserTest_ManifestId : public WebAppBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId,
-                       DISABLE_MAC(NoManifestId)) {
+                       DISABLE_POSIX(NoManifestId)) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
   const AppId app_id = InstallPwaForCurrentUrl();
