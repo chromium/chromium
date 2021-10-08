@@ -79,7 +79,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -114,7 +115,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '12345/6789&',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -123,7 +125,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const device2 = createDefaultBluetoothDevice(
         /*id=*/ '987654321',
         /*publicName=*/ 'MX 3',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device2',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -152,7 +155,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const getBluetoothForgetBtn = () =>
         bluetoothDeviceDetailPage.$$('#forgetBtn');
     const getBluetoothStateBtn = () =>
-        bluetoothDeviceDetailPage.$$('#stateBtn');
+        bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
     const getBluetoothDeviceNameLabel = () =>
         bluetoothDeviceDetailPage.$$('#bluetoothDeviceNameLabel');
     const getBluetoothDeviceBatteryInfo = () =>
@@ -170,7 +173,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '123456789',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_udioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -228,7 +232,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         const device1 = createDefaultBluetoothDevice(
             /*id=*/ '12//345&6789',
             /*publicName=*/ 'BeatsX',
-            /*connected=*/ true,
+            /*connectionState=*/
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
             mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -253,4 +258,236 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         await flushAsync();
         assertTrue(!!getChangeDeviceNameDialog());
       });
+
+  test('Connect/Disconnect/forget states and error message', async function() {
+    init();
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+    const windowPopstatePromise = test_util.eventToPromise('popstate', window);
+
+    const getBluetoothForgetBtn = () =>
+        bluetoothDeviceDetailPage.$$('#forgetBtn');
+    const getBluetoothConnectDisconnectBtn = () =>
+        bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
+
+    const getBluetoothStateText = () =>
+        bluetoothDeviceDetailPage.$$('#bluetoothStateText');
+    const getConnectionFailedText = () =>
+        bluetoothDeviceDetailPage.$$('#connectionFailed');
+
+    const assertUIState =
+        (isShowingConnectionFailed, isConnectDisconnectBtnDisabled,
+         bluetoothStateText, connectDisconnectBtnText) => {
+          assertEquals(!!getConnectionFailedText(), isShowingConnectionFailed);
+          assertEquals(
+              getBluetoothConnectDisconnectBtn().disabled,
+              isConnectDisconnectBtnDisabled);
+          assertEquals(
+              getBluetoothStateText().textContent.trim(), bluetoothStateText);
+          assertEquals(
+              getBluetoothConnectDisconnectBtn().textContent.trim(),
+              connectDisconnectBtnText);
+        };
+
+    const id = '12345/6789&';
+    const device1 = createDefaultBluetoothDevice(
+        id,
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    device1.deviceProperties.batteryInfo = {
+      defaultProperties: {batteryPercentage: 90}
+    };
+
+    bluetoothConfig.appendToPairedDeviceList([device1]);
+    await flushAsync();
+
+    const params = new URLSearchParams();
+    params.append('id', id);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+
+    await flushAsync();
+    assertTrue(!!getBluetoothConnectDisconnectBtn());
+    // Disconnected without error.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'));
+
+    // Try to connect.
+    getBluetoothConnectDisconnectBtn().click();
+    await flushAsync();
+    // Connecting.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ true,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnecting'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'));
+    bluetoothConfig.completeConnect(/*success=*/ false);
+
+    // Connection fails.
+    await flushAsync();
+    // Disconnected with error.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ true,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'));
+
+    // Try to connect with success.
+    getBluetoothConnectDisconnectBtn().click();
+    await flushAsync();
+    bluetoothConfig.completeConnect(/*success=*/ true);
+    // Connection success.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDisconnect'));
+
+    // Disconnect device and check that connection error is not shown.
+    getBluetoothConnectDisconnectBtn().click();
+    await flushAsync();
+    bluetoothConfig.completeDisconnect(/*success=*/ true);
+    await flushAsync();
+    // Disconnected without error.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'));
+
+    // Try to connect with error.
+    getBluetoothConnectDisconnectBtn().click();
+    await flushAsync();
+    bluetoothConfig.completeConnect(/*success=*/ false);
+    await flushAsync();
+    // Disconnected with error.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ true,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'));
+
+    // Device automatically reconnects without calling connect. This
+    // can happen if connection failure was because device was turned off
+    // and is turned on. We expect connection error text to not show when
+    // disconnected.
+    device1.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kConnected;
+    bluetoothConfig.updatePairedDevice(device1);
+    await flushAsync();
+    // Connection success.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDisconnect'));
+
+    // Disconnect device and check that connection error is not shown.
+    getBluetoothConnectDisconnectBtn().click();
+    await flushAsync();
+    bluetoothConfig.completeDisconnect(/*success=*/ true);
+    await flushAsync();
+    // Disconnected without error.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'));
+
+
+    // Retry connection with success.
+    getBluetoothConnectDisconnectBtn().click();
+    await flushAsync();
+    // Connecting.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ true,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnecting'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'));
+    bluetoothConfig.completeConnect(/*success=*/ true);
+    await flushAsync();
+    // Connection success.
+    assertUIState(
+        /*isShowingConnectionFailed=*/ false,
+        /*isConnectDisconnectBtnDisabled=*/ false,
+        /*bluetoothStateText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
+        /*connectDisconnectBtnText=*/
+        bluetoothDeviceDetailPage.i18n('bluetoothDisconnect'));
+
+    // Forget device.
+    getBluetoothForgetBtn().click();
+    await flushAsync();
+    bluetoothConfig.completeForget(/*success=*/ true);
+    await windowPopstatePromise;
+  });
+
+  test('Landing on page while device is still connecting', async function() {
+    init();
+    bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
+
+    const getBluetoothConnectDisconnectBtn = () =>
+        bluetoothDeviceDetailPage.$$('#connectDisconnectBtn');
+    const getBluetoothStateText = () =>
+        bluetoothDeviceDetailPage.$$('#bluetoothStateText');
+    const getConnectionFailedText = () =>
+        bluetoothDeviceDetailPage.$$('#connectionFailed');
+
+    const id = '12//345&6789';
+
+    const device1 = createDefaultBluetoothDevice(
+        /*id=*/ id,
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+
+    bluetoothConfig.appendToPairedDeviceList([device1]);
+    await flushAsync();
+
+    const params = new URLSearchParams();
+    params.append('id', id);
+    settings.Router.getInstance().navigateTo(
+        settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+
+    await flushAsync();
+    assertEquals(
+        bluetoothDeviceDetailPage.i18n('bluetoothConnecting'),
+        getBluetoothStateText().textContent.trim());
+    assertFalse(!!getConnectionFailedText());
+    assertTrue(getBluetoothConnectDisconnectBtn().disabled);
+    assertEquals(
+        bluetoothDeviceDetailPage.i18n('bluetoothConnect'),
+        getBluetoothConnectDisconnectBtn().textContent.trim());
+  });
 });

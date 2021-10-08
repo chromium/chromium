@@ -59,7 +59,8 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789',
             /*publicName=*/ deviceName,
-            /*connected=*/ true,
+            /*connectionState=*/
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
             mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -98,7 +99,8 @@ suite('CrComponentsBluetoothPairingRequestCodePageTest', function() {
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789',
             /*publicName=*/ 'BeatsX',
-            /*connected=*/ true,
+            /*connectionState=*/
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
             mojom.AudioOutputCapability.kCapableOfAudioOutput,

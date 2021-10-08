@@ -2034,6 +2034,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is connected.">
     Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTING_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing, the current device is being connected to.">
+    Connecting to <ph name="DEVICE">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTION_FAILURE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing, the current device could not be connected to.">
+    Could not connect to <ph name="DEVICE">$1<ex>Beats</ex></ph>. Try again.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTION_FAILURE_LABEL" desc="Bluetooth device details page: Message informing, the current device could not be connected to.">
+    Couldn't connect. Try again.
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_DISCONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is disconnected.">
     Disconnected from <ph name="DEVICE">$1<ex>Beats</ex></ph>
   </message>

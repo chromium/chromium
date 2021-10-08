@@ -69,7 +69,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -142,7 +143,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -165,7 +167,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const device = createDefaultBluetoothDevice(
         id,
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -190,7 +193,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const device = createDefaultBluetoothDevice(
         /*id=*/ '123456',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -199,7 +203,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '12345654321',
         /*publicName=*/ 'Head phones',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device 2',
         /*opt_audioCapability=*/
         mojom.AudioOutputCapability.kCapableOfAudioOutput,
@@ -250,7 +255,8 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456',
             /*publicName=*/ 'BeatsX',
-            /*connected=*/ true,
+            /*connectionState=*/
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
             /*opt_nickname=*/ 'device1',
             /*opt_audioCapability=*/
             mojom.AudioOutputCapability.kCapableOfAudioOutput,

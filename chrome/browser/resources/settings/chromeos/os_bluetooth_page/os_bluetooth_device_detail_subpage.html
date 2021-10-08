@@ -1,6 +1,10 @@
 <style include="settings-shared">
-  :host([is-device-connected_]) #bluetoothStateText {
+  :host([is-device-connected_]) #bluetoothState {
     color: var(--cros-text-color-positive);
+  }
+
+  #connectionFailed {
+    color: var(--cros-text-color-alert);
   }
 
   .bluetooth-middle {
@@ -15,15 +19,19 @@
 <div id="container">
   <div id="deviceStateSettings" class="settings-box two-line first">
     <iron-icon id="statusIcon"
-        icon="[[getBluetoothStateIcon_(device_.*)]]">
+        icon="[[getBluetoothStateIcon_(device_.*, pageState_)]]">
     </iron-icon>
-    <div id="bluetoothStateText"
+    <div id="bluetoothState"
         class="middle settings-box-text">
-      <div aria-live="polite"
-          aria-label$="[[getDeviceStatusA11yLabel_(device_.*)]]">
-        [[getBluetoothStateTextLabel_(device_.*)]]
+      <div
+          id="bluetoothStateText"
+          aria-live="polite"
+          aria-label$="[[getDeviceStatusA11yLabel_(device_.*, pageState_)]]">
+        [[getBluetoothStateTextLabel_(device_.*, pageState_)]]
       </div>
-      <template is="dom-if" if="[[shouldShowBatteryInfo_(device_.*)]]" restamp>
+      <template is="dom-if"
+          if="[[shouldShowBatteryInfo_(device_.*, pageState_)]]"
+          restamp>
         <bluetooth-device-battery-info
             aria-label$="[[getBatteryInfoA11yLabel_(device_.*)]]"
             id="batteryInfo"
@@ -32,14 +40,26 @@
             aria-live="polite">
         </bluetooth-device-battery-info>
       </template>
+      <template is="dom-if" if="[[shouldShowErrorMessage_(device_.*, pageState_)]]"
+          restamp>
+        <div id="connectionFailed">
+          [[i18n('bluetoothDeviceDetailConnectionFailureLabel')]]
+        </div>
+      </template>
     </div>
     <div id="buttonContainer" class="layout end">
-      <cr-button id="forgetBtn" class="cancel-button">
+      <cr-button id="forgetBtn"
+          class="cancel-button"
+          on-click="onForgetBtnClick_">
         $i18n{bluetoothDeviceDetailForget}
       </cr-button>
-      <template is="dom-if" if="[[shouldShowStateBtn_(device_.*)]]" restamp>
-        <cr-button id="stateBtn" class="action-button">
-          [[getBluetoothStateBtnLabel_(device_.*)]]
+      <template is="dom-if" if="[[shouldShowConnectDisconnectBtn_(device_.*)]]"
+          restamp>
+        <cr-button id="connectDisconnectBtn"
+            disabled$="[[isConnectDisconnectBtnDisabled(pageState_)]]"
+            class="action-button"
+            on-click="onConnectDisconnectBtnClick_">
+          [[getBluetoothConnectDisconnectBtnLabel_(device_.*, pageState_)]]
         </cr-button>
       </template>
     </div>

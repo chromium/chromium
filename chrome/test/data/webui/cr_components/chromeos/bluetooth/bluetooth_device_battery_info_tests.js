@@ -65,7 +65,9 @@ suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
 
   test('Battery text, icon and color', async function() {
     const device = createDefaultBluetoothDevice(
-        /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true);
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
     bluetoothDeviceBatteryInfo.device = device.deviceProperties;
 
     // Lower bound edge case.

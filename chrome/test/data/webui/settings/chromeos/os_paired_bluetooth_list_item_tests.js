@@ -47,7 +47,8 @@ suite('OsPairedBluetoothListItemTest', function() {
         const publicName = 'BeatsX';
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789', /*publicName=*/ publicName,
-            /*connected=*/ true);
+            /*connectionState=*/
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
         pairedBluetoothListItem.device = device;
 
         const itemIndex = 3;
@@ -119,7 +120,9 @@ suite('OsPairedBluetoothListItemTest', function() {
 
   test('Battery percentage out of bounds', async function() {
     const device = createDefaultBluetoothDevice(
-        /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true);
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
     pairedBluetoothListItem.device = device;
 
     const getBatteryInfo = () => {
@@ -137,7 +140,9 @@ suite('OsPairedBluetoothListItemTest', function() {
   test('Selecting item routes to detail subpage', async function() {
     const id = '123456789';
     const device = createDefaultBluetoothDevice(
-        id, /*publicName=*/ 'BeatsX', /*connected=*/ true);
+        id, /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
     pairedBluetoothListItem.device = device;
     await flushAsync();
 

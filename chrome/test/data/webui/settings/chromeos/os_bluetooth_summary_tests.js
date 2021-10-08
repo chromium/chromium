@@ -151,12 +151,18 @@ suite('OsBluetoothSummaryTest', function() {
     assertEquals('cr:bluetooth', getBluetoothStatusIcon().icon);
 
     const device1 = createDefaultBluetoothDevice(
-        /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true,
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1');
     const device2 = createDefaultBluetoothDevice(
-        /*id=*/ '987654321', /*publicName=*/ 'MX 3', /*connected=*/ true);
+        /*id=*/ '987654321', /*publicName=*/ 'MX 3',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
     const device3 = createDefaultBluetoothDevice(
-        /*id=*/ '456789', /*publicName=*/ 'Radio head', /*connected=*/ true,
+        /*id=*/ '456789', /*publicName=*/ 'Radio head',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device3');
 
     const mockPairedBluetoothDeviceProperties = [

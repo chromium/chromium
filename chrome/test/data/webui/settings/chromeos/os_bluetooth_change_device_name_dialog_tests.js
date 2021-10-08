@@ -55,7 +55,8 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1');
 
     bluetoothDeviceChangeNameDialog.device = {...device1};
@@ -70,7 +71,8 @@ suite('OsBluetoothChangeDeviceNameDialogTest', function() {
     const device1 = createDefaultBluetoothDevice(
         /*id=*/ '12//345&6789',
         /*publicName=*/ 'BeatsX',
-        /*connected=*/ true,
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
         /*opt_nickname=*/ 'device1');
 
     bluetoothDeviceChangeNameDialog.device = {...device1};

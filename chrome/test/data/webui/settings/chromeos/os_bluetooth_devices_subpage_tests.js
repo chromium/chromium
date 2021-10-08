@@ -133,9 +133,13 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertFalse(!!getDeviceList(/*connected=*/ false));
 
     const connectedDevice = createDefaultBluetoothDevice(
-        /*id=*/ '123456789', /*publicName=*/ 'BeatsX', /*connected=*/ true);
+        /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
     const unconnectedDevice = createDefaultBluetoothDevice(
-        /*id=*/ '987654321', /*publicName=*/ 'MX 3', /*connected=*/ false);
+        /*id=*/ '987654321', /*publicName=*/ 'MX 3',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
 
     // Pair connected device.
     bluetoothConfig.appendToPairedDeviceList([connectedDevice]);
