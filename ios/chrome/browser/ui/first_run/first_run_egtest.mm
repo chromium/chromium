@@ -275,6 +275,69 @@ GREYLayoutConstraint* BelowConstraint() {
   [self scrollToElementAndAssertVisibility:subtitle];
 }
 
+// Tests that the forced sign-in screen replaces the regular sign-in screen
+// in the FRE when the policy is enabled.
+- (void)testSignInScreenUIWhenForcedByPolicy {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+
+  // Configure the policy to force sign-in.
+  std::string policy_data = "<dict>"
+                            "    <key>BrowserSignin</key>"
+                            "    <integer>2</integer>"
+                            "</dict>";
+  base::RemoveChars(policy_data, base::kWhitespaceASCII, &policy_data);
+
+  config.additional_args.push_back("--enable-forced-signin-policy");
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(policy_data);
+
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Add an identity to sign-in to enable the "Continue as ..." button in the
+  // sign-in screen.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Go to the sign-in screen from the welcome screen.
+  [self verifyWelcomeScreenIsDisplayed];
+  [self scrollToElementAndAssertVisibility:GetAcceptButton()];
+  [[EarlGrey selectElementWithMatcher:GetAcceptButton()]
+      performAction:grey_tap()];
+
+  // Sanity check that the sign-in screen is being displayed.
+  [self verifySignInScreenIsDisplayed];
+
+  // Validate the Title text of the forced sign-in screen.
+  id<GREYMatcher> title =
+      grey_text(l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE));
+  [self scrollToElementAndAssertVisibility:title];
+
+  // Validate the Subtitle text of the forced sign-in screen.
+  id<GREYMatcher> subtitle = grey_text(
+      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_MANAGED));
+  [self scrollToElementAndAssertVisibility:subtitle];
+
+  // Scroll to the "Continue as ..." button to go to the bottom of the screen.
+  [self scrollToElementAndAssertVisibility:GetContinueButtonWithIdentity(
+                                               fakeIdentity)];
+
+  // Assert that there isn't the button to skip sign-in.
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                   IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN))]
+      assertWithMatcher:grey_nil()];
+
+  // Touch the continue button to go to the next screen.
+  [[EarlGrey
+      selectElementWithMatcher:GetContinueButtonWithIdentity(fakeIdentity)]
+      performAction:grey_tap()];
+
+  // Make sure that the next screen can be successfully displayed.
+  [self verifySyncScreenIsDisplayed];
+}
+
 // Checks that the default browser screen is displayed correctly.
 - (void)testDefaultBrowserScreenUI {
   if ([self isDefaultBrowserTestDisabled]) {
