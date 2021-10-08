@@ -1,0 +1,3 @@
+-ColorProviderSourceObserverTest.DestroyingObserverClearsItFromSource
+-ColorProviderSourceObserverTest.ObserverCorrectlySetsObservationOfSource
+-ColorProviderSourceObserverTest.DestroyingSourceClearsItFromObservers

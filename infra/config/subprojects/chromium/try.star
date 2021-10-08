@@ -2197,6 +2197,28 @@ try_.gpu_chromium_win_builder(
     ),
 )
 
+try_.chromium_linux_builder(
+    name = "linux-stable-filter-rel",
+    builderless = False,
+    goma_jobs = goma.jobs.J150,
+    use_clang_coverage = True,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
+)
+
+try_.chromium_linux_builder(
+    name = "linux-stable-filter-combined-rel",
+    builderless = False,
+    goma_jobs = goma.jobs.J150,
+    use_clang_coverage = True,
+    tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
+    os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
+)
+
 # RTS builders (https://crbug.com/1203048)
 try_.chromium_linux_builder(
     name = "linux-rel-rts",

@@ -472,6 +472,12 @@ as required builders.
 * [linux-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-rel-rts) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-rel-rts"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-rts""))
   * Experiment percentage: 5.0
 
+* [linux-stable-filter-combined-rel](https://ci.chromium.org/p/chromium/builders/try/linux-stable-filter-combined-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-stable-filter-combined-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-stable-filter-combined-rel""))
+  * Experiment percentage: 5.0
+
+* [linux-stable-filter-rel](https://ci.chromium.org/p/chromium/builders/try/linux-stable-filter-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-stable-filter-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-stable-filter-rel""))
+  * Experiment percentage: 5.0
+
 * [linux-wayland-rel](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""linux-wayland-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-wayland-rel""))
   * Experiment percentage: 1.0
 

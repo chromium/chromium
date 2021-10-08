@@ -1,0 +1,11 @@
+-MimeHandlerServiceImplTest.SetPdfPluginAttributesInvalidBackgroundColor
+-CastChannelEnumUtilTest.TestToReadyState
+-MimeHandlerServiceImplTest.SetValidPdfPluginAttributes
+-CastChannelOpenFunctionTest.TestParseConnectInfo
+-CompositeMatcherTest.RulePlacement
+-SocketsManifestPermissionTest.IPC
+-CompositeMatcherTest.HostPermissionsAlwaysRequired
+-CastChannelEnumUtilTest.TestToChannelError
+-ExtensionMessageTypesTest.TestLoadedParams
+-APIPermissionSetTest.IPC
+-SocketPermissionTest.IPC
