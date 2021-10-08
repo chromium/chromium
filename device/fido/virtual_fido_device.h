@@ -238,6 +238,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     std::vector<std::vector<PublicKeyCredentialDescriptor>>
         exclude_list_history;
 
+    // |cancel_response_code| is the response code the authenticator will return
+    // when cancelling a pending request. Normally authenticators return
+    // CTAP2_ERR_KEEP_ALIVE_CANCEL, but some authenticators incorrectly return
+    // other codes.
+    CtapDeviceResponseCode cancel_response_code =
+        CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel;
+
     // The large-blob array.
     std::vector<uint8_t> large_blob;
 

@@ -702,6 +702,17 @@ void MakeCredentialRequestHandler::HandleResponse(
 
   if (state_ != State::kWaitingForTouch &&
       state_ != State::kWaitingForResponseWithToken) {
+    FIDO_LOG(DEBUG) << "Ignoring response from "
+                    << authenticator->GetDisplayName()
+                    << " because no longer waiting for touch";
+    return;
+  }
+
+  if (selected_authenticator_for_pin_uv_auth_token_ &&
+      authenticator != selected_authenticator_for_pin_uv_auth_token_) {
+    FIDO_LOG(DEBUG) << "Ignoring response from "
+                    << authenticator->GetDisplayName()
+                    << " because another authenticator was selected";
     return;
   }
 

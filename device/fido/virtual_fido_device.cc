@@ -82,7 +82,7 @@ class EVPBackedPrivateKey : public VirtualFidoDevice::PrivateKey {
     crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
     bssl::UniquePtr<EVP_PKEY_CTX> gen_ctx(
-        EVP_PKEY_CTX_new_id(type, /*engine=*/nullptr));
+        EVP_PKEY_CTX_new_id(type, /*e=*/nullptr));
     EVP_PKEY* pkey_ptr = nullptr;
     CHECK(EVP_PKEY_keygen_init(gen_ctx.get()) &&
           config_key_gen(gen_ctx.get()) &&
@@ -106,7 +106,7 @@ class EVPBackedPrivateKey : public VirtualFidoDevice::PrivateKey {
     const EVP_MD* digest =
         EVP_PKEY_id(pkey_.get()) == EVP_PKEY_ED25519 ? nullptr : EVP_sha256();
     CHECK(EVP_DigestSignInit(md_ctx.get(), /*pctx=*/nullptr, digest,
-                             /*engine=*/nullptr, pkey_.get()) &&
+                             /*e=*/nullptr, pkey_.get()) &&
           EVP_DigestSign(md_ctx.get(), ret.data(), &sig_len, msg.data(),
                          msg.size()) &&
           sig_len <= ret.size());
