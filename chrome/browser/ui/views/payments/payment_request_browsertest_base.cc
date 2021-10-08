@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/ui/address_combobox_model.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/payments/content/payment_request.h"
-#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -425,17 +424,14 @@ content::WebContents* PaymentRequestBrowserTestBase::GetActiveWebContents() {
 }
 
 const std::vector<PaymentRequest*>
-PaymentRequestBrowserTestBase::GetPaymentRequests(
-    content::WebContents* web_contents) {
-  PaymentRequestWebContentsManager* manager =
-      PaymentRequestWebContentsManager::GetOrCreateForWebContents(web_contents);
-  if (!manager)
-    return std::vector<PaymentRequest*>();
-
-  std::vector<PaymentRequest*> payment_requests_ptrs;
-  for (const auto& p : manager->payment_requests_)
-    payment_requests_ptrs.push_back(p.first);
-  return payment_requests_ptrs;
+PaymentRequestBrowserTestBase::GetPaymentRequests() {
+  std::vector<PaymentRequest*> ptrs;
+  ptrs.reserve(requests_.size());
+  for (const auto& weak : requests_) {
+    if (weak)
+      ptrs.push_back(&*weak);
+  }
+  return ptrs;
 }
 
 autofill::PersonalDataManager* PaymentRequestBrowserTestBase::GetDataManager() {
@@ -509,10 +505,11 @@ void PaymentRequestBrowserTestBase::CreatePaymentRequestForTest(
           render_frame_host, /*observer=*/GetWeakPtr(), &prefs_, is_incognito_,
           is_valid_ssl_, is_browser_window_active_, skip_ui_for_basic_card_);
   delegate_ = delegate.get();
-  PaymentRequestWebContentsManager::GetOrCreateForWebContents(
-      content::WebContents::FromRenderFrameHost(render_frame_host))
-      ->CreatePaymentRequest(render_frame_host, std::move(delegate),
-                             std::move(receiver), GetWeakPtr());
+  auto display_manager = delegate->GetDisplayManager()->GetWeakPtr();
+  auto* request = new PaymentRequest(render_frame_host, std::move(delegate),
+                                     std::move(display_manager),
+                                     std::move(receiver), GetWeakPtr());
+  requests_.push_back(request->GetWeakPtr());
 }
 
 void PaymentRequestBrowserTestBase::ClickOnDialogViewAndWait(

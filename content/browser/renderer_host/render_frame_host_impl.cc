@@ -12621,6 +12621,8 @@ RenderFrameHostImpl::DocumentAssociatedData::DocumentAssociatedData(
 RenderFrameHostImpl::DocumentAssociatedData::~DocumentAssociatedData() {
   while (!services.empty()) {
     // DocumentServiceBase unregisters itself at destruction time.
+    services.back()->WillBeDestroyed(
+        DocumentServiceDestructionReason::kEndOfDocumentLifetime);
     delete services.back();
   }
 }

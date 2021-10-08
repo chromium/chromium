@@ -10,6 +10,7 @@
 namespace content {
 
 class RenderFrameHost;
+enum class DocumentServiceDestructionReason : int;
 
 namespace internal {
 
@@ -21,6 +22,12 @@ class CONTENT_EXPORT DocumentServiceBase {
   DocumentServiceBase& operator=(const DocumentServiceBase&) = delete;
 
   virtual ~DocumentServiceBase();
+
+  // To be called just before the destructor, when the object does not
+  // self-destroy (via `delete this`). It reports the reason that the object is
+  // being destroyed via DocumentServiceDestructionReason, which gives the
+  // subclass a chance to react in a specific way.
+  virtual void WillBeDestroyed(DocumentServiceDestructionReason) {}
 
  protected:
   explicit DocumentServiceBase(RenderFrameHost* render_frame_host);
