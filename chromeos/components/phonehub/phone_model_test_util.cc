@@ -70,12 +70,13 @@ const char16_t kFakeAppVisibleName[] = u"Fake App";
 const char kFakeAppPackageName[] = "com.fakeapp";
 const int64_t kFakeAppId = 1234567890;
 const int64_t kFakeInlineReplyId = 1337;
+const int64_t kUserId = 1;
 const char16_t kFakeNotificationTitle[] = u"Fake Title";
 const char16_t kFakeNotificationText[] = u"Fake Text";
 
 const Notification::AppMetadata& CreateFakeAppMetadata() {
   static const base::NoDestructor<Notification::AppMetadata> fake_app_metadata{
-      kFakeAppVisibleName, kFakeAppPackageName, gfx::Image()};
+      kFakeAppVisibleName, kFakeAppPackageName, gfx::Image(), kUserId};
   return *fake_app_metadata;
 }
 

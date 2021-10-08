@@ -25,19 +25,20 @@ void RecentAppsInteractionHandler::RemoveRecentAppClickObserver(
 }
 
 void RecentAppsInteractionHandler::NotifyRecentAppClicked(
-    const std::string& package_name,
-    const std::u16string& visible_name) {
+    const Notification::AppMetadata& app_metadata) {
   for (auto& observer : observer_list_)
-    observer.OnRecentAppClicked(package_name, visible_name);
+    observer.OnRecentAppClicked(app_metadata);
 }
 
 void RecentAppsInteractionHandler::NotifyRecentAppAddedOrUpdated(
     const Notification::AppMetadata& app_metadata,
     base::Time last_accessed_timestamp) {
-  // Each element of |recent_app_metadata_list_| has a unique |package_name|.
+  // Each element of |recent_app_metadata_list_| has a unique |package_name| and
+  // |user_id|.
   for (auto it = recent_app_metadata_list_.begin();
        it != recent_app_metadata_list_.end(); ++it) {
-    if (it->first.package_name == app_metadata.package_name) {
+    if (it->first.package_name == app_metadata.package_name &&
+        it->first.user_id == app_metadata.user_id) {
       recent_app_metadata_list_.erase(it);
       break;
     }

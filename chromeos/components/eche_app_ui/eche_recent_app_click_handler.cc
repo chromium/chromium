@@ -48,12 +48,11 @@ void EcheRecentAppClickHandler::HandleNotificationClick(
 }
 
 void EcheRecentAppClickHandler::OnRecentAppClicked(
-    const std::string& recent_app_package_name,
-    const std::u16string& recent_app_visible_name) {
+    const phonehub::Notification::AppMetadata& app_metadata) {
   if (launch_app_helper_->IsAppLaunchAllowed()) {
-    launch_app_helper_->LaunchEcheApp(/*notification_id=*/absl::nullopt,
-                                      recent_app_package_name,
-                                      recent_app_visible_name);
+    launch_app_helper_->LaunchEcheApp(
+        /*notification_id=*/absl::nullopt, app_metadata.package_name,
+        app_metadata.visible_app_name, app_metadata.user_id);
   } else {
     launch_app_helper_->ShowNotification(
         /* title= */ absl::nullopt, /* message= */ absl::nullopt,

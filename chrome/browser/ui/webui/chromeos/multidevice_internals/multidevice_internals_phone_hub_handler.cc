@@ -76,8 +76,13 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
   auto icon_image_type = static_cast<ImageType>(icon_image_type_as_int);
   gfx::Image icon = gfx::Image::CreateFrom1xBitmap(
       ImageTypeToBitmap(icon_image_type, kIconSize));
+
+  int user_id;
+  if (!app_metadata_dict->GetInteger("userId", &user_id))
+    user_id = 0;
+
   return phonehub::Notification::AppMetadata(visible_app_name, package_name,
-                                             icon);
+                                             icon, user_id);
 }
 
 void TryAddingMetadata(

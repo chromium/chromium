@@ -159,8 +159,7 @@ void PhoneHubRecentAppsView::Update() {
     auto pressed_callback = base::BindRepeating(
         &chromeos::phonehub::RecentAppsInteractionHandler::
             NotifyRecentAppClicked,
-        base::Unretained(recent_apps_interaction_handler_),
-        recent_app.package_name, recent_app.visible_app_name);
+        base::Unretained(recent_apps_interaction_handler_), recent_app);
     recent_app_button_list_.push_back(std::make_unique<PhoneHubRecentAppButton>(
         recent_app.icon, pressed_callback));
     recent_app_buttons_view_->AddRecentAppButton(

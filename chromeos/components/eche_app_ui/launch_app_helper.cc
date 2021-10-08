@@ -63,10 +63,13 @@ void LaunchAppHelper::ShowNotification(
   launch_notification_function_.Run(title, message, std::move(info));
 }
 
-void LaunchAppHelper::LaunchEcheApp(absl::optional<int64_t> notification_id,
-                                    const std::string& package_name,
-                                    const std::u16string& visible_name) const {
-  launch_eche_app_function_.Run(notification_id, package_name, visible_name);
+void LaunchAppHelper::LaunchEcheApp(
+    absl::optional<int64_t> notification_id,
+    const std::string& package_name,
+    const std::u16string& visible_name,
+    const absl::optional<int64_t>& user_id) const {
+  launch_eche_app_function_.Run(notification_id, package_name, visible_name,
+                                user_id);
 }
 
 void LaunchAppHelper::CloseEcheApp() const {

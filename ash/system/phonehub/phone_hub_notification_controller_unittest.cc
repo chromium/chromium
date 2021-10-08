@@ -29,6 +29,8 @@ const int64_t kPhoneHubNotificationId0 = 0;
 const int64_t kPhoneHubNotificationId1 = 1;
 const int64_t kPhoneHubNotificationId2 = 2;
 
+const int64_t kUserId = 0;
+
 const char kCrOSNotificationId0[] = "chrome://phonehub-0";
 const char kCrOSNotificationId1[] = "chrome://phonehub-1";
 const char kCrOSNotificationId2[] = "chrome://phonehub-2";
@@ -48,7 +50,8 @@ chromeos::phonehub::Notification CreateNotification(int64_t id) {
   return chromeos::phonehub::Notification(
       id,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image()),
+                                                    /*icon=*/gfx::Image(),
+                                                    kUserId),
       base::Time::Now(), chromeos::phonehub::Notification::Importance::kDefault,
       /*inline_reply_id=*/0,
       chromeos::phonehub::Notification::InteractionBehavior::kOpenable, kTitle,
@@ -127,7 +130,8 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
   chromeos::phonehub::Notification updated_notification(
       kPhoneHubNotificationId1,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image()),
+                                                    /*icon=*/gfx::Image(),
+                                                    kUserId),
       base::Time::Now(), chromeos::phonehub::Notification::Importance::kDefault,
       /*inline_reply_id=*/0,
       chromeos::phonehub::Notification::InteractionBehavior::kNone, kNewTitle,
@@ -229,7 +233,7 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
   chromeos::phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    icon),
+                                                    icon, kUserId),
       timestamp, chromeos::phonehub::Notification::Importance::kHigh,
       /*inline_reply_id=*/0,
       chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
@@ -308,7 +312,8 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   chromeos::phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image()),
+                                                    /*icon=*/gfx::Image(),
+                                                    kUserId),
       base::Time::Now(), chromeos::phonehub::Notification::Importance::kHigh,
       /*inline_reply_id=*/0,
       chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
@@ -359,7 +364,8 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotReshowPopupNotification) {
   chromeos::phonehub::Notification modified_fake_notification(
       kPhoneHubNotificationId0,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image()),
+                                                    /*icon=*/gfx::Image(),
+                                                    kUserId),
       base::Time::Now(), chromeos::phonehub::Notification::Importance::kHigh,
       /*inline_reply_id=*/0,
       chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,
@@ -379,7 +385,8 @@ TEST_F(PhoneHubNotificationControllerTest, MinPriorityNotification) {
   chromeos::phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image()),
+                                                    /*icon=*/gfx::Image(),
+                                                    kUserId),
       base::Time::Now(), chromeos::phonehub::Notification::Importance::kMin,
       /*inline_reply_id=*/0,
       chromeos::phonehub::Notification::InteractionBehavior::kNone, kTitle,

@@ -14,13 +14,12 @@ FakeRecentAppsInteractionHandler::FakeRecentAppsInteractionHandler() = default;
 FakeRecentAppsInteractionHandler::~FakeRecentAppsInteractionHandler() = default;
 
 void FakeRecentAppsInteractionHandler::NotifyRecentAppClicked(
-    const std::string& recent_app_package_name,
-    const std::u16string& recent_app_visible_name) {
-  if (base::Contains(package_name_to_click_count_, recent_app_package_name)) {
-    package_name_to_click_count_.at(recent_app_package_name)++;
+    const Notification::AppMetadata& app_metadata) {
+  if (base::Contains(package_name_to_click_count_, app_metadata.package_name)) {
+    package_name_to_click_count_.at(app_metadata.package_name)++;
     return;
   }
-  package_name_to_click_count_[recent_app_package_name] = 1;
+  package_name_to_click_count_[app_metadata.package_name] = 1;
 }
 
 void FakeRecentAppsInteractionHandler::AddRecentAppClickObserver(

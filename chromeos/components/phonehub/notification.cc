@@ -13,10 +13,12 @@ namespace phonehub {
 
 Notification::AppMetadata::AppMetadata(const std::u16string& visible_app_name,
                                        const std::string& package_name,
-                                       const gfx::Image& icon)
+                                       const gfx::Image& icon,
+                                       int64_t user_id)
     : visible_app_name(visible_app_name),
       package_name(package_name),
-      icon(icon) {}
+      icon(icon),
+      user_id(user_id) {}
 
 Notification::AppMetadata::AppMetadata(const AppMetadata& other) = default;
 
@@ -25,7 +27,8 @@ Notification::AppMetadata& Notification::AppMetadata::operator=(
 
 bool Notification::AppMetadata::operator==(const AppMetadata& other) const {
   return visible_app_name == other.visible_app_name &&
-         package_name == other.package_name && icon == other.icon;
+         package_name == other.package_name && icon == other.icon &&
+         user_id == other.user_id;
 }
 
 bool Notification::AppMetadata::operator!=(const AppMetadata& other) const {

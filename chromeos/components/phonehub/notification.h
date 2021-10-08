@@ -25,7 +25,8 @@ class Notification {
   struct AppMetadata {
     AppMetadata(const std::u16string& visible_app_name,
                 const std::string& package_name,
-                const gfx::Image& icon);
+                const gfx::Image& icon,
+                int64_t user_id);
     AppMetadata(const AppMetadata& other);
     AppMetadata& operator=(const AppMetadata& other);
 
@@ -35,6 +36,7 @@ class Notification {
     std::u16string visible_app_name;
     std::string package_name;
     gfx::Image icon;
+    int64_t user_id;
   };
 
   // Interaction behavior for integration with other features.

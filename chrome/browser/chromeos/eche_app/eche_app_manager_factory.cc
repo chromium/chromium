@@ -70,7 +70,8 @@ enum class NotificationInteraction {
 void LaunchSystemWebApp(Profile* profile,
                         const std::string& package_name,
                         const absl::optional<int64_t>& notification_id,
-                        const std::u16string& visible_name) {
+                        const std::u16string& visible_name,
+                        const absl::optional<int64_t>& user_id) {
   std::u16string url;
   // Use hash mark(#) to send params to webui so we don't need to reload the
   // whole eche window.
@@ -90,6 +91,12 @@ void LaunchSystemWebApp(Profile* profile,
   double now_seconds = base::Time::Now().ToDoubleT();
   int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
   url.append(base::NumberToString16(now_ms));
+
+  if (user_id.has_value()) {
+    url.append(u"&user_id=");
+    url.append(base::NumberToString16(user_id.value()));
+  }
+
   web_app::SystemAppLaunchParams params;
   params.url = GURL(url);
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::ECHE,
@@ -99,8 +106,10 @@ void LaunchSystemWebApp(Profile* profile,
 void LaunchEcheApp(Profile* profile,
                    const absl::optional<int64_t>& notification_id,
                    const std::string& package_name,
-                   const std::u16string& visible_name) {
-  LaunchSystemWebApp(profile, package_name, notification_id, visible_name);
+                   const std::u16string& visible_name,
+                   const absl::optional<int64_t>& user_id) {
+  LaunchSystemWebApp(profile, package_name, notification_id, visible_name,
+                     user_id);
   base::UmaHistogramEnumeration("Eche.NotificationClicked",
                                 NotificationInteraction::kOpenAppStreaming);
 }

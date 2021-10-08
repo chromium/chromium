@@ -83,9 +83,11 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
 
   void FakeLaunchEcheAppFunction(const absl::optional<int64_t>& notification_id,
                                  const std::string& package_name,
-                                 const std::u16string& visible_name) {
+                                 const std::u16string& visible_name,
+                                 const absl::optional<int64_t>& user_id) {
     package_name_ = package_name;
     visible_name_ = visible_name;
+    user_id_ = user_id.value();
   }
 
   void FakeLaunchNotificationFunction(
@@ -108,9 +110,9 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
         ->recent_app_click_observer_count();
   }
 
-  void RecentAppClicked(const std::string& package_name,
-                        const std::u16string& visible_name) {
-    handler_->OnRecentAppClicked(package_name, visible_name);
+  void RecentAppClicked(
+      const phonehub::Notification::AppMetadata& app_metadata) {
+    handler_->OnRecentAppClicked(app_metadata);
   }
 
   void HandleNotificationClick(
@@ -125,9 +127,11 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
         ->FetchRecentAppMetadataList();
   }
 
-  const std::string& package_name() { return package_name_; }
+  const std::string& get_package_name() { return package_name_; }
 
-  const std::u16string& visible_name() { return visible_name_; }
+  const std::u16string& get_visible_name() { return visible_name_; }
+
+  int64_t get_user_id() { return user_id_; }
 
  private:
   phonehub::FakePhoneHubManager fake_phone_hub_manager_;
@@ -137,6 +141,7 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
   std::unique_ptr<EcheRecentAppClickHandler> handler_;
   std::string package_name_;
   std::u16string visible_name_;
+  int64_t user_id_;
 };
 
 TEST_F(EcheRecentAppClickHandlerTest, StatusChangeTransitions) {
@@ -166,21 +171,26 @@ TEST_F(EcheRecentAppClickHandlerTest, StatusChangeTransitions) {
 }
 
 TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {
-  const char expected_package_name[] = "com.fakeapp";
-  const char16_t expected_visible_name[] = u"Fake App";
+  const int64_t user_id = 1;
+  const char16_t app_visible_name[] = u"Fake App";
+  const char package_name[] = "com.fakeapp";
+  auto fake_app_metadata = phonehub::Notification::AppMetadata(
+      app_visible_name, package_name, gfx::Image(), user_id);
 
-  RecentAppClicked(expected_package_name, expected_visible_name);
+  RecentAppClicked(fake_app_metadata);
 
-  EXPECT_EQ(expected_package_name, package_name());
-  EXPECT_EQ(expected_visible_name, visible_name());
+  EXPECT_EQ(fake_app_metadata.package_name, get_package_name());
+  EXPECT_EQ(fake_app_metadata.visible_app_name, get_visible_name());
+  EXPECT_EQ(fake_app_metadata.user_id, get_user_id());
 }
 
 TEST_F(EcheRecentAppClickHandlerTest, HandleNotificationClick) {
   const int64_t notification_id = 1;
+  const int64_t user_id = 1;
   const char16_t app_visible_name[] = u"Fake App";
   const char package_name[] = "com.fakeapp";
   auto fake_app_metadata = phonehub::Notification::AppMetadata(
-      app_visible_name, package_name, gfx::Image());
+      app_visible_name, package_name, gfx::Image(), user_id);
 
   HandleNotificationClick(notification_id, fake_app_metadata);
   std::vector<phonehub::Notification::AppMetadata> app_metadata =
@@ -189,6 +199,7 @@ TEST_F(EcheRecentAppClickHandlerTest, HandleNotificationClick) {
   EXPECT_EQ(fake_app_metadata.visible_app_name,
             app_metadata[0].visible_app_name);
   EXPECT_EQ(fake_app_metadata.package_name, app_metadata[0].package_name);
+  EXPECT_EQ(fake_app_metadata.user_id, app_metadata[0].user_id);
 }
 
 }  // namespace eche_app

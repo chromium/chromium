@@ -163,6 +163,7 @@ message App {
   string package_name = 1;
   string visible_name = 2;
   bytes icon = 3;
+  int64 user_id = 4;
 }
 
 message CrosState {

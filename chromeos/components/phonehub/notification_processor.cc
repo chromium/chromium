@@ -84,7 +84,8 @@ Notification CreateInlineReplyNotification(const proto::Notification& proto,
       proto.id(),
       Notification::AppMetadata(
           base::UTF8ToUTF16(proto.origin_app().visible_name()),
-          proto.origin_app().package_name(), icon),
+          proto.origin_app().package_name(), icon,
+          proto.origin_app().user_id()),
       base::Time::FromJsTime(proto.epoch_time_millis()),
       GetNotificationImportanceFromProto(proto.importance()), *inline_reply_id,
       includes_open_action ? Notification::InteractionBehavior::kOpenable

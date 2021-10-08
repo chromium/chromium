@@ -20,6 +20,7 @@ namespace {
 
 const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";
+const int64_t kUserId = 1;
 
 const char16_t kTitle[] = u"Test notification";
 const char16_t kTextContent[] = u"This is a test notification";
@@ -30,7 +31,8 @@ Notification CreateNotification(int64_t id) {
   return chromeos::phonehub::Notification(
       id,
       chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                    /*icon=*/gfx::Image()),
+                                                    /*icon=*/gfx::Image(),
+                                                    kUserId),
       base::Time::Now(), Notification::Importance::kDefault,
       /*inline_reply_id=*/0, Notification::InteractionBehavior::kNone, kTitle,
       kTextContent);

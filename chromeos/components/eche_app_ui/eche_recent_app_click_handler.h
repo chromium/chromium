@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_RECENT_APP_CLICK_HANDLER_H_
 #define CHROMEOS_COMPONENTS_ECHE_APP_UI_ECHE_RECENT_APP_CLICK_HANDLER_H_
 
-#include <string>
-
 #include "base/callback.h"
 #include "chromeos/components/eche_app_ui/feature_status_provider.h"
 #include "chromeos/components/phonehub/notification.h"
@@ -46,8 +44,7 @@ class EcheRecentAppClickHandler : public phonehub::NotificationClickHandler,
 
   // phonehub::RecentAppClickObserver:
   void OnRecentAppClicked(
-      const std::string& recent_app_package_name,
-      const std::u16string& recent_app_visible_name) override;
+      const phonehub::Notification::AppMetadata& app_metadata) override;
 
   // FeatureStatusProvider::Observer:
   void OnFeatureStatusChanged() override;

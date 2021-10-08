@@ -21,9 +21,8 @@ class FakeClickHandler : public RecentAppClickObserver {
   std::string get_package_name() { return package_name; }
 
   void OnRecentAppClicked(
-      const std::string& recent_app_package_name,
-      const std::u16string& recent_app_visible_name) override {
-    package_name = recent_app_package_name;
+      const Notification::AppMetadata& app_metadata) override {
+    package_name = app_metadata.package_name;
   }
 
  private:
@@ -65,11 +64,12 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
   const char16_t expected_app_visible_name[] = u"Fake App";
   const char expected_package_name[] = "com.fakeapp";
+  const int64_t expected_user_id = 1;
   auto expected_app_metadata = Notification::AppMetadata(
-      expected_app_visible_name, expected_package_name, gfx::Image());
+      expected_app_visible_name, expected_package_name, gfx::Image(),
+      expected_user_id);
 
-  handler().NotifyRecentAppClicked(expected_package_name,
-                                   expected_app_visible_name);
+  handler().NotifyRecentAppClicked(expected_app_metadata);
 
   EXPECT_EQ(expected_package_name, GetPackageName());
 }
@@ -77,13 +77,15 @@ TEST_F(RecentAppsInteractionHandlerTest, RecentAppsClicked) {
 TEST_F(RecentAppsInteractionHandlerTest, RecentAppsUpdated) {
   const char16_t app_visible_name1[] = u"Fake App";
   const char package_name1[] = "com.fakeapp";
-  auto app_metadata1 =
-      Notification::AppMetadata(app_visible_name1, package_name1, gfx::Image());
+  const int64_t expected_user_id1 = 1;
+  auto app_metadata1 = Notification::AppMetadata(
+      app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
 
   const char16_t app_visible_name2[] = u"Fake App2";
   const char package_name2[] = "com.fakeapp2";
-  auto app_metadata2 =
-      Notification::AppMetadata(app_visible_name2, package_name2, gfx::Image());
+  const int64_t expected_user_id2 = 2;
+  auto app_metadata2 = Notification::AppMetadata(
+      app_visible_name2, package_name2, gfx::Image(), expected_user_id2);
   const base::Time now = base::Time::Now();
 
   handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
@@ -104,18 +106,21 @@ TEST_F(RecentAppsInteractionHandlerTest, RecentAppsUpdated) {
 TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
   const char16_t app_visible_name1[] = u"Fake App";
   const char package_name1[] = "com.fakeapp";
-  auto app_metadata1 =
-      Notification::AppMetadata(app_visible_name1, package_name1, gfx::Image());
+  const int64_t expected_user_id1 = 1;
+  auto app_metadata1 = Notification::AppMetadata(
+      app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
 
   const char16_t app_visible_name2[] = u"Fake App2";
   const char package_name2[] = "com.fakeapp2";
-  auto app_metadata2 =
-      Notification::AppMetadata(app_visible_name2, package_name2, gfx::Image());
+  const int64_t expected_user_id2 = 2;
+  auto app_metadata2 = Notification::AppMetadata(
+      app_visible_name2, package_name2, gfx::Image(), expected_user_id2);
 
   const char16_t app_visible_name3[] = u"Fake App3";
   const char package_name3[] = "com.fakeapp3";
-  auto app_metadata3 =
-      Notification::AppMetadata(app_visible_name3, package_name3, gfx::Image());
+  const int64_t expected_user_id3 = 3;
+  auto app_metadata3 = Notification::AppMetadata(
+      app_visible_name3, package_name3, gfx::Image(), expected_user_id3);
 
   const base::Time now = base::Time::Now();
   const base::Time next_minute = base::Time::Now() + base::Minutes(1);
@@ -135,18 +140,21 @@ TEST_F(RecentAppsInteractionHandlerTest, FetchRecentAppMetadataList) {
 
   const char16_t app_visible_name4[] = u"Fake App4";
   const char package_name4[] = "com.fakeapp4";
-  auto app_metadata4 =
-      Notification::AppMetadata(app_visible_name4, package_name4, gfx::Image());
+  const int64_t expected_user_id4 = 4;
+  auto app_metadata4 = Notification::AppMetadata(
+      app_visible_name4, package_name4, gfx::Image(), expected_user_id4);
 
   const char16_t app_visible_name5[] = u"Fake App5";
   const char package_name5[] = "com.fakeapp5";
-  auto app_metadata5 =
-      Notification::AppMetadata(app_visible_name5, package_name5, gfx::Image());
+  const int64_t expected_user_id5 = 5;
+  auto app_metadata5 = Notification::AppMetadata(
+      app_visible_name5, package_name5, gfx::Image(), expected_user_id5);
 
   const char16_t app_visible_name6[] = u"Fake App6";
   const char package_name6[] = "com.fakeapp6";
-  auto app_metadata6 =
-      Notification::AppMetadata(app_visible_name6, package_name6, gfx::Image());
+  const int64_t expected_user_id6 = 6;
+  auto app_metadata6 = Notification::AppMetadata(
+      app_visible_name6, package_name6, gfx::Image(), expected_user_id6);
 
   const base::Time next_two_hour = base::Time::Now() + base::Hours(2);
   const base::Time next_three_hour = base::Time::Now() + base::Hours(3);

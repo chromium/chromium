@@ -15,6 +15,7 @@ namespace ash {
 
 const char16_t kAppName[] = u"Test App";
 const char kPackageName[] = "com.google.testapp";
+const int64_t kUserId = 0;
 
 namespace {
 
@@ -51,7 +52,8 @@ class RecentAppButtonsViewTest : public AshTestBase {
   void NotifyRecentAppAddedOrUpdated() {
     fake_recent_apps_interaction_handler_.NotifyRecentAppAddedOrUpdated(
         chromeos::phonehub::Notification::AppMetadata(kAppName, kPackageName,
-                                                      /*icon=*/gfx::Image()),
+                                                      /*icon=*/gfx::Image(),
+                                                      kUserId),
         base::Time::Now());
   }
 
