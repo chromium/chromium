@@ -50,13 +50,6 @@ class BrowserAppInstanceRegistry
       BrowserAppInstanceTracker& ash_instance_tracker);
   ~BrowserAppInstanceRegistry() override;
 
-  // A factory method to make the creation of the registry optional to keep it
-  // behind a flag.
-  // TODO(crbug.com/1203992): Remove this when the |kBrowserAppInstanceTracking|
-  // flag is removed.
-  static std::unique_ptr<BrowserAppInstanceRegistry> Create(
-      BrowserAppInstanceTracker* ash_instance_tracker);
-
   // Get all instances by app ID. Returns a set of unowned pointers.
   std::set<const BrowserAppInstance*> GetAppInstancesByAppId(
       const std::string& app_id) const;

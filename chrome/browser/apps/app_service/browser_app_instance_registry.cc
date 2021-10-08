@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_map.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_features.h"
 #include "components/exo/shell_surface_util.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -45,14 +44,6 @@ BrowserAppInstanceRegistry::BrowserAppInstanceRegistry(
 }
 
 BrowserAppInstanceRegistry::~BrowserAppInstanceRegistry() = default;
-
-std::unique_ptr<BrowserAppInstanceRegistry> BrowserAppInstanceRegistry::Create(
-    BrowserAppInstanceTracker* ash_instance_tracker) {
-  if (!features::IsBrowserAppInstanceTrackingEnabled()) {
-    return nullptr;
-  }
-  return std::make_unique<BrowserAppInstanceRegistry>(*ash_instance_tracker);
-}
 
 std::set<const BrowserAppInstance*>
 BrowserAppInstanceRegistry::GetAppInstancesByAppId(

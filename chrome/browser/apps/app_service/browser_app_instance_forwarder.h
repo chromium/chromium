@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_FORWARDER_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_BROWSER_APP_INSTANCE_FORWARDER_H_
 
-#include <memory>
-
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
@@ -25,13 +23,6 @@ class BrowserAppInstanceForwarder
     : public apps::BrowserAppInstanceObserver,
       public crosapi::mojom::BrowserAppInstanceController {
  public:
-  // A factory method to make the creation of the forwarder optional to keep it
-  // behind a flag.
-  // TODO(crbug.com/1203992): Remove this when the |kBrowserAppInstanceTracking|
-  // flag is removed.
-  static std::unique_ptr<BrowserAppInstanceForwarder> Create(
-      BrowserAppInstanceTracker* tracker);
-
   explicit BrowserAppInstanceForwarder(BrowserAppInstanceTracker& tracker);
   ~BrowserAppInstanceForwarder() override;
 
