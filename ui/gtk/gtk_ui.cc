@@ -332,10 +332,8 @@ GtkUi::GtkUi() {
   CHECK(LoadGtk());
 
   auto* delegate = ui::LinuxUiDelegate::GetInstance();
-  // TODO(thomasanderson): This should be replaced with DCHECK(delegate) once
-  // fully migrated to ozone.
-  auto backend = delegate ? delegate->GetBackend() : ui::LinuxUiBackend::kX11;
-  platform_ = CreateGtkUiPlatform(backend);
+  DCHECK(delegate);
+  platform_ = CreateGtkUiPlatform(delegate->GetBackend());
 
   SelectFileDialogImpl::Initialize();
 

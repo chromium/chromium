@@ -15,6 +15,7 @@
 #include "ui/gtk/gtk_ui_factory.h"
 #include "ui/native_theme/native_theme_color_id.h"
 #include "ui/native_theme/test/color_utils.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
 namespace gtk {
@@ -25,7 +26,12 @@ class NativeThemeGtkRedirectedEquivalenceTest
     : public testing::TestWithParam<
           std::tuple<ui::NativeTheme::ColorScheme, ui::NativeTheme::ColorId>> {
  public:
-  NativeThemeGtkRedirectedEquivalenceTest() { gtk_ui_ = BuildGtkUi(); }
+  NativeThemeGtkRedirectedEquivalenceTest() {
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
+    gtk_ui_ = BuildGtkUi();
+  }
 
   static std::string ParamInfoToString(
       ::testing::TestParamInfo<
