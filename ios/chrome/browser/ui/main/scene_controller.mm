@@ -1020,54 +1020,52 @@ bool IsSigninForcedByPolicy() {
 }
 
 - (void)maybeShowDefaultBrowserPromo {
-  if (self.sceneState.appState.startupInformation.isFirstRun) {
+  if (self.sceneState.appState.startupInformation.isFirstRun ||
+      ![self potentiallyInterestedUser]) {
+    return;
+  }
+  // Show the Default Browser promo UI if the user's past behavior fits
+  // the categorization of potentially interested users or if the user is
+  // signed in. Do not show if it is determined that Chrome is already the
+  // default browser (checked in the if enclosing this comment) or if the user
+  // has already seen the promo UI. If the user was in the experiment group
+  // that showed the Remind Me Later button and tapped on it, then show the
+  // promo again if now is the right time.
+
+  BOOL isSignedIn = [self isSignedIn];
+
+  // Tailored promos take priority over general promo.
+  BOOL isMadeForIOSPromoEligible =
+      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
+  BOOL isAllTabsPromoEligible =
+      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
+      isSignedIn;
+  BOOL isStaySafePromoEligible =
+      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
+
+  BOOL isTailoredPromoEligibleUser =
+      !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
+      (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
+       isStaySafePromoEligible);
+  if (isTailoredPromoEligibleUser && !UserInPromoCooldown()) {
+    self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
+    self.sceneState.appState.defaultBrowserPromoTypeToShow =
+        MostRecentInterestDefaultPromoType(!isSignedIn);
+    DCHECK(self.sceneState.appState.defaultBrowserPromoTypeToShow !=
+           DefaultPromoTypeGeneral);
     return;
   }
 
-  if ([self potentiallyInterestedUser]) {
-    // Show the Default Browser promo UI if the user's past behavior fits
-    // the categorization of potentially interested users or if the user is
-    // signed in. Do not show if it is determined that Chrome is already the
-    // default browser (checked in the if enclosing this comment) or if the user
-    // has already seen the promo UI. If the user was in the experiment group
-    // that showed the Remind Me Later button and tapped on it, then show the
-    // promo again if now is the right time.
-
-    BOOL isSignedIn = [self isSignedIn];
-
-    // Tailored promos take priority over general promo.
-    BOOL isMadeForIOSPromoEligible =
-        IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
-    BOOL isAllTabsPromoEligible =
-        IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
-        isSignedIn;
-    BOOL isStaySafePromoEligible =
-        IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
-
-    BOOL isTailoredPromoEligibleUser =
-        !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
-        (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
-         isStaySafePromoEligible);
-    if (isTailoredPromoEligibleUser && !UserInPromoCooldown()) {
-      self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
-      self.sceneState.appState.defaultBrowserPromoTypeToShow =
-          MostRecentInterestDefaultPromoType(!isSignedIn);
-      DCHECK(self.sceneState.appState.defaultBrowserPromoTypeToShow !=
-             DefaultPromoTypeGeneral);
-      return;
-    }
-
-    BOOL isGeneralPromoEligibleUser =
-        !HasUserInteractedWithFullscreenPromoBefore() &&
-        (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-         isSignedIn) &&
-        !UserInPromoCooldown();
-    if (isGeneralPromoEligibleUser ||
-        ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
-      self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
-      self.sceneState.appState.defaultBrowserPromoTypeToShow =
-          DefaultPromoTypeGeneral;
-    }
+  BOOL isGeneralPromoEligibleUser =
+      !HasUserInteractedWithFullscreenPromoBefore() &&
+      (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
+       isSignedIn) &&
+      !UserInPromoCooldown();
+  if (isGeneralPromoEligibleUser ||
+      ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo()) {
+    self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
+    self.sceneState.appState.defaultBrowserPromoTypeToShow =
+        DefaultPromoTypeGeneral;
   }
 }
 
