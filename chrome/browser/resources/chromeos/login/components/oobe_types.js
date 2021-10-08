@@ -60,7 +60,7 @@ OobeTypes.A11yStatuses;
 
 /**
  * Timezone ID.
- * @typedef {!String}
+ * @typedef {!string}
  */
 OobeTypes.Timezone;
 
@@ -68,7 +68,7 @@ OobeTypes.Timezone;
  * ChromeOS timezone descriptor.
  * @typedef {{
  *   value: (OobeTypes.Timezone|undefined),
- *   title: (String|undefined),
+ *   title: (string|undefined),
  *   selected: (boolean|undefined),
  * }}
  */

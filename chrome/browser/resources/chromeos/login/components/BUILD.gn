@@ -50,6 +50,7 @@ group("closure_compile_module") {
     ":oobe_a11y_option.m",
     ":oobe_icons.m",
     ":oobe_network_icons.m",
+    ":oobe_select.m",
     ":oobe_types.m",
     ":web_view_helper.m",
     ":web_view_loader.m",
@@ -181,6 +182,12 @@ js_library("oobe_network_icons.m") {
   extra_deps = [ ":oobe_network_icons_module" ]
 }
 
+js_library("oobe_select.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_select.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("oobe_types.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_types.m.js" ]
   deps = []
@@ -242,6 +249,7 @@ polymer_modulizer("oobe_network_icons") {
 js_modulizer("modulize") {
   input_files = [
     "display_manager_types.js",
+    "oobe_select.js",
     "oobe_types.js",
     "web_view_helper.js",
     "web_view_loader.js",
