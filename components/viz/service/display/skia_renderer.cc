@@ -1838,16 +1838,15 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
   PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds,
                 &params->content_device_transform);
 
-  float scale_x = params->rect.width() / quad->tex_coord_rect.width();
-  float scale_y = params->rect.height() / quad->tex_coord_rect.height();
-
-  float offset_x =
-      params->visible_rect.x() - params->vis_tex_coords.x() * scale_x;
-  float offset_y =
-      params->visible_rect.y() - params->vis_tex_coords.y() * scale_y;
-
   auto visible_rect = gfx::RectFToSkRect(params->visible_rect);
   current_canvas_->clipRect(visible_rect);
+
+  if (params->draw_region) {
+    SkPath clip_path;
+    clip_path.addPoly(params->draw_region->points, 4, true /* close */);
+    bool aa = params->aa_flags != SkCanvas::kNone_QuadAAFlags;
+    current_canvas_->clipPath(clip_path, aa);
+  }
 
   absl::optional<int> restore_count;
   sk_sp<SkColorFilter> color_filter =
@@ -1861,6 +1860,14 @@ void SkiaRenderer::DrawPaintOpBuffer(const cc::PaintOpBuffer* buffer,
 
   if (clear_color)
     current_canvas_->drawColor(*clear_color);
+
+  float scale_x = params->rect.width() / quad->tex_coord_rect.width();
+  float scale_y = params->rect.height() / quad->tex_coord_rect.height();
+
+  float offset_x =
+      params->visible_rect.x() - params->vis_tex_coords.x() * scale_x;
+  float offset_y =
+      params->visible_rect.y() - params->vis_tex_coords.y() * scale_y;
 
   current_canvas_->translate(offset_x, offset_y);
   current_canvas_->scale(scale_x, scale_y);
