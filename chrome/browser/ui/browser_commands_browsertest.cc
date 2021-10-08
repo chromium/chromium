@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -205,7 +206,9 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
 class ReadLaterBrowserCommandsTest : public BrowserCommandsTest {
  public:
   ReadLaterBrowserCommandsTest() {
-    feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{reading_list::switches::kReadLater},
+        /*disabled_features=*/{features::kSidePanel});
   }
   ~ReadLaterBrowserCommandsTest() override = default;
 

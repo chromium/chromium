@@ -65,8 +65,9 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
   // by
   // StarViewTestWithReadLaterEnabled.AddBookmarkFromStarViewMenuBookmarksUrl.
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
-      !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog)) {
-    GTEST_SKIP() << "When read later is enabled adnd add from dialog disabled, "
+      (!base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
+       !base::FeatureList::IsEnabled(features::kSidePanel))) {
+    GTEST_SKIP() << "When read later is enabled and add from dialog disabled, "
                     "the star view behaves differently on press. Testing in "
                     "that case is covered by "
                     "StarViewTestWithReadLaterEnabled."
@@ -104,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, HideOnSecondClick) {
   // The BookmarkBubbleView is not shown when the StarView is first pressed when
   // the reading list is enabled.
   if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
-      !base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog)) {
+      (!base::FeatureList::IsEnabled(features::kReadLaterAddFromDialog) ||
+       !base::FeatureList::IsEnabled(features::kSidePanel))) {
     GTEST_SKIP() << "The BookmarkBubbleView is not shown when the StarView is "
                     "first pressed when the reading list is enabled and add "
                     "from dialog is disabled";
@@ -158,7 +160,8 @@ class StarViewTestWithReadLaterEnabled : public InProcessBrowserTest {
   StarViewTestWithReadLaterEnabled() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{reading_list::switches::kReadLater},
-        /*disabled_features=*/{features::kReadLaterAddFromDialog});
+        /*disabled_features=*/{features::kReadLaterAddFromDialog,
+                               features::kSidePanel});
   }
   StarViewTestWithReadLaterEnabled(const StarViewTestWithReadLaterEnabled&) =
       delete;
