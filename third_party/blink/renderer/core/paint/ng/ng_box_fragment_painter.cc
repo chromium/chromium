@@ -2377,6 +2377,30 @@ bool NGBoxFragmentPainter::HitTestBlockChildren(
   return false;
 }
 
+// static
+bool NGBoxFragmentPainter::ShouldHitTestCulledInlineAncestors(
+    const HitTestContext& hit_test,
+    const NGFragmentItem& item) {
+  if (hit_test.action != kHitTestForeground)
+    return false;
+  if (item.Type() == NGFragmentItem::kLine)
+    return false;
+  if (hit_test.result->GetHitTestRequest().ListBased()) {
+    // For list base hit test, we should include culled inline into list.
+    // DocumentOrShadowRoot-prototype-elementFromPoint.html requires this.
+    return true;
+  }
+  if (item.IsBlockInInline()) {
+    // To handle, empty size <div>, we skip hit testing on culled inline box.
+    // See "fast/events/ondragenter.html".
+    //
+    // Culled inline should be handled by item in another line for block-in-
+    // inline, e.g. <span>a<div>b</div></span>.
+    return false;
+  }
+  return !item.IsBlockInInline();
+}
+
 bool NGBoxFragmentPainter::HitTestItemsChildren(
     const HitTestContext& hit_test,
     const NGPhysicalBoxFragment& container,
@@ -2418,8 +2442,7 @@ bool NGBoxFragmentPainter::HitTestItemsChildren(
 
     cursor.MoveToPreviousSibling();
 
-    if (hit_test.action == kHitTestForeground &&
-        item->Type() != NGFragmentItem::kLine && !item->IsBlockInInline()) {
+    if (ShouldHitTestCulledInlineAncestors(hit_test, *item)) {
       // Hit test culled inline boxes between |fragment| and its parent
       // fragment.
       const PhysicalOffset child_offset =

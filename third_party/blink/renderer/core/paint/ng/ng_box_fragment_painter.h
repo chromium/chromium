@@ -309,6 +309,9 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   }
   PhysicalRect InkOverflowIncludingFilters() const;
 
+  static bool ShouldHitTestCulledInlineAncestors(const HitTestContext& hit_test,
+                                                 const NGFragmentItem& item);
+
   const NGPhysicalBoxFragment& box_fragment_;
   const DisplayItemClient& display_item_client_;
   const NGFragmentItems* items_;
