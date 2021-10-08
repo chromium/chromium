@@ -354,7 +354,7 @@ QuotaError QuotaDatabase::SetStorageKeyLastAccessTime(
   return QuotaError::kNone;
 }
 
-QuotaError QuotaDatabase::SetBucketLastAccessTime(const BucketId bucket_id,
+QuotaError QuotaDatabase::SetBucketLastAccessTime(BucketId bucket_id,
                                                   base::Time last_accessed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bucket_id.is_null());
@@ -420,7 +420,7 @@ QuotaError QuotaDatabase::SetStorageKeyLastModifiedTime(
   return QuotaError::kNone;
 }
 
-QuotaError QuotaDatabase::SetBucketLastModifiedTime(const BucketId bucket_id,
+QuotaError QuotaDatabase::SetBucketLastModifiedTime(BucketId bucket_id,
                                                     base::Time last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bucket_id.is_null());
@@ -482,7 +482,7 @@ bool QuotaDatabase::RegisterInitialStorageKeyInfo(
   return true;
 }
 
-bool QuotaDatabase::GetBucketInfo(const BucketId bucket_id,
+bool QuotaDatabase::GetBucketInfo(BucketId bucket_id,
                                   QuotaDatabase::BucketTableEntry* entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bucket_id.is_null());
@@ -557,7 +557,7 @@ bool QuotaDatabase::DeleteStorageKeyInfo(const StorageKey& storage_key,
   return true;
 }
 
-bool QuotaDatabase::DeleteBucketInfo(const BucketId bucket_id) {
+bool QuotaDatabase::DeleteBucketInfo(BucketId bucket_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!bucket_id.is_null());
   if (EnsureOpened(EnsureOpenedMode::kFailIfNotFound) != QuotaError::kNone)

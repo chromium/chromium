@@ -194,7 +194,7 @@ bool DeleteStorageKeyInfoOnDBThread(const StorageKey& storage_key,
   return database->DeleteStorageKeyInfo(storage_key, type);
 }
 
-bool DeleteBucketInfoOnDBThread(const BucketId bucket_id,
+bool DeleteBucketInfoOnDBThread(BucketId bucket_id,
                                 bool is_eviction,
                                 QuotaDatabase* database) {
   DCHECK(database);
@@ -239,7 +239,7 @@ bool UpdateAccessTimeOnDBThread(const StorageKey& storage_key,
   return result != QuotaError::kDatabaseError;
 }
 
-bool UpdateBucketAccessTimeOnDBThread(const BucketId bucket_id,
+bool UpdateBucketAccessTimeOnDBThread(BucketId bucket_id,
                                       base::Time accessed_time,
                                       QuotaDatabase* database) {
   DCHECK(database);
@@ -258,7 +258,7 @@ bool UpdateModifiedTimeOnDBThread(const StorageKey& storage_key,
   return result != QuotaError::kDatabaseError;
 }
 
-bool UpdateBucketModifiedTimeOnDBThread(const BucketId bucket_id,
+bool UpdateBucketModifiedTimeOnDBThread(BucketId bucket_id,
                                         base::Time modified_time,
                                         QuotaDatabase* database) {
   DCHECK(database);
@@ -1648,7 +1648,7 @@ void QuotaManagerImpl::NotifyStorageAccessed(const StorageKey& storage_key,
                      weak_factory_.GetWeakPtr()));
 }
 
-void QuotaManagerImpl::NotifyBucketAccessed(const BucketId bucket_id,
+void QuotaManagerImpl::NotifyBucketAccessed(BucketId bucket_id,
                                             base::Time access_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
@@ -1693,7 +1693,7 @@ void QuotaManagerImpl::NotifyStorageModified(QuotaClientType client_id,
 }
 
 void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
-                                            const BucketId bucket_id,
+                                            BucketId bucket_id,
                                             int64_t delta,
                                             base::Time modification_time,
                                             base::OnceClosure callback) {

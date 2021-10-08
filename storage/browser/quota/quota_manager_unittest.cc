@@ -439,7 +439,7 @@ class QuotaManagerImplTest : public testing::Test {
                                                IncrementMockTime());
   }
 
-  void NotifyBucketAccessed(const BucketId bucket_id) {
+  void NotifyBucketAccessed(BucketId bucket_id) {
     quota_manager_impl_->NotifyBucketAccessed(bucket_id, IncrementMockTime());
   }
 
