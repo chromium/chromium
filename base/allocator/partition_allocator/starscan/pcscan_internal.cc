@@ -638,7 +638,12 @@ PCScanTask::TryMarkObjectInNormalBuckets(uintptr_t maybe_ptr) const {
   // metadata partition.
   // TODO(bikineev): To speed things up, consider removing the check and
   // committing quarantine bitmaps for metadata partition.
-  if (UNLIKELY(!root->IsQuarantineEnabled()))
+  // TODO(bikineev): Marking an entry in the reservation-table is not a
+  // publishing operation, meaning that the |root| pointer may not be assigned
+  // yet. This can happen as arbitrary pointers may point into a super-page
+  // during its set up. Make sure to check |root| is not null before
+  // dereferencing it.
+  if (UNLIKELY(!root || !root->IsQuarantineEnabled()))
     return 0;
 #endif
 
