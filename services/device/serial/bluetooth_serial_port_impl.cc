@@ -61,6 +61,7 @@ BluetoothSerialPortImpl::~BluetoothSerialPortImpl() {
 }
 
 void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BluetoothDevice* device = bluetooth_adapter_->GetDevice(address_);
   if (!device) {
     std::move(callback).Run(mojo::NullRemote());
@@ -89,6 +90,7 @@ void BluetoothSerialPortImpl::OpenSocket(OpenCallback callback) {
 void BluetoothSerialPortImpl::OnSocketConnected(
     OpenCallback callback,
     scoped_refptr<BluetoothSocket> socket) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(socket);
   bluetooth_socket_ = std::move(socket);
   mojo::PendingRemote<mojom::SerialPort> port =
@@ -102,12 +104,14 @@ void BluetoothSerialPortImpl::OnSocketConnected(
 void BluetoothSerialPortImpl::OnSocketConnectedError(
     OpenCallback callback,
     const std::string& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(mojo::NullRemote());
   delete this;
 }
 
 void BluetoothSerialPortImpl::StartWriting(
     mojo::ScopedDataPipeConsumerHandle consumer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!write_pending_);
 
   if (in_stream_) {
@@ -133,6 +137,7 @@ void BluetoothSerialPortImpl::StartWriting(
 
 void BluetoothSerialPortImpl::StartReading(
     mojo::ScopedDataPipeProducerHandle producer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (out_stream_) {
     mojo::ReportBadMessage("Data pipe producer still open.");
     return;
@@ -157,6 +162,7 @@ void BluetoothSerialPortImpl::StartReading(
 void BluetoothSerialPortImpl::ReadFromSocketAndWriteOut(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (result) {
     case MOJO_RESULT_OK:
       ReadMore();
@@ -177,6 +183,7 @@ void BluetoothSerialPortImpl::ReadFromSocketAndWriteOut(
 }
 
 void BluetoothSerialPortImpl::ReadMore() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out_stream_.is_valid());
 
   void* buffer = nullptr;
@@ -237,6 +244,7 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceive(
     base::span<char> pending_write_buffer,
     int num_bytes_received,
     scoped_refptr<net::IOBuffer> io_buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(num_bytes_received, 0);
   DCHECK(io_buffer->data());
   DCHECK(out_stream_.is_valid());
@@ -269,6 +277,7 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceive(
 void BluetoothSerialPortImpl::OnBluetoothSocketReceiveError(
     BluetoothSocket::ErrorReason error_reason,
     const std::string& error_message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out_stream_.is_valid());
   read_pending_ = false;
   if (client_) {
@@ -295,6 +304,7 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceiveError(
 void BluetoothSerialPortImpl::WriteToSocket(
     MojoResult result,
     const mojo::HandleSignalsState& state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   switch (result) {
     case MOJO_RESULT_OK:
       WriteMore();
@@ -318,6 +328,7 @@ void BluetoothSerialPortImpl::WriteToSocket(
 }
 
 void BluetoothSerialPortImpl::WriteMore() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(in_stream_.is_valid());
 
   const void* buffer = nullptr;
@@ -352,6 +363,7 @@ void BluetoothSerialPortImpl::WriteMore() {
 }
 
 void BluetoothSerialPortImpl::OnBluetoothSocketSend(int num_bytes_sent) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(num_bytes_sent, 0);
   DCHECK(in_stream_.is_valid());
 
@@ -371,6 +383,7 @@ void BluetoothSerialPortImpl::OnBluetoothSocketSend(int num_bytes_sent) {
 
 void BluetoothSerialPortImpl::OnBluetoothSocketSendError(
     const std::string& error_message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(in_stream_.is_valid());
   write_pending_ = false;
   if (client_)
@@ -383,6 +396,7 @@ void BluetoothSerialPortImpl::OnBluetoothSocketSendError(
 }
 
 void BluetoothSerialPortImpl::OnSocketDisconnected(CloseCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run();
   bluetooth_socket_.reset();  // Avoid calling Disconnect() twice.
   delete this;
@@ -390,10 +404,12 @@ void BluetoothSerialPortImpl::OnSocketDisconnected(CloseCallback callback) {
 
 void BluetoothSerialPortImpl::Flush(mojom::SerialPortFlushMode mode,
                                     FlushCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTIMPLEMENTED();
 }
 
 void BluetoothSerialPortImpl::Drain(DrainCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!in_stream_) {
     std::move(callback).Run();
     return;
@@ -404,6 +420,7 @@ void BluetoothSerialPortImpl::Drain(DrainCallback callback) {
 
 void BluetoothSerialPortImpl::GetControlSignals(
     GetControlSignalsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto signals = mojom::SerialPortControlSignals::New();
   std::move(callback).Run(std::move(signals));
 }
@@ -411,17 +428,20 @@ void BluetoothSerialPortImpl::GetControlSignals(
 void BluetoothSerialPortImpl::SetControlSignals(
     mojom::SerialHostControlSignalsPtr signals,
     SetControlSignalsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(true);
 }
 
 void BluetoothSerialPortImpl::ConfigurePort(
     mojom::SerialConnectionOptionsPtr options,
     ConfigurePortCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   options_ = std::move(options);
   std::move(callback).Run(true);
 }
 
 void BluetoothSerialPortImpl::GetPortInfo(GetPortInfoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto info = mojom::SerialConnectionInfo::New(
       /*bitrate=*/options_->bitrate, /*data_bits=*/options_->data_bits,
       /*parity_bit=*/options_->parity_bit, /*stop_bits=*/options_->stop_bits,
@@ -430,6 +450,7 @@ void BluetoothSerialPortImpl::GetPortInfo(GetPortInfoCallback callback) {
 }
 
 void BluetoothSerialPortImpl::Close(CloseCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bluetooth_socket_->Disconnect(
       base::BindOnce(&BluetoothSerialPortImpl::OnSocketDisconnected,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

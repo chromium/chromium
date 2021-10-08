@@ -5,10 +5,10 @@
 #ifndef SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_PORT_IMPL_H_
 #define SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_PORT_IMPL_H_
 
+#include "base/sequence_checker.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/device/public/mojom/serial.mojom.h"
@@ -114,6 +114,8 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   scoped_refptr<net::IOBuffer> receive_buffer_;
 
   mojom::SerialConnectionOptionsPtr options_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BluetoothSerialPortImpl> weak_ptr_factory_{this};
 };
