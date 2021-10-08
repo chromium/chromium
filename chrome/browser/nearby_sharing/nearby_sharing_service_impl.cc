@@ -2110,6 +2110,18 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
 }
 
 void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
+  bool is_hardware_offloading_supported =
+      IsBluetoothPresent() &&
+      FastInitiationScanner::Factory::IsHardwareSupportAvailable(
+          bluetooth_adapter_.get());
+
+  // Hardware offloading support is computed when the bluetooth adapter becomes
+  // available. We set the hardware supported state on |settings_| to notify the
+  // UI of state changes. InvalidateFastInitiationScanning gets triggered on
+  // adapter change events.
+  settings_.SetIsFastInitiationHardwareSupported(
+      is_hardware_offloading_supported);
+
   // Nothing to do if we're shutting down the profile.
   if (!profile_)
     return;
@@ -2183,8 +2195,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
     return;
   }
 
-  if (!FastInitiationScanner::Factory::IsHardwareSupportAvailable(
-          bluetooth_adapter_.get())) {
+  if (!is_hardware_offloading_supported) {
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping background scanning because hardware "
                        "support is not available or not ready.";

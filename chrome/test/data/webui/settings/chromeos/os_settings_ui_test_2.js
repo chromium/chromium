@@ -5,12 +5,14 @@
 // clang-format off
 // #import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {CrSettingsPrefs, Router, routes, setUserActionRecorderForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {CrSettingsPrefs, Router, routes, setUserActionRecorderForTesting, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeUserActionRecorder} from './fake_user_action_recorder.m.js';
 // #import {eventToPromise} from '../../../test_util.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+// #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
 // clang-format on
 
 /**
@@ -25,9 +27,21 @@ function isVisible(element) {
 suite('os-settings-ui', () => {
   let ui;
   let userActionRecorder;
+  /** @type {!nearby_share.FakeContactManager} */
+  let fakeContactManager = null;
+  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  let fakeSettings = null;
 
   setup(async () => {
     PolymerTest.clearBody();
+
+    fakeContactManager = new nearby_share.FakeContactManager();
+    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager.setupContactRecords();
+
+    fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
+
     ui = document.createElement('os-settings-ui');
     document.body.appendChild(ui);
     await CrSettingsPrefs.initialized;

@@ -636,6 +636,25 @@ suite('Multidevice', function() {
     assertFalse(router.getQueryParameters().has('onboarding'));
   });
 
+  test('Settings mojo changes propagate to settings property', async () => {
+    // Allow initial settings to be loaded.
+    await flushAsync();
+
+    const newName = 'NEW NAME';
+    assertNotEquals(newName, multidevicePage.get('settings.deviceName'));
+
+    await fakeSettings.setDeviceName(newName);
+    await flushAsync();
+    assertEquals(newName, multidevicePage.get('settings.deviceName'));
+
+    const newEnabledState = !multidevicePage.get('settings.enabled');
+    assertNotEquals(newEnabledState, multidevicePage.get('settings.enabled'));
+
+    await fakeSettings.setEnabled(newEnabledState);
+    await flushAsync();
+    assertEquals(newEnabledState, multidevicePage.get('settings.enabled'));
+  });
+
   suite('Background Scanning Enabled', function() {
     suiteSetup(function() {
       loadTimeData.overrideValues({
@@ -646,6 +665,13 @@ suite('Multidevice', function() {
     test(
         'Nearby share sub page arrow is visible before onboarding',
         async () => {
+          // Arrow only visible if background scanning feature flag is enabled
+          // and hardware offloading is supported.
+          await flushAsync();
+          setNearbyShareDisallowedByPolicy(false);
+          multidevicePage.set(
+              'settings.isFastInitiationHardwareSupported', true);
+
           setNearbyShareDisallowedByPolicy(false);
           assertTrue(test_util.isChildVisible(
               multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
@@ -661,10 +687,33 @@ suite('Multidevice', function() {
               /*checkLightDom=*/ false));
         });
 
+    test('No Background Scanning hardware support', async () => {
+      // Ensure initial nearby settings values are set before overriding.
+      await flushAsync();
+      setNearbyShareDisallowedByPolicy(false);
+      multidevicePage.set('settings.isFastInitiationHardwareSupported', false);
+      await flushAsync();
+
+      assertTrue(test_util.isChildVisible(
+          multidevicePage, '#nearbySetUp', /*checkLightDom=*/ false));
+      assertFalse(test_util.isChildVisible(
+          multidevicePage, '#nearbyShareSubpageArrow',
+          /*checkLightDom=*/ false));
+
+      // Clicking on Nearby Subpage row should initiate onboarding.
+      const router = settings.Router.getInstance();
+      assertTrue(!!multidevicePage.$$('#nearbyLinkWrapper'));
+      multidevicePage.$$('#nearbyLinkWrapper').click();
+      await flushAsync();
+      assertEquals(settings.routes.NEARBY_SHARE, router.getCurrentRoute());
+      assertTrue(router.getQueryParameters().has('onboarding'));
+    });
+
     test(
         'Clicking nearby subpage before onboarding enters subpage',
         async () => {
           setNearbyShareDisallowedByPolicy(false);
+          await flushAsync();
 
           const router = settings.Router.getInstance();
           assertTrue(!!multidevicePage.$$('#nearbyLinkWrapper'));

@@ -18,6 +18,7 @@
 <link rel="import" href="../prefs_behavior.html">
 <link rel="import" href="../../settings_shared_css.html">
 <link rel="import" href="../nearby_share_page/nearby_share_subpage.html">
+<link rel="import" href="../../shared/nearby_share_settings_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="multidevice_browser_proxy.html">
@@ -209,7 +210,8 @@
       <template is="dom-if" if="[[isNearbyShareSupported_]]" restamp>
         <template is="dom-if" route-path="/multidevice/nearbyshare" restamp>
           <settings-subpage page-title="$i18n{nearbyShareTitle}">
-            <settings-nearby-share-subpage prefs="{{prefs}}">
+            <settings-nearby-share-subpage settings="{{settings}}"
+                prefs="{{prefs}}">
             </settings-nearby-share-subpage>
           </settings-subpage>
         </template>

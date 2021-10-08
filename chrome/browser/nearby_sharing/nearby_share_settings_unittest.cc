@@ -46,6 +46,9 @@ class FakeNearbyShareSettingsObserver
       nearby_share::mojom::FastInitiationNotificationState state) override {
     this->fast_initiation_notification_state = state;
   }
+  void OnIsFastInitiationHardwareSupportedChanged(bool is_supported) override {
+    this->is_fast_initiation_notification_hardware_supported = is_supported;
+  }
   void OnDeviceNameChanged(const std::string& device_name) override {
     this->device_name = device_name;
   }
@@ -68,6 +71,7 @@ class FakeNearbyShareSettingsObserver
   nearby_share::mojom::FastInitiationNotificationState
       fast_initiation_notification_state =
           nearby_share::mojom::FastInitiationNotificationState::kEnabled;
+  bool is_fast_initiation_notification_hardware_supported = false;
   bool is_onboarding_complete = false;
   std::string device_name = "uncalled";
   nearby_share::mojom::DataUsage data_usage =
@@ -232,6 +236,18 @@ TEST_F(NearbyShareSettingsTest, GetAndSetIsOnboardingComplete) {
   bool is_complete = false;
   settings_waiter()->IsOnboardingComplete(&is_complete);
   EXPECT_TRUE(is_complete);
+}
+
+TEST_F(NearbyShareSettingsTest, GetAndSetIsFastInitiationHardwareSupported) {
+  EXPECT_FALSE(observer_.is_fast_initiation_notification_hardware_supported);
+  settings()->SetIsFastInitiationHardwareSupported(true);
+
+  FlushMojoMessages();
+  EXPECT_TRUE(observer_.is_fast_initiation_notification_hardware_supported);
+
+  bool is_supported = false;
+  settings_waiter()->GetIsFastInitiationHardwareSupported(&is_supported);
+  EXPECT_TRUE(is_supported);
 }
 
 TEST_F(NearbyShareSettingsTest, ValidateDeviceName) {

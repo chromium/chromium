@@ -8,10 +8,12 @@
 
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {CrSettingsPrefs, Router, routes, setNearbyShareSettingsForTesting, setContactManagerForTesting} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 // #import {flushTasks} from 'chrome://test/test_util.js';
+// #import {FakeNearbyShareSettings} from '../../nearby_share/shared/fake_nearby_share_settings.m.js';
+// #import {FakeContactManager} from '../../nearby_share/shared/fake_nearby_contact_manager.m.js';
 // clang-format on
 
 suite('OsSettingsPageTests', function() {
@@ -21,10 +23,22 @@ suite('OsSettingsPageTests', function() {
   /** @type {?SettingsPrefsElement} */
   let prefElement = null;
 
+  /** @type {!nearby_share.FakeContactManager} */
+  let fakeContactManager = null;
+  /** @type {!nearby_share.FakeNearbyShareSettings} */
+  let fakeSettings = null;
+
   suiteSetup(async function() {
     loadTimeData.overrideValues({
       enableBluetoothRevamp: false,
     });
+
+    fakeContactManager = new nearby_share.FakeContactManager();
+    nearby_share.setContactManagerForTesting(fakeContactManager);
+    fakeContactManager.setupContactRecords();
+
+    fakeSettings = new nearby_share.FakeNearbyShareSettings();
+    nearby_share.setNearbyShareSettingsForTesting(fakeSettings);
 
     settings.Router.getInstance().navigateTo(settings.routes.BASIC);
     PolymerTest.clearBody();

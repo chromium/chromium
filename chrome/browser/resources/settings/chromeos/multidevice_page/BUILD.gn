@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../../../nearby_share/shared/nearby_shared.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
@@ -94,6 +95,7 @@ js_library("multidevice_page.m") {
     "..:os_route.m",
     "..:prefs_behavior",
     "../..:router",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/js:assert.m",
@@ -275,6 +277,21 @@ group("polymer3_elements") {
   ]
 }
 
+nearby_shared_auto_imports_closure_fix = [
+  # TODO(crbug.com/1121865): polymer.py normalizes the relative paths to shared
+  # nearby resources like ../../shared/* against
+  # c/b/r/settings/chromeos/nearby_share_page
+  # generating paths with the prefix c/b/r/settings/shared/*. It uses the
+  # normalized path to look up relative references for auto import. In order to
+  # get the auto import to match, we need to use this path prefix even though it
+  # does not exist on disk there. The actual resources are in
+  # c/b/r/nearby_share/shared and are re-hosted in the chrome://os-settings
+  # webui at the chrome://os-settings/shared/* prefix.
+  "chrome/browser/resources/settings/shared/nearby_contact_manager.html|getContactManager",
+  "chrome/browser/resources/settings/shared/nearby_share_settings.html|getNearbyShareSettings",
+  "chrome/browser/resources/settings/shared/nearby_share_settings_behavior.html|NearbyShareSettingsBehavior,NearbySettings",
+]
+
 polymer_modulizer("multidevice_feature_item") {
   js_file = "multidevice_feature_item.js"
   html_file = "multidevice_feature_item.html"
@@ -299,9 +316,10 @@ polymer_modulizer("multidevice_page") {
   html_file = "multidevice_page.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites
+  namespace_rewrites =
+      os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
   auto_imports =
-      os_settings_auto_imports +
+      os_settings_auto_imports + nearby_shared_auto_imports_closure_fix +
       [ "ui/webui/resources/html/polymer.html|Polymer,html,beforeNextRender" ]
 }
 

@@ -286,7 +286,14 @@ os_settings_auto_imports = settings_auto_imports +
                              "third_party/polymer/v1_0/components-chromium/iron-resizable-behavior/iron-resizable-behavior.html|IronResizableBehavior",
                            ]
 
-os_settings_closure_flags = settings_closure_flags
+# TODO(crbug.com/1121865): browser_resolver_prefix_replacements allows path
+# from ../../shared/* to resolve to ../../../nearby_share/shared/* for closure
+# purposes.
+os_settings_closure_flags = settings_closure_flags + [
+                              "js_module_root=../../chrome/browser/resources/nearby_share",
+                              "js_module_root=./gen/chrome/browser/resources/nearby_share",
+                              "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"",
+                            ]
 
 os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/ambient_mode_page/album_item.html",

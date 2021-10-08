@@ -66,6 +66,8 @@ interface NearbyShareSettingsObserver {
   OnEnabledChanged(bool enabled);
   // Called when Fast Initiation notification feature state changes.
   OnFastInitiationNotificationStateChanged(FastInitiationNotificationState state);
+  // Called when the fast initiation hardware offloading support state changes.
+  OnIsFastInitiationHardwareSupportedChanged(bool is_supported);
   // Called when the device name changes.
   OnDeviceNameChanged(string device_name);
   // Called when data usage changes.
@@ -96,6 +98,9 @@ interface NearbyShareSettings {
   GetFastInitiationNotificationState() => (FastInitiationNotificationState state);
   // Set the feature state for Fast Initiation notification.
   SetFastInitiationNotificationState(FastInitiationNotificationState state);
+  // Get the supported state for fast initiation hardware offloading
+  // support.
+  GetIsFastInitiationHardwareSupported() => (bool supported);
 
   // Get the device name shown to a sender when this device is available as
   // a share target. |device_name| is the new device name.

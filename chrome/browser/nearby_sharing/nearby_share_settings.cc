@@ -69,6 +69,19 @@ NearbyShareSettings::GetFastInitiationNotificationState() const {
       prefs::kNearbySharingFastInitiationNotificationStatePrefName));
 }
 
+void NearbyShareSettings::SetIsFastInitiationHardwareSupported(
+    bool is_supported) {
+  // If new value is same as old value don't notify observers.
+  if (is_fast_initiation_hardware_supported_ == is_supported) {
+    return;
+  }
+
+  is_fast_initiation_hardware_supported_ = is_supported;
+  for (auto& remote : observers_set_) {
+    remote->OnIsFastInitiationHardwareSupportedChanged(is_supported);
+  }
+}
+
 std::string NearbyShareSettings::GetDeviceName() const {
   return local_device_data_manager_->GetDeviceName();
 }
@@ -119,6 +132,11 @@ void NearbyShareSettings::GetEnabled(base::OnceCallback<void(bool)> callback) {
 void NearbyShareSettings::GetFastInitiationNotificationState(
     base::OnceCallback<void(FastInitiationNotificationState)> callback) {
   std::move(callback).Run(GetFastInitiationNotificationState());
+}
+
+void NearbyShareSettings::GetIsFastInitiationHardwareSupported(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(is_fast_initiation_hardware_supported_);
 }
 
 void NearbyShareSettings::SetEnabled(bool enabled) {

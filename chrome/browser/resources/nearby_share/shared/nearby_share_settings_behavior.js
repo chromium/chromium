@@ -16,6 +16,7 @@ cr.define('nearby_share', function() {
    *            enabled:boolean,
    *            fastInitiationNotificationState:
    *                nearbyShare.mojom.FastInitiationNotificationState,
+   *            isFastInitiationHardwareSupported:boolean,
    *            deviceName:string,
    *            dataUsage:nearbyShare.mojom.DataUsage,
    *            visibility:nearbyShare.mojom.Visibility,
@@ -60,6 +61,7 @@ cr.define('nearby_share', function() {
             this.nearbyShareSettings_.getAllowedContacts(),
             this.nearbyShareSettings_.isOnboardingComplete(),
             this.nearbyShareSettings_.getFastInitiationNotificationState(),
+            this.nearbyShareSettings_.getIsFastInitiationHardwareSupported(),
           ])
           .then((results) => {
             this.set('settings.enabled', results[0].enabled);
@@ -70,6 +72,9 @@ cr.define('nearby_share', function() {
             this.set('settings.isOnboardingComplete', results[5].completed);
             this.set(
                 'settings.fastInitiationNotificationState', results[6].state);
+            this.set(
+                'settings.isFastInitiationHardwareSupported',
+                results[7].supported);
             this.onSettingsRetrieved();
           });
     },
@@ -89,6 +94,13 @@ cr.define('nearby_share', function() {
      */
     onEnabledChanged(enabled) {
       this.set('settings.enabled', enabled);
+    },
+
+    /**
+     * @param {!boolean} supported
+     */
+    onIsFastInitiationHardwareSupportedChanged(supported) {
+      this.set('settings.isFastInitiationHardwareSupported', supported);
     },
 
     /**

@@ -6,11 +6,9 @@ Polymer({
   is: 'settings-multidevice-page',
 
   behaviors: [
-    DeepLinkingBehavior,
-    settings.RouteObserverBehavior,
-    MultiDeviceFeatureBehavior,
-    WebUIListenerBehavior,
-    PrefsBehavior,
+    DeepLinkingBehavior, settings.RouteObserverBehavior,
+    MultiDeviceFeatureBehavior, WebUIListenerBehavior, PrefsBehavior,
+    nearby_share.NearbyShareSettingsBehavior
   ],
 
   properties: {
@@ -84,8 +82,8 @@ Polymer({
     /** @private */
     shouldEnableNearbyShareBackgroundScanningRevamp_: {
       type: Boolean,
-      value: () =>
-          loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled')
+      computed: `computeShouldEnableNearbyShareBackgroundScanningRevamp_(
+          settings.isFastInitiationHardwareSupported)`,
     },
 
     /**
@@ -606,5 +604,16 @@ Polymer({
     return (shouldEnableNearbyShareBackgroundScanningRevamp ||
             isNearbySharingEnabled) &&
         !this.isNearbyShareDisallowedByPolicy_();
-  }
+  },
+
+  /**
+   * @param {boolean} is_hardware_supported
+   * @return {boolean}
+   * @private
+   */
+  computeShouldEnableNearbyShareBackgroundScanningRevamp_(
+      is_hardware_supported) {
+    return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
+        is_hardware_supported;
+  },
 });

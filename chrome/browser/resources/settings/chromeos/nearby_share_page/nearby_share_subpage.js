@@ -21,7 +21,6 @@ Polymer({
     I18nBehavior,
     PrefsBehavior,
     settings.RouteObserverBehavior,
-    nearby_share.NearbyShareSettingsBehavior,
   ],
 
   properties: {
@@ -39,6 +38,13 @@ Polymer({
     profileLabel_: {
       type: String,
       value: '',
+    },
+
+    /** @type {nearby_share.NearbySettings} */
+    settings: {
+      type: Object,
+      notify: true,
+      value: {},
     },
 
     /** @private {boolean} */
@@ -95,12 +101,17 @@ Polymer({
     /** @private */
     shouldShowFastInititationNotificationToggle_: {
       type: Boolean,
-      value: () =>
-          loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled')
+      computed: `computeShouldShowFastInititationNotificationToggle_(
+              settings.isFastInitiationHardwareSupported)`,
     },
   },
 
-  listeners: {'onboarding-cancelled': 'onOnboardingCancelled_'},
+  listeners: {
+    'onboarding-cancelled': 'onOnboardingCancelled_',
+    'settings-loaded': 'onSettingsLoaded_'
+  },
+
+  observers: ['enabledChange_(settings.enabled)'],
 
   /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
   receiveObserver_: null,
@@ -124,16 +135,13 @@ Polymer({
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
   },
 
-  /**
-   * Called when component is attached and all settings values have been
-   * retrieved.
-   */
-  onSettingsRetrieved() {
-    if (this.settings.enabled) {
+  /** @private */
+  enabledChange_(newValue, oldValue) {
+    if (oldValue === undefined && newValue) {
       // Trigger a contact sync whenever the Nearby subpage is opened and
-      // onboarding is complete to improve consistency. This should help avoid
-      // scenarios where a share is attempted and contacts are stale on the
-      // receiver.
+      // nearby is enabled complete to improve consistency. This should help
+      // avoid scenarios where a share is attempted and contacts are stale on
+      // the receiver.
       nearby_share.getContactManager().downloadContacts();
     }
   },
@@ -477,4 +485,15 @@ Polymer({
     Polymer.dom.flush();
     this.$$('#receiveDialog').showOnboarding();
   },
+
+  /**
+   * @param {boolean} is_hardware_supported
+   * @return {boolean}
+   * @private
+   */
+  computeShouldShowFastInititationNotificationToggle_(is_hardware_supported) {
+    return loadTimeData.getBoolean('isNearbyShareBackgroundScanningEnabled') &&
+        is_hardware_supported;
+  },
+
 });

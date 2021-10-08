@@ -18,6 +18,8 @@ cr.define('nearby_share', function() {
       /** @private {!nearbyShare.mojom.FastInitiationNotificationState} */
       this.fastInitiationNotificationState_ =
           nearbyShare.mojom.FastInitiationNotificationState.kEnabled;
+      /** @private {!boolean} */
+      this.isFastInitiationHardwareSupported_ = true;
       /** @private {!string} */
       this.deviceName_ = 'testDevice';
       /** @private {!nearbyShare.mojom.DataUsage} */
@@ -62,6 +64,13 @@ cr.define('nearby_share', function() {
      */
     async getEnabled() {
       return {enabled: this.enabled_};
+    }
+
+    /**
+     * @return {!Promise<{supported: !boolean}>}
+     */
+    async getIsFastInitiationHardwareSupported() {
+      return {supported: this.isFastInitiationHardwareSupported_};
     }
 
     /**
@@ -192,10 +201,45 @@ cr.define('nearby_share', function() {
     }
 
     /**
+     * @param { !boolean } supported
+     */
+    setIsFastInitiationHardwareSupportedForTest(supported) {
+      this.isFastInitiationHardwareSupported_ = supported;
+    }
+
+    /**
      * @param { !boolean } completed
      */
     setIsOnboardingCompleteForTest(completed) {
       this.isOnboardingComplete_ = completed;
+    }
+
+    getEnabledForTest() {
+      return this.enabled_;
+    }
+
+    getIsFastInitiationHardwareSupportedTest() {
+      return this.isFastInitiationHardwareSupported_;
+    }
+
+    getFastInitiationNotificationStateTest() {
+      return this.fastInitiationNotificationState_;
+    }
+
+    getDeviceNameForTest() {
+      return this.deviceName_;
+    }
+
+    getDataUsageForTest() {
+      return this.dataUsage_;
+    }
+
+    getVisibilityForTest() {
+      return this.visibility_;
+    }
+
+    getAllowedContactsForTest() {
+      return this.allowedContacts_;
     }
   }
   // #cr_define_end
