@@ -22,9 +22,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="App">
-  <variant name="Contacts" summary="Contacts"/>
-  <variant name="FileManager" summary="FileManager"/>
-  <variant name="PlayStore" summary="PlayStore"/>
+  <variant name="Contacts" summary="Contacts">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name="FileManager" summary="FileManager">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
+  <variant name="PlayStore" summary="PlayStore">
+    <obsolete>
+      Removed October 2021.
+    </obsolete>
+  </variant>
 </variants>
 
 <variants name="AppType">
@@ -2450,6 +2462,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Apps.PreviousReadinessStatus.{App}" enum="AppReadiness"
     expires_after="2021-12-31">
+  <obsolete>
+    Removed October 2021.
+  </obsolete>
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>

@@ -25,7 +25,6 @@
 #include "chrome/browser/metrics/usertype_by_devicetype_metrics_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
@@ -62,7 +61,6 @@ constexpr char kAppsRunningPercentageHistogramPrefix[] =
 constexpr char kAppsActivatedCountHistogramPrefix[] = "Apps.ActivatedCount.";
 constexpr char kAppsUsageTimeHistogramPrefix[] = "Apps.UsageTime.";
 constexpr char kAppsUsageTimeHistogramPrefixV2[] = "Apps.UsageTimeV2.";
-constexpr char kAppPreviousReadinessStatus[] = "Apps.PreviousReadinessStatus.";
 
 constexpr char kInstallReasonUnknownHistogram[] = "Unknown";
 constexpr char kInstallReasonSystemHistogram[] = "System";
@@ -800,12 +798,6 @@ void AppPlatformMetrics::OnAppUpdate(const apps::AppUpdate& update) {
     return;
   }
 
-  if (update.AppId() == extension_misc::kFilesManagerAppId ||
-      update.AppId() == arc::kPlayStoreAppId ||
-      update.AppId() == arc::kAndroidContactsAppId) {
-    RecordAppReadinessStatus(update);
-  }
-
   InstallTime install_time =
       app_registry_cache_.IsAppTypeInitialized(update.AppType())
           ? InstallTime::kRunning
@@ -1291,35 +1283,6 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(const std::string& app_id) {
       return ukm::kInvalidSourceId;
   }
   return source_id;
-}
-
-void AppPlatformMetrics::RecordAppReadinessStatus(
-    const apps::AppUpdate& update) {
-  std::string histogram_name = kAppPreviousReadinessStatus;
-  auto readiness = update.PriorReadiness();
-  const std::set<apps::mojom::AppType>& initialized_app_types =
-      app_registry_cache_.GetInitializedAppTypes();
-  if (update.AppId() == extension_misc::kFilesManagerAppId) {
-    histogram_name += "FileManager";
-    if (!base::Contains(initialized_app_types,
-                        apps::mojom::AppType::kExtension)) {
-      readiness = apps::mojom::Readiness::kReady;
-    }
-  } else if (update.AppId() == arc::kPlayStoreAppId) {
-    histogram_name += "PlayStore";
-    if (!base::Contains(initialized_app_types, apps::mojom::AppType::kArc)) {
-      readiness = apps::mojom::Readiness::kReady;
-    }
-  } else if (update.AppId() == arc::kAndroidContactsAppId) {
-    histogram_name += "Contacts";
-    if (!base::Contains(initialized_app_types, apps::mojom::AppType::kArc)) {
-      readiness = apps::mojom::Readiness::kReady;
-    }
-  } else {
-    return;
-  }
-
-  base::UmaHistogramEnumeration(histogram_name, readiness);
 }
 
 ukm::SourceId AppPlatformMetrics::GetSourceIdForCrostini(
