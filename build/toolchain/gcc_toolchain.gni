@@ -729,20 +729,24 @@ template("gcc_toolchain") {
 # actually just be doing a native compile. The invoker can optionally override
 # use_gold too.
 template("clang_toolchain") {
-  if (defined(invoker.toolprefix)) {
-    toolprefix = invoker.toolprefix
-  } else {
-    toolprefix = ""
-  }
-
   gcc_toolchain(target_name) {
     prefix = rebase_path("$clang_base_path/bin", root_build_dir)
     cc = "$prefix/clang"
     cxx = "$prefix/clang++"
     ld = cxx
-    readelf = "${toolprefix}readelf"
     ar = "${prefix}/llvm-ar"
     nm = "${prefix}/llvm-nm"
+
+    if (defined(invoker.readelf)) {
+      readelf = invoker.readelf
+    } else {
+      if (defined(invoker.toolprefix)) {
+        toolprefix = invoker.toolprefix
+      } else {
+        toolprefix = ""
+      }
+      readelf = "${toolprefix}readelf"
+    }
 
     forward_variables_from(invoker,
                            [
