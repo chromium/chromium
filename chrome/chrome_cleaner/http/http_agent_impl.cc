@@ -520,7 +520,7 @@ void GetOSAndCPU(UserAgent* user_agent) {
   user_agent->set_os_version(os_major_version, os_minor_version);
 
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  if (os_info->wow64_status() == base::win::OSInfo::WOW64_ENABLED) {
+  if (os_info->IsWowX86OnAMD64()) {
     user_agent->set_architecture(UserAgent::WOW64);
   } else {
     base::win::OSInfo::WindowsArchitecture windows_architecture =
