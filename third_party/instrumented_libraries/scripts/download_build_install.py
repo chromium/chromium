@@ -57,7 +57,6 @@ class InstrumentedPackageBuilder(object):
     self._patches = [real_path(patch) for patch in (args.patch or [])]
     self._pre_build = \
         real_path(args.pre_build) if args.pre_build else None
-    self._sanitizer = args.sanitizer
     self._verbose = args.verbose
     self._clobber = clobber
     self._working_dir = os.path.join(
@@ -65,7 +64,7 @@ class InstrumentedPackageBuilder(object):
 
     product_dir = real_path(args.product_dir)
     self._destdir = os.path.join(
-        product_dir, 'instrumented_libraries', self._sanitizer)
+        product_dir, 'instrumented_libraries')
     self._source_archives_dir = os.path.join(
         product_dir, 'instrumented_libraries', 'sources', self._package)
 
@@ -94,14 +93,6 @@ class InstrumentedPackageBuilder(object):
 
     # libappindicator1 needs this.
     self._build_env['CSC'] = '/usr/bin/mono-csc'
-
-    self.set_asan_options()
-
-  def set_asan_options(self):
-    if self._sanitizer == 'asan':
-      # Do not report leaks during the build process.
-      self._build_env['ASAN_OPTIONS'] = \
-          '%s:detect_leaks=0' % self._build_env.get('ASAN_OPTIONS', '')
 
   def shell_call(self, command, env=None, cwd=None, ignore_ret_code=False):
     """Wrapper around subprocess.Popen().
@@ -291,8 +282,6 @@ class DebianBuilder(InstrumentedPackageBuilder):
     self._build_env['DEB_LDFLAGS_APPEND'] = self._ldflags
     self._build_env['DEB_BUILD_OPTIONS'] = \
       'nocheck notest nodoc nostrip parallel=%d' % os.cpu_count()
-
-    self.set_asan_options()
 
   def build_and_install(self):
     self.build_debian_packages()
@@ -499,8 +488,6 @@ def main():
   parser.add_argument('--extra-configure-flags', default='')
   parser.add_argument('--cflags', default='')
   parser.add_argument('--ldflags', default='')
-  parser.add_argument('-s', '--sanitizer', required=True,
-                               choices=['asan', 'msan', 'tsan'])
   parser.add_argument('-v', '--verbose', action='store_true')
   parser.add_argument('--cc')
   parser.add_argument('--cxx')

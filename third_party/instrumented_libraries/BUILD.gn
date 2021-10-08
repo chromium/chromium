@@ -18,14 +18,6 @@ group("deps") {
   }
 }
 
-if (is_msan) {
-  sanitizer_type = "msan"
-} else if (is_asan) {
-  sanitizer_type = "asan"
-} else if (is_tsan) {
-  sanitizer_type = "tsan"
-}
-
 if (prebuilt_instrumented_libraries_available) {
   group("prebuilt") {
     visibility = [ ":deps" ]
@@ -34,12 +26,10 @@ if (prebuilt_instrumented_libraries_available) {
     data_deps = [ ":extract_prebuilt_instrumented_libraries" ]
   }
 
-  if (is_msan) {
-    if (msan_track_origins == 0) {
-      archive_prefix = "msan-no-origins"
-    } else if (msan_track_origins == 2) {
-      archive_prefix = "msan-chained-origins"
-    }
+  if (msan_track_origins == 0) {
+    archive_prefix = "msan-no-origins"
+  } else if (msan_track_origins == 2) {
+    archive_prefix = "msan-chained-origins"
   }
 
   # Note: This requires a clobber whenever Ubuntu version changes.
@@ -62,7 +52,7 @@ if (prebuilt_instrumented_libraries_available) {
     ldflags = [
       # Add a relative RPATH entry to Chromium binaries. This puts instrumented
       # DSOs before system-installed versions in library search path.
-      "-Wl,-R,\$ORIGIN/instrumented_libraries_prebuilt/$sanitizer_type/lib",
+      "-Wl,-R,\$ORIGIN/instrumented_libraries_prebuilt/lib",
       "-Wl,-z,origin",
 
       # Add some padding to allow RPATHs to be modified later.
@@ -87,7 +77,9 @@ if (use_locally_built_instrumented_libraries) {
       ":libavahi-client3",
       ":libcairo2",
       ":libcap2",
+      ":libcgmanager0",
       ":libcredentialkit_pkcs11",
+      ":libcups2",
       ":libcurl3-gnutls",
       ":libdbus-1-3",
       ":libdbus-glib-1-2",
@@ -100,6 +92,7 @@ if (use_locally_built_instrumented_libraries) {
       ":libgdk-pixbuf2.0-0",
       ":libglib2.0-0",
       ":libgnome-keyring0",
+      ":libgnutls30",
       ":libgpg-error0",
       ":libgtk-3-0",
       ":libidn11",
@@ -108,11 +101,14 @@ if (use_locally_built_instrumented_libraries) {
       ":libjasper1",
       ":libjpeg-turbo8",
       ":libldap-2.4-2",
+      ":libnih-dbus1",
+      ":libnih1",
       ":libnspr4",
       ":libp11-kit0",
       ":libpci3",
       ":libpcre3",
       ":libpixman-1-0",
+      ":libpng12-0",
       ":librtmp1",
       ":libsasl2-2",
       ":libsecret",
@@ -142,26 +138,14 @@ if (use_locally_built_instrumented_libraries) {
       ":pulseaudio",
       ":zlib1g",
     ]
-    if (is_msan) {
-      deps += [
-        ":libcgmanager0",
-        ":libcups2",
-        ":libgnutls30",
-        ":libnih-dbus1",
-        ":libnih1",
-      ]
-    }
-    if (!is_tsan) {
-      deps += [ ":libpng12-0" ]
-    }
-    data = [ "${root_out_dir}/instrumented_libraries/${sanitizer_type}/lib" ]
+    data = [ "${root_out_dir}/instrumented_libraries/lib" ]
   }
 
   config("locally_built_ldflags") {
     ldflags = [
       # Add a relative RPATH entry to Chromium binaries. This puts instrumented
       # DSOs before system-installed versions in library search path.
-      "-Wl,-R,\$ORIGIN/instrumented_libraries/${sanitizer_type}/lib",
+      "-Wl,-R,\$ORIGIN/instrumented_libraries/lib",
       "-Wl,-z,origin",
 
       # Add some padding to allow RPATHs to be modified later.
@@ -190,21 +174,11 @@ if (use_locally_built_instrumented_libraries) {
         "-w",
         "-U_FORTIFY_SOURCE",
         "-fno-omit-frame-pointer",
+
+        "-fsanitize=memory",
+        "-fsanitize-memory-track-origins=${msan_track_origins}",
       ]
-      package_ldflags = []
-      if (is_asan) {
-        package_cflags += [ "-fsanitize=address" ]
-        package_ldflags = [ "-fsanitize=address" ]
-      } else if (is_msan) {
-        package_cflags += [
-          "-fsanitize=memory",
-          "-fsanitize-memory-track-origins=${msan_track_origins}",
-        ]
-        package_ldflags = [ "-fsanitize=memory" ]
-      } else if (is_tsan) {
-        package_cflags += [ "-fsanitize=thread" ]
-        package_ldflags = [ "-fsanitize=thread" ]
-      }
+      package_ldflags = [ "-fsanitize=memory" ]
       if (defined(invoker.package_cflags)) {
         package_cflags += invoker.package_cflags
       }
@@ -226,9 +200,8 @@ if (use_locally_built_instrumented_libraries) {
         "--product-dir=${product_dir}",
         "--cflags=${package_cflags}",
         "--ldflags=${package_ldflags}",
-        "--sanitizer=${sanitizer_type}",
       ]
-      outputs = [ "${root_out_dir}/instrumented_libraries/${sanitizer_type}/${target_name}.txt" ]
+      outputs = [ "${root_out_dir}/instrumented_libraries/${target_name}.txt" ]
       inputs = []
       if (defined(invoker.pre_build)) {
         inputs += [ invoker.pre_build ]
@@ -240,21 +213,9 @@ if (use_locally_built_instrumented_libraries) {
           args += [ "--patch=${patch}" ]
         }
       }
-      if (defined(invoker.asan_blacklist)) {
-        if (is_asan) {
-          inputs += [ invoker.asan_blacklist ]
-          args += [ "--sanitizer-blacklist=${invoker.asan_blacklist}" ]
-        } else {
-          assert(invoker.asan_blacklist != "", "")
-        }
-      }
       if (defined(invoker.msan_blacklist)) {
-        if (is_msan) {
-          inputs += [ invoker.msan_blacklist ]
-          args += [ "--sanitizer-blacklist=${invoker.msan_blacklist}" ]
-        } else {
-          assert(invoker.msan_blacklist != "", "")
-        }
+        inputs += [ invoker.msan_blacklist ]
+        args += [ "--sanitizer-blacklist=${invoker.msan_blacklist}" ]
       }
 
       if (defined(invoker.extra_configure_flags)) {
@@ -551,7 +512,6 @@ if (use_locally_built_instrumented_libraries) {
       # PCRE does not support Unicode properties or UTF-8.
       "--with-pcre=internal",
     ]
-    asan_blacklist = "blacklists/asan/libglib2.0-0.txt"
     msan_blacklist = "blacklists/msan/libglib2.0-0.txt"
     pre_build = "scripts/pre-build/autogen.sh"
   }
@@ -576,12 +536,11 @@ if (use_locally_built_instrumented_libraries) {
       "--disable-guile",
       "--with-libgcrypt",
       "--with-packager=Debian",
-    ]
-    if (is_msan) {
+
       # MSAN is not compatible with instructions such as CPUID.
       # https://github.com/google/oss-fuzz/issues/578
-      extra_configure_flags += [ "--disable-hardware-acceleration" ]
-    }
+      "--disable-hardware-acceleration",
+    ]
     patches = [
       # Make sure to use the memset/memcmp provided by MSAN, not the
       # gnutls-provided ones.

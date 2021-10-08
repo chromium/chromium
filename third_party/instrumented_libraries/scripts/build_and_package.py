@@ -21,8 +21,6 @@ BUILD_TYPES = {
         'is_msan = true',
         'msan_track_origins = 2',
     ],
-    'tsan': ['is_tsan = true'],
-    'asan': ['is_asan = true']
 }
 
 SUPPORTED_RELEASE = 'xenial'
@@ -63,9 +61,8 @@ def build_libraries(build_type, ubuntu_release, jobs, use_goma):
   subprocess.check_call(['ninja', '-j%d' % jobs, '-C', build_dir,
                          'third_party/instrumented_libraries:locally_built'])
   with tarfile.open('%s.tgz' % archive_name, mode='w:gz') as f:
-    prefix = build_type.split('-', 1)[0]
-    f.add('%s/instrumented_libraries/%s' % (build_dir, prefix),
-          arcname=prefix,
+    f.add('%s/instrumented_libraries/lib' % build_dir,
+          arcname='lib',
           filter=_tar_filter)
     f.add('%s/instrumented_libraries/sources' % build_dir,
           arcname='sources',
