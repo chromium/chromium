@@ -4,9 +4,9 @@
 
 // height and width should match the dialog size in EmojiPickerDialog.
 export const EMOJI_PICKER_HEIGHT = 454;
-export const EMOJI_PICKER_WIDTH = 372;
+export const EMOJI_PICKER_WIDTH = 396;
 export const EMOJI_ICON_SIZE = 28;
-export const EMOJI_SPACING = 10;
+export const EMOJI_SPACING = 13;
 export const EMOJI_PER_ROW = 9;
 export const GROUP_PER_ROW = 9;
 export const EMOJI_PICKER_SIDE_PADDING = 20;

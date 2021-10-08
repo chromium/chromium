@@ -25,7 +25,7 @@
 #include <iostream>
 
 namespace {
-constexpr gfx::Size kDefaultWindowSize(372, 454);
+constexpr gfx::Size kDefaultWindowSize(396, 454);
 constexpr int kPaddingAroundCursor = 8;
 
 class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
