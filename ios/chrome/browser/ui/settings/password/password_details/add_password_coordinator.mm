@@ -147,6 +147,12 @@
   [self.delegate setMostRecentlyUpdatedPasswordDetails:passwordForm];
 }
 
+- (void)showPasswordDetailsControllerWithForm:
+    (const password_manager::PasswordForm&)passwordForm {
+  [self.delegate dismissAddViewControllerAndShowPasswordDetails:passwordForm
+                                                    coordinator:self];
+}
+
 #pragma mark - AddPasswordHandler
 
 - (void)showPasscodeDialog {

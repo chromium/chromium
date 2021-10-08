@@ -150,6 +150,22 @@ bool CheckForDuplicates(
       }));
 }
 
+- (void)showExistingCredentialWithSite:(NSString*)website
+                              username:(NSString*)username {
+  GURL gurl = net::GURLWithNSURL([NSURL URLWithString:website]);
+  std::string signon_realm = password_manager::GetSignonRealm(
+      password_manager_util::StripAuthAndParams(gurl));
+  std::u16string username_value = SysNSStringToUTF16(username);
+  for (const auto& form : _manager->GetAllCredentials()) {
+    if (form.signon_realm == signon_realm &&
+        form.username_value == username_value) {
+      [self.delegate showPasswordDetailsControllerWithForm:form];
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
 - (void)didCancelAddPasswordDetails {
   [self.delegate dismissPasswordDetailsTableViewController];
 }

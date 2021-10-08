@@ -33,6 +33,9 @@ class IOSChromePasswordCheckManager;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Displays the password data without requiring any authentication.
+- (void)showPasswordDetailsWithoutAuthentication;
+
 // Delegate.
 @property(nonatomic, weak) id<PasswordDetailsCoordinatorDelegate> delegate;
 

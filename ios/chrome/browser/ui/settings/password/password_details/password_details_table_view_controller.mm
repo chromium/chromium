@@ -497,8 +497,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       }
       break;
     case ItemTypeDuplicateCredentialButton:
-      // TODO(crbug.com/1226006):Implement the functionality to authenticate and
-      // show the password.
+      [self reauthAndShowExistingCredential];
       break;
   }
 }
@@ -947,6 +946,38 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   }
 }
 
+- (void)reauthAndShowExistingCredential {
+  if ([self.reauthModule canAttemptReauth]) {
+    __weak __typeof(self) weakSelf = self;
+    void (^viewExistingPasswordHandler)(ReauthenticationResult) =
+        ^(ReauthenticationResult result) {
+          PasswordDetailsTableViewController* strongSelf = weakSelf;
+          if (!strongSelf)
+            return;
+          [strongSelf logPasswordSettingsReauthResult:result];
+
+          if (result == ReauthenticationResult::kFailure) {
+            return;
+          }
+
+          [strongSelf.delegate
+              showExistingCredentialWithSite:strongSelf.websiteTextItem
+                                                 .textFieldValue
+                                    username:strongSelf.usernameTextItem
+                                                 .textFieldValue];
+        };
+
+    // TODO(crbug.com/1226006): Use i18n string.
+    [self.reauthModule
+        attemptReauthWithLocalizedReason:@"Test Show Existing Credential"
+                    canReusePreviousAuth:YES
+                                 handler:viewExistingPasswordHandler];
+  } else {
+    DCHECK(self.addPasswordHandler);
+    [self.addPasswordHandler showPasscodeDialog];
+  }
+}
+
 #pragma mark - Actions
 
 // Called when the user tapped on the show/hide button near password.
@@ -1152,6 +1183,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     DCHECK(self.addPasswordHandler);
     [self.addPasswordHandler showPasscodeDialog];
   }
+}
+
+- (void)showPasswordWithoutAuthentication {
+  [self showPasswordFor:ReauthenticationReasonShow];
 }
 
 @end

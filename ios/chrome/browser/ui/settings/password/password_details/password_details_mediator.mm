@@ -101,6 +101,11 @@ using InsecureCredentialsView =
   NOTREACHED();
 }
 
+- (void)showExistingCredentialWithSite:(NSString*)website
+                              username:(NSString*)username {
+  NOTREACHED();
+}
+
 - (void)didCancelAddPasswordDetails {
   NOTREACHED();
 }

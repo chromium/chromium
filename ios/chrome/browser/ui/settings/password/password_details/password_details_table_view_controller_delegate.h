@@ -27,6 +27,11 @@
 - (void)checkForDuplicatesWithSite:(NSString*)website
                           username:(NSString*)username;
 
+// Called when an existing credential is to be displayed in the add credential
+// flow.
+- (void)showExistingCredentialWithSite:(NSString*)website
+                              username:(NSString*)username;
+
 // Called when the user cancels the add password view.
 - (void)didCancelAddPasswordDetails;
 

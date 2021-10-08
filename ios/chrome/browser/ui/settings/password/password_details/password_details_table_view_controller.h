@@ -59,6 +59,9 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 // credential from the add password view.
 - (void)validateUserAndReplaceExistingCredential;
 
+// Shows the password data without requiring any authentication for editing.
+- (void)showPasswordWithoutAuthentication;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_H_

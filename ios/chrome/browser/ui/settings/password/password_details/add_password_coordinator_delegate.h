@@ -21,6 +21,15 @@ struct PasswordForm;
 - (void)setMostRecentlyUpdatedPasswordDetails:
     (const password_manager::PasswordForm&)password;
 
+// Called when the user clicks on the "View Password" in the section alert. The
+// section alert is shown when there exists an existing credential with the same
+// username/website combination as that of the credential being added manually.
+// Would stop the add password coordinator and dismiss the view controller.
+- (void)dismissAddViewControllerAndShowPasswordDetails:
+            (const password_manager::PasswordForm&)password
+                                           coordinator:(AddPasswordCoordinator*)
+                                                           coordinator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_ADD_PASSWORD_COORDINATOR_DELEGATE_H_

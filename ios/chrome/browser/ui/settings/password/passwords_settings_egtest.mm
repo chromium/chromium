@@ -343,7 +343,8 @@ void CopyPasswordDetailWithID(int detail_id) {
   if ([self isRunningTest:@selector(testToolbarAddPasswordButton)] ||
       [self isRunningTest:@selector(testNoAddButtonInEditMode)] ||
       [self isRunningTest:@selector(testAddNewPasswordCredential)] ||
-      [self isRunningTest:@selector(testAutoScroll)]) {
+      [self isRunningTest:@selector(testAutoScroll)] ||
+      [self isRunningTest:@selector(testAddNewDuplicatedPasswordCredential)]) {
     config.features_enabled.push_back(
         password_manager::features::kSupportForAddPasswordsInSettings);
   }
@@ -1837,6 +1838,66 @@ void CopyPasswordDetailWithID(int detail_id) {
 
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
       performAction:grey_tap()];
+}
+
+// Tests that adding new password credential where the username and website
+// matches with an existing credential results in showing a section alert for
+// the existing credential.
+- (void)testAddNewDuplicatedPasswordCredential {
+  SaveExamplePasswordForm();
+
+  OpenPasswordSettings();
+  [PasswordSettingsAppInterface setUpMockReauthenticationModuleForExport];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  BOOL isSwitchEnabled =
+      [PasswordSettingsAppInterface isCredentialsServiceEnabled];
+
+  // Enable switch if it is disabled.
+  if (!isSwitchEnabled) {
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             isSwitchEnabled),
+        kGREYDirectionUp) performAction:TurnSettingsSwitchOn(!isSwitchEnabled)];
+
+    // Check that the switch has been modified.
+    [GetInteractionForListItem(
+        chrome_test_util::SettingsSwitchCell(kSavePasswordSwitchTableViewId,
+                                             !isSwitchEnabled),
+        kGREYDirectionUp) assertWithMatcher:grey_sufficientlyVisible()];
+  }
+
+  // Press "Add".
+  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+      performAction:grey_tap()];
+
+  // Fill form.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailWebsite()]
+      performAction:grey_replaceText(@"https://example.com")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailPassword()]
+      performAction:grey_replaceText(@"password")];
+
+  [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
+      performAction:grey_replaceText(@"concrete username")];
+
+  [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(
+                                              @"Test View Password"),
+                                          grey_accessibilityTrait(
+                                              UIAccessibilityTraitButton),
+                                          nullptr)] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_textFieldValue(@"concrete password")]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that deleting a compromised password from password issues goes back

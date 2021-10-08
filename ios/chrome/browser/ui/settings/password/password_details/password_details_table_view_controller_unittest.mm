@@ -110,6 +110,10 @@ constexpr char kPassword[] = "test";
                           username:(NSString*)username {
 }
 
+- (void)showExistingCredentialWithSite:(NSString*)website
+                              username:(NSString*)username {
+}
+
 - (void)didConfirmReplaceExistingCredential {
 }
 
