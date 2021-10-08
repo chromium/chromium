@@ -20,6 +20,23 @@ interface PdfListener {
   SetSelectionBounds(gfx.mojom.PointF base, gfx.mojom.PointF extent);
 };
 
+// Renderer-side interface to access the PDF extension.
+// The browser passes the remote for this interface to the PDF renderer
+// associated with the PDF extension.
+interface PdfFindInPage {
+  // Sets the find-in-page tickmarks in the PDF extension UI.
+  SetTickmarks(array<gfx.mojom.Rect> tickmark);
+};
+
+// Renderer-side interface to retrieve the PdfFindInPage remote for a specific
+// RFH from a PDF extension. Only used by the browser to facilitate PDF renderer
+// to PDF extension communication.
+interface PdfFindInPageFactory {
+  // Retrieves the remote to pass to the PDF renderer.
+  GetPdfFindInPage() => (pending_remote<PdfFindInPage> find_remote);
+};
+
+// Browser-side interface shared by PDF plugins and PDF renderers.
 interface PdfService {
   SetListener(pending_remote<PdfListener> client);
 
@@ -39,4 +56,8 @@ interface PdfService {
 
   // Notifies the embedder know the plugin can handle save commands internally.
   SetPluginCanSave(bool can_save);
+
+  // Retrieves the PdfFindInPage remote. Only used by PDF renderers.
+  [Sync]
+  GetPdfFindInPage() => (pending_remote<PdfFindInPage> find_remote);
 };

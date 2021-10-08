@@ -212,6 +212,8 @@
 #include "chrome/renderer/pdf/chrome_pdf_internal_plugin_delegate.h"
 #include "components/pdf/common/internal_plugin_helpers.h"
 #include "components/pdf/renderer/internal_plugin_renderer_helpers.h"
+#include "components/pdf/renderer/pdf_find_in_page.h"
+#include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -713,6 +715,14 @@ void ChromeContentRendererClient::RenderFrameCreated(
   if (render_frame->IsMainFrame() &&
       base::FeatureList::IsEnabled(feed::kWebFeed)) {
     new feed::RssLinkReader(render_frame, registry);
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned)) {
+    associated_interfaces->AddInterface(
+        base::BindRepeating(&pdf::PdfFindInPageFactory::BindReceiver,
+                            render_frame->GetRoutingID()));
   }
 #endif
 }

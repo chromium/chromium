@@ -844,9 +844,16 @@ void PdfViewWebPlugin::NotifyFindResultsChanged(int total, bool final_result) {
 }
 void PdfViewWebPlugin::NotifyFindTickmarks(
     const std::vector<gfx::Rect>& tickmarks) {
-  // TODO(crbug.com/1199999): Notify the frame about the tickmarks for the
-  // find request.
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* service = GetPdfService();
+  if (!service)
+    return;
+
+  if (!find_remote_) {
+    mojo::PendingRemote<pdf::mojom::PdfFindInPage> pending_find_remote;
+    service->GetPdfFindInPage(&pending_find_remote);
+    find_remote_.Bind(std::move(pending_find_remote));
+  }
+  find_remote_->SetTickmarks(tickmarks);
 }
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {

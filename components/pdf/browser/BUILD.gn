@@ -17,6 +17,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//content/public/browser",
+    "//pdf:features",
     "//ui/base",
     "//ui/touch_selection",
   ]
