@@ -17,7 +17,6 @@
 #import "ios/web/js_features/window_error/window_error_java_script_feature.h"
 #import "ios/web/js_messaging/script_command_java_script_feature.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
-#import "ios/web/navigation/navigation_java_script_feature.h"
 #import "ios/web/navigation/session_restore_java_script_feature.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/web_client.h"
@@ -113,7 +112,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       GetFaviconJavaScriptFeature(),
       GetScrollHelperJavaScriptFeature(),
       GetWindowErrorJavaScriptFeature(),
-      NavigationJavaScriptFeature::GetInstance(),
       ScriptCommandJavaScriptFeature::GetInstance(),
       SessionRestoreJavaScriptFeature::FromBrowserState(browser_state),
       TextFragmentsJavaScriptFeature::GetInstance(),
