@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_buildflags.h"
@@ -293,7 +292,10 @@ CRASH_KEY_EXPORT void InitializeCrashKeys();
 
 #if defined(UNIT_TEST) || defined(CRASH_CORE_COMMON_IMPLEMENTATION)
 // Returns a value for the crash key named |key_name|. For Crashpad-based
-// clients, this returns the first instance found of the name.
+// clients, this returns the first instance found of the name. On Breakpad
+// clients, oversized crash key values (those longer than
+// |kCrashKeyStorageValueSize| - 1) are stored in chunks and must be retrieved
+// piecewise, using syntax <key name>__1, <key name>__2, etc.
 // Note: In a component build, this will only retrieve crash keys for the
 // current component.
 CRASH_KEY_EXPORT std::string GetCrashKeyValue(const std::string& key_name);
@@ -304,6 +306,8 @@ CRASH_KEY_EXPORT void InitializeCrashKeysForTesting();
 
 // Resets crash key state and, depending on the platform, de-initializes
 // the system.
+// WARNING: this does not work on Breakpad, which is used by Chrome on Linux
+// (crbug.com/1041106).
 CRASH_KEY_EXPORT void ResetCrashKeysForTesting();
 #endif
 
