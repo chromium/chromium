@@ -26,6 +26,7 @@ const KEYS = {
   "location.ancestorOrigins"     : "00000000-0000-0000-0000-000000000007",
   "location.ancestorOrigins ACK" : "00000000-0000-0000-0000-000000000008",
   // Add keys below this list, incrementing the key UUID in hexadecimal:
+  "keyboard.lock"                : "00000000-0000-0000-0000-000000000009",
 }
 
 function attachFencedFrame(url) {

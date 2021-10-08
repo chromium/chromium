@@ -30,7 +30,7 @@ constexpr char kKeyboardLockNoValidKeyCodesErrorMsg[] =
     "No valid key codes passed into lock().";
 
 constexpr char kKeyboardLockChildFrameErrorMsg[] =
-    "lock() must be called from a top-level browsing context.";
+    "lock() must be called from a primary top-level browsing context.";
 
 constexpr char kKeyboardLockRequestFailedErrorMsg[] =
     "lock() request could not be registered.";

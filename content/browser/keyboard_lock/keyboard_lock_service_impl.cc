@@ -64,13 +64,13 @@ void KeyboardLockServiceImpl::RequestKeyboardLock(
   else
     LogKeyboardLockMethodCalled(KeyboardLockMethods::kRequestSomeKeys);
 
-  if (!render_frame_host_->IsActive()) {
-    std::move(callback).Run(KeyboardLockRequestResult::kFrameDetachedError);
+  if (render_frame_host_->GetParentOrOuterDocument()) {
+    std::move(callback).Run(KeyboardLockRequestResult::kChildFrameError);
     return;
   }
 
-  if (render_frame_host_->GetParent()) {
-    std::move(callback).Run(KeyboardLockRequestResult::kChildFrameError);
+  if (!render_frame_host_->IsActive()) {
+    std::move(callback).Run(KeyboardLockRequestResult::kFrameDetachedError);
     return;
   }
 
