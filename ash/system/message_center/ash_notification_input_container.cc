@@ -14,6 +14,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -40,50 +41,6 @@ constexpr int kInputReplyHighlightRadius =
 constexpr gfx::Insets kInputTextfieldPaddingCrOS(6, 12, 6, 12);
 // Corner radius of the grey background of the textfield.
 constexpr int kTextfieldBackgroundCornerRadius = 24;
-
-// Inline reply textfield's highlight path generator. Draws a highlight path
-// that is flush with the rounded background.
-class TextfieldHighlightPathGenerator : public views::HighlightPathGenerator {
- public:
-  explicit TextfieldHighlightPathGenerator(views::Textfield* textfield)
-      : textfield_(textfield) {}
-  TextfieldHighlightPathGenerator(const TextfieldHighlightPathGenerator&) =
-      delete;
-  TextfieldHighlightPathGenerator& operator=(
-      const TextfieldHighlightPathGenerator&) = delete;
-
-  // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
-    return gfx::RRectF(gfx::RectF(textfield_->GetLocalBounds()),
-                       kTextfieldBackgroundCornerRadius);
-  }
-
- private:
-  // Owned by the view hierarchy.
-  const views::Textfield* const textfield_;
-};
-
-// Inline reply's send button's highlight path generator. Draws a circular
-// highlight path.
-class SendButtonHighlightPathGenerator : public views::HighlightPathGenerator {
- public:
-  explicit SendButtonHighlightPathGenerator(views::ImageButton* button)
-      : button_(button) {}
-  SendButtonHighlightPathGenerator(const SendButtonHighlightPathGenerator&) =
-      delete;
-  SendButtonHighlightPathGenerator& operator=(
-      const SendButtonHighlightPathGenerator&) = delete;
-
-  // views::HighlightPathGenerator:
-  absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override {
-    return gfx::RRectF(gfx::RectF(button_->GetLocalBounds()),
-                       kInputReplyHighlightRadius);
-  }
-
- private:
-  // Owned by the views hierarchy.
-  const views::ImageButton* const button_;
-};
 
 }  // namespace
 
@@ -124,9 +81,11 @@ void AshNotificationInputContainer::StyleTextfield() {
       kTextfieldBackgroundCornerRadius));
 
   views::FocusRing::Install(textfield());
-  views::HighlightPathGenerator::Install(
-      textfield(),
-      std::make_unique<TextfieldHighlightPathGenerator>(textfield()));
+  views::InstallRoundRectHighlightPathGenerator(
+      textfield(), gfx::Insets(), kTextfieldBackgroundCornerRadius);
+  views::FocusRing::Get(textfield())
+      ->SetColor(color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 gfx::Insets AshNotificationInputContainer::GetSendButtonPadding() const {
@@ -134,8 +93,12 @@ gfx::Insets AshNotificationInputContainer::GetSendButtonPadding() const {
 }
 
 void AshNotificationInputContainer::SetSendButtonHighlightPath() {
-  views::HighlightPathGenerator::Install(
-      button(), std::make_unique<SendButtonHighlightPathGenerator>(button()));
+  views::FocusRing::Install(textfield());
+  views::InstallRoundRectHighlightPathGenerator(button(), gfx::Insets(),
+                                                kInputReplyHighlightRadius);
+  views::FocusRing::Get(button())->SetColor(
+      AshColorProvider::Get()->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::kFocusRingColor));
 }
 
 void AshNotificationInputContainer::UpdateButtonImage() {
@@ -148,6 +111,13 @@ void AshNotificationInputContainer::UpdateButtonImage() {
                             ash::AshColorProvider::Get()->GetControlsLayerColor(
                                 ash::AshColorProvider::ControlsLayerType::
                                     kControlBackgroundColorActive)));
+}
+
+void AshNotificationInputContainer::OnThemeChanged() {
+  message_center::NotificationInputContainer::OnThemeChanged();
+  UpdateButtonImage();
+  SetSendButtonHighlightPath();
+  StyleTextfield();
 }
 
 }  // namespace ash

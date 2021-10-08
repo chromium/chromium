@@ -33,6 +33,9 @@ class ASH_EXPORT AshNotificationInputContainer
   gfx::Insets GetSendButtonPadding() const override;
   void SetSendButtonHighlightPath() override;
   void UpdateButtonImage() override;
+
+  // views::View:
+  void OnThemeChanged() override;
 };
 
 }  // namespace ash
