@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL dialog-inert assert_not_equals: Dialog becomes inert dynamically got disallowed value Element node <dialog id="dialog" open="" inert="">Something</dialog>
+Harness: the test ran to completion.
+

@@ -382,6 +382,13 @@
         {}
        ]
       ],
+      "slot-content-visibility-15-crash.html": [
+       "14abfb361ba920d138fca2537ce4fd2bcd436611",
+       [
+        null,
+        {}
+       ]
+      ],
       "slot-content-visibility-2-crash.html": [
        "47b7962ae0ba76f4387a1d8c35b782b64dc86a6b",
        [
@@ -281924,6 +281931,10 @@
         "6ffd72296d8302c71866624b08b1b3213f1b5e4e",
         []
        ],
+       "dialog-inert.tentative-expected.txt": [
+        "9dd4bfe5af3042eb46c4496dd556e64e61229dd2",
+        []
+       ],
        "dialogs-with-no-backdrop-ref.html": [
         "4b31dc7062e697496f4edfaf98a70c0e794c6245",
         []
@@ -286083,6 +286094,12 @@
     },
     "static-import.py": [
      "fcf823c113ee22cb21283a18e3246d1c5bd72520",
+     []
+    ]
+   },
+   "inert": {
+    "inert-computed-style-expected.txt": [
+     "416c46a8e77416c0518b9e3af15c5b27ccce770d",
      []
     ]
    },
@@ -298401,6 +298418,10 @@
      "resources": {
       "key-value-store.py": [
        "1ab609f11bf2be22696f0b132b88d8fc86546b93",
+       []
+      ],
+      "notification.html": [
+       "f9502dd5f21d6f93fd97f3553f4fc01f0cf57809",
        []
       ],
       "prerender-state.html": [
@@ -434653,6 +434674,13 @@
          }
         ]
        ],
+       "dialog-inert.tentative.html": [
+        "864420b9d25e67745a497309252a6df8000a8b2f",
+        [
+         null,
+         {}
+        ]
+       ],
        "dialog-keydown-preventDefault.html": [
         "4a50b13c87f24d210b5b7558cb4c8c31f24d36a4",
         [
@@ -444168,6 +444196,13 @@
     ]
    },
    "inert": {
+    "inert-computed-style.html": [
+     "a68eb7465128937801d5417cbe4ed2ca1bfc3757",
+     [
+      null,
+      {}
+     ]
+    ],
     "inert-does-not-match-disabled-selector.tentative.html": [
      "74b8ac3f7dd5c3447bf47fd732fade9220497c93",
      [
@@ -481077,6 +481112,16 @@
    },
    "speculation-rules": {
     "prerender": {
+     "restriction-notification.https.html": [
+      "964c408f111d92c9477fc2f14d21d87c768d6f92",
+      [
+       null,
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-window-open.html": [
       "33ec5b1530de8159c6ee5e2db06ac8b7df984bdf",
       [
