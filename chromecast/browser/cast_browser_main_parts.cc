@@ -634,6 +634,10 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   window_manager_ = std::make_unique<CastWindowManagerDefault>();
 #endif  // defined(USE_AURA)
 
+  cast_content_browser_client_->media_resource_tracker()->InitializeMediaLib();
+  ::media::InitializeMediaLibrary();
+  media_caps_->Initialize();
+
   cast_browser_process_->SetCastService(
       cast_browser_process_->browser_client()->CreateCastService(
           cast_browser_process_->browser_context(),
@@ -641,10 +645,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
           cast_browser_process_->pref_service(),
           video_plane_controller_.get(), window_manager_.get()));
   cast_browser_process_->cast_service()->Initialize();
-
-  cast_content_browser_client_->media_resource_tracker()->InitializeMediaLib();
-  ::media::InitializeMediaLibrary();
-  media_caps_->Initialize();
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   user_pref_service_ = extensions::cast_prefs::CreateUserPrefService(
