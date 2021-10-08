@@ -12,15 +12,14 @@ import './privacy_review_description_item.js';
 import './privacy_review_fragment_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin, BaseMixinInterface} from '../../base_mixin.js';
+import {BaseMixin} from '../../base_mixin.js';
 import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs} from '../../people_page/sync_browser_proxy.js';
 
 const PrivacyReviewHistorySyncFragmentElementBase =
-    mixinBehaviors([WebUIListenerBehavior], BaseMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUIListenerBehavior & BaseMixinInterface};
+    WebUIListenerMixin(BaseMixin(PolymerElement));
 
 /** @polymer */
 export class PrivacyReviewHistorySyncFragmentElement extends
