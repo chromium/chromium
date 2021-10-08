@@ -67,6 +67,14 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "tab.icon",
     "trending_up.icon",
   ]
+
+  if (is_mac) {
+    sources += [ "share_mac.icon" ]
+  }
+
+  if (is_win) {
+    sources += [ "share_win.icon" ]
+  }
 }
 
 static_library("vector_icons") {
