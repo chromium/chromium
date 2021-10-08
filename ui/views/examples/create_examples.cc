@@ -20,6 +20,7 @@
 #include "ui/views/examples/dialog_example.h"
 #include "ui/views/examples/fade_animation.h"
 #include "ui/views/examples/flex_layout_example.h"
+#include "ui/views/examples/ink_drop_example.h"
 #include "ui/views/examples/label_example.h"
 #include "ui/views/examples/link_example.h"
 #include "ui/views/examples/login_bubble_dialog_example.h"
@@ -31,6 +32,7 @@
 #include "ui/views/examples/radio_button_example.h"
 #include "ui/views/examples/scroll_view_example.h"
 #include "ui/views/examples/slider_example.h"
+#include "ui/views/examples/square_ink_drop_example.h"
 #include "ui/views/examples/tabbed_pane_example.h"
 #include "ui/views/examples/table_example.h"
 #include "ui/views/examples/text_example.h"
@@ -61,6 +63,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<DialogExample>());
   examples.push_back(std::make_unique<FadeAnimationExample>());
   examples.push_back(std::make_unique<FlexLayoutExample>());
+  examples.push_back(std::make_unique<InkDropExample>());
   examples.push_back(std::make_unique<LabelExample>());
   examples.push_back(std::make_unique<LinkExample>());
   examples.push_back(std::make_unique<LoginBubbleDialogExample>());
@@ -72,6 +75,7 @@ ExampleVector CreateExamples(ExampleVector extra_examples) {
   examples.push_back(std::make_unique<RadioButtonExample>());
   examples.push_back(std::make_unique<ScrollViewExample>());
   examples.push_back(std::make_unique<SliderExample>());
+  examples.push_back(std::make_unique<SquareInkDropExample>());
   examples.push_back(std::make_unique<TabbedPaneExample>());
   examples.push_back(std::make_unique<TableExample>());
   examples.push_back(std::make_unique<TextExample>());

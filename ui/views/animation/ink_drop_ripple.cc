@@ -42,6 +42,7 @@ void InkDropRipple::AnimateToState(InkDropState ink_drop_state) {
   }
 
   AnimateStateChange(old_ink_drop_state, target_ink_drop_state_);
+
   animation_observer_->SetActive();
   // |this| may be deleted! |animation_observer_| might synchronously call
   // AnimationEndedCallback which can delete |this|.

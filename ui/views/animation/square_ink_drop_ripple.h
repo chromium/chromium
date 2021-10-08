@@ -61,10 +61,8 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
                       const gfx::Point& center_point,
                       SkColor color,
                       float visible_opacity);
-
   SquareInkDropRipple(const SquareInkDropRipple&) = delete;
   SquareInkDropRipple& operator=(const SquareInkDropRipple&) = delete;
-
   ~SquareInkDropRipple() override;
 
   void set_activated_shape(ActivatedShape shape) { activated_shape_ = shape; }
@@ -103,16 +101,6 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
   void SetStateToHidden() override;
   void AbortAllAnimations() override;
 
-  // Animates all of the painted shape layers to the specified |transforms|. The
-  // animation will be configured with the given |duration|, |tween|, and
-  // |preemption_strategy| values. The |observer| will be added to all
-  // LayerAnimationSequences if not null.
-  void AnimateToTransforms(
-      const InkDropTransforms transforms,
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween);
-
   // Sets the |transforms| on all of the shape layers. Note that this does not
   // perform any animation.
   void SetTransforms(const InkDropTransforms transforms);
@@ -120,16 +108,6 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
   // Sets the opacity of the ink drop. Note that this does not perform any
   // animation.
   void SetOpacity(float opacity);
-
-  // Animates all of the painted shape layers to the specified |opacity|. The
-  // animation will be configured with the given |duration|, |tween|, and
-  // |preemption_strategy| values. The |observer| will be added to all
-  // LayerAnimationSequences if not null.
-  void AnimateToOpacity(
-      float opacity,
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween);
 
   // Updates all of the Transforms in |transforms_out| for a circle of the given
   // |size|.

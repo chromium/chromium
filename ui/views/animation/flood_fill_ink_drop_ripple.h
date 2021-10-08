@@ -86,39 +86,9 @@ class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
   void SetStateToHidden() override;
   void AbortAllAnimations() override;
 
-  // Animates the |painted_layer_| to the specified |transform|. The animation
-  // will be configured with the given |duration|, |tween|, and
-  // |preemption_strategy| values. The |observer| will be added to all
-  // LayerAnimationSequences if not null.
-  void AnimateToTransform(
-      const gfx::Transform& transform,
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween);
-
-  // Creates a pause animation for transform property.
-  void PauseTransformAnimation(
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy);
-
   // Sets the opacity of the ink drop. Note that this does not perform any
   // animation.
   void SetOpacity(float opacity);
-
-  // Animates the |painted_layer_| to the specified |opacity|. The animation
-  // will be configured with the given |duration|, |tween|, and
-  // |preemption_strategy| values. The |observer| will be added to all
-  // LayerAnimationSequences if not null.
-  void AnimateToOpacity(
-      float opacity,
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-      gfx::Tween::Type tween);
-
-  // Creates a pause animation for opacity property.
-  void PauseOpacityAnimation(
-      base::TimeDelta duration,
-      ui::LayerAnimator::PreemptionStrategy preemption_strategy);
 
   // Returns the Transform to be applied to the |painted_layer_| for the given
   // |target_radius|.

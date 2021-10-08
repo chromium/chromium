@@ -37,10 +37,8 @@ class VIEWS_EXPORT InkDropRipple {
   static const float kHiddenOpacity;
 
   InkDropRipple();
-
   InkDropRipple(const InkDropRipple&) = delete;
   InkDropRipple& operator=(const InkDropRipple&) = delete;
-
   virtual ~InkDropRipple();
 
   // In the event that an animation is in progress for ink drop state 's1' and

@@ -157,8 +157,10 @@ struct AnimationBuilder::Value {
     // nonzero of the same start time to prevent the DCHECK from happening in
     // TerminateSequence(). These animations don't count as overlapping
     // properties.
-    return std::tie(start, original_duration, element) <
-           std::tie(key.start, key.original_duration, key.element);
+    auto element_properties = element->properties();
+    auto key_element_properties = key.element->properties();
+    return std::tie(start, original_duration, element_properties) <
+           std::tie(key.start, key.original_duration, key_element_properties);
   }
 };
 
