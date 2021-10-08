@@ -84,6 +84,11 @@ class OfferNotificationBubbleViewsTestBase
 
   PersonalDataManager* personal_data() { return personal_data_; }
 
+ protected:
+  // Returns the string used for the default test promo code data, so that it
+  // can be expected on UI elements if desired.
+  std::string GetDefaultTestPromoCode() const;
+
  private:
   PersonalDataManager* personal_data_;
   CouponService* coupon_service_;

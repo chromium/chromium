@@ -155,8 +155,6 @@ void OfferNotificationBubbleViews::InitWithPromoCodeOfferContent() {
 }
 
 void OfferNotificationBubbleViews::OnPromoCodeButtonClicked() {
-  // TODO(crbug.com/1248523): Log metrics for when when copy button is clicked.
-
   // Copy clicked promo code to clipboard.
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(base::ASCIIToUTF16(controller_->GetOffer()->promo_code));

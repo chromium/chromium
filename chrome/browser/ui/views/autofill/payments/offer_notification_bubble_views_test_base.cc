@@ -20,6 +20,8 @@
 
 namespace autofill {
 
+const char kDefaultTestPromoCode[] = "5PCTOFFSHOES";
+
 OfferNotificationBubbleViewsTestBase::OfferNotificationBubbleViewsTestBase(
     bool promo_code_flag_enabled) {
   if (promo_code_flag_enabled) {
@@ -89,7 +91,7 @@ OfferNotificationBubbleViewsTestBase::CreatePromoCodeOfferDataWithDomains(
   for (auto url : domains)
     offer_data_entry->merchant_origins.emplace_back(url.GetOrigin());
   offer_data_entry->offer_details_url = GURL("https://www.google.com/");
-  offer_data_entry->promo_code = "5PCTOFFSHOES";
+  offer_data_entry->promo_code = GetDefaultTestPromoCode();
   offer_data_entry->display_strings.value_prop_text =
       "5% off on shoes. Up to $50.";
   offer_data_entry->display_strings.see_details_text = "See details";
@@ -200,6 +202,11 @@ void OfferNotificationBubbleViewsTestBase::ResetEventWaiterForSequence(
     std::list<DialogEvent> event_sequence) {
   event_waiter_ =
       std::make_unique<EventWaiter<DialogEvent>>(std::move(event_sequence));
+}
+
+std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestPromoCode()
+    const {
+  return kDefaultTestPromoCode;
 }
 
 }  // namespace autofill
