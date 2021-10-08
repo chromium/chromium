@@ -24,6 +24,7 @@
 #include "base/time/default_tick_clock.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "components/breadcrumbs/core/features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
@@ -162,7 +163,8 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
   }
 
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
-    breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>();
+    breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>(
+        breadcrumbs::GetStartTime());
     application_breadcrumbs_logger_ =
         std::make_unique<ApplicationBreadcrumbsLoggerIOS>(
             breadcrumb_manager_.get());

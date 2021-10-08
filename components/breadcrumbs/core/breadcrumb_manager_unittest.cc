@@ -9,6 +9,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -21,7 +22,12 @@ class BreadcrumbManagerTest : public PlatformTest {
 
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  BreadcrumbManager breadcrumb_manager_;
+
+  // Set the start time to the current time at the start of each test rather
+  // than breadcrumbs::GetStartTime(), to ensure that timestamps start at
+  // 0:00:00. Otherwise, failures in earlier tests may progress MOCK_TIME by a
+  // few seconds, throwing off timestamps and causing these tests to also fail.
+  BreadcrumbManager breadcrumb_manager_{base::TimeTicks::Now()};
 };
 
 // Tests that an event is logged and returned.
@@ -44,9 +50,9 @@ TEST_F(BreadcrumbManagerTest, EventCountLimited) {
 
   std::list<std::string> events = breadcrumb_manager_.GetEvents(2);
   ASSERT_EQ(2ul, events.size());
-  EXPECT_NE(std::string::npos, events.front().find("event3"));
+  EXPECT_EQ("0:00:00 event3", events.front());
   events.pop_front();
-  EXPECT_NE(std::string::npos, events.front().find("event4"));
+  EXPECT_EQ("0:00:00 event4", events.front());
 }
 
 // Tests that old event buckets are dropped.
@@ -69,11 +75,11 @@ TEST_F(BreadcrumbManagerTest, OldEventsDropped) {
   std::list<std::string> events = breadcrumb_manager_.GetEvents(0);
   ASSERT_EQ(3ul, events.size());
   // Validate the three most recent events are the ones which were returned.
-  EXPECT_NE(std::string::npos, events.front().find("event3"));
+  EXPECT_EQ("2:00:00 event3", events.front());
   events.pop_front();
-  EXPECT_NE(std::string::npos, events.front().find("event4"));
+  EXPECT_EQ("2:03:00 event4", events.front());
   events.pop_front();
-  EXPECT_NE(std::string::npos, events.front().find("event5"));
+  EXPECT_EQ("2:06:00 event5", events.front());
 }
 
 // Tests that expired events are returned if not enough new events exist.
@@ -87,6 +93,21 @@ TEST_F(BreadcrumbManagerTest, MinimumEventsReturned) {
 
   const std::list<std::string>& events = breadcrumb_manager_.GetEvents(0);
   EXPECT_EQ(2ul, events.size());
+}
+
+// Tests that event timestamps are formatted as expected.
+TEST_F(BreadcrumbManagerTest, EventTimestampsFormatted) {
+  breadcrumb_manager_.AddEvent("event1");
+  EXPECT_EQ("0:00:00 event1", breadcrumb_manager_.GetEvents(0).back());
+  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  breadcrumb_manager_.AddEvent("event2");
+  EXPECT_EQ("0:01:40 event2", breadcrumb_manager_.GetEvents(0).back());
+  task_env_.FastForwardBy(base::TimeDelta::FromHours(100));
+  breadcrumb_manager_.AddEvent("event3");
+  EXPECT_EQ("100:01:40 event3", breadcrumb_manager_.GetEvents(0).back());
+  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(100));
+  breadcrumb_manager_.AddEvent("event4");
+  EXPECT_EQ("101:41:40 event4", breadcrumb_manager_.GetEvents(0).back());
 }
 
 }  // namespace breadcrumbs

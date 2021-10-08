@@ -15,6 +15,8 @@ source_set("core") {
     "breadcrumb_persistent_storage_manager.h",
     "breadcrumb_persistent_storage_util.cc",
     "breadcrumb_persistent_storage_util.h",
+    "breadcrumb_util.cc",
+    "breadcrumb_util.h",
     "crash_reporter_breadcrumb_constants.h",
     "crash_reporter_breadcrumb_observer.cc",
     "crash_reporter_breadcrumb_observer.h",

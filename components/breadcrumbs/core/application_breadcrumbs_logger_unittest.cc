@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -34,7 +35,7 @@ class ApplicationBreadcrumbsLoggerTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  BreadcrumbManager breadcrumb_manager_;
+  BreadcrumbManager breadcrumb_manager_{GetStartTime()};
   std::unique_ptr<ApplicationBreadcrumbsLogger> logger_;
 };
 

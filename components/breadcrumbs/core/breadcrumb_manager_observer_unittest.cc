@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -55,7 +56,7 @@ class BreadcrumbManagerObserverTest : public PlatformTest {
   base::test::TaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  BreadcrumbManager manager_;
+  BreadcrumbManager manager_{GetStartTime()};
   FakeBreadcrumbManagerObserver observer_;
 };
 

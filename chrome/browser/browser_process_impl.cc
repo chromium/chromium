@@ -92,6 +92,7 @@
 #include "components/breadcrumbs/core/application_breadcrumbs_logger.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "components/breadcrumbs/core/features.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/timer_update_scheduler.h"
@@ -1227,7 +1228,8 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
-    breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>();
+    breadcrumb_manager_ = std::make_unique<breadcrumbs::BreadcrumbManager>(
+        breadcrumbs::GetStartTime());
     application_breadcrumbs_logger_ =
         std::make_unique<breadcrumbs::ApplicationBreadcrumbsLogger>(
             breadcrumb_manager_.get());

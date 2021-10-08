@@ -10,6 +10,7 @@
 #include <string>
 
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/breadcrumb_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -24,7 +25,8 @@ class ApplicationBreadcrumbsLoggerIOSTest : public PlatformTest {
       : logger_(std::make_unique<ApplicationBreadcrumbsLoggerIOS>(
             &breadcrumb_manager_)) {}
 
-  breadcrumbs::BreadcrumbManager breadcrumb_manager_;
+  breadcrumbs::BreadcrumbManager breadcrumb_manager_{
+      breadcrumbs::GetStartTime()};
   std::unique_ptr<ApplicationBreadcrumbsLoggerIOS> logger_;
 };
 
