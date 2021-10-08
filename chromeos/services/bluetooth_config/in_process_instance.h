@@ -9,10 +9,22 @@
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
+class PrefService;
+
 namespace chromeos {
 namespace bluetooth_config {
 
 class Initializer;
+
+COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
+void Initialize();
+
+COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
+void Shutdown();
+
+// Updates the PrefServices used by CrosBluetoothConfig.
+COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)
+void SetPrefs(PrefService* logged_in_profile_prefs, PrefService* device_prefs);
 
 // Binds to an instance of CrosBluetoothConfig from within the browser process.
 COMPONENT_EXPORT(IN_PROCESS_BLUETOOTH_CONFIG)

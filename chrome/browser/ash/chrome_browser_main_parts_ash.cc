@@ -101,6 +101,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_health/network_health_service.h"
 #include "chrome/browser/ash/net/network_portal_detector_impl.h"
 #include "chrome/browser/ash/net/network_pref_state_observer.h"
@@ -189,6 +190,7 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
+#include "chromeos/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -436,6 +438,8 @@ class DBusServices {
     disks::DiskMountManager::Initialize();
 
     NetworkHandler::Initialize();
+    if (ash::features::IsBluetoothRevampEnabled())
+      chromeos::bluetooth_config::Initialize();
 
     sensors::SensorHalDispatcher::Initialize();
 
@@ -464,6 +468,9 @@ class DBusServices {
     ash::rollback_network_config::Shutdown();
     sensors::SensorHalDispatcher::Shutdown();
     NetworkHandler::Shutdown();
+    if (ash::features::IsBluetoothRevampEnabled())
+      chromeos::bluetooth_config::Shutdown();
+
     disks::DiskMountManager::Shutdown();
     LoginState::Shutdown();
     NetworkCertLoader::Shutdown();
@@ -1021,6 +1028,13 @@ void ChromeBrowserMainPartsAsh::PostProfileInit() {
 
   // Initialize an observer to update NetworkHandler's pref based services.
   network_pref_state_observer_ = std::make_unique<NetworkPrefStateObserver>();
+
+  if (ash::features::IsBluetoothRevampEnabled()) {
+    // Initialize an observer to update CrosBluetoothConfig's pref based
+    // services.
+    bluetooth_pref_state_observer_ =
+        std::make_unique<BluetoothPrefStateObserver>();
+  }
 
   // Initialize the NetworkHealth aggregator.
   network_health::NetworkHealthService::GetInstance();

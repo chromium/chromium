@@ -21,7 +21,13 @@ SystemPropertiesProviderImpl::SystemPropertiesProviderImpl(
 }
 
 SystemPropertiesProviderImpl::~SystemPropertiesProviderImpl() {
-  session_manager::SessionManager::Get()->RemoveObserver(this);
+  session_manager::SessionManager* session_manager =
+      session_manager::SessionManager::Get();
+
+  // |session_manager| is null when we are shutting down and this class is being
+  // destroyed because there is no longer a session.
+  if (session_manager)
+    session_manager->RemoveObserver(this);
 }
 
 void SystemPropertiesProviderImpl::OnAdapterStateChanged() {

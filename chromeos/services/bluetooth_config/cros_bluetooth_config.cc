@@ -35,6 +35,11 @@ CrosBluetoothConfig::CrosBluetoothConfig(
 
 CrosBluetoothConfig::~CrosBluetoothConfig() = default;
 
+void CrosBluetoothConfig::SetPrefs(PrefService* logged_in_profile_prefs,
+                                   PrefService* device_prefs) {
+  // TODO(1010321): Set prefs of classes that need it here.
+}
+
 void CrosBluetoothConfig::BindPendingReceiver(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver) {
   receivers_.Add(this, std::move(pending_receiver));

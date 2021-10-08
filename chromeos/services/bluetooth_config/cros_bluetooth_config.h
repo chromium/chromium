@@ -16,6 +16,8 @@ namespace device {
 class BluetoothAdapter;
 }  // namespace device
 
+class PrefService;
+
 namespace chromeos {
 namespace bluetooth_config {
 
@@ -35,6 +37,10 @@ class CrosBluetoothConfig : public mojom::CrosBluetoothConfig {
       Initializer& initializer,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
   ~CrosBluetoothConfig() override;
+
+  // Sets the PrefServices to be used by classes within CrosBluetoothConfig.
+  void SetPrefs(PrefService* logged_in_profile_prefs,
+                PrefService* device_prefs);
 
   // Binds a PendingReceiver to this instance. Clients wishing to use the
   // CrosBluetoothConfig API should use this function as an entrypoint.

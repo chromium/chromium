@@ -11,6 +11,7 @@
 #include "chromeos/services/bluetooth_config/cros_bluetooth_config.h"
 #include "chromeos/services/bluetooth_config/initializer_impl.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -18,18 +19,67 @@ namespace {
 
 CrosBluetoothConfig* g_instance = nullptr;
 
+// Flag indicating that Shutdown() has been called and g_instance should not be
+// initialized.
+bool g_is_shut_down = false;
+
+// PrefServices that should be used by CrosBluetoothConfig once it has finished
+// initializing.
+PrefService* g_pending_logged_in_profile_prefs = nullptr;
+PrefService* g_pending_device_prefs = nullptr;
+
 void OnBluetoothAdapter(
-    mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver,
+    absl::optional<mojo::PendingReceiver<mojom::CrosBluetoothConfig>>
+        pending_receiver,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
+  if (g_is_shut_down)
+    return;
+
   if (!g_instance) {
     InitializerImpl initializer;
     g_instance =
         new CrosBluetoothConfig(initializer, std::move(bluetooth_adapter));
+    g_instance->SetPrefs(g_pending_logged_in_profile_prefs,
+                         g_pending_device_prefs);
+    g_pending_logged_in_profile_prefs = nullptr;
+    g_pending_device_prefs = nullptr;
   }
-  g_instance->BindPendingReceiver(std::move(pending_receiver));
+  if (pending_receiver)
+    g_instance->BindPendingReceiver(std::move(*pending_receiver));
 }
 
 }  // namespace
+
+void Initialize() {
+  CHECK(ash::features::IsBluetoothRevampEnabled());
+  CHECK(!g_instance);
+  device::BluetoothAdapterFactory::Get()->GetAdapter(
+      base::BindOnce(&OnBluetoothAdapter, /*pending_receiver=*/absl::nullopt));
+}
+
+void Shutdown() {
+  CHECK(ash::features::IsBluetoothRevampEnabled());
+  if (g_instance) {
+    delete g_instance;
+    g_instance = nullptr;
+  } else {
+    g_is_shut_down = true;
+  }
+  g_pending_logged_in_profile_prefs = nullptr;
+  g_pending_device_prefs = nullptr;
+}
+
+void SetPrefs(PrefService* logged_in_profile_prefs, PrefService* device_prefs) {
+  if (!g_instance) {
+    // |g_instance| may not be initialized yet if we're still getting the
+    // Bluetooth adapter. Save the prefs to be used once the instance has
+    // initialized.
+    g_pending_logged_in_profile_prefs = logged_in_profile_prefs;
+    g_pending_device_prefs = device_prefs;
+    return;
+  }
+  g_instance->SetPrefs(logged_in_profile_prefs, device_prefs);
+}
 
 void BindToInProcessInstance(
     mojo::PendingReceiver<mojom::CrosBluetoothConfig> pending_receiver) {
