@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/timing/event_counts.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
@@ -189,16 +190,40 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
 
-  // Assign an interaction id to an event timing entry if needed.
-  // Returns true if the entry is ready to be surfaced in PerformanceObservers
-  // and the Performance Timeline
-  bool SetInteractionIdForEventTiming(PerformanceEventTiming* entry,
-                                      absl::optional<int> key_code,
-                                      absl::optional<PointerId> pointer_id);
+  // Assign an interaction id to an event timing entry if needed. Also records
+  // the interaction latency. Returns true if the entry is ready to be surfaced
+  // in PerformanceObservers and the Performance Timeline
+  bool SetInteractionIdAndRecordLatency(
+      PerformanceEventTiming* entry,
+      absl::optional<int> key_code,
+      absl::optional<PointerId> pointer_id,
+      ResponsivenessMetrics::EventTimestamps event_timestamps);
+
+  // Assigns an interactionId and records interaction latency for pointer
+  // events. Returns true if the entry is ready to be surfaced in
+  // PerformanceObservers and the Performance Timeline.
+  bool SetPointerIdAndRecordLatency(
+      PerformanceEventTiming* entry,
+      PointerId pointer_id,
+      ResponsivenessMetrics::EventTimestamps event_timestamps);
+
+  // Assigns interactionId and records interaction latency for keyboard events.
+  // We care about input, compositionstart, and compositionend events, so
+  // |key_code| will be absl::nullopt in those cases. Returns true if the entry
+  // would be ready to be surfaced in PerformanceObservers and the Performance
+  // Timeline.
+  bool SetKeyIdAndRecordLatency(
+      PerformanceEventTiming* entry,
+      absl::optional<int> key_code,
+      ResponsivenessMetrics::EventTimestamps event_timestamps);
 
   // Notify observer that an event timing entry is ready and add it to the event
   // timing buffer if needed.
   void NotifyAndAddEventTimingBuffer(PerformanceEventTiming* entry);
+
+  // NotifyAndAddEventTimingBuffer() when interactionId feature is enabled.
+  void MaybeNotifyInteractionAndAddEventTimingBuffer(
+      PerformanceEventTiming* entry);
 
   void UpdateInteractionId();
 
@@ -230,9 +255,41 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // The event we are currently processing.
   WeakMember<const Event> current_event_;
 
+  // Wrapper class to store keyboard PerformanceEventTiming and other entry data
+  // on a HeapHashMap.
+  class KeyboardEntryAndTimestamps
+      : public GarbageCollected<KeyboardEntryAndTimestamps> {
+   public:
+    KeyboardEntryAndTimestamps(
+        PerformanceEventTiming* entry,
+        ResponsivenessMetrics::EventTimestamps timestamps)
+        : entry_(entry), timestamps_(timestamps) {}
+
+    static KeyboardEntryAndTimestamps* Create(
+        PerformanceEventTiming* entry,
+        ResponsivenessMetrics::EventTimestamps timestamps) {
+      return MakeGarbageCollected<KeyboardEntryAndTimestamps>(entry,
+                                                              timestamps);
+    }
+    ~KeyboardEntryAndTimestamps() = default;
+    void Trace(Visitor*) const;
+    PerformanceEventTiming* GetEntry() const { return entry_; }
+    ResponsivenessMetrics::EventTimestamps GetTimeStamps() const {
+      return timestamps_;
+    }
+
+   private:
+    // Event PerformanceEventTiming entry that has not been sent to observers
+    // yet: the event dispatch has been completed but the presentation promise
+    // used to determine |duration| has not yet been resolved.
+    Member<PerformanceEventTiming> entry_;
+    // ResponsivenessMetrics::EventTimestamps
+    ResponsivenessMetrics::EventTimestamps timestamps_;
+  };
+
   // Map used to map keyCodes to interactionId values.
   HeapHashMap<int,
-              Member<PerformanceEventTiming>,
+              Member<KeyboardEntryAndTimestamps>,
               WTF::IntHash<int>,
               WTF::UnsignedWithZeroKeyHashTraits<int>>
       key_code_entry_map_;

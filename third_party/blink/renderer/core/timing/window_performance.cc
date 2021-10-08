@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/core/timing/visibility_state_entry.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
@@ -196,6 +197,11 @@ WindowPerformance::WindowPerformance(LocalDOMWindow* window)
 
 void WindowPerformance::EventData::Trace(Visitor* visitor) const {
   visitor->Trace(event_timing_);
+}
+
+void WindowPerformance::KeyboardEntryAndTimestamps::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(entry_);
 }
 
 WindowPerformance::~WindowPerformance() = default;
@@ -469,16 +475,6 @@ void WindowPerformance::ReportEventTimings(
     base::TimeDelta time_to_next_paint =
         base::Milliseconds(end_time - entry->processingEnd());
     entry->SetDuration(duration_in_ms);
-    ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        event_timestamp, presentation_timestamp};
-    // The page visibility was changed. In this case, we don't care about
-    // the time to next paint.
-    if (last_visibility_change_timestamp_ > event_timestamp &&
-        last_visibility_change_timestamp_ <= presentation_timestamp) {
-      event_timestamps.end_time -= time_to_next_paint;
-    }
-    responsiveness_metrics_.RecordPerInteractionLatency(
-        DomWindow(), entry->name(), key_code, pointer_id, event_timestamps);
     TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
                  entry->ToTracedValue(), "frame",
                  ToTraceValue(DomWindow()->GetFrame()));
@@ -513,7 +509,16 @@ void WindowPerformance::ReportEventTimings(
             PerformanceEventTiming::CreateFirstInputTiming(entry));
       }
     }
-    if (!SetInteractionIdForEventTiming(entry, key_code, pointer_id)) {
+    ResponsivenessMetrics::EventTimestamps event_timestamps = {
+        event_timestamp, presentation_timestamp};
+    // The page visibility was changed. In this case, we don't care about
+    // the time to next paint.
+    if (last_visibility_change_timestamp_ > event_timestamp &&
+        last_visibility_change_timestamp_ <= presentation_timestamp) {
+      event_timestamps.end_time -= time_to_next_paint;
+    }
+    if (!SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
+                                          event_timestamps)) {
       continue;
     }
 
@@ -540,7 +545,7 @@ void WindowPerformance::ReportEventTimings(
   // We cannot delete from a HashMap while iterating.
   Vector<int> key_codes_to_remove;
   for (const auto& entry : key_code_entry_map_) {
-    PerformanceEventTiming* key_down = entry.value;
+    PerformanceEventTiming* key_down = entry.value->GetEntry();
     // Use |end_time| as a proxy for the current timestamp.
     if (end_time - key_down->processingEnd() > kMaxDelayForEntries) {
       NotifyAndAddEventTimingBuffer(key_down);
@@ -565,6 +570,15 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
   }
 }
 
+void WindowPerformance::MaybeNotifyInteractionAndAddEventTimingBuffer(
+    PerformanceEventTiming* entry) {
+  if (!RuntimeEnabledFeatures::InteractionIdEnabled(GetExecutionContext())) {
+    return;
+  }
+
+  NotifyAndAddEventTimingBuffer(entry);
+}
+
 void WindowPerformance::UpdateInteractionId() {
   current_interaction_id_for_event_timing_ += kInteractionIdIncrement;
 }
@@ -573,34 +587,52 @@ uint32_t WindowPerformance::GetCurrentInteractionId() const {
   return current_interaction_id_for_event_timing_;
 }
 
-bool WindowPerformance::SetInteractionIdForEventTiming(
+bool WindowPerformance::SetInteractionIdAndRecordLatency(
     PerformanceEventTiming* entry,
     absl::optional<int> key_code,
-    absl::optional<PointerId> pointer_id) {
+    absl::optional<PointerId> pointer_id,
+    ResponsivenessMetrics::EventTimestamps event_timestamps) {
+  if (pointer_id.has_value()) {
+    return SetPointerIdAndRecordLatency(entry, *pointer_id, event_timestamps);
+  }
+  // For keyboard events, we set the interactionId and record the metric in the
+  // same logic, so we need to ignore the return value when InteractionId is
+  // disabled.
+  return SetKeyIdAndRecordLatency(entry, key_code, event_timestamps) ||
+         !RuntimeEnabledFeatures::InteractionIdEnabled(GetExecutionContext());
+}
+
+bool WindowPerformance::SetPointerIdAndRecordLatency(
+    PerformanceEventTiming* entry,
+    PointerId pointer_id,
+    ResponsivenessMetrics::EventTimestamps event_timestamps) {
+  // TODO(npm): merge the logic on RecordTapOrClickOrDrag() with the logic
+  // computing interactionIds for pointer events once interactionId ships and is
+  // not behind a flag.
+  responsiveness_metrics_.RecordTapOrClickOrDrag(DomWindow(), entry->name(),
+                                                 event_timestamps);
   if (!RuntimeEnabledFeatures::InteractionIdEnabled(GetExecutionContext())) {
     return true;
   }
-
   auto event_type = entry->name();
   if (event_type == event_type_names::kPointercancel &&
-      pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+      pointer_id_pointer_down_map_.Contains(pointer_id)) {
     // Flush the pointer down entry.
-    NotifyAndAddEventTimingBuffer(
-        pointer_id_pointer_down_map_.at(pointer_id.value()));
+    NotifyAndAddEventTimingBuffer(pointer_id_pointer_down_map_.at(pointer_id));
     // The pointer id of the pointerdown is no longer needed.
-    pointer_id_pointer_down_map_.erase(pointer_id.value());
+    pointer_id_pointer_down_map_.erase(pointer_id);
   } else if (event_type == event_type_names::kPointerdown) {
-    if (pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+    if (pointer_id_pointer_down_map_.Contains(pointer_id)) {
       NotifyAndAddEventTimingBuffer(
-          pointer_id_pointer_down_map_.at(pointer_id.value()));
+          pointer_id_pointer_down_map_.at(pointer_id));
     }
-    pointer_id_pointer_down_map_.Set(pointer_id.value(), entry);
+    pointer_id_pointer_down_map_.Set(pointer_id, entry);
     // Waiting to see if we get a pointercancel or pointerup.
     return false;
   } else if (event_type == event_type_names::kPointerup &&
-             pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+             pointer_id_pointer_down_map_.Contains(pointer_id)) {
     PerformanceEventTiming* pointer_down_entry =
-        pointer_id_pointer_down_map_.at(pointer_id.value());
+        pointer_id_pointer_down_map_.at(pointer_id);
     // Generate a new interaction id.
     UpdateInteractionId();
     pointer_down_entry->SetInteractionId(GetCurrentInteractionId());
@@ -608,21 +640,29 @@ bool WindowPerformance::SetInteractionIdForEventTiming(
     // Flush the pointer down entry.
     NotifyAndAddEventTimingBuffer(pointer_down_entry);
   } else if (event_type == event_type_names::kClick &&
-             pointer_id_pointer_down_map_.Contains(pointer_id.value())) {
+             pointer_id_pointer_down_map_.Contains(pointer_id)) {
     PerformanceEventTiming* pointer_down_entry =
-        pointer_id_pointer_down_map_.at(pointer_id.value());
+        pointer_id_pointer_down_map_.at(pointer_id);
     entry->SetInteractionId(pointer_down_entry->interactionId());
     // The pointer id of the pointerdown is no longer needed.
-    pointer_id_pointer_down_map_.erase(pointer_id.value());
-  } else if (event_type == event_type_names::kKeydown) {
+    pointer_id_pointer_down_map_.erase(pointer_id);
+  }
+  return true;
+}
+
+bool WindowPerformance::SetKeyIdAndRecordLatency(
+    PerformanceEventTiming* entry,
+    absl::optional<int> key_code,
+    ResponsivenessMetrics::EventTimestamps event_timestamps) {
+  auto event_type = entry->name();
+  if (event_type == event_type_names::kKeydown) {
     DCHECK(key_code.has_value());
     // During compositions, we ignore keydowns/keyups and look at input events.
     if (composition_started_)
       return true;
 
     if (key_code_entry_map_.Contains(*key_code)) {
-      PerformanceEventTiming* previous_entry =
-          key_code_entry_map_.at(*key_code);
+      auto* previous_entry = key_code_entry_map_.at(*key_code);
       // Ignore repeat IME keydowns. See
       // https://w3c.github.io/uievents/#determine-keydown-keyup-keyCode.
       // Reasoning: we cannot ignore all IME keydowns because on Android in some
@@ -636,11 +676,14 @@ bool WindowPerformance::SetInteractionIdForEventTiming(
         // Generate a new interaction id for |previous_entry|. This case could
         // be caused by keeping a key pressed for a while.
         UpdateInteractionId();
-        previous_entry->SetInteractionId(GetCurrentInteractionId());
+        previous_entry->GetEntry()->SetInteractionId(GetCurrentInteractionId());
+        responsiveness_metrics_.RecordKeyboardInteractions(
+            DomWindow(), {previous_entry->GetTimeStamps()});
       }
-      NotifyAndAddEventTimingBuffer(previous_entry);
+      MaybeNotifyInteractionAndAddEventTimingBuffer(previous_entry->GetEntry());
     }
-    key_code_entry_map_.Set(*key_code, entry);
+    key_code_entry_map_.Set(
+        *key_code, KeyboardEntryAndTimestamps::Create(entry, event_timestamps));
     // Similar to pointerdown, we need to wait a bit before knowing the
     // interactionId of keydowns.
     return false;
@@ -649,17 +692,19 @@ bool WindowPerformance::SetInteractionIdForEventTiming(
     if (composition_started_ || !key_code_entry_map_.Contains(*key_code))
       return true;
 
-    PerformanceEventTiming* previous_entry = key_code_entry_map_.at(*key_code);
+    auto* previous_entry = key_code_entry_map_.at(*key_code);
     // Generate a new interaction id for the keydown-keyup pair.
     UpdateInteractionId();
-    previous_entry->SetInteractionId(GetCurrentInteractionId());
-    NotifyAndAddEventTimingBuffer(previous_entry);
+    previous_entry->GetEntry()->SetInteractionId(GetCurrentInteractionId());
+    MaybeNotifyInteractionAndAddEventTimingBuffer(previous_entry->GetEntry());
     key_code_entry_map_.erase(*key_code);
     entry->SetInteractionId(GetCurrentInteractionId());
+    responsiveness_metrics_.RecordKeyboardInteractions(
+        DomWindow(), {previous_entry->GetTimeStamps(), event_timestamps});
   } else if (event_type == event_type_names::kCompositionstart) {
     composition_started_ = true;
-    for (PerformanceEventTiming* key_entry : key_code_entry_map_.Values()) {
-      NotifyAndAddEventTimingBuffer(key_entry);
+    for (auto key_entry : key_code_entry_map_.Values()) {
+      MaybeNotifyInteractionAndAddEventTimingBuffer(key_entry->GetEntry());
     }
     key_code_entry_map_.clear();
   } else if (event_type == event_type_names::kCompositionend) {
@@ -673,6 +718,8 @@ bool WindowPerformance::SetInteractionIdForEventTiming(
     // TODO(crbug.com/1252856): fix counts in ChromeOS due to duplicate events.
     UpdateInteractionId();
     entry->SetInteractionId(GetCurrentInteractionId());
+    responsiveness_metrics_.RecordKeyboardInteractions(DomWindow(),
+                                                       {event_timestamps});
   }
   return true;
 }
