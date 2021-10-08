@@ -48,9 +48,6 @@ rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
       state->set_allocated_wp_disable_complete(
           new rmad::WriteProtectDisableCompleteState());
       break;
-    case rmad::RmadState::kVerifyRsu:
-      state->set_allocated_verify_rsu(new rmad::VerifyRsuState());
-      break;
     case rmad::RmadState::kUpdateRoFirmware:
       state->set_allocated_update_ro_firmware(
           new rmad::UpdateRoFirmwareState());
@@ -131,7 +128,6 @@ void FakeRmadClient::CreateWithState() {
                        rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
       wp_disable_rsu_state,
-      CreateStateReply(rmad::RmadState::kVerifyRsu, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kWpDisablePhysical,
                        rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kWpDisableComplete,

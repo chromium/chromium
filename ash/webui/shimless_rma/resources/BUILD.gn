@@ -24,7 +24,6 @@ polymer_element_files = [
   "onboarding_select_components_page.js",
   "onboarding_update_page.js",
   "onboarding_wait_for_manual_wp_disable_page.js",
-  "onboarding_verify_rsu_page.js",
   "onboarding_wp_disable_complete_page.js",
   "reimaging_calibration_page.js",
   "reimaging_calibration_run_page.js",
@@ -80,7 +79,6 @@ js_type_check("closure_compile_module") {
     ":onboarding_network_page",
     ":onboarding_select_components_page",
     ":onboarding_update_page",
-    ":onboarding_verify_rsu_page",
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
     ":reimaging_calibration_page",
@@ -113,7 +111,6 @@ js_library("shimless_rma") {
     ":onboarding_network_page",
     ":onboarding_select_components_page",
     ":onboarding_update_page",
-    ":onboarding_verify_rsu_page",
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
     ":reimaging_calibration_page",
@@ -257,15 +254,6 @@ js_library("onboarding_wait_for_manual_wp_disable_page") {
     ":shimless_rma_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-  ]
-}
-
-js_library("onboarding_verify_rsu_page") {
-  deps = [
-    ":base_page",
-    ":mojo_interface_provider",
-    ":shimless_rma_types",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 

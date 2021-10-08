@@ -51,12 +51,6 @@ export const fakeStates = [
     error: RmadErrorCode.kOk
   },
   {
-    state: RmaState.kVerifyRsu,
-    canCancel: true,
-    canGoBack: true,
-    error: RmadErrorCode.kOk
-  },
-  {
     state: RmaState.kWaitForManualWPDisable,
     canCancel: true,
     canGoBack: true,

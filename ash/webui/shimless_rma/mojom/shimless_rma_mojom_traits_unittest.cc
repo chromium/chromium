@@ -73,7 +73,6 @@ TEST_F(ShimlessRmaMojoToProtoTest, StatesMatch) {
         rmad::RmadState::kWpDisableMethod},
        {mojom::RmaState::kEnterRSUWPDisableCode,
         rmad::RmadState::kWpDisableRsu},
-       {mojom::RmaState::kVerifyRsu, rmad::RmadState::kVerifyRsu},
        {mojom::RmaState::kWaitForManualWPDisable,
         rmad::RmadState::kWpDisablePhysical},
        {mojom::RmaState::kWPDisableComplete,

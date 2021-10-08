@@ -64,8 +64,6 @@ MojomRmaState EnumTraits<MojomRmaState, ProtoRmadState>::ToMojom(
       return MojomRmaState::kChooseWriteProtectDisableMethod;
     case ProtoRmadState::kWpDisableRsu:
       return MojomRmaState::kEnterRSUWPDisableCode;
-    case ProtoRmadState::kVerifyRsu:
-      return MojomRmaState::kVerifyRsu;
     case ProtoRmadState::kWpDisablePhysical:
       return MojomRmaState::kWaitForManualWPDisable;
     case ProtoRmadState::kWpDisableComplete:

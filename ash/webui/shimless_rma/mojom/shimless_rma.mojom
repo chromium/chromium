@@ -54,7 +54,6 @@ enum RmaState {
   kChooseDestination,
   kChooseWriteProtectDisableMethod,
   kEnterRSUWPDisableCode,
-  kVerifyRsu,
   kWaitForManualWPDisable,
   kWPDisableComplete,
   kChooseFirmwareReimageMethod,
