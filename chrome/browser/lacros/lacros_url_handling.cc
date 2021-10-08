@@ -19,7 +19,10 @@ bool MaybeInterceptNavigation(const GURL& url) {
   // We may expand this in the future to support a dynamic set of URLs provided
   // by Ash via LacrosInitParams. That way we avoid having to synchronize the
   // set of known chrome:// URLs across the two sides.
+  return NavigateInAsh(url);
+}
 
+bool NavigateInAsh(const GURL& url) {
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (!service->IsAvailable<crosapi::mojom::UrlHandler>())
     return false;

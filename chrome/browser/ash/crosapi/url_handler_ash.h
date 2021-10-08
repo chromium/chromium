@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_URL_HANDLER_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_URL_HANDLER_ASH_H_
 
+#include <memory>
+#include "chrome/browser/ui/ash/chrome_url_window_manager.h"
+#include "chrome/browser/ui/ash/shelf/chrome_url_window_observer.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
@@ -26,6 +29,10 @@ class UrlHandlerAsh : public mojom::UrlHandler {
 
  private:
   mojo::ReceiverSet<mojom::UrlHandler> receivers_;
+
+  // It is assumed that url_window_manager_ outlives url_window_observer_.
+  std::unique_ptr<ChromeUrlWindowObserver> url_window_observer_;
+  std::unique_ptr<ChromeUrlWindowManager> url_window_manager_;
 };
 
 }  // namespace crosapi
