@@ -76,19 +76,21 @@ class BASE_EXPORT PartitionAddressSpace {
   // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
   // supports BackupRefPtr and one that doesn't.
   static ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
-    return non_brp_pool_;
+    return setup_.non_brp_pool_;
   }
 
   static ALWAYS_INLINE constexpr uintptr_t NonBRPPoolBaseMask() {
     return kNonBRPPoolBaseMask;
   }
 
-  static ALWAYS_INLINE internal::pool_handle GetBRPPool() { return brp_pool_; }
+  static ALWAYS_INLINE internal::pool_handle GetBRPPool() {
+    return setup_.brp_pool_;
+  }
 
   // The Configurable Pool can be created inside an existing mapping and so will
   // be located outside PartitionAlloc's GigaCage.
   static ALWAYS_INLINE internal::pool_handle GetConfigurablePool() {
-    return configurable_pool_;
+    return setup_.configurable_pool_;
   }
 
   static ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
@@ -101,7 +103,7 @@ class BASE_EXPORT PartitionAddressSpace {
     uintptr_t base = 0;
     if (IsInNonBRPPool(address)) {
       pool = GetNonBRPPool();
-      base = non_brp_pool_base_address_;
+      base = setup_.non_brp_pool_base_address_;
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInBRPPool(address)) {
       pool = GetBRPPool();
@@ -109,7 +111,7 @@ class BASE_EXPORT PartitionAddressSpace {
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     } else if (IsInConfigurablePool(address)) {
       pool = GetConfigurablePool();
-      base = configurable_pool_base_address_;
+      base = setup_.configurable_pool_base_address_;
     } else {
       PA_NOTREACHED();
     }
@@ -132,49 +134,50 @@ class BASE_EXPORT PartitionAddressSpace {
   static void UninitForTesting();
 
   static ALWAYS_INLINE bool IsInitialized() {
-    if (reserved_base_address_) {
-      PA_DCHECK(non_brp_pool_ != 0);
-      PA_DCHECK(brp_pool_ != 0);
+    if (setup_.reserved_base_address_) {
+      PA_DCHECK(setup_.non_brp_pool_ != 0);
+      PA_DCHECK(setup_.brp_pool_ != 0);
       return true;
     }
 
-    PA_DCHECK(non_brp_pool_ == 0);
-    PA_DCHECK(brp_pool_ == 0);
+    PA_DCHECK(setup_.non_brp_pool_ == 0);
+    PA_DCHECK(setup_.brp_pool_ == 0);
     return false;
   }
 
   static ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
-    return configurable_pool_base_address_ != kConfigurablePoolOffsetMask;
+    return setup_.configurable_pool_base_address_ !=
+           kConfigurablePoolOffsetMask;
   }
 
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInNonBRPPool(const void* address) {
     return (reinterpret_cast<uintptr_t>(address) & kNonBRPPoolBaseMask) ==
-           non_brp_pool_base_address_;
+           setup_.non_brp_pool_base_address_;
   }
 
   static ALWAYS_INLINE uintptr_t NonBRPPoolBase() {
-    return non_brp_pool_base_address_;
+    return setup_.non_brp_pool_base_address_;
   }
 
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInBRPPool(const void* address) {
     return (reinterpret_cast<uintptr_t>(address) & kBRPPoolBaseMask) ==
-           brp_pool_base_address_;
+           setup_.brp_pool_base_address_;
   }
   // Returns false for nullptr.
   static ALWAYS_INLINE bool IsInConfigurablePool(const void* address) {
     return (reinterpret_cast<uintptr_t>(address) & kConfigurablePoolBaseMask) ==
-           configurable_pool_base_address_;
+           setup_.configurable_pool_base_address_;
   }
 
   static ALWAYS_INLINE uintptr_t ConfigurablePoolBase() {
-    return configurable_pool_base_address_;
+    return setup_.configurable_pool_base_address_;
   }
 
   static ALWAYS_INLINE uintptr_t OffsetInBRPPool(const void* address) {
     PA_DCHECK(IsInBRPPool(address));
-    return reinterpret_cast<uintptr_t>(address) - brp_pool_base_address_;
+    return reinterpret_cast<uintptr_t>(address) - setup_.brp_pool_base_address_;
   }
 
   // PartitionAddressSpace is static_only class.
@@ -242,15 +245,32 @@ class BASE_EXPORT PartitionAddressSpace {
   static constexpr uintptr_t kConfigurablePoolBaseMask =
       ~kConfigurablePoolOffsetMask;
 
-  // See the comment describing the address layout above.
-  static uintptr_t reserved_base_address_;
-  static uintptr_t non_brp_pool_base_address_;
-  static uintptr_t brp_pool_base_address_;
-  static uintptr_t configurable_pool_base_address_;
+  struct GigaCageSetup {
+    uintptr_t reserved_base_address_ = 0;
 
-  static pool_handle non_brp_pool_;
-  static pool_handle brp_pool_;
-  static pool_handle configurable_pool_;
+    // Before PartitionAddressSpace::Init(), no allocation are allocated from a
+    // reserved address space. Therefore, set *_pool_base_address_ initially to
+    // k*PoolOffsetMask, so that PartitionAddressSpace::IsIn*Pool() always
+    // returns false.
+    uintptr_t non_brp_pool_base_address_ = kNonBRPPoolOffsetMask;
+    uintptr_t brp_pool_base_address_ = kBRPPoolOffsetMask;
+    uintptr_t configurable_pool_base_address_ = kConfigurablePoolOffsetMask;
+
+    pool_handle non_brp_pool_ = 0;
+    pool_handle brp_pool_ = 0;
+    pool_handle configurable_pool_ = 0;
+
+    char padding_[20] = {};
+  };
+  static_assert(sizeof(GigaCageSetup) % 64 == 0,
+                "GigaCageSetup has to fill a cacheline(s)");
+
+  // See the comment describing the address layout above.
+  //
+  // These are write-once fields, frequently accessed thereafter. Make sure they
+  // don't share a cacheline with other, potentially writeable data, through
+  // alignment and padding.
+  alignas(64) static GigaCageSetup setup_;
 };
 
 ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
