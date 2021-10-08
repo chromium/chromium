@@ -807,9 +807,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ(image_original_url, image_load_info->original_url);
 }
 
-// Flaky on all platforms, http://crbug.com/1256643.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       DISABLED_ResourceLoadCompleteNetError) {
+                       ResourceLoadCompleteNetError) {
   ResourceLoadObserver observer(shell());
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -824,22 +823,31 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   observer.Reset();
 
   // Load the page and simulate a network error.
-  content::URLLoaderInterceptor url_interceptor(base::BindRepeating(
-      [](const GURL& url,
-         content::URLLoaderInterceptor::RequestParams* params) {
-        if (params->url_request.url != url)
+  content::URLLoaderInterceptor url_interceptor(base::BindLambdaForTesting(
+      [image_url](content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url != image_url)
           return false;
         network::URLLoaderCompletionStatus status;
         status.error_code = net::ERR_ADDRESS_UNREACHABLE;
         params->client->OnComplete(status);
         return true;
-      },
-      image_url));
+      }));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
   ASSERT_EQ(2U, observer.resource_load_infos().size());
-  EXPECT_EQ(net::OK, observer.resource_load_infos()[0]->net_error);
-  EXPECT_EQ(net::ERR_ADDRESS_UNREACHABLE,
-            observer.resource_load_infos()[1]->net_error);
+  // A ResourceLoadInfo is added when the load for the resource is complete,
+  // and hence the order is undeterministic.
+  if (observer.resource_load_infos()[0]->final_url == page_url) {
+    EXPECT_EQ(net::OK, observer.resource_load_infos()[0]->net_error);
+    EXPECT_EQ(image_url, observer.resource_load_infos()[1]->final_url);
+    EXPECT_EQ(net::ERR_ADDRESS_UNREACHABLE,
+              observer.resource_load_infos()[1]->net_error);
+  } else {
+    EXPECT_EQ(image_url, observer.resource_load_infos()[0]->final_url);
+    EXPECT_EQ(net::ERR_ADDRESS_UNREACHABLE,
+              observer.resource_load_infos()[0]->net_error);
+    EXPECT_EQ(page_url, observer.resource_load_infos()[1]->final_url);
+    EXPECT_EQ(net::OK, observer.resource_load_infos()[1]->net_error);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
