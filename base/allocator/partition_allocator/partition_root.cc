@@ -905,7 +905,7 @@ void* PartitionRoot<thread_safe>::ReallocFlags(int flags,
     bool tried_in_place_for_direct_map = false;
     {
       internal::ScopedGuard<thread_safe> guard{old_root->lock_};
-      // TODO(palmer): See if we can afford to make this a CHECK.
+      // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
       PA_DCHECK(IsValidSlotSpan(slot_span));
       old_usable_size = slot_span->GetUsableSize(old_root);
 

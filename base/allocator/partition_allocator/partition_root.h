@@ -700,7 +700,7 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
   // cause trouble, and the caller is responsible for that not happening.
   auto* slot_span =
       internal::SlotSpanMetadata<thread_safe>::FromSlotInnerPtr(ptr);
-  // TODO(palmer): See if we can afford to make this a CHECK.
+  // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
   PA_DCHECK(PartitionRoot<thread_safe>::IsValidSlotSpan(slot_span));
   return slot_span;
 }
@@ -903,8 +903,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     *usable_size = AdjustSizeForExtrasSubtract(bucket->slot_size);
     PA_DCHECK(*usable_size == slot_span->GetUsableSize(this));
 
-    // If these DCHECKs fire, you probably corrupted memory. TODO(palmer): See
-    // if we can afford to make these CHECKs.
+    // If these DCHECKs fire, you probably corrupted memory.
+    // TODO(crbug.com/1257655): See if we can afford to make these CHECKs.
     PA_DCHECK(IsValidSlotSpan(slot_span));
 
     // All large allocations must go through the slow path to correctly update
@@ -924,7 +924,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
       return nullptr;
 
     slot_span = SlotSpan::FromSlotStartPtr(slot_start);
-    // TODO(palmer): See if we can afford to make this a CHECK.
+    // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
     PA_DCHECK(IsValidSlotSpan(slot_span));
     // For direct mapped allocations, |bucket| is the sentinel.
     PA_DCHECK((slot_span->bucket == bucket) ||
@@ -1004,7 +1004,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   // cacheline ping-pong.
   PA_PREFETCH(slot_span);
 
-  // TODO(palmer): See if we can afford to make this a CHECK.
+  // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
   PA_DCHECK(IsValidSlotSpan(slot_span));
   PA_DCHECK(FromSlotSpan(slot_span) == root);
 
