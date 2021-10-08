@@ -168,10 +168,6 @@ extern const char kEnableDiscoverFeedPreviewDescription[];
 extern const char kEnableDiscoverFeedStaticResourceServingName[];
 extern const char kEnableDiscoverFeedStaticResourceServingDescription[];
 
-// Title and description for the flag to enable FRE default browser screen.
-extern const char kEnableFREDefaultBrowserScreenName[];
-extern const char kEnableFREDefaultBrowserScreenDescription[];
-
 // Title and description for the flag to test the FRE default browser promo
 // experiment.
 extern const char kEnableFREDefaultBrowserScreenTestingName[];

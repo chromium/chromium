@@ -192,13 +192,6 @@ const char kEnableDiscoverFeedStaticResourceServingDescription[] =
     "When enabled the discover feed will optimize the request of resources "
     "coming from the server.";
 
-const char kEnableFREDefaultBrowserScreenName[] =
-    "Enable FRE default browser screen";
-const char kEnableFREDefaultBrowserScreenDescription[] =
-    "When enabled, displays the 'default browser' screen in the new FRE which "
-    "suggests changing the default browser in the Settings.app with a button "
-    "to go directly to it.";
-
 const char kEnableFREDefaultBrowserScreenTestingName[] =
     "Enable FRE default browser screen testing";
 const char kEnableFREDefaultBrowserScreenTestingDescription[] =

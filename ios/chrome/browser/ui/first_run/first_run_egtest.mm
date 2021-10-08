@@ -344,11 +344,6 @@ GREYLayoutConstraint* BelowConstraint() {
     return;
   }
 
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.features_enabled.push_back(kEnableFREDefaultBrowserScreen);
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   // Go to the default browser screen.
   [self verifyWelcomeScreenIsDisplayed];
   [self scrollToElementAndAssertVisibility:GetAcceptButton()];
