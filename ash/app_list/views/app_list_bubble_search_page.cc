@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/result_selection_controller.h"
 #include "ash/app_list/views/search_box_view.h"
@@ -99,6 +100,36 @@ void AppListBubbleSearchPage::OnSearchResultContainerResultsChanged() {
 }
 
 void AppListBubbleSearchPage::OnSelectedResultChanged() {
+  if (!result_selection_controller_->selected_result()) {
+    return;
+  }
+
+  views::View* selected_row = result_selection_controller_->selected_result();
+  selected_row->ScrollViewToVisible();
+
+  MaybeNotifySelectedResultChanged();
+}
+
+void AppListBubbleSearchPage::SetIgnoreResultChangesForA11y(bool ignore) {
+  if (ignore_result_changes_for_a11y_ == ignore)
+    return;
+  ignore_result_changes_for_a11y_ = ignore;
+  SetViewIgnoredForAccessibility(this, ignore);
+}
+
+void AppListBubbleSearchPage::ScheduleResultsChangedA11yNotification() {
+  // TODO(crbug.com/1204551): Schedule accessibility announcement, similar to
+  // SearchResultPageView.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void AppListBubbleSearchPage::NotifyA11yResultsChanged() {
+  // TODO(crbug.com/1204551): Accessibility announcement, similar to
+  // SearchResultPageView.
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void AppListBubbleSearchPage::MaybeNotifySelectedResultChanged() {
   // TODO(crbug.com/1204551): Accessibility announcement, similar to
   // SearchResultPageView.
   NOTIMPLEMENTED_LOG_ONCE();

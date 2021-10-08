@@ -46,9 +46,43 @@ class ASH_EXPORT AppListBubbleSearchPage
   }
 
  private:
+  // Passed to |result_selection_controller_| as a callback that gets called
+  // when the currently selected result changes.
+  // Scrolls the list view to the newly selected result.
   void OnSelectedResultChanged();
 
+  // Sets whether changes in search result containers should be hidden from the
+  // accessibility framework.
+  // This is set while search results are being updated to reduce noisy updates
+  // sent to the accessibility framework while the search result containers are
+  // being rebuilt.
+  // The |ignore| value is reset in NotifyA11yResultsChanged(), at which time
+  // accessibility framework is notified that the view value/selected children
+  // have changed.
+  void SetIgnoreResultChangesForA11y(bool ignore);
+
+  // Schedules a call to |NotifyA11yResultsChanged|. Called from
+  // OnSearchResultContainerResultsChanged() when all result containers have
+  // finished changing. The goal of the delay is to silence bursts of A11Y
+  // events caused by from rapidly changing user queries and consecutive search
+  // result updates.
+  void ScheduleResultsChangedA11yNotification();
+
+  // Notifies the accessibility framework that the set of search results has
+  // changed.
+  // Note: This ensures that results changes are not being hidden from a11y
+  // framework.
+  void NotifyA11yResultsChanged();
+
+  // Send a kSelection a11y notification for the currently selected search
+  // result view unless overridden by |ignore_result_changes_for_a11y_|.
+  void MaybeNotifySelectedResultChanged();
+
   SearchBoxView* const search_box_view_;
+
+  // Whether changes in search result containers are hidden from the
+  // accessibility framework.
+  bool ignore_result_changes_for_a11y_ = false;
 
   // Containers for search result views. Has a single element, but is a vector
   // for compatibility with SearchBoxView. The contained view is owned by the
