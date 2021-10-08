@@ -969,4 +969,46 @@ IN_PROC_BROWSER_TEST_F(CommerceHintPurchaseURLPatternTest, PurchaseByURL) {
   NavigateToURL("https://www.guitarcenter.com/special_purchase_text");
   WaitForCartCount(kEmptyExpected);
 }
+
+class CommerceHintOptimizeRendererTest : public CommerceHintAgentTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{ntp_features::kNtpChromeCartModule,
+          {{"optimize-renderer-signal", "true"},
+           {"cart-extraction-gap-time", "0s"}}},
+         {optimization_guide::features::kOptimizationHints, {{}}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CommerceHintOptimizeRendererTest,
+                       CartExtractionSkipped) {
+  base::HistogramTester histogram_tester;
+
+  // Without adding testing hints, all the URLs are considered non-shopping.
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  WaitForCartCount(kEmptyExpected);
+  SendXHR("/add-to-cart", "product: 123");
+
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 0);
+
+  auto* optimization_guide_decider =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+  // Need the non-default port here.
+  optimization_guide_decider->AddHintForTesting(
+      https_server_.GetURL("www.guitarcenter.com", "/cart.html"),
+      optimization_guide::proto::SHOPPING_PAGE_PREDICTOR, absl::nullopt);
+
+  NavigateToURL("https://www.guitarcenter.com/cart.html");
+  WaitForCarts(kExpectedExample);
+  SendXHR("/add-to-cart", "product: 123");
+
+  WaitForUmaBucketCount(histogram_tester, "Commerce.Carts.ExtractionTimedOut",
+                        0, 2);
+}
 }  // namespace

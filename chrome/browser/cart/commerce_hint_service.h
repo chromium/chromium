@@ -32,12 +32,12 @@ class CommerceHintService
   void OnWillSendRequest(const GURL& navigation_url, bool is_addtocart);
   void OnCartUpdated(const GURL& cart_url,
                      std::vector<mojom::ProductPtr> products);
+  bool ShouldSkip(const GURL& url);
 
  private:
   explicit CommerceHintService(content::WebContents* web_contents);
   friend class content::WebContentsUserData<CommerceHintService>;
 
-  bool ShouldSkip(const GURL& url);
   void AddCartToDB(const GURL& url,
                    bool success,
                    std::vector<CartDB::KeyAndValue> proto_pairs);

@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/common/cart/commerce_hints.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -47,6 +48,8 @@ class CommerceHintAgent
       const blink::WebFormElement& form);
 
  private:
+  using OnNavigationCallback = base::OnceCallback<void(bool)>;
+
   void MaybeExtractProducts();
   void ExtractProducts();
   void ExtractCartFromCurrentFrame();
@@ -59,6 +62,8 @@ class CommerceHintAgent
   int extraction_count_{0};
   bool is_extraction_pending_{false};
   bool is_extraction_running_{false};
+  bool should_skip_{false};
+  mojo::Remote<mojom::CommerceHintObserver> navigation_observer_;
   base::WeakPtrFactory<CommerceHintAgent> weak_factory_{this};
 
   class JavaScriptRequest : public blink::WebScriptExecutionCallback {
@@ -88,6 +93,19 @@ class CommerceHintAgent
   void WillSubmitForm(const blink::WebFormElement& form) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
   void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
+
+  void OnNavigation(const GURL& url, OnNavigationCallback callback);
+  // Callbacks with business logics for handling navigation-related observer
+  // calls. These callbacks are triggered when navigation-related signals are
+  // captured and carry an extra bool |should_act| indicating whether commerce
+  // hint signals should be collected on current URL or not.
+  void DidStartNavigationCallback(
+      const GURL& url,
+      absl::optional<blink::WebNavigationType> navigation_type,
+      bool should_skip);
+  void DidCommitProvisionalLoadCallback(ui::PageTransition transition,
+                                        bool should_skip);
+  void DidFinishLoadCallback(bool should_skip);
 };
 
 }  // namespace cart

@@ -7,10 +7,17 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/search/ntp_features.h"
 #include "url/gurl.h"
 
 namespace commerce_renderer_feature {
 extern const base::Feature kRetailCoupons;
+
+// Whether to use OptimizationGuide to optimize renderer signal collection.
+constexpr base::FeatureParam<bool> kOptimizeRendererSignal(
+    &ntp_features::kNtpChromeCartModule,
+    "optimize-renderer-signal",
+    false);
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);
