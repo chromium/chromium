@@ -117,10 +117,10 @@ class ReadableByteStreamController : public ReadableStreamController {
                     v8::Local<v8::Value> e);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-enqueue
-  void Enqueue(ScriptState*,
-               ReadableByteStreamController*,
-               NotShared<DOMArrayBufferView> chunk,
-               ExceptionState&);
+  static void Enqueue(ScriptState*,
+                      ReadableByteStreamController*,
+                      NotShared<DOMArrayBufferView> chunk,
+                      ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-enqueue-chunk-to-queue
   static void EnqueueChunkToQueue(ReadableByteStreamController*,

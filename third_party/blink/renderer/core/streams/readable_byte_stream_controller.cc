@@ -314,16 +314,10 @@ void ReadableByteStreamController::Enqueue(
 
   // 7. If ! ReadableStreamHasDefaultReader(stream) is true
   if (ReadableStream::HasDefaultReader(stream)) {
-    if (!pending_pull_intos_.empty()) {
-      DCHECK_EQ(pending_pull_intos_.size(), 1u);
-      DCHECK_EQ(pending_pull_intos_[0]->reader_type, ReaderType::kDefault);
-      pending_pull_intos_.clear();
-    }
-
-    // TODO(ricea): Update the step numbering to match the standard.
-
     //   a. If ! ReadableStreamGetNumReadRequests(stream) is 0,
     if (ReadableStream::GetNumReadRequests(stream) == 0) {
+      DCHECK(controller->pending_pull_intos_.IsEmpty());
+
       //     i. Perform !
       //     ReadableByteStreamControllerEnqueueChunkToQueue(controller,
       //     transferredBuffer, byteOffset, byteLength).
@@ -333,6 +327,13 @@ void ReadableByteStreamController::Enqueue(
       // b. Otherwise,
       //     i. Assert: controller.[[queue]] is empty.
       DCHECK(controller->queue_.IsEmpty());
+
+      if (!controller->pending_pull_intos_.IsEmpty()) {
+        DCHECK_EQ(controller->pending_pull_intos_[0]->reader_type,
+                  ReaderType::kDefault);
+        ShiftPendingPullInto(controller);
+      }
+
       //     ii. Let transferredView be ! Construct(%Uint8Array%, «
       //     transferredBuffer, byteOffset, byteLength »).
       v8::Local<v8::Value> const transferred_view = v8::Uint8Array::New(
