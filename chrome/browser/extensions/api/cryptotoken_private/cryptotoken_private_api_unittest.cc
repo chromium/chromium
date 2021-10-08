@@ -360,6 +360,7 @@ TEST_F(CryptoTokenPermissionTest, PolicyOverridesAttestationPrompt) {
 }
 
 TEST_F(CryptoTokenPermissionTest, RequestPrompt) {
+  feature_list_.InitAndEnableFeature(device::kU2fPermissionPrompt);
   const std::vector<permissions::PermissionRequestManager::AutoResponseType>
       actions = {
           permissions::PermissionRequestManager::ACCEPT_ALL,
