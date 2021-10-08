@@ -10,8 +10,10 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -25,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
@@ -679,6 +682,26 @@ void RunTestServiceCommand(const std::string& sub_command) {
   base::CommandLine command(path);
   command.AppendArg(sub_command);
 
+  EXPECT_EQ(RunVPythonCommand(command), 0);
+}
+
+void InvokeTestServiceFunction(
+    const std::string& function_name,
+    const base::flat_map<std::string, base::Value>& arguments) {
+  std::string arguments_json_string;
+  EXPECT_TRUE(
+      base::JSONWriter::Write(base::Value(arguments), &arguments_json_string));
+
+  base::FilePath path(base::CommandLine::ForCurrentProcess()->GetProgram());
+  path = path.DirName();
+  path = MakeAbsoluteFilePath(path);
+  path = path.Append(FILE_PATH_LITERAL("test_service"))
+             .Append(FILE_PATH_LITERAL("service_client.py"));
+  EXPECT_TRUE(base::PathExists(path));
+
+  base::CommandLine command(path);
+  command.AppendSwitchASCII("--function", function_name);
+  command.AppendSwitchASCII("--args", arguments_json_string);
   EXPECT_EQ(RunVPythonCommand(command), 0);
 }
 

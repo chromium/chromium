@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
@@ -17,6 +18,7 @@
 
 namespace base {
 class CommandLine;
+class Value;
 class Version;
 }  // namespace base
 
@@ -142,6 +144,13 @@ void ExpectInterfacesRegistered(UpdaterScope scope);
 void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                                     const std::string& app_id);
 void RunTestServiceCommand(const std::string& sub_command);
+
+// Calls a function defined in test/service/win/rpc_client.py.
+// Entries of the `arguments` dictionary should be the function's parameter
+// name/value pairs.
+void InvokeTestServiceFunction(
+    const std::string& function_name,
+    const base::flat_map<std::string, base::Value>& arguments);
 #endif  // OS_WIN
 
 // Returns the number of files in the directory, not including directories,

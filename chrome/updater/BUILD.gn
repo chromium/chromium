@@ -591,6 +591,7 @@ if (is_win || is_mac) {
         "test/service/win/rpc_client.py",
         "test/service/win/rpc_handler.py",
         "test/service/win/run_command_as_standard_user.py",
+        "test/service/win/service_client.py",
         "test/service/win/uac.py",
         "test/service/win/ui.py",
         "test/service/win/updater_test_service.py",
