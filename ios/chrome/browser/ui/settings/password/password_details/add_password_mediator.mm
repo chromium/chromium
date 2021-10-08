@@ -121,17 +121,6 @@ bool CheckForDuplicates(
   passwordForm.in_store = password_manager::PasswordForm::Store::kProfileStore;
   passwordForm.type = password_manager::PasswordForm::Type::kManuallyAdded;
 
-  for (const auto& form : _manager->GetAllCredentials()) {
-    if (form.signon_realm == passwordForm.signon_realm &&
-        form.username_value == passwordForm.username_value) {
-      _cachedPasswordForm = passwordForm;
-      [self.delegate
-          showReplacePasswordAlert:username
-                           hostUrl:SysUTF8ToNSString(passwordForm.url.host())];
-      return;
-    }
-  }
-
   _manager->AddPasswordForm(passwordForm);
   [self.delegate setUpdatedPasswordForm:passwordForm];
   [self.delegate dismissPasswordDetailsTableViewController];
@@ -167,20 +156,6 @@ bool CheckForDuplicates(
 }
 
 - (void)didCancelAddPasswordDetails {
-  [self.delegate dismissPasswordDetailsTableViewController];
-}
-
-- (void)didConfirmReplaceExistingCredential {
-  DCHECK(self.cachedPasswordForm);
-  for (const auto& form : _manager->GetAllCredentials()) {
-    if (form.signon_realm == self.cachedPasswordForm->signon_realm &&
-        form.username_value == self.cachedPasswordForm->username_value) {
-      _manager->EditPasswordForm(form, self.cachedPasswordForm->username_value,
-                                 self.cachedPasswordForm->password_value);
-      [self.delegate setUpdatedPasswordForm:self.cachedPasswordForm.value()];
-      break;
-    }
-  }
   [self.delegate dismissPasswordDetailsTableViewController];
 }
 

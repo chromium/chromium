@@ -110,10 +110,6 @@ using InsecureCredentialsView =
   NOTREACHED();
 }
 
-- (void)didConfirmReplaceExistingCredential {
-  NOTREACHED();
-}
-
 - (BOOL)isUsernameReused:(NSString*)newUsername {
   // It is more efficient to check set of the usernames for the same origin
   // instead of delegating this to the |_manager|.

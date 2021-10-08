@@ -76,7 +76,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   ReauthenticationReasonShow = 0,
   ReauthenticationReasonCopy,
   ReauthenticationReasonEdit,
-  ReauthenticationReasonReplacePassword,
 };
 
 }  // namespace
@@ -843,9 +842,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       [super editButtonPressed];
       [self reloadData];
       break;
-    case ReauthenticationReasonReplacePassword:
-      NOTREACHED();
-      break;
   }
   [self logPasswordAccessWith:reason];
 }
@@ -862,9 +858,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ReauthenticationReasonEdit:
       return l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORD_REAUTH_REASON_EDIT);
-    case ReauthenticationReasonReplacePassword:
-      // TODO(crbug.com/1226006): Use i18n string.
-      return @"Replace Password";
   }
 }
 
@@ -1134,9 +1127,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
           password_manager::metrics_util::ACCESS_PASSWORD_EDITED,
           password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
       break;
-    case ReauthenticationReasonReplacePassword:
-      NOTREACHED();
-      break;
   }
 }
 
@@ -1153,36 +1143,6 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                             PasswordCheckInteraction::kEditPassword);
   }
   [self reloadData];
-}
-
-- (void)validateUserAndReplaceExistingCredential {
-  if ([self.reauthModule canAttemptReauth]) {
-    __weak __typeof(self) weakSelf = self;
-    void (^editPasswordConfirmationHandler)(ReauthenticationResult) =
-        ^(ReauthenticationResult result) {
-          PasswordDetailsTableViewController* strongSelf = weakSelf;
-          if (!strongSelf)
-            return;
-          [strongSelf logPasswordSettingsReauthResult:result];
-
-          if (result == ReauthenticationResult::kFailure) {
-            return;
-          }
-
-          [strongSelf.delegate didConfirmReplaceExistingCredential];
-        };
-
-    NSString* reauthReason =
-        [self localizedStringForReason:ReauthenticationReasonReplacePassword];
-
-    [self.reauthModule
-        attemptReauthWithLocalizedReason:reauthReason
-                    canReusePreviousAuth:YES
-                                 handler:editPasswordConfirmationHandler];
-  } else {
-    DCHECK(self.addPasswordHandler);
-    [self.addPasswordHandler showPasscodeDialog];
-  }
 }
 
 - (void)showPasswordWithoutAuthentication {

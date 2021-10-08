@@ -114,9 +114,6 @@ constexpr char kPassword[] = "test";
                               username:(NSString*)username {
 }
 
-- (void)didConfirmReplaceExistingCredential {
-}
-
 - (void)didCancelAddPasswordDetails {
 }
 

@@ -107,41 +107,6 @@
   [self.delegate passwordDetailsTableViewControllerDidFinish:self];
 }
 
-- (void)showReplacePasswordAlert:(NSString*)username
-                         hostUrl:(NSString*)hostUrl {
-  // TODO(crbug.com/1226006): Use i18n strings for title, message and the
-  // buttons.
-  NSString* title = @"Replace Password?";
-  NSString* message = [NSString
-      stringWithFormat:@"You already saved a password for \"%@\" at %@. "
-                       @"Do you want to replace it?",
-                       username, hostUrl];
-  self.alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
-                                                   browser:self.browser
-                                                     title:title
-                                                   message:message];
-
-  __weak __typeof(self) weakSelf = self;
-
-  [self.alertCoordinator addItemWithTitle:@"Cancel"
-                                   action:nil
-                                    style:UIAlertActionStyleCancel];
-
-  [self.alertCoordinator
-      addItemWithTitle:@"Replace"
-                action:^{
-                  if (!weakSelf) {
-                    return;
-                  }
-                  [weakSelf.viewController
-                          validateUserAndReplaceExistingCredential];
-                }
-                 style:UIAlertActionStyleDestructive];
-
-  [self.alertCoordinator start];
-}
-
 - (void)setUpdatedPasswordForm:
     (const password_manager::PasswordForm&)passwordForm {
   [self.delegate setMostRecentlyUpdatedPasswordDetails:passwordForm];

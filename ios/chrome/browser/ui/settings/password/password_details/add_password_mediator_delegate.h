@@ -15,10 +15,6 @@ struct PasswordForm;
 // Called when the password details view controller is to be dismissed.
 - (void)dismissPasswordDetailsTableViewController;
 
-// Called when the alert is to be shown to the user for replacing an existing
-// credential's password.
-- (void)showReplacePasswordAlert:(NSString*)username hostUrl:(NSString*)hostUrl;
-
 // Called after a new credential is added or an existing one is updated via the
 // add credential flow.
 - (void)setUpdatedPasswordForm:
