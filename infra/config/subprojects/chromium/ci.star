@@ -1240,6 +1240,15 @@ ci.android_fyi_builder(
     os = os.LINUX_BIONIC_REMOVE,
 )
 
+ci.android_fyi_builder(
+    name = "android-annotator-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "network|traffic|annotations",
+        short_name = "and",
+    ),
+    notifies = ["annotator-rel"],
+)
+
 ci.angle_linux_builder(
     name = "android-angle-arm64-builder",
     console_view_entry = consoles.console_view_entry(
