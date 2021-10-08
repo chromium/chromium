@@ -432,7 +432,7 @@ void BrowserAppInstanceTracker::OnBrowserFirstTabAttached(Browser* browser) {
   }
 
   tracked_browsers_.insert(browser);
-  if (browser->is_type_normal()) {
+  if (browser->is_type_normal() || browser->is_type_devtools()) {
     CreateWindowInstance(browser);
   }
 }

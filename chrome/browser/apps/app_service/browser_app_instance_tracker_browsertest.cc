@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -434,6 +435,48 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, InsertAndCloseTabs) {
         {"removed", 3, kAppTab, kAppId_B, window, kTitle_B, kActive, kInactive},
         {"removed", 2, kAppTab, kAppId_A, window, kTitle_A, kActive, kInactive},
         {"removed", 1, kChromeWindow, "", window, "", kActive, false},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, DevtoolsWindow) {
+  Browser* browser = CreateBrowser();
+  InsertForegroundTab(browser, "https://c.example.org");
+  aura::Window* window1 = browser->window()->GetNativeWindow();
+
+  {
+    SCOPED_TRACE("docked dev tools window");
+    Recorder recorder(*tracker_);
+
+    DevToolsWindow* dev_tools_window =
+        DevToolsWindowTesting::OpenDevToolsWindowSync(browser,
+                                                      /*is_docked=*/true);
+    DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
+    recorder.Verify({});
+  }
+
+  {
+    SCOPED_TRACE("undocked dev tools window");
+    Recorder recorder(*tracker_);
+
+    DevToolsWindow* dev_tools_window =
+        DevToolsWindowTesting::OpenDevToolsWindowSync(browser,
+                                                      /*is_docked=*/false);
+    aura::Window* window2 = DevToolsWindowTesting::Get(dev_tools_window)
+                                ->browser()
+                                ->window()
+                                ->GetNativeWindow();
+    DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
+
+    recorder.Verify({
+        // dev tools window opened
+        {"added", 2, kChromeWindow, "", window2, "", kInactive, false},
+        {"updated", 1, kChromeWindow, "", window1, "", kInactive, false},
+        {"updated", 2, kChromeWindow, "", window2, "", kActive, false},
+        // dev tools window closed
+        {"updated", 2, kChromeWindow, "", window2, "", kInactive, false},
+        {"updated", 1, kChromeWindow, "", window1, "", kActive, false},
+        {"removed", 2, kChromeWindow, "", window2, "", kInactive, false},
     });
   }
 }
