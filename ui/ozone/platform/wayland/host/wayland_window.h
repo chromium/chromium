@@ -55,9 +55,7 @@ class WaylandWindow : public PlatformWindow,
   static std::unique_ptr<WaylandWindow> Create(
       PlatformWindowDelegate* delegate,
       WaylandConnection* connection,
-      PlatformWindowInitProperties properties,
-      bool update_visual_size_immediately = false,
-      bool apply_pending_state_on_update_visual_size = false);
+      PlatformWindowInitProperties properties);
 
   void OnWindowLostCapture();
 
@@ -135,12 +133,9 @@ class WaylandWindow : public PlatformWindow,
   }
   void set_frame_insets_px(gfx::Insets insets) { frame_insets_px_ = insets; }
 
-  // These are never intended to be used except in unit tests.
+  // This is never intended to be used except in unit tests.
   void set_update_visual_size_immediately(bool update_immediately) {
     update_visual_size_immediately_ = update_immediately;
-  }
-  void set_apply_pending_state_on_update_visual_size(bool apply_immediately) {
-    apply_pending_state_on_update_visual_size_ = apply_immediately;
   }
 
   // Remove WaylandOutput associated with WaylandSurface of this window.
@@ -383,12 +378,6 @@ class WaylandWindow : public PlatformWindow,
   // any frame updates. This flag causes UpdateVisualSize() to be invoked during
   // SetBounds() in unit tests.
   bool update_visual_size_immediately_ = false;
-
-  // In a non-test environment, root_surface_->ApplyPendingBounds() is called to
-  // send Wayland protocol requests, but in some unit tests there will never be
-  // any frame updates. This flag causes root_surface_->ApplyPendingBounds() to
-  // be invoked during UpdateVisualSize() in unit tests.
-  bool apply_pending_state_on_update_visual_size_ = false;
 
   // AcceleratedWidget for this window. This will be unique even over time.
   gfx::AcceleratedWidget accelerated_widget_;

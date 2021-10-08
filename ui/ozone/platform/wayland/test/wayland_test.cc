@@ -70,7 +70,8 @@ void WaylandTest::SetUp() {
   properties.bounds = gfx::Rect(0, 0, 800, 600);
   properties.type = PlatformWindowType::kWindow;
   window_ = WaylandWindow::Create(&delegate_, connection_.get(),
-                                  std::move(properties), true, true);
+                                  std::move(properties));
+  window_->set_update_visual_size_immediately(true);
   ASSERT_NE(widget_, gfx::kNullAcceleratedWidget);
 
   window_->Show(false);

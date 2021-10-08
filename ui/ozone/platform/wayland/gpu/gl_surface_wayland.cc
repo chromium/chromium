@@ -8,9 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
 #include "third_party/khronos/EGL/egl.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gl/gl_surface_presentation_helper.h"
 #include "ui/ozone/common/egl_util.h"
@@ -38,7 +36,6 @@ GLSurfaceWayland::GLSurfaceWayland(WaylandEglWindowPtr egl_window,
       window_(window) {
   DCHECK(egl_window_);
   DCHECK(window_);
-  window_->root_surface()->SetApplyStateImmediately();
 }
 
 bool GLSurfaceWayland::Resize(const gfx::Size& size,

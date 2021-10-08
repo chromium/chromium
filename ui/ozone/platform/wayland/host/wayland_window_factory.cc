@@ -28,9 +28,7 @@ WaylandWindow* GetParentWindow(WaylandConnection* connection,
 std::unique_ptr<WaylandWindow> WaylandWindow::Create(
     PlatformWindowDelegate* delegate,
     WaylandConnection* connection,
-    PlatformWindowInitProperties properties,
-    bool update_visual_size_immediately,
-    bool apply_pending_state_on_update_visual_size) {
+    PlatformWindowInitProperties properties) {
   std::unique_ptr<WaylandWindow> window;
   switch (properties.type) {
     case PlatformWindowType::kPopup:
@@ -58,9 +56,6 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       NOTREACHED();
       break;
   }
-  window->set_update_visual_size_immediately(update_visual_size_immediately);
-  window->set_apply_pending_state_on_update_visual_size(
-      apply_pending_state_on_update_visual_size);
   return window && window->Initialize(std::move(properties)) ? std::move(window)
                                                              : nullptr;
 }

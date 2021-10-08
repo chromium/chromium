@@ -107,9 +107,6 @@ class WaylandBufferManagerTest : public WaylandTest {
     auto interface_ptr = manager_host_->BindInterface();
     buffer_manager_gpu_->Initialize(std::move(interface_ptr), {}, false, true,
                                     false);
-
-    window_->set_update_visual_size_immediately(false);
-    window_->set_apply_pending_state_on_update_visual_size(false);
   }
 
  protected:
@@ -1953,9 +1950,6 @@ TEST_P(WaylandBufferManagerTest, HasOverlayPrioritizer) {
 }
 
 TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
-  auto* mock_surface = server_.GetObject<wl::MockSurface>(
-      window_->root_surface()->GetSurfaceId());
-
   std::vector<uint32_t> kBufferIds = {1, 2, 3};
 
   MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(),
@@ -2009,11 +2003,7 @@ TEST_P(WaylandBufferManagerTest, CanSubmitOverlayPriority) {
       EXPECT_EQ(
           mock_surface_of_subsurface->prioritized_surface()->overlay_priority(),
           priority.second);
-
-      mock_surface_of_subsurface->SendFrameCallback();
     }
-
-    mock_surface->SendFrameCallback();
   }
 }
 

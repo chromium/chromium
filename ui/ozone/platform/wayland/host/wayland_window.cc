@@ -270,7 +270,6 @@ void WaylandWindow::SetBounds(const gfx::Rect& bounds_px) {
 
   if (update_visual_size_immediately_)
     UpdateVisualSize(bounds_px.size());
-
   delegate_->OnBoundsChanged(bounds_px_);
 }
 
@@ -470,11 +469,6 @@ void WaylandWindow::UpdateVisualSize(const gfx::Size& size_px) {
     return;
   visual_size_px_ = size_px;
   UpdateWindowMask();
-
-  if (apply_pending_state_on_update_visual_size_) {
-    root_surface_->ApplyPendingState();
-    connection_->ScheduleFlush();
-  }
 }
 
 void WaylandWindow::OnCloseRequest() {
@@ -560,8 +554,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
 
   // Update visual size in tests immediately if the test config is set.
   // Otherwise, such tests as interactive_ui_tests fail.
-  if (!update_visual_size_immediately_)
-    set_update_visual_size_immediately(UseTestConfigForPlatformWindows());
+  set_update_visual_size_immediately(UseTestConfigForPlatformWindows());
 
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's
   // OK to assign.  The bounds will be recalculated when the buffer scale
@@ -584,12 +577,12 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
         GetWidget(), primary_subsurface_.get());
   }
 
+  connection_->ScheduleFlush();
+
   PlatformEventSource::GetInstance()->AddPlatformEventDispatcher(this);
   delegate_->OnAcceleratedWidgetAvailable(GetWidget());
 
   root_surface_->SetOpaqueRegion({gfx::Rect(bounds_px_.size())});
-  root_surface_->ApplyPendingState();
-  connection_->ScheduleFlush();
 
   return true;
 }
@@ -801,12 +794,12 @@ bool WaylandWindow::CommitOverlays(
         }
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->bounds_rect, (*split)->bounds_rect,
-            root_surface()->pending_buffer_scale(), nullptr, reference_above);
+            root_surface()->buffer_scale(), nullptr, reference_above);
 
         (*iter)->wayland_surface()->SetBufferTransform(
             (*overlay_iter)->transform);
         (*iter)->wayland_surface()->SetSurfaceBufferScale(
-            root_surface()->pending_buffer_scale());
+            root_surface()->buffer_scale());
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
         (*iter)->wayland_surface()->SetOverlayPriority(
@@ -849,12 +842,12 @@ bool WaylandWindow::CommitOverlays(
         }
         (*iter)->ConfigureAndShowSurface(
             (*overlay_iter)->bounds_rect, (*split)->bounds_rect,
-            root_surface()->pending_buffer_scale(), reference_below, nullptr);
+            root_surface()->buffer_scale(), reference_below, nullptr);
 
         (*iter)->wayland_surface()->SetBufferTransform(
             (*overlay_iter)->transform);
         (*iter)->wayland_surface()->SetSurfaceBufferScale(
-            root_surface()->pending_buffer_scale());
+            root_surface()->buffer_scale());
         (*iter)->wayland_surface()->SetViewportSource(
             (*overlay_iter)->crop_rect);
         (*iter)->wayland_surface()->SetOverlayPriority(
@@ -911,7 +904,7 @@ bool WaylandWindow::CommitOverlays(
     primary_subsurface_->wayland_surface()->SetBufferTransform(
         (*split)->transform);
     primary_subsurface_->wayland_surface()->SetSurfaceBufferScale(
-        root_surface()->pending_buffer_scale());
+        root_surface()->buffer_scale());
     primary_subsurface_->wayland_surface()->SetViewportSource(
         (*split)->crop_rect);
     primary_subsurface_->wayland_surface()->SetOverlayPriority(

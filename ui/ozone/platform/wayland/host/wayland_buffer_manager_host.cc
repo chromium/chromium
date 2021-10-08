@@ -127,8 +127,7 @@ class WaylandBufferManagerHost::Surface {
     // This is a buffer-less commit, do not lookup buffers.
     if (buffer_id == kInvalidBufferId) {
       DCHECK(access_fence_handle.is_null());
-      pending_commits_.push_back({nullptr, wait_for_frame_callback,
-                                  gfx::GpuFenceHandle(),
+      pending_commits_.push_back({nullptr, wait_for_frame_callback, nullptr,
                                   std::move(post_commit_cb), gfx::Rect()});
       MaybeProcessPendingBuffer();
       return true;
@@ -148,9 +147,10 @@ class WaylandBufferManagerHost::Surface {
           weak_ptr_factory_.GetWeakPtr()));
     }
 
-    pending_commits_.push_back({buffer->AsWeakPtr(), wait_for_frame_callback,
-                                std::move(access_fence_handle),
-                                std::move(post_commit_cb), damage_region});
+    pending_commits_.push_back(
+        {buffer->AsWeakPtr(), wait_for_frame_callback,
+         std::make_unique<gfx::GpuFence>(std::move(access_fence_handle)),
+         std::move(post_commit_cb), damage_region});
     MaybeProcessPendingBuffer();
     return true;
   }
@@ -170,7 +170,6 @@ class WaylandBufferManagerHost::Surface {
 
     if (wayland_surface_->has_buffer_attached()) {
       wayland_surface_->AttachBuffer(nullptr);
-      wayland_surface_->ApplyPendingState();
       wayland_surface_->Commit();
     }
 
@@ -262,7 +261,7 @@ class WaylandBufferManagerHost::Surface {
     bool wait_for_callback = false;
     // Fence to wait on before the |buffer| content is available to read by
     // Wayland host.
-    gfx::GpuFenceHandle access_fence;
+    std::unique_ptr<gfx::GpuFence> access_fence;
     // Callback to run once this commit is applied.
     base::OnceClosure post_commit_cb;
     // Damage region this buffer describes.
@@ -272,7 +271,7 @@ class WaylandBufferManagerHost::Surface {
   bool CommitBufferInternal(WaylandBufferHandle* buffer,
                             bool wait_for_callback,
                             const gfx::Rect& damage_region,
-                            gfx::GpuFenceHandle access_fence_handle) {
+                            const gfx::GpuFenceHandle& access_fence_handle) {
     DCHECK(buffer && wayland_surface_);
 
     // If the same buffer has been submitted again right after the client
@@ -286,7 +285,7 @@ class WaylandBufferManagerHost::Surface {
       // Once the BufferRelease is called, the buffer will be released.
       DCHECK(buffer->released);
       buffer->released = false;
-      AttachBuffer(buffer, std::move(access_fence_handle));
+      AttachBuffer(buffer, access_fence_handle);
     }
 
     // If the client submits the same buffer twice, we need to store it twice,
@@ -314,20 +313,19 @@ class WaylandBufferManagerHost::Surface {
 
   void DamageBuffer(WaylandBufferHandle* buffer, gfx::Rect damage_region) {
     DCHECK(wayland_surface_);
-    wayland_surface_->UpdateBufferDamageRegion(damage_region);
+    wayland_surface_->UpdateBufferDamageRegion(damage_region, buffer->size());
   }
 
   void AttachBuffer(WaylandBufferHandle* buffer,
-                    gfx::GpuFenceHandle access_fence_handle) {
+                    const gfx::GpuFenceHandle& access_fence_handle) {
     DCHECK(wayland_surface_ && configured_);
     if (!access_fence_handle.is_null())
-      wayland_surface_->SetAcquireFence(std::move(access_fence_handle));
-    wayland_surface_->AttachBuffer(buffer);
+      wayland_surface_->SetAcquireFence(access_fence_handle);
+    wayland_surface_->AttachBuffer(buffer->wl_buffer());
   }
 
   void CommitSurface() {
     DCHECK(wayland_surface_);
-    wayland_surface_->ApplyPendingState();
     wayland_surface_->Commit();
   }
 
@@ -623,7 +621,8 @@ class WaylandBufferManagerHost::Surface {
         /*release_fence=*/gfx::GpuFenceHandle()));
 
     CommitBufferInternal(commit.buffer.get(), commit.wait_for_callback,
-                         commit.damage_region, std::move(commit.access_fence));
+                         commit.damage_region,
+                         commit.access_fence->GetGpuFenceHandle());
     std::move(commit.post_commit_cb).Run();
   }
 

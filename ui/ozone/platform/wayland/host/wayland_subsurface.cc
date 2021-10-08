@@ -79,7 +79,10 @@ void WaylandSubsurface::CreateSubsurface() {
   // Subsurfaces don't need to trap input events. Its display rect is fully
   // contained in |parent_|'s. Setting input_region to empty allows |parent_| to
   // dispatch all of the input to platform window.
-  wayland_surface()->SetInputRegion({});
+  wl::Object<wl_region> region(
+      wl_compositor_create_region(connection_->compositor()));
+  wl_region_add(region.get(), 0, 0, 0, 0);
+  wl_surface_set_input_region(surface(), region.get());
 
   connection_->buffer_manager_host()->SetSurfaceConfigured(wayland_surface());
 }
