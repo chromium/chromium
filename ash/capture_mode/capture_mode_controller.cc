@@ -579,7 +579,8 @@ void CaptureModeController::CaptureScreenshotsOfAllDisplays() {
   // Since this doesn't create a capture mode session, log metrics here.
   RecordCaptureModeEntryType(CaptureModeEntryType::kCaptureAllDisplays);
   RecordCaptureModeConfiguration(CaptureModeType::kImage,
-                                 CaptureModeSource::kFullscreen);
+                                 CaptureModeSource::kFullscreen,
+                                 /*audio_on=*/false);
 }
 
 void CaptureModeController::PerformCapture() {
@@ -1087,12 +1088,13 @@ void CaptureModeController::OnVideoFileSaved(
       client->AddScreenRecording(current_video_file_path_);
   }
 
-  if (!on_file_saved_callback_.is_null())
-    std::move(on_file_saved_callback_).Run(current_video_file_path_);
-
   low_disk_space_threshold_reached_ = false;
   recording_start_time_ = base::TimeTicks();
+  const auto local_video_file_path = current_video_file_path_;
   current_video_file_path_.clear();
+
+  if (!on_file_saved_callback_.is_null())
+    std::move(on_file_saved_callback_).Run(local_video_file_path);
 }
 
 void CaptureModeController::ShowPreviewNotification(

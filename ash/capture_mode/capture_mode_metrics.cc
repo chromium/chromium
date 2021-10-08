@@ -15,6 +15,8 @@ constexpr char kEndRecordingReasonHistogramName[] =
     "Ash.CaptureModeController.EndRecordingReason";
 constexpr char kBarButtonHistogramName[] =
     "Ash.CaptureModeController.BarButtons";
+constexpr char kCaptureAudioOnHistogramName[] =
+    "Ash.CaptureModeController.CaptureAudioOnMetric";
 constexpr char kCaptureConfigurationHistogramName[] =
     "Ash.CaptureModeController.CaptureConfiguration";
 constexpr char kCaptureRegionAdjustmentHistogramName[] =
@@ -76,10 +78,15 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type) {
 }
 
 void RecordCaptureModeConfiguration(CaptureModeType type,
-                                    CaptureModeSource source) {
+                                    CaptureModeSource source,
+                                    bool audio_on) {
   base::UmaHistogramEnumeration(
       GetCaptureModeHistogramName(kCaptureConfigurationHistogramName),
       GetConfiguration(type, source));
+  if (type == CaptureModeType::kVideo) {
+    base::UmaHistogramBoolean(
+        GetCaptureModeHistogramName(kCaptureAudioOnHistogramName), audio_on);
+  }
 }
 
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {

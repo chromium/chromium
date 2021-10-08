@@ -4804,4 +4804,74 @@ TEST_F(CaptureModeAdvancedSettingsTest,
   EXPECT_TRUE(capture_label_widget->IsVisible());
 }
 
+// -----------------------------------------------------------------------------
+// CaptureModeAudioSettingHistogramTest:
+
+// Test fixture to verify screen recording audio histogram depending on the test
+// param (true for tablet mode, false for clamshell mode).
+class CaptureModeAudioSettingHistogramTest
+    : public CaptureModeTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  CaptureModeAudioSettingHistogramTest() = default;
+  ~CaptureModeAudioSettingHistogramTest() override = default;
+
+  // CaptureModeTest:
+  void SetUp() override {
+    CaptureModeTest::SetUp();
+    if (GetParam()) {
+      TabletModeControllerTestApi test_api;
+      test_api.DetachAllMice();
+      test_api.EnterTabletMode();
+    }
+  }
+
+  void StartSessionForVideo() {
+    StartCaptureSession(CaptureModeSource::kFullscreen,
+                        CaptureModeType::kVideo);
+  }
+
+  void StartRecording() { CaptureModeTestApi().PerformCapture(); }
+
+  void StopRecording() { CaptureModeTestApi().StopVideoRecording(); }
+
+  std::string GetCaptureModeHistogramName(std::string prefix) {
+    prefix.append(GetParam() ? ".TabletMode" : ".ClamshellMode");
+    return prefix;
+  }
+};
+
+TEST_P(CaptureModeAudioSettingHistogramTest, VideoRecordingAudioMetric) {
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.CaptureAudioOnMetric";
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase), false, 0);
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase), true, 0);
+  // Perform a video recording with audio off. A false should be recorded.
+  StartSessionForVideo();
+  CaptureModeTestApi().SetAudioRecordingEnabled(false);
+  StartRecording();
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase), false, 1);
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase), true, 0);
+  StopRecording();
+  WaitForCaptureFileToBeSaved();
+  // Perform a video recording with audio on. A true should be recorded.
+  StartSessionForVideo();
+  CaptureModeTestApi().SetAudioRecordingEnabled(true);
+  StartRecording();
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase), false, 1);
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(kHistogramNameBase), true, 1);
+  StopRecording();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         CaptureModeAudioSettingHistogramTest,
+                         testing::Values(false, true));
+
 }  // namespace ash

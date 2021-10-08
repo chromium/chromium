@@ -731,7 +731,8 @@ void CaptureModeSession::ReportSessionHistograms() {
   num_capture_region_adjusted_ = 0;
 
   RecordCaptureModeSwitchesFromInitialMode(capture_source_changed_);
-  RecordCaptureModeConfiguration(controller_->type(), controller_->source());
+  RecordCaptureModeConfiguration(controller_->type(), controller_->source(),
+                                 controller_->enable_audio_recording());
 }
 
 void CaptureModeSession::StartCountDown(

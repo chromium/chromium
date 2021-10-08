@@ -95,7 +95,8 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);
 
 // Records a user's configuration when they perform a capture.
 void RecordCaptureModeConfiguration(CaptureModeType type,
-                                    CaptureModeSource source);
+                                    CaptureModeSource source,
+                                    bool audio_on);
 
 // Records the method the user enters capture mode given by |entry_type|.
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);

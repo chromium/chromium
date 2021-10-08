@@ -350,7 +350,8 @@ class ASH_EXPORT CaptureModeController
       recording_service_client_receiver_;
 
   // This is the file path of the video file currently being recorded. It is
-  // empty when no video recording is in progress.
+  // empty when no video recording is in progress or when no video is being
+  // saved.
   base::FilePath current_video_file_path_;
 
   // We remember the user selected capture region when the source is |kRegion|
