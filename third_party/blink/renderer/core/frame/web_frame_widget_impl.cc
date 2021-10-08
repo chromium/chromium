@@ -139,8 +139,9 @@
 
 namespace WTF {
 template <>
-struct CrossThreadCopier<blink::WebReportTimeCallback>
-    : public CrossThreadCopierByValuePassThrough<blink::WebReportTimeCallback> {
+struct CrossThreadCopier<base::OnceCallback<void(base::TimeTicks)>>
+    : public CrossThreadCopierByValuePassThrough<
+          base::OnceCallback<void(base::TimeTicks)>> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -2762,7 +2763,6 @@ void WebFrameWidgetImpl::DidMeaningfulLayout(WebMeaningfulLayout layout_type) {
 }
 
 void WebFrameWidgetImpl::PresentationCallbackForMeaningfulLayout(
-    blink::WebSwapResult,
     base::TimeTicks) {
   // |local_root_| may be null if the widget has shut down between when this
   // callback was requested and when it was resolved by the compositor.
@@ -2853,10 +2853,11 @@ void WebFrameWidgetImpl::SetDelegatedInkMetadata(
 // swap promises.
 class ReportTimeSwapPromise : public cc::SwapPromise {
  public:
-  ReportTimeSwapPromise(WebReportTimeCallback swap_time_callback,
-                        WebReportTimeCallback presentation_time_callback,
-                        scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                        WebFrameWidgetImpl* widget)
+  ReportTimeSwapPromise(
+      base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
+      base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      WebFrameWidgetImpl* widget)
       : swap_time_callback_(std::move(swap_time_callback)),
         presentation_time_callback_(std::move(presentation_time_callback)),
         task_runner_(std::move(task_runner)),
@@ -2886,34 +2887,19 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
 
   cc::SwapPromise::DidNotSwapAction DidNotSwap(
       DidNotSwapReason reason) override {
-    WebSwapResult result;
-    switch (reason) {
-      case cc::SwapPromise::DidNotSwapReason::SWAP_FAILS:
-        result = WebSwapResult::kDidNotSwapSwapFails;
-        break;
-      case cc::SwapPromise::DidNotSwapReason::COMMIT_FAILS:
-        result = WebSwapResult::kDidNotSwapCommitFails;
-        break;
-      case cc::SwapPromise::DidNotSwapReason::COMMIT_NO_UPDATE:
-        result = WebSwapResult::kDidNotSwapCommitNoUpdate;
-        break;
-      case cc::SwapPromise::DidNotSwapReason::ACTIVATION_FAILS:
-        result = WebSwapResult::kDidNotSwapActivationFails;
-        break;
-    }
     // During a failed swap, return the current time regardless of whether we're
     // using presentation or swap timestamps.
     PostCrossThreadTask(
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(
-            [](WebSwapResult result, base::TimeTicks swap_time,
-               WebReportTimeCallback swap_time_callback,
-               WebReportTimeCallback presentation_time_callback) {
-              ReportTime(std::move(swap_time_callback), result, swap_time);
-              ReportTime(std::move(presentation_time_callback), result,
-                         swap_time);
+            [](base::TimeTicks swap_time,
+               base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
+               base::OnceCallback<void(base::TimeTicks)>
+                   presentation_time_callback) {
+              ReportTime(std::move(swap_time_callback), swap_time);
+              ReportTime(std::move(presentation_time_callback), swap_time);
             },
-            result, base::TimeTicks::Now(), std::move(swap_time_callback_),
+            base::TimeTicks::Now(), std::move(swap_time_callback_),
             std::move(presentation_time_callback_)));
     return DidNotSwapAction::BREAK_PROMISE;
   }
@@ -2924,8 +2910,8 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
   static void RunCallbackAfterSwap(
       WebFrameWidgetImpl* widget,
       base::TimeTicks swap_time,
-      WebReportTimeCallback swap_time_callback,
-      WebReportTimeCallback presentation_time_callback,
+      base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
+      base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
       int frame_token) {
     // If the widget was collected or the widget wasn't collected yet, but
     // it was closed don't schedule a presentation callback.
@@ -2934,18 +2920,15 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
           frame_token,
           WTF::Bind(&RunCallbackAfterPresentation,
                     std::move(presentation_time_callback), swap_time));
-      ReportTime(std::move(swap_time_callback), WebSwapResult::kDidSwap,
-                 swap_time);
+      ReportTime(std::move(swap_time_callback), swap_time);
     } else {
-      ReportTime(std::move(swap_time_callback), WebSwapResult::kDidSwap,
-                 swap_time);
-      ReportTime(std::move(presentation_time_callback), WebSwapResult::kDidSwap,
-                 swap_time);
+      ReportTime(std::move(swap_time_callback), swap_time);
+      ReportTime(std::move(presentation_time_callback), swap_time);
     }
   }
 
   static void RunCallbackAfterPresentation(
-      WebReportTimeCallback presentation_time_callback,
+      base::OnceCallback<void(base::TimeTicks)> presentation_time_callback,
       base::TimeTicks swap_time,
       base::TimeTicks presentation_time) {
     DCHECK(!swap_time.is_null());
@@ -2959,33 +2942,32 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
           "PageLoad.Internal.Renderer.PresentationTime.DeltaFromSwapTime",
           presentation_time - swap_time);
     }
-    ReportTime(std::move(presentation_time_callback), WebSwapResult::kDidSwap,
+    ReportTime(std::move(presentation_time_callback),
                presentation_time_is_valid ? presentation_time : swap_time);
   }
 
-  static void ReportTime(WebReportTimeCallback callback,
-                         WebSwapResult result,
+  static void ReportTime(base::OnceCallback<void(base::TimeTicks)> callback,
                          base::TimeTicks time) {
     if (callback)
-      std::move(callback).Run(result, time);
+      std::move(callback).Run(time);
   }
 
-  WebReportTimeCallback swap_time_callback_;
-  WebReportTimeCallback presentation_time_callback_;
+  base::OnceCallback<void(base::TimeTicks)> swap_time_callback_;
+  base::OnceCallback<void(base::TimeTicks)> presentation_time_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   CrossThreadWeakPersistent<WebFrameWidgetImpl> widget_;
   uint32_t frame_token_ = 0;
 };
 
 void WebFrameWidgetImpl::NotifyPresentationTimeInBlink(
-    WebReportTimeCallback presentation_time_callback) {
+    base::OnceCallback<void(base::TimeTicks)> presentation_time_callback) {
   NotifySwapAndPresentationTime(base::NullCallback(),
                                 std::move(presentation_time_callback));
 }
 
 void WebFrameWidgetImpl::NotifySwapAndPresentationTime(
-    WebReportTimeCallback swap_time_callback,
-    WebReportTimeCallback presentation_time_callback) {
+    base::OnceCallback<void(base::TimeTicks)> swap_time_callback,
+    base::OnceCallback<void(base::TimeTicks)> presentation_time_callback) {
   if (!View()->does_composite())
     return;
   widget_base_->LayerTreeHost()->QueueSwapPromise(

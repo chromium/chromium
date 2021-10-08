@@ -9,7 +9,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/web/web_performance.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
@@ -31,7 +30,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
                                       public Supplement<Document> {
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(WebSwapResult, base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
   using RequestAnimationFrameTimesAfterBackForwardCacheRestore = std::array<
       base::TimeTicks,
       WebPerformance::
@@ -144,11 +143,9 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void RegisterNotifyPresentationTime(ReportTimeCallback);
   void ReportPresentationTime(PaintEvent,
-                              WebSwapResult,
                               base::TimeTicks timestamp);
   void ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
       wtf_size_t index,
-      WebSwapResult,
       base::TimeTicks timestamp);
 
   // The caller owns the |clock| which must outlive the PaintTiming.

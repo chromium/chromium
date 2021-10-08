@@ -393,7 +393,6 @@ source_set("blink_headers") {
     "web/web_settings.h",
     "web/web_shared_worker.h",
     "web/web_shared_worker_client.h",
-    "web/web_swap_result.h",
     "web/web_testing_support.h",
     "web/web_text_check_client.h",
     "web/web_text_checking_completion.h",

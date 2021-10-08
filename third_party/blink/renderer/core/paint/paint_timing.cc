@@ -283,21 +283,8 @@ void PaintTiming::RegisterNotifyPresentationTime(ReportTimeCallback callback) {
 }
 
 void PaintTiming::ReportPresentationTime(PaintEvent event,
-                                         WebSwapResult result,
                                          base::TimeTicks timestamp) {
   DCHECK(IsMainThread());
-  // If the presentation fails for any reason, we use the timestamp when the
-  // PresentationPromise was broken. |result| ==
-  // WebSwapResult::kDidNotSwapSwapFails usually means the compositor decided
-  // not to swap because there was no actual damage, which can happen when
-  // what's being painted isn't visible. In this case, the timestamp will be
-  // consistent with the case where the presentation succeeds, as they both
-  // capture the time up to presentation. In other failure cases (aborts during
-  // commit), this timestamp is an improvement over the blink paint time, but
-  // does not capture some time we're interested in, e.g.  image decoding.
-  //
-  // TODO(crbug.com/738235): Consider not reporting any timestamp when failing
-  // for reasons other than kDidNotSwapSwapFails.
   switch (event) {
     case PaintEvent::kFirstPaint:
       SetFirstPaintPresentation(timestamp);
@@ -318,7 +305,6 @@ void PaintTiming::ReportPresentationTime(PaintEvent event,
 
 void PaintTiming::ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
     wtf_size_t index,
-    WebSwapResult result,
     base::TimeTicks timestamp) {
   DCHECK(IsMainThread());
   SetFirstPaintAfterBackForwardCacheRestorePresentation(timestamp, index);

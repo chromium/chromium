@@ -39,7 +39,6 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/blame_context.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/battery_savings.h"
@@ -518,11 +517,9 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   }
 
   // The |callback| will be fired when the corresponding renderer frame for the
-  // |frame| is presented in the display compositor. The reported time could
-  // sometimes be the swap time, as is the case when the swap is aborted. In
-  // this case, WebSwapResult will be DidNotSwap.
+  // |frame| is presented in the display compositor.
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(WebSwapResult, base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
   virtual void NotifyPresentationTime(LocalFrame& frame,
                                       ReportTimeCallback callback) {}
 

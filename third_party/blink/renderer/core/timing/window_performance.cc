@@ -434,7 +434,6 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
 
 void WindowPerformance::ReportEventTimings(
     uint64_t frame_index,
-    WebSwapResult result,
     base::TimeTicks presentation_timestamp) {
   DCHECK(pending_presentation_promise_count_);
   --pending_presentation_promise_count_;

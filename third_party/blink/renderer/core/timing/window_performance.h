@@ -34,7 +34,6 @@
 
 #include "base/rand_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -186,7 +185,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   // add all event timings that have not been added since the last presentation
   // promise.
   void ReportEventTimings(uint64_t frame_index,
-                          WebSwapResult result,
                           base::TimeTicks presentation_timestamp);
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);

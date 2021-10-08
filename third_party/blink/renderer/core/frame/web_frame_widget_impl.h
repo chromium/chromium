@@ -191,7 +191,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void RequestDecode(const cc::PaintImage&,
                      base::OnceCallback<void(bool)>) override;
   void NotifyPresentationTimeInBlink(
-      WebReportTimeCallback presentation_callback) final;
+      base::OnceCallback<void(base::TimeTicks)> presentation_callback) final;
   void RequestBeginMainFrameNotExpected(bool request) final;
   int GetLayerTreeId() final;
   const cc::LayerTreeSettings& GetLayerTreeSettings() final;
@@ -300,8 +300,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ApplyViewportIntersectionForTesting(
       mojom::blink::ViewportIntersectionStatePtr intersection_state);
   void NotifySwapAndPresentationTime(
-      WebReportTimeCallback swap_callback,
-      WebReportTimeCallback presentation_callback) override;
+      base::OnceCallback<void(base::TimeTicks)> swap_callback,
+      base::OnceCallback<void(base::TimeTicks)> presentation_callback) override;
   scheduler::WebRenderWidgetSchedulingState* RendererWidgetSchedulingState()
       override;
   void WaitForDebuggerWhenShown() override;
@@ -778,8 +778,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   WebInputEventResult HandleCapturedMouseEvent(const WebCoalescedInputEvent&);
   void MouseContextMenu(const WebMouseEvent&);
   void CancelDrag();
-  void PresentationCallbackForMeaningfulLayout(blink::WebSwapResult,
-                                               base::TimeTicks);
+  void PresentationCallbackForMeaningfulLayout(base::TimeTicks);
 
   void ForEachRemoteFrameControlledByWidget(
       const base::RepeatingCallback<void(RemoteFrame*)>& callback);

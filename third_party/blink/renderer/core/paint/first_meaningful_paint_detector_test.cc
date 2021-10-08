@@ -62,14 +62,13 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
 
   void ClearFirstPaintPresentationPromise() {
     platform()->AdvanceClock(base::Milliseconds(1));
-    GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstPaint,
-                                            WebSwapResult::kDidSwap, Now());
+    GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstPaint, Now());
   }
 
   void ClearFirstContentfulPaintPresentationPromise() {
     platform()->AdvanceClock(base::Milliseconds(1));
     GetPaintTiming().ReportPresentationTime(PaintEvent::kFirstContentfulPaint,
-                                            WebSwapResult::kDidSwap, Now());
+                                            Now());
   }
 
   void ClearProvisionalFirstMeaningfulPaintPresentationPromise() {
@@ -80,8 +79,7 @@ class FirstMeaningfulPaintDetectorTest : public PageTestBase {
   void ClearProvisionalFirstMeaningfulPaintPresentationPromise(
       base::TimeTicks timestamp) {
     Detector().ReportPresentationTime(
-        PaintEvent::kProvisionalFirstMeaningfulPaint, WebSwapResult::kDidSwap,
-        timestamp);
+        PaintEvent::kProvisionalFirstMeaningfulPaint, timestamp);
   }
 
   unsigned OutstandingDetectorPresentationPromiseCount() {

@@ -476,7 +476,6 @@ void PaintTimingCallbackManagerImpl::
 
 void PaintTimingCallbackManagerImpl::ReportPaintTime(
     std::unique_ptr<PaintTimingCallbackManager::CallbackQueue> frame_callbacks,
-    WebSwapResult result,
     base::TimeTicks paint_time) {
   while (!frame_callbacks->empty()) {
     std::move(frame_callbacks->front()).Run(paint_time);

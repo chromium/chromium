@@ -53,7 +53,6 @@
 #include "third_party/blink/public/web/web_hit_test_result.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
 #include "third_party/blink/public/web/web_range.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 
 namespace cc {
 class LayerTreeHost;

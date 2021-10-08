@@ -14,7 +14,6 @@
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
@@ -80,7 +79,7 @@ class PLATFORM_EXPORT FrameWidget {
   // submitted (still called "swapped") to the display compositor (either with
   // DidSwap or DidNotSwap).
   virtual void NotifyPresentationTimeInBlink(
-      WebReportTimeCallback presentation_callback) = 0;
+      base::OnceCallback<void(base::TimeTicks)> presentation_callback) = 0;
 
   // Enable or disable BeginMainFrameNotExpected signals from the compositor,
   // which are consumed by the blink scheduler.

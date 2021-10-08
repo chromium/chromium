@@ -83,8 +83,7 @@ class WindowPerformanceTest : public testing::Test {
   }
 
   void SimulateSwapPromise(base::TimeTicks timestamp) {
-    performance_->ReportEventTimings(frame_counter++, WebSwapResult::kDidSwap,
-                                     timestamp);
+    performance_->ReportEventTimings(frame_counter++, timestamp);
   }
 
   void SimulateInteractionId(PerformanceEventTiming* entry,
