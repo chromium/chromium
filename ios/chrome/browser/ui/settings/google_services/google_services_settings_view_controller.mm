@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller_model_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -50,6 +51,34 @@
                               targetRect:targetRect];
 }
 
+// Shows an enterprise info popover anchored on  |buttonView| giving |message|.
+// A default message is used when |message| is nil.
+- (void)showEntepriseInfoPopoverOnButton:(UIButton*)buttonView
+                             withMessage:(NSString*)message {
+  EnterpriseInfoPopoverViewController* bubbleViewController;
+  if (message) {
+    bubbleViewController =
+        [[EnterpriseInfoPopoverViewController alloc] initWithMessage:message
+                                                      enterpriseName:nil];
+  } else {
+    bubbleViewController = [[EnterpriseInfoPopoverViewController alloc]
+        initWithEnterpriseName:nil];
+  }
+
+  bubbleViewController.delegate = self;
+  // Disable the button when showing the bubble.
+  buttonView.enabled = NO;
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView = buttonView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      buttonView.bounds;
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
+}
+
 #pragma mark - UITableViewDataSource
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
@@ -67,9 +96,24 @@
   } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
     TableViewInfoButtonCell* managedCell =
         base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    [managedCell.trailingButton addTarget:self
-                                   action:@selector(didTapManagedUIInfoButton:)
-                         forControlEvents:UIControlEventTouchUpInside];
+    if ([self.modelDelegate
+            isAllowChromeSigninItem:[self.tableViewModel
+                                        itemAtIndexPath:indexPath]
+                                        .type] &&
+        self.forcedSigninEnabled) {
+      // Use a specific target when tapping the info button of the allow
+      // sign-in item while forced sign-in is enabled. This is because the info
+      // bubble has different textual content.
+      [managedCell.trailingButton
+                 addTarget:self
+                    action:@selector(didTapForcedSigninUIInfoButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+    } else {
+      [managedCell.trailingButton
+                 addTarget:self
+                    action:@selector(didTapManagedUIInfoButton:)
+          forControlEvents:UIControlEventTouchUpInside];
+    }
   }
   return cell;
 }
@@ -160,21 +204,17 @@
 // Called when the user clicks on the information button of the managed
 // setting's UI. Shows a textual bubble with the information of the enterprise.
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
-  EnterpriseInfoPopoverViewController* bubbleViewController =
-      [[EnterpriseInfoPopoverViewController alloc] initWithEnterpriseName:nil];
+  [self showEntepriseInfoPopoverOnButton:buttonView withMessage:nil];
+}
 
-  bubbleViewController.delegate = self;
-  // Disable the button when showing the bubble.
-  buttonView.enabled = NO;
-
-  // Set the anchor and arrow direction of the bubble.
-  bubbleViewController.popoverPresentationController.sourceView = buttonView;
-  bubbleViewController.popoverPresentationController.sourceRect =
-      buttonView.bounds;
-  bubbleViewController.popoverPresentationController.permittedArrowDirections =
-      UIPopoverArrowDirectionAny;
-
-  [self presentViewController:bubbleViewController animated:YES completion:nil];
+// Called when the user taps on the information button of the allow sign-in
+// item while forced sign-in is enabled. Shows a textual bubble with
+// information about the forced sign-in policy.
+- (void)didTapForcedSigninUIInfoButton:(UIButton*)buttonView {
+  [self showEntepriseInfoPopoverOnButton:buttonView
+                             withMessage:
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE)];
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
