@@ -679,7 +679,7 @@ Additional details:
     Capture confidential content on your screen
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_MESSAGE" desc="The message for notification informing the user that screen capture is not recommended.">
-    Administrator doesn't recommend taking screenshots or recordings due to confidential content on screen.
+    Administrator doesn't recommend taking screenshots or recordings due to confidential content on screen:
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before screen capture.">
     Capture anyway
@@ -691,7 +691,7 @@ Additional details:
     Capture confidential content on your screen
   </message>
   <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_MESSAGE" desc="The message for notification informing the user that there was confidential information revealed during screen recording.">
-    Administrator doesn't recommend taking screenshots or recordings due to confidential content captured.
+    Administrator doesn't recommend taking screenshots or recordings due to confidential content captured:
   </message>
   <message name="IDS_POLICY_DLP_VIDEO_CAPTURE_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before saving a screen recording.">
     Save anyway

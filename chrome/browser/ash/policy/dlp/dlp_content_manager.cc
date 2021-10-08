@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
@@ -189,10 +190,12 @@ void DlpContentManager::CheckStoppedVideoCapture(
 
   if (running_video_capture_info_->confidential_content_observed_) {
     // TODO(crbug.com/1254312): Simplify creating the dialog
+    // TODO(crbug.com/1253800): Pass all the confidential content to the dialog
     auto split = base::SplitOnceCallback(std::move(callback));
-    ShowDlpVideoCaptureWarningDialog(
+    DlpWarnDialog::ShowDlpVideoCaptureWarningDialog(
         base::BindOnce(std::move(split.first), true),
-        base::BindOnce(std::move(split.second), false));
+        base::BindOnce(std::move(split.second), false),
+        /*confidential_web_contents=*/{});
   }
   running_video_capture_info_.reset();
 }
@@ -664,13 +667,16 @@ void DlpContentManager::CheckScreenCaptureRestriction(
       std::move(callback).Run(true);
     } else {
       // TODO(crbug.com/1254312): Simplify creating the dialog
+      // TODO(crbug.com/1253800): Pass all the confidential content to the
+      // dialog
       auto split = base::SplitOnceCallback(std::move(callback));
-      ShowDlpScreenCaptureWarningDialog(
+      DlpWarnDialog::ShowDlpScreenCaptureWarningDialog(
           base::BindOnce(std::move(split.first), true)
               .Then(
                   base::BindOnce(&DlpContentManager::OnScreenCaptureUserAllowed,
                                  base::Unretained(this))),
-          base::BindOnce(std::move(split.second), false));
+          base::BindOnce(std::move(split.second), false),
+          /*confidential_web_contents=*/{});
     }
   } else {
     std::move(callback).Run(true);

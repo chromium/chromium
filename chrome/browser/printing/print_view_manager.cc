@@ -32,6 +32,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_notification_helper.h"
+#include "chrome/browser/ash/policy/dlp/dlp_warn_dialog.h"
 #endif
 
 using content::BrowserThread;
@@ -464,8 +465,9 @@ void PrintViewManager::ShowWarning(
     base::OnceClosure on_print_preview_allowed_cb,
     base::OnceClosure on_print_preview_rejected_cb) const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::ShowDlpPrintWarningDialog(std::move(on_print_preview_allowed_cb),
-                                    std::move(on_print_preview_rejected_cb));
+  policy::DlpWarnDialog::ShowDlpPrintWarningDialog(
+      std::move(on_print_preview_allowed_cb),
+      std::move(on_print_preview_rejected_cb));
 #else
   NOTREACHED();
 #endif

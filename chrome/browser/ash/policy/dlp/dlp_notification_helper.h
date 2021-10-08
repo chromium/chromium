@@ -14,12 +14,6 @@ namespace policy {
 // Shows a notification that printing is not allowed due to DLP rules.
 void ShowDlpPrintDisabledNotification();
 
-// Shows a warning dialog that printing is not recommended and allows the user
-// to choose whether to continue or not. Based on the response, only one of
-// |continue_cb| and |cancel_cb| will run.
-void ShowDlpPrintWarningDialog(base::OnceClosure continue_cb,
-                               base::OnceClosure cancel_cb);
-
 // Shows/hides a notification that screen capture was paused because
 // confidential content appeared in the captured area, or resumed when it left
 // the captured area.
@@ -31,18 +25,6 @@ void ShowDlpScreenCapturePausedNotification(const std::string& capture_id,
 void HideDlpScreenCaptureResumedNotification(const std::string& capture_id);
 void ShowDlpScreenCaptureResumedNotification(const std::string& capture_id,
                                              const std::u16string& app_title);
-
-// Shows a warning dialog that screen capture is not recommended and allows the
-// user to choose whether to continue or not. Based on the response, only one of
-// |continue_cb| and |cancel_cb| will run.
-void ShowDlpScreenCaptureWarningDialog(base::OnceClosure continue_cb,
-                                       base::OnceClosure cancel_cb);
-
-// Shows a warning dialog that video capture is not recommended and allows the
-// user to choose whether to save it or not. Based on the response, only one of
-// |continue_cb| and |cancel_cb| will run.
-void ShowDlpVideoCaptureWarningDialog(base::OnceClosure continue_cb,
-                                      base::OnceClosure cancel_cb);
 
 }  // namespace policy
 
