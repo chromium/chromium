@@ -2849,8 +2849,27 @@ void RenderFrameHostManager::CreateProxiesForChildFrame(FrameTreeNode* child) {
         ChromeTrackEvent::kRenderFrameProxyHost, *pair.second);
     // Do not create proxies for subframes in the outer delegate's process,
     // since the outer delegate does not need to interact with them.
+    //
+    // TODO(alexmos): This is potentially redundant with the
+    // IsRelatedSiteInstance() check below.  Verify this and remove if so.
     if (pair.second.get() == outer_delegate_proxy)
       continue;
+
+    // Do not create proxies for subframes for SiteInstances belonging to a
+    // different BrowsingInstance.  This may happen when a main frame is
+    // navigating across BrowsingInstances, and the current document adds a
+    // subframe after that navigation starts but before it commits.  In that
+    // time window, the main frame's FrameTreeNode would have a proxy in the
+    // destination SiteInstance, but the current document's subframes shouldn't
+    // create a proxy in the destination SiteInstance, since the new
+    // BrowsingInstance need not know about them.  Not doing this used to
+    // trigger inconsistencies and crashes if the old document was stored in
+    // BackForwardCache and later restored (since this preserves all of the
+    // subframe FrameTreeNodes and proxies).  See https://crbug.com/1243541.
+    if (!pair.second->GetSiteInstance()->IsRelatedSiteInstance(
+            render_frame_host_->GetSiteInstance())) {
+      continue;
+    }
 
     child->render_manager()->CreateRenderFrameProxy(
         pair.second->GetSiteInstance());

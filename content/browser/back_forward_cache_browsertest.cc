@@ -78,6 +78,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/echo.test-mojom.h"
 #include "content/test/web_contents_observer_test_utils.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -12762,6 +12763,99 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_FALSE(web_contents()->IsCrashed());
 
   ExpectRestored(FROM_HERE);
+}
+
+// Injects a blank subframe into the current document just before processing
+// DidCommitNavigation for a specified URL.
+class InjectCreateChildFrame : public DidCommitNavigationInterceptor {
+ public:
+  InjectCreateChildFrame(WebContents* web_contents, const GURL& url)
+      : DidCommitNavigationInterceptor(web_contents), url_(url) {}
+
+  InjectCreateChildFrame(const InjectCreateChildFrame&) = delete;
+  InjectCreateChildFrame& operator=(const InjectCreateChildFrame&) = delete;
+
+  bool was_called() { return was_called_; }
+
+ private:
+  // DidCommitNavigationInterceptor implementation.
+  bool WillProcessDidCommitNavigation(
+      RenderFrameHost* render_frame_host,
+      NavigationRequest* navigation_request,
+      mojom::DidCommitProvisionalLoadParamsPtr*,
+      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
+      override {
+    if (!was_called_ && navigation_request &&
+        navigation_request->GetURL() == url_) {
+      EXPECT_TRUE(ExecuteScript(
+          web_contents(),
+          "document.body.appendChild(document.createElement('iframe'));"));
+    }
+    was_called_ = true;
+    return true;
+  }
+
+  bool was_called_ = false;
+  GURL url_;
+};
+
+// Verify that when A navigates to B, and A creates a subframe just before B
+// commits, the subframe does not inherit a proxy in B's process from its
+// parent.  Otherwise, if A gets bfcached and later restored, the subframe's
+// proxy would be (1) in a different BrowsingInstance than the rest of its
+// page, and (2) preserved after the restore, which would cause crashes when
+// later using that proxy (for example, when creating more subframes). See
+// https://crbug.com/1243541.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    InjectSubframeDuringPendingCrossBrowsingInstanceNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_EQ(0U, rfh_a->child_count());
+
+  // 2) Navigate to B, and inject a blank subframe just before it commits.
+  {
+    InjectCreateChildFrame injector(shell()->web_contents(), url_b);
+    ASSERT_TRUE(NavigateToURL(shell(), url_b));
+    EXPECT_TRUE(injector.was_called());
+  }
+
+  // `rfh_a` should be in BackForwardCache, and it should have a subframe.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_EQ(1U, rfh_a->child_count());
+
+  // The new subframe should not have any proxies at this point.  In
+  // particular, it shouldn't inherit a proxy in b.com from its parent.
+  EXPECT_TRUE(rfh_a->child_at(0)
+                  ->render_manager()
+                  ->GetAllProxyHostsForTesting()
+                  .empty());
+
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // 3) Go back.  This should restore `rfh_a` from the cache, and `rfh_b`
+  // should go into the cache.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 4) Add a grandchild frame to `rfh_a`.  This shouldn't crash.
+  RenderFrameHostCreatedObserver frame_observer(shell()->web_contents(), 1);
+  EXPECT_TRUE(ExecuteScript(
+      rfh_a->child_at(0),
+      "document.body.appendChild(document.createElement('iframe'));"));
+  frame_observer.Wait();
+  EXPECT_EQ(1U, rfh_a->child_at(0)->child_count());
+
+  // Make sure the grandchild is live.
+  EXPECT_TRUE(ExecuteScript(rfh_a->child_at(0)->child_at(0), "true"));
 }
 
 }  // namespace content

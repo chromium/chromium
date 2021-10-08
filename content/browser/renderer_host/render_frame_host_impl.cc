@@ -3521,7 +3521,6 @@ void RenderFrameHostImpl::OnCreateChildFrame(
                         ChromeTrackEvent::kRenderFrameProxyHost, *proxy);
     CaptureTraceForNavigationDebugScenario(
         DebugScenario::kDebugSubframeProxyCreationWithNoRVH);
-    return;
   }
 
   // |new_routing_id|, |browser_interface_broker_receiver| and
