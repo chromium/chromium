@@ -28,7 +28,9 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_AT_START;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_IS_VISIBLE;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_TEXT_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
@@ -132,12 +134,14 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mPropertyModel = mPropertyModel =
+        mPropertyModel =
                 new PropertyModel.Builder(StartSurfaceToolbarProperties.ALL_KEYS)
                         .with(StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IN_START_SURFACE_MODE, false)
                         .with(StartSurfaceToolbarProperties.MENU_IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
+                        .with(StartSurfaceToolbarProperties.NEW_TAB_VIEW_AT_START, false)
+                        .with(StartSurfaceToolbarProperties.NEW_TAB_VIEW_TEXT_IS_VISIBLE, false)
                         .build();
         mButtonData = new ButtonDataImpl(false, mDrawable, mOnClickListener, 0, false, null, true);
         mDisabledButtonData = new ButtonDataImpl(false, null, null, 0, false, null, true);
@@ -187,7 +191,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         assertFalse(mPropertyModel.get(BUTTONS_CLICKABLE));
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(NEW_TAB_BUTTON_IS_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertTrue(mPropertyModel.get(MENU_IS_VISIBLE));
         assertEquals(true, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
@@ -205,7 +211,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         assertFalse(mPropertyModel.get(BUTTONS_CLICKABLE));
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(NEW_TAB_BUTTON_IS_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertTrue(mPropertyModel.get(MENU_IS_VISIBLE));
         assertEquals(true, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
@@ -637,6 +645,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertEquals(true, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         assertFalse(mPropertyModel.get(IN_START_SURFACE_MODE));
@@ -645,6 +656,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertEquals(true, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
         assertTrue(mPropertyModel.get(IN_START_SURFACE_MODE));
@@ -655,6 +669,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
+        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertEquals(true, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
 
@@ -671,6 +688,9 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
+        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
+        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
         assertEquals(true, mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
     }
@@ -771,7 +791,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         // When accessibility is turned on and TAB_GROUPS_CONTINUATION_ANDROID is enabled, new tab
         // button shouldn't show on homepage.
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        assertFalse(mPropertyModel.get(NEW_TAB_BUTTON_IS_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
 
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
     }
@@ -785,7 +805,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         // When accessibility is turned on and TAB_GROUPS_CONTINUATION_ANDROID is disabled, new tab
         // button should show on homepage.
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        assertTrue(mPropertyModel.get(NEW_TAB_BUTTON_IS_VISIBLE));
+        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
 
         ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
     }

@@ -49,7 +49,11 @@ class StartSurfaceToolbarProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey MENU_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
-    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_BUTTON_IS_VISIBLE =
+    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_VIEW_IS_VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_VIEW_AT_START =
+            new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey NEW_TAB_VIEW_TEXT_IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey BUTTONS_CLICKABLE =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -94,12 +98,12 @@ class StartSurfaceToolbarProperties {
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {NEW_TAB_CLICK_HANDLER,
             IS_VISIBLE, SHOW_ANIMATION, LOGO_IS_VISIBLE, IS_INCOGNITO, INCOGNITO_STATE_PROVIDER,
-            ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE, NEW_TAB_BUTTON_IS_VISIBLE, BUTTONS_CLICKABLE,
-            GRID_TAB_SWITCHER_ENABLED, IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE,
-            IDENTITY_DISC_IS_VISIBLE, IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE,
-            IDENTITY_DISC_DESCRIPTION, IN_START_SURFACE_MODE, NEW_TAB_BUTTON_HIGHLIGHT,
-            TRANSLATION_Y, HOME_BUTTON_IS_VISIBLE, HOMEPAGE_ENABLED_SUPPLIER,
-            HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER, HOME_BUTTON_CLICK_HANDLER,
-            TAB_SWITCHER_BUTTON_IS_VISIBLE, INCOGNITO_TAB_COUNT_PROVIDER,
+            ACCESSIBILITY_ENABLED, MENU_IS_VISIBLE, NEW_TAB_VIEW_IS_VISIBLE, NEW_TAB_VIEW_AT_START,
+            NEW_TAB_VIEW_TEXT_IS_VISIBLE, BUTTONS_CLICKABLE, GRID_TAB_SWITCHER_ENABLED,
+            IDENTITY_DISC_AT_START, INCOGNITO_SWITCHER_VISIBLE, IDENTITY_DISC_IS_VISIBLE,
+            IDENTITY_DISC_CLICK_HANDLER, IDENTITY_DISC_IMAGE, IDENTITY_DISC_DESCRIPTION,
+            IN_START_SURFACE_MODE, NEW_TAB_BUTTON_HIGHLIGHT, TRANSLATION_Y, HOME_BUTTON_IS_VISIBLE,
+            HOMEPAGE_ENABLED_SUPPLIER, HOMEPAGE_MANAGED_BY_POLICY_SUPPLIER,
+            HOME_BUTTON_CLICK_HANDLER, TAB_SWITCHER_BUTTON_IS_VISIBLE, INCOGNITO_TAB_COUNT_PROVIDER,
             INCOGNITO_TAB_MODEL_SELECTOR};
 }
