@@ -387,11 +387,7 @@ InspectorOverlayAgent::InspectorOverlayAgent(
       inspect_mode_protocol_config_(&agent_state_, std::vector<uint8_t>()) {}
 
 InspectorOverlayAgent::~InspectorOverlayAgent() {
-  DCHECK(!overlay_page_);
-  DCHECK(!inspect_tool_);
-  DCHECK(!hinge_);
-  DCHECK(!persistent_tool_);
-  DCHECK(!frame_overlay_);
+  DCHECK(!overlay_page_ && !inspect_tool_ && !hinge_ && !persistent_tool_);
 }
 
 void InspectorOverlayAgent::Trace(Visitor* visitor) const {
@@ -402,7 +398,6 @@ void InspectorOverlayAgent::Trace(Visitor* visitor) const {
   visitor->Trace(overlay_host_);
   visitor->Trace(resize_timer_);
   visitor->Trace(dom_agent_);
-  visitor->Trace(frame_overlay_);
   visitor->Trace(inspect_tool_);
   visitor->Trace(persistent_tool_);
   visitor->Trace(hinge_);
@@ -470,10 +465,7 @@ Response InspectorOverlayAgent::disable() {
   }
   resize_timer_.Stop();
   resize_timer_active_ = false;
-
-  if (frame_overlay_)
-    frame_overlay_.Release()->Destroy();
-
+  frame_overlay_.reset();
   persistent_tool_ = nullptr;
   PickTheRightTool();
   SetNeedsUnbufferedInput(false);
@@ -1495,7 +1487,7 @@ void InspectorOverlayAgent::DisableFrameOverlay() {
   if (IsVisible() || !frame_overlay_)
     return;
 
-  frame_overlay_.Release()->Destroy();
+  frame_overlay_.reset();
   auto& client = GetFrame()->GetPage()->GetChromeClient();
   client.SetCursorOverridden(false);
   client.SetCursor(PointerCursor(), GetFrame());
@@ -1508,7 +1500,7 @@ void InspectorOverlayAgent::EnsureEnableFrameOverlay() {
   if (frame_overlay_)
     return;
 
-  frame_overlay_ = MakeGarbageCollected<FrameOverlay>(
+  frame_overlay_ = std::make_unique<FrameOverlay>(
       GetFrame(), std::make_unique<InspectorPageOverlayDelegate>(*this));
 }
 

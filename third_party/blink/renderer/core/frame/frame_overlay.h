@@ -42,8 +42,7 @@ class GraphicsContext;
 class LocalFrame;
 
 // Manages a layer that is overlaid on a WebLocalFrame's content.
-class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
-                                 public GraphicsLayerClient,
+class CORE_EXPORT FrameOverlay : public GraphicsLayerClient,
                                  public DisplayItemClient {
  public:
   class Delegate {
@@ -63,10 +62,8 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
         base::TimeTicks monotonic_frame_begin_time) {}
   };
 
-  // |Destroy()| should be called when it is no longer used.
   FrameOverlay(LocalFrame*, std::unique_ptr<FrameOverlay::Delegate>);
   ~FrameOverlay() override;
-  void Destroy();
 
   void UpdatePrePaint();
 
@@ -75,7 +72,7 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
 
   GraphicsLayer* GetGraphicsLayer() const {
     DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-    return layer_;
+    return layer_.get();
   }
 
   // FrameOverlay is always the same size as the viewport.
@@ -102,18 +99,13 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
   void GraphicsLayersDidChange() override;
   PaintArtifactCompositor* GetPaintArtifactCompositor() override;
   String DebugName(const GraphicsLayer*) const override;
-  void Trace(Visitor*) const override;
 
   PropertyTreeState DefaultPropertyTreeState() const;
 
  private:
-  Member<LocalFrame> frame_;
+  Persistent<LocalFrame> frame_;
   std::unique_ptr<FrameOverlay::Delegate> delegate_;
-  Member<GraphicsLayer> layer_;
-
-#if DCHECK_IS_ON()
-  bool is_destroyed_ = false;
-#endif
+  std::unique_ptr<GraphicsLayer> layer_;
 };
 
 }  // namespace blink

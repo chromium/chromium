@@ -55,21 +55,7 @@ FrameOverlay::FrameOverlay(LocalFrame* local_frame,
 }
 
 FrameOverlay::~FrameOverlay() {
-#if DCHECK_IS_ON()
-  DCHECK(is_destroyed_);
-#endif
-}
-
-void FrameOverlay::Destroy() {
   frame_->View()->SetVisualViewportOrOverlayNeedsRepaint();
-
-  delegate_.reset();
-  if (layer_)
-    layer_.Release()->Destroy();
-
-#if DCHECK_IS_ON()
-  is_destroyed_ = true;
-#endif
 }
 
 void FrameOverlay::UpdatePrePaint() {
@@ -92,7 +78,7 @@ void FrameOverlay::UpdatePrePaint() {
   }
 
   if (!layer_) {
-    layer_ = MakeGarbageCollected<GraphicsLayer>(*this);
+    layer_ = std::make_unique<GraphicsLayer>(*this);
     layer_->SetDrawsContent(true);
     layer_->SetHitTestable(false);
   }
@@ -100,8 +86,8 @@ void FrameOverlay::UpdatePrePaint() {
   DCHECK(parent_layer);
   if (layer_->Parent() != parent_layer ||
       // Keep the layer the last child of parent to make it topmost.
-      parent_layer->Children().back() != layer_)
-    parent_layer->AddChild(layer_);
+      parent_layer->Children().back() != layer_.get())
+    parent_layer->AddChild(layer_.get());
   layer_->SetLayerState(DefaultPropertyTreeState(), IntPoint());
   layer_->SetSize(gfx::Size(Size()));
 }
@@ -132,7 +118,7 @@ void FrameOverlay::PaintContents(const GraphicsLayer* graphics_layer,
                                  GraphicsLayerPaintingPhase phase,
                                  const IntRect& interest_rect) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  DCHECK_EQ(graphics_layer, layer_);
+  DCHECK_EQ(graphics_layer, layer_.get());
   DCHECK_EQ(DefaultPropertyTreeState(), layer_->GetPropertyTreeState());
   Paint(context);
 }
@@ -153,12 +139,6 @@ void FrameOverlay::ServiceScriptedAnimations(
 String FrameOverlay::DebugName(const GraphicsLayer*) const {
   DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   return "Frame Overlay Content Layer";
-}
-
-void FrameOverlay::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_);
-  visitor->Trace(layer_);
-  GraphicsLayerClient::Trace(visitor);
 }
 
 void FrameOverlay::Paint(GraphicsContext& context) const {

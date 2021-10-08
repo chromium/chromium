@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -19,8 +18,7 @@ class GraphicsLayer;
 // in pre-CompositeAfterPaint. In CompositeAfterPaint, this is expected to
 // contain all paint chunks, as if we created one root layer that needs to be
 // future layerized.
-struct PLATFORM_EXPORT PreCompositedLayerInfo {
-  DISALLOW_NEW();
+struct PreCompositedLayerInfo {
   // For now this is used only when graphics_layer == nullptr. This will also
   // contain the paint chunks for the graphics layer when we unify
   // PaintController for pre-CAP and CAP.
@@ -28,8 +26,7 @@ struct PLATFORM_EXPORT PreCompositedLayerInfo {
   // If this is not nullptr, we should use the composited layer created by the
   // GraphicsLayer. Otherwise we should layerize |chunks|. A GraphicsLayer with
   // ShouldCreateLayersAfterPaint() == true should set this field to nullptr.
-  const Member<GraphicsLayer> graphics_layer = nullptr;
-  void Trace(Visitor* visitor) const;
+  const GraphicsLayer* graphics_layer = nullptr;
 };
 
 // A pending layer is a collection of paint chunks that will end up in the same
@@ -153,11 +150,9 @@ class PLATFORM_EXPORT PendingLayer {
   gfx::Vector2dF offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
-  const WeakPersistent<GraphicsLayer> graphics_layer_ = nullptr;
+  const GraphicsLayer* graphics_layer_ = nullptr;
   CompositingType compositing_type_;
 };
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PreCompositedLayerInfo)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_
