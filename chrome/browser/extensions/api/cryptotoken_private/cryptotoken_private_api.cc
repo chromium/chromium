@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/permissions/attestation_permission_request.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,6 +39,10 @@
 #include "device/fido/features.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // defined(OS_WIN)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
 
 namespace extensions {
 
@@ -310,12 +315,26 @@ CryptotokenPrivateCanMakeU2fApiRequestFunction::Run() {
       base::FeatureList::IsEnabled(extensions_features::kU2FSecurityKeyAPI) ||
       u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled);
 
+  const bool is_chromeos_signin_or_lockscreen_profile =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // Note that this is not the same as `Profile::IsRegularProfile()`.
+      !ash::ProfileHelper::IsRegularProfile(
+          Profile::FromBrowserContext(browser_context()));
+#else
+      false;
+#endif
+
   // Don't show a permission prompt if its feature flag is disabled, or if the
   // site enrolled in the deprecation trial (since they're obviously aware of
   // the deprecation), or if the enterprise policy to override U2F
   // deprecation-related changes has been enabled.
+  //
+  // Also don't show the prompt in "non-regular" ChromeOS profiles, which
+  // includes CrOS SAML sign-in context that doesn't support permission prompts
+  // (crbug.com/1257293).
   if (!base::FeatureList::IsEnabled(device::kU2fPermissionPrompt) ||
-      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled) {
+      u2f_api_enterprise_policy_enabled || u2f_api_origin_trial_enabled ||
+      is_chromeos_signin_or_lockscreen_profile) {
     return RespondNow(OneArgument(base::Value(true)));
   }
 
