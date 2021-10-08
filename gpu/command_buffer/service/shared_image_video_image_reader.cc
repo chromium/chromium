@@ -579,6 +579,7 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
         // of returning a null GLImage here.
         gl_image_ = base::MakeRefCounted<VideoImage>();
       }
+      gl_image_->SetColorSpace(color_space());
     }
     return gl_image_.get();
   }

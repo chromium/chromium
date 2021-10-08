@@ -51,6 +51,9 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
     render_cb_ = std::move(render_cb);
   }
 
+  // Color space of the image.
+  const gfx::ColorSpace& color_space() const { return color_space_; }
+
   // Note that you can't use the first ctor, since CodecWrapperImpl isn't
   // defined here.  Use the second, and it'll be nullptr.
   template <typename... Args>
@@ -65,16 +68,20 @@ class MEDIA_GPU_EXPORT CodecOutputBuffer {
   friend class CodecWrapperImpl;
   CodecOutputBuffer(scoped_refptr<CodecWrapperImpl> codec,
                     int64_t id,
-                    const gfx::Size& size);
+                    const gfx::Size& size,
+                    const gfx::ColorSpace& color_space);
 
   // For testing, since CodecWrapperImpl isn't available.  Uses nullptr.
-  CodecOutputBuffer(int64_t id, const gfx::Size& size);
+  CodecOutputBuffer(int64_t id,
+                    const gfx::Size& size,
+                    const gfx::ColorSpace& color_space);
 
   scoped_refptr<CodecWrapperImpl> codec_;
   int64_t id_;
   bool was_rendered_ = false;
   gfx::Size size_;
   base::OnceClosure render_cb_;
+  gfx::ColorSpace color_space_;
 };
 
 // This wraps a MediaCodecBridge and provides higher level features and tracks

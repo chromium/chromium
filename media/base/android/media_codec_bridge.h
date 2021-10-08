@@ -19,6 +19,7 @@
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -78,6 +79,13 @@ class MEDIA_EXPORT MediaCodecBridge {
   // INFO_OUTPUT_FORMAT_CHANGED. Returns MEDIA_CODEC_ERROR if an error occurs,
   // or MEDIA_CODEC_OK otherwise.
   virtual MediaCodecStatus GetOutputChannelCount(int* channel_count) = 0;
+
+  // Fills in |color_space| with the color space of the decoded video.  This
+  // is valid after DequeueOutputBuffer() signals a format change.  Will return
+  // MEDIA_CODEC_OK on success, with |color_space| initialized, or
+  // MEDIA_CODEC_ERROR with |color_space| unmodified otherwise.
+  virtual MediaCodecStatus GetOutputColorSpace(
+      gfx::ColorSpace* color_space) = 0;
 
   // Submits a byte array to the given input buffer. Call this after getting an
   // available buffer from DequeueInputBuffer(). If |data| is NULL, it assumes

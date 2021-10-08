@@ -71,6 +71,11 @@ class MEDIA_GPU_EXPORT CodecOutputBufferRenderer
 
   gfx::Size size() const { return output_buffer_->size(); }
 
+  // Color space of the image.
+  const gfx::ColorSpace& color_space() const {
+    return output_buffer_->color_space();
+  }
+
   bool was_tex_image_bound() const { return was_tex_image_bound_; }
 
   scoped_refptr<gpu::TextureOwner> texture_owner() const {

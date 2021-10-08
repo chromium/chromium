@@ -224,6 +224,7 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnFrameInfoReady(
   // all RequestImage, so skip updating image_spec_ in this case.
   if (output_buffer_renderer) {
     image_spec_.coded_size = frame_info.coded_size;
+    image_spec_.color_space = output_buffer_renderer->color_space();
   } else {
     // It is possible that we come here from RunAfterPendingVideoFrames before
     // CreateVideoFrame was called. In this case we don't have coded_size, but
@@ -263,6 +264,8 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
   if (!thiz)
     return;
 
+  gfx::ColorSpace color_space = output_buffer_renderer->color_space();
+
   // Initialize the CodecImage to use this output buffer.  Note that we're not
   // on the gpu main thread here, but it's okay since CodecImage is not being
   // used at this point.  Alternatively, we could post it, or hand it off to the
@@ -292,6 +295,8 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
 
   // For Vulkan.
   frame->set_ycbcr_info(frame_info.ycbcr_info);
+
+  frame->set_color_space(color_space);
 
   // If, for some reason, we failed to create a frame, then fail.  Note that we
   // don't need to call |release_cb|; dropping it is okay since the api says so.

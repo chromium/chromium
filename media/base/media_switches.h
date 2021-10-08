@@ -227,6 +227,7 @@ MEDIA_EXPORT extern const base::Feature kHlsPlayer;
 MEDIA_EXPORT extern const base::Feature kRequestSystemAudioFocus;
 MEDIA_EXPORT extern const base::Feature kUseAudioLatencyFromHAL;
 MEDIA_EXPORT extern const base::Feature kUsePooledSharedImageVideoProvider;
+MEDIA_EXPORT extern const base::Feature kUseRealColorSpaceForAndroidVideo;
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

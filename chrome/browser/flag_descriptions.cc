@@ -3609,6 +3609,11 @@ const char kUpdateMenuTypeInlineUpdateDownloadCanceled[] =
 const char kUpdateMenuTypeInlineUpdateInstallFailed[] =
     "Inline Update Error: Install Failed";
 
+extern const char kUseRealColorSpaceForAndroidVideoName[] =
+    "Use color space from MediaCodec";
+extern const char kUseRealColorSpaceForAndroidVideoDescription[] =
+    "When enabled video will use real color space instead of srgb.";
+
 const char kUserMediaScreenCapturingName[] = "Screen Capture API";
 const char kUserMediaScreenCapturingDescription[] =
     "Allows sites to request a video stream of your screen.";

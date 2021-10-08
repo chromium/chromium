@@ -373,4 +373,29 @@ TEST_F(CodecWrapperTest, RenderCallbackIsNotCalledIfNotRendered) {
   EXPECT_FALSE(flag);
 }
 
+TEST_F(CodecWrapperTest, CodecWrapperGetsColorSpaceFromCodec) {
+  // CodecWrapper should provide the color space that's reported by the bridge.
+  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK));
+  gfx::ColorSpace color_space{gfx::ColorSpace::CreateHDR10()};
+  EXPECT_CALL(*codec_, GetOutputColorSpace(_))
+      .WillOnce(DoAll(SetArgPointee<0>(color_space), Return(MEDIA_CODEC_OK)));
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->color_space(), color_space);
+}
+
+TEST_F(CodecWrapperTest, CodecWrapperDefaultsToSRGB) {
+  // If MediaCodec doesn't provide a color space, then CodecWrapper should
+  // default to sRGB for sanity.
+  // CodecWrapper should provide the color space that's reported by the bridge.
+  EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
+      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
+      .WillOnce(Return(MEDIA_CODEC_OK));
+  EXPECT_CALL(*codec_, GetOutputColorSpace(_))
+      .WillOnce(Return(MEDIA_CODEC_ERROR));
+  auto codec_buffer = DequeueCodecOutputBuffer();
+  ASSERT_EQ(codec_buffer->color_space(), gfx::ColorSpace::CreateSRGB());
+}
+
 }  // namespace media

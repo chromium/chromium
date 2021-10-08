@@ -332,7 +332,8 @@ TEST_F(CodecImageTest, RenderAfterUnusedDoesntCrash) {
 TEST_F(CodecImageTest, CodedSizeVsVisibleSize) {
   const gfx::Size coded_size(128, 128);
   const gfx::Size visible_size(100, 100);
-  auto buffer = CodecOutputBuffer::CreateForTesting(0, visible_size);
+  auto buffer = CodecOutputBuffer::CreateForTesting(
+      0, visible_size, gfx::ColorSpace::CreateSRGB());
   auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
       std::move(buffer), nullptr, /*lock=*/nullptr);
 

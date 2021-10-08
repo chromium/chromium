@@ -696,6 +696,12 @@ const base::Feature kUseAudioLatencyFromHAL{"UseAudioLatencyFromHAL",
 // the GPU main thread during VideoFrame construction.
 const base::Feature kUsePooledSharedImageVideoProvider{
     "UsePooledSharedImageVideoProvider", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Historically we hardcoded sRGB for color space. This flags controls if we
+// pass real color space to VideoFrame/SharedImages.
+const base::Feature kUseRealColorSpaceForAndroidVideo{
+    "UseRealColorSpaceForAndroidVideo", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

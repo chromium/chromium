@@ -7663,6 +7663,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-midi", flag_descriptions::kWebMidiName,
      flag_descriptions::kWebMidiDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebMidi)},
+#if defined(OS_ANDROID)
+    {"canvas-oop-rasterization",
+     flag_descriptions::kUseRealColorSpaceForAndroidVideoName,
+     flag_descriptions::kUseRealColorSpaceForAndroidVideoDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(media::kUseRealColorSpaceForAndroidVideo)},
+#endif
 
 #if defined(OS_WIN)
     {"win11-style-menus", flag_descriptions::kWin11StyleMenusName,

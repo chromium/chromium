@@ -50810,6 +50810,7 @@ from previous Chrome versions.
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>
   <int value="246106068" label="HandwritingLegacyRecognition:disabled"/>
   <int value="247200195" label="EnhancedProtectionPromoCard:enabled"/>
+  <int value="249465446" label="UseRealColorSpaceForAndroidVideo:enabled"/>
   <int value="250855010" label="WebAssemblyBaseline:disabled"/>
   <int value="251367892" label="PersistentQuotaIsTemporaryQuota:disabled"/>
   <int value="254497185" label="VideoPlayerJsModules:enabled"/>
@@ -51058,6 +51059,7 @@ from previous Chrome versions.
   <int value="418769094" label="MixedContentSiteSetting:enabled"/>
   <int value="420160748" label="CornerShortcuts:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
+  <int value="421986951" label="UseRealColorSpaceForAndroidVideo:disabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
   <int value="423615350" label="enable-tab-audio-muting"/>

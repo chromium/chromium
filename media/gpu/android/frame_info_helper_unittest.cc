@@ -60,7 +60,8 @@ class FrameInfoHelperTest : public testing::Test {
         texture_owner ? base::MakeRefCounted<CodecBufferWaitCoordinator>(
                             texture_owner, /*lock=*/nullptr)
                       : nullptr;
-    auto buffer = CodecOutputBuffer::CreateForTesting(0, size);
+    auto buffer = CodecOutputBuffer::CreateForTesting(
+        0, size, gfx::ColorSpace::CreateSRGB());
     auto buffer_renderer = std::make_unique<CodecOutputBufferRenderer>(
         std::move(buffer), codec_buffer_wait_coordinator, /*lock=*/nullptr);
 

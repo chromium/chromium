@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
@@ -22,6 +23,7 @@
 #include "media/base/android/media_jni_headers/MediaCodecBridgeBuilder_jni.h"
 #include "media/base/android/media_jni_headers/MediaCodecBridge_jni.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/video_codecs.h"
 
@@ -303,7 +305,9 @@ MediaCodecBridgeImpl::MediaCodecBridgeImpl(
     base::RepeatingClosure on_buffers_available_cb)
     : codec_type_(codec_type),
       on_buffers_available_cb_(std::move(on_buffers_available_cb)),
-      j_bridge_(std::move(j_bridge)) {
+      j_bridge_(std::move(j_bridge)),
+      use_real_color_space_(base::FeatureList::IsEnabled(
+          media::kUseRealColorSpaceForAndroidVideo)) {
   DCHECK(!j_bridge_.is_null());
 
   if (!on_buffers_available_cb_)
@@ -370,6 +374,91 @@ MediaCodecStatus MediaCodecBridgeImpl::GetOutputChannelCount(
   if (status == MEDIA_CODEC_OK)
     *channel_count = Java_GetOutputFormatResult_channelCount(env, result);
   return status;
+}
+
+MediaCodecStatus MediaCodecBridgeImpl::GetOutputColorSpace(
+    gfx::ColorSpace* color_space) {
+  if (!use_real_color_space_) {
+    *color_space = gfx::ColorSpace::CreateSRGB();
+    return MEDIA_CODEC_OK;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> result =
+      Java_MediaCodecBridge_getOutputFormat(env, j_bridge_);
+  MediaCodecStatus status = static_cast<MediaCodecStatus>(
+      Java_GetOutputFormatResult_status(env, result));
+  if (status != MEDIA_CODEC_OK)
+    return status;
+
+  // TODO(liberato): Consider consolidating these to save JNI hops.  However,
+  // since this is called only rarely, it's clearer this way.
+  int standard = Java_GetOutputFormatResult_colorStandard(env, result);
+  int range = Java_GetOutputFormatResult_colorRange(env, result);
+  int transfer = Java_GetOutputFormatResult_colorTransfer(env, result);
+  gfx::ColorSpace::PrimaryID primary_id;
+  gfx::ColorSpace::TransferID transfer_id;
+  gfx::ColorSpace::MatrixID matrix_id = gfx::ColorSpace::MatrixID::RGB;
+  gfx::ColorSpace::RangeID range_id;
+
+  switch (standard) {
+    case 1:  // MediaFormat.COLOR_STANDARD_BT709:
+      primary_id = gfx::ColorSpace::PrimaryID::BT709;
+      break;
+    case 2:  // MediaFormat.COLOR_STANDARD_BT601_PAL:
+      primary_id = gfx::ColorSpace::PrimaryID::BT470BG;
+      break;
+    case 4:  // MediaFormat.COLOR_STANDARD_BT601_NTSC:
+      primary_id = gfx::ColorSpace::PrimaryID::SMPTE170M;
+      break;
+    case 6:  // MediaFormat.COLOR_STANDARD_BT2020
+      primary_id = gfx::ColorSpace::PrimaryID::BT2020;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported primary in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  switch (transfer) {
+    case 1:  // MediaFormat.COLOR_TRANSFER_LINEAR
+      // TODO(liberato): LINEAR or LINEAR_HDR?
+      // Based on https://android.googlesource.com/platform/frameworks/native/
+      //            +/master/libs/nativewindow/include/android/data_space.h#57
+      // we pick LINEAR_HDR.
+      transfer_id = gfx::ColorSpace::TransferID::LINEAR_HDR;
+      break;
+    case 3:  // MediaFormat.COLOR_TRANSFER_SDR_VIDEO
+      transfer_id = gfx::ColorSpace::TransferID::SMPTE170M;
+      break;
+    case 6:  // MediaFormat.COLOR_TRANSFER_ST2084
+      transfer_id = gfx::ColorSpace::TransferID::SMPTEST2084;
+      break;
+    case 7:  // MediaFormat.COLOR_TRANSFER_HLG
+      transfer_id = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported transfer in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  switch (range) {
+    case 1:  // MediaFormat.COLOR_RANGE_FULL
+      range_id = gfx::ColorSpace::RangeID::FULL;
+      break;
+    case 2:  // MediaFormat.COLOR_RANGE_LIMITED
+      range_id = gfx::ColorSpace::RangeID::LIMITED;
+      break;
+    default:
+      DVLOG(3) << __func__ << ": unsupported range in p: " << standard
+               << " r: " << range << " t: " << transfer;
+      return MEDIA_CODEC_ERROR;
+  }
+
+  *color_space = gfx::ColorSpace(primary_id, transfer_id, matrix_id, range_id);
+
+  return MEDIA_CODEC_OK;
 }
 
 MediaCodecStatus MediaCodecBridgeImpl::QueueInputBuffer(
