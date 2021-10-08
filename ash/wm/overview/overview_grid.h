@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/rounded_label_widget.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_observer.h"
@@ -74,7 +75,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   ~OverviewGrid() override;
 
   // Exits overview mode.
-  void Shutdown();
+  void Shutdown(OverviewEnterExitType exit_type);
 
   // Prepares the windows in this grid for overview. This will restore all
   // minimized windows and ensure they are visible.
@@ -343,6 +344,15 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // True if the grid of desks templates is shown.
   bool IsShowingDesksTemplatesGrid() const;
 
+  // Updates the visibility of the `no_windows_widget_`. If `no_items` is true,
+  // the widget will be shown. If `no_items` is false or the desk templates grid
+  // is visible, the widget will be hidden.
+  void UpdateNoWindowsWidget(bool no_items);
+
+  // Refreshes the bounds of `no_windows_widget_`, animating if `animate` is
+  // true.
+  void RefreshNoWindowsWidgetBounds(bool animate);
+
   // Returns true if the grid has no more windows.
   bool empty() const { return window_list_.empty(); }
 
@@ -357,6 +367,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   const std::vector<std::unique_ptr<OverviewItem>>& window_list() const {
     return window_list_;
   }
+
+  RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
   SplitViewDragIndicators* split_view_drag_indicators() {
     return split_view_drag_indicators_.get();
@@ -469,6 +481,9 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Vector containing all the windows in this grid.
   std::vector<std::unique_ptr<OverviewItem>> window_list_;
+
+  // A widget that is shown if we entered overview without any windows opened.
+  std::unique_ptr<RoundedLabelWidget> no_windows_widget_;
 
   // The owner of the widget that displays split-view-related information. Null
   // if split view is unsupported (see |ShouldAllowSplitView|).

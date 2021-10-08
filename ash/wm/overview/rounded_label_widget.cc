@@ -12,6 +12,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/screen.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -106,14 +107,16 @@ gfx::Rect RoundedLabelWidget::GetBoundsCenteredIn(const gfx::Rect& bounds) {
   return widget_bounds;
 }
 
-void RoundedLabelWidget::SetBoundsCenteredIn(const gfx::Rect& bounds,
+void RoundedLabelWidget::SetBoundsCenteredIn(const gfx::Rect& bounds_in_screen,
                                              bool animate) {
   auto* window = GetNativeWindow();
   ScopedOverviewAnimationSettings animation_settings{
       animate ? OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW
               : OVERVIEW_ANIMATION_NONE,
       window};
-  window->SetBounds(GetBoundsCenteredIn(bounds));
+  window->SetBoundsInScreen(
+      GetBoundsCenteredIn(bounds_in_screen),
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window));
 }
 
 }  // namespace ash

@@ -40,6 +40,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/rounded_label_widget.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -1875,12 +1876,12 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitScreenTest) {
   aura::Window::Windows children = default_container()->children();
   children.erase(std::remove_if(children.begin(), children.end(),
                                 [](aura::Window* window) {
-                                  return window ==
-                                         Shell::Get()
-                                             ->overview_controller()
-                                             ->overview_session()
-                                             ->no_windows_widget_for_testing()
-                                             ->GetNativeWindow();
+                                  return window == Shell::Get()
+                                                       ->overview_controller()
+                                                       ->overview_session()
+                                                       ->grid_list()[0]
+                                                       ->no_windows_widget()
+                                                       ->GetNativeWindow();
                                 }),
                  children.end());
   EXPECT_EQ(2U, children.size());

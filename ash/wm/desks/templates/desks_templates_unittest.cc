@@ -270,4 +270,23 @@ TEST_F(DesksTemplatesTest, DesksTemplatesButtonVisibility) {
                              /*trace_string=*/"two-desk-zero-entries");
 }
 
+// Tests that the no windows widget is hidden when the desk templates grid is
+// shown.
+TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
+  UpdateDisplay("400x300,400x300");
+
+  // Start overview mode. The no windows widget should be visible.
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+  auto& grid_list = GetOverviewSession()->grid_list();
+  ASSERT_EQ(2u, grid_list.size());
+  EXPECT_TRUE(grid_list[0]->no_windows_widget());
+  EXPECT_TRUE(grid_list[1]->no_windows_widget());
+
+  // Open the desk templates grid. The no windows widget should now be hidden.
+  GetOverviewSession()->ShowDesksTemplatesGrids();
+  EXPECT_FALSE(grid_list[0]->no_windows_widget());
+  EXPECT_FALSE(grid_list[1]->no_windows_widget());
+}
+
 }  // namespace ash

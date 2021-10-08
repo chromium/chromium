@@ -3041,7 +3041,7 @@ TEST_F(DesksTest, SuccessfulDragToDeskRemovesSplitViewIndicators) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_TRUE(overview_grid->empty());
   EXPECT_FALSE(DoesActiveDeskContainWindow(window.get()));
-  EXPECT_TRUE(overview_session->no_windows_widget_for_testing());
+  EXPECT_TRUE(overview_grid->no_windows_widget());
   EXPECT_FALSE(overview_grid->drop_target_widget());
   EXPECT_EQ(SplitViewDragIndicators::WindowDraggingState::kNoDrag,
             overview_session->grid_list()[0]

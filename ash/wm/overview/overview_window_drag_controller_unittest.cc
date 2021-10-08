@@ -188,7 +188,7 @@ TEST_F(OverviewWindowDragControllerTest,
   EXPECT_TRUE(overview_grid->empty());
   const Desk* desk_2 = controller->desks()[1].get();
   EXPECT_TRUE(base::Contains(desk_2->windows(), window.get()));
-  EXPECT_TRUE(overview_session->no_windows_widget_for_testing());
+  EXPECT_TRUE(const_cast<OverviewGrid*>(overview_grid)->no_windows_widget());
 }
 
 // Test that if window is destroyed during dragging, no crash should happen and

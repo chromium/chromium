@@ -47,7 +47,6 @@ class OverviewGrid;
 class OverviewHighlightController;
 class OverviewItem;
 class OverviewWindowDragController;
-class RoundedLabelWidget;
 
 // The Overview shows a grid of all of your windows, allowing to select
 // one by clicking or tapping on it.
@@ -331,10 +330,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
     return desks_templates_presenter_.get();
   }
 
-  RoundedLabelWidget* no_windows_widget_for_testing() {
-    return no_windows_widget_.get();
-  }
-
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewTestBase;
@@ -351,9 +346,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // initialization.
   void RemoveAllObservers();
 
-  void UpdateNoWindowsWidget();
+  // Updates the no windows widget on each OverviewGrid.
+  void UpdateNoWindowsWidgetOnEachGrid();
 
-  void RefreshNoWindowsWidgetBounds(bool animate);
+  // Refreshes the bounds of the no windows widget on each OverviewGrid.
+  void RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate);
 
   void OnItemAdded(aura::Window* window);
 
@@ -378,9 +375,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // we may be able to add some mechanism to trigger accessibility events
   // without a focused window.
   std::unique_ptr<views::Widget> overview_focus_widget_;
-
-  // A widget that is shown if we entered overview without any windows opened.
-  std::unique_ptr<RoundedLabelWidget> no_windows_widget_;
 
   // True when performing operations that may cause window activations. This is
   // used to prevent handling the resulting expected activation. This is

@@ -1661,12 +1661,15 @@ TEST_F(OverviewSessionTest, OverviewWhileDragging) {
 // Verify that the overview no windows indicator appears when entering overview
 // mode with no windows.
 TEST_F(OverviewSessionTest, NoWindowsIndicator) {
+  UpdateDisplay("400x300,400x300");
+
   // Verify that by entering overview mode without windows, the no items
   // indicator appears.
   ToggleOverview();
   ASSERT_TRUE(GetOverviewSession());
   ASSERT_EQ(0u, GetOverviewItemsForRoot(0).size());
-  EXPECT_TRUE(GetOverviewSession()->no_windows_widget_for_testing());
+  for (auto& grid : GetOverviewSession()->grid_list())
+    EXPECT_TRUE(grid->no_windows_widget());
 }
 
 // Verify that the overview no windows indicator position is as expected.
@@ -1675,8 +1678,9 @@ TEST_F(OverviewSessionTest, NoWindowsIndicatorPosition) {
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewSession());
+
   RoundedLabelWidget* no_windows_widget =
-      GetOverviewSession()->no_windows_widget_for_testing();
+      GetOverviewSession()->grid_list()[0]->no_windows_widget();
   ASSERT_TRUE(no_windows_widget);
 
   // Verify that originally the label is in the center of the workspace.
@@ -1757,13 +1761,13 @@ TEST_F(OverviewSessionTest, NoWindowsIndicatorPositionSplitview) {
   ToggleOverview();
   ASSERT_TRUE(GetOverviewSession());
   RoundedLabelWidget* no_windows_widget =
-      GetOverviewSession()->no_windows_widget_for_testing();
+      GetOverviewSession()->grid_list()[0]->no_windows_widget();
   EXPECT_FALSE(no_windows_widget);
 
   // Tests that when snapping a window to the left in splitview, the no windows
   // indicator shows up in the middle of the right side of the screen.
   GetSplitViewController()->SnapWindow(window.get(), SplitViewController::LEFT);
-  no_windows_widget = GetOverviewSession()->no_windows_widget_for_testing();
+  no_windows_widget = GetOverviewSession()->grid_list()[0]->no_windows_widget();
   ASSERT_TRUE(no_windows_widget);
 
   // There is a 8dp divider in splitview, the indicator should take that into
@@ -1791,28 +1795,12 @@ TEST_F(OverviewSessionTest, NoWindowsIndicatorAddItem) {
 
   ToggleOverview();
   GetSplitViewController()->SnapWindow(window.get(), SplitViewController::LEFT);
-  EXPECT_TRUE(GetOverviewSession()->no_windows_widget_for_testing());
+  EXPECT_TRUE(GetOverviewSession()->grid_list()[0]->no_windows_widget());
 
   GetOverviewSession()->AddItem(window.get(), /*reposition=*/true,
                                 /*animate=*/false, /*ignored_items=*/{},
                                 /*index=*/0u);
-  EXPECT_FALSE(GetOverviewSession()->no_windows_widget_for_testing());
-}
-
-// Verify that when opening overview mode with multiple displays, the no items
-// indicator on the primary grid if there are no windows.
-TEST_F(OverviewSessionTest, NoWindowsIndicatorPositionMultiDisplay) {
-  UpdateDisplay("500x400,500x400,500x400");
-
-  // Enter overview mode. Verify that the no windows indicator is located on the
-  // primary display.
-  ToggleOverview();
-  ASSERT_TRUE(GetOverviewSession());
-  RoundedLabelWidget* no_windows_widget =
-      GetOverviewSession()->no_windows_widget_for_testing();
-  const int expected_y = (400 - ShelfConfig::Get()->shelf_size()) / 2;
-  EXPECT_EQ(gfx::Point(250, expected_y),
-            no_windows_widget->GetWindowBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(GetOverviewSession()->grid_list()[0]->no_windows_widget());
 }
 
 // Tests that we do not exit overview mode until all the grids are empty.
@@ -1837,14 +1825,15 @@ TEST_F(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
   auto& grids = GetOverviewSession()->grid_list();
   ASSERT_TRUE(GetOverviewSession());
   ASSERT_EQ(3u, grids.size());
-  EXPECT_FALSE(GetOverviewSession()->no_windows_widget_for_testing());
+  for (auto& grid : grids)
+    EXPECT_FALSE(grid->no_windows_widget());
 
   OverviewItem* item1 = GetOverviewItemForWindow(window1);
   OverviewItem* item2 = GetOverviewItemForWindow(window2);
   ASSERT_TRUE(item1 && item2);
 
   // Close |item2|. Verify that we are still in overview mode because |window1|
-  // is still open. The non primary root grids are empty however.
+  // is still open. All the grids should not have a no windows widget.
   item2->CloseWindow();
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(GetOverviewSession());
@@ -1852,7 +1841,8 @@ TEST_F(OverviewSessionTest, ExitOverviewWhenAllGridsEmpty) {
   EXPECT_FALSE(grids[0]->empty());
   EXPECT_TRUE(grids[1]->empty());
   EXPECT_TRUE(grids[2]->empty());
-  EXPECT_FALSE(GetOverviewSession()->no_windows_widget_for_testing());
+  for (auto& grid : grids)
+    EXPECT_FALSE(grid->no_windows_widget());
 
   // Close |item1|. Verify that since no windows are open, we exit overview
   // mode.
