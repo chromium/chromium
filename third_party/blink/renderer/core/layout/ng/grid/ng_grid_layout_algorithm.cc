@@ -2030,6 +2030,9 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 namespace {
 
 using GridSetVector = Vector<NGGridSet*, 16>;
+using ClampedDouble = base::ClampedNumeric<double>;
+
+const double kDoubleEpsilon = std::numeric_limits<float>::epsilon();
 
 LayoutUnit DefiniteGrowthLimit(const NGGridSet& set) {
   LayoutUnit growth_limit = set.GrowthLimit();
@@ -2208,7 +2211,7 @@ bool AreEqual(T a, T b) {
 
 template <>
 bool AreEqual<double>(double a, double b) {
-  return std::abs(a - b) < std::numeric_limits<double>::epsilon();
+  return std::abs(a - b) < kDoubleEpsilon;
 }
 
 // Follow the definitions from https://drafts.csswg.org/css-grid-2/#extra-space;
@@ -2502,7 +2505,7 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     LayoutUnit spanned_tracks_size =
         GridGap(track_direction) * (grid_item->SpanSize(track_direction) - 1);
 
-    base::ClampedNumeric<double> flex_factor_sum = 0;
+    ClampedDouble flex_factor_sum = 0;
     for (auto set_iterator =
              GetSetIteratorForItem(*grid_item, *track_collection);
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
@@ -2810,9 +2813,6 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     bool* needs_additional_pass,
     bool* has_block_size_dependent_item) const {
   DCHECK(track_collection && grid_items && needs_additional_pass);
-  if (!track_collection->IsSpanningFlexibleTrack())
-    return;
-
   LayoutUnit free_space =
       DetermineFreeSpace(sizing_constraint, *track_collection);
 
@@ -2827,12 +2827,11 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
 
   // https://drafts.csswg.org/css-grid-2/#algo-find-fr-size
   GridSetVector flexible_sets;
-  auto FindFrSize = [&flexible_sets, gutter_size](
-                        SetIterator set_iterator,
+  auto FindFrSize = [&](SetIterator set_iterator,
                         LayoutUnit leftover_space) -> double {
-    flexible_sets.Shrink(0);
-    base::ClampedNumeric<double> flex_factor_sum = 0;
+    ClampedDouble flex_factor_sum = 0;
     wtf_size_t total_track_count = 0;
+    flexible_sets.Shrink(0);
 
     while (!set_iterator.IsAtEnd()) {
       auto& set = set_iterator.CurrentSet();
@@ -2892,7 +2891,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
 
     GridSetVector::iterator current_set = flexible_sets.begin();
     while (leftover_space > 0 && current_set != flexible_sets.end()) {
-      flex_factor_sum = base::ClampMax(flex_factor_sum, 1.0);
+      flex_factor_sum = base::ClampMax(flex_factor_sum, 1);
 
       GridSetVector::iterator next_set = current_set;
       while (next_set != flexible_sets.end() &&
@@ -2920,7 +2919,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     return 0;
   };
 
-  base::ClampedNumeric<double> fr_size = 0;
+  double fr_size = 0;
   if (free_space != kIndefiniteSize) {
     // Otherwise, if the free space is a definite length, the used flex fraction
     // is the result of finding the size of an fr using all of the grid tracks
@@ -2937,7 +2936,7 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     //   crosses and a space to fill of the item’s max-content contribution.
     for (auto& grid_item : grid_items->item_data) {
       if (grid_item.IsSpanningFlexibleTrack(track_direction)) {
-        base::ClampedNumeric<double> grid_item_fr_size =
+        double grid_item_fr_size =
             FindFrSize(GetSetIteratorForItem(grid_item, *track_collection),
                        ContributionSizeForGridItem(
                            grid_geometry, grid_item, track_direction,
@@ -2951,31 +2950,43 @@ void NGGridLayoutAlgorithm::ExpandFlexibleTracks(
     //   - For each flexible track, if the flexible track’s flex factor is
     //   greater than one, the result of dividing the track’s base size by its
     //   flex factor; otherwise, the track’s base size.
-    flexible_sets.Shrink(0);
     for (auto set_iterator = track_collection->GetSetIterator();
          !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
       auto& set = set_iterator.CurrentSet();
       if (!set.TrackSize().HasFlexMaxTrackBreadth())
         continue;
 
-      // Above, we filled |flexible_sets| considering only the tracks spanned by
-      // a given grid item. However, the next section of the algorithm expects
-      // such vector to contain all flexible sets in the specified track
-      // collection; push all flexible sets here to keep the invariant.
-      flexible_sets.push_back(&set);
-
       DCHECK_GT(set.TrackCount(), 0u);
-      base::ClampedNumeric<double> flex_factor =
-          std::max<double>(set.FlexFactor(), set.TrackCount());
-      fr_size = std::max(set.BaseSize().RawValue() / flex_factor, fr_size);
+      double set_flex_factor =
+          base::ClampMax(set.FlexFactor(), set.TrackCount());
+      fr_size = std::max(set.BaseSize().RawValue() / set_flex_factor, fr_size);
     }
   }
 
-  for (auto* set : flexible_sets) {
-    LayoutUnit expanded_size =
-        LayoutUnit::FromRawValue(fr_size * set->FlexFactor());
-    if (expanded_size > set->BaseSize())
-      set->SetBaseSize(expanded_size);
+  // Notice that the fr size multiplied by a set's flex factor can result in a
+  // non-integer size; since we floor the expanded size to fit in a LayoutUnit,
+  // when multiple sets lose the fractional part of the computation we may not
+  // distribute the entire free space. We fix this issue by accumulating the
+  // leftover fractional part from every flexible set.
+  double leftover_size = 0;
+
+  for (auto set_iterator = track_collection->GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    auto& set = set_iterator.CurrentSet();
+    if (!set.TrackSize().HasFlexMaxTrackBreadth())
+      continue;
+
+    const ClampedDouble fr_share = fr_size * set.FlexFactor() + leftover_size;
+    // Add an epsilon to round up values very close to the next integer.
+    const LayoutUnit expanded_size =
+        LayoutUnit::FromRawValue(fr_share + kDoubleEpsilon);
+
+    if (!expanded_size.MightBeSaturated() && expanded_size >= set.BaseSize()) {
+      set.SetBaseSize(expanded_size);
+      // The epsilon added above might make |expanded_size| greater than
+      // |fr_share|, in that case avoid a negative leftover by flooring to 0.
+      leftover_size = base::ClampMax(fr_share - expanded_size.RawValue(), 0);
+    }
   }
 
   // TODO(ethavar): If using this flex fraction would cause the grid to be

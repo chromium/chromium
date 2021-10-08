@@ -178,6 +178,7 @@ crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-item-hit-test.html [
 crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-overflow-padding-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-model/grid-overflow-padding-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/flex-sizing-rows-indefinite-height.html [ Failure ]
+crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/flex-tracks-with-fractional-size.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-content-distribution-must-account-for-track-sizing-002.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Failure ]
