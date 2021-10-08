@@ -131,6 +131,38 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, StoreEntryWhenFull) {
   EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
 }
 
+// Only add an entry to the cache when no beforeunload listeners are running.
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest,
+                       StoreEntryWithoutBeforeunloadListener) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  EXPECT_TRUE(closed_tab_cache().IsEmpty())
+      << "Expected cache to be empty at the start of the test.";
+
+  // Don't cache WebContents when beforeunload listeners are run.
+  NavigateToURL(browser(), "a.com");
+  content::WebContents* a = browser()->tab_strip_model()->GetWebContentsAt(1);
+  EXPECT_TRUE(ExecJs(a->GetMainFrame(),
+                     "window.addEventListener('beforeunload', function (e) "
+                     "{e.returnValue = '';});"));
+  EXPECT_TRUE(a->NeedToFireBeforeUnloadOrUnloadEvents());
+  CloseTabAt(1);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);
+  a->DispatchBeforeUnload(/*auto_cancel=*/false);
+
+  // Cache WebContents when no beforeunload listeners are run.
+  NavigateToURL(browser(), "b.com");
+  content::WebContents* b = browser()->tab_strip_model()->GetWebContentsAt(2);
+  EXPECT_FALSE(b->NeedToFireBeforeUnloadOrUnloadEvents());
+  CloseTabAt(2);
+  EXPECT_EQ(closed_tab_cache().EntriesCount(), 1U);
+
+  // Ensure that the browser can shutdown. Otherwise tests might timeout.
+  base::RepeatingCallback<void(bool)> on_close_confirmed = base::BindRepeating(
+      [](bool placeholder) { LOG(ERROR) << "Should not be reached!"; });
+  EXPECT_FALSE(browser()->TryToCloseWindow(/*skip_beforeunload=*/true,
+                                           on_close_confirmed));
+}
+
 // Restore an entry when the cache is empty.
 IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenEmpty) {
   ASSERT_TRUE(closed_tab_cache().IsEmpty())

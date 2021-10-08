@@ -241,6 +241,8 @@ void BrowserTabStripModelDelegate::CacheWebContents(
     return;
   }
 
+  DCHECK(!web_contents.empty());
+
   ClosedTabCache& cache =
       ClosedTabCacheServiceFactory::GetForProfile(browser_->profile())
           ->closed_tab_cache();
