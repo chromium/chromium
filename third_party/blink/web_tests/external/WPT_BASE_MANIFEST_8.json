@@ -298416,6 +298416,14 @@
    "speculation-rules": {
     "prerender": {
      "resources": {
+      "about-blank-iframes.html": [
+       "4cac6d6fee63b189cccfe34e40f32ff502b95641",
+       []
+      ],
+      "empty.html": [
+       "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+       []
+      ],
       "key-value-store.py": [
        "1ab609f11bf2be22696f0b132b88d8fc86546b93",
        []
@@ -481112,6 +481120,15 @@
    },
    "speculation-rules": {
     "prerender": {
+     "about-blank-iframes.html": [
+      "a35d1886ef5e27154d65f797a455f1f31e87a1ae",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-notification.https.html": [
       "964c408f111d92c9477fc2f14d21d87c768d6f92",
       [
@@ -483269,7 +483286,7 @@
       ]
      ],
      "respond-after-enqueue.any.js": [
-      "390f5f8fa35986a487c11a8dd5f0279111f4ad0a",
+      "f4be0d4a4db0db1f1185a38d6405f078aa97f2c9",
       [
        null,
        {
@@ -519744,7 +519761,7 @@
      ]
     ],
     "streams-close.https.any.js": [
-     "96afc1c68ac392190de4c07bd6247858409e03e6",
+     "be9a7322957596aa174b06c146e15e961d307aa5",
      [
       "webtransport/streams-close.https.any.html",
       {
