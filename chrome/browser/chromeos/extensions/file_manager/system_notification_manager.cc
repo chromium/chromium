@@ -204,6 +204,8 @@ void SystemNotificationManager::HandleDeviceEvent(
     case file_manager_private::DEVICE_EVENT_TYPE_HARD_UNPLUGGED:
       notification = CreateNotification(id, IDS_DEVICE_HARD_UNPLUGGED_TITLE,
                                         IDS_DEVICE_HARD_UNPLUGGED_MESSAGE);
+      RecordDeviceNotificationMetric(
+          DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_FORMAT_START:
       title = l10n_util::GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
@@ -679,6 +681,8 @@ SystemNotificationManager::MakeRemovableNotification(
     if (volume.is_read_only() && !volume.is_read_only_removable_device()) {
       message = l10n_util::GetStringUTF16(
           IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE_READONLY_POLICY);
+      RecordDeviceNotificationMetric(
+          DeviceNotificationUmaType::DEVICE_NAVIGATION_READONLY_POLICY);
     } else {
       const PrefService* const service = profile_->GetPrefs();
       DCHECK(service);
@@ -688,6 +692,8 @@ SystemNotificationManager::MakeRemovableNotification(
       if (!arc_enabled) {
         message =
             l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE);
+        RecordDeviceNotificationMetric(
+            DeviceNotificationUmaType::DEVICE_NAVIGATION);
       } else if (arc_removable_media_access_enabled) {
         message = base::StrCat(
             {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
@@ -695,6 +701,8 @@ SystemNotificationManager::MakeRemovableNotification(
              l10n_util::GetStringUTF16(
                  IDS_REMOVABLE_DEVICE_PLAY_STORE_APPS_HAVE_ACCESS_MESSAGE)});
         show_settings_button = true;
+        RecordDeviceNotificationMetric(
+            DeviceNotificationUmaType::DEVICE_NAVIGATION_APPS_HAVE_ACCESS);
       } else {
         message = base::StrCat(
             {l10n_util::GetStringUTF16(IDS_REMOVABLE_DEVICE_NAVIGATION_MESSAGE),
@@ -702,6 +710,8 @@ SystemNotificationManager::MakeRemovableNotification(
              l10n_util::GetStringUTF16(
                  IDS_REMOVABLE_DEVICE_ALLOW_PLAY_STORE_ACCESS_MESSAGE)});
         show_settings_button = true;
+        RecordDeviceNotificationMetric(
+            DeviceNotificationUmaType::DEVICE_NAVIGATION_ALLOW_APP_ACCESS);
       }
     }
     scoped_refptr<message_center::NotificationDelegate> delegate =

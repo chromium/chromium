@@ -330,6 +330,7 @@ TEST_F(SystemNotificationManagerTest, RenameFail) {
 }
 
 TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<chromeos::disks::Disk> disk =
       CreateTestDisk(kDevicePath, kMountPath, /*is_read_only_hardware=*/false,
                      /*is_mounted=*/true);
@@ -351,9 +352,14 @@ TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
   EXPECT_EQ(notification_strings.message,
             u"In the future, be sure to eject your removable device in the "
             u"Files app before unplugging it. Otherwise, you might lose data.");
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED, 1);
 }
 
 TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
       VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
@@ -381,12 +387,17 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message,
             u"Explore the device\x2019s content in the Files app.");
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_NAVIGATION, 1);
 }
 
 // Test for notification generated when enterprise read-only policy is set.
 // Condition that triggers that is a mount event for a removable device
 // and the volume has read only set.
 TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
       VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
@@ -415,12 +426,17 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
   EXPECT_EQ(notification_strings.message,
             u"Explore the device's content in the Files app. The content is "
             u"restricted by an admin and can\x2019t be modified.");
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_NAVIGATION_READONLY_POLICY, 1);
 }
 
 // Test for notification generated when ARC++ is enabled on the device.
 // Condition that triggers that is a mount event for a removable device
 // when the removable access for ARC++ is disabled.
 TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
+  base::HistogramTester histogram_tester;
   // Set the ARC++ enbled preference on the testing profile.
   PrefService* const service = GetProfile()->GetPrefs();
   service->SetBoolean(arc::prefs::kArcEnabled, true);
@@ -452,12 +468,17 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
   EXPECT_EQ(notification_strings.message,
             u"Explore the device\x2019s content in the Files app. For device "
             u"preferences, go to Settings.");
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_NAVIGATION_ALLOW_APP_ACCESS, 1);
 }
 
 // Test for notification generated when ARC++ is enabled on the device.
 // Condition that triggers that is a mount event for a removable device
 // when the removable access for ARC++ is enabled.
 TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
+  base::HistogramTester histogram_tester;
   // Set the ARC++ enbled preference on the testing profile.
   PrefService* const service = GetProfile()->GetPrefs();
   service->SetBoolean(arc::prefs::kArcEnabled, true);
@@ -490,6 +511,10 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
   EXPECT_EQ(notification_strings.message,
             u"Explore the device\x2019s content in the Files app. Play Store "
             u"applications have access to this device.");
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_NAVIGATION_APPS_HAVE_ACCESS, 1);
 }
 
 constexpr char kDeviceFailNotificationId[] = "swa-device-fail-id";
