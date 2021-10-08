@@ -9,6 +9,7 @@ Tests for the Traffic Annotation Auditor.
 import argparse
 import itertools
 import os
+import platform
 import sys
 import unittest
 
@@ -16,30 +17,30 @@ from auditor import *
 from typing import cast, Tuple
 
 # Path to the test_data/ dir.
-TESTS_DIR = SCRIPT_DIR.parent / "test_data"
-
-# TODO(nicolaso): Move these to tools/traffic_annotation/scripts/test_data/ once
-# the Python auditor has fully replaced the C++ one.
-CPP_TESTS_DIR = (SRC_DIR / "tools" / "traffic_annotation" / "auditor" / "tests")
+TEST_DATA_DIR = SCRIPT_DIR.parent / "test_data"
 
 TEST_DEPRECATED_IDS = [UniqueId("abc"), UniqueId("def"), UniqueId("ghi")]
 
 
 class AuditorTest(unittest.TestCase):
   def setUp(self):
+    build_path = TEST_DATA_DIR / "out" / "Debug"
+
     unittest.TestCase.setUp(self)
 
     path_filters = [
-        TESTS_DIR.joinpath("test_sample_annotations.cc").relative_to(
-            SRC_DIR).as_posix()
+        (TEST_DATA_DIR /
+         "test_sample_annotations.cc").relative_to(SRC_DIR).as_posix()
     ]
     self.auditor_ui = AuditorUI(build_path,
                                 path_filters,
                                 no_filtering=False,
                                 test_only=True)
     self.auditor = self.auditor_ui.auditor
-    self.auditor.file_filter.git_file_for_testing = TESTS_DIR / "git_list.txt"
+    self.auditor.file_filter.git_file_for_testing = (TEST_DATA_DIR /
+                                                     "git_list.txt")
 
+    logger.info(repr(path_filters))
     all_annotations = self.auditor.run_extractor(self.auditor_ui.build_path,
                                                  self.auditor_ui.path_filters,
                                                  skip_compdb=True)
@@ -55,7 +56,7 @@ class AuditorTest(unittest.TestCase):
 
   def deserialize(self,
                   file_name: str) -> Tuple[Annotation, List[AuditorError]]:
-    file_path = CPP_TESTS_DIR / "extractor_outputs" / file_name
+    file_path = TEST_DATA_DIR / "extractor_outputs" / file_name
     lines = file_path.read_text(encoding="utf-8").splitlines()
 
     annotation = Annotation()
@@ -113,20 +114,14 @@ class AuditorTest(unittest.TestCase):
     a mock git_list.txt file. It also inherently checks
     FileFilter._is_supported_source_file()."""
     filter = FileFilter([".cc", ".mm"])
-    filter.git_file_for_testing = CPP_TESTS_DIR / "git_list.txt"
+    filter.git_file_for_testing = TEST_DATA_DIR / "git_list.txt"
     filter.get_files_from_git()
 
     relevant_files = [
-        # TODO(crbug.com/1119417): Rename (ir)?relevant_file_content.cc to
-        # something else, and add samples of other file types.
-        "tools/traffic_annotation/auditor/tests/"
-        "irrelevant_file_content.cc",
-        "tools/traffic_annotation/auditor/tests/"
-        "irrelevant_file_content.mm",
-        "tools/traffic_annotation/auditor/tests/"
-        "relevant_file_name_and_content.cc",
-        "tools/traffic_annotation/auditor/tests/"
-        "relevant_file_name_and_content.mm",
+        "tools/traffic_annotation/scripts/test_data/"
+        "objective_cpp.mm",
+        "tools/traffic_annotation/scripts/test_data/"
+        "test_sample_annotations.cc",
     ]
     self.assertCountEqual([Path(f) for f in relevant_files], filter.git_files)
 
@@ -134,7 +129,7 @@ class AuditorTest(unittest.TestCase):
     """Tests that FileFilter.get_source_files() gives the correct list of
     files, given a mock git_list.txt file."""
     filter = FileFilter([".cc", ".mm"])
-    filter.git_file_for_testing = CPP_TESTS_DIR / "git_list.txt"
+    filter.git_file_for_testing = TEST_DATA_DIR / "git_list.txt"
     filter.get_files_from_git()
 
     # Check if all files are returned with no ignore list and directory.
@@ -650,22 +645,22 @@ class AuditorTest(unittest.TestCase):
     """Tests if annotations.xml changes are correctly reported."""
     exporter = Exporter(get_current_platform())
 
-    xml1 = (CPP_TESTS_DIR /
+    xml1 = (TEST_DATA_DIR /
             "annotations_sample1.xml").read_text(encoding="utf-8")
-    xml2 = (CPP_TESTS_DIR /
+    xml2 = (TEST_DATA_DIR /
             "annotations_sample2.xml").read_text(encoding="utf-8")
-    xml3 = (CPP_TESTS_DIR /
+    xml3 = (TEST_DATA_DIR /
             "annotations_sample3.xml").read_text(encoding="utf-8")
 
     diff12 = exporter._get_xml_differences(xml1, xml2)
     diff13 = exporter._get_xml_differences(xml1, xml3)
     diff23 = exporter._get_xml_differences(xml2, xml3)
 
-    expected_diff12 = (CPP_TESTS_DIR /
+    expected_diff12 = (TEST_DATA_DIR /
                        "annotations_diff12.txt").read_text(encoding="utf-8")
-    expected_diff13 = (CPP_TESTS_DIR /
+    expected_diff13 = (TEST_DATA_DIR /
                        "annotations_diff13.txt").read_text(encoding="utf-8")
-    expected_diff23 = (CPP_TESTS_DIR /
+    expected_diff23 = (TEST_DATA_DIR /
                        "annotations_diff23.txt").read_text(encoding="utf-8")
 
     self.assertEqual(expected_diff12, diff12)
@@ -674,7 +669,7 @@ class AuditorTest(unittest.TestCase):
 
   def test_annotation_grouping(self):
     """Tests if an annotation is in test_grouping.xml or not."""
-    grouping_xml_path = CPP_TESTS_DIR / "test_grouping.xml"
+    grouping_xml_path = TEST_DATA_DIR / "test_grouping.xml"
     grouping_xml_ids = self.auditor._get_grouping_xml_ids(grouping_xml_path)
     self.assertCountEqual([
         "foobar_policy_fetcher", "foobar_info_fetcher",
@@ -738,16 +733,20 @@ class AuditorTest(unittest.TestCase):
                                        1)[1].lstrip().split(", ")
     self.assertCountEqual(expected_missing_fields, missing_fields)
 
+  def test_get_current_platform(self) -> None:
+    host_platform = platform.system().lower()
+
+    if host_platform == "windows":
+      self.assertEqual("windows",
+                       get_current_platform(TEST_DATA_DIR / "out" / "Debug"))
+    elif host_platform == "linux":
+      self.assertEqual("linux",
+                       get_current_platform(TEST_DATA_DIR / "out" / "Debug"))
+      self.assertEqual("android",
+                       get_current_platform(TEST_DATA_DIR / "out" / "Android"))
+    else:
+      raise ValueError("Unrecognized host platform {}".format(host_platform))
+
 
 if __name__ == "__main__":
-  args_parser = argparse.ArgumentParser(description="Unittests for auditor.py")
-  args_parser.add_argument("--build-path",
-                           type=Path,
-                           help="Path to the build directory.",
-                           required=True)
-  args_parser.add_argument('unittest_args', nargs='*')
-
-  args = args_parser.parse_args()
-  build_path = Path(args.build_path)
-  sys.argv[1:] = args.unittest_args
   unittest.main()

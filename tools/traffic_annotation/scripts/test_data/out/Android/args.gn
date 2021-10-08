@@ -1,0 +1,4 @@
+# Set build arguments here. See `gn help buildargs`.
+# target_os = "linux"
+target_os = "android"
+target_cpu = "x86"

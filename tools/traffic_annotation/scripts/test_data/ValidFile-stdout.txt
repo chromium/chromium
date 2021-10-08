@@ -1,6 +1,6 @@
 ==== NEW ANNOTATION ====
 ValidFile.java
-13
+12
 Definition
 id1
 
@@ -24,7 +24,7 @@ comments: 'comment1'
 ==== ANNOTATION ENDS ====
 ==== NEW ANNOTATION ====
 ValidFile.java
-40
+39
 Definition
 test
 
@@ -32,7 +32,7 @@ Traffic annotation for unit, browser and other tests
 ==== ANNOTATION ENDS ====
 ==== NEW ANNOTATION ====
 ValidFile.java
-39
+38
 Definition
 missing
 
@@ -40,7 +40,7 @@ Function called without traffic annotation.
 ==== ANNOTATION ENDS ====
 ==== NEW ANNOTATION ====
 ValidFile.java
-38
+37
 Definition
 undefined
 

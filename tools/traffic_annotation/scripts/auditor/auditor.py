@@ -101,8 +101,8 @@ def get_current_platform(build_path: Optional[Path] = None) -> str:
       pattern = re.compile(r"^\s*target_os\s*=\s*\"android\"\s*$", re.MULTILINE)
       if pattern.search(gn_args):
         current_platform = "android"
-    except (ValueError, OSError):
-      logger.info(e.value)
+    except (ValueError, OSError) as e:
+      logger.info(e)
       # Maybe the file's absent, or it can't be decoded as UTF-8, or something.
       # It's probably not Android in that case.
       pass
