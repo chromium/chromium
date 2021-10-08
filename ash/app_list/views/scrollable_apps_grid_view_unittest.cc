@@ -7,12 +7,14 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/paged_view_structure.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/test_app_list_client.h"
@@ -35,18 +37,6 @@
 
 namespace ash {
 namespace {
-
-void AddAppListItem(const std::string& id) {
-  Shell::Get()->app_list_controller()->GetModel()->AddItem(
-      std::make_unique<AppListItem>(id));
-}
-
-void PopulateApps(int n) {
-  AppListModel* model = Shell::Get()->app_list_controller()->GetModel();
-  for (int i = 0; i < n; ++i) {
-    model->AddItem(std::make_unique<AppListItem>(base::NumberToString(i)));
-  }
-}
 
 class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
  public:
@@ -74,6 +64,12 @@ class ScrollableAppsGridViewTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+
+    auto model = std::make_unique<test::AppListTestModel>();
+    app_list_test_model_ = model.get();
+    Shell::Get()->app_list_controller()->SetAppListModelForTest(
+        std::move(model));
+
     shelf_item_factory_ = std::make_unique<ShelfItemFactoryFake>();
     ShelfModel::Get()->SetShelfItemFactory(shelf_item_factory_.get());
   }
@@ -83,20 +79,19 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  // TODO(crbug.com/1222777): Convert the methods below to use
-  // GetEventGenerator().
-  void SimulateKeyPress(ui::KeyboardCode key_code) {
-    SimulateKeyPress(key_code, ui::EF_NONE);
+  test::AppListTestModel::AppListTestItem* AddAppListItem(
+      const std::string& id) {
+    return app_list_test_model_->CreateAndAddItem(id);
   }
 
-  void SimulateKeyPress(ui::KeyboardCode key_code, int flags) {
-    ui::KeyEvent key_event(ui::ET_KEY_PRESSED, key_code, flags);
-    GetScrollableAppsGridView()->OnKeyPressed(key_event);
+  void PopulateApps(int n) { app_list_test_model_->PopulateApps(n); }
+
+  void SimulateKeyPress(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
+    GetEventGenerator()->PressKey(key_code, flags);
   }
 
-  void SimulateKeyReleased(ui::KeyboardCode key_code, int flags) {
-    ui::KeyEvent key_event(ui::ET_KEY_RELEASED, key_code, flags);
-    GetScrollableAppsGridView()->OnKeyReleased(key_event);
+  void SimulateKeyReleased(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
+    GetEventGenerator()->ReleaseKey(key_code, flags);
   }
 
   void ShowAppList() {
@@ -122,6 +117,7 @@ class ScrollableAppsGridViewTest : public AshTestBase {
   void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  test::AppListTestModel* app_list_test_model_ = nullptr;
   std::unique_ptr<ShelfItemFactoryFake> shelf_item_factory_;
 
   // Cache some view pointers to make the tests more concise.
