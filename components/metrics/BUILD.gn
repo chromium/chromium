@@ -124,6 +124,7 @@ static_library("metrics") {
     "//build:chromeos_buildflags",
     "//components/prefs",
     "//components/variations",
+    "//components/variations/field_trial_config",
     "//components/variations/service:constants",
     "//components/version_info:version_info",
     "//crypto",
