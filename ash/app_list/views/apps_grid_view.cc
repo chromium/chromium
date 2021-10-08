@@ -328,6 +328,11 @@ AppsGridView::~AppsGridView() {
 
   view_model_.Clear();
   RemoveAllChildViews();
+
+  // `OnBoundsAnimatorDone`, which uses `bounds_animator_`, is called on
+  // `drag_icon_proxy_` destruction. Reset `drag_icon_proxy_` early, while
+  // `bounds_animator_` is still around.
+  drag_icon_proxy_.reset();
 }
 
 void AppsGridView::Init() {
@@ -2093,7 +2098,7 @@ void AppsGridView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
     return;
 
   if (bounds_animation_for_cardified_state_in_progress_ ||
-      bounds_animator_->IsAnimating()) {
+      (bounds_animator_ && bounds_animator_->IsAnimating())) {
     return;
   }
 

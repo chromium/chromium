@@ -58,7 +58,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
 
@@ -1287,6 +1289,59 @@ TEST_P(AppsGridViewClamshellTest, ItemViewsDontHaveLayer) {
   // Normally individual item-view does not have a layer.
   for (size_t i = 0; i < model_->top_level_item_list()->item_count(); ++i)
     EXPECT_FALSE(GetItemViewInTopLevelGrid(i)->layer());
+}
+
+TEST_P(AppsGridViewDragTest, DismissWhileDraggingDoesNotCrash) {
+  model_->PopulateApps(2);
+  UpdateLayout();
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(1);
+
+  // Non-zero animation durations are necessary to make sure we don't miss
+  // crashes involving animation delegates. Specifically, `bounds_animator_` had
+  // a use after free problem in the past.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  GetEventGenerator()->MoveMouseTo(
+      item_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+  GetEventGenerator()->MoveMouseBy(20, 20);
+
+  ASSERT_TRUE(apps_grid_view_->drag_item());
+  ASSERT_TRUE(apps_grid_view_->IsDragging());
+  ASSERT_EQ(item_view->item(), apps_grid_view_->drag_item());
+
+  GetAppListTestHelper()->Dismiss();
+  // No crash
+}
+
+TEST_P(AppsGridViewDragTest, DismissWhileDraggingInFolderDoesNotCrash) {
+  model_->CreateAndPopulateFolderWithApps(2);
+  test_api_->Update();
+  test_api_->PressItemAt(0);
+
+  AppListItemView* const item_view =
+      GetItemViewInAppsGridAt(1, folder_apps_grid_view());
+
+  // Non-zero animation durations are necessary to make sure we don't miss
+  // crashes involving animation delegates. Specifically, `bounds_animator_` had
+  // a use after free problem in the past.
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  GetEventGenerator()->MoveMouseTo(
+      item_view->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+  item_view->FireMouseDragTimerForTest();
+  GetEventGenerator()->MoveMouseBy(20, 20);
+
+  ASSERT_TRUE(folder_apps_grid_view()->drag_item());
+  ASSERT_TRUE(folder_apps_grid_view()->IsDragging());
+  ASSERT_EQ(item_view->item(), folder_apps_grid_view()->drag_item());
+
+  GetAppListTestHelper()->Dismiss();
+  // No crash
 }
 
 TEST_P(AppsGridViewDragTest, ItemViewsHaveLayerDuringDrag) {
