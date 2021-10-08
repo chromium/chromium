@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SPEECH_CROS_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_CROS_SPEECH_RECOGNITION_SERVICE_H_
 
+#include "base/bind.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -46,8 +48,17 @@ class CrosSpeechRecognitionService
       BindRecognizerCallback callback) override;
 
  private:
+  void CreateAudioSourceFetcherOnIOThread(
+      mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
+      mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
+          client,
+      media::mojom::SpeechRecognitionOptionsPtr options,
+      const base::FilePath& binary_path,
+      const base::FilePath& languagepack_path);
+
   mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
       speech_recognition_contexts_;
+  base::WeakPtrFactory<CrosSpeechRecognitionService> weak_factory_{this};
 };
 
 }  // namespace speech
