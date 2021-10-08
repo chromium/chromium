@@ -7,12 +7,14 @@
 #include "base/ios/ios_util.h"
 #include "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/search_engines/search_engines_util.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/ui/context_menu/context_menu_utils.h"
 #import "ios/chrome/browser/ui/context_menu/image_preview_view_controller.h"
 #import "ios/chrome/browser/ui/context_menu/link_no_preview_view_controller.h"
+#import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/ui/image_util/image_copier.h"
 #import "ios/chrome/browser/ui/image_util/image_saver.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
@@ -109,6 +112,9 @@ const CGFloat kFaviconWidthHeight = 24;
     ActionSheetCoordinator* legacyContextMenuCoordinator;
 
 @property(nonatomic, assign, readonly) web::WebState* currentWebState;
+
+// Coordinator used to display the preview of the link.
+@property(nonatomic, strong) LinkPreviewCoordinator* linkPreview;
 
 @end
 
@@ -336,6 +342,16 @@ const CGFloat kFaviconWidthHeight = 24;
       return nil;
     }
     if (isLink) {
+      if (self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+              prefs::kLinkPreviewEnabled)) {
+        self.linkPreview =
+            [[LinkPreviewCoordinator alloc] initWithBrowser:self.browser
+                                                        URL:link];
+        // TODO(crbug.com/1251137): Pass the referrer?
+        [self.linkPreview start];
+        return [self.linkPreview linkPreviewViewController];
+      }
+
       NSString* title = GetContextMenuTitle(params);
       NSString* subtitle = GetContextMenuSubtitle(params);
       LinkNoPreviewViewController* previewViewController =
