@@ -2390,6 +2390,7 @@
     },
     {
       name: "WebAssemblyCSP",
+      status: "experimental",
     },
     {
       name: "WebAssemblyExceptions",

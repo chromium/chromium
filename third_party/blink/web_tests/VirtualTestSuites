@@ -541,7 +541,7 @@
     "bases": [
       "wasm",
       "external/wpt/content-security-policy/wasm-unsafe-eval"],
-    "args": ["--enable-blink-features=WebAssemblyCSP"]
+    "args": ["--disable-blink-features=WebAssemblyCSP"]
   },
   {
     "prefix": "split-http-cache-not-site-per-process",
