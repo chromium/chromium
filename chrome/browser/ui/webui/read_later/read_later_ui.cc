@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
+#include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,7 +43,7 @@ void AddLocalizedString(content::WebUIDataSource* source,
 }  // namespace
 
 ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
-    : ui::MojoBubbleWebUIController(web_ui),
+    : ui::MojoBubbleWebUIController(web_ui, /*enable_chrome_send=*/true),
       webui_load_timer_(web_ui->GetWebContents(),
                         "ReadingList.WebUI.LoadDocumentTime",
                         "ReadingList.WebUI.LoadCompletedTime") {
@@ -99,6 +100,8 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
                       : IDR_READ_LATER_READ_LATER_HTML);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
+
+  web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
 }
 
 ReadLaterUI::~ReadLaterUI() = default;

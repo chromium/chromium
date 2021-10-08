@@ -12,6 +12,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
@@ -26,7 +27,10 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/dot_indicator.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -57,6 +61,9 @@ class ReadLaterSidePanelWebView : public views::WebView,
     contents_wrapper_->ReloadWebContents();
     SetWebContents(contents_wrapper_->web_contents());
     set_allow_accelerators(true);
+
+    views::SetCascadingColorProviderColor(
+        this, views::kCascadingBackgroundColor, ui::kColorBubbleBackground);
 
     if (base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop)) {
       extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
@@ -117,6 +124,16 @@ class ReadLaterSidePanelWebView : public views::WebView,
   void HideCustomContextMenu() override {
     if (context_menu_runner_)
       context_menu_runner_->Cancel();
+  }
+  SkColor GetColorProviderColor(ui::ColorId id) override {
+    switch (id) {
+      case ui::kColorDialogBackground:
+        return GetCascadingBackgroundColor(this);
+      case ui::kColorFocusableBorderFocused:
+        return GetCascadingAccentColor(this);
+      default:
+        return GetColorProvider()->GetColor(id);
+    }
   }
   bool HandleKeyboardEvent(
       content::WebContents* source,

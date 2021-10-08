@@ -20,6 +20,9 @@ namespace ui {
 
 class MenuModel;
 
+using ColorId = int;
+using SkColor = uint32_t;
+
 class MojoBubbleWebUIController : public MojoWebUIController {
  public:
   class Embedder {
@@ -29,6 +32,7 @@ class MojoBubbleWebUIController : public MojoWebUIController {
     virtual void ShowContextMenu(gfx::Point point,
                                  std::unique_ptr<ui::MenuModel> menu_model) = 0;
     virtual void HideContextMenu() = 0;
+    virtual SkColor GetColorProviderColor(ColorId id) = 0;
   };
 
   // By default MojoBubbleWebUIController do not have normal WebUI bindings.

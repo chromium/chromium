@@ -14,13 +14,19 @@ import '../strings.m.js';
 import './bookmarks_list.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
 
 // Key for localStorage object that refers to the last active tab's ID.
 export const LOCAL_STORAGE_TAB_ID_KEY = 'lastActiveTab';
 
-export class SidePanelAppElement extends PolymerElement {
+const SidePanelAppElementBase =
+    mixinBehaviors([WebUIListenerBehavior], PolymerElement) as
+    {new (): PolymerElement & WebUIListenerBehavior};
+
+export class SidePanelAppElement extends SidePanelAppElementBase {
   static get is() {
     return 'side-panel-app';
   }
@@ -52,6 +58,14 @@ export class SidePanelAppElement extends PolymerElement {
 
   connectedCallback() {
     super.connectedCallback();
+
+    this.fetchAndUpdateColors_();
+    this.addWebUIListener('theme-changed', () => {
+      // Refetch theme colors on theme change.
+      this.fetchAndUpdateColors_();
+    });
+    chrome.send('observeThemeChanges');
+
     const lastActiveTab = window.localStorage[LOCAL_STORAGE_TAB_ID_KEY];
     if (loadTimeData.getBoolean('hasUnseenReadingListEntries')) {
       window.localStorage[LOCAL_STORAGE_TAB_ID_KEY] = 'readingList';
@@ -61,6 +75,14 @@ export class SidePanelAppElement extends PolymerElement {
 
     // Show the UI as soon as the app is connected.
     this.apiProxy_.showUI();
+  }
+
+  private fetchAndUpdateColors_() {
+    this.apiProxy_.getColors().then(({colors}) => {
+      for (const [cssVariable, value] of Object.entries(colors)) {
+        this.style.setProperty(cssVariable, value);
+      }
+    });
   }
 
   private getTabNames_(): string[] {

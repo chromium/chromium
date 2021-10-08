@@ -62,6 +62,12 @@ interface PageHandler {
 
   // Notify the backend that the dialog should be closed.
   CloseUI();
+
+  // Get colors of the current theme with CSS variables as keys and rgba strings
+  // as values.
+  // TODO(corising): This is also done in tab_strip.mojom. We should find a way
+  // to unify this.
+  GetThemeColors() => (map<string, string> colors);
 };
 
 enum CurrentPageActionButtonState {

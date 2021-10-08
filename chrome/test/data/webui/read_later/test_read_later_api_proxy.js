@@ -20,6 +20,7 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
       'updateCurrentPageActionButtonState',
       'showUI',
       'closeUI',
+      'getColors',
     ]);
 
     /** @type {!readLater.mojom.PageCallbackRouter} */
@@ -27,6 +28,9 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
 
     /** @private {!readLater.mojom.ReadLaterEntriesByStatus} */
     this.entries_;
+
+    /** @private {!Object<string, string>} */
+    this.colors_ = {};
   }
 
   /** @override */
@@ -73,6 +77,12 @@ export class TestReadLaterApiProxy extends TestBrowserProxy {
   /** @override */
   closeUI() {
     this.methodCalled('closeUI');
+  }
+
+  /** @override */
+  getColors() {
+    this.methodCalled('getColors');
+    return Promise.resolve({colors: this.colors_});
   }
 
   /** @override */

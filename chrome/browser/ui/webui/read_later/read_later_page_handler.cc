@@ -36,6 +36,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/color_utils.h"
 #include "url/gurl.h"
 
 namespace {
@@ -273,6 +274,21 @@ void ReadLaterPageHandler::CloseUI() {
   auto embedder = read_later_ui_->embedder();
   if (embedder)
     embedder->CloseUI();
+}
+
+void ReadLaterPageHandler::GetThemeColors(GetThemeColorsCallback callback) {
+  base::flat_map<std::string, std::string> colors;
+  auto embedder = read_later_ui_->embedder();
+  if (!embedder) {
+    std::move(callback).Run(std::move(colors));
+    return;
+  }
+  colors["--side-panel-focus-outline-color"] = color_utils::SkColorToRgbaString(
+      embedder->GetColorProviderColor(ui::kColorFocusableBorderFocused));
+  colors["--side-panel-background-color"] = color_utils::SkColorToRgbaString(
+      embedder->GetColorProviderColor(ui::kColorDialogBackground));
+
+  std::move(callback).Run(std::move(colors));
 }
 
 void ReadLaterPageHandler::ReadingListModelCompletedBatchUpdates(

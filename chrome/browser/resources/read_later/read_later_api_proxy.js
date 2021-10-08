@@ -49,6 +49,12 @@ export class ReadLaterApiProxy {
 
   closeUI() {}
 
+  /**
+   * @return {!Promise<{colors: !Object<string, string>}>} Object with CSS
+   *     variables as keys and rgba strings as values
+   */
+  getColors() {}
+
   /** @return {!readLater.mojom.PageCallbackRouter} */
   getCallbackRouter() {}
 }
@@ -111,6 +117,11 @@ export class ReadLaterApiProxyImpl {
   /** @override */
   closeUI() {
     this.handler.closeUI();
+  }
+
+  /** @override */
+  getColors() {
+    return this.handler.getThemeColors();
   }
 
   /** @override */

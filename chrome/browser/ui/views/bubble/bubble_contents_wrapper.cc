@@ -9,6 +9,7 @@
 #include "content/public/browser/native_web_keyboard_event.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 
@@ -28,6 +29,11 @@ content::WebContents::CreateParams GetWebContentsCreateParams(
 }
 
 }  // namespace
+
+SkColor BubbleContentsWrapper::Host::GetColorProviderColor(ui::ColorId id) {
+  NOTREACHED();
+  return gfx::kPlaceholderColor;
+}
 
 bool BubbleContentsWrapper::Host::HandleKeyboardEvent(
     content::WebContents* source,
@@ -134,6 +140,10 @@ void BubbleContentsWrapper::ShowContextMenu(
 void BubbleContentsWrapper::HideContextMenu() {
   if (host_)
     host_->HideCustomContextMenu();
+}
+
+SkColor BubbleContentsWrapper::GetColorProviderColor(ui::ColorId id) {
+  return host_ ? host_->GetColorProviderColor(id) : gfx::kPlaceholderColor;
 }
 
 base::WeakPtr<BubbleContentsWrapper::Host> BubbleContentsWrapper::GetHost() {
