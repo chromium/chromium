@@ -121,18 +121,24 @@ void CheckContainsOriginStorageRecords(
     const url::Origin& top_frame_origin,
     bool compare_host_only = false) {
   for (auto type : types) {
-    EXPECT_NE(std::find_if(
-                  record_list.begin(), record_list.end(),
-                  [=](const AccessContextAuditDatabase::AccessRecord& record) {
-                    return record.type == type &&
-                           (compare_host_only
-                                ? record.top_frame_origin.host() ==
-                                          top_frame_origin.host() &&
-                                      record.origin.host() == origin.host()
-                                : record.top_frame_origin == top_frame_origin &&
-                                      record.origin == origin);
-                  }),
-              record_list.end());
+    auto it = std::find_if(
+        record_list.begin(), record_list.end(),
+        [=](const AccessContextAuditDatabase::AccessRecord& record) {
+          return record.type == type &&
+                 (compare_host_only
+                      ? record.top_frame_origin.host() ==
+                                top_frame_origin.host() &&
+                            record.origin.host() == origin.host()
+                      : record.top_frame_origin == top_frame_origin &&
+                            record.origin == origin);
+        });
+    if (origin != top_frame_origin &&
+        type == AccessContextAuditDatabase::StorageAPIType::kWebDatabase) {
+      // WebSQL in third-party contexts is disabled as of M97.
+      EXPECT_EQ(it, record_list.end());
+    } else {
+      EXPECT_NE(it, record_list.end());
+    }
   }
 }
 
@@ -280,7 +286,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, PRE_PRE_RemoveRecords) {
   // acceesed in one.
   unsigned expected_cookie_records =
       2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
   EXPECT_EQ(cookies.size(),
@@ -316,7 +323,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, PRE_RemoveRecords) {
   // removed.
   unsigned expected_cookie_records =
       2 * (kEmbeddedPageCookieCount - 1) + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
   EXPECT_EQ(cookies.size(),
@@ -377,7 +385,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, PRE_CheckSessionOnly) {
   auto cookies = GetAllCookies();
   unsigned expected_cookie_records =
       2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
   EXPECT_EQ(cookies.size(),
@@ -402,7 +411,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, RemoveHistory) {
   auto cookies = GetAllCookies();
   unsigned expected_cookie_records =
       2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
   EXPECT_EQ(cookies.size(),
@@ -456,7 +466,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TreeModelDeletion) {
   auto records = GetAllAccessRecords();
   unsigned expected_cookie_records =
       2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
   EXPECT_EQ(cookies.size(),
@@ -536,7 +547,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditBrowserTest, TabClosed) {
   auto cookies = GetAllCookies();
   unsigned expected_cookie_records =
       2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
 
@@ -595,7 +607,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditSessionRestoreBrowserTest,
 
   unsigned expected_cookie_records =
       2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
   EXPECT_EQ(cookies.size(),
@@ -610,7 +623,8 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditSessionRestoreBrowserTest,
 
   unsigned expected_cookie_records =
       2 * kEmbeddedPageCookieCount + kTopLevelPageCookieCount;
-  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size();
+  // Subtract 1 as third-party context WebSQL is disabled as of M97.
+  unsigned expected_origin_storage_records = 3 * kOriginStorageTypes.size() - 1;
   EXPECT_EQ(records.size(),
             expected_cookie_records + expected_origin_storage_records);
   EXPECT_EQ(cookies.size(),

@@ -51,7 +51,14 @@ void SetStorageForFrame(content::RenderFrameHost* frame) {
     bool data = content::EvalJs(frame, "set" + data_type + "()",
                                 content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                     .ExtractBool();
-    EXPECT_TRUE(data) << "SetStorageForFrame for " << data_type;
+    if (frame->GetLastCommittedOrigin() !=
+            frame->GetMainFrame()->GetLastCommittedOrigin() &&
+        data_type == "WebSql") {
+      // Third-party context WebSQL is disabled as of M97.
+      EXPECT_FALSE(data) << "SetStorageForFrame for " << data_type;
+    } else {
+      EXPECT_TRUE(data) << "SetStorageForFrame for " << data_type;
+    }
   }
 }
 
@@ -69,7 +76,14 @@ void ExpectStorageForFrame(content::RenderFrameHost* frame, bool expected) {
     bool data = content::EvalJs(frame, "has" + data_type + "();",
                                 content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
                     .ExtractBool();
-    EXPECT_EQ(expected, data) << "ExpectStorageForFrame for " << data_type;
+    if (frame->GetLastCommittedOrigin() !=
+            frame->GetMainFrame()->GetLastCommittedOrigin() &&
+        data_type == "WebSql") {
+      // Third-party context WebSQL is disabled as of M97.
+      EXPECT_FALSE(data) << "ExpectStorageForFrame for " << data_type;
+    } else {
+      EXPECT_EQ(expected, data) << "ExpectStorageForFrame for " << data_type;
+    }
   }
 }
 

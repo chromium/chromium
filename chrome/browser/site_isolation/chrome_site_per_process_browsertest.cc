@@ -223,13 +223,6 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessTest,
       "window.domAutomationController.send(!!indexedDB.open('testdb', 2));",
       &is_object_created));
   EXPECT_TRUE(is_object_created);
-  is_object_created = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(
-      frame_host,
-      "window.domAutomationController.send(!!openDatabase("
-      "'foodb', '1.0', 'Test DB', 1024));",
-      &is_object_created));
-  EXPECT_TRUE(is_object_created);
   EXPECT_TRUE(ExecuteScript(frame_host,
                             "window.webkitRequestFileSystem("
                             "window.TEMPORARY, 1024, function() {});"));

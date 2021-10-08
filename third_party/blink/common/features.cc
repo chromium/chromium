@@ -1071,7 +1071,7 @@ const base::Feature kClientHintsViewportWidth{
 
 // Allows third party use of WebSQL (`DOMWindowWebDatabase::openDatabase`).
 const base::Feature kWebSQLInThirdPartyContextEnabled{
-    "WebSQLInThirdPartyContextEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
+    "WebSQLInThirdPartyContextEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable legacy `device-memory` client hint.
 const base::Feature kClientHintsDeviceMemory_DEPRECATED{

@@ -47,92 +47,80 @@ void OpenWebDatabaseInIFrame(const char* outer_origin,
 }
 
 TEST(DOMWindowWebDatabaseTest, FirstPartyContextWebSQLIFrame) {
-  {
-    V8TestingScope scope;
-    OpenWebDatabaseInIFrame("http://example.test:0/",
-                            "first_party/nested-originA.html",
-                            "http://example.test:0/", "first_party/empty.html",
-                            scope.GetExceptionState());
-    // Insufficient state exists to actually open a database, but this error
-    // means it was tried.
-    EXPECT_TRUE(scope.GetExceptionState().HadException());
-    EXPECT_EQ(scope.GetExceptionState().Code(),
-              static_cast<int>(DOMExceptionCode::kInvalidStateError));
-  }
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kWebSQLInThirdPartyContextEnabled);
-  {
-    V8TestingScope scope;
-    OpenWebDatabaseInIFrame("http://example.test:0/",
-                            "first_party/nested-originA.html",
-                            "http://example.test:0/", "first_party/empty.html",
-                            scope.GetExceptionState());
-    // Insufficient state exists to actually open a database, but this error
-    // means it was tried.
-    EXPECT_TRUE(scope.GetExceptionState().HadException());
-    EXPECT_EQ(scope.GetExceptionState().Code(),
-              static_cast<int>(DOMExceptionCode::kInvalidStateError));
-  }
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      blink::switches::kWebSQLInThirdPartyContextEnabled);
-  {
-    V8TestingScope scope;
-    OpenWebDatabaseInIFrame("http://example.test:0/",
-                            "first_party/nested-originA.html",
-                            "http://example.test:0/", "first_party/empty.html",
-                            scope.GetExceptionState());
-    // Insufficient state exists to actually open a database, but this error
-    // means it was tried.
-    EXPECT_TRUE(scope.GetExceptionState().HadException());
-    EXPECT_EQ(scope.GetExceptionState().Code(),
-              static_cast<int>(DOMExceptionCode::kInvalidStateError));
-  }
+  V8TestingScope scope;
+  OpenWebDatabaseInIFrame("http://example.test:0/",
+                          "first_party/nested-originA.html",
+                          "http://example.test:0/", "first_party/empty.html",
+                          scope.GetExceptionState());
+  // Insufficient state exists to actually open a database, but this error
+  // means it was tried.
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            static_cast<int>(DOMExceptionCode::kInvalidStateError));
 }
 
 TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrame) {
-  {
-    V8TestingScope scope;
-    OpenWebDatabaseInIFrame("http://not-example.test:0/",
-                            "first_party/nested-originA.html",
-                            "http://example.test:0/", "first_party/empty.html",
-                            scope.GetExceptionState());
-    // Insufficient state exists to actually open a database, but this error
-    // means it was tried.
-    EXPECT_TRUE(scope.GetExceptionState().HadException());
-    EXPECT_EQ(scope.GetExceptionState().Code(),
-              static_cast<int>(DOMExceptionCode::kInvalidStateError));
-  }
+  V8TestingScope scope;
+  OpenWebDatabaseInIFrame("http://not-example.test:0/",
+                          "first_party/nested-originA.html",
+                          "http://example.test:0/", "first_party/empty.html",
+                          scope.GetExceptionState());
+  // This error means the database opening was rejected.
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            static_cast<int>(DOMExceptionCode::kSecurityError));
+}
+
+TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrameWithFeature) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
+  scoped_feature_list.InitAndEnableFeature(
       features::kWebSQLInThirdPartyContextEnabled);
-  {
-    V8TestingScope scope;
-    OpenWebDatabaseInIFrame("http://not-example.test:0/",
-                            "first_party/nested-originA.html",
-                            "http://example.test:0/", "first_party/empty.html",
-                            scope.GetExceptionState());
-    // This error means the database opening was rejected.
-    EXPECT_TRUE(scope.GetExceptionState().HadException());
-    EXPECT_EQ(scope.GetExceptionState().Code(),
-              static_cast<int>(DOMExceptionCode::kSecurityError));
-  }
+  V8TestingScope scope;
+  OpenWebDatabaseInIFrame("http://not-example.test:0/",
+                          "first_party/nested-originA.html",
+                          "http://example.test:0/", "first_party/empty.html",
+                          scope.GetExceptionState());
+  // Insufficient state exists to actually open a database, but this error
+  // means it was tried.
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            static_cast<int>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST(DOMWindowWebDatabaseTest, ThirdPartyContextWebSQLIFrameWithSwitch) {
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       blink::switches::kWebSQLInThirdPartyContextEnabled);
-  {
-    V8TestingScope scope;
-    OpenWebDatabaseInIFrame("http://not-example.test:0/",
-                            "first_party/nested-originA.html",
-                            "http://example.test:0/", "first_party/empty.html",
-                            scope.GetExceptionState());
-    // Insufficient state exists to actually open a database, but this error
-    // means it was tried.
-    EXPECT_TRUE(scope.GetExceptionState().HadException());
-    EXPECT_EQ(scope.GetExceptionState().Code(),
-              static_cast<int>(DOMExceptionCode::kInvalidStateError));
-  }
+  V8TestingScope scope;
+  OpenWebDatabaseInIFrame("http://not-example.test:0/",
+                          "first_party/nested-originA.html",
+                          "http://example.test:0/", "first_party/empty.html",
+                          scope.GetExceptionState());
+  // Insufficient state exists to actually open a database, but this error
+  // means it was tried.
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            static_cast<int>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST(DOMWindowWebDatabaseTest,
+     ThirdPartyContextWebSQLIFrameWithFeatureAndSwitch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kWebSQLInThirdPartyContextEnabled);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      blink::switches::kWebSQLInThirdPartyContextEnabled);
+  V8TestingScope scope;
+  OpenWebDatabaseInIFrame("http://not-example.test:0/",
+                          "first_party/nested-originA.html",
+                          "http://example.test:0/", "first_party/empty.html",
+                          scope.GetExceptionState());
+  // Insufficient state exists to actually open a database, but this error
+  // means it was tried.
+  EXPECT_TRUE(scope.GetExceptionState().HadException());
+  EXPECT_EQ(scope.GetExceptionState().Code(),
+            static_cast<int>(DOMExceptionCode::kInvalidStateError));
 }
 
 }  // namespace blink

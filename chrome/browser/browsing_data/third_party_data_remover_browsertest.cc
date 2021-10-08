@@ -35,9 +35,8 @@ using content::BrowserThread;
 namespace {
 
 const std::vector<std::string> kStorageTypes{
-    "LocalStorage",   "FileSystem",    "FileSystemAccess",
-    "SessionStorage", "IndexedDb",     "WebSql",
-    "CacheStorage",   "ServiceWorker", "StorageFoundation"};
+    "LocalStorage", "FileSystem",   "FileSystemAccess", "SessionStorage",
+    "IndexedDb",    "CacheStorage", "ServiceWorker",    "StorageFoundation"};
 
 class ThirdPartyDataRemoverTest : public InProcessBrowserTest {
  public:
