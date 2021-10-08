@@ -936,8 +936,7 @@ class PublicSessionOobeTest : public MixinBasedInProcessBrowserTest,
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
 
-// TODO(crbug.com/1248317): This test is flaky.
-IN_PROC_BROWSER_TEST_P(PublicSessionOobeTest, DISABLED_NoTermsOfService) {
+IN_PROC_BROWSER_TEST_P(PublicSessionOobeTest, NoTermsOfService) {
   login_manager_.WaitForActiveSession();
   // Check that the dialog was never shown.
   EXPECT_FALSE(DialogWasVisible());
