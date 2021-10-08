@@ -50,9 +50,10 @@ def bind_local_vars(code_node, cg_context, is_construct_call=False):
     local_vars = []
 
     local_vars.extend([
-        S("exception_state", ("ExceptionState ${exception_state}("
-                              "${isolate}, ExceptionState::kExecutionContext,"
-                              "${class_like_name}, ${property_name});")),
+        S("exception_state",
+          ("ExceptionState ${exception_state}("
+           "${isolate}, ExceptionContext::Context::kOperationInvoke,"
+           "${class_like_name}, ${property_name});")),
         S("isolate", "v8::Isolate* ${isolate} = GetIsolate();"),
         S("script_state",
           "ScriptState* ${script_state} = CallbackRelevantScriptState();"),

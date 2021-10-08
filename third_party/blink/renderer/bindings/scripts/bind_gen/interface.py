@@ -397,23 +397,23 @@ def bind_callback_local_vars(code_node, cg_context):
         "const ExceptionState::ContextType ${exception_state_context_type} = "
         "{_1};")
     if cg_context.attribute_get:
-        _1 = "ExceptionState::kGetterContext"
+        _1 = "ExceptionContext::Context::kAttributeGet"
     elif cg_context.attribute_set:
-        _1 = "ExceptionState::kSetterContext"
+        _1 = "ExceptionContext::Context::kAttributeSet"
     elif cg_context.constructor_group:
-        _1 = "ExceptionState::kConstructionContext"
+        _1 = "ExceptionContext::Context::kConstructorOperationInvoke"
     elif cg_context.indexed_property_getter:
-        _1 = "ExceptionState::kIndexedGetterContext"
+        _1 = "ExceptionContext::Context::kIndexedPropertyGet"
     elif cg_context.indexed_property_setter:
-        _1 = "ExceptionState::kIndexedSetterContext"
+        _1 = "ExceptionContext::Context::kIndexedPropertySet"
     elif cg_context.named_property_getter:
-        _1 = "ExceptionState::kNamedGetterContext"
+        _1 = "ExceptionContext::Context::kNamedPropertyGet"
     elif cg_context.named_property_setter:
-        _1 = "ExceptionState::kNamedSetterContext"
+        _1 = "ExceptionContext::Context::kNamedPropertySet"
     elif cg_context.named_property_deleter:
-        _1 = "ExceptionState::kNamedDeletionContext"
+        _1 = "ExceptionContext::Context::kNamedPropertyDelete"
     else:
-        _1 = "ExceptionState::kExecutionContext"
+        _1 = "ExceptionContext::Context::kOperationInvoke"
     local_vars.append(
         S("exception_state_context_type", _format(pattern, _1=_1)))
 
@@ -2721,9 +2721,10 @@ ${class_name}::NamedPropertySetterCallback(
 // object.
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError(
       "Indexed property setter is not supported.");
 }
@@ -2801,9 +2802,10 @@ ${class_name}::NamedPropertyDeleterCallback(property_name, ${info});
 const bool is_supported = ${index} < ${blink_receiver}->length();
 bindings::V8SetReturnValue(${info}, !is_supported);
 if (is_supported and ${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property deleter is not supported.");
 }
 """))
@@ -2846,9 +2848,10 @@ ${class_name}::NamedPropertyDefinerCallback(
 if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kIndexedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kIndexedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError("Accessor properties are not allowed.");
   }
   return;
@@ -2862,9 +2865,10 @@ if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
 //   setter, then return false.
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property setter is not supported.");
 }
 """))
@@ -3079,9 +3083,10 @@ const bool is_creating = ${info}.GetReturnValue().Get()->IsUndefined();
 if (!is_creating) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError(
         "Named property setter is not supported.");
   }
@@ -3187,7 +3192,7 @@ def make_named_property_deleter_callback(cg_context, function_name):
 // step 2.1. If O does not implement an interface with a named property
 //   deleter, then return false.
 ExceptionState exception_state(${info}.GetIsolate(),
-                               ExceptionState::kNamedDeletionContext,
+                               ExceptionContext::Context::kNamedPropertyDelete,
                                "${interface.identifier}");
 bool does_exist = ${blink_receiver}->NamedPropertyQuery(
     ${blink_property_name}, exception_state);
@@ -3226,7 +3231,8 @@ if (does_exist) {
 if (${return_value} == NamedPropertyDeleterResult::kDidNotDelete) {
   if (${info}.ShouldThrowOnError()) {
     ExceptionState deletion_exception_state(
-        ${info}.GetIsolate(), ExceptionState::kNamedDeletionContext,
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertyDelete,
         "${interface.identifier}");
     deletion_exception_state.ThrowTypeError("Failed to delete a property.");
   }
@@ -3280,9 +3286,10 @@ const bool is_creating = ${info}.GetReturnValue().Get()->IsUndefined();
 if (!is_creating) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError("Named property setter is not supported.");
   }
   return;
@@ -3302,9 +3309,10 @@ if (!is_creating) {
 if (v8_property_desc.has_get() || v8_property_desc.has_set()) {
   bindings::V8SetReturnValue(${info}, nullptr);
   if (${info}.ShouldThrowOnError()) {
-    ExceptionState exception_state(${info}.GetIsolate(),
-                                   ExceptionState::kNamedSetterContext,
-                                   "${interface.identifier}");
+    ExceptionState exception_state(
+        ${info}.GetIsolate(),
+        ExceptionContext::Context::kNamedPropertySet,
+        "${interface.identifier}");
     exception_state.ThrowTypeError("Accessor properties are not allowed.");
   }
   return;
@@ -3430,7 +3438,7 @@ def make_named_property_query_callback(cg_context, function_name):
     body.extend([
         TextNode("""\
 ExceptionState exception_state(${isolate},
-                               ExceptionState::kNamedGetterContext,
+                               ExceptionContext::Context::kNamedPropertyGet,
                                "${interface.identifier}");
 bool does_exist = ${blink_receiver}->NamedPropertyQuery(
     ${blink_property_name}, exception_state);
@@ -3471,9 +3479,10 @@ def make_named_property_enumerator_callback(cg_context, function_name):
 //   property names that is visible according to the named property
 //   visibility algorithm, append P to keys.
 Vector<String> blink_property_names;
-ExceptionState exception_state(${info}.GetIsolate(),
-                               ExceptionState::kEnumerationContext,
-                               "${interface.identifier}");
+ExceptionState exception_state(
+    ${info}.GetIsolate(),
+    ExceptionContext::Context::kNamedPropertyEnumerate,
+    "${interface.identifier}");
 ${blink_receiver}->NamedPropertyEnumerator(
     blink_property_names, exception_state);
 if (UNLIKELY(exception_state.HadException()))
@@ -3538,9 +3547,10 @@ def make_named_props_obj_indexed_setter_callback(cg_context, function_name):
 // https://heycam.github.io/webidl/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
 """))
@@ -3567,9 +3577,10 @@ def make_named_props_obj_indexed_deleter_callback(cg_context, function_name):
         TextNode("""\
 bindings::V8SetReturnValue(${info}, false);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property deleter is not supported.");
 }
 """))
@@ -3599,9 +3610,10 @@ def make_named_props_obj_indexed_definer_callback(cg_context, function_name):
 // https://heycam.github.io/webidl/#named-properties-object-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
 """))
@@ -3686,7 +3698,7 @@ def make_named_props_obj_named_setter_callback(cg_context, function_name):
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kNamedSetterContext,
+                                 ExceptionContext::Context::kNamedPropertySet,
                                  "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
@@ -3716,9 +3728,10 @@ def make_named_props_obj_named_deleter_callback(cg_context, function_name):
 // https://heycam.github.io/webidl/#named-properties-object-delete
 bindings::V8SetReturnValue(${info}, false);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kNamedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kNamedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Named property deleter is not supported.");
 }
 """))
@@ -3749,7 +3762,7 @@ def make_named_props_obj_named_definer_callback(cg_context, function_name):
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
   ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kNamedSetterContext,
+                                 ExceptionContext::Context::kNamedPropertySet,
                                  "${interface.identifier}");
   exception_state.ThrowTypeError("Named property setter is not supported.");
 }
@@ -4390,9 +4403,10 @@ def make_same_origin_indexed_setter_callback(cg_context, function_name):
         TextNode("""\
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError(
       "Indexed property setter is not supported.");
 }
@@ -4423,9 +4437,10 @@ def make_same_origin_indexed_deleter_callback(cg_context, function_name):
 const bool is_supported = ${index} < ${blink_receiver}->length();
 bindings::V8SetReturnValue(${info}, !is_supported);
 if (is_supported and ${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedDeletionContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertyDelete,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property deleter is not supported.");
 }
 """))
@@ -4455,9 +4470,10 @@ def make_same_origin_indexed_definer_callback(cg_context, function_name):
 // https://html.spec.whatwg.org/C/#windowproxy-defineownproperty
 bindings::V8SetReturnValue(${info}, nullptr);
 if (${info}.ShouldThrowOnError()) {
-  ExceptionState exception_state(${info}.GetIsolate(),
-                                 ExceptionState::kIndexedSetterContext,
-                                 "${interface.identifier}");
+  ExceptionState exception_state(
+      ${info}.GetIsolate(),
+      ExceptionContext::Context::kIndexedPropertySet,
+      "${interface.identifier}");
   exception_state.ThrowTypeError("Index property setter is not supported.");
 }
 """))
