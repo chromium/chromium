@@ -1574,7 +1574,7 @@
     ],
 
     'android_release_trybot_x86_fastbuild_resource_allowlisting_webview_google_coverage': [
-      'android', 'release_trybot_minimal_symbols', 'x86', 'android_fastbuild',
+      'android', 'release_trybot', 'x86', 'android_fastbuild',
       'resource_allowlisting', 'webview_google', 'use_java_coverage',
       'partial_code_coverage_instrumentation',
     ],
