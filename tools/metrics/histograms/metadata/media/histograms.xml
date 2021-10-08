@@ -3383,7 +3383,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
   <token key="Codec">
     <variant name="AV1"/>
+    <variant name="DolbyVision"/>
     <variant name="H264"/>
+    <variant name="HEVC"/>
     <variant name="Other" summary="other"/>
     <variant name="VP8"/>
     <variant name="VP9"/>

@@ -102,6 +102,7 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
     const PipelineInfo& player_info) {
   constexpr char kPipelineUmaPrefix[] = "Media.PipelineStatus.AudioVideo.";
   std::string uma_name = kPipelineUmaPrefix;
+  // TODO(xhwang): Use a helper function to simply the codec name mapping.
   if (player_info.video_codec == VideoCodec::kVP8)
     uma_name += "VP8.";
   else if (player_info.video_codec == VideoCodec::kVP9)
@@ -110,6 +111,10 @@ std::string MediaMetricsProvider::GetUMANameForAVStream(
     uma_name += "H264.";
   else if (player_info.video_codec == VideoCodec::kAV1)
     uma_name += "AV1.";
+  else if (player_info.video_codec == VideoCodec::kHEVC)
+    uma_name += "HEVC.";
+  else if (player_info.video_codec == VideoCodec::kDolbyVision)
+    uma_name += "DolbyVision.";
   else
     return uma_name + "Other";
 
