@@ -24,7 +24,10 @@ class SystemTimeProvider : public TimeProvider {
   // TimeProvider implementation.
   uint32_t GetCurrentDay() const override;
 
-  base::Time Now() const override;
+ protected:
+  // Return the current time.
+  // virtual for testing.
+  virtual base::Time Now() const;
 };
 
 }  // namespace feature_engagement

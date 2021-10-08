@@ -41,24 +41,17 @@ const base::Feature kTrackerTestFeatureBaz{"test_baz",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kTrackerTestFeatureQux{"test_qux",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kTrackerTestFeatureSnooze{
-    "test_snooze", base::FEATURE_DISABLED_BY_DEFAULT};
 
 void RegisterFeatureConfig(EditableConfiguration* configuration,
                            const base::Feature& feature,
                            bool valid,
-                           bool tracking_only,
-                           bool snooze_params) {
+                           bool tracking_only) {
   FeatureConfig config;
   config.valid = valid;
   config.used.name = feature.name + std::string("_used");
   config.trigger.name = feature.name + std::string("_trigger");
   config.trigger.storage = 1u;
   config.tracking_only = tracking_only;
-  if (snooze_params) {
-    config.snooze_params.snooze_interval = 7u;
-    config.snooze_params.max_limit = 3u;
-  }
   configuration->SetConfiguration(&feature, config);
 }
 
@@ -149,13 +142,6 @@ class TestTimeProvider : public TimeProvider {
 
   // TimeProvider implementation.
   uint32_t GetCurrentDay() const override { return 1u; }
-
-  base::Time Now() const override { return now_; }
-
-  void SetCurrentTime(base::Time now) { now_ = now; }
-
- private:
-  base::Time now_;
 };
 
 class TestTrackerAvailabilityModel : public AvailabilityModel {
@@ -227,20 +213,13 @@ class TrackerImplTest : public ::testing::Test {
     configuration_ = configuration.get();
 
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureFoo,
-                          true /* is_valid */, false /* tracking_only */,
-                          false /* snooze_params */);
+                          true /* is_valid */, false /* tracking_only */);
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureBar,
-                          true /* is_valid */, false /* tracking_only */,
-                          false /* snooze_params */);
+                          true /* is_valid */, false /* tracking_only */);
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureBaz,
-                          true /* is_valid */, true /* tracking_only */,
-                          false /* snooze_params */);
+                          true /* is_valid */, true /* tracking_only */);
     RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureQux,
-                          false /* is_valid */, false /* tracking_only */,
-                          false /* snooze_params */);
-    RegisterFeatureConfig(configuration.get(), kTrackerTestFeatureSnooze,
-                          true /* is_valid */, false /* tracking_only */,
-                          true /* snooze_params */);
+                          false /* is_valid */, false /* tracking_only */);
 
     std::unique_ptr<TestTrackerInMemoryEventStore> event_store =
         CreateEventStore();
@@ -258,13 +237,11 @@ class TrackerImplTest : public ::testing::Test {
         std::make_unique<TestTrackerDisplayLockController>();
     display_lock_controller_ = display_lock_controller.get();
 
-    auto time_provider = std::make_unique<TestTimeProvider>();
-    time_provider_ = time_provider.get();
-
     tracker_ = std::make_unique<TrackerImpl>(
         std::move(event_model), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
-        std::make_unique<OnceConditionValidator>(), std::move(time_provider));
+        std::make_unique<OnceConditionValidator>(),
+        std::make_unique<TestTimeProvider>());
   }
 
   void VerifyEventTriggerEvents(const base::Feature& feature, uint32_t count) {
@@ -464,7 +441,6 @@ class TrackerImplTest : public ::testing::Test {
   TestTrackerDisplayLockController* display_lock_controller_;
   Configuration* configuration_;
   base::HistogramTester histogram_tester_;
-  TestTimeProvider* time_provider_;
 };
 
 // A top-level test class where the store fails to initialize.
@@ -712,54 +688,6 @@ TEST_F(TrackerImplTest, TestTriggering) {
   VerifyUserActionsWouldHaveTriggered(user_action_tester, 0, 0, 0, 0);
   VerifyUserActionsDismissed(user_action_tester, 2);
   VerifyHistograms(true, 1, 3, 0, true, 1, 2, 0, false, 0, 0, 0, true, 0, 4, 0);
-}
-
-TEST_F(TrackerImplTest, TestTriggeringWithSnooze) {
-  // Ensure all initialization is finished.
-  StoringInitializedCallback callback;
-  tracker_->AddOnInitializedCallback(base::BindOnce(
-      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
-  base::RunLoop().RunUntilIdle();
-
-  base::Time now = base::Time::Now();
-  time_provider_->SetCurrentTime(now);
-
-  // The first time a feature with snooze params triggers, it should be shown
-  // with snooze.
-  Tracker::TriggerDetails trigger_details =
-      tracker_->ShouldTriggerHelpUIWithSnooze(kTrackerTestFeatureSnooze);
-  EXPECT_TRUE(trigger_details.ShouldShowIph());
-  EXPECT_TRUE(trigger_details.ShouldShowSnooze());
-
-  Event snooze_event = event_store_->GetEvent(
-      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
-  EXPECT_EQ(1, snooze_event.events_size());
-  EXPECT_EQ(1u, snooze_event.events(0).day());
-  EXPECT_EQ(1u, snooze_event.events(0).count());
-  EXPECT_EQ(0u, snooze_event.events(0).snooze_count());
-
-  tracker_->DismissedWithSnooze(kTrackerTestFeatureSnooze,
-                                Tracker::SnoozeAction::SNOOZED);
-  snooze_event = event_store_->GetEvent(
-      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
-  trigger_details =
-      tracker_->ShouldTriggerHelpUIWithSnooze(kTrackerTestFeatureSnooze);
-  EXPECT_FALSE(trigger_details.ShouldShowIph());
-  EXPECT_FALSE(trigger_details.ShouldShowSnooze());
-  EXPECT_EQ(1u, snooze_event.events(0).snooze_count());
-  EXPECT_EQ(now.ToDeltaSinceWindowsEpoch().InMicroseconds(),
-            snooze_event.last_snooze_time_us());
-  EXPECT_EQ(false, snooze_event.snooze_dismissed());
-
-  // TODO(crbug.com/1238924): Investigate using FeatureConfigConditionValidator
-  // here to test for snooze expiration after snooze's time interval.
-
-  tracker_->DismissedWithSnooze(kTrackerTestFeatureSnooze,
-                                Tracker::SnoozeAction::DISMISSED);
-  snooze_event = event_store_->GetEvent(
-      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
-  EXPECT_EQ(1u, snooze_event.events(0).snooze_count());
-  EXPECT_EQ(true, snooze_event.snooze_dismissed());
 }
 
 TEST_F(TrackerImplTest, TestTrackingOnlyTriggering) {

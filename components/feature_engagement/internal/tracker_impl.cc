@@ -282,7 +282,7 @@ void TrackerImpl::DismissedWithSnooze(
   if (snooze_action == SnoozeAction::SNOOZED) {
     event_model_->IncrementSnooze(feature_config.trigger.name,
                                   time_provider_->GetCurrentDay(),
-                                  time_provider_->Now());
+                                  base::Time::Now());
   } else if (snooze_action == SnoozeAction::DISMISSED) {
     event_model_->DismissSnooze(feature_config.trigger.name);
   }
