@@ -94,6 +94,9 @@ public class AccountPickerDelegateImplTest {
     @Captor
     private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
+    @Captor
+    private ArgumentCaptor<WebSigninBridge.Listener> mWebSigninBridgeListenerCaptor;
+
     private FragmentActivity mActivity;
 
     private AccountPickerDelegateImpl mDelegate;
@@ -115,7 +118,7 @@ public class AccountPickerDelegateImplTest {
 
         mDelegate = new AccountPickerDelegateImpl(
                 mWindowAndroidMock, mTabMock, mWebSigninBridgeFactoryMock, CONTINUE_URL);
-        when(mWebSigninBridgeFactoryMock.create(eq(mProfileMock), any(), eq(mDelegate)))
+        when(mWebSigninBridgeFactoryMock.create(eq(mProfileMock), any(), any()))
                 .thenReturn(mWebSigninBridgeMock);
     }
 
@@ -129,10 +132,11 @@ public class AccountPickerDelegateImplTest {
         mDelegate.signIn(TEST_EMAIL, error -> {});
         InOrder calledInOrder = inOrder(mWebSigninBridgeFactoryMock, mSigninManagerMock);
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
-                .create(mProfileMock, mCoreAccountInfo, mDelegate);
+                .create(eq(mProfileMock), eq(mCoreAccountInfo),
+                        mWebSigninBridgeListenerCaptor.capture());
         calledInOrder.verify(mSigninManagerMock)
                 .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
-        mDelegate.onSigninSucceeded();
+        mWebSigninBridgeListenerCaptor.getValue().onSigninSucceeded();
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
         Assert.assertEquals("Continue url does not match!", CONTINUE_URL, loadUrlParams.getUrl());
@@ -165,7 +169,7 @@ public class AccountPickerDelegateImplTest {
         calledInOrder.verify(mWebSigninBridgeMock).destroy();
         calledInOrder.verify(mSigninManagerMock).signOut(anyInt());
         calledInOrder.verify(mWebSigninBridgeFactoryMock)
-                .create(mProfileMock, mCoreAccountInfo, mDelegate);
+                .create(eq(mProfileMock), eq(mCoreAccountInfo), any());
         calledInOrder.verify(mSigninManagerMock)
                 .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)), any());
     }
@@ -175,7 +179,10 @@ public class AccountPickerDelegateImplTest {
         Callback<GoogleServiceAuthError> mockCallback = mock(Callback.class);
         GoogleServiceAuthError error = new GoogleServiceAuthError(State.CONNECTION_FAILED);
         mDelegate.signIn(TEST_EMAIL, mockCallback);
-        mDelegate.onSigninFailed(error);
+        verify(mWebSigninBridgeFactoryMock)
+                .create(eq(mProfileMock), eq(mCoreAccountInfo),
+                        mWebSigninBridgeListenerCaptor.capture());
+        mWebSigninBridgeListenerCaptor.getValue().onSigninFailed(error);
         verify(mockCallback).onResult(error);
         // WebSigninBridge should be kept alive in case cookies are taking longer to
         // generate than usual

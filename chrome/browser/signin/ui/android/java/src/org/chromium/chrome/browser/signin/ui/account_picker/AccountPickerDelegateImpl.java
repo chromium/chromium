@@ -35,7 +35,7 @@ import org.chromium.ui.base.WindowAndroid;
  * It is responsible for the sign-in and adding account functions needed for the
  * web sign-in flow.
  */
-public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, AccountPickerDelegate {
+public class AccountPickerDelegateImpl implements AccountPickerDelegate {
     private final WindowAndroid mWindowAndroid;
     private final Activity mActivity;
     private final Tab mCurrentTab;
@@ -44,7 +44,6 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
     private final SigninManager mSigninManager;
     private final IdentityManager mIdentityManager;
     private @Nullable WebSigninBridge mWebSigninBridge;
-    private Callback<GoogleServiceAuthError> mOnSignInErrorCallback;
 
     /**
      * @param windowAndroid The {@link WindowAndroid} instance of the activity.
@@ -73,7 +72,6 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
     @Override
     public void onDismiss() {
         destroyWebSigninBridge();
-        mOnSignInErrorCallback = null;
     }
 
     /**
@@ -90,10 +88,11 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
             // TODO(https://crbug.com/1133752): Revise sign-out reason
             mSigninManager.signOut(SignoutReason.ABORT_SIGNIN);
         }
-        mOnSignInErrorCallback = onSignInErrorCallback;
         AccountInfoServiceProvider.get().getAccountInfoByEmail(accountEmail).then(accountInfo -> {
-            mWebSigninBridge = mWebSigninBridgeFactory.create(
-                    Profile.getLastUsedRegularProfile(), accountInfo, this);
+            mWebSigninBridge =
+                    mWebSigninBridgeFactory.create(Profile.getLastUsedRegularProfile(), accountInfo,
+                            createWebSigninBridgeListener(
+                                    mCurrentTab, mContinueUrl, onSignInErrorCallback));
             mSigninManager.signin(AccountUtils.createAccountFromName(accountEmail),
                     new SigninManager.SignInCallback() {
                         @Override
@@ -148,26 +147,23 @@ public class AccountPickerDelegateImpl implements WebSigninBridge.Listener, Acco
                 onUpdateCredentialsCallback);
     }
 
-    /**
-     * Sign-in completed successfully and the primary account is available in the cookie jar.
-     */
-    @MainThread
-    @Override
-    public void onSigninSucceeded() {
-        ThreadUtils.assertOnUiThread();
-        mCurrentTab.loadUrl(new LoadUrlParams(mContinueUrl));
-    }
+    private static WebSigninBridge.Listener createWebSigninBridgeListener(
+            Tab tab, String continueUrl, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+        return new WebSigninBridge.Listener() {
+            @MainThread
+            @Override
+            public void onSigninFailed(GoogleServiceAuthError error) {
+                ThreadUtils.assertOnUiThread();
+                onSignInErrorCallback.onResult(error);
+            }
 
-    /**
-     * Sign-in process failed.
-     *
-     * @param error Details about the error that occurred in the sign-in process.
-     */
-    @MainThread
-    @Override
-    public void onSigninFailed(GoogleServiceAuthError error) {
-        ThreadUtils.assertOnUiThread();
-        mOnSignInErrorCallback.onResult(error);
+            @MainThread
+            @Override
+            public void onSigninSucceeded() {
+                ThreadUtils.assertOnUiThread();
+                tab.loadUrl(new LoadUrlParams(continueUrl));
+            }
+        };
     }
 
     private void destroyWebSigninBridge() {
