@@ -123,6 +123,9 @@ crbug.com/dawn/802 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering
 # Deprecated values temporarily cause the wrong count.
 wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:TextureUsage,count:* [ Failure ]
 
+# Test shouldn't have a stencil8 variant.
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:format="stencil8";* [ Failure ]
+
 ###
 ### Test bugs (fixed upstream)
 ###
@@ -211,7 +214,6 @@ crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_co
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=1;dimension="2d";format="stencil8";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=3;dimension="2d";format="depth16unorm";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,texture_related:format:method="CopyT2B";depthOrArrayLayers=3;dimension="2d";format="stencil8";* [ Failure ]
-
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:format="stencil8";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_depth_stencil:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/690 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_depth_stencil:format="stencil8";* [ Failure ]
@@ -269,12 +271,15 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:textu
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:mip_levels:viewDimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:offsets_and_sizes_copy_with_stencil_aspect:stencilFormat="stencil8";* [ Failure ]
-
 crbug.com/dawn/570 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:format="stencil8";* [ Failure ]
+crbug.com/dawn/570 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:format="depth16unorm";* [ Failure ]
+crbug.com/dawn/570 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:format="depth16unorm";* [ Failure ]
 
-crbug.com/dawn/1155 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:* [ Failure ]
-crbug.com/dawn/1155 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:* [ Failure ]
+# Need to clamp depth in shader on Vulkan
+crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:clampDepth=false;writeDepth=true;* [ Failure ]
+crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:clampDepth=false;* [ Failure ]
+
 crbug.com/tint/1211 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,builtin,abs:abs_float,float_builtin_functions:* [ Failure ]
 crbug.com/tint/1215 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,shader_io,compute_builtins:inputs:* [ Failure ]
 
