@@ -283,6 +283,16 @@ constexpr size_t AggregatableReport::kValueDomainBitLength;
 constexpr size_t AggregatableReport::kNumberOfProcessingOrigins;
 constexpr char AggregatableReport::kDomainSeparationValue[];
 
+// static
+bool AggregatableReport::Provider::g_disable_encryption_for_testing_tool_ =
+    false;
+
+// static
+void AggregatableReport::Provider::SetDisableEncryptionForTestingTool(
+    bool should_disable) {
+  g_disable_encryption_for_testing_tool_ = should_disable;
+}
+
 AggregatableReport::Provider::~Provider() = default;
 
 absl::optional<AggregatableReport>
@@ -326,10 +336,13 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
   // is destroyed at the end of this method.
   std::vector<AggregatableReport::AggregationServicePayload> encrypted_payloads;
   for (size_t i = 0; i < AggregatableReport::kNumberOfProcessingOrigins; ++i) {
-    std::vector<uint8_t> encrypted_payload = EncryptWithHpke(
-        /*plaintext=*/unencrypted_payloads[i],
-        /*public_key=*/public_keys[i].key,
-        /*authenticated_info=*/authenticated_info);
+    std::vector<uint8_t> encrypted_payload =
+        g_disable_encryption_for_testing_tool_
+            ? std::move(unencrypted_payloads[i])
+            : EncryptWithHpke(
+                  /*plaintext=*/unencrypted_payloads[i],
+                  /*public_key=*/public_keys[i].key,
+                  /*authenticated_info=*/authenticated_info);
 
     if (encrypted_payload.empty()) {
       return absl::nullopt;

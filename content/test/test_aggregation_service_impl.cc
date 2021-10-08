@@ -18,6 +18,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregatable_report_sender.h"
 #include "content/browser/aggregation_service/aggregation_service_storage_sql.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -43,6 +44,12 @@ TestAggregationServiceImpl::~TestAggregationServiceImpl() = default;
 const base::SequenceBound<AggregationServiceKeyStorage>&
 TestAggregationServiceImpl::GetKeyStorage() {
   return storage_;
+}
+
+void TestAggregationServiceImpl::SetDisablePayloadEncryption(
+    bool should_disable) {
+  content::AggregatableReport::Provider::SetDisableEncryptionForTestingTool(
+      should_disable);
 }
 
 void TestAggregationServiceImpl::SetPublicKeys(

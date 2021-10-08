@@ -21,11 +21,12 @@ const char kSwitchContents[] = "contents";
 const char kSwitchHelperKeys[] = "helper-keys";
 const char kSwitchOutput[] = "output";
 const char kSwitchReportingUrl[] = "reporting-url";
+const char kDisablePayloadEncryption[] = "disable-payload-encryption";
 
 const char kHelpMsg[] = R"(
   aggregation_service_tool --contents=<report_contents>
   --helper-keys=<helper_server_keys> [--output=<output_file_path>]
-  [--reporting-url=<reporting_url>]
+  [--reporting-url=<reporting_url>] [--disable-payload-encryption]
 
   Example:
   aggregation_service_tool --contents="count-value,1234,5"
@@ -38,7 +39,9 @@ const char kHelpMsg[] = R"(
   aggregation_service_tool is a command-line tool that accepts report contents
   `contents` and mapping of origins to public key json files
   `helper_server_keys` as input and either output an aggregatable report to
-  `output_file_path` or send the aggregatable report to `reporting_url`.
+  `output_file_path` or send the aggregatable report to `reporting_url`. If
+  `--disable-payload-encryption` is specified, the aggregatable report's
+  payload(s) will not be encrypted after serialization.
 )";
 
 void PrintHelp() {
@@ -89,6 +92,9 @@ int main(int argc, char* argv[]) {
   }
 
   aggregation_service::AggregationServiceTool tool;
+
+  tool.SetDisablePayloadEncryption(
+      /*should_disable=*/command_line.HasSwitch(kDisablePayloadEncryption));
 
   std::string helper_keys = command_line.GetSwitchValueASCII(kSwitchHelperKeys);
 

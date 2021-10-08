@@ -40,6 +40,10 @@ class TestAggregationService {
   static std::unique_ptr<TestAggregationService> Create(
       const base::Clock* clock);
 
+  // Sets whether to disable the AggregatableReport's payload(s) being encrypted
+  // after serialization.
+  virtual void SetDisablePayloadEncryption(bool should_disable) = 0;
+
   // Parses the keys for `origin` from `json_string`, and saves the set of keys
   // to storage. `callback` will be run once completed which takes a boolean
   // value indicating whether the keys were parsed successfully.

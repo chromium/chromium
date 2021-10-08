@@ -33,6 +33,10 @@ AggregationServiceTool::AggregationServiceTool()
 
 AggregationServiceTool::~AggregationServiceTool() = default;
 
+void AggregationServiceTool::SetDisablePayloadEncryption(bool should_disable) {
+  agg_service_->SetDisablePayloadEncryption(should_disable);
+}
+
 bool AggregationServiceTool::SetPublicKeys(const base::StringPairs& kv_pairs) {
   // Send each origin's specified public keys to the tool's storage.
   for (const auto& kv : kv_pairs) {

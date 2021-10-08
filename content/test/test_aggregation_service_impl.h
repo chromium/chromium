@@ -45,6 +45,7 @@ class TestAggregationServiceImpl : public AggregatableReportManager,
       override;
 
   // TestAggregationService:
+  void SetDisablePayloadEncryption(bool should_disable) override;
   void SetPublicKeys(const url::Origin& origin,
                      const std::string& json_string,
                      base::OnceCallback<void(bool)> callback) override;

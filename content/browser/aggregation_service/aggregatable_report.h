@@ -110,6 +110,13 @@ class CONTENT_EXPORT AggregatableReport {
     virtual absl::optional<AggregatableReport> CreateFromRequestAndPublicKeys(
         AggregatableReportRequest report_request,
         std::vector<PublicKey> public_keys) const;
+
+    // Sets whether to disable encryption of the payload(s). Should only be used
+    // by the AggregationServiceTool.
+    static void SetDisableEncryptionForTestingTool(bool should_disable);
+
+   private:
+    static bool g_disable_encryption_for_testing_tool_;
   };
 
   // log_2 of the number of buckets

@@ -33,6 +33,10 @@ class AggregationServiceTool {
   AggregationServiceTool();
   ~AggregationServiceTool();
 
+  // Sets whether to disable the AggregatableReport's payload(s) being encrypted
+  // after serialization.
+  void SetDisablePayloadEncryption(bool should_disable);
+
   // Sets public keys to storage from the origin-filename pairs and returns
   // whether it's successful.
   bool SetPublicKeys(const base::StringPairs& kv_pairs);
