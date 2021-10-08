@@ -9,21 +9,15 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/path_service.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
@@ -43,6 +37,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/print_preview/data_request_filter.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -193,49 +188,6 @@ base::LazyInstance<PrintPreviewRequestIdMapWithLock>::DestructorAtExit
 // Only accessed on the UI thread.
 base::LazyInstance<base::IDMap<PrintPreviewUI*>>::DestructorAtExit
     g_print_preview_ui_id_map = LAZY_INSTANCE_INITIALIZER;
-
-bool ShouldHandleRequestCallback(const std::string& path) {
-  // ChromeWebUIDataSource handles most requests except for the print preview
-  // data.
-  return PrintPreviewUI::ParseDataPath(path, nullptr, nullptr);
-}
-
-// Get markup or other resources for the print preview page.
-void HandleRequestCallback(const std::string& path,
-                           content::WebUIDataSource::GotDataCallback callback) {
-  // ChromeWebUIDataSource handles most requests except for the print preview
-  // data.
-  int preview_ui_id;
-  int page_index;
-  CHECK(PrintPreviewUI::ParseDataPath(path, &preview_ui_id, &page_index));
-
-  scoped_refptr<base::RefCountedMemory> data;
-  PrintPreviewDataService::GetInstance()->GetDataEntry(preview_ui_id,
-                                                       page_index, &data);
-  if (data.get()) {
-    std::move(callback).Run(data.get());
-    return;
-  }
-
-  // May be a test request
-  if (base::EndsWith(path, "/test.pdf", base::CompareCase::SENSITIVE)) {
-    std::string test_pdf_content;
-    base::FilePath test_data_path;
-    CHECK(base::PathService::Get(base::DIR_TEST_DATA, &test_data_path));
-    base::FilePath pdf_path =
-        test_data_path.AppendASCII("pdf/test.pdf").NormalizePathSeparators();
-
-    CHECK(base::ReadFileToString(pdf_path, &test_pdf_content));
-    scoped_refptr<base::RefCountedString> response =
-        base::RefCountedString::TakeString(&test_pdf_content);
-    std::move(callback).Run(response.get());
-    return;
-  }
-
-  // Invalid request.
-  auto empty_bytes = base::MakeRefCounted<base::RefCountedBytes>();
-  std::move(callback).Run(empty_bytes.get());
-}
 
 void AddPrintPreviewStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -419,8 +371,8 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
 }
 
 void SetupPrintPreviewPlugin(content::WebUIDataSource* source) {
-  source->SetRequestFilter(base::BindRepeating(&ShouldHandleRequestCallback),
-                           base::BindRepeating(&HandleRequestCallback));
+  // TODO(crbug.com/1238829): Only serve PDF from chrome-untrusted://print.
+  AddDataRequestFilter(*source);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc, "child-src 'self';");
   source->DisableDenyXFrameOptions();
@@ -553,37 +505,6 @@ void PrintPreviewUI::SetPrintPreviewDataForIndex(
     scoped_refptr<base::RefCountedMemory> data) {
   PrintPreviewDataService::GetInstance()->SetDataEntry(*id_, index,
                                                        std::move(data));
-}
-
-// static
-bool PrintPreviewUI::ParseDataPath(const std::string& path,
-                                   int* ui_id,
-                                   int* page_index) {
-  std::string file_path = path.substr(0, path.find_first_of('?'));
-  if (base::EndsWith(file_path, "/test.pdf", base::CompareCase::SENSITIVE))
-    return true;
-
-  if (!base::EndsWith(file_path, "/print.pdf", base::CompareCase::SENSITIVE))
-    return false;
-
-  std::vector<std::string> url_substr =
-      base::SplitString(path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (url_substr.size() != 3)
-    return false;
-
-  int preview_ui_id = -1;
-  if (!base::StringToInt(url_substr[0], &preview_ui_id) || preview_ui_id < 0)
-    return false;
-
-  int preview_page_index = 0;
-  if (!base::StringToInt(url_substr[1], &preview_page_index))
-    return false;
-
-  if (ui_id)
-    *ui_id = preview_ui_id;
-  if (page_index)
-    *page_index = preview_page_index;
-  return true;
 }
 
 void PrintPreviewUI::ClearAllPreviewData() {
