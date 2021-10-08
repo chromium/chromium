@@ -46494,6 +46494,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="Success"/>
   <int value="1" label="Failed to open results in a new tab"/>
   <int value="2" label="Error capturing image from selected region"/>
+  <int value="3" label="User exited the capture mode via the escape key."/>
+  <int value="4"
+      label="User exited the capture mode via the close button on the
+             instructional bubble."/>
+  <int value="5"
+      label="User navigated away from the page while capture mode was open,
+             closing the capture mode."/>
 </enum>
 
 <enum name="LensSdkError">
