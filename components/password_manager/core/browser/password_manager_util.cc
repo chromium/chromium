@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -42,6 +43,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
+#include "url/url_util.h"
 
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
@@ -387,6 +389,21 @@ GURL StripAuthAndParams(const GURL& gurl) {
   rep.ClearQuery();
   rep.ClearRef();
   return gurl.ReplaceComponents(rep);
+}
+
+GURL ConstructGURLWithScheme(const std::string& url) {
+  GURL gurl = GURL(url);
+  if (!gurl.has_scheme()) {
+    GURL https_url(
+        base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator, url}));
+    if (url::HostIsIPAddress(https_url.host())) {
+      GURL::Replacements replacements;
+      replacements.SetSchemeStr(url::kHttpScheme);
+      return https_url.ReplaceComponents(replacements);
+    }
+    return https_url;
+  }
+  return gurl;
 }
 
 }  // namespace password_manager_util

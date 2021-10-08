@@ -532,4 +532,16 @@ TEST(PasswordManagerUtil, StripAuthAndParams) {
   EXPECT_EQ(GURL("https://example.com/login/"), StripAuthAndParams(url));
 }
 
+TEST(PasswordManagerUtil, ConstructGURLWithScheme) {
+  std::vector<std::pair<std::string, GURL>> test_cases = {
+      {"example.com", GURL("https://example.com")},
+      {"127.0.0.1", GURL("http://127.0.0.1")},
+      {"file:///Test/example.html", GURL("file:///Test/example.html")},
+      {"https://www.example.com", GURL("https://www.example.com")},
+      {"example", GURL("https://example")}};
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.second, ConstructGURLWithScheme(test_case.first));
+  }
+}
+
 }  // namespace password_manager_util
