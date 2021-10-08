@@ -226,6 +226,12 @@ class PasswordDetailsTableViewControllerTest
     EXPECT_NSEQ(expected_text, cell.textFieldValue);
   }
 
+  void SetEditCellText(NSString* text, int section, int item) {
+    TableViewTextEditItem* cell =
+        static_cast<TableViewTextEditItem*>(GetTableViewItem(section, item));
+    cell.textFieldValue = text;
+  }
+
   void CheckDetailItemTextWithId(int expected_detail_text_id,
                                  int section,
                                  int item) {
@@ -404,9 +410,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestEditPasswordConfirmed) {
   EXPECT_FALSE(delegate().password);
   EXPECT_TRUE(passwordDetails.tableView.editing);
 
-  TableViewTextEditItem* cell =
-      static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 2));
-  cell.textFieldValue = @"new_password";
+  SetEditCellText(@"new_password", 0, 2);
 
   [passwordDetails editButtonPressed];
   EXPECT_TRUE(handler().editingCalled);
@@ -429,9 +433,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestEditPasswordCancel) {
   EXPECT_FALSE(delegate().password);
   EXPECT_TRUE(passwordDetails.tableView.editing);
 
-  TableViewTextEditItem* cell =
-      static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 2));
-  cell.textFieldValue = @"new_password";
+  SetEditCellText(@"new_password", 0, 2);
 
   [passwordDetails editButtonPressed];
   EXPECT_FALSE(delegate().password);
@@ -600,10 +602,34 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
       static_cast<PasswordDetailsTableViewController*>(controller());
   [passwords_controller loadModel];
 
-  EXPECT_EQ(2, NumberOfSections());
+  EXPECT_EQ(3, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
   EXPECT_EQ(2, NumberOfItemsInSection(1));
   // TODO(crbug.com/1226006): Use i18n string.
   CheckSectionFooter(
-      @"Make sure you're saving your current password for this site", 1);
+      @"Make sure you're saving your current password for this site", 2);
+}
+
+// Tests the layout of the view controller when adding a new credential with
+// duplicate website/username combination.
+TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAddDuplicated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kSupportForAddPasswordsInSettings);
+  SetCredentialType(CredentialTypeNew);
+  SetPassword();
+
+  PasswordDetailsTableViewController* passwords_controller =
+      static_cast<PasswordDetailsTableViewController*>(controller());
+  [passwords_controller loadModel];
+
+  SetEditCellText(@"http://www.example.com/", 0, 0);
+  SetEditCellText(@"test@egmail.com", 1, 0);
+
+  [passwords_controller onDuplicateCheckCompletion:YES];
+
+  EXPECT_EQ(4, NumberOfSections());
+  EXPECT_EQ(1, NumberOfItemsInSection(0));
+  EXPECT_EQ(2, NumberOfItemsInSection(1));
+  EXPECT_EQ(2, NumberOfItemsInSection(2));
 }

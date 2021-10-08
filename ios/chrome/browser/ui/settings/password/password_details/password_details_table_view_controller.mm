@@ -55,7 +55,9 @@ const CGFloat kWarningIconSize = 20;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierPassword = kSectionIdentifierEnumZero,
   SectionIdentifierSite,
-  SectionIdentifierCompromisedInfo
+  SectionIdentifierCompromisedInfo,
+  SectionIdentifierDuplicate,
+  SectionIdentifierFooter
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -65,7 +67,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFederation,
   ItemTypeChangePasswordButton,
   ItemTypeChangePasswordRecommendation,
-  ItemTypeFooter
+  ItemTypeFooter,
+  ItemTypeDuplicateCredentialButton,
+  ItemTypeDuplicateCredentialMessage
 };
 
 typedef NS_ENUM(NSInteger, ReauthenticationReason) {
@@ -102,6 +106,15 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 // blocked, federated, new or regular.
 @property(nonatomic, assign) CredentialType credentialType;
 
+// If YES, denotes that the credential with the same website/username
+// combination already exists. Used when creating a new credential.
+@property(nonatomic, assign) BOOL isDuplicatedCredential;
+
+// Denotes that the save button in the add credential view can be enabled after
+// basic validation of data on all the fields. Does not account for whether the
+// duplicate credential exists or not.
+@property(nonatomic, assign) BOOL shouldEnableSave;
+
 @end
 
 @implementation PasswordDetailsTableViewController
@@ -112,6 +125,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _credentialType = credentialType;
+    _isDuplicatedCredential = NO;
+    _shouldEnableSave = NO;
   }
   return self;
 }
@@ -254,8 +269,9 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   }
 
   if (self.credentialType == CredentialTypeNew) {
+    [model addSectionWithIdentifier:SectionIdentifierFooter];
     [model setFooter:[self footerItem]
-        forSectionWithIdentifier:SectionIdentifierPassword];
+        forSectionWithIdentifier:SectionIdentifierFooter];
   }
 }
 
@@ -389,6 +405,27 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   return item;
 }
 
+- (TableViewTextItem*)duplicatePasswordViewButtonItem {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:ItemTypeDuplicateCredentialButton];
+  // TODO(crbug.com/1226006): Use i18n string.
+  item.text = @"Test View Password";
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
+}
+
+- (SettingsImageDetailTextItem*)duplicatePasswordMessageItem {
+  SettingsImageDetailTextItem* item = [[SettingsImageDetailTextItem alloc]
+      initWithType:ItemTypeDuplicateCredentialMessage];
+  // TODO(crbug.com/1226006): Use i18n string.
+  item.detailText = @"Test You already saved a password";
+  item.image = [[UIImage imageNamed:@"table_view_cell_error_icon"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  item.imageViewTintColor = [UIColor colorNamed:kRedColor];
+  return item;
+}
+
 - (TableViewLinkHeaderFooterItem*)footerItem {
   TableViewLinkHeaderFooterItem* item =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
@@ -401,11 +438,12 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (self.credentialType == CredentialTypeNew) {
-    return;
-  }
   TableViewModel* model = self.tableViewModel;
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
+  if (self.credentialType == CredentialTypeNew &&
+      itemType != ItemTypeDuplicateCredentialButton) {
+    return;
+  }
   switch (itemType) {
     case ItemTypeWebsite:
     case ItemTypeFederation:
@@ -415,6 +453,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       break;
     case ItemTypeChangePasswordRecommendation:
     case ItemTypeFooter:
+    case ItemTypeDuplicateCredentialMessage:
       break;
     case ItemTypeUsername: {
       if (base::FeatureList::IsEnabled(
@@ -457,6 +496,10 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
         [self.commandsHandler closeSettingsUIAndOpenURL:command];
       }
       break;
+    case ItemTypeDuplicateCredentialButton:
+      // TODO(crbug.com/1226006):Implement the functionality to authenticate and
+      // show the password.
+      break;
   }
 }
 
@@ -487,7 +530,34 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
-  return !self.editing && self.credentialType != CredentialTypeNew;
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  BOOL isNewCredentialDuplicateButton =
+      (self.isDuplicatedCredential &&
+       itemType == ItemTypeDuplicateCredentialButton);
+  return (!self.editing && self.credentialType != CredentialTypeNew) ||
+         isNewCredentialDuplicateButton;
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+  if (sectionIdentifier == SectionIdentifierFooter) {
+    return 0;
+  }
+  return [super tableView:tableView heightForHeaderInSection:section];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+  if ((sectionIdentifier == SectionIdentifierPassword &&
+       !self.isDuplicatedCredential) ||
+      sectionIdentifier == SectionIdentifierDuplicate) {
+    return 0;
+  }
+  return [super tableView:tableView heightForFooterInSection:section];
 }
 
 #pragma mark - UITableViewDataSource
@@ -526,6 +596,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypeWebsite:
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
+    case ItemTypeDuplicateCredentialMessage:
+    case ItemTypeDuplicateCredentialButton:
     case ItemTypeFooter:
       break;
     case ItemTypeChangePasswordRecommendation:
@@ -542,6 +614,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypeWebsite:
     case ItemTypeFederation:
     case ItemTypeFooter:
+    case ItemTypeDuplicateCredentialMessage:
+    case ItemTypeDuplicateCredentialButton:
       return NO;
     case ItemTypeUsername:
       return base::FeatureList::IsEnabled(
@@ -562,8 +636,52 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 #pragma mark - AddPasswordDetailsConsumer
 
 - (void)onDuplicateCheckCompletion:(BOOL)duplicateFound {
-  self.navigationItem.rightBarButtonItem.enabled = !duplicateFound;
-  // TODO(crbug.com/1226006): Update model when a duplicate is found.
+  self.navigationItem.rightBarButtonItem.enabled =
+      !duplicateFound && self.shouldEnableSave;
+  if (duplicateFound == self.isDuplicatedCredential) {
+    return;
+  }
+
+  self.isDuplicatedCredential = duplicateFound;
+  TableViewModel* model = self.tableViewModel;
+  if (duplicateFound) {
+    [self
+        performBatchTableViewUpdates:^{
+          [model insertSectionWithIdentifier:SectionIdentifierDuplicate
+                                     atIndex:2];
+          [self.tableView insertSections:[NSIndexSet indexSetWithIndex:2]
+                        withRowAnimation:UITableViewRowAnimationTop];
+          [model addItem:[self duplicatePasswordMessageItem]
+              toSectionWithIdentifier:SectionIdentifierDuplicate];
+          [model addItem:[self duplicatePasswordViewButtonItem]
+              toSectionWithIdentifier:SectionIdentifierDuplicate];
+          if (self.usernameTextItem &&
+              [self.usernameTextItem.textFieldValue length] > 0) {
+            self.usernameTextItem.hasValidText = NO;
+            self.usernameTextItem.hideIcon = NO;
+            [self reconfigureCellsForItems:@[ self.usernameTextItem ]];
+          } else {
+            self.websiteTextItem.hasValidText = NO;
+            self.websiteTextItem.hideIcon = NO;
+            [self reconfigureCellsForItems:@[ self.websiteTextItem ]];
+          }
+        }
+                          completion:nil];
+  } else {
+    [self
+        performBatchTableViewUpdates:^{
+          [self removeSectionWithIdentifier:SectionIdentifierDuplicate
+                           withRowAnimation:UITableViewRowAnimationTop];
+          self.usernameTextItem.hasValidText = YES;
+          self.usernameTextItem.hideIcon = YES;
+          self.websiteTextItem.hasValidText = YES;
+          self.websiteTextItem.hideIcon = YES;
+          [self reconfigureCellsForItems:@[
+            self.websiteTextItem, self.usernameTextItem
+          ]];
+        }
+                          completion:nil];
+  }
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -580,11 +698,13 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     [self.delegate
         checkForDuplicatesWithSite:self.websiteTextItem.textFieldValue
                           username:self.usernameTextItem.textFieldValue];
-  } else {
-    BOOL isInputValid = [self checkIfValidSite] & [self checkIfValidUsername] &
-                        [self checkIfValidPassword];
-    self.navigationItem.rightBarButtonItem.enabled = isInputValid;
   }
+
+  self.shouldEnableSave = [self checkIfValidSite] &
+                          [self checkIfValidUsername] &
+                          [self checkIfValidPassword];
+  self.navigationItem.rightBarButtonItem.enabled =
+      !self.isDuplicatedCredential && self.shouldEnableSave;
 }
 
 - (void)tableViewItemDidEndEditing:(TableViewTextEditItem*)tableViewItem {
@@ -773,6 +893,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypeFederation:
     case ItemTypeChangePasswordButton:
     case ItemTypeChangePasswordRecommendation:
+    case ItemTypeDuplicateCredentialMessage:
+    case ItemTypeDuplicateCredentialButton:
     case ItemTypeFooter:
       return NO;
   }
@@ -811,6 +933,18 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
   [self reconfigureCellsForItems:@[ self.passwordTextItem ]];
   return !passwordEmpty;
+}
+
+// Removes the given section if it exists.
+- (void)removeSectionWithIdentifier:(NSInteger)sectionIdentifier
+                   withRowAnimation:(UITableViewRowAnimation)animation {
+  TableViewModel* model = self.tableViewModel;
+  if ([model hasSectionForSectionIdentifier:sectionIdentifier]) {
+    NSInteger section = [model sectionForSectionIdentifier:sectionIdentifier];
+    [model removeSectionWithIdentifier:sectionIdentifier];
+    [[self tableView] deleteSections:[NSIndexSet indexSetWithIndex:section]
+                    withRowAnimation:animation];
+  }
 }
 
 #pragma mark - Actions
@@ -909,6 +1043,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
     case ItemTypePassword:
       [self attemptToShowPasswordFor:ReauthenticationReasonCopy];
       return;
+    case ItemTypeDuplicateCredentialMessage:
+    case ItemTypeDuplicateCredentialButton:
     case ItemTypeFooter:
       NOTREACHED();
       return;
