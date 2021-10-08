@@ -109,7 +109,8 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   // nor aborted.
   bool HasTickingKeyframeModel() const;
 
-  bool AffectsCustomProperty() const;
+  bool RequiresInvalidation() const;
+  bool AffectsNativeProperty() const;
 
   bool HasNonDeletedKeyframeModel() const;
 

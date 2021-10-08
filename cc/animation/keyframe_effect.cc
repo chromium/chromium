@@ -407,10 +407,25 @@ bool KeyframeEffect::HasTickingKeyframeModel() const {
   return false;
 }
 
-bool KeyframeEffect::AffectsCustomProperty() const {
-  for (const auto& it : keyframe_models())
-    if (it->TargetProperty() == TargetProperty::CSS_CUSTOM_PROPERTY)
+bool KeyframeEffect::RequiresInvalidation() const {
+  for (const auto& it : keyframe_models()) {
+    if (it->TargetProperty() == TargetProperty::NATIVE_PROPERTY ||
+        it->TargetProperty() == TargetProperty::CSS_CUSTOM_PROPERTY) {
       return true;
+    }
+  }
+  return false;
+}
+
+bool KeyframeEffect::AffectsNativeProperty() const {
+  for (const auto& it : keyframe_models()) {
+    // TODO(crbug.com/1257778): include the SCROLL_OFFSET here so that we won't
+    // create a compositor animation frame sequence tracker when there is a
+    // composited scroll.
+    if (it->TargetProperty() != TargetProperty::CSS_CUSTOM_PROPERTY &&
+        it->TargetProperty() != TargetProperty::NATIVE_PROPERTY)
+      return true;
+  }
   return false;
 }
 

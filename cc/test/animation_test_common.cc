@@ -80,6 +80,31 @@ int AddAnimatedTransform(Animation* target,
   return id;
 }
 
+int AddAnimatedCustomProperty(Animation* target,
+                              double duration,
+                              int start_value,
+                              int end_value) {
+  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve(
+      gfx::KeyframedFloatAnimationCurve::Create());
+
+  if (duration > 0.0) {
+    curve->AddKeyframe(
+        gfx::FloatKeyframe::Create(base::TimeDelta(), start_value, nullptr));
+  }
+
+  curve->AddKeyframe(
+      gfx::FloatKeyframe::Create(base::Seconds(duration), end_value, nullptr));
+
+  int id = AnimationIdProvider::NextKeyframeModelId();
+  std::unique_ptr<KeyframeModel> keyframe_model(KeyframeModel::Create(
+      std::move(curve), id, AnimationIdProvider::NextGroupId(),
+      KeyframeModel::TargetPropertyId(TargetProperty::CSS_CUSTOM_PROPERTY)));
+  keyframe_model->set_needs_synchronized_start_time(true);
+
+  target->AddKeyframeModel(std::move(keyframe_model));
+  return id;
+}
+
 int AddAnimatedTransform(Animation* target,
                          double duration,
                          int delta_x,
@@ -238,6 +263,13 @@ int AddScrollOffsetAnimationToAnimation(Animation* animation,
   animation->AddKeyframeModel(std::move(keyframe_model));
 
   return id;
+}
+
+int AddAnimatedCustomPropertyToAnimation(Animation* animation,
+                                         double duration,
+                                         int start_value,
+                                         int end_value) {
+  return AddAnimatedCustomProperty(animation, duration, start_value, end_value);
 }
 
 int AddAnimatedTransformToAnimation(Animation* animation,

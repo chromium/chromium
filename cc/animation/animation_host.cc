@@ -821,9 +821,16 @@ size_t AnimationHost::MainThreadAnimationsCount() const {
   return main_thread_animations_count_;
 }
 
-bool AnimationHost::HasCustomPropertyAnimations() const {
+bool AnimationHost::HasInvalidationAnimation() const {
   for (const auto& it : ticking_animations_)
-    if (it->AffectsCustomProperty())
+    if (it->RequiresInvalidation())
+      return true;
+  return false;
+}
+
+bool AnimationHost::HasNativePropertyAnimation() const {
+  for (const auto& it : ticking_animations_)
+    if (it->AffectsNativeProperty())
       return true;
   return false;
 }

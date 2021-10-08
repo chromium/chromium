@@ -273,7 +273,7 @@ class FakeSchedulerClient : public SchedulerClient,
     PushAction("RemoveObserver(this)");
   }
 
-  bool HasCustomPropertyAnimations() const override { return false; }
+  bool HasInvalidationAnimation() const override { return false; }
 
  protected:
   bool InsideBeginImplFrameCallback(bool state) {

@@ -121,6 +121,95 @@ TEST_F(AnimationTest, AttachDetachTimelineIfLayerAttached) {
   EXPECT_TRUE(animation_->keyframe_effect()->needs_push_properties());
 }
 
+TEST_F(AnimationTest, HaveInvalidationAndNativePropertyAnimations) {
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+
+  host_->AddAnimationTimeline(timeline_);
+
+  timeline_->AttachAnimation(animation_);
+  animation_->AttachElement(element_id_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(true);
+
+  host_->PushPropertiesTo(host_impl_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(false);
+
+  const float start_value = .7f;
+  const float end_value = .3f;
+
+  const float start_opacity = .7f;
+  const float end_opacity = .3f;
+  const double duration = 1.;
+
+  AddAnimatedCustomPropertyToAnimation(animation_.get(), duration, start_value,
+                                       end_value);
+  AddOpacityTransitionToAnimation(animation_.get(), duration, start_opacity,
+                                  end_opacity, false);
+  CheckKeyframeEffectTimelineNeedsPushProperties(true);
+
+  host_->PushPropertiesTo(host_impl_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(false);
+  EXPECT_TRUE(host_->HasInvalidationAnimation());
+  EXPECT_TRUE(host_->HasNativePropertyAnimation());
+}
+
+TEST_F(AnimationTest, HasInvalidationAnimation) {
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+
+  host_->AddAnimationTimeline(timeline_);
+
+  timeline_->AttachAnimation(animation_);
+  animation_->AttachElement(element_id_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(true);
+
+  host_->PushPropertiesTo(host_impl_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(false);
+
+  const float start_value = .7f;
+  const float end_value = .3f;
+  const double duration = 1.;
+
+  AddAnimatedCustomPropertyToAnimation(animation_.get(), duration, start_value,
+                                       end_value);
+  CheckKeyframeEffectTimelineNeedsPushProperties(true);
+
+  host_->PushPropertiesTo(host_impl_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(false);
+  EXPECT_TRUE(host_->HasInvalidationAnimation());
+  EXPECT_FALSE(host_->HasNativePropertyAnimation());
+}
+
+TEST_F(AnimationTest, HasNativePropertyAnimation) {
+  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+
+  host_->AddAnimationTimeline(timeline_);
+
+  timeline_->AttachAnimation(animation_);
+  animation_->AttachElement(element_id_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(true);
+
+  host_->PushPropertiesTo(host_impl_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(false);
+
+  const float start_opacity = .7f;
+  const float end_opacity = .3f;
+  const double duration = 1.;
+
+  AddOpacityTransitionToAnimation(animation_.get(), duration, start_opacity,
+                                  end_opacity, false);
+  CheckKeyframeEffectTimelineNeedsPushProperties(true);
+
+  host_->PushPropertiesTo(host_impl_);
+  CheckKeyframeEffectTimelineNeedsPushProperties(false);
+  EXPECT_FALSE(host_->HasInvalidationAnimation());
+  EXPECT_TRUE(host_->HasNativePropertyAnimation());
+}
+
 TEST_F(AnimationTest, PropertiesMutate) {
   client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);

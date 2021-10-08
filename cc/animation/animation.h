@@ -116,7 +116,12 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation> {
   // to be dispatched.
   void DispatchAndDelegateAnimationEvent(const AnimationEvent& event);
 
-  bool AffectsCustomProperty() const;
+  // Returns true if this animation effects pending tree, such as a custom
+  // property animation with paint worklet.
+  bool RequiresInvalidation() const;
+  // Returns true if this animation effects active tree, such as a transform
+  // animation.
+  bool AffectsNativeProperty() const;
 
   void SetNeedsPushProperties();
 

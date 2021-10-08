@@ -149,7 +149,8 @@ class MutatorHost {
   virtual ElementId ImplOnlyScrollAnimatingElement() const = 0;
 
   virtual size_t MainThreadAnimationsCount() const = 0;
-  virtual bool HasCustomPropertyAnimations() const = 0;
+  virtual bool HasInvalidationAnimation() const = 0;
+  virtual bool HasNativePropertyAnimation() const = 0;
   virtual bool CurrentFrameHadRAF() const = 0;
   virtual bool NextFrameHasPendingRAF() const = 0;
   virtual bool HasCanvasInvalidation() const = 0;

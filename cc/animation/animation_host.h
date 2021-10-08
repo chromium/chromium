@@ -199,7 +199,12 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       std::unique_ptr<MutatorOutputState> output_state) override;
 
   size_t MainThreadAnimationsCount() const override;
-  bool HasCustomPropertyAnimations() const override;
+  // Returns true if there is any animation that affects pending tree, such as
+  // custom property animations via paint worklet.
+  bool HasInvalidationAnimation() const override;
+  // Returns true if there is any animation that affects active tree, such as
+  // transform animation.
+  bool HasNativePropertyAnimation() const override;
   bool CurrentFrameHadRAF() const override;
   bool NextFrameHasPendingRAF() const override;
   PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() override;

@@ -76,6 +76,11 @@ int AddAnimatedTransformToAnimation(Animation* animation,
                                     int delta_x,
                                     int delta_y);
 
+int AddAnimatedCustomPropertyToAnimation(Animation* animation,
+                                         double duration,
+                                         int start_value,
+                                         int end_value);
+
 int AddAnimatedTransformToAnimation(Animation* animation,
                                     double duration,
                                     gfx::TransformOperations start_operations,

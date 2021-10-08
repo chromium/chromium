@@ -216,8 +216,12 @@ void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
   }
 }
 
-bool Animation::AffectsCustomProperty() const {
-  return keyframe_effect_->AffectsCustomProperty();
+bool Animation::RequiresInvalidation() const {
+  return keyframe_effect_->RequiresInvalidation();
+}
+
+bool Animation::AffectsNativeProperty() const {
+  return keyframe_effect_->AffectsNativeProperty();
 }
 
 void Animation::SetNeedsCommit() {

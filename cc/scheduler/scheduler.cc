@@ -839,7 +839,7 @@ void Scheduler::DrawIfPossible() {
   DrawResult result = client_->ScheduledActionDrawIfPossible();
   state_machine_.DidDraw(result);
   compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
-                                      client_->HasCustomPropertyAnimations());
+                                      client_->HasInvalidationAnimation());
 }
 
 void Scheduler::DrawForced() {
@@ -853,7 +853,7 @@ void Scheduler::DrawForced() {
   DrawResult result = client_->ScheduledActionDrawForced();
   state_machine_.DidDraw(result);
   compositor_timing_history_->DidDraw(drawing_with_new_active_tree,
-                                      client_->HasCustomPropertyAnimations());
+                                      client_->HasInvalidationAnimation());
 }
 
 void Scheduler::SetDeferBeginMainFrame(bool defer_begin_main_frame) {

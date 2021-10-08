@@ -93,7 +93,8 @@ class MockMutatorHost : public MutatorHost {
   MOCK_METHOD0(ScrollAnimationAbort, void());
   MOCK_CONST_METHOD0(ImplOnlyScrollAnimatingElement, ElementId());
   MOCK_CONST_METHOD0(MainThreadAnimationsCount, size_t());
-  MOCK_CONST_METHOD0(HasCustomPropertyAnimations, bool());
+  MOCK_CONST_METHOD0(HasInvalidationAnimation, bool());
+  MOCK_CONST_METHOD0(HasNativePropertyAnimation, bool());
   MOCK_CONST_METHOD0(CurrentFrameHadRAF, bool());
   MOCK_CONST_METHOD0(HasSmilAnimation, bool());
   MOCK_CONST_METHOD0(NextFrameHasPendingRAF, bool());

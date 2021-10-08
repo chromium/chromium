@@ -450,7 +450,7 @@ void SingleThreadProxy::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
     scheduler_on_impl_thread_->SetVideoNeedsBeginFrames(needs_begin_frames);
 }
 
-bool SingleThreadProxy::HasCustomPropertyAnimations() const {
+bool SingleThreadProxy::HasInvalidationAnimation() const {
   return false;
 }
 
