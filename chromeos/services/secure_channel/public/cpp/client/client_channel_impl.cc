@@ -5,7 +5,11 @@
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel_impl.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
 
@@ -42,9 +46,14 @@ ClientChannelImpl::ClientChannelImpl(
   channel_.set_disconnect_with_reason_handler(
       base::BindOnce(&ClientChannelImpl::OnChannelDisconnected,
                      weak_ptr_factory_.GetWeakPtr()));
+  file_payload_listeners_.set_disconnect_handler(base::BindRepeating(
+      &ClientChannelImpl::OnFilePayloadListenerRemoteDisconnected,
+      base::Unretained(this)));
 }
 
-ClientChannelImpl::~ClientChannelImpl() = default;
+ClientChannelImpl::~ClientChannelImpl() {
+  CleanUpPendingFileTransfers();
+}
 
 void ClientChannelImpl::PerformGetConnectionMetadata(
     base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback) {
@@ -68,6 +77,73 @@ void ClientChannelImpl::PerformSendMessage(const std::string& payload,
   channel_->SendMessage(payload, std::move(on_sent_callback));
 }
 
+void ClientChannelImpl::PerformRegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+        file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  mojo::PendingRemote<mojom::FilePayloadListener>
+      file_payload_listener_pending_remote;
+  file_payload_listeners_.Add(
+      this,
+      file_payload_listener_pending_remote.InitWithNewPipeAndPassReceiver(),
+      /*context=*/payload_id);
+  file_transfer_update_callbacks_.emplace(
+      payload_id, std::move(file_transfer_update_callback));
+
+  channel_->RegisterPayloadFile(payload_id, std::move(payload_files),
+                                std::move(file_payload_listener_pending_remote),
+                                std::move(registration_result_callback));
+}
+
+void ClientChannelImpl::OnFileTransferUpdate(
+    mojom::FileTransferUpdatePtr update) {
+  DCHECK_EQ(update->payload_id, file_payload_listeners_.current_context());
+
+  auto it = file_transfer_update_callbacks_.find(update->payload_id);
+  if (it == file_transfer_update_callbacks_.end()) {
+    LOG(ERROR) << "Received unexpected file transfer update for payload "
+               << update->payload_id
+               << " after the transfer has already been completed";
+    return;
+  }
+
+  bool is_transfer_complete =
+      update->status != mojom::FileTransferStatus::kInProgress;
+  it->second.Run(std::move(update));
+  if (is_transfer_complete) {
+    file_transfer_update_callbacks_.erase(it);
+  }
+}
+
+void ClientChannelImpl::CleanUpPendingFileTransfers() {
+  // Notify clients of uncompleted file transfers and clean up callbacks and
+  // corresponding FilePayloadListener receivers when the connection
+  // drops.
+  for (auto& id_to_callback : file_transfer_update_callbacks_) {
+    id_to_callback.second.Run(mojom::FileTransferUpdate::New(
+        id_to_callback.first, mojom::FileTransferStatus::kCanceled,
+        /*total_bytes=*/0, /*bytes_transferred=*/0));
+  }
+  file_transfer_update_callbacks_.clear();
+  file_payload_listeners_.Clear();
+}
+
+void ClientChannelImpl::OnFilePayloadListenerRemoteDisconnected() {
+  int64_t payload_id = file_payload_listeners_.current_context();
+  auto it = file_transfer_update_callbacks_.find(payload_id);
+  if (it != file_transfer_update_callbacks_.end()) {
+    // If the file transfer update callback hasn't been removed by the time the
+    // corresponding Remote endpoint disconnects, the transfer for this payload
+    // hasn't completed yet and we need to send a cancelation update.
+    it->second.Run(mojom::FileTransferUpdate::New(
+        payload_id, mojom::FileTransferStatus::kCanceled,
+        /*total_bytes=*/0, /*bytes_transferred=*/0));
+    file_transfer_update_callbacks_.erase(it);
+  }
+}
+
 void ClientChannelImpl::OnChannelDisconnected(
     uint32_t disconnection_reason,
     const std::string& disconnection_description) {
@@ -78,11 +154,13 @@ void ClientChannelImpl::OnChannelDisconnected(
 
   channel_.reset();
   receiver_.reset();
+  CleanUpPendingFileTransfers();
   NotifyDisconnected();
 }
 
 void ClientChannelImpl::FlushForTesting() {
   channel_.FlushForTesting();
+  file_payload_listeners_.FlushForTesting();
 }
 
 }  // namespace secure_channel

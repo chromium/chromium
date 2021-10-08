@@ -9,11 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 
@@ -42,6 +45,16 @@ class FakeChannel : public mojom::Channel {
     return sent_messages_;
   }
 
+  void SendFileTransferUpdate(int64_t payload_id,
+                              mojom::FileTransferStatus status,
+                              uint64_t total_bytes,
+                              uint64_t bytes_transferred);
+
+  base::flat_map<int64_t, mojo::Remote<mojom::FilePayloadListener>>&
+  file_payload_listeners() {
+    return file_payload_listeners_;
+  }
+
  private:
   // mojom::Channel:
   void SendMessage(const std::string& message,
@@ -50,13 +63,15 @@ class FakeChannel : public mojom::Channel {
       int64_t payload_id,
       mojom::PayloadFilesPtr payload_files,
       mojo::PendingRemote<mojom::FilePayloadListener> listener,
-      RegisterPayloadFileCallback callback) override {}
+      RegisterPayloadFileCallback callback) override;
   void GetConnectionMetadata(GetConnectionMetadataCallback callback) override;
 
   mojo::Receiver<mojom::Channel> receiver_{this};
 
   std::vector<std::pair<std::string, SendMessageCallback>> sent_messages_;
   mojom::ConnectionMetadataPtr connection_metadata_for_next_call_;
+  base::flat_map<int64_t, mojo::Remote<mojom::FilePayloadListener>>
+      file_payload_listeners_;
 };
 
 }  // namespace secure_channel

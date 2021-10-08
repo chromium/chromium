@@ -5,6 +5,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager_impl.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,6 +13,7 @@
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace chromeos {
 namespace secure_channel {
@@ -184,6 +186,23 @@ void ConnectionManagerImpl::SendMessage(const std::string& payload) {
   }
 
   channel_->SendMessage(payload, base::DoNothing());
+}
+
+void ConnectionManagerImpl::RegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+        file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  if (!channel_) {
+    PA_LOG(ERROR) << "RegisterPayloadFile() failed because channel is null.";
+    std::move(registration_result_callback).Run(/*success=*/false);
+    return;
+  }
+
+  channel_->RegisterPayloadFile(payload_id, std::move(payload_files),
+                                std::move(file_transfer_update_callback),
+                                std::move(registration_result_callback));
 }
 
 void ConnectionManagerImpl::OnConnectionAttemptFailure(

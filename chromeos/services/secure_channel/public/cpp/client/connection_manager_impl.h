@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
@@ -14,6 +15,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
 namespace chromeos {
 
@@ -51,6 +53,12 @@ class ConnectionManagerImpl
   void AttemptNearbyConnection() override;
   void Disconnect() override;
   void SendMessage(const std::string& payload) override;
+  void RegisterPayloadFile(
+      int64_t payload_id,
+      mojom::PayloadFilesPtr payload_files,
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>
+          file_transfer_update_callback,
+      base::OnceCallback<void(bool)> registration_result_callback) override;
 
  private:
   friend class ConnectionManagerImplTest;

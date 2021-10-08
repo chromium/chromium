@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -19,6 +21,7 @@
 #include "chromeos/services/secure_channel/public/cpp/client/fake_client_channel.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_connection_attempt.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -349,6 +352,51 @@ TEST_F(ConnectionManagerImplTest, DisconnectConnection) {
             GetStatus());
   VerifyTimerStopped();
   VerifyConnectionResultHistogram(false, 1);
+}
+
+TEST_F(ConnectionManagerImplTest, RegisterPayloadFiles) {
+  CreateFakeConnectionAttempt();
+  connection_manager_->AttemptNearbyConnection();
+  auto fake_client_channel =
+      std::make_unique<chromeos::secure_channel::FakeClientChannel>();
+  chromeos::secure_channel::FakeClientChannel* fake_client_channel_raw =
+      fake_client_channel.get();
+  fake_connection_attempt_->NotifyConnection(std::move(fake_client_channel));
+  int registeration_result_count = 0;
+
+  connection_manager_->RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>(),
+      base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        registeration_result_count++;
+      }));
+  connection_manager_->RegisterPayloadFile(
+      /*payload_id=*/-5678, mojom::PayloadFiles::New(),
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>(),
+      base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        registeration_result_count++;
+      }));
+
+  EXPECT_EQ(2, registeration_result_count);
+  EXPECT_EQ(2u, fake_client_channel_raw->registered_file_payloads().size());
+  EXPECT_EQ(1234, fake_client_channel_raw->registered_file_payloads().at(0));
+  EXPECT_EQ(-5678, fake_client_channel_raw->registered_file_payloads().at(1));
+}
+
+TEST_F(ConnectionManagerImplTest, RegisterPayloadFilesBeforeConnection) {
+  int registeration_result_count = 0;
+
+  connection_manager_->RegisterPayloadFile(
+      /*payload_id=*/1234, mojom::PayloadFiles::New(),
+      base::RepeatingCallback<void(mojom::FileTransferUpdatePtr)>(),
+      base::BindLambdaForTesting([&](bool success) {
+        EXPECT_FALSE(success);
+        registeration_result_count++;
+      }));
+
+  EXPECT_EQ(1, registeration_result_count);
 }
 
 }  // namespace secure_channel
