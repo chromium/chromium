@@ -39,7 +39,7 @@ Polymer({
    * @protected
    */
   getTopSectionClassName_() {
-    return `top-section${this.isNetworkingCard ? '-padding' : ''}`;
+    return `top-section${this.isNetworkingCard ? '-networking' : ''}`;
   },
 
   /**

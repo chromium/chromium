@@ -55,8 +55,18 @@
   #toggleReportButton {
     margin-right: 8px;
   }
+
+  :host([hide-routine-status]) .container-spacing {
+    padding-inline: 20px;
+  }
+
+  :host(:not([hide-routine-status])) .container-spacing {
+    margin-bottom: 16px;
+    margin-top: 12px;
+    padding-inline: 20px;
+  }
 </style>
-<div class="routine-section-container">
+<div class="routine-section-container container-spacing">
   <div id="routineSection" class="routine-container">
     <div class="routine-status-container" hidden$="[[hideRoutineStatus]]">
       <text-badge id="testStatusBadge" badge-type="[[badgeType_]]"

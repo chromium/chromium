@@ -194,6 +194,7 @@ Polymer({
     hideRoutineStatus: {
       type: Boolean,
       value: false,
+      reflectToAttribute: true,
     },
 
     /** @type {boolean} */

@@ -7,6 +7,12 @@
     @apply --diagnostics-card-drawer-font;
     line-height: 20px;
   }
+
+  #drawerToggle {
+    padding-bottom: 16px;
+    padding-top: 12px;
+    padding-inline: 20px;
+  }
 </style>
 <cr-expand-button id="drawerToggle" expanded="{{expanded_}}"
     aria-labelledby="drawerTitle">
@@ -15,7 +21,8 @@
   </span>
 </cr-expand-button>
 <template is="dom-if" if="[[expanded_]]">
-  <div id="ipConfigInfoElement" class="horizontal-data-point-container">
+  <div id="ipConfigInfoElement"
+      class="horizontal-data-point-container spacing">
     <div class="data-point-container">
       <data-point id="gateway"
           header="[[i18n('ipConfigInfoDrawerGateway')]]"
