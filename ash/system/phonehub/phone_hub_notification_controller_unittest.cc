@@ -22,7 +22,6 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/notification_view.h"
-#include "ui/views/controls/label.h"
 
 namespace ash {
 

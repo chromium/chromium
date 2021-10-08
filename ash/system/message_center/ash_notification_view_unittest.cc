@@ -12,7 +12,6 @@
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/controls/label.h"
 
 using message_center::Notification;
 using message_center::NotificationHeaderView;

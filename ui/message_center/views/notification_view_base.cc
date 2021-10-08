@@ -74,13 +74,14 @@ namespace message_center {
 namespace {
 
 // Dimensions.
+constexpr gfx::Insets kActionsRowPadding(8, 8, 8, 8);
 constexpr int kActionsRowHorizontalSpacing = 8;
 constexpr gfx::Insets kStatusTextPadding(4, 0, 0, 0);
-constexpr gfx::Insets kActionsRowPadding(8);
+constexpr gfx::Size kActionButtonMinSize(0, 32);
 constexpr gfx::Insets kLargeImageContainerPadding(0, 16, 16, 16);
 constexpr int kLargeImageMaxHeight = 218;
 constexpr gfx::Insets kSettingsRowPadding(8, 0, 0, 0);
-constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18);
+constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18, 14, 18);
 constexpr gfx::Insets kSettingsButtonRowPadding(8);
 
 // Max number of lines for title_view_.
@@ -263,6 +264,45 @@ gfx::Size LargeImageView::GetResizedImageSize() {
   resized_size.SetSize(max_size_.width(), max_size_.width() * proportion);
   return resized_size;
 }
+
+// NotificationTextButton ////////////////////////////////////////////////
+
+NotificationTextButton::NotificationTextButton(
+    PressedCallback callback,
+    const std::u16string& label,
+    const absl::optional<std::u16string>& placeholder)
+    : views::MdTextButton(std::move(callback), label),
+      placeholder_(placeholder) {
+  SetMinSize(kActionButtonMinSize);
+  views::InstallRectHighlightPathGenerator(this);
+  SetTextSubpixelRenderingEnabled(false);
+}
+
+NotificationTextButton::~NotificationTextButton() = default;
+
+void NotificationTextButton::UpdateBackgroundColor() {
+  // Overridden as no-op so we don't draw any background or border.
+}
+
+void NotificationTextButton::OnThemeChanged() {
+  views::MdTextButton::OnThemeChanged();
+  SetEnabledTextColors(text_color_);
+  label()->SetAutoColorReadabilityEnabled(true);
+  label()->SetBackgroundColor(
+      GetColorProvider()->GetColor(ui::kColorNotificationActionsBackground));
+}
+
+void NotificationTextButton::OverrideTextColor(
+    absl::optional<SkColor> text_color) {
+  text_color_ = std::move(text_color);
+  SetEnabledTextColors(text_color_);
+  label()->SetAutoColorReadabilityEnabled(true);
+}
+
+BEGIN_METADATA(NotificationTextButton, views::MdTextButton)
+END_METADATA
+
+// NotificationInputContainer ////////////////////////////////////////////////
 
 // InlineSettingsRadioButton ///////////////////////////////////////////////////
 
@@ -695,6 +735,7 @@ std::unique_ptr<NotificationInputContainer>
 NotificationViewBase::GenerateNotificationInputContainer() {
   return std::make_unique<NotificationInputContainer>(this);
 }
+
 void NotificationViewBase::CreateOrUpdateContextTitleView(
     const Notification& notification) {
   if (!header_view_in_ash_notification_)
@@ -925,23 +966,21 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
     ButtonInfo button_info = buttons[i];
     std::u16string label = base::i18n::ToUpper(button_info.title);
     if (new_buttons) {
-      action_buttons_.push_back(
-          action_buttons_row_->AddChildView(GenerateNotificationLabelButton(
+      action_buttons_.push_back(action_buttons_row_->AddChildView(
+          std::make_unique<NotificationTextButton>(
               base::BindRepeating(&NotificationViewBase::ActionButtonPressed,
                                   base::Unretained(this), i),
-              label)));
-      action_button_to_placeholder_map_[action_buttons_.back()] =
-          button_info.placeholder;
+              label, button_info.placeholder)));
       // TODO(pkasting): BoxLayout should invalidate automatically when a child
       // is added, at which point we can remove this call.
       action_buttons_row_->InvalidateLayout();
     } else {
       action_buttons_[i]->SetText(label);
-      action_button_to_placeholder_map_[action_buttons_[i]] =
-          button_info.placeholder;
+      action_buttons_[i]->set_placeholder(button_info.placeholder);
     }
+
     // Change action button color to the accent color.
-    action_buttons_[i]->SetEnabledTextColors(notification.accent_color());
+    action_buttons_[i]->OverrideTextColor(notification.accent_color());
   }
 
   // Inherit mouse hover state when action button views reset.
@@ -998,35 +1037,33 @@ void NotificationViewBase::CreateOrUpdateInlineSettingsViews(
   }
   DCHECK_NE(block_notifications_message_id, 0);
 
-  auto block_all_button = std::make_unique<InlineSettingsRadioButton>(
+  block_all_button_ = new InlineSettingsRadioButton(
       l10n_util::GetStringUTF16(block_notifications_message_id));
-  block_all_button->SetBorder(
+  block_all_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  block_all_button_ = settings_row_->AddChildView(std::move(block_all_button));
+  settings_row_->AddChildView(block_all_button_);
 
-  auto dont_block_button = std::make_unique<InlineSettingsRadioButton>(
+  dont_block_button_ = new InlineSettingsRadioButton(
       l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_DONT_BLOCK_NOTIFICATIONS));
-  dont_block_button->SetBorder(
+  dont_block_button_->SetBorder(
       views::CreateEmptyBorder(kSettingsRadioButtonPadding));
-  dont_block_button_ =
-      settings_row_->AddChildView(std::move(dont_block_button));
-
+  settings_row_->AddChildView(dont_block_button_);
   settings_row_->SetVisible(false);
 
-  auto settings_done_button = GenerateNotificationLabelButton(
+  settings_done_button_ = new NotificationTextButton(
       base::BindRepeating(&NotificationViewBase::ToggleInlineSettings,
                           base::Unretained(this)),
-      l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_SETTINGS_DONE));
+      l10n_util::GetStringUTF16(IDS_MESSAGE_CENTER_SETTINGS_DONE),
+      absl::nullopt);
 
-  auto settings_button_row = std::make_unique<views::View>();
+  auto* settings_button_row = new views::View;
   auto settings_button_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kSettingsButtonRowPadding, 0);
   settings_button_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kEnd);
   settings_button_row->SetLayoutManager(std::move(settings_button_layout));
-  settings_done_button_ =
-      settings_button_row->AddChildView(std::move(settings_done_button));
-  settings_row_->AddChildView(std::move(settings_button_row));
+  settings_button_row->AddChildView(settings_done_button_);
+  settings_row_->AddChildView(settings_button_row);
 }
 
 void NotificationViewBase::ReorderViewInLeftContent(views::View* view) {
@@ -1053,7 +1090,7 @@ void NotificationViewBase::HeaderRowPressed() {
 void NotificationViewBase::ActionButtonPressed(size_t index,
                                                const ui::Event& event) {
   const absl::optional<std::u16string>& placeholder =
-      action_button_to_placeholder_map_[action_buttons_[index]];
+      action_buttons_[index]->placeholder();
   if (placeholder) {
     inline_reply_->SetTextfieldIndex(static_cast<int>(index));
     inline_reply_->SetPlaceholderText(placeholder);

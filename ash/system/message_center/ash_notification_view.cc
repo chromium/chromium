@@ -22,13 +22,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
@@ -38,19 +36,16 @@
 #include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
 namespace {
 
-constexpr gfx::Insets kNotificationViewPadding(6, 16, 0, 6);
+constexpr gfx::Insets kNotificationViewPadding(6, 16, 22, 6);
 constexpr gfx::Insets kMainRightViewPadding(0, 0, 0, 10);
 constexpr int kMainRightViewVerticalSpacing = 16;
 constexpr gfx::Insets kContentRowPadding(0, 14, 0, 0);
@@ -62,7 +57,6 @@ constexpr int kTitleRowSpacing = 6;
 constexpr char16_t kTitleRowDivider[] = u"\u2022";
 
 constexpr char kGoogleSansFont[] = "Google Sans";
-constexpr char kLabelButtonFontSize = 13;
 
 constexpr int kAppIconViewSize = 24;
 constexpr int kExpandButtonSize = 24;
@@ -71,8 +65,6 @@ constexpr int kTitleCharacterLimit =
     message_center::kMinPixelsPerTitleCharacter;
 constexpr int kExpandedTitleLabelSize = 16;
 constexpr int kCollapsedTitleLabelSize = 14;
-constexpr gfx::Insets kLabelButtonInsets(6, 16);
-constexpr int kLabelButtonCornerRadius = 24;
 constexpr int kTimestampInCollapsedViewSize = 12;
 constexpr int kMessageLabelSize = 13;
 // The size for `icon_view_`, which is the icon within right content (between
@@ -101,63 +93,6 @@ void ConfigureLabelStyle(views::Label* label, int size, bool is_color_primary) {
   label->SetEnabledColor(
       ash::AshColorProvider::Get()->GetContentLayerColor(layer_type));
 }
-
-// A class to provide custom (non MD) styling for buttons shown in the actions
-// row. NotificationViewBase uses an MD button, both inherit from
-// views::LabelButton.
-class AshNotificationLabelButton : public views::LabelButton {
- public:
-  AshNotificationLabelButton(PressedCallback callback,
-                             const std::u16string& text)
-      : views::LabelButton(std::move(callback),
-                           text,
-                           views::style::CONTEXT_BUTTON_MD) {
-    // TODO(crbug/1255172): Convert this "pill button no icon floating" to use
-    // the element_style when it is implemented.
-    const SkColor enabled_text_color =
-        ash::AshColorProvider::Get()->GetContentLayerColor(
-            ash::AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
-
-    // TODO(crbug/1255159): Consider setting the disabled color as well.
-    SetEnabledTextColors(enabled_text_color);
-    label()->SetAutoColorReadabilityEnabled(true);
-
-    SetBorder(views::CreateEmptyBorder(kLabelButtonInsets));
-    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                  kLabelButtonCornerRadius);
-    views::FocusRing::Get(this)->SetColor(
-        ash::AshColorProvider::Get()->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::kFocusRingColor));
-  }
-  AshNotificationLabelButton(const AshNotificationLabelButton&) = delete;
-  AshNotificationLabelButton& operator=(const AshNotificationLabelButton&) =
-      delete;
-  ~AshNotificationLabelButton() override = default;
-
- private:
-  // views::LabelButton:
-  views::PropertyEffects UpdateStyleToIndicateDefaultStatus() override {
-    label()->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
-                                       kLabelButtonFontSize,
-                                       gfx::Font::Weight::MEDIUM));
-    return views::kPropertyEffectsPreferredSizeChanged;
-  }
-
-  void OnThemeChanged() override {
-    views::LabelButton::OnThemeChanged();
-    // TODO(crbug/1255172): Convert this "pill button no icon floating" to use
-    // the element_style when it is implemented.
-    const SkColor enabled_text_color =
-        ash::AshColorProvider::Get()->GetContentLayerColor(
-            ash::AshColorProvider::ContentLayerType::kButtonLabelColorBlue);
-
-    // TODO(crbug/1255159): Consider setting the disabled color as well.
-    SetEnabledTextColors(enabled_text_color);
-    views::FocusRing::Get(this)->SetColor(
-        ash::AshColorProvider::Get()->GetControlsLayerColor(
-            ash::AshColorProvider::ControlsLayerType::kFocusRingColor));
-  }
-};
 
 }  // namespace
 
@@ -689,14 +624,6 @@ void AshNotificationView::OnThemeChanged() {
 std::unique_ptr<message_center::NotificationInputContainer>
 AshNotificationView::GenerateNotificationInputContainer() {
   return std::make_unique<AshNotificationInputContainer>(this);
-}
-
-std::unique_ptr<views::LabelButton>
-AshNotificationView::GenerateNotificationLabelButton(
-    views::Button::PressedCallback callback,
-    const std::u16string& label) {
-  return std::make_unique<AshNotificationLabelButton>(std::move(callback),
-                                                      label);
 }
 
 gfx::Size AshNotificationView::GetIconViewSize() const {

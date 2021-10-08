@@ -32,9 +32,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/view.h"
 
 namespace ash {
 
@@ -84,7 +82,7 @@ class PhoneHubNotificationView : public message_center::NotificationView {
     action_buttons_row_ =
         GetViewByID(message_center::NotificationView::kActionButtonsRow);
     if (!action_buttons_row_->children().empty())
-      reply_button_ = static_cast<views::View*>(
+      reply_button_ = static_cast<message_center::NotificationTextButton*>(
           action_buttons_row_->children()[kReplyButtonIndex]);
 
     inline_reply_ = static_cast<message_center::NotificationInputContainer*>(
@@ -125,7 +123,7 @@ class PhoneHubNotificationView : public message_center::NotificationView {
  private:
   // Owned by view hierarchy.
   views::View* action_buttons_row_ = nullptr;
-  views::View* reply_button_ = nullptr;
+  message_center::NotificationTextButton* reply_button_ = nullptr;
   message_center::NotificationInputContainer* inline_reply_ = nullptr;
 
   // Timer that fires to enable reply button after a brief period of time.
