@@ -54113,6 +54113,7 @@ from previous Chrome versions.
   <int value="7" label="Touch To Fill"/>
   <int value="8" label="Safe state bubble"/>
   <int value="9" label="Password Breach Dialog"/>
+  <int value="10" label="Safety Check"/>
 </enum>
 
 <enum name="ManifestFetchResultType">

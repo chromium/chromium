@@ -501,7 +501,7 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
             listener = (p) -> {
                 // Open the Passwords settings.
                 PasswordManagerHelper.showPasswordSettings(
-                        p.getContext(), ManagePasswordsReferrer.CHROME_SETTINGS, mSettingsLauncher);
+                        p.getContext(), ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher);
                 return true;
             };
         }

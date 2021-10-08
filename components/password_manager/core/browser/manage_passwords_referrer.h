@@ -46,7 +46,10 @@ enum class ManagePasswordsReferrer {
   // The dialog notifying a user about compromised credentials on sign in. Only
   // used on iOS.
   kPasswordBreachDialog = 9,
-  kMaxValue = kPasswordBreachDialog,
+  // On Android, the Safety Check UI in settings opens the passwords page if no
+  // check was performed.
+  kSafetyCheck = 10,
+  kMaxValue = kSafetyCheck,
 };
 
 }  // namespace password_manager
