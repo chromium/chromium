@@ -52,17 +52,6 @@ crbug.com/dawn/1111 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execu
 ### Untriaged failures. Please prefer to triage thoroughly and file a bug!
 ###
 
-# New tests that were blocking the CTS roller
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";access="read";containerType="vector";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";containerType="vector";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";containerType="vector";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";access="read";containerType="vector";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="read";containerType="vector";* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";containerType="vector";* [ Crash ]
-
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,builtin,abs:abs_uint_hex:* [ Failure ]
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";access="read";containerType="vector";* [ Failure ]
-
 ###
 ### Tests that might be passing now.
 ###
@@ -283,6 +272,22 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,image_copy:ro
 
 crbug.com/dawn/570 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:format="depth16unorm";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,image_copy,buffer_related:bytes_per_row_alignment:format="stencil8";* [ Failure ]
+
+crbug.com/dawn/1155 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:* [ Failure ]
+crbug.com/dawn/1155 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:* [ Failure ]
+crbug.com/tint/1211 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,builtin,abs:abs_float,float_builtin_functions:* [ Failure ]
+crbug.com/tint/1215 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,shader_io,compute_builtins:inputs:* [ Failure ]
+
+crbug.com/tint/1216 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";access="read";containerType="vector";* [ Failure ]
+crbug.com/tint/1216 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read_write";access="read";containerType="vector";* [ Failure ]
+crbug.com/tint/1216 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="storage";storageMode="read";access="read";containerType="vector";* [ Failure ]
+crbug.com/tint/1216 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="uniform";access="read";containerType="vector";* [ Failure ]
+crbug.com/tint/1216 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="read";containerType="vector";* [ Crash ]
+crbug.com/tint/1216 wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="workgroup";access="write";containerType="vector";* [ Crash ]
+
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,builtin,abs:abs_uint_hex:* [ Failure ]
+[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="function";access="read";containerType="vector";* [ Failure ]
+
 
 # maxArrayLayoutCount limit should be 256 instead of 2048
 crbug.com/dawn/685 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,compressed_format:size=[4,4,2047];* [ Failure ]
