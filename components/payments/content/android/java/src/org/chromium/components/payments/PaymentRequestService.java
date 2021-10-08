@@ -1051,7 +1051,9 @@ public class PaymentRequestService
         mHasEnrolledInstrument |= paymentApp.canMakePayment();
         mHasNonAutofillApp |= paymentApp.getPaymentAppType() != PaymentAppType.AUTOFILL;
 
-        if (paymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
+        // Note that only a test can add autofill payment apps when basic-card feature is disabled.
+        if (PaymentFeatureList.isEnabled(PaymentFeatureList.PAYMENT_REQUEST_BASIC_CARD)
+                && paymentApp.getPaymentAppType() == PaymentAppType.AUTOFILL) {
             mJourneyLogger.setAvailableMethod(PaymentMethodCategory.BASIC_CARD);
         } else if (paymentApp.getInstrumentMethodNames().contains(MethodStrings.GOOGLE_PAY)
                 || paymentApp.getInstrumentMethodNames().contains(MethodStrings.ANDROID_PAY)) {
