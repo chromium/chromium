@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/compiler_specific.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 
 #include "base/callback_helpers.h"
@@ -92,18 +93,20 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
   void OnMediaButtonEnabled() override {}
   void OnMediaButtonDisabled() override {}
 
-  void WaitForDialogOpened() {
+  WARN_UNUSED_RESULT bool WaitForDialogOpened() {
     if (MediaDialogView::IsShowing())
-      return;
+      return true;
     waiting_for_dialog_opened_ = true;
     Wait();
+    return MediaDialogView::IsShowing();
   }
 
-  void WaitForButtonShown() {
+  WARN_UNUSED_RESULT bool WaitForButtonShown() {
     if (button_->GetVisible())
-      return;
+      return true;
     waiting_for_button_shown_ = true;
     Wait();
+    return button_->GetVisible();
   }
 
   void WaitForDialogToContainText(const std::u16string& text) {
@@ -384,8 +387,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
   bool IsToolbarIconVisible() { return GetToolbarIcon()->GetVisible(); }
 
-  void WaitForVisibleToolbarIcon() {
-    MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonShown();
+  WARN_UNUSED_RESULT bool WaitForToolbarIconShown() {
+    return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForButtonShown();
   }
 
   void OpenTestURL() {
@@ -456,8 +459,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     observer.Wait();
   }
 
-  void WaitForDialogOpened() {
-    MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForDialogOpened();
+  WARN_UNUSED_RESULT bool WaitForDialogOpened() {
+    return MediaToolbarButtonWatcher(GetToolbarIcon()).WaitForDialogOpened();
   }
 
   bool IsDialogVisible() { return MediaDialogView::IsShowing(); }
@@ -645,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   // appear if it hasn't been clicked.
   StartPlayback();
   WaitForStart();
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   EXPECT_TRUE(IsToolbarIconVisible());
   EXPECT_FALSE(IsDialogVisible());
 
@@ -655,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Clicking on the toolbar icon should open the dialog.
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   // The dialog should contain the title and artist. These are taken from
@@ -705,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   // appear if it hasn't been clicked.
   StartPlayback();
   WaitForStart();
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   EXPECT_TRUE(IsToolbarIconVisible());
   EXPECT_FALSE(IsDialogVisible());
 
@@ -715,7 +718,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Clicking on the toolbar icon should open the dialog.
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   // The view containing playback controls should not be mirrored.
@@ -774,7 +777,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsMultipleMediaSessions) {
 
   // Open the media dialog.
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   // The dialog should show both media sessions.
@@ -805,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
 
   // Open the media dialog.
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   // Wait for the dialog to be populated.
@@ -842,9 +845,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, ShowsCastSession) {
   base::RunLoop().RunUntilIdle();
   presentation_manager_->NotifyMediaRoutesChanged({route});
 
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   WaitForDialogToContainText(
       base::UTF8ToUTF16(route_description + " \xC2\xB7 " + sink_name));
   WaitForNotificationCount(1);
@@ -864,9 +867,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_PictureInPicture) {
   WaitForStart();
 
   // Open the media dialog.
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   ClickEnterPictureInPictureButtonOnDialog();
@@ -884,9 +887,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   WaitForStart();
 
   // Open the media dialog.
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   DisablePictureInPicture();
@@ -915,11 +918,11 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   StartPlayback();
   WaitForStart();
 
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   EXPECT_TRUE(IsToolbarIconVisible());
 
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   // Pause the first session.
@@ -930,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   ClickToolbarIcon();
   EXPECT_FALSE(IsDialogVisible());
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   EXPECT_TRUE(IsPlayingSessionDisplayedFirst());
@@ -949,9 +952,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   WaitForStart();
 
   // Open the media dialog.
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   // When media dialog opens and Live Caption is disabled, the New badge is
@@ -981,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, MAYBE_LiveCaption) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
   // When media dialog opens and Live Caption is enabled, the New badge is not
   // created. The regular title is visible.
@@ -1010,9 +1013,9 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest,
   WaitForStart();
 
   // Open the media dialog.
-  WaitForVisibleToolbarIcon();
+  EXPECT_TRUE(WaitForToolbarIconShown());
   ClickToolbarIcon();
-  WaitForDialogOpened();
+  EXPECT_TRUE(WaitForDialogOpened());
   EXPECT_TRUE(IsDialogVisible());
 
   EXPECT_EQ("Live Caption (English only)",
