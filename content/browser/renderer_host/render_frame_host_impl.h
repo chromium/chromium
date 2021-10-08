@@ -2655,7 +2655,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // commit unauthorized origins.
   CanCommitStatus CanCommitOriginAndUrl(const url::Origin& origin,
                                         const GURL& url,
-                                        bool is_same_document_navigation);
+                                        bool is_same_document_navigation,
+                                        bool is_pdf);
 
   // Asserts that the given RenderFrameHostImpl is part of the same browser
   // context (and crashes if not), then returns whether the given frame is
