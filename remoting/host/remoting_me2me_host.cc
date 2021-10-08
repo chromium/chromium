@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/policy_constants.h"
 #include "ipc/ipc_channel.h"
@@ -303,8 +304,12 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Tear down resources that run on the UI thread.
   void ShutdownOnUiThread();
 
+  // Determines whether a new config should be applied and handles starting or
+  // restarting the host process as necessary.
+  void OnConfigParsed(base::Value config);
+
   // Applies the host config, returning true if successful.
-  bool ApplyConfig(const base::DictionaryValue& config);
+  bool ApplyConfig(const base::Value& config);
 
   // Handles policy updates, by calling On*PolicyUpdate methods.
   void OnPolicyUpdate(std::unique_ptr<base::DictionaryValue> policies);
@@ -352,7 +357,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   void CrashHostProcess(const std::string& function_name,
                         const std::string& file_name,
                         int line_number) override;
-  void ApplyHostConfig(const std::string& serialized_config) override;
+  void ApplyHostConfig(base::Value serialized_config) override;
   void InitializePairingRegistry(
       ::mojo::PlatformHandle privileged_handle,
       ::mojo::PlatformHandle unprivileged_handle) override;
@@ -380,7 +385,7 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<RsaKeyPair> key_pair_;
   std::string oauth_refresh_token_;
   std::string robot_account_username_;
-  std::string serialized_config_;
+  base::Value config_{base::Value::Type::DICTIONARY};
   std::string host_owner_;
   bool is_googler_ = false;
 
@@ -601,22 +606,9 @@ bool HostProcess::InitWithCommandLine(const base::CommandLine* cmd_line) {
   return true;
 }
 
-void HostProcess::OnConfigUpdated(
-    const std::string& serialized_config) {
-  if (!context_->network_task_runner()->BelongsToCurrentThread()) {
-    context_->network_task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HostProcess::OnConfigUpdated, this, serialized_config));
-    return;
-  }
+void HostProcess::OnConfigUpdated(const std::string& serialized_config) {
+  HOST_LOG << "Parsing new host configuration.";
 
-  // Filter out duplicates.
-  if (serialized_config_ == serialized_config)
-    return;
-
-  HOST_LOG << "Processing new host configuration.";
-
-  serialized_config_ = serialized_config;
   std::unique_ptr<base::DictionaryValue> config(
       HostConfigFromJson(serialized_config));
   if (!config) {
@@ -625,7 +617,25 @@ void HostProcess::OnConfigUpdated(
     return;
   }
 
-  if (!ApplyConfig(*config)) {
+  OnConfigParsed(base::Value::FromUniquePtrValue(std::move(config)));
+}
+
+void HostProcess::OnConfigParsed(base::Value config) {
+  if (!context_->network_task_runner()->BelongsToCurrentThread()) {
+    context_->network_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HostProcess::OnConfigParsed, this, std::move(config)));
+    return;
+  }
+
+  // Filter out duplicates.
+  if (config_ == config)
+    return;
+
+  HOST_LOG << "Applying new host configuration.";
+
+  config_ = std::move(config);
+  if (!ApplyConfig(config_)) {
     LOG(ERROR) << "Failed to apply the configuration.";
     ShutdownHost(kInvalidHostConfigurationExitCode);
     return;
@@ -985,9 +995,9 @@ void HostProcess::OnHostDeleted() {
 }
 
 #if defined(OS_WIN)
-void HostProcess::ApplyHostConfig(const std::string& serialized_config) {
+void HostProcess::ApplyHostConfig(base::Value config) {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
-  OnConfigUpdated(serialized_config);
+  OnConfigParsed(std::move(config));
 }
 
 void HostProcess::InitializePairingRegistry(
@@ -1026,39 +1036,57 @@ void HostProcess::InitializePairingRegistry(
 #endif  // defined(OS_WIN)
 
 // Applies the host config, returning true if successful.
-bool HostProcess::ApplyConfig(const base::DictionaryValue& config) {
+bool HostProcess::ApplyConfig(const base::Value& config) {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
 
-  if (!config.GetString(kHostIdConfigPath, &host_id_)) {
+  const std::string* host_id = config.FindStringKey(kHostIdConfigPath);
+  if (!host_id) {
     LOG(ERROR) << "Config does not define " << kHostIdConfigPath << ".";
     return false;
   }
+  host_id_ = *host_id;
 
-  std::string key_base64;
-  if (!config.GetString(kPrivateKeyConfigPath, &key_base64)) {
+  const std::string* key_base64 = config.FindStringKey(kPrivateKeyConfigPath);
+  if (!key_base64) {
     LOG(ERROR) << "Private key couldn't be read from the config file.";
     return false;
   }
 
-  key_pair_ = RsaKeyPair::FromString(key_base64);
+  key_pair_ = RsaKeyPair::FromString(*key_base64);
   if (!key_pair_.get()) {
     LOG(ERROR) << "Invalid private key in the config file.";
     return false;
   }
 
-  std::string host_secret_hash_string;
-  if (!config.GetString(kHostSecretHashConfigPath, &host_secret_hash_string) ||
-      !ParsePinHashFromConfig(host_secret_hash_string, host_id_, &pin_hash_)) {
+  const std::string* host_secret_hash =
+      config.FindStringKey(kHostSecretHashConfigPath);
+  if (!host_secret_hash) {
+    LOG(ERROR) << "Missing host_secret_hash value in configuration file.";
+    return false;
+  }
+
+  if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
     LOG(ERROR) << "Cannot parse host_secret_hash configuration value.";
     return false;
   }
 
+  // Retrieve robot account to use for signaling and backend communication.
+  const std::string* robot_account_username =
+      config.FindStringKey(kXmppLoginConfigPath);
+  if (!robot_account_username) {
+    LOG(ERROR) << "Robot account username is not defined in the config.";
+    return false;
+  }
+  robot_account_username_ = *robot_account_username;
+
   // Retrieve robot account credentials for session signaling.
-  if (!config.GetString(kXmppLoginConfigPath, &robot_account_username_) ||
-      !config.GetString(kOAuthRefreshTokenConfigPath, &oauth_refresh_token_)) {
+  const std::string* oauth_refresh_token =
+      config.FindStringKey(kOAuthRefreshTokenConfigPath);
+  if (!oauth_refresh_token) {
     LOG(ERROR) << "Robot account credentials are not defined in the config.";
     return false;
   }
+  oauth_refresh_token_ = *oauth_refresh_token;
 
   // Some old host configs have a host_owner field that's set to a JID ending
   // with @id.talk.google.com, and a host_owner_email field that's set to the
@@ -1129,7 +1157,7 @@ void HostProcess::OnPolicyError() {
   if (policy_state_ != POLICY_ERROR_REPORTED) {
     policy_state_ = POLICY_ERROR_REPORT_PENDING;
     if ((state_ == HOST_STARTED) ||
-        (state_ == HOST_STARTING && !serialized_config_.empty())) {
+        (state_ == HOST_STARTING && !config_.DictEmpty())) {
       ReportPolicyErrorAndRestartHost();
     }
   }
@@ -1137,7 +1165,7 @@ void HostProcess::OnPolicyError() {
 
 void HostProcess::ReportPolicyErrorAndRestartHost() {
   DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-  DCHECK(!serialized_config_.empty());
+  DCHECK(!config_.DictEmpty());
 
   DCHECK_EQ(policy_state_, POLICY_ERROR_REPORT_PENDING);
   policy_state_ = POLICY_ERROR_REPORTED;
@@ -1545,7 +1573,7 @@ void HostProcess::StartHostIfReady() {
   DCHECK_EQ(state_, HOST_STARTING);
 
   // Start the host if both the config and the policies are loaded.
-  if (!serialized_config_.empty()) {
+  if (!config_.DictEmpty()) {
     if (!report_offline_reason_.empty()) {
       SetState(HOST_GOING_OFFLINE_TO_STOP);
       GoOffline(report_offline_reason_);
@@ -1732,7 +1760,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
     // to directory.
     OnHostOfflineReasonAck(true);
     return;
-  } else if (!serialized_config_.empty()) {
+  } else if (!config_.DictEmpty()) {
     if (!signal_strategy_)
       InitializeSignaling();
 

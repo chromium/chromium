@@ -4,6 +4,8 @@
 
 module remoting.mojom;
 
+import "mojo/public/mojom/base/values.mojom";
+
 // Provides a set of methods to allow the Daemon process to initialize and
 // control the network (a.k.a. host) process.
 // The remote for this interface is owned in the high-privilege daemon process
@@ -16,14 +18,12 @@ interface RemotingHostControl {
   [EnableIf=is_win]
   CrashHostProcess(string function_name, string file_name, int32 line_number);
 
-  // Provide a serialized configuration file to the network process. This config
-  // provides host operational details such as the owner email and robot account
-  // to use for authentication to service APIs. This method may be called
-  // multiple times as changes are detected in the host configuration file.
-  // |serialized_config| is serialized JSON.
-  // TODO(joedow): Use base::Value instead of a serialized string.
+  // Provides host configuration details to the network process such as the
+  // owner email and robot account to use for authentication to service APIs.
+  // This method may be called multiple times as changes are detected in the
+  // host configuration file.
   [EnableIf=is_win]
-  ApplyHostConfig(string serialized_config);
+  ApplyHostConfig(mojo_base.mojom.DictionaryValue config);
 
   // Provides the network process with a set of platform handles which are used
   // for pairing functionality. The network process does not have access to the

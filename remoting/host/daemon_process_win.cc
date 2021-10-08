@@ -21,6 +21,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/win_util.h"
@@ -35,6 +36,7 @@
 #include "remoting/host/branding.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/desktop_session_win.h"
+#include "remoting/host/host_config.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
@@ -283,9 +285,18 @@ void DaemonProcessWin::SendHostConfigToNetworkProcess(
     const std::string& serialized_config) {
   if (remoting_host_control_.is_bound()) {
     LOG_IF(ERROR, !remoting_host_control_.is_connected())
-        << "IPC channel not "
-        << "connected. HostConfig message will be dropped.";
-    remoting_host_control_->ApplyHostConfig(serialized_config);
+        << "IPC channel not connected. HostConfig message will be dropped.";
+
+    std::unique_ptr<base::DictionaryValue> config(
+        HostConfigFromJson(serialized_config));
+    if (!config) {
+      LOG(ERROR) << "Invalid host config, shutting down.";
+      OnPermanentError(kInvalidHostConfigurationExitCode);
+      return;
+    }
+
+    remoting_host_control_->ApplyHostConfig(
+        base::Value::FromUniquePtrValue(std::move(config)));
   }
 }
 
