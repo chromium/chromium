@@ -444,8 +444,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, VisitCart) {
   WaitForCartCount(kExpectedExample);
 }
 
-// TODO(crbug.com/1257901): Flaky
-IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, DISABLE_ExtractCart) {
+IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, ExtractCart) {
   base::HistogramTester histogram_tester;
 
   // This page has three products.
