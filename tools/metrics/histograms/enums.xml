@@ -88434,6 +88434,10 @@ others/histograms.xml -->
   <int value="15" label="Activity stopped while awaiting handshake"/>
   <int value="16" label="Activity stopped while awaiting request"/>
   <int value="17" label="Activity stopped in GMS Core request"/>
+  <int value="18" label="An unexpected GetAssertion response was received"/>
+  <int value="19" label="A GetAssertion request was started"/>
+  <int value="20" label="A GetAssertion response was received"/>
+  <int value="21" label="The first transaction on a connection was completed"/>
 </enum>
 
 <enum name="WebAuthenticationCableV2MobileResult">
@@ -88448,6 +88452,7 @@ others/histograms.xml -->
   <int value="8" label="Internal error"/>
   <int value="9" label="Invalid QR"/>
   <int value="10" label="Invalid server link data"/>
+  <int value="11" label="EOF while processing a request"/>
 </enum>
 
 <enum name="WebAuthenticationCableV2TunnelEvent">

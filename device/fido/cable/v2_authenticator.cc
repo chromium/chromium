@@ -456,8 +456,10 @@ class CTAP2Processor : public Transaction {
       return;
     } else if (absl::get_if<Transport::Disconnected>(&update)) {
       absl::optional<Platform::Error> maybe_error;
-      if (!transaction_done_) {
+      if (!transaction_received_) {
         maybe_error = Platform::Error::UNEXPECTED_EOF;
+      } else if (!transaction_done_) {
+        maybe_error = Platform::Error::EOF_WHILE_PROCESSING;
       }
       platform_->OnCompleted(maybe_error);
       return;
@@ -582,6 +584,7 @@ class CTAP2Processor : public Transaction {
 
         // TODO: plumb the rk flag through once GmsCore supports resident
         // keys. This will require support for optional maps in |Extract|.
+        transaction_received_ = true;
         platform_->MakeCredential(std::move(params));
         return std::vector<uint8_t>();
       }
@@ -624,6 +627,7 @@ class CTAP2Processor : public Transaction {
           return absl::nullopt;
         }
 
+        transaction_received_ = true;
         platform_->GetAssertion(std::move(params));
         return std::vector<uint8_t>();
       }
@@ -676,7 +680,10 @@ class CTAP2Processor : public Transaction {
       platform_->OnStatus(Platform::Status::CTAP_ERROR);
     }
 
-    transaction_done_ = true;
+    if (!transaction_done_) {
+      platform_->OnStatus(Platform::Status::FIRST_TRANSACTION_DONE);
+      transaction_done_ = true;
+    }
     transport_->Write(std::move(response));
   }
 
@@ -713,10 +720,14 @@ class CTAP2Processor : public Transaction {
       platform_->OnStatus(Platform::Status::CTAP_ERROR);
     }
 
-    transaction_done_ = true;
+    if (!transaction_done_) {
+      platform_->OnStatus(Platform::Status::FIRST_TRANSACTION_DONE);
+      transaction_done_ = true;
+    }
     transport_->Write(std::move(response));
   }
 
+  bool transaction_received_ = false;
   bool transaction_done_ = false;
   const std::unique_ptr<Transport> transport_;
   const std::unique_ptr<Platform> platform_;

@@ -65,8 +65,12 @@ enum class CableV2MobileEvent {
   kStoppedWhileAwaitingHandshake = 15,
   kStoppedWhileAwaitingRequest = 16,
   kStoppedWhileAuthenticating = 17,
+  kStrayGetAssertionResponse = 18,
+  kGetAssertionStarted = 19,
+  kGetAssertionComplete = 20,
+  kFirstTransactionDone = 21,
 
-  kMaxValue = 17,
+  kMaxValue = 21,
 };
 
 void RecordEvent(CableV2MobileEvent event) {
@@ -88,8 +92,9 @@ enum class CableV2MobileResult {
   kInternalError = 8,
   kInvalidQR = 9,
   kInvalidServerLink = 10,
+  kEOFWhileProcessing = 11,
 
-  kMaxValue = 10,
+  kMaxValue = 11,
 };
 
 void RecordResult(CableV2MobileResult result) {
@@ -171,6 +176,7 @@ struct GlobalData {
   // completed.
   absl::optional<device::cablev2::authenticator::Platform::GetAssertionCallback>
       pending_get_assertion_callback;
+  absl::optional<base::TimeTicks> get_assertion_start_time;
 
   // usb_callback holds the callback that receives data from a USB connection.
   absl::optional<
@@ -190,6 +196,7 @@ void ResetGlobalData() {
   global_data.current_transaction.reset();
   global_data.pending_make_credential_callback.reset();
   global_data.pending_get_assertion_callback.reset();
+  global_data.get_assertion_start_time.reset();
   global_data.usb_callback.reset();
 }
 
@@ -263,7 +270,9 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     GlobalData& global_data = GetGlobalData();
     DCHECK(!global_data.pending_get_assertion_callback);
     global_data.pending_get_assertion_callback = std::move(params->callback);
+    global_data.get_assertion_start_time = base::TimeTicks::Now();
 
+    RecordEvent(CableV2MobileEvent::kGetAssertionStarted);
     Java_CableAuthenticator_getAssertion(
         env_, cable_authenticator_,
         ConvertUTF8ToJavaString(env_, params->rp_id),
@@ -302,6 +311,10 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
       case Status::CTAP_ERROR:
         event = CableV2MobileEvent::kCTAPError;
         break;
+      case Status::FIRST_TRANSACTION_DONE:
+        GetGlobalData().event_to_record_if_stopped.reset();
+        event = CableV2MobileEvent::kFirstTransactionDone;
+        break;
     }
     RecordEvent(event);
 
@@ -323,6 +336,9 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
       switch (*maybe_error) {
         case Error::UNEXPECTED_EOF:
           result = CableV2MobileResult::kUnexpectedEOF;
+          break;
+        case Error::EOF_WHILE_PROCESSING:
+          result = CableV2MobileResult::kEOFWhileProcessing;
           break;
         case Error::TUNNEL_SERVER_CONNECT_FAILED:
           result = CableV2MobileResult::kTunnelServerConnectFailed;
@@ -702,9 +718,25 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
     const JavaParamRef<jbyteArray>& jcredential_id,
     const JavaParamRef<jbyteArray>& jauthenticator_data,
     const JavaParamRef<jbyteArray>& jsignature) {
+  RecordEvent(CableV2MobileEvent::kGetAssertionComplete);
+
   GlobalData& global_data = GetGlobalData();
+  // TODO: |get_assertion_start_time| should always be present in this case.
+  // But, at the time of writing, we are seeing some odd numbers in UMA metrics
+  // and aren't sure what's going on. Thus there's an if to avoid introducing
+  // a crash. If the number of records for this histogram are comparible to
+  // the number of recorded starts, then this can be removed.
+  DCHECK(global_data.get_assertion_start_time);
+  if (global_data.get_assertion_start_time) {
+    const base::TimeDelta duration =
+        base::TimeTicks::Now() - global_data.get_assertion_start_time.value();
+    base::UmaHistogramMediumTimes("WebAuthentication.CableV2.GetAssertionTime",
+                                  duration);
+    global_data.get_assertion_start_time.reset();
+  }
 
   if (!global_data.pending_get_assertion_callback) {
+    RecordEvent(CableV2MobileEvent::kStrayGetAssertionResponse);
     return;
   }
   auto callback = std::move(*global_data.pending_get_assertion_callback);

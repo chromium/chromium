@@ -66,6 +66,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.CableV2.GetAssertionTime" units="ms"
+    expires_after="2022-03-01">
+  <owner>agl@chromium.org</owner>
+  <owner>martinkr@google.com</owner>
+  <summary>
+    The time taken between requesting GMS Core to do a GetAssertion operation
+    and the response getting received. Recorded only once the response is
+    received.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CableV2.MobileEvent"
     enum="WebAuthenticationCableV2MobileEvent" expires_after="2022-04-03">
   <owner>agl@chromium.org</owner>
