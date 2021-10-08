@@ -58,6 +58,7 @@ class SelectFileAsh;
 class StructuredMetricsServiceAsh;
 class SystemDisplayAsh;
 class TaskManagerAsh;
+class TtsAsh;
 class WebPageInfoFactoryAsh;
 class UrlHandlerAsh;
 class VideoCaptureDeviceFactoryAsh;
@@ -182,6 +183,7 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::TaskManager> receiver) override;
   void BindTestController(
       mojo::PendingReceiver<mojom::TestController> receiver) override;
+  void BindTts(mojo::PendingReceiver<mojom::Tts> receiver) override;
   void BindUrlHandler(
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
   void BindMachineLearningService(
@@ -231,6 +233,8 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
+
+  TtsAsh* tts_ash() { return tts_ash_.get(); }
 
   KeystoreServiceAsh* keystore_service_ash() {
     return keystore_service_ash_.get();
@@ -286,6 +290,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SystemDisplayAsh> system_display_ash_;
   std::unique_ptr<WebPageInfoFactoryAsh> web_page_info_factory_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
+  std::unique_ptr<TtsAsh> tts_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
   std::unique_ptr<VideoCaptureDeviceFactoryAsh>
       video_capture_device_factory_ash_;

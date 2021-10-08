@@ -14,6 +14,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "content/public/browser/tts_platform.h"
 #include "content/public/common/result_codes.h"
 #include "ui/wm/core/wm_core_switches.h"
 
@@ -68,6 +69,10 @@ void ChromeBrowserMainPartsLacros::PreProfileInit() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         wm::switches::kWindowAnimationsDisabled);
   }
+
+  // Initialize TtsPlatform so that TtsPlatformImplLacros can observe the
+  // ProfileManager for OnProfileAdded event before the profile is loaded.
+  content::TtsPlatform::GetInstance();
 }
 
 void ChromeBrowserMainPartsLacros::PostDestroyThreads() {

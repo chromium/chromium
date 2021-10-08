@@ -214,6 +214,8 @@ void TtsEngineExtensionObserverChromeOS::OnListenerAdded(
 void TtsEngineExtensionObserverChromeOS::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
+  // TODO(jennyz): Do we need to monitor this in Lacros for loading 3rd party
+  // tts engine extensions?
   if (extension->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kTtsEngine)) {
     engine_extension_ids_.insert(extension->id());

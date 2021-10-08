@@ -1862,7 +1862,6 @@ source_set("browser") {
     "speech/speech_synthesis_impl.cc",
     "speech/speech_synthesis_impl.h",
     "speech/tts_controller_impl.cc",
-    "speech/tts_controller_impl.h",
     "speech/tts_platform_impl.cc",
     "speech/tts_platform_impl.h",
     "speech/tts_utterance_impl.cc",
@@ -2356,7 +2355,7 @@ source_set("browser") {
         [ "screenlock_monitor/screenlock_monitor_device_source_chromeos.cc" ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [ "speech/tts_linux.cc" ]
     deps += [ "//third_party/speech-dispatcher" ]
   }

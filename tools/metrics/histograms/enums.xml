@@ -48395,6 +48395,7 @@ from previous Chrome versions.
   <int value="-1625881240" label="FullscreenExitUI:disabled"/>
   <int value="-1625777277"
       label="AutofillUpstreamEditableCardholderName:disabled"/>
+  <int value="-1624992248" label="LacrosTtsSupport:disabled"/>
   <int value="-1624854957" label="enable-es3-apis"/>
   <int value="-1624593106" label="NewTabPageBackgrounds:enabled"/>
   <int value="-1624412478" label="OptimizationGuideModelDownloading:disabled"/>
@@ -52520,6 +52521,7 @@ from previous Chrome versions.
   <int value="1531741496" label="DragFromShelfToHomeOrOverview:disabled"/>
   <int value="1532505461" label="HelpAppLauncherSearch:disabled"/>
   <int value="1533004890" label="CrostiniEnableDlc:enabled"/>
+  <int value="1533106740" label="LacrosTtsSupport:enabled"/>
   <int value="1534222388" label="EnableEphemeralFlashPermission:enabled"/>
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>

@@ -14,6 +14,7 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/tts_utterance.h"
 #include "url/gurl.h"
@@ -41,6 +42,11 @@ struct CONTENT_EXPORT VoiceData {
   // TtsPlatformImpl. If false, this is implemented in a content embedder.
   bool native;
   std::string native_voice_identifier;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If true, the voice is from a remote tts engine.
+  bool from_crosapi = false;
+#endif
 };
 
 // Interface that delegates TTS requests to engines in content embedders.
@@ -73,6 +79,17 @@ class CONTENT_EXPORT TtsEngineDelegate {
   // Returns whether the built in engine is initialized.
   virtual bool IsBuiltInTtsEngineInitialized(
       BrowserContext* browser_context) = 0;
+};
+
+// Interface that delegates TTS requests to a remote engine from another browser
+// process.
+class CONTENT_EXPORT RemoteTtsEngineDelegate {
+ public:
+  virtual ~RemoteTtsEngineDelegate() = default;
+
+  // Returns a list of voices from remote tts engine for |browser_context|.
+  virtual void GetVoices(BrowserContext* browser_context,
+                         std::vector<VoiceData>* out_voices) = 0;
 };
 
 // Class that wants to be notified when the set of
@@ -154,6 +171,10 @@ class CONTENT_EXPORT TtsController {
   // Set the delegate that processes TTS requests with engines in a content
   // embedder.
   virtual void SetTtsEngineDelegate(TtsEngineDelegate* delegate) = 0;
+
+  // Sets the delegate that processes TTS requests with the remote enigne.
+  virtual void SetRemoteTtsEngineDelegate(
+      RemoteTtsEngineDelegate* delegate) = 0;
 
   // Get the delegate that processes TTS requests with engines in a content
   // embedder.

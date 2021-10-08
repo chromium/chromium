@@ -5243,6 +5243,10 @@ const char kDeprecateLowUsageCodecsDescription[] =
 const char kVaapiAV1DecoderName[] = "VA-API decode acceleration for AV1";
 const char kVaapiAV1DecoderDescription[] =
     "Enable or disable decode acceleration of AV1 videos using the VA-API.";
+
+const char kEnableTtsLacrosSupportName[] = "Enable tts lacros support";
+const char kEnableTtsLacrosSupportDescription[] =
+    "Enable or disable lacros support for text to speech.";
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)

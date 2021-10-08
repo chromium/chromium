@@ -2686,6 +2686,11 @@
     "expiry_milestone": 96
   },
   {
+    "name": "enable-tts-lacros-support",
+    "owners": ["jennyz"],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-ui-devtools",
     "owners": [ "//components/ui_devtools/OWNERS" ],
     // Convenience debugging flag for non-stable ChromeOS Builds.

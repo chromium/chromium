@@ -46,6 +46,10 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
       content::TtsUtterance* utterance,
       const content::VoiceData& voice_data) override {}
   void Shutdown() override {}
+  void GetVoicesForBrowserContext(
+      content::BrowserContext* browser_context,
+      const GURL& source_url,
+      std::vector<content::VoiceData>* out_voices) override {}
 
   // Get the single instance of this class.
   static TtsPlatformImplChromeOs* GetInstance();

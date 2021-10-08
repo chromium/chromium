@@ -3026,6 +3026,9 @@ extern const char kDeprecateLowUsageCodecsDescription[];
 
 extern const char kVaapiAV1DecoderName[];
 extern const char kVaapiAV1DecoderDescription[];
+
+extern const char kEnableTtsLacrosSupportName[];
+extern const char kEnableTtsLacrosSupportDescription[];
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)

@@ -576,8 +576,10 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chrome_browser_main_parts_lacros.h"
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
+#include "chrome/browser/speech/tts_lacros.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/features/chromeos_features.h"
 #include "ui/base/ui_base_switches.h"
 #endif
 
@@ -3261,6 +3263,8 @@ content::TtsPlatform* ChromeContentBrowserClient::GetTtsPlatform() {
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return TtsPlatformImplChromeOs::GetInstance();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return TtsPlatformImplLacros::GetInstance();
 #else
   return nullptr;
 #endif

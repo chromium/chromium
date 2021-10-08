@@ -71,6 +71,11 @@ bool WebTestTtsPlatform::PreferEngineDelegateVoices() {
   return false;
 }
 
+void WebTestTtsPlatform::GetVoicesForBrowserContext(
+    content::BrowserContext* browser_context,
+    const GURL& source_url,
+    std::vector<content::VoiceData>* out_voices) {}
+
 WebTestTtsPlatform::WebTestTtsPlatform() = default;
 
 WebTestTtsPlatform::~WebTestTtsPlatform() = default;

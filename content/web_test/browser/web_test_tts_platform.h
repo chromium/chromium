@@ -38,6 +38,10 @@ class WebTestTtsPlatform : public content::TtsPlatform {
   void SetError(const std::string& error) override;
   void Shutdown() override;
   bool PreferEngineDelegateVoices() override;
+  void GetVoicesForBrowserContext(
+      content::BrowserContext* browser_context,
+      const GURL& source_url,
+      std::vector<content::VoiceData>* out_voices) override;
 
  private:
   WebTestTtsPlatform();

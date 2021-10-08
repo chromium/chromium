@@ -210,6 +210,10 @@
 #include "base/allocator/buildflags.h"
 #endif
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/features/chromeos_features.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -3217,6 +3221,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeprecateLowUsageCodecsName,
      flag_descriptions::kDeprecateLowUsageCodecsDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(media::kDeprecateLowUsageCodecs)},
+    {"enable-tts-lacros-support",
+     flag_descriptions::kEnableTtsLacrosSupportName,
+     flag_descriptions::kEnableTtsLacrosSupportDescription, kOsCrOS | kOsLinux,
+     FEATURE_VALUE_TYPE(chromeos::kLacrosTtsSupport)},
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(OS_LINUX)

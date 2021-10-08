@@ -64,6 +64,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/speech/tts_ash.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -160,6 +161,7 @@ CrosapiAsh::CrosapiAsh()
       system_display_ash_(std::make_unique<SystemDisplayAsh>()),
       web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
+      tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
       video_capture_device_factory_ash_(
           std::make_unique<VideoCaptureDeviceFactoryAsh>()) {
@@ -388,6 +390,10 @@ void CrosapiAsh::BindTestController(
 void CrosapiAsh::BindKioskSessionService(
     mojo::PendingReceiver<mojom::KioskSessionService> receiver) {
   kiosk_session_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {
+  tts_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindWebPageInfoFactory(

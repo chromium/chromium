@@ -4770,6 +4770,8 @@ static_library("browser") {
       "shell_integration_chromeos.cc",
       "signin/signin_status_metrics_provider_chromeos.cc",
       "signin/signin_status_metrics_provider_chromeos.h",
+      "speech/crosapi_tts_engine_delegate_ash.cc",
+      "speech/crosapi_tts_engine_delegate_ash.h",
       "speech/cros_speech_recognition_service.cc",
       "speech/cros_speech_recognition_service.h",
       "speech/cros_speech_recognition_service_factory.cc",
@@ -4781,6 +4783,8 @@ static_library("browser") {
       "speech/speech_recognizer.cc",
       "speech/speech_recognizer.h",
       "speech/speech_recognizer_delegate.h",
+      "speech/tts_ash.cc",
+      "speech/tts_ash.h",
       "speech/tts_chromeos.cc",
       "speech/tts_chromeos.h",
       "speech/tts_controller_delegate_impl.cc",
@@ -5083,6 +5087,12 @@ static_library("browser") {
       "notifications/notification_platform_bridge_lacros.cc",
       "notifications/notification_platform_bridge_lacros.h",
       "platform_util_lacros.cc",
+      "speech/tts_client_factory_lacros.cc",
+      "speech/tts_client_factory_lacros.h",
+      "speech/tts_client_lacros.cc",
+      "speech/tts_client_lacros.h",
+      "speech/tts_lacros.cc",
+      "speech/tts_lacros.h",
       "task_manager/providers/crosapi/task_manager_controller_lacros.cc",
       "task_manager/providers/crosapi/task_manager_controller_lacros.h",
     ]
@@ -5120,6 +5130,8 @@ static_library("browser") {
       "platform_keys/extension_platform_keys_service_factory.h",
       "platform_keys/platform_keys.cc",
       "platform_keys/platform_keys.h",
+      "speech/tts_crosapi_util.cc",
+      "speech/tts_crosapi_util.h",
     ]
     deps += [
       "//chrome/browser/metrics/structured",
@@ -5128,6 +5140,7 @@ static_library("browser") {
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus/constants",
+      "//chromeos/features",
       "//chromeos/ui/wm",
     ]
   }

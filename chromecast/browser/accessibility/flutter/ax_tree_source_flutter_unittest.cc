@@ -62,6 +62,10 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void GetVoices(std::vector<VoiceData>* out_voices) override {
     *out_voices = voices_;
   }
+  void GetVoicesForBrowserContext(
+      content::BrowserContext* browser_context,
+      const GURL& source_url,
+      std::vector<content::VoiceData>* out_voices) override {}
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
@@ -741,7 +745,6 @@ TEST_F(AXTreeSourceFlutterTest, ScopesRouteNoNames) {
   auto* tts_controller = content::TtsController::GetInstance();
   content::MockTtsPlatformImpl mock_tts_platform;
   tts_controller->SetTtsPlatform(&mock_tts_platform);
-
 
   // Add node with scopes route but no names route descendant.
   OnAccessibilityEventRequest event;

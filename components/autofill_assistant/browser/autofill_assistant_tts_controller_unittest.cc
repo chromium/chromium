@@ -48,6 +48,8 @@ class MockTtsController : public content::TtsController {
   void StripSSML(
       const std::string& utterance,
       base::OnceCallback<void(const std::string&)> callback) override {}
+  void SetRemoteTtsEngineDelegate(
+      content::RemoteTtsEngineDelegate* delegate) override {}
 };
 
 class MockTtsEventDelegate
