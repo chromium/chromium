@@ -149,7 +149,7 @@ struct IconKey {
   // A bitmask of icon post-processing effects, such as desaturation to gray
   // and rounding the corners.
   // The mask enum apps::IconEffects is defined in
-  // chrome/browser/apps/app_service/app_icon_factory.h and will remain
+  // chrome/browser/apps/app_service/app_icon/app_icon_factory.h and will remain
   // stable.
   uint32 icon_effects;
 };

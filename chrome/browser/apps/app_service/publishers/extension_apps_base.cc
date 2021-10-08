@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/extension_uninstaller.h"

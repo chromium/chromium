@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"

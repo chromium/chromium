@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_SOURCE_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_SOURCE_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_SOURCE_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_SOURCE_H_
 
 #include <string>
 
@@ -55,4 +55,4 @@ class AppIconSource : public content::URLDataSource {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_SOURCE_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_SOURCE_H_

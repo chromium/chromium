@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_PUBLISHERS_STANDALONE_BROWSER_APPS_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"

@@ -9,7 +9,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/bind.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"

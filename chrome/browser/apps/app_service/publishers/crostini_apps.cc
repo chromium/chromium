@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_menu_constants.h"
-#include "chrome/browser/apps/app_service/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"

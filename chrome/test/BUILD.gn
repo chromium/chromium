@@ -6217,7 +6217,7 @@ test("unit_tests") {
   if (!is_android) {
     sources += [
       "../browser/apps/app_discovery_service/app_discovery_service_unittest.cc",
-      "../browser/apps/app_service/app_icon_factory_unittest.cc",
+      "../browser/apps/app_service/app_icon/app_icon_factory_unittest.cc",
       "../browser/apps/app_service/app_service_proxy_unittest.cc",
       "../browser/apps/app_service/app_service_test.cc",
       "../browser/apps/app_service/app_service_test.h",

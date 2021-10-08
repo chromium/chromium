@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADER_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADER_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_LOADER_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_LOADER_H_
 
 #include <map>
 #include <string>
@@ -14,7 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image_skia.h"
@@ -205,4 +205,4 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_LOADER_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_APP_ICON_LOADER_H_

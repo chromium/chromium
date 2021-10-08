@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_ICON_KEY_UTIL_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_ICON_KEY_UTIL_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_ICON_KEY_UTIL_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_ICON_KEY_UTIL_H_
 
 // Utility classes for providing an App Service IconKey.
 
@@ -37,4 +37,4 @@ class IncrementingIconKeyFactory {
 
 }  // namespace apps_util
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_ICON_KEY_UTIL_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_ICON_KEY_UTIL_H_

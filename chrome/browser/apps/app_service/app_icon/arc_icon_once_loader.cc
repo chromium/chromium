@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/arc_icon_once_loader.h"
+#include "chrome/browser/apps/app_service/app_icon/arc_icon_once_loader.h"
 
 #include <vector>
 

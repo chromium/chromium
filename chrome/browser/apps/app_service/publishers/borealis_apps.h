@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"

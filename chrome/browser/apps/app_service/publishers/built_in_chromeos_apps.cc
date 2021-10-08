@@ -12,7 +12,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/keyboard_shortcut_viewer.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_metrics.h"
 #include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/profiles/profile.h"

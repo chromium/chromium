@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/app_icon_loader.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 
 #include <memory>
 #include <utility>
@@ -19,7 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/dip_px_util.h"
+#include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"

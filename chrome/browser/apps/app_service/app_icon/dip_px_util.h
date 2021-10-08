@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_DIP_PX_UTIL_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_DIP_PX_UTIL_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_DIP_PX_UTIL_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_DIP_PX_UTIL_H_
 
 // Utility functions for converting between DIP (device independent pixels) and
 // PX (physical pixels).
@@ -22,4 +22,4 @@ ui::ResourceScaleFactor GetPrimaryDisplayUIScaleFactor();
 
 }  // namespace apps_util
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_DIP_PX_UTIL_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_ICON_DIP_PX_UTIL_H_
