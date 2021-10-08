@@ -822,6 +822,9 @@ void BaseRenderingContext2D::CompositedDraw(
           sk_make_sp<ComposePaintFilter>(foreground_flags.getImageFilter(),
                                          shadow_flags.getImageFilter()),
           canvas_filter));
+      // Resetting the alpha of the shadow layer, to avoid the alpha being
+      // applied twice.
+      shadow_flags.setAlpha(255);
       // Saving the shadow layer before setting the matrix, so the shadow offset
       // does not get modified by the transformation matrix
       c->saveLayer(nullptr, &shadow_flags);
