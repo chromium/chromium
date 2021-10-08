@@ -137,9 +137,6 @@ void RmadClientImpl::CalibrationOverallProgressReceived(dbus::Signal* signal) {
   }
 }
 
-// TODO(gavindodd): Does current value of any state (e.g. HWWP) need to be
-// stored so it can be passed to new observers when added?
-
 void RmadClientImpl::ErrorReceived(dbus::Signal* signal) {
   DCHECK_EQ(signal->GetMember(), rmad::kErrorSignal);
   dbus::MessageReader reader(signal);
@@ -282,10 +279,11 @@ void RmadClientImpl::GetLogPath(DBusMethodCallback<std::string> callback) {
 }
 
 void RmadClientImpl::AddObserver(Observer* observer) {
+  // Currently there is only one observer (chromeos::ShimlessRmaService) and it
+  // is added before any signals are expected, so there is no need to preserve
+  // any signals and send them to new observers.
   CHECK(observer);
   observers_.AddObserver(observer);
-  // TODO(gavindodd): Does current value of any state (e.g. HWWP) need to be
-  // 'observed' at add?
 }
 
 void RmadClientImpl::RemoveObserver(Observer* observer) {

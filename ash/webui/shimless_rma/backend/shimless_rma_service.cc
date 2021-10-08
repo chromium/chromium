@@ -31,25 +31,6 @@ mojom::RmaState RmadStateToMojo(rmad::RmadState::StateCase rmadState) {
                           rmad::RmadState::StateCase>::ToMojom(rmadState);
 }
 
-class RmadObserver : chromeos::RmadClient::Observer {
- public:
-  void Error(rmad::RmadErrorCode error) override {}
-
-  // Called when calibration progress is updated.
-  void CalibrationProgress(
-      const rmad::CalibrationComponentStatus& componentStatus) override {}
-
-  // Called when provisioning progress is updated.
-  void ProvisioningProgress(rmad::ProvisionDeviceState::ProvisioningStep step,
-                            double progress) override {}
-
-  // Called when hardware write protection state changes.
-  void HardwareWriteProtectionState(bool enabled) override {}
-
-  // Called when power cable is plugged in or removed.
-  void PowerCableState(bool plugged_in) override {}
-};
-
 }  // namespace
 
 ShimlessRmaService::ShimlessRmaService() {
@@ -659,6 +640,7 @@ void ShimlessRmaService::OsUpdateProgress(update_engine::Operation operation,
 
 void ShimlessRmaService::CalibrationProgress(
     const rmad::CalibrationComponentStatus& component_status) {
+  last_calibration_progress_ = component_status;
   if (calibration_observer_.is_bound()) {
     calibration_observer_->OnCalibrationUpdated(component_status);
   }
@@ -666,6 +648,7 @@ void ShimlessRmaService::CalibrationProgress(
 
 void ShimlessRmaService::CalibrationOverallProgress(
     rmad::CalibrationOverallStatus status) {
+  last_calibration_overall_progress_ = status;
   if (calibration_observer_.is_bound()) {
     calibration_observer_->OnCalibrationStepComplete(status);
   }
@@ -674,18 +657,22 @@ void ShimlessRmaService::CalibrationOverallProgress(
 void ShimlessRmaService::ProvisioningProgress(
     rmad::ProvisionDeviceState::ProvisioningStep step,
     double progress) {
+  last_provisioning_progress_step_ = step;
+  last_provisioning_progress_ = progress;
   if (provisioning_observer_.is_bound()) {
     provisioning_observer_->OnProvisioningUpdated(step, progress);
   }
 }
 
 void ShimlessRmaService::HardwareWriteProtectionState(bool enabled) {
+  last_hardware_protection_state_ = enabled;
   if (hwwp_state_observer_.is_bound()) {
     hwwp_state_observer_->OnHardwareWriteProtectionStateChanged(enabled);
   }
 }
 
 void ShimlessRmaService::PowerCableState(bool plugged_in) {
+  last_power_cable_state_ = plugged_in;
   if (power_cable_observer_.is_bound()) {
     power_cable_observer_->OnPowerCableStateChanged(plugged_in);
   }
@@ -693,6 +680,7 @@ void ShimlessRmaService::PowerCableState(bool plugged_in) {
 
 void ShimlessRmaService::HardwareVerificationResult(
     const rmad::HardwareVerificationResult& hardware_verification_result) {
+  last_hardware_verification_result_ = hardware_verification_result;
   if (finalization_observer_.is_bound()) {
     finalization_observer_->OnHardwareVerificationResult(
         hardware_verification_result.is_compliant(),
@@ -713,27 +701,50 @@ void ShimlessRmaService::ObserveOsUpdateProgress(
 void ShimlessRmaService::ObserveCalibrationProgress(
     ::mojo::PendingRemote<mojom::CalibrationObserver> observer) {
   calibration_observer_.Bind(std::move(observer));
+  if (last_calibration_progress_) {
+    calibration_observer_->OnCalibrationUpdated(*last_calibration_progress_);
+  }
+  if (last_calibration_overall_progress_) {
+    calibration_observer_->OnCalibrationStepComplete(
+        *last_calibration_overall_progress_);
+  }
 }
 
 void ShimlessRmaService::ObserveProvisioningProgress(
     ::mojo::PendingRemote<mojom::ProvisioningObserver> observer) {
   provisioning_observer_.Bind(std::move(observer));
+  if (last_provisioning_progress_step_) {
+    provisioning_observer_->OnProvisioningUpdated(
+        *last_provisioning_progress_step_, *last_provisioning_progress_);
+  }
 }
 
 void ShimlessRmaService::ObserveHardwareWriteProtectionState(
     ::mojo::PendingRemote<mojom::HardwareWriteProtectionStateObserver>
         observer) {
   hwwp_state_observer_.Bind(std::move(observer));
+  if (last_hardware_protection_state_) {
+    hwwp_state_observer_->OnHardwareWriteProtectionStateChanged(
+        *last_hardware_protection_state_);
+  }
 }
 
 void ShimlessRmaService::ObservePowerCableState(
     ::mojo::PendingRemote<mojom::PowerCableStateObserver> observer) {
   power_cable_observer_.Bind(std::move(observer));
+  if (last_power_cable_state_) {
+    power_cable_observer_->OnPowerCableStateChanged(*last_power_cable_state_);
+  }
 }
 
 void ShimlessRmaService::ObserveFinalizationStatus(
     ::mojo::PendingRemote<mojom::FinalizationObserver> observer) {
   finalization_observer_.Bind(std::move(observer));
+  if (last_hardware_verification_result_) {
+    finalization_observer_->OnHardwareVerificationResult(
+        last_hardware_verification_result_->is_compliant(),
+        last_hardware_verification_result_->error_str());
+  }
 }
 
 ////////////////////////////////

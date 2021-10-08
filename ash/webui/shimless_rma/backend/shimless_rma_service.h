@@ -165,6 +165,17 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   bool can_abort_ = false;
   bool can_go_back_ = false;
 
+  absl::optional<rmad::CalibrationComponentStatus> last_calibration_progress_;
+  absl::optional<rmad::CalibrationOverallStatus>
+      last_calibration_overall_progress_;
+  absl::optional<rmad::ProvisionDeviceState::ProvisioningStep>
+      last_provisioning_progress_step_;
+  absl::optional<double> last_provisioning_progress_;
+  absl::optional<bool> last_hardware_protection_state_;
+  absl::optional<bool> last_power_cable_state_;
+  absl::optional<rmad::HardwareVerificationResult>
+      last_hardware_verification_result_;
+
   mojo::Remote<mojom::ErrorObserver> error_observer_;
   mojo::Remote<mojom::OsUpdateObserver> os_update_observer_;
   mojo::Remote<mojom::CalibrationObserver> calibration_observer_;

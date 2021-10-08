@@ -2400,6 +2400,23 @@ TEST_F(ShimlessRmaServiceTest, ObserveCalibration) {
   EXPECT_EQ(fake_observer.component_observations[0].progress(), 0.25);
 }
 
+TEST_F(ShimlessRmaServiceTest, ObserveCalibrationAfterSignal) {
+  fake_rmad_client_()->TriggerCalibrationProgressObservation(
+      rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER,
+      rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS, 0.25);
+  FakeCalibrationObserver fake_observer;
+  shimless_rma_provider_->ObserveCalibrationProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.component_observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.component_observations[0].component(),
+            rmad::RmadComponent::RMAD_COMPONENT_BASE_ACCELEROMETER);
+  EXPECT_EQ(fake_observer.component_observations[0].status(),
+            rmad::CalibrationComponentStatus::RMAD_CALIBRATION_IN_PROGRESS);
+  EXPECT_EQ(fake_observer.component_observations[0].progress(), 0.25);
+}
+
 TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibration) {
   FakeCalibrationObserver fake_observer;
   shimless_rma_provider_->ObserveCalibrationProgress(
@@ -2408,6 +2425,21 @@ TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibration) {
   fake_rmad_client_()->TriggerCalibrationOverallProgressObservation(
       rmad::CalibrationOverallStatus::
           RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.overall_observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.overall_observations[0],
+            rmad::CalibrationOverallStatus::
+                RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
+}
+
+TEST_F(ShimlessRmaServiceTest, ObserveOverallCalibrationAfterSignal) {
+  fake_rmad_client_()->TriggerCalibrationOverallProgressObservation(
+      rmad::CalibrationOverallStatus::
+          RMAD_CALIBRATION_OVERALL_CURRENT_ROUND_COMPLETE);
+  FakeCalibrationObserver fake_observer;
+  shimless_rma_provider_->ObserveCalibrationProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.overall_observations.size(), 1UL);
   EXPECT_EQ(fake_observer.overall_observations[0],
@@ -2440,6 +2472,17 @@ TEST_F(ShimlessRmaServiceTest, ObserveProvisioning) {
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
+TEST_F(ShimlessRmaServiceTest, ObserveProvisioningAfterSignal) {
+  fake_rmad_client_()->TriggerProvisioningProgressObservation(
+      rmad::ProvisionDeviceState::RMAD_PROVISIONING_STEP_IN_PROGRESS, 0.75);
+  FakeProvisioningObserver fake_observer;
+  shimless_rma_provider_->ObserveProvisioningProgress(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
 class FakeHardwareWriteProtectionStateObserver
     : public mojom::HardwareWriteProtectionStateObserver {
  public:
@@ -2461,6 +2504,16 @@ TEST_F(ShimlessRmaServiceTest, ObserveHardwareWriteProtectionState) {
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
 
+TEST_F(ShimlessRmaServiceTest, ObserveHardwareWriteProtectionStateAfterSignal) {
+  fake_rmad_client_()->TriggerHardwareWriteProtectionStateObservation(false);
+  FakeHardwareWriteProtectionStateObserver fake_observer;
+  shimless_rma_provider_->ObserveHardwareWriteProtectionState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
 class FakePowerCableStateObserver : public mojom::PowerCableStateObserver {
  public:
   void OnPowerCableStateChanged(bool enabled) override {
@@ -2477,6 +2530,16 @@ TEST_F(ShimlessRmaServiceTest, ObservePowerCableState) {
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerPowerCableStateObservation(false);
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+}
+
+TEST_F(ShimlessRmaServiceTest, ObservePowerCableStateAfterSignal) {
+  FakePowerCableStateObserver fake_observer;
+  fake_rmad_client_()->TriggerPowerCableStateObservation(false);
+  shimless_rma_provider_->ObservePowerCableState(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
 }
@@ -2506,6 +2569,18 @@ TEST_F(ShimlessRmaServiceTest, ObserveFinalization) {
       fake_observer.receiver.BindNewPipeAndPassRemote());
   base::RunLoop run_loop;
   fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  run_loop.RunUntilIdle();
+  EXPECT_EQ(fake_observer.observations.size(), 1UL);
+  EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
+  EXPECT_EQ(fake_observer.observations[0].error_message, "ok");
+}
+
+TEST_F(ShimlessRmaServiceTest, ObserveFinalizationAfterSignal) {
+  fake_rmad_client_()->TriggerHardwareVerificationResultObservation(true, "ok");
+  FakeFinalizationObserver fake_observer;
+  shimless_rma_provider_->ObserveFinalizationStatus(
+      fake_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop run_loop;
   run_loop.RunUntilIdle();
   EXPECT_EQ(fake_observer.observations.size(), 1UL);
   EXPECT_EQ(fake_observer.observations[0].is_compliant, true);
