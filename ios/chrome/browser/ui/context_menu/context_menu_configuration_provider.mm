@@ -330,10 +330,41 @@ const CGFloat kFaviconWidthHeight = 24;
     menuTitle = GetContextMenuTitle(params);
   }
 
+  BOOL previewEnabled = self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
+      prefs::kLinkPreviewEnabled);
+
+  UIMenu* menu;
+  if (base::FeatureList::IsEnabled(
+          web::features::kWebViewNativeContextMenuPhase2)) {
+    UIAction* previewAction;
+    if (previewEnabled) {
+      previewAction = [actionFactory actionToHideLinkPreview];
+    } else {
+      previewAction = [actionFactory actionToShowLinkPreview];
+    }
+
+    UIMenu* actionMenu = [UIMenu menuWithTitle:@""
+                                         image:nil
+                                    identifier:nil
+                                       options:UIMenuOptionsDisplayInline
+                                      children:menuElements];
+
+    UIMenu* previewMenu = [UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:@[ previewAction ]];
+
+    menu = [UIMenu menuWithTitle:menuTitle
+                        children:@[ actionMenu, previewMenu ]];
+  } else {
+    menu = [UIMenu menuWithTitle:menuTitle children:menuElements];
+  }
+
   UIContextMenuActionProvider actionProvider =
       ^(NSArray<UIMenuElement*>* suggestedActions) {
         RecordMenuShown(menuScenario);
-        return [UIMenu menuWithTitle:menuTitle children:menuElements];
+        return menu;
       };
 
   UIContextMenuContentPreviewProvider previewProvider = ^UIViewController* {
@@ -342,8 +373,7 @@ const CGFloat kFaviconWidthHeight = 24;
       return nil;
     }
     if (isLink) {
-      if (self.browser->GetBrowserState()->GetPrefs()->GetBoolean(
-              prefs::kLinkPreviewEnabled)) {
+      if (previewEnabled) {
         self.linkPreview =
             [[LinkPreviewCoordinator alloc] initWithBrowser:self.browser
                                                         URL:link];

@@ -194,3 +194,35 @@ TEST_F(BrowserActionFactoryTest, OpenImageInNewTabAction) {
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
   EXPECT_EQ(expectedImage, action.image);
 }
+
+// Tests that the show preview action has the right title and image.
+TEST_F(BrowserActionFactoryTest, ShowPreviewAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [UIImage imageNamed:@"show_preview"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SHOWLINKPREVIEW);
+
+  UIAction* action = [factory actionToShowLinkPreview];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}
+
+// Tests that the hide preview action has the right title and image.
+TEST_F(BrowserActionFactoryTest, HidePreviewAction) {
+  BrowserActionFactory* factory =
+      [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
+                                           scenario:kTestMenuScenario];
+
+  UIImage* expectedImage = [UIImage imageNamed:@"hide_preview"];
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_HIDELINKPREVIEW);
+
+  UIAction* action = [factory actionToHideLinkPreview];
+
+  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+  EXPECT_EQ(expectedImage, action.image);
+}

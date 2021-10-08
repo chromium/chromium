@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 
+#include "components/prefs/pref_service.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -152,6 +155,32 @@
                           completion();
                         }
                       }];
+  return action;
+}
+
+- (UIAction*)actionToShowLinkPreview {
+  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_CONTEXT_SHOWLINKPREVIEW)
+                image:[UIImage imageNamed:@"show_preview"]
+                 type:MenuActionType::ShowLinkPreview
+                block:^{
+                  prefService->SetBoolean(prefs::kLinkPreviewEnabled, true);
+                }];
+  return action;
+}
+
+- (UIAction*)actionToHideLinkPreview {
+  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_CONTENT_CONTEXT_HIDELINKPREVIEW)
+                image:[UIImage imageNamed:@"hide_preview"]
+                 type:MenuActionType::HideLinkPreview
+                block:^{
+                  prefService->SetBoolean(prefs::kLinkPreviewEnabled, false);
+                }];
   return action;
 }
 

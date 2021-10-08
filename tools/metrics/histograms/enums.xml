@@ -44381,6 +44381,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="24" label="Open Image in New Tab"/>
   <int value="25" label="Copy Image"/>
   <int value="26" label="Search with Google Lens"/>
+  <int value="27" label="Show Link Preview"/>
+  <int value="28" label="Hide Link Preview"/>
 </enum>
 
 <enum name="IOSMenuScenario">

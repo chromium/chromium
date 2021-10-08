@@ -63,6 +63,12 @@ class GURL;
                                            completion:
                                                (ProceduralBlock)completion;
 
+// Creates a UIAction instance for showing an element.
+- (UIAction*)actionToShowLinkPreview;
+
+// Creates a UIAction instance for hidding an element.
+- (UIAction*)actionToHideLinkPreview;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_BROWSER_ACTION_FACTORY_H_
