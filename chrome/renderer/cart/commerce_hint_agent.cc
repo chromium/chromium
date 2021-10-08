@@ -817,9 +817,8 @@ void CommerceHintAgent::OnProductsExtracted(
     if (!value)
       return;
     if (value->is_int() || value->is_double()) {
-      base::UmaHistogramTimes(
-          histograme_name,
-          base::TimeDelta::FromMillisecondsD(value->GetDouble()));
+      base::UmaHistogramTimes(histograme_name,
+                              base::Milliseconds(value->GetDouble()));
     }
   };
   record_time("longest_task_ms", "Commerce.Carts.ExtractionLongestTaskTime");

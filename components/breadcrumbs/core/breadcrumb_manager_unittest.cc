@@ -99,13 +99,13 @@ TEST_F(BreadcrumbManagerTest, MinimumEventsReturned) {
 TEST_F(BreadcrumbManagerTest, EventTimestampsFormatted) {
   breadcrumb_manager_.AddEvent("event1");
   EXPECT_EQ("0:00:00 event1", breadcrumb_manager_.GetEvents(0).back());
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(100));
+  task_env_.FastForwardBy(base::Seconds(100));
   breadcrumb_manager_.AddEvent("event2");
   EXPECT_EQ("0:01:40 event2", breadcrumb_manager_.GetEvents(0).back());
-  task_env_.FastForwardBy(base::TimeDelta::FromHours(100));
+  task_env_.FastForwardBy(base::Hours(100));
   breadcrumb_manager_.AddEvent("event3");
   EXPECT_EQ("100:01:40 event3", breadcrumb_manager_.GetEvents(0).back());
-  task_env_.FastForwardBy(base::TimeDelta::FromMinutes(100));
+  task_env_.FastForwardBy(base::Minutes(100));
   breadcrumb_manager_.AddEvent("event4");
   EXPECT_EQ("101:41:40 event4", breadcrumb_manager_.GetEvents(0).back());
 }
