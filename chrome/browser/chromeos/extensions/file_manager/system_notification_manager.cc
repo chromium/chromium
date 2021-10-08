@@ -245,6 +245,7 @@ void SystemNotificationManager::HandleDeviceEvent(
       notification =
           CreateNotification(id, IDS_RENAMING_OF_DEVICE_FAILED_TITLE,
                              IDS_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE);
+      RecordDeviceNotificationMetric(DeviceNotificationUmaType::RENAME_FAIL);
       break;
     default:
       DLOG(WARNING) << "Unable to generate notification for " << id;

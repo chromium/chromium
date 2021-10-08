@@ -310,6 +310,7 @@ TEST_F(SystemNotificationManagerTest, PartitionFail) {
 }
 
 TEST_F(SystemNotificationManagerTest, RenameFail) {
+  base::HistogramTester histogram_tester;
   GetDeviceEventRouter()->OnRenameCompleted(kDevicePath, kPartitionLabel,
                                             /*success=*/false);
   // Get the number of notifications from the NotificationDisplayService.
@@ -327,6 +328,10 @@ TEST_F(SystemNotificationManagerTest, RenameFail) {
   EXPECT_EQ(notification_strings.title, u"Renaming failed");
   EXPECT_EQ(notification_strings.message,
             u"Aw, Snap! There was an error during renaming.");
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(kNotificationShowHistogramName,
+                                      DeviceNotificationUmaType::RENAME_FAIL,
+                                      1);
 }
 
 TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
