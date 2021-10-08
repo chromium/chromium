@@ -285,12 +285,6 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
       is_underlay = true;
       exclude_overlay_index = overlay.overlay_damage_index;
     }
-
-    if (overlay.plane_z_order) {
-      RecordOverlayDamageRectHistograms((overlay.plane_z_order > 0),
-                                        overlay.damage_area_estimate != 0,
-                                        damage_rect->IsEmpty());
-    }
   }
 
   // Removes all damage from this overlay and occluded surface damages.
@@ -317,6 +311,13 @@ void OverlayProcessorUsingStrategy::UpdateDamageRect(
     if (is_underlay || !is_opaque_overlay) {
       damage_rect->Union(this_frame_overlay_rect);
     }
+  }
+
+  // Record the first candidate.
+  if (candidates->size() > 0 && (*candidates)[0].plane_z_order != 0) {
+    RecordOverlayDamageRectHistograms(
+        (*candidates)[0].plane_z_order > 0,
+        (*candidates)[0].damage_area_estimate != 0, damage_rect->IsEmpty());
   }
 
   previous_frame_overlay_rect_ = this_frame_overlay_rect;
