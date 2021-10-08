@@ -48,6 +48,8 @@ class WtsSessionProcessDelegate : public WorkerProcessLauncher::Delegate {
   // WorkerProcessLauncher::Delegate implementation.
   void LaunchProcess(WorkerProcessLauncher* event_handler) override;
   void Send(IPC::Message* message) override;
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver) override;
   void CloseChannel() override;
   void KillProcess() override;
 

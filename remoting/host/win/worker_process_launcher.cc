@@ -105,6 +105,12 @@ void WorkerProcessLauncher::Send(IPC::Message* message) {
   }
 }
 
+void WorkerProcessLauncher::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  DCHECK(ipc_enabled_);
+  launcher_delegate_->GetRemoteAssociatedInterface(std::move(receiver));
+}
+
 void WorkerProcessLauncher::OnProcessLaunched(
     base::win::ScopedHandle worker_process) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

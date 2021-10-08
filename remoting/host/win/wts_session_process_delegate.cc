@@ -74,6 +74,8 @@ class WtsSessionProcessDelegate::Core
   // Mirrors WorkerProcessLauncher::Delegate.
   void LaunchProcess(WorkerProcessLauncher* event_handler);
   void Send(IPC::Message* message);
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver);
   void CloseChannel();
   void KillProcess();
 
@@ -250,6 +252,13 @@ void WtsSessionProcessDelegate::Core::Send(IPC::Message* message) {
   } else {
     delete message;
   }
+}
+
+void WtsSessionProcessDelegate::Core::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  // TODO(joedow): Implement this when converting the Daemon->Desktop messages.
+  NOTIMPLEMENTED();
 }
 
 void WtsSessionProcessDelegate::Core::CloseChannel() {
@@ -614,6 +623,11 @@ void WtsSessionProcessDelegate::LaunchProcess(
 
 void WtsSessionProcessDelegate::Send(IPC::Message* message) {
   core_->Send(message);
+}
+
+void WtsSessionProcessDelegate::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  core_->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 void WtsSessionProcessDelegate::CloseChannel() {

@@ -9,6 +9,7 @@ mojom("mojom") {
     "desktop_session.mojom",
     "remote_support.mojom",
     "remote_url_opener.mojom",
+    "remoting_host.mojom",
     "testing.mojom",
     "webauthn_proxy.mojom",
   ]

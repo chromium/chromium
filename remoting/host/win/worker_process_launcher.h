@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "base/win/object_watcher.h"
 #include "base/win/scoped_handle.h"
+#include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "net/base/backoff_entry.h"
 
 namespace base {
@@ -53,9 +54,16 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
 
     // Sends an IPC message to the worker process. The message will be silently
     // dropped if the channel is closed.
+    // TODO(joedow): Remove this method after completing the migration to Mojo.
     virtual void Send(IPC::Message* message) = 0;
 
+    // Provides a way to request an associated interface from the worker process
+    // IPC channel.
+    virtual void GetRemoteAssociatedInterface(
+        mojo::GenericPendingAssociatedReceiver receiver) = 0;
+
     // Closes the IPC channel.
+    // TODO(joedow): Remove this method after completing the migration to Mojo.
     virtual void CloseChannel() = 0;
 
     // Terminates the worker process and closes the IPC channel.
@@ -80,9 +88,14 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
   void Crash(const base::Location& location);
 
   // Sends an IPC message to the worker process. The message will be silently
-  // dropped if Send() is called before Start() or after stutdown has been
+  // dropped if Send() is called before Start() or after shutdown has been
   // initiated.
   void Send(IPC::Message* message);
+
+  // Provides a way to request an associated interface from the worker process
+  // IPC channel.
+  void GetRemoteAssociatedInterface(
+      mojo::GenericPendingAssociatedReceiver receiver);
 
   // Notification methods invoked by |Delegate|.
 
@@ -143,6 +156,7 @@ class WorkerProcessLauncher : public base::win::ObjectWatcher::Delegate {
 
   // Indicates whether the worker process has been launched, after which IPC
   // messages and events should be passed to the |ipc_handler_| delegate.
+  // TODO(joedow): Remove this member after completing the migration to Mojo.
   bool ipc_enabled_;
 
   // The timer used to delay termination of the worker process when an IPC error

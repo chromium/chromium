@@ -331,6 +331,11 @@ void UnprivilegedProcessDelegate::Send(IPC::Message* message) {
   }
 }
 
+void UnprivilegedProcessDelegate::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  channel_->GetRemoteAssociatedInterface(std::move(receiver));
+}
+
 void UnprivilegedProcessDelegate::CloseChannel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   channel_.reset();

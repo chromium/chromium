@@ -146,6 +146,12 @@ class DaemonProcess
   // Launches the network process and establishes an IPC channel with it.
   virtual void LaunchNetworkProcess() = 0;
 
+  // Sends |serialized_config| to the network process. The config includes
+  // details such as the host owner email and robot account refresh token which
+  // are required to start the host and get online.
+  virtual void SendHostConfigToNetworkProcess(
+      const std::string& serialized_config) = 0;
+
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner() {
     return caller_task_runner_;
   }

@@ -47,15 +47,6 @@ IPC_MESSAGE_CONTROL(ChromotingDaemonMsg_Crash,
 //-----------------------------------------------------------------------------
 // Chromoting messages sent from the daemon to the network process.
 
-// Delivers the host configuration (and updates) to the network process.
-IPC_MESSAGE_CONTROL(ChromotingDaemonNetworkMsg_Configuration, std::string)
-
-// Initializes the pairing registry on Windows. The passed key handles are
-// already duplicated by the sender.
-IPC_MESSAGE_CONTROL(ChromotingDaemonNetworkMsg_InitializePairingRegistry,
-                    IPC::PlatformFileForTransit /* privileged_key */,
-                    IPC::PlatformFileForTransit /* unprivileged_key */)
-
 // Notifies the network process that the terminal |terminal_id| has been
 // disconnected from the desktop session.
 IPC_MESSAGE_CONTROL(ChromotingDaemonNetworkMsg_TerminalDisconnected,

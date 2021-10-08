@@ -33,6 +33,8 @@
 #include "ipc/ipc_listener.h"
 #include "jingle/glue/thread_wrapper.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "net/base/network_change_notifier.h"
@@ -73,6 +75,7 @@
 #include "remoting/host/ipc_host_event_logger.h"
 #include "remoting/host/logging.h"
 #include "remoting/host/me2me_desktop_environment.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate.h"
 #include "remoting/host/pin_hash.h"
 #include "remoting/host/policy_watcher.h"
@@ -209,7 +212,8 @@ class HostProcess : public ConfigWatcher::Delegate,
                     public FtlHostChangeNotificationListener::Listener,
                     public HeartbeatSender::Delegate,
                     public IPC::Listener,
-                    public base::RefCountedThreadSafe<HostProcess> {
+                    public base::RefCountedThreadSafe<HostProcess>,
+                    public mojom::RemotingHostControl {
  public:
   // |shutdown_watchdog| is armed when shutdown is started, and should be kept
   // alive as long as possible until the process exits (since destroying the
@@ -228,15 +232,12 @@ class HostProcess : public ConfigWatcher::Delegate,
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnChannelError() override;
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // FtlHostChangeNotificationListener::Listener overrides.
   void OnHostDeleted() override;
-
-  // Handler of the ChromotingDaemonNetworkMsg_InitializePairingRegistry IPC
-  // message.
-  void OnInitializePairingRegistry(
-      IPC::PlatformFileForTransit privileged_key,
-      IPC::PlatformFileForTransit unprivileged_key);
 
  private:
   // See SetState method for a list of allowed state transitions.
@@ -347,19 +348,15 @@ class HostProcess : public ConfigWatcher::Delegate,
   void OnHostOfflineReasonAck(bool success);
 
 #if defined(OS_WIN)
-  // Initializes the pairing registry on Windows. This should be invoked on the
-  // network thread.
+  // mojom::RemotingHostControl implementation.
+  void CrashHostProcess(const std::string& function_name,
+                        const std::string& file_name,
+                        int line_number) override;
+  void ApplyHostConfig(const std::string& serialized_config) override;
   void InitializePairingRegistry(
-      IPC::PlatformFileForTransit privileged_key,
-      IPC::PlatformFileForTransit unprivileged_key);
-#endif  // defined(OS_WIN)
-
-  // Crashes the process in response to a daemon's request. The daemon passes
-  // the location of the code that detected the fatal error resulted in this
-  // request.
-  void OnCrash(const std::string& function_name,
-               const std::string& file_name,
-               const int& line_number);
+      ::mojo::PlatformHandle privileged_handle,
+      ::mojo::PlatformHandle unprivileged_handle) override;
+#endif
 
   std::unique_ptr<ChromotingHostContext> context_;
 
@@ -453,6 +450,9 @@ class HostProcess : public ConfigWatcher::Delegate,
   scoped_refptr<PairingRegistry> pairing_registry_;
 
   ShutdownWatchdog* shutdown_watchdog_;
+
+  mojo::AssociatedReceiver<mojom::RemotingHostControl> remoting_host_control_{
+      this};
 
 #if defined(OS_APPLE)
   // When using the command line option to check the Accessibility or Screen
@@ -812,11 +812,6 @@ bool HostProcess::OnMessageReceived(const IPC::Message& message) {
 #if defined(REMOTING_MULTI_PROCESS)
   bool handled = true;
   IPC_BEGIN_MESSAGE_MAP(HostProcess, message)
-    IPC_MESSAGE_HANDLER(ChromotingDaemonMsg_Crash, OnCrash)
-    IPC_MESSAGE_HANDLER(ChromotingDaemonNetworkMsg_Configuration,
-                        OnConfigUpdated)
-    IPC_MESSAGE_HANDLER(ChromotingDaemonNetworkMsg_InitializePairingRegistry,
-                        OnInitializePairingRegistry)
     IPC_MESSAGE_FORWARD(
         ChromotingDaemonNetworkMsg_DesktopAttached,
         desktop_session_connector_,
@@ -842,6 +837,28 @@ void HostProcess::OnChannelError() {
   context_->network_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&HostProcess::ShutdownHost, this, kSuccessExitCode));
+}
+
+void HostProcess::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
+
+  if (interface_name == mojom::RemotingHostControl::Name_) {
+    if (remoting_host_control_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::RemotingHostControl::Name_;
+      CrashProcess(__FUNCTION__, __FILE__, __LINE__);
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::RemotingHostControl>
+        pending_receiver(std::move(handle));
+    remoting_host_control_.Bind(std::move(pending_receiver));
+  } else {
+    LOG(ERROR) << "Unknown associated interface requested: " << interface_name
+               << ", crashing the network process";
+    CrashProcess(__FUNCTION__, __FILE__, __LINE__);
+  }
 }
 
 void HostProcess::StartOnUiThread() {
@@ -967,38 +984,37 @@ void HostProcess::OnHostDeleted() {
   ShutdownHost(kHostDeletedExitCode);
 }
 
-void HostProcess::OnInitializePairingRegistry(
-    IPC::PlatformFileForTransit privileged_key,
-    IPC::PlatformFileForTransit unprivileged_key) {
-  DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
-
 #if defined(OS_WIN)
-  context_->network_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&HostProcess::InitializePairingRegistry, this,
-                                privileged_key, unprivileged_key));
-#else  // !defined(OS_WIN)
-  NOTREACHED();
-#endif  // !defined(OS_WIN)
+void HostProcess::ApplyHostConfig(const std::string& serialized_config) {
+  DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
+  OnConfigUpdated(serialized_config);
 }
 
-#if defined(OS_WIN)
 void HostProcess::InitializePairingRegistry(
-    IPC::PlatformFileForTransit privileged_key,
-    IPC::PlatformFileForTransit unprivileged_key) {
-  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
-  // |privileged_key| can be nullptr but not |unprivileged_key|.
-  DCHECK(unprivileged_key.IsValid());
-  // |pairing_registry_| should only be initialized once.
-  DCHECK(!pairing_registry_);
+    ::mojo::PlatformHandle privileged_handle,
+    ::mojo::PlatformHandle unprivileged_handle) {
+  // This IPC is handled on the UI thread and bounced over to the network thread
+  // so being called on any other thread is unexpected.
+  DCHECK(context_->ui_task_runner()->BelongsToCurrentThread() ||
+         context_->network_task_runner()->BelongsToCurrentThread());
 
-  HKEY privileged_hkey = reinterpret_cast<HKEY>(
-      IPC::PlatformFileForTransitToPlatformFile(privileged_key));
-  HKEY unprivileged_hkey = reinterpret_cast<HKEY>(
-      IPC::PlatformFileForTransitToPlatformFile(unprivileged_key));
+  if (context_->ui_task_runner()->BelongsToCurrentThread()) {
+    context_->network_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&HostProcess::InitializePairingRegistry, this,
+                                  std::move(privileged_handle),
+                                  std::move(unprivileged_handle)));
+    return;
+  }
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+
+  // |pairing_registry_| must only be initialized once.
+  DCHECK(!pairing_registry_) << "Received multiple calls to initialize the "
+                             << "pairing registry";
 
   std::unique_ptr<PairingRegistryDelegateWin> delegate(
       new PairingRegistryDelegateWin());
-  delegate->SetRootKeys(privileged_hkey, unprivileged_hkey);
+  delegate->SetRootKeys(static_cast<HKEY>(privileged_handle.ReleaseHandle()),
+                        static_cast<HKEY>(unprivileged_handle.ReleaseHandle()));
 
   pairing_registry_ = new PairingRegistry(context_->file_task_runner(),
                                           std::move(delegate));
@@ -1007,7 +1023,7 @@ void HostProcess::InitializePairingRegistry(
   // initialized.
   CreateAuthenticatorFactory();
 }
-#endif  // !defined(OS_WIN)
+#endif  // defined(OS_WIN)
 
 // Applies the host config, returning true if successful.
 bool HostProcess::ApplyConfig(const base::DictionaryValue& config) {
@@ -1765,12 +1781,14 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
   }
 }
 
-void HostProcess::OnCrash(const std::string& function_name,
-                          const std::string& file_name,
-                          const int& line_number) {
+#if defined(OS_WIN)
+void HostProcess::CrashHostProcess(const std::string& function_name,
+                                   const std::string& file_name,
+                                   int line_number) {
   // The daemon requested us to crash the process.
   CrashProcess(function_name, file_name, line_number);
 }
+#endif
 
 int HostProcessMain() {
   HOST_LOG << "Starting host process: version " << STRINGIZE(VERSION);

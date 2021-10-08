@@ -55,6 +55,10 @@ class MockProcessLauncherDelegate : public WorkerProcessLauncher::Delegate {
   // WorkerProcessLauncher::Delegate interface.
   MOCK_METHOD(void, LaunchProcess, (WorkerProcessLauncher*), (override));
   MOCK_METHOD(void, Send, (IPC::Message*), (override));
+  MOCK_METHOD(void,
+              GetRemoteAssociatedInterface,
+              (mojo::GenericPendingAssociatedReceiver),
+              (override));
   MOCK_METHOD(void, CloseChannel, (), (override));
   MOCK_METHOD(void, KillProcess, (), (override));
 };

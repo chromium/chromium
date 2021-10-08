@@ -28,6 +28,7 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/scoped_sc_handle_win.h"
@@ -37,6 +38,7 @@
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/pairing_registry_delegate_win.h"
 #include "remoting/host/screen_resolution.h"
 #include "remoting/host/switches.h"
@@ -54,12 +56,18 @@ namespace {
 
 constexpr char kEtwTracingThreadName[] = "ETW Trace Consumer";
 
-// Duplicates |key| and returns the value that can be sent over IPC.
-IPC::PlatformFileForTransit GetRegistryKeyForTransit(
+// Duplicates |key| and returns a value that can be sent over IPC.
+base::win::ScopedHandle DuplicateRegistryKeyHandle(
     const base::win::RegKey& key) {
-  base::PlatformFile handle =
-      reinterpret_cast<base::PlatformFile>(key.Handle());
-  return IPC::GetPlatformFileForTransit(handle, false);
+  HANDLE duplicate_handle = INVALID_HANDLE_VALUE;
+  BOOL result = ::DuplicateHandle(::GetCurrentProcess(),
+                                  reinterpret_cast<HANDLE>(key.Handle()),
+                                  ::GetCurrentProcess(), &duplicate_handle, 0,
+                                  FALSE, DUPLICATE_SAME_ACCESS);
+  if (!result || duplicate_handle == INVALID_HANDLE_VALUE) {
+    return base::win::ScopedHandle();
+  }
+  return base::win::ScopedHandle(duplicate_handle);
 }
 
 #if defined(OFFICIAL_BUILD)
@@ -94,6 +102,7 @@ class DaemonProcessWin : public DaemonProcess {
   // WorkerProcessIpcDelegate implementation.
   void OnChannelConnected(int32_t peer_pid) override;
   void OnPermanentError(int exit_code) override;
+  void OnWorkerProcessStopped() override;
 
   // DaemonProcess overrides.
   void SendToNetwork(IPC::Message* message) override;
@@ -116,12 +125,13 @@ class DaemonProcessWin : public DaemonProcess {
       bool virtual_terminal) override;
   void DoCrashNetworkProcess(const base::Location& location) override;
   void LaunchNetworkProcess() override;
+  void SendHostConfigToNetworkProcess(
+      const std::string& serialized_config) override;
 
   // Changes the service start type to 'manual'.
   void DisableAutoStart();
 
-  // Initializes the pairing registry on the host side by sending
-  // ChromotingDaemonNetworkMsg_InitializePairingRegistry message.
+  // Initializes the pairing registry on the host side.
   bool InitializePairingRegistry();
 
   // Opens the pairing registry keys.
@@ -142,6 +152,8 @@ class DaemonProcessWin : public DaemonProcess {
   base::win::RegKey pairing_registry_unprivileged_key_;
 
   std::unique_ptr<EtwTraceConsumer> etw_trace_consumer_;
+
+  mojo::AssociatedRemote<mojom::RemotingHostControl> remoting_host_control_;
 };
 
 DaemonProcessWin::DaemonProcessWin(
@@ -164,6 +176,24 @@ void DaemonProcessWin::OnChannelConnected(int32_t peer_pid) {
     return;
   }
 
+  network_launcher_->GetRemoteAssociatedInterface(
+      remoting_host_control_.BindNewEndpointAndPassReceiver());
+  if (!remoting_host_control_.is_connected()) {
+    CrashNetworkProcess(FROM_HERE);
+    return;
+  }
+
+  // Typically the Daemon process is responsible for disconnecting the remote
+  // however in cases where the network process crashes, we want to ensure that
+  // |remoting_host_control_| is reset so it can be reused after the network
+  // process is relaunched.
+  // TODO(joedow): Implement reset_on_disconnect() for mojo::AssociatedRemote.
+  remoting_host_control_.set_disconnect_handler(base::BindOnce(
+      [](DaemonProcessWin* daemon_process_win) {
+        daemon_process_win->remoting_host_control_.reset();
+      },
+      base::Unretained(this)));
+
   if (!InitializePairingRegistry()) {
     CrashNetworkProcess(FROM_HERE);
     return;
@@ -177,7 +207,7 @@ void DaemonProcessWin::OnPermanentError(int exit_code) {
          exit_code <= kMaxPermanentErrorExitCode);
 
   // Both kInvalidHostIdExitCode and kInvalidOauthCredentialsExitCode are
-  // errors then will never go away with the current config.
+  // errors that will never go away with the current config.
   // Disabling automatic service start until the host is re-enabled and config
   // updated.
   if (exit_code == kInvalidHostIdExitCode ||
@@ -186,6 +216,12 @@ void DaemonProcessWin::OnPermanentError(int exit_code) {
   }
 
   DaemonProcess::OnPermanentError(exit_code);
+}
+
+void DaemonProcessWin::OnWorkerProcessStopped() {
+  // Reset our IPC remote so it's ready to re-init if the network process is
+  // re-launched.
+  remoting_host_control_.reset();
 }
 
 void DaemonProcessWin::SendToNetwork(IPC::Message* message) {
@@ -248,6 +284,16 @@ void DaemonProcessWin::LaunchNetworkProcess() {
       std::make_unique<WorkerProcessLauncher>(std::move(delegate), this);
 }
 
+void DaemonProcessWin::SendHostConfigToNetworkProcess(
+    const std::string& serialized_config) {
+  if (remoting_host_control_.is_bound()) {
+    LOG_IF(ERROR, !remoting_host_control_.is_connected())
+        << "IPC channel not "
+        << "connected. HostConfig message will be dropped.";
+    remoting_host_control_->ApplyHostConfig(serialized_config);
+  }
+}
+
 std::unique_ptr<DaemonProcess> DaemonProcess::Create(
     scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
     scoped_refptr<AutoThreadTaskRunner> io_task_runner,
@@ -305,19 +351,24 @@ bool DaemonProcessWin::InitializePairingRegistry() {
       return false;
   }
 
-  // Duplicate handles to the network process.
-  IPC::PlatformFileForTransit privileged_key = GetRegistryKeyForTransit(
-      pairing_registry_privileged_key_);
-  IPC::PlatformFileForTransit unprivileged_key = GetRegistryKeyForTransit(
-      pairing_registry_unprivileged_key_);
-  if (!(privileged_key.IsValid() && unprivileged_key.IsValid()))
-    return false;
-
   // Initialize the pairing registry in the network process. This has to be done
   // before the host configuration is sent, otherwise the host will not use
   // the passed handles.
-  SendToNetwork(new ChromotingDaemonNetworkMsg_InitializePairingRegistry(
-      privileged_key, unprivileged_key));
+
+  // Duplicate handles for the network process.
+  base::win::ScopedHandle privileged_key =
+      DuplicateRegistryKeyHandle(pairing_registry_privileged_key_);
+  base::win::ScopedHandle unprivileged_key =
+      DuplicateRegistryKeyHandle(pairing_registry_unprivileged_key_);
+  if (!(privileged_key.IsValid() && unprivileged_key.IsValid()))
+    return false;
+
+  if (!remoting_host_control_.is_bound())
+    return false;
+
+  remoting_host_control_->InitializePairingRegistry(
+      mojo::PlatformHandle(std::move(privileged_key)),
+      mojo::PlatformHandle(std::move(unprivileged_key)));
 
   return true;
 }

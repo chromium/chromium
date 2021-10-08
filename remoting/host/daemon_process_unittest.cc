@@ -37,7 +37,6 @@ namespace {
 
 enum Messages {
   kMessageCrash = ChromotingDaemonMsg_Crash::ID,
-  kMessageConfiguration = ChromotingDaemonNetworkMsg_Configuration::ID,
   kMessageConnectTerminal = ChromotingNetworkHostMsg_ConnectTerminal::ID,
   kMessageDisconnectTerminal = ChromotingNetworkHostMsg_DisconnectTerminal::ID,
   kMessageTerminalDisconnected =
@@ -78,15 +77,21 @@ class MockDaemonProcess : public DaemonProcess {
   bool OnMessageReceived(const IPC::Message& message) override;
   void SendToNetwork(IPC::Message* message) override;
 
-  MOCK_METHOD1(Received, void(const IPC::Message&));
-  MOCK_METHOD1(Sent, void(const IPC::Message&));
+  MOCK_METHOD(void, Received, (const IPC::Message&));
+  MOCK_METHOD(void, Sent, (const IPC::Message&));
 
-  MOCK_METHOD3(OnDesktopSessionAgentAttached,
-               bool(int, int, const IPC::ChannelHandle&));
+  MOCK_METHOD(bool,
+              OnDesktopSessionAgentAttached,
+              (int, int, const IPC::ChannelHandle&),
+              (override));
 
-  MOCK_METHOD1(DoCreateDesktopSessionPtr, DesktopSession*(int));
-  MOCK_METHOD1(DoCrashNetworkProcess, void(const base::Location&));
-  MOCK_METHOD0(LaunchNetworkProcess, void());
+  MOCK_METHOD(DesktopSession*, DoCreateDesktopSessionPtr, (int));
+  MOCK_METHOD(void, DoCrashNetworkProcess, (const base::Location&), (override));
+  MOCK_METHOD(void, LaunchNetworkProcess, (), (override));
+  MOCK_METHOD(void,
+              SendHostConfigToNetworkProcess,
+              (const std::string&),
+              (override));
 };
 
 FakeDesktopSession::FakeDesktopSession(DaemonProcess* daemon_process, int id)
@@ -230,7 +235,7 @@ MATCHER_P(Message, type, "") {
 
 TEST_F(DaemonProcessTest, OpenClose) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
@@ -252,7 +257,7 @@ TEST_F(DaemonProcessTest, OpenClose) {
 
 TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
 
@@ -274,7 +279,7 @@ TEST_F(DaemonProcessTest, CallCloseDesktopSession) {
 // ignored.
 TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageTerminalDisconnected)));
@@ -303,12 +308,12 @@ TEST_F(DaemonProcessTest, DoubleDisconnectTerminal) {
 // restarted.
 TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageDisconnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageCrash)))
       .WillOnce(InvokeWithoutArgs(this,
                                   &DaemonProcessTest::LaunchNetworkProcess));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
 
   StartDaemonProcess();
 
@@ -324,13 +329,13 @@ TEST_F(DaemonProcessTest, InvalidDisconnectTerminal) {
 // restarted.
 TEST_F(DaemonProcessTest, InvalidConnectTerminal) {
   InSequence s;
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Received(Message(kMessageConnectTerminal)));
   EXPECT_CALL(*daemon_process_, Sent(Message(kMessageCrash)))
       .WillOnce(InvokeWithoutArgs(this,
                                   &DaemonProcessTest::LaunchNetworkProcess));
-  EXPECT_CALL(*daemon_process_, Sent(Message(kMessageConfiguration)));
+  EXPECT_CALL(*daemon_process_, SendHostConfigToNetworkProcess(_));
 
   StartDaemonProcess();
 

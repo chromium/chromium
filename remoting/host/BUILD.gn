@@ -950,6 +950,7 @@ if (enable_me2me_host) {
       "//remoting/base",
       "//remoting/base:authorization",
       "//remoting/host",
+      "//remoting/host/mojom",
       "//remoting/host/security_key:security_key",
       "//remoting/proto",
       "//remoting/protocol:protocol",
