@@ -18,6 +18,8 @@ void ConstructCouponProto(
     coupon_info_proto->set_coupon_description(
         offer->display_strings.value_prop_text);
     coupon_info_proto->set_coupon_code(offer->promo_code);
+    coupon_info_proto->set_coupon_id(offer->offer_id);
+    coupon_info_proto->set_expiry_time(offer->expiry.ToDoubleT());
   }
 }
 
@@ -99,6 +101,8 @@ void CouponService::OnInitializeCouponsMap(
       offer->display_strings.value_prop_text = coupon.coupon_description();
       offer->promo_code = coupon.coupon_code();
       offer->merchant_origins.emplace_back(origin);
+      offer->offer_id = coupon.coupon_id();
+      offer->expiry = base::Time::FromDoubleT(coupon.expiry_time());
       coupon_map_[origin].emplace_back(std::move(offer));
     }
   }

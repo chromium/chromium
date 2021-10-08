@@ -17,6 +17,7 @@
 namespace {
 
 coupon_db::CouponContentProto BuildProtoWithOneCoupon(
+    const int64_t id,
     const char* origin,
     const char* coupon_description,
     const char* coupon_code) {
@@ -24,29 +25,26 @@ coupon_db::CouponContentProto BuildProtoWithOneCoupon(
   proto.set_key(origin);
   coupon_db::FreeListingCouponInfoProto* coupon_proto =
       proto.add_free_listing_coupons();
+  coupon_proto->set_coupon_id(id);
   coupon_proto->set_coupon_code(coupon_code);
   coupon_proto->set_coupon_description(coupon_description);
   return proto;
 }
 
-autofill::AutofillOfferData BuildCouponOfferData(const char* origin,
+autofill::AutofillOfferData BuildCouponOfferData(const int64_t id,
+                                                 const char* origin,
                                                  const char* coupon_description,
                                                  const char* coupon_code) {
   autofill::AutofillOfferData data;
+  data.offer_id = id;
   data.display_strings.value_prop_text = coupon_description;
   data.promo_code = coupon_code;
   data.merchant_origins.emplace_back(GURL(origin));
   return data;
 }
 
-void CompareAutofillOfferData(autofill::AutofillOfferData* offer_a,
-                              autofill::AutofillOfferData* offer_b) {
-  // Reset offer_id of both offers to 0 since they are irrelevant in the
-  // comparison here.
-  offer_a->offer_id = 0, offer_b->offer_id = 0;
-  EXPECT_EQ(*offer_a, *offer_a);
-}
-
+const int64_t kMockCouponIdA = 135;
+const int64_t kMockCouponIdB = 357;
 const char kMockMerchantA[] = "https://www.foo.com";
 const char kMockMerchantB[] = "https://www.bar.com";
 const char kMockCouponDescriptionA[] = "15% off";
@@ -54,11 +52,13 @@ const char kMockCouponDescriptionB[] = "$25 off";
 const char kMockCouponCodeA[] = "123";
 const char kMockCouponCodeB[] = "456";
 const coupon_db::CouponContentProto kMockProtoA =
-    BuildProtoWithOneCoupon(kMockMerchantA,
+    BuildProtoWithOneCoupon(kMockCouponIdA,
+                            kMockMerchantA,
                             kMockCouponDescriptionA,
                             kMockCouponCodeA);
 const coupon_db::CouponContentProto kMockProtoB =
-    BuildProtoWithOneCoupon(kMockMerchantB,
+    BuildProtoWithOneCoupon(kMockCouponIdA,
+                            kMockMerchantB,
                             kMockCouponDescriptionB,
                             kMockCouponCodeB);
 
@@ -76,6 +76,7 @@ autofill::AutofillOfferData couponDataA;
 autofill::AutofillOfferData couponDataB;
 
 struct CouponDataStruct {
+  const int64_t id;
   const GURL& origin;
   const std::string& description;
   const std::string& coupon_code;
@@ -93,10 +94,12 @@ class CouponServiceTest : public testing::Test {
 
     service_ = CouponServiceFactory::GetForProfile(&profile_);
     coupon_db_ = service_->GetDB();
-    couponDataA = BuildCouponOfferData(kMockMerchantA, kMockCouponDescriptionA,
-                                       kMockCouponCodeA);
-    couponDataB = BuildCouponOfferData(kMockMerchantB, kMockCouponDescriptionB,
-                                       kMockCouponCodeB);
+    couponDataA =
+        BuildCouponOfferData(kMockCouponIdA, kMockMerchantA,
+                             kMockCouponDescriptionA, kMockCouponCodeA);
+    couponDataB =
+        BuildCouponOfferData(kMockCouponIdB, kMockMerchantB,
+                             kMockCouponDescriptionB, kMockCouponCodeB);
   }
 
   void OperationEvaluation(base::OnceClosure closure,
@@ -138,6 +141,7 @@ class CouponServiceTest : public testing::Test {
     CouponsMap coupon_map;
     for (auto coupon : coupons) {
       auto offer = std::make_unique<autofill::AutofillOfferData>();
+      offer->offer_id = coupon.id;
       offer->display_strings.value_prop_text = std::move(coupon.description);
       offer->promo_code = std::move(coupon.coupon_code);
       offer->merchant_origins.emplace_back(GURL(coupon.origin));
@@ -165,31 +169,33 @@ class CouponServiceTest : public testing::Test {
 TEST_F(CouponServiceTest, TestGetCouponForUrl) {
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetupCouponMap({{orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
-                  {orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+  SetupCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
-  CompareAutofillOfferData(result[0], &couponDataA);
+  EXPECT_EQ(*result[0], couponDataA);
 
   result = service_->GetFreeListingCouponsForUrl(orgin_b);
   EXPECT_EQ(result.size(), 1u);
-  CompareAutofillOfferData(result[0], &couponDataB);
+  EXPECT_EQ(*result[0], couponDataB);
 
   result = service_->GetFreeListingCouponsForUrl(
       GURL(std::string(kMockMerchantA) + "/cart"));
   EXPECT_EQ(result.size(), 1u);
-  CompareAutofillOfferData(result[0], &couponDataA);
+  EXPECT_EQ(*result[0], couponDataA);
 }
 
 TEST_F(CouponServiceTest, TestUpdateCoupons) {
   base::RunLoop run_loop[1];
   GURL origin = GURL(kMockMerchantA);
-  SetupCouponMap({{origin, kMockCouponDescriptionA, kMockCouponCodeA}});
+  SetupCouponMap(
+      {{kMockCouponIdA, origin, kMockCouponDescriptionA, kMockCouponCodeA}});
 
   Coupons result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
-  CompareAutofillOfferData(result[0], &couponDataA);
+  EXPECT_EQ(*result[0], couponDataA);
   coupon_db_->LoadCoupon(
       origin, base::BindOnce(&CouponServiceTest::GetEvaluationCoupons,
                              base::Unretained(this), run_loop[0].QuitClosure(),
@@ -200,19 +206,20 @@ TEST_F(CouponServiceTest, TestDeleteCouponForUrl) {
   base::RunLoop run_loop[4];
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetupCouponMap({{orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
-                  {orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+  SetupCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
   Coupons result = service_->GetFreeListingCouponsForUrl(orgin_a);
   EXPECT_EQ(result.size(), 1u);
-  CompareAutofillOfferData(result[0], &couponDataA);
+  EXPECT_EQ(*result[0], couponDataA);
   coupon_db_->LoadCoupon(
       orgin_a, base::BindOnce(&CouponServiceTest::GetEvaluationCoupons,
                               base::Unretained(this), run_loop[0].QuitClosure(),
                               kExpectedA));
   result = service_->GetFreeListingCouponsForUrl(orgin_b);
   EXPECT_EQ(result.size(), 1u);
-  CompareAutofillOfferData(result[0], &couponDataB);
+  EXPECT_EQ(*result[0], couponDataB);
   coupon_db_->LoadCoupon(
       orgin_b, base::BindOnce(&CouponServiceTest::GetEvaluationCoupons,
                               base::Unretained(this), run_loop[1].QuitClosure(),
@@ -248,15 +255,16 @@ TEST_F(CouponServiceTest, TestInitialization) {
 
   result = service_->GetFreeListingCouponsForUrl(origin);
   EXPECT_EQ(result.size(), 1u);
-  CompareAutofillOfferData(result[0], &couponDataA);
+  EXPECT_EQ(*result[0], couponDataA);
 }
 
 TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
   base::RunLoop run_loop[1];
   GURL orgin_a(kMockMerchantA);
   GURL orgin_b(kMockMerchantB);
-  SetupCouponMap({{orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
-                  {orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
+  SetupCouponMap(
+      {{kMockCouponIdA, orgin_a, kMockCouponDescriptionA, kMockCouponCodeA},
+       {kMockCouponIdB, orgin_b, kMockCouponDescriptionB, kMockCouponCodeB}});
 
   service_->DeleteAllFreeListingCoupons();
 
@@ -270,8 +278,8 @@ TEST_F(CouponServiceTest, TestDeleteAllCoupons) {
 }
 
 TEST_F(CouponServiceTest, TestIsUrlEligible) {
-  SetupCouponMap({{GURL("https://www.example.com"), kMockCouponDescriptionA,
-                   kMockCouponCodeA}});
+  SetupCouponMap({{kMockCouponIdA, GURL("https://www.example.com"),
+                   kMockCouponDescriptionA, kMockCouponCodeA}});
 
   EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com")));
   EXPECT_TRUE(service_->IsUrlEligible(GURL("https://www.example.com/first")));
