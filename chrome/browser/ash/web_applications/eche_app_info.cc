@@ -86,7 +86,9 @@ bool EcheSystemAppDelegate::ShouldHaveReloadButtonInMinimalUi() const {
 }
 
 bool EcheSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
-  return true;
+  // For debug purposes, we do not allow closing windows via script under the
+  // debug mode.
+  return !base::FeatureList::IsEnabled(chromeos::features::kEcheSWADebugMode);
 }
 
 gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(Browser* browser) const {

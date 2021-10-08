@@ -4,6 +4,7 @@
 
 #include "chromeos/components/eche_app_ui/eche_notification_click_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "chromeos/components/eche_app_ui/launch_app_helper.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
@@ -64,7 +65,8 @@ void EcheNotificationClickHandler::OnFeatureStatusChanged() {
   } else if (is_click_handler_set_ && !clickable) {
     handler_->RemoveNotificationClickHandler(this);
     is_click_handler_set_ = false;
-    if (NeedClose(feature_status_provider_->GetStatus())) {
+    if (NeedClose(feature_status_provider_->GetStatus()) &&
+        !base::FeatureList::IsEnabled(chromeos::features::kEcheSWADebugMode)) {
       PA_LOG(INFO) << "Close Eche app window";
       launch_app_helper_->CloseEcheApp();
     }

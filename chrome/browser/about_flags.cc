@@ -4378,6 +4378,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"eche-swa-resizing", flag_descriptions::kEcheSWAResizingName,
      flag_descriptions::kEcheSWAResizingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kEcheSWAResizing)},
+    {"eche-swa-debug-mode", flag_descriptions::kEcheSWADebugModeName,
+     flag_descriptions::kEcheSWADebugModeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kEcheSWADebugMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)

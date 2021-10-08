@@ -1322,7 +1322,12 @@
   {
     "name": "eche-swa",
     "owners": [ "dhnishi" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 101
+  },
+  {
+    "name": "eche-swa-debug-mode",
+    "owners": [ "dhnishi" ],
+    "expiry_milestone": 101
   },
   {
     "name": "eche-swa-resizing",
@@ -2383,7 +2388,7 @@
   {
     "name": "enable-phone-hub-recent-apps",
     "owners": [ "dhnishi", "cros-recentapps@google.com" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 101
   },
   {
     "name": "enable-pixel-canvas-recording",

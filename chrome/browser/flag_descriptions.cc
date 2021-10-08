@@ -4568,6 +4568,9 @@ const char kEcheSWAResizingName[] = "Allow resizing Eche App.";
 const char kEcheSWAResizingDescription[] =
     "Enable a naive resize for the Eche window";
 
+const char kEcheSWADebugModeName[] = "Enable Eche Debug Mode";
+const char kEcheSWADebugModeDescription[] = "Enable the Debug Mode of the Eche";
+
 const char kEnableNetworkingInDiagnosticsAppName[] =
     "Enable networking cards in the Diagnostics App";
 const char kEnableNetworkingInDiagnosticsAppDescription[] =

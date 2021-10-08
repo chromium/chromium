@@ -2619,6 +2619,9 @@ extern const char kEcheSWADescription[];
 extern const char kEcheSWAResizingName[];
 extern const char kEcheSWAResizingDescription[];
 
+extern const char kEcheSWADebugModeName[];
+extern const char kEcheSWADebugModeDescription[];
+
 extern const char kEnableNetworkingInDiagnosticsAppName[];
 extern const char kEnableNetworkingInDiagnosticsAppDescription[];
 

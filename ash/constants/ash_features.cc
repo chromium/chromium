@@ -403,6 +403,10 @@ const base::Feature kEcheSWA{"EcheSWA", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kEcheSWAResizing{"EcheSWAResizing",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the Debug Mode of Eche.
+const base::Feature kEcheSWADebugMode{"EcheSWADebugMode",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, emoji suggestion will be shown when user type "space".
 const base::Feature kEmojiSuggestAddition{"EmojiSuggestAddition",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1363,6 +1367,10 @@ bool IsEcheSWAEnabled() {
 
 bool IsEcheSWAResizingEnabled() {
   return base::FeatureList::IsEnabled(kEcheSWAResizing);
+}
+
+bool IsEcheSWADebugModeEnabled() {
+  return base::FeatureList::IsEnabled(kEcheSWADebugMode);
 }
 
 bool IsESimPolicyEnabled() {
