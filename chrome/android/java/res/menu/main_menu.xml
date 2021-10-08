@@ -178,6 +178,48 @@
             android:icon="@drawable/settings_cog" />
     </group>
 
+    <!-- Items shown only in the tab switcher when start surface is enabled -->
+    <group android:id="@+id/START_SURFACE_MODE_MENU"
+        android:visible="false">
+        <item android:id="@id/new_tab_menu_id"
+            android:title="@string/menu_new_tab"
+            android:icon="@drawable/ic_add_box_rounded_corner" />
+        <item android:id="@id/new_incognito_tab_menu_id"
+            android:title="@string/menu_new_incognito_tab"
+            android:icon="@drawable/incognito_simple" />
+        <item android:id="@id/divider_line_id"
+            android:title="@null" />
+        <item android:id="@id/open_history_menu_id"
+            android:title="@string/menu_history"
+            android:icon="@drawable/ic_history_googblue_24dp" />
+        <item android:id="@id/downloads_menu_id"
+            android:title="@string/menu_downloads"
+            android:icon="@drawable/infobar_download_complete" />
+        <item android:id="@id/all_bookmarks_menu_id"
+            android:title="@string/menu_bookmarks"
+            android:icon="@drawable/btn_star_filled" />
+        <item android:id="@id/recent_tabs_menu_id"
+            android:title="@string/menu_recent_tabs"
+            android:icon="@drawable/devices_black_24dp" />
+        <item android:id="@id/divider_line_id"
+            android:title="@null" />
+        <item android:id="@id/close_all_tabs_menu_id"
+            android:title="@string/menu_close_all_tabs"
+            android:icon="@drawable/btn_close_white" />
+        <item android:id="@id/close_all_incognito_tabs_menu_id"
+            android:title="@string/menu_close_all_incognito_tabs"
+            android:icon="@drawable/btn_close_white" />
+        <item android:id="@id/menu_group_tabs"
+            android:title="@string/menu_group_tabs"
+            android:icon="@drawable/ic_widgets" />
+        <item android:id="@id/track_prices_row_menu_id"
+            android:title="@string/menu_track_prices"
+            android:icon="@drawable/ic_trending_down_black" />
+        <item android:id="@id/preferences_id"
+            android:title="@string/menu_settings"
+            android:icon="@drawable/settings_cog" />
+    </group>
+
     <!-- Items shown only when the tablet has no visible tabs -->
     <group android:id="@+id/TABLET_EMPTY_MODE_MENU"
         android:visible="false">

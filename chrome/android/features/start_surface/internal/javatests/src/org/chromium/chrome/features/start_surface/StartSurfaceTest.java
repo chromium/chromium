@@ -27,8 +27,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
@@ -112,7 +110,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -129,7 +126,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -2136,57 +2132,6 @@ public class StartSurfaceTest {
 
         // Resets the decision.
         manager.writeBoolean(ChromePreferenceKeys.START_SHOW_ON_STARTUP, false);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    // clang-format off
-    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
-    public void testStartSurfaceMenu() throws ExecutionException {
-        // clang-format on
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        if (!mImmediateReturn) StartSurfaceTestUtils.pressHomePageButton(cta);
-        StartSurfaceTestUtils.waitForOverviewVisible(
-                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
-        StartSurfaceTestUtils.waitForTabModel(cta);
-        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
-
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.icon_row_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.new_incognito_tab_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.open_history_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.downloads_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.all_bookmarks_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.recent_tabs_menu_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.preferences_id));
-        assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.help_id));
-
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_group_tabs));
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.close_all_tabs_menu_id));
-
-        ModelList menuItemsModelList =
-                AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
-        assertEquals(11, menuItemsModelList.size());
     }
 
     /**

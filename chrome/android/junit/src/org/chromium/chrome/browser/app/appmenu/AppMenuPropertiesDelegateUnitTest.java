@@ -160,7 +160,7 @@ public class AppMenuPropertiesDelegateUnitTest {
         mAppMenuPropertiesDelegate = Mockito.spy(new AppMenuPropertiesDelegateImpl(
                 ContextUtils.getApplicationContext(), mActivityTabProvider,
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mOverviewModeSupplier, null, mBookmarkBridgeSupplier));
+                mOverviewModeSupplier, mBookmarkBridgeSupplier));
     }
 
     @After

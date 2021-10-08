@@ -209,7 +209,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(
                 new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
                         mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
-                        mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier, null,
+                        mToolbarManager, mDecorView, mAppMenuDelegate, mOverviewModeSupplier,
                         mBookmarkBridgeSupplier, mFeedLauncher, mDialogManager, mSnackbarManager));
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_URL);

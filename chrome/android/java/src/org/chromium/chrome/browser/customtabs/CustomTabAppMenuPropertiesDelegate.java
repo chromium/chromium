@@ -73,7 +73,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             @CustomTabsUiType final int uiType, List<String> menuEntries, boolean isOpenedByChrome,
             boolean showShare, boolean showStar, boolean showDownload, boolean isIncognito) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
-                toolbarManager, decorView, null, null, bookmarkBridgeSupplier);
+                toolbarManager, decorView, null, bookmarkBridgeSupplier);
         mVerifier = verifier;
         mUiType = uiType;
         mMenuEntries = menuEntries;
