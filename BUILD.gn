@@ -272,7 +272,7 @@ group("gn_all") {
       "//ios:all",
       "//third_party/crashpad/crashpad:crashpad_tests",
     ]
-  } else if (is_fuchsia) {
+  } else if (is_fuchsia && !is_chromecast) {
     deps += [
       ":d8_fuchsia",
       "//fuchsia:gn_all",

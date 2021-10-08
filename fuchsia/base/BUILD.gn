@@ -9,7 +9,13 @@ import("//testing/test.gni")
 
 # Integration helpers for commonly used fuchsia.* APIs.
 source_set("base") {
-  visibility = [ "//fuchsia/*" ]
+  # Only for use by Fuchsia Components.
+  visibility = [
+    "./test/*",
+    "//chromecast/internal/*",
+    "//fuchsia/engine/*",
+    "//fuchsia/runners/*",
+  ]
   sources = [
     "config_reader.cc",
     "feedback_registration.cc",
@@ -39,7 +45,14 @@ source_set("base") {
 
 # Integration helpers for fuchsia.modular.
 source_set("modular") {
-  visibility = [ "//fuchsia/*" ]
+  # Only for use by Fuchsia Components.
+  visibility = [
+    ":cr_fuchsia_base_unittests__exec",
+    "./test/*",
+    "//chromecast/internal/*",
+    "//fuchsia/engine/*",
+    "//fuchsia/runners/*",
+  ]
   sources = [
     "agent_impl.cc",
     "agent_impl.h",
@@ -57,7 +70,7 @@ source_set("modular") {
 
 # FIDL/Mojo adapters for MessagePorts.
 source_set("message_port") {
-  visibility = [ "//fuchsia/*" ]
+  visibility = [ "//fuchsia/engine/*" ]
   sources = [ "message_port.cc" ]
   public = [ "message_port.h" ]
   public_deps = [
@@ -76,7 +89,8 @@ source_set("message_port") {
 
 source_set("legacymetrics") {
   visibility = [
-    ":*",
+    ":cr_fuchsia_base_unittests__exec",
+    "//chromecast/internal/*",
     "//fuchsia/engine/*",
   ]
   sources = [
@@ -95,6 +109,10 @@ source_set("legacymetrics") {
 
 static_library("run_all_integration_tests") {
   testonly = true
+  visibility = [
+    "//fuchsia/engine/*",
+    "//fuchsia/runners/*",
+  ]
   sources = [ "run_all_integration_tests.cc" ]
   deps = [ "//base/test:test_support" ]
 }

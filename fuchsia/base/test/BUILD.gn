@@ -24,7 +24,7 @@ source_set("test_support") {
   ]
   public_deps = [
     "//base",
-    "//fuchsia/base",
+    "//fuchsia/base:base",
     "//fuchsia/base:modular",
     "//net",
     "//net:test_support",
