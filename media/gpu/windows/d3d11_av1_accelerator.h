@@ -13,9 +13,9 @@
 
 #include "base/callback_helpers.h"
 #include "media/base/media_log.h"
-#include "media/base/status_codes.h"
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
 
@@ -54,10 +54,10 @@ class D3D11AV1Accelerator : public AV1Decoder::AV1Accelerator {
       const DXVA_PicParams_AV1& pic_params,
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
 
-  void RecordFailure(const std::string& fail_type, media::Status error);
+  void RecordFailure(const std::string& fail_type, D3D11Status error);
   void RecordFailure(const std::string& fail_type,
                      const std::string& message,
-                     StatusCode reason);
+                     D3D11Status::Codes reason);
   void SetVideoDecoder(ComD3D11VideoDecoder video_decoder);
   void FillPicParams(size_t picture_index,
                      bool apply_grain,

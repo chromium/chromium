@@ -16,10 +16,10 @@
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "media/base/media_log.h"
-#include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/video/picture.h"
 #include "third_party/angle/include/EGL/egl.h"
@@ -61,21 +61,21 @@ class MEDIA_GPU_EXPORT D3D11PictureBuffer
       gfx::Size size,
       size_t picture_index);
 
-  Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-              GetCommandBufferHelperCB get_helper_cb,
-              ComD3D11VideoDevice video_device,
-              const GUID& decoder_guid,
-              std::unique_ptr<MediaLog> media_log);
+  D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+                   GetCommandBufferHelperCB get_helper_cb,
+                   ComD3D11VideoDevice video_device,
+                   const GUID& decoder_guid,
+                   std::unique_ptr<MediaLog> media_log);
 
   // Set the contents of a mailbox holder array, return true if successful.
   // |input_color_space| is the color space of our input texture, and
   // |output_color_space| will be set, on success, to the color space that the
   // processed texture has.
-  Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                        MailboxHolderArray* mailbox_dest,
-                        gfx::ColorSpace* output_color_space);
+  D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
+                             MailboxHolderArray* mailbox_dest,
+                             gfx::ColorSpace* output_color_space);
   ComD3D11Texture2D Texture() const;
-  StatusOr<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
+  D3D11Status::Or<ID3D11VideoDecoderOutputView*> AcquireOutputView() const;
 
   const gfx::Size& size() const { return size_; }
   size_t picture_index() const { return picture_index_; }

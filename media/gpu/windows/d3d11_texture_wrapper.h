@@ -14,11 +14,11 @@
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
-#include "media/base/status.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -45,7 +45,7 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   virtual ~Texture2DWrapper();
 
   // Initialize the wrapper.
-  virtual Status Init(
+  virtual D3D11Status Init(
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetCommandBufferHelperCB get_helper_cb,
       ComD3D11Texture2D texture,
@@ -57,13 +57,13 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   // other means.
   // - Before calling ProcessTexture.
   // And need to call ProcessTexture() to release the key mutex.
-  virtual Status AcquireKeyedMutexIfNeeded() = 0;
+  virtual D3D11Status AcquireKeyedMutexIfNeeded() = 0;
 
   // Import |texture|, |array_slice| and return the mailbox(es) that can be
   // used to refer to it.
-  virtual Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                                MailboxHolderArray* mailbox_dest_out,
-                                gfx::ColorSpace* output_color_space) = 0;
+  virtual D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
+                                     MailboxHolderArray* mailbox_dest_out,
+                                     gfx::ColorSpace* output_color_space) = 0;
 
   virtual void SetStreamHDRMetadata(
       const gfx::HDRMetadata& stream_metadata) = 0;
@@ -78,23 +78,23 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
 class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
  public:
   // Error callback for GpuResource to notify us of errors.
-  using OnErrorCB = base::OnceCallback<void(Status)>;
+  using OnErrorCB = base::OnceCallback<void(D3D11Status)>;
 
   // While the specific texture instance can change on every call to
   // ProcessTexture, the dxgi format must be the same for all of them.
   DefaultTexture2DWrapper(const gfx::Size& size, DXGI_FORMAT dxgi_format);
   ~DefaultTexture2DWrapper() override;
 
-  Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-              GetCommandBufferHelperCB get_helper_cb,
-              ComD3D11Texture2D in_texture,
-              size_t array_slice) override;
+  D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+                   GetCommandBufferHelperCB get_helper_cb,
+                   ComD3D11Texture2D in_texture,
+                   size_t array_slice) override;
 
-  Status AcquireKeyedMutexIfNeeded() override;
+  D3D11Status AcquireKeyedMutexIfNeeded() override;
 
-  Status ProcessTexture(const gfx::ColorSpace& input_color_space,
-                        MailboxHolderArray* mailbox_dest,
-                        gfx::ColorSpace* output_color_space) override;
+  D3D11Status ProcessTexture(const gfx::ColorSpace& input_color_space,
+                             MailboxHolderArray* mailbox_dest,
+                             gfx::ColorSpace* output_color_space) override;
 
   void SetStreamHDRMetadata(const gfx::HDRMetadata& stream_metadata) override;
   void SetDisplayHDRMetadata(
@@ -128,10 +128,10 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   };
 
   // Receive an error from |gpu_resources_| and store it in |received_error_|.
-  void OnError(Status status);
+  void OnError(D3D11Status status);
 
   // The first error status that we've received from |gpu_resources_|, if any.
-  absl::optional<Status> received_error_;
+  absl::optional<D3D11Status> received_error_;
 
   gfx::Size size_;
   base::SequenceBound<GpuResources> gpu_resources_;

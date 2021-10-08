@@ -194,7 +194,7 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
   return hr;
 }
 
-StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
+D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // By default we assume outputs are 8-bit for SDR color spaces and 10 bit for
   // HDR color spaces (or VP9.2). We'll get a config change once we know the
   // real bit depth if this turns out to be wrong.
@@ -217,10 +217,10 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       gpu_preferences_, gpu_workarounds_, config_, bit_depth_, media_log_.get(),
       use_shared_handle);
   if (!decoder_configurator_)
-    return StatusCode::kDecoderUnsupportedProfile;
+    return D3D11Status::Codes::kDecoderUnsupportedProfile;
 
   if (!decoder_configurator_->SupportsDevice(video_device_))
-    return StatusCode::kDecoderUnsupportedCodec;
+    return D3D11Status::Codes::kDecoderUnsupportedCodec;
 
   FormatSupportChecker format_checker(device_);
   if (!format_checker.Initialize()) {
@@ -239,18 +239,18 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       &format_checker, video_device_, device_context_, media_log_.get(),
       use_shared_handle);
   if (!texture_selector_)
-    return StatusCode::kCreateTextureSelectorFailed;
+    return D3D11Status::Codes::kCreateTextureSelectorFailed;
 
   UINT config_count = 0;
   auto hr = video_device_->GetVideoDecoderConfigCount(
       decoder_configurator_->DecoderDescriptor(), &config_count);
   if (FAILED(hr)) {
-    return Status(StatusCode::kGetDecoderConfigCountFailed)
+    return D3D11Status(D3D11Status::Codes::kGetDecoderConfigCountFailed)
         .AddCause(HresultToStatus(hr));
   }
 
   if (config_count == 0)
-    return Status(StatusCode::kGetDecoderConfigCountFailed);
+    return D3D11Status(D3D11Status::Codes::kGetDecoderConfigCountFailed);
 
   D3D11_VIDEO_DECODER_CONFIG dec_config = {};
   bool found = false;
@@ -259,7 +259,7 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
     hr = video_device_->GetVideoDecoderConfig(
         decoder_configurator_->DecoderDescriptor(), i, &dec_config);
     if (FAILED(hr)) {
-      return Status(StatusCode::kGetDecoderConfigFailed)
+      return D3D11Status(D3D11Status::Codes::kGetDecoderConfigFailed)
           .AddCause(HresultToStatus(hr));
     }
 
@@ -279,7 +279,7 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
     }
   }
   if (!found)
-    return StatusCode::kDecoderUnsupportedConfig;
+    return D3D11Status::Codes::kDecoderUnsupportedConfig;
 
   // Prefer whatever the config tells us about whether to use one Texture2D with
   // multiple array slices, or multiple Texture2Ds with one slice each.  If bit
@@ -312,10 +312,10 @@ StatusOr<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       decoder_configurator_->DecoderDescriptor(), &dec_config, &video_decoder);
 
   if (!video_decoder.Get())
-    return Status(StatusCode::kDecoderCreationFailed);
+    return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed);
 
   if (FAILED(hr)) {
-    return Status(StatusCode::kDecoderCreationFailed)
+    return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed)
         .AddCause(HresultToStatus(hr));
   }
 
@@ -404,8 +404,9 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   ComD3D11Multithread multi_threaded;
   hr = device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
   if (FAILED(hr)) {
-    return NotifyError(Status(StatusCode::kQueryID3D11MultithreadFailed)
-                           .AddCause(HresultToStatus(hr)));
+    return NotifyError(
+        D3D11Status(D3D11Status::Codes::kQueryID3D11MultithreadFailed)
+            .AddCause(HresultToStatus(hr)));
   }
 
   multi_threaded->SetMultithreadProtected(TRUE);
@@ -561,7 +562,7 @@ void D3D11VideoDecoder::DoDecode() {
       current_buffer_ = nullptr;
       if (!accelerated_video_decoder_->Flush()) {
         // This will also signal error |current_decode_cb_|.
-        NotifyError(StatusCode::kAcceleratorFlushFailed);
+        NotifyError(D3D11Status::Codes::kAcceleratorFlushFailed);
         return;
       }
       // Pictures out output synchronously during Flush.  Signal the decode
@@ -658,12 +659,13 @@ void D3D11VideoDecoder::DoDecode() {
       picture_buffers_.clear();
     } else if (result == media::AcceleratedVideoDecoder::kTryAgain) {
       LOG(ERROR) << "Try again is not supported";
-      NotifyError(StatusCode::kTryAgainNotSupported);
+      NotifyError(D3D11Status::Codes::kTryAgainNotSupported);
       return;
     } else {
       std::ostringstream message;
       message << "VDA Error " << result;
-      NotifyError(Status(StatusCode::kDecoderFailedDecode, message.str()));
+      NotifyError(
+          D3D11Status(D3D11Status::Codes::kDecoderFailedDecode, message.str()));
       return;
     }
   }
@@ -763,7 +765,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
     auto tex_wrapper = texture_selector_->CreateTextureWrapper(device_, size);
     if (!tex_wrapper) {
-      NotifyError(StatusCode::kAllocateTextureForCopyingWrapperFailed);
+      NotifyError(D3D11Status::Codes::kAllocateTextureForCopyingWrapperFailed);
       return;
     }
 
@@ -771,7 +773,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     picture_buffers_.push_back(
         new D3D11PictureBuffer(decoder_task_runner_, in_texture, array_slice,
                                std::move(tex_wrapper), size, i /* level */));
-    Status result = picture_buffers_[i]->Init(
+    D3D11Status result = picture_buffers_[i]->Init(
         gpu_task_runner_, get_helper_cb_, video_device_,
         decoder_configurator_->DecoderGuid(), media_log_->Clone());
     if (!result.is_ok()) {
@@ -841,7 +843,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   MailboxHolderArray mailbox_holders;
   gfx::ColorSpace output_color_space;
-  Status result = picture_buffer->ProcessTexture(
+  D3D11Status result = picture_buffer->ProcessTexture(
       picture->get_colorspace().ToGfxColorSpace(), &mailbox_holders,
       &output_color_space);
   if (!result.is_ok()) {
@@ -857,7 +859,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of
     // pixel format, etc.
-    NotifyError(StatusCode::kDecoderVideoFrameConstructionFailed);
+    NotifyError(D3D11Status::Codes::kDecoderVideoFrameConstructionFailed);
     return false;
   }
 
@@ -898,10 +900,11 @@ void D3D11VideoDecoder::SetDecoderCB(const SetAcceleratorDecoderCB& cb) {
 
 // TODO(tmathmeyer): Please don't add new uses of this overload.
 void D3D11VideoDecoder::NotifyError(const char* reason) {
-  NotifyError(Status(StatusCode::kDecoderInitializeNeverCompleted, reason));
+  NotifyError(D3D11Status(D3D11Status::Codes::kDecoderInitializeNeverCompleted,
+                          reason));
 }
 
-void D3D11VideoDecoder::NotifyError(const Status& reason) {
+void D3D11VideoDecoder::NotifyError(D3D11Status reason) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::NotifyError");
   state_ = State::kError;
 
@@ -910,13 +913,19 @@ void D3D11VideoDecoder::NotifyError(const Status& reason) {
                            static_cast<int>(reason.code()));
 
   if (init_cb_) {
-    std::move(init_cb_).Run(reason);
+    // TODO(liberato): VideoDecoder::InitCB should have either its own status
+    // codes, or should use a common one that has "succeeded / didn't succeed"
+    // as its only options.
+    std::move(init_cb_).Run(
+        Status(Status::Codes::kDecoderInitializeNeverCompleted)
+            .AddCause(std::move(reason)));
   } else {
     // TODO(tmathmeyer) - Remove this after plumbing Status through the
     // decode_cb and input_buffer_queue cb's.
     // Let the init handler set the error string if this is an init failure.
-    MEDIA_LOG(ERROR, media_log_) << "D3D11VideoDecoder error: 0x" << std::hex
-                                 << reason.code() << " " << reason.message();
+    MEDIA_LOG(ERROR, media_log_)
+        << "D3D11VideoDecoder error: 0x" << std::hex
+        << static_cast<int>(reason.code()) << " " << reason.message();
   }
 
   current_buffer_ = nullptr;

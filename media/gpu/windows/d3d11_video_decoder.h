@@ -18,6 +18,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/callback_registry.h"
+#include "media/base/status.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/command_buffer_helper.h"
@@ -25,6 +26,7 @@
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_decoder_configurator.h"
 #include "media/gpu/windows/d3d11_h264_accelerator.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_selector.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
@@ -143,7 +145,7 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   void CreatePictureBuffers();
 
   // Create a D3D11VideoDecoder, if possible, based on the current config.
-  StatusOr<ComD3D11VideoDecoder> CreateD3D11Decoder();
+  D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
 
   enum class NotSupportedReason {
     kVideoIsSupported = 0,
@@ -211,7 +213,12 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // pending decode as well.  Do not add new uses of the char* overload; send a
   // Status instead.
   void NotifyError(const char* reason);
-  void NotifyError(const Status& reason);
+  // void NotifyError(D3D11Status&& reason);
+  // This one sends the Status upwards, since VideoDecoder still returns a
+  // Status rather than a decoder-specific variant.  This sends the correct
+  // status code (DECODE_ERROR, for example), and attaches `reason` as the thing
+  // that caused it.
+  void NotifyError(D3D11Status reason);
 
   // The implementation, which lives on the GPU main thread.
   base::SequenceBound<D3D11VideoDecoderImpl> impl_;

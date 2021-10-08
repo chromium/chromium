@@ -185,6 +185,7 @@ component("gpu") {
       "windows/d3d11_h264_accelerator.h",
       "windows/d3d11_picture_buffer.cc",
       "windows/d3d11_picture_buffer.h",
+      "windows/d3d11_status.h",
       "windows/d3d11_texture_selector.cc",
       "windows/d3d11_texture_selector.h",
       "windows/d3d11_texture_wrapper.cc",

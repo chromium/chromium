@@ -278,6 +278,10 @@ class MEDIA_EXPORT TypedStatus {
   // Allow media-serialization
   friend struct internal::MediaSerializer<TypedStatus<T>>;
 
+  // Allow AddCause.
+  template <typename StatusEnum>
+  friend class TypedStatus;
+
   void SetInternalData(std::unique_ptr<internal::StatusData> data) {
     data_ = std::move(data);
   }
