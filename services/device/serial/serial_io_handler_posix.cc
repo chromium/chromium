@@ -297,7 +297,7 @@ bool SerialIoHandlerPosix::ConfigurePortImpl() {
 }
 
 bool SerialIoHandlerPosix::PostOpen() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // The Chrome OS permission broker does not open devices in async mode.
   return base::SetNonBlocking(file().GetPlatformFile());
 #else
