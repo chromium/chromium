@@ -14,9 +14,13 @@
 
 class SpeechRecognizer;
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace extensions {
 
-class SpeechRecogntionPrivateDelegate;
+class SpeechRecognitionPrivateDelegate;
 
 // This class is a wrapper around SpeechRecognizer and can be used to start and
 // stop speech recognition. It uses the |delegate| to handle speech recognition
@@ -27,7 +31,8 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
       base::OnceCallback<void(absl::optional<std::string> error)>;
 
  public:
-  SpeechRecognitionPrivateRecognizer(SpeechRecogntionPrivateDelegate* delegate,
+  SpeechRecognitionPrivateRecognizer(SpeechRecognitionPrivateDelegate* delegate,
+                                     content::BrowserContext* context,
                                      const std::string& id);
   ~SpeechRecognitionPrivateRecognizer() override;
 
@@ -76,7 +81,9 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   ApiCallback on_start_callback_;
   // Delegate that helps handle speech recognition events. `delegate_` is
   // required to outlive this object.
-  SpeechRecogntionPrivateDelegate* const delegate_;
+  SpeechRecognitionPrivateDelegate* const delegate_;
+  // The associated BrowserContext.
+  content::BrowserContext* const context_;
   // A unique ID for this speech recognizer.
   const std::string id_;
   std::unique_ptr<SpeechRecognizer> speech_recognizer_;

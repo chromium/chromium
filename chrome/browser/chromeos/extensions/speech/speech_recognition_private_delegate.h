@@ -9,9 +9,9 @@ namespace extensions {
 
 // A delegate class that helps the SpeechRecognitionPrivateRecognizer handle
 // speech recognition events.
-class SpeechRecogntionPrivateDelegate {
+class SpeechRecognitionPrivateDelegate {
  public:
-  virtual ~SpeechRecogntionPrivateDelegate() {}
+  virtual ~SpeechRecognitionPrivateDelegate() {}
 
   // Below are methods to handle speech recognition events. `key` is used to
   // specify which SpeechRecognitionPrivateRecognizer this request came from.

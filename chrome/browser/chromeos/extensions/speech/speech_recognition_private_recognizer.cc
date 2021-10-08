@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_recognizer.h"
 
 #include "chrome/browser/chromeos/extensions/speech/speech_recognition_private_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/network_speech_recognizer.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 #include "components/language/core/browser/pref_names.h"
@@ -22,9 +22,10 @@ const char kSpeechRecognitionStopError[] = "Speech recognition already stopped";
 namespace extensions {
 
 SpeechRecognitionPrivateRecognizer::SpeechRecognitionPrivateRecognizer(
-    SpeechRecogntionPrivateDelegate* delegate,
+    SpeechRecognitionPrivateDelegate* delegate,
+    content::BrowserContext* context,
     const std::string& id)
-    : delegate_(delegate), id_(id) {
+    : delegate_(delegate), context_(context), id_(id) {
   DCHECK(delegate);
 }
 
@@ -88,7 +89,7 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   MaybeUpdateProperties(locale, interim_results, std::move(callback));
 
   // Choose which type of speech recognition, either on-device or network.
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  Profile* profile = Profile::FromBrowserContext(context_);
   if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale_)) {
     speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
         GetWeakPtr(), profile, locale_,

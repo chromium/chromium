@@ -219,8 +219,8 @@ SpeechRecognitionPrivateRecognizer*
 SpeechRecognitionPrivateManager::GetSpeechRecognizer(const std::string& key) {
   auto& recognizer = recognition_data_[key];
   if (!recognizer)
-    recognizer =
-        std::make_unique<SpeechRecognitionPrivateRecognizer>(this, key);
+    recognizer = std::make_unique<SpeechRecognitionPrivateRecognizer>(
+        this, context_, key);
 
   return recognizer.get();
 }

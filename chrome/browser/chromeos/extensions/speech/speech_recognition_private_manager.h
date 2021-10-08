@@ -26,8 +26,9 @@ class SpeechRecognitionPrivateRecognizer;
 // This class implements core bookkeeping logic for the SpeechRecognitionPrivate
 // API. It is responsible for routing API function calls to the correct speech
 // recognizer and routing events back to the correct extension.
-class SpeechRecognitionPrivateManager : public KeyedService,
-                                        public SpeechRecogntionPrivateDelegate {
+class SpeechRecognitionPrivateManager
+    : public KeyedService,
+      public SpeechRecognitionPrivateDelegate {
   using ApiCallback =
       base::OnceCallback<void(absl::optional<std::string> error)>;
 
@@ -59,7 +60,7 @@ class SpeechRecognitionPrivateManager : public KeyedService,
   friend class SpeechRecognitionPrivateManagerTest;
   friend class SpeechRecognitionPrivateApiTest;
 
-  // SpeechRecogntionPrivateDelegate:
+  // SpeechRecognitionPrivateDelegate:
   void HandleSpeechRecognitionStopped(const std::string& key) override;
   void HandleSpeechRecognitionResult(const std::string& key,
                                      const std::u16string& transcript,
