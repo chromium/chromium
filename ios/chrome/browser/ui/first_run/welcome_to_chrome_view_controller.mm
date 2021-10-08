@@ -15,6 +15,7 @@
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/driver/sync_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -23,6 +24,8 @@
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
@@ -228,8 +231,15 @@ const BOOL kDefaultStatsCheckboxValue = YES;
           self.mainBrowser->GetBrowserState());
   self.firstRunConfig.hasSSOAccount = accountManagerService->HasIdentities();
 
-  if (!signin::IsSigninAllowedByPolicy()) {
-    // Sign-in is disabled by policy. Skip the sign-in flow.
+  syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
+      self.mainBrowser->GetBrowserState());
+  BOOL shouldSkipSignInFlow =
+      syncService->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      !signin::IsSigninAllowedByPolicy();
+
+  if (shouldSkipSignInFlow) {
+    // Sign-in or sync is disabled by policy. Skip the sign-in flow.
     self.firstRunConfig.signInAttemptStatus =
         first_run::SignInAttemptStatus::SKIPPED_BY_POLICY;
     SigninCompletionInfo* completionInfo =
