@@ -1411,6 +1411,8 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_.UpdateCommandEnabled(IDC_CHROME_WHATS_NEW, show_main_ui);
 #endif
   command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR, show_main_ui);
+  command_updater_.UpdateCommandEnabled(IDC_CONTENT_CONTEXT_SHARING_SUBMENU,
+                                        show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHARING_HUB, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHARING_HUB_SCREENSHOT,
                                         show_main_ui);

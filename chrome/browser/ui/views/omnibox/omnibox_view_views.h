@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/share/share_submenu_model.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_sub_menu_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -318,6 +319,10 @@ class OmniboxViewViews
   void PerformDrop(const ui::DropTargetEvent& event,
                    ui::mojom::DragOperation& output_drag_op);
 
+  // Helper methods to construct parts of the context menu.
+  void MaybeAddShareSubmenu(ui::SimpleMenuModel* menu_contents);
+  void MaybeAddSendTabToSelfItem(ui::SimpleMenuModel* menu_contents);
+
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
@@ -407,7 +412,9 @@ class OmniboxViewViews
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       scoped_template_url_service_observation_{this};
 
-  // Send tab to self submenu.
+  // Send tab to self submenu & share submenu - only one of these is populated
+  // at a time.
+  std::unique_ptr<share::ShareSubmenuModel> share_submenu_model_;
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;
 

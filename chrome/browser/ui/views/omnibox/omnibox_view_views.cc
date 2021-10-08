@@ -1795,37 +1795,10 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
-  // Only add this menu entry if SendTabToSelf feature is enabled.
-  if (send_tab_to_self::ShouldOfferFeature(
-          location_bar_view_->GetWebContents())) {
-    int index = menu_contents->GetIndexOfCommandId(Textfield::kUndo);
-    // Add a separator if this is not the first item.
-    if (index)
-      menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
-
-    if (send_tab_to_self::GetValidDeviceCount(location_bar_view_->profile()) ==
-        1) {
-      menu_contents->InsertItemAt(
-          index, IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
-          l10n_util::GetStringFUTF16(
-              IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
-              send_tab_to_self::GetSingleTargetDeviceName(
-                  location_bar_view_->profile())));
-    } else {
-      send_tab_to_self_sub_menu_model_ =
-          std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
-              location_bar_view_->GetWebContents(),
-              send_tab_to_self::SendTabToSelfMenuType::kOmnibox);
-      menu_contents->InsertSubMenuWithStringIdAt(
-          index, IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
-          send_tab_to_self_sub_menu_model_.get());
-    }
-#if !defined(OS_MAC)
-    menu_contents->SetIcon(index,
-                           ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
-#endif
-    menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
-  }
+  if (share::ShareSubmenuModel::IsEnabled())
+    MaybeAddShareSubmenu(menu_contents);
+  else
+    MaybeAddSendTabToSelfItem(menu_contents);
 
   int paste_position = menu_contents->GetIndexOfCommandId(Textfield::kPaste);
   DCHECK_GE(paste_position, 0);
@@ -1926,6 +1899,71 @@ void OmniboxViewViews::PerformDrop(const ui::DropTargetEvent& event,
     RequestFocus();
   SelectAll(false);
   output_drag_op = DragOperation::kCopy;
+}
+
+void OmniboxViewViews::MaybeAddShareSubmenu(
+    ui::SimpleMenuModel* menu_contents) {
+  content::WebContents* web_contents = location_bar_view_->GetWebContents();
+
+  const GURL& page_url = web_contents->GetVisibleURL();
+
+  if (!page_url.is_valid())
+    return;
+
+  int index = menu_contents->GetIndexOfCommandId(Textfield::kUndo);
+  // Add a separator if this is not the first item.
+  if (index) {
+    menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
+  }
+
+  share_submenu_model_ = std::make_unique<share::ShareSubmenuModel>(
+      location_bar_view_->browser(),
+      std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kDefault,
+                                                 false),
+      share::ShareSubmenuModel::Context::PAGE, page_url,
+      web_contents->GetTitle());
+  menu_contents->InsertSubMenuWithStringIdAt(
+      index, IDC_CONTENT_CONTEXT_SHARING_SUBMENU, IDS_SHARE_MENU_TITLE,
+      share_submenu_model_.get());
+  menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
+}
+
+void OmniboxViewViews::MaybeAddSendTabToSelfItem(
+    ui::SimpleMenuModel* menu_contents) {
+  // Only add this menu entry if SendTabToSelf feature is enabled.
+  if (!send_tab_to_self::ShouldOfferFeature(
+          location_bar_view_->GetWebContents())) {
+    return;
+  }
+
+  int index = menu_contents->GetIndexOfCommandId(Textfield::kUndo);
+  // Add a separator if this is not the first item.
+  if (index) {
+    menu_contents->InsertSeparatorAt(index++, ui::NORMAL_SEPARATOR);
+  }
+
+  if (send_tab_to_self::GetValidDeviceCount(location_bar_view_->profile()) ==
+      1) {
+    menu_contents->InsertItemAt(
+        index, IDC_SEND_TAB_TO_SELF_SINGLE_TARGET,
+        l10n_util::GetStringFUTF16(
+            IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SINGLE_TARGET,
+            send_tab_to_self::GetSingleTargetDeviceName(
+                location_bar_view_->profile())));
+  } else {
+    send_tab_to_self_sub_menu_model_ =
+        std::make_unique<send_tab_to_self::SendTabToSelfSubMenuModel>(
+            location_bar_view_->GetWebContents(),
+            send_tab_to_self::SendTabToSelfMenuType::kOmnibox);
+    menu_contents->InsertSubMenuWithStringIdAt(
+        index, IDC_SEND_TAB_TO_SELF, IDS_CONTEXT_MENU_SEND_TAB_TO_SELF,
+        send_tab_to_self_sub_menu_model_.get());
+  }
+#if !defined(OS_MAC)
+  menu_contents->SetIcon(index,
+                         ui::ImageModel::FromVectorIcon(kSendTabToSelfIcon));
+#endif
+  menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }
 
 BEGIN_METADATA(OmniboxViewViews, views::Textfield)

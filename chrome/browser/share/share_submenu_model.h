@@ -43,6 +43,10 @@ class ShareSubmenuModel : public ui::SimpleMenuModel,
     IMAGE,
   };
 
+  // Returns whether the share submenu should appear as part of other menus,
+  // based on the state of field trials & flags.
+  static bool IsEnabled();
+
   // The |url| parameter is a bit tricky: it is the "target URL" of the
   // containing menu, whatever that happens to be. The exact meaning of that
   // depends on |context|. The |source_endpoint| is the source of |url| or
