@@ -7,13 +7,14 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
 #include "chrome/browser/web_applications/test/fake_web_app_ui_manager.h"
-#include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -51,9 +52,8 @@ class WebAppInstallFinalizerUnitTest : public WebAppTest {
     fake_registry_controller_ =
         std::make_unique<FakeWebAppRegistryController>();
     fake_registry_controller_->SetUp(profile());
-    auto file_utils = std::make_unique<TestFileUtils>();
-    icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
-                                                        std::move(file_utils));
+    icon_manager_ = std::make_unique<WebAppIconManager>(
+        profile(), registrar(), base::MakeRefCounted<FileUtilsWrapper>());
     policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
     ui_manager_ = std::make_unique<FakeWebAppUiManager>();
     finalizer_ = std::make_unique<WebAppInstallFinalizer>(

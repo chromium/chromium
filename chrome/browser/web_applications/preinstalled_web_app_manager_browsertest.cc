@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
 #include "base/files/file_path.h"
@@ -219,10 +220,10 @@ class PreinstalledWebAppManagerBrowserTest
     base::FilePath test_icon_path =
         source_root_dir.Append(GetChromeTestDataDir())
             .AppendASCII("web_apps/blue-192.png");
-    TestFileUtils file_utils(
+    scoped_refptr<TestFileUtils> file_utils = TestFileUtils::Create(
         {{base::FilePath(FILE_PATH_LITERAL("test_dir/icon.png")),
           test_icon_path}});
-    PreinstalledWebAppManager::SetFileUtilsForTesting(&file_utils);
+    PreinstalledWebAppManager::SetFileUtilsForTesting(file_utils.get());
 
     std::vector<base::Value> app_configs;
     base::JSONReader::ValueWithError json_parse_result =

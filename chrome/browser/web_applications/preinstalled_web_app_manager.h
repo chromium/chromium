@@ -61,7 +61,7 @@ class PreinstalledWebAppManager {
   static void BypassOfflineManifestRequirementForTesting();
   static void SetConfigDirForTesting(const base::FilePath* config_dir);
   static void SetConfigsForTesting(const std::vector<base::Value>* configs);
-  static void SetFileUtilsForTesting(const FileUtilsWrapper* file_utils);
+  static void SetFileUtilsForTesting(FileUtilsWrapper* file_utils);
 
   explicit PreinstalledWebAppManager(Profile* profile);
   PreinstalledWebAppManager(const PreinstalledWebAppManager&) = delete;

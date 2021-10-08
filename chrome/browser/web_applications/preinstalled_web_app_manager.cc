@@ -21,6 +21,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
@@ -76,7 +78,7 @@ bool g_skip_startup_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 const base::FilePath* g_config_dir_for_testing = nullptr;
 const std::vector<base::Value>* g_configs_for_testing = nullptr;
-const FileUtilsWrapper* g_file_utils_for_testing = nullptr;
+FileUtilsWrapper* g_file_utils_for_testing = nullptr;
 
 struct LoadedConfig {
   base::Value contents;
@@ -131,9 +133,9 @@ ParsedConfigs ParseConfigsBlocking(LoadedConfigs loaded_configs) {
   ParsedConfigs result;
   result.errors = std::move(loaded_configs.errors);
 
-  auto file_utils = g_file_utils_for_testing
-                        ? g_file_utils_for_testing->Clone()
-                        : std::make_unique<FileUtilsWrapper>();
+  scoped_refptr<FileUtilsWrapper> file_utils =
+      g_file_utils_for_testing ? base::WrapRefCounted(g_file_utils_for_testing)
+                               : base::MakeRefCounted<FileUtilsWrapper>();
 
   for (const LoadedConfig& loaded_config : loaded_configs.configs) {
     OptionsOrError parse_result =
@@ -362,7 +364,7 @@ void PreinstalledWebAppManager::SetConfigsForTesting(
 }
 
 void PreinstalledWebAppManager::SetFileUtilsForTesting(
-    const FileUtilsWrapper* file_utils) {
+    FileUtilsWrapper* file_utils) {
   g_file_utils_for_testing = file_utils;
 }
 

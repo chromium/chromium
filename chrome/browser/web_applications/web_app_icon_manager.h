@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
@@ -39,7 +40,7 @@ class WebAppIconManager : public AppRegistrarObserver {
 
   WebAppIconManager(Profile* profile,
                     WebAppRegistrar& registrar,
-                    std::unique_ptr<FileUtilsWrapper> utils);
+                    scoped_refptr<FileUtilsWrapper> utils);
   WebAppIconManager(const WebAppIconManager&) = delete;
   WebAppIconManager& operator=(const WebAppIconManager&) = delete;
   ~WebAppIconManager() override;
@@ -202,7 +203,7 @@ class WebAppIconManager : public AppRegistrarObserver {
 
   WebAppRegistrar& registrar_;
   base::FilePath web_apps_directory_;
-  std::unique_ptr<FileUtilsWrapper> utils_;
+  scoped_refptr<FileUtilsWrapper> utils_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};

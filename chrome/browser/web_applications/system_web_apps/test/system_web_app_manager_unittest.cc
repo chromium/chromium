@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
@@ -143,7 +144,8 @@ class SystemWebAppManagerTest : public WebAppTest {
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
     icon_manager_ = std::make_unique<WebAppIconManager>(
-        profile(), controller().registrar(), std::make_unique<TestFileUtils>());
+        profile(), controller().registrar(),
+        base::MakeRefCounted<TestFileUtils>());
     web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
     install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
         profile(), &icon_manager(), web_app_policy_manager_.get());

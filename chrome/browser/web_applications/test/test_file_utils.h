@@ -19,17 +19,15 @@ class TestFileUtils : public FileUtilsWrapper {
  public:
   // Initializer list type deduction does not work through std::make_unique so
   // provide this helper function.
-  static std::unique_ptr<TestFileUtils> Create(
+  static scoped_refptr<TestFileUtils> Create(
       std::map<base::FilePath, base::FilePath> read_file_rerouting);
 
   explicit TestFileUtils(
       std::map<base::FilePath, base::FilePath> read_file_rerouting = {});
-  TestFileUtils(const TestFileUtils&);
+  TestFileUtils(const TestFileUtils&) = delete;
   TestFileUtils& operator=(const TestFileUtils&) = delete;
-  ~TestFileUtils() override;
 
   // FileUtilsWrapper:
-  std::unique_ptr<FileUtilsWrapper> Clone() const override;
   int WriteFile(const base::FilePath& filename,
                 const char* data,
                 int size) override;
@@ -45,6 +43,8 @@ class TestFileUtils : public FileUtilsWrapper {
   void SetNextDeleteFileRecursivelyResult(absl::optional<bool> delete_result);
 
  private:
+  ~TestFileUtils() override;
+
   std::map<base::FilePath, base::FilePath> read_file_rerouting_;
   absl::optional<bool> delete_file_recursively_result_;
   int remaining_disk_space_ = kNoLimit;

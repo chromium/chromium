@@ -175,11 +175,9 @@ class WebAppInstallManagerTest
         std::make_unique<FakeWebAppRegistryController>();
     fake_registry_controller_->SetUp(profile());
 
-    auto file_utils = std::make_unique<TestFileUtils>();
-    file_utils_ = file_utils.get();
-
+    file_utils_ = base::MakeRefCounted<TestFileUtils>();
     icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
-                                                        std::move(file_utils));
+                                                        file_utils_);
 
     policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
 
@@ -439,8 +437,7 @@ class WebAppInstallManagerTest
 
   // A weak ptr. The original is owned by install_manager_.
   TestWebAppUrlLoader* test_url_loader_ = nullptr;
-  // Owned by icon_manager_:
-  TestFileUtils* file_utils_ = nullptr;
+  scoped_refptr<TestFileUtils> file_utils_;
 };
 
 using WebAppInstallManagerTest_SyncOnly = WebAppInstallManagerTest;

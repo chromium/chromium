@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -45,9 +46,9 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
     absl::optional<base::Value> app_config =
         base::JSONReader::Read(app_config_string);
     DCHECK(app_config);
-    FileUtilsWrapper file_utils;
+    auto file_utils = base::MakeRefCounted<FileUtilsWrapper>();
     OptionsOrError result =
-        ::web_app::ParseConfig(file_utils, /*dir=*/base::FilePath(),
+        ::web_app::ParseConfig(*file_utils, /*dir=*/base::FilePath(),
                                /*file=*/base::FilePath(), app_config.value());
     if (ExternalInstallOptions* options =
             absl::get_if<ExternalInstallOptions>(&result)) {
@@ -73,7 +74,7 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<TestFileUtils> file_utils_;
+  scoped_refptr<TestFileUtils> file_utils_;
 };
 
 // ParseConfig() is also tested by PreinstalledWebAppManagerTest.

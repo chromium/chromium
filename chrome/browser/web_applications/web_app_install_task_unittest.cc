@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -94,11 +95,9 @@ class WebAppInstallTaskTest : public WebAppTest {
         std::make_unique<FakeWebAppRegistryController>();
     fake_registry_controller_->SetUp(profile());
 
-    auto file_utils = std::make_unique<TestFileUtils>();
-    file_utils_ = file_utils.get();
-
+    file_utils_ = base::MakeRefCounted<TestFileUtils>();
     icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
-                                                        std::move(file_utils));
+                                                        file_utils_);
 
     policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
 
@@ -341,9 +340,8 @@ class WebAppInstallTaskTest : public WebAppTest {
   std::unique_ptr<WebAppInstallTask> install_task_;
   std::unique_ptr<FakeWebAppUiManager> ui_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
+  scoped_refptr<TestFileUtils> file_utils_;
 
-  // Owned by icon_manager_:
-  TestFileUtils* file_utils_ = nullptr;
   // Owned by install_task_:
   FakeDataRetriever* data_retriever_ = nullptr;
 
@@ -746,7 +744,7 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDisk) {
     EXPECT_TRUE(file_utils_->DirectoryExists(icons_dir));
 
     std::map<SquareSizePx, SkBitmap> pngs =
-        ReadPngsFromDirectory(file_utils_, icons_dir);
+        ReadPngsFromDirectory(file_utils_.get(), icons_dir);
 
     // The install does ResizeIconsAndGenerateMissing() only for ANY icons.
     if (purpose_info.purpose == IconPurpose::ANY) {

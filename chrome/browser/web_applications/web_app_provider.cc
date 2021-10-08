@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -243,7 +244,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   }
 
   auto icon_manager = std::make_unique<WebAppIconManager>(
-      profile, *registrar, std::make_unique<FileUtilsWrapper>());
+      profile, *registrar, base::MakeRefCounted<FileUtilsWrapper>());
   install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
       profile, icon_manager.get(), web_app_policy_manager_.get());
 

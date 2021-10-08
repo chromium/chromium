@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 
 // Include this to avoid conflicts with CreateDirectory Win macro.
@@ -28,16 +29,11 @@ namespace web_app {
 // base/files/file_util.h functions.
 // Allows a testing implementation to intercept calls to the file system.
 // TODO(loyso): Add more tests and promote mocked methods to |virtual|.
-class FileUtilsWrapper {
+class FileUtilsWrapper : public base::RefCountedThreadSafe<FileUtilsWrapper> {
  public:
   FileUtilsWrapper() = default;
 
   FileUtilsWrapper& operator=(const FileUtilsWrapper&) = delete;
-
-  virtual ~FileUtilsWrapper() = default;
-
-  // Create a copy to use in IO task.
-  virtual std::unique_ptr<FileUtilsWrapper> Clone() const;
 
   bool PathExists(const base::FilePath& path);
 
@@ -63,6 +59,10 @@ class FileUtilsWrapper {
   bool DeleteFile(const base::FilePath& path, bool recursive);
 
   virtual bool DeleteFileRecursively(const base::FilePath& path);
+
+ protected:
+  friend class base::RefCountedThreadSafe<FileUtilsWrapper>;
+  virtual ~FileUtilsWrapper() = default;
 };
 
 }  // namespace web_app
