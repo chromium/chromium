@@ -945,31 +945,31 @@
             ],
             "experiments": [
                 {
-                    "name": "AutofillEnableProfileDeduplication_2021-1O-10",
+                    "name": "AutofillEnableProfileDeduplication_2021-10-10",
                     "enable_features": [
                         "AutofillEnableProfileDeduplication"
                     ]
                 },
                 {
-                    "name": "AutofillEnableSupportForParsingWithSharedLabels_2021-1O-10",
+                    "name": "AutofillEnableSupportForParsingWithSharedLabels_2021-10-10",
                     "enable_features": [
                         "AutofillEnableSupportForParsingWithSharedLabels"
                     ]
                 },
                 {
-                    "name": "AutofillLabelAffixRemoval_2021-1O-10",
+                    "name": "AutofillLabelAffixRemoval_2021-10-10",
                     "enable_features": [
                         "AutofillLabelAffixRemoval"
                     ]
                 },
                 {
-                    "name": "AutofillRetrieveOverallPredictionsFromCache_2021-1O-10",
+                    "name": "AutofillRetrieveOverallPredictionsFromCache_2021-10-10",
                     "enable_features": [
                         "AutofillRetrieveOverallPredictionsFromCache"
                     ]
                 },
                 {
-                    "name": "AutofillShadowDOM_2021-1O-10",
+                    "name": "AutofillShadowDOM_2021-10-10",
                     "enable_features": [
                         "AutofillShadowDOM"
                     ]
@@ -981,7 +981,7 @@
                     ]
                 },
                 {
-                    "name": "AutofillUseAlternativeStateNameMap_2021-1O-10",
+                    "name": "AutofillUseAlternativeStateNameMap_2021-10-10",
                     "enable_features": [
                         "AutofillUseAlternativeStateNameMap"
                     ]
