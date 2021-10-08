@@ -6979,6 +6979,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-prerender2", flag_descriptions::kPrerender2Name,
      flag_descriptions::kPrerender2Description, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kPrerender2)},
+    {"omnibox-trigger-for-prerender2",
+     flag_descriptions::kOmniboxTriggerForPrerender2Name,
+     flag_descriptions::kOmniboxTriggerForPrerender2Description, kOsAll,
+     FEATURE_VALUE_TYPE(features::kOmniboxTriggerForPrerender2)},
 
 #if !defined(OS_ANDROID)
     {"settings-landing-page-redesign",

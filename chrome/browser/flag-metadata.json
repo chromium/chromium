@@ -2423,7 +2423,7 @@
   {
     "name": "enable-prerender2",
     "owners": [ "//content/browser/prerender/OWNERS" ],
-    "expiry_milestone": 96
+    "expiry_milestone": 104
   },
   {
     "name": "enable-quic",
@@ -4173,6 +4173,11 @@
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
     "owners": [ "mahmadi", "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 97
+  },
+  {
+    "name": "omnibox-trigger-for-prerender2",
+    "owners": [ "//content/browser/prerender/OWNERS" ],
+    "expiry_milestone": 104
   },
   {
     "name": "omnibox-ui-max-autocomplete-matches",

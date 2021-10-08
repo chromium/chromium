@@ -1201,6 +1201,9 @@ extern const char kPointerLockOptionsDescription[];
 extern const char kPrerender2Name[];
 extern const char kPrerender2Description[];
 
+extern const char kOmniboxTriggerForPrerender2Name[];
+extern const char kOmniboxTriggerForPrerender2Description[];
+
 extern const char kPrivacyAdvisorName[];
 extern const char kPrivacyAdvisorDescription[];
 

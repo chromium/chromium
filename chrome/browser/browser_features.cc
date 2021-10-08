@@ -109,4 +109,8 @@ bool ShouldTriggerNetworkDataMigration() {
 const base::Feature kWebUsbDeviceDetection{"WebUsbDeviceDetection",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables omnibox trigger prerendering.
+const base::Feature kOmniboxTriggerForPrerender2{
+    "OmniboxTriggerForPrerender2", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

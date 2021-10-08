@@ -2108,6 +2108,11 @@ const char kPrerender2Description[] =
     "Enables the new prerenderer implementation for "
     "<script type=speculationrules> that specifies prerender candidates.";
 
+const char kOmniboxTriggerForPrerender2Name[] =
+    "Omnibox trigger for Prerender2";
+const char kOmniboxTriggerForPrerender2Description[] =
+    "Enables the new omnibox trigger prerenderer implementation.";
+
 const char kPrivacyAdvisorName[] = "Privacy Advisor";
 const char kPrivacyAdvisorDescription[] =
     "Provides contextual entry points for adjusting privacy settings";
