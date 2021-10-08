@@ -2705,6 +2705,9 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
     return false;
   for (LayoutObject* child = SlowFirstChild(); child;
        child = child->NextSibling()) {
+    // We do not bother checking descendants of |LayoutInline|, including
+    // block-in-inline, because the cost of checking them overweights the
+    // benefits.
     if (!child->IsBox())
       continue;
     auto* child_box = To<LayoutBox>(child);
