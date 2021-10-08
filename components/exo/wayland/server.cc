@@ -54,6 +54,7 @@
 #include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/surface_augmenter.h"
 #include "components/exo/wayland/wayland_display_output.h"
+#include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wayland/wl_compositor.h"
 #include "components/exo/wayland/wl_data_device_manager.h"
 #include "components/exo/wayland/wl_output.h"
@@ -367,6 +368,11 @@ std::unique_ptr<Server> Server::Create(Display* display) {
     PLOG(ERROR) << "Could not set permissions: " << socket_path.value();
     return nullptr;
   }
+
+  // At this point, server creation was successful, so we should instantiate the
+  // watcher.
+  server->wayland_watcher_ =
+      std::make_unique<wayland::WaylandWatcher>(server.get());
 
   return server;
 }

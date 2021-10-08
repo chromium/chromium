@@ -15,7 +15,6 @@
 #include "components/exo/notification_surface_manager.h"
 #include "components/exo/toast_surface_manager.h"
 #include "components/exo/wayland/server.h"
-#include "components/exo/wayland/wayland_watcher.h"
 #include "components/exo/wm_helper.h"
 #include "components/exo/wm_helper_chromeos.h"
 
@@ -35,8 +34,7 @@ WaylandServerController::CreateIfNecessary(
       std::move(toast_surface_manager));
 }
 
-WaylandServerController::~WaylandServerController() {
-}
+WaylandServerController::~WaylandServerController() {}
 
 WaylandServerController::WaylandServerController(
     std::unique_ptr<DataExchangeDelegate> data_exchange_delegate,
@@ -50,12 +48,6 @@ WaylandServerController::WaylandServerController(
                                     std::move(toast_surface_manager),
                                     std::move(data_exchange_delegate))),
 
-      wayland_server_(wayland::Server::Create(display_.get())) {
-  // Wayland server creation can fail if XDG_RUNTIME_DIR is not set correctly.
-  if (wayland_server_) {
-    wayland_watcher_ =
-        std::make_unique<wayland::WaylandWatcher>(wayland_server_.get());
-  }
-}
+      wayland_server_(wayland::Server::Create(display_.get())) {}
 
 }  // namespace exo
