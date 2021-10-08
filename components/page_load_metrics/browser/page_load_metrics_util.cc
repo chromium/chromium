@@ -258,11 +258,8 @@ int32_t LayoutShiftUmaValue(float shift_score) {
   return static_cast<int>(roundf(std::min(shift_score, 10.0f) * 10.0f));
 }
 
-int32_t LayoutShiftExperimentalUmaValue10000(float shift_score) {
+int32_t LayoutShiftUmaValue10000(float shift_score) {
   // Report (shift_score * 10000) as an int in the range [0, 1000].
-  // This is an experiment to understand if more values reduce the 0-1 bucket
-  // size.
-  // Rename or remove when resolving crbug.com/1230786
   return static_cast<int>(roundf(std::min(shift_score, 10.0f) * 10000.0f));
 }
 
