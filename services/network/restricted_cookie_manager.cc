@@ -161,7 +161,7 @@ CookieAccesses* RestrictedCookieManager::GetCookieAccessesForURLAndSite(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies) {
   std::unique_ptr<CookieAccesses>& entry =
-      recent_cookie_accesses_[std::tie(url, site_for_cookies)];
+      recent_cookie_accesses_[std::make_pair(url, site_for_cookies)];
   if (!entry) {
     entry = std::make_unique<CookieAccesses>();
   }
