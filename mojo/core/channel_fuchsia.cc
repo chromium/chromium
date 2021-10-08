@@ -46,22 +46,14 @@ bool UnwrapFdioHandle(PlatformHandleInTransit handle,
     return true;
   }
 
-  // TODO(crbug.com/1254755) The FD should be transferred and only clone if this
-  // is impossible. Unfortunately, as fdio_fd_transfer currently takes ownership
-  // of the fd even when it fails, this is currently not possible.
-
-  // Try to clone the FD, and if that fails (because |fd| has insufficient
-  // rights to clone the underlying object), fall back to transferring it.
+  // Try to transfer the FD if possible, otherwise take a clone of it.
+  // This allows non-dup()d FDs to be efficiently unwrapped, while dup()d FDs
+  // have a new handle attached to the same underlying resource created.
   zx::handle result;
-  zx_status_t status = fdio_fd_clone(handle.handle().GetFD().get(),
-                                     result.reset_and_get_address());
-  if (status == ZX_ERR_ACCESS_DENIED) {
-    status = fdio_fd_transfer(handle.TakeHandle().ReleaseFD(),
-                              result.reset_and_get_address());
-  }
-
+  zx_status_t status = fdio_fd_transfer_or_clone(
+      handle.TakeHandle().ReleaseFD(), result.reset_and_get_address());
   if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status) << "fdio_fd_clone/transfer";
+    ZX_DLOG(ERROR, status) << "fdio_fd_transfer_or_clone";
     return false;
   }
 
