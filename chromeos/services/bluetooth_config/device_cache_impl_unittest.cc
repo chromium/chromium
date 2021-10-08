@@ -393,7 +393,7 @@ TEST_F(DeviceCacheImplTest, PairedDeviceBluetoothClassChanges) {
 
   // Change its device type.
   ChangeDeviceType(paired_device_id, device::BluetoothDeviceType::PHONE);
-  EXPECT_EQ(3u, GetNumPairedDeviceListObserverEvents());
+  EXPECT_EQ(2u, GetNumPairedDeviceListObserverEvents());
   list = GetPairedDevices();
   EXPECT_EQ(1u, list.size());
   EXPECT_EQ(paired_device_id, list[0]->device_properties->id);
@@ -415,7 +415,7 @@ TEST_F(DeviceCacheImplTest, UnpairedDeviceBluetoothClassChanges) {
 
   // Change its device type.
   ChangeDeviceType(unpaired_device_id, device::BluetoothDeviceType::PHONE);
-  EXPECT_EQ(3u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_EQ(2u, GetNumUnpairedDeviceListObserverEvents());
   list = GetUnpairedDevices();
   EXPECT_EQ(1u, list.size());
   EXPECT_EQ(unpaired_device_id, list[0]->id);
@@ -449,7 +449,7 @@ TEST_F(DeviceCacheImplTest, UnpairedDeviceSignalStrengthChanges) {
   // Update device 1's signal strength to be greater than device 2. Device 1
   // should now be returned first.
   ChangeInquiryRssi(unpaired_device_id1, 3);
-  EXPECT_EQ(4u, GetNumUnpairedDeviceListObserverEvents());
+  EXPECT_EQ(3u, GetNumUnpairedDeviceListObserverEvents());
   list = GetUnpairedDevices();
   EXPECT_EQ(2u, list.size());
   EXPECT_EQ(unpaired_device_id1, list[0]->id);

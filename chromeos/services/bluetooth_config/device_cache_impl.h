@@ -85,14 +85,17 @@ class DeviceCacheImpl : public DeviceCache,
   // Adds |device| to |paired_devices_|, but only if |device| is paired. If the
   // device was already present in the list, this function updates its metadata
   // to reflect up-to-date values. This function sorts the list after a new
-  // element is inserted.
-  void AttemptSetDeviceInPairedDeviceList(device::BluetoothDevice* device);
+  // element is inserted. Returns true if the device was added or updated in the
+  // list.
+  bool AttemptSetDeviceInPairedDeviceList(device::BluetoothDevice* device);
 
-  // Removes |device| from |paired_devices_| if it exists in the list.
-  void RemoveFromPairedDeviceList(device::BluetoothDevice* device);
+  // Removes |device| from |paired_devices_| if it exists in the list. Returns
+  // true if the device was removed from the list.
+  bool RemoveFromPairedDeviceList(device::BluetoothDevice* device);
 
   // Attempts to add updated metadata about |device| to |paired_devices_|.
-  void AttemptUpdatePairedDeviceMetadata(device::BluetoothDevice* device);
+  // Returns true if the device was updated in the list.
+  bool AttemptUpdatePairedDeviceMetadata(device::BluetoothDevice* device);
 
   // Sorts |unpaired_devices_| based on signal strength. This function is called
   // each time a device is added to the list. This is not particularly
@@ -103,14 +106,17 @@ class DeviceCacheImpl : public DeviceCache,
   // Adds |device| to |unpaired_devices_|, but only if |device| is unpaired. If
   // the device was already present in the list, this function updates its
   // metadata to reflect up-to-date values. This function sorts the list after a
-  // new element is inserted.
-  void AttemptSetDeviceInUnpairedDeviceList(device::BluetoothDevice* device);
+  // new element is inserted. Returns true if the device was added or updated in
+  // the list.
+  bool AttemptSetDeviceInUnpairedDeviceList(device::BluetoothDevice* device);
 
-  // Removes |device| from |unpaired_devices_| if it exists in the list.
-  void RemoveFromUnpairedDeviceList(device::BluetoothDevice* device);
+  // Removes |device| from |unpaired_devices_| if it exists in the list. Returns
+  // true if the device was removed from the list.
+  bool RemoveFromUnpairedDeviceList(device::BluetoothDevice* device);
 
   // Attempts to add updated metadata about |device| to |unpaired_devices_|.
-  void AttemptUpdateUnpairedDeviceMetadata(device::BluetoothDevice* device);
+  // Returns true if the device was updated in the list.
+  bool AttemptUpdateUnpairedDeviceMetadata(device::BluetoothDevice* device);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
