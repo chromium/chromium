@@ -25,6 +25,7 @@ extern const base::Feature kWebViewMixedContentAutoupgrades;
 extern const base::Feature kWebViewOriginTrials;
 extern const base::Feature kWebViewSuppressDifferentOriginSubframeJSDialogs;
 extern const base::Feature kWebViewTestFeature;
+extern const base::Feature kWebViewUseMetricsUploadService;
 extern const base::Feature kWebViewWideColorGamutSupport;
 
 }  // namespace features

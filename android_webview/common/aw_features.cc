@@ -67,6 +67,11 @@ const base::Feature kWebViewSuppressDifferentOriginSubframeJSDialogs{
 const base::Feature kWebViewTestFeature{"WebViewTestFeature",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Use WebView's nonembedded MetricsUploadService to upload UMA metrics instead
+// of sending it directly to GMS-core.
+const base::Feature kWebViewUseMetricsUploadService{
+    "WebViewUseMetricsUploadService", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable raster in wide color gamut for apps that use webview in a wide color
 // gamut activity.
 const base::Feature kWebViewWideColorGamutSupport{
