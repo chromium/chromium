@@ -40,6 +40,10 @@ const base::Feature kWebViewExtraHeadersSameOriginOnly{
 const base::Feature kWebViewJavaJsBridgeMojo{"WebViewJavaJsBridgeMojo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables logging whether it was a first party page when logging PageTimeSpent.
+const base::Feature kWebViewLogFirstPartyPageTimeSpent{
+    "WebViewLogFirstPartyPageTimeSpent", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Measure the number of pixels occupied by one or more WebViews as a
 // proportion of the total screen size. Depending on the number of
 // WebVieaws and the size of the screen this might be expensive so

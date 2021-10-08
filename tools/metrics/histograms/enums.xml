@@ -52978,6 +52978,7 @@ from previous Chrome versions.
   <int value="1899248188" label="MediaApp:disabled"/>
   <int value="1900529524" label="disable-touch-drag-drop"/>
   <int value="1901640438" label="EnableLauncherSearchNormalization:disabled"/>
+  <int value="1902274960" label="WebViewLogFirstPartyPageTimeSpent:enabled"/>
   <int value="1903206193" label="NewWindowAppMenu:disabled"/>
   <int value="1903444879" label="VirtualKeyboardApi:disabled"/>
   <int value="1905465678" label="ContextualSearchSingleActions:enabled"/>
@@ -53055,6 +53056,7 @@ from previous Chrome versions.
   <int value="1954778883" label="COLRV1Fonts:disabled"/>
   <int value="1955238689" label="OmniboxMaxURLMatches:disabled"/>
   <int value="1955669770" label="MessagesForAndroidPopupBlocked:enabled"/>
+  <int value="1957192097" label="WebViewLogFirstPartyPageTimeSpent:disabled"/>
   <int value="1957273171" label="PageAlmostIdle:disabled"/>
   <int value="1957358530" label="ContextualSearchSecondTap:enabled"/>
   <int value="1957472162"

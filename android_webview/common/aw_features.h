@@ -20,6 +20,7 @@ extern const base::Feature kWebViewConnectionlessSafeBrowsing;
 extern const base::Feature kWebViewDisplayCutout;
 extern const base::Feature kWebViewExtraHeadersSameOriginOnly;
 extern const base::Feature kWebViewJavaJsBridgeMojo;
+extern const base::Feature kWebViewLogFirstPartyPageTimeSpent;
 extern const base::Feature kWebViewMeasureScreenCoverage;
 extern const base::Feature kWebViewMixedContentAutoupgrades;
 extern const base::Feature kWebViewOriginTrials;

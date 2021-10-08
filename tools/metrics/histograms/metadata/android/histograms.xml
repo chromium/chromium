@@ -4045,6 +4045,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.PageTimeSpent.{Scheme}" units="ms"
     expires_after="2022-07-01">
+  <obsolete>
+    Removed in October 2021.
+  </obsolete>
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -4073,6 +4076,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     <variant name="Other"/>
     <variant name="Sms"/>
     <variant name="Tel"/>
+  </token>
+</histogram>
+
+<histogram name="Android.WebView.PageTimeSpent2.{Scheme}{Party}" units="ms"
+    expires_after="2022-07-01">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Time spent on a page with a {Scheme} scheme. This is measured from
+    navigation commit to the start of the next navigation. For http and https
+    schemes it is additionally recorded whether it is a first or third party
+    page. This uses an optional key, in this case the value is
+    &quot;{Party}&quot;.
+  </summary>
+  <token key="Scheme">
+    <variant name="App"/>
+    <variant name="Blob"/>
+    <variant name="Chrome"/>
+    <variant name="ChromeNative"/>
+    <variant name="Content"/>
+    <variant name="CustomTab"/>
+    <variant name="Data"/>
+    <variant name="Devtools"/>
+    <variant name="Document"/>
+    <variant name="File"/>
+    <variant name="Filesystem"/>
+    <variant name="Ftp"/>
+    <variant name="Http"/>
+    <variant name="Https"/>
+    <variant name="Inline"/>
+    <variant name="Intent"/>
+    <variant name="Jar"/>
+    <variant name="JavaScript"/>
+    <variant name="Other"/>
+    <variant name="Sms"/>
+    <variant name="Tel"/>
+  </token>
+  <token key="Party">
+    <variant name=""/>
+    <variant name=".FirstParty"/>
+    <variant name=".ThirdParty"/>
   </token>
 </histogram>
 

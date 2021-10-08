@@ -200,7 +200,7 @@ public class FlagsFragmentTest {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
         int searchBarChangeCount = helper.getCallCount();
-        onView(withId(R.id.flag_search_bar)).perform(replaceText("logging"));
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("verbose-logging"));
         helper.waitForCallback(searchBarChangeCount, 1);
         onView(allOf(withId(R.id.flag_name), withText(AwSwitches.WEBVIEW_VERBOSE_LOGGING)))
                 .check(matches(isDisplayed()));
@@ -228,7 +228,7 @@ public class FlagsFragmentTest {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
         int searchBarChangeCount = helper.getCallCount();
-        onView(withId(R.id.flag_search_bar)).perform(replaceText("LOGGING"));
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("VERBOSE-LOGGING"));
         helper.waitForCallback(searchBarChangeCount, 1);
         onView(allOf(withId(R.id.flag_name), withText(AwSwitches.WEBVIEW_VERBOSE_LOGGING)))
                 .check(matches(isDisplayed()));
@@ -266,7 +266,7 @@ public class FlagsFragmentTest {
         int totalNumFlags = flagsList.getCount();
 
         int searchBarChangeCount = helper.getCallCount();
-        onView(withId(R.id.flag_search_bar)).perform(replaceText("logging"));
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("verbose-logging"));
         helper.waitForCallback(searchBarChangeCount, 1);
         onView(withId(R.id.flags_list)).check(matches(withCount(1)));
 
@@ -282,7 +282,7 @@ public class FlagsFragmentTest {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
         int searchBarChangeCount = helper.getCallCount();
-        onView(withId(R.id.flag_search_bar)).perform(replaceText("logging"));
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("verbose-logging"));
         helper.waitForCallback(searchBarChangeCount, 1);
 
         // "x" icon should visible if there's some text
@@ -309,7 +309,7 @@ public class FlagsFragmentTest {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
         int searchBarChangeCount = helper.getCallCount();
-        onView(withId(R.id.flag_search_bar)).perform(replaceText("logging"));
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("verbose-logging"));
         helper.waitForCallback(searchBarChangeCount, 1);
 
         // "x" icon should visible if there's some text
@@ -335,14 +335,14 @@ public class FlagsFragmentTest {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
         int searchBarChangeCount = helper.getCallCount();
-        onView(withId(R.id.flag_search_bar)).perform(replaceText("logging"));
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("verbose-logging"));
         helper.waitForCallback(searchBarChangeCount, 1);
 
         EditText searchBar = mRule.getActivity().findViewById(R.id.flag_search_bar);
         tapCompoundDrawableOnUiThread(searchBar, CompoundDrawable.TOP);
 
         // EditText should not be cleared
-        onView(withId(R.id.flag_search_bar)).check(matches(withText("logging")));
+        onView(withId(R.id.flag_search_bar)).check(matches(withText("verbose-logging")));
 
         // "x" icon is still visible
         onView(withId(R.id.flag_search_bar))
