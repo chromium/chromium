@@ -2740,6 +2740,9 @@
                         "NtpDriveModule",
                         "NtpModules",
                         "NtpRecipeTasksModule"
+                    ],
+                    "disable_features": [
+                        "NtpShoppingTasksModule"
                     ]
                 }
             ]
