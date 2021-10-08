@@ -22,25 +22,19 @@ class Extension;
 
 namespace chromeos {
 
-namespace {
-
-constexpr char kChromeOSSystemExtensionId[] =
-    "gogonhoemckpdpadfnjnpgbjpbjnodgc";
-
-}  // namespace
-
 using TelemetryExtensionBrowserTest = BaseTelemetryExtensionBrowserTest;
 
 // Tests that chromeos_system_extension is able to define externally_connectable
 // manifest key and receive messages from another extension.
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
                        CanReceiveMessageExternal) {
   // Start listening on the extension.
   ExtensionTestMessageListener listener(/*will_reply=*/false);
 
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir_receiver;
-  test_dir_receiver.WriteManifest(kManifestFile);
+  test_dir_receiver.WriteManifest(
+      GetManifestFile(GetParam().public_key, GetParam().matches_origin));
   test_dir_receiver.WriteFile(FILE_PATH_LITERAL("options.html"), "");
   test_dir_receiver.WriteFile("sw.js", base::StringPrintf(R"(
         chrome.test.runTests([
@@ -54,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
             chrome.test.sendMessage('ready');
           }
         ]);
-      )", kPwaPageUrlString));
+      )", GetParam().pwa_page_url.c_str()));
 
   // Load and run the extenion (chromeos_system_extension).
   const extensions::Extension* receiver =
@@ -72,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
   // Note: |pwa_page_rfh_| is the RenderFrameHost for |kPwaPageUrlString| page.
   const auto script = base::StringPrintf(
       "window.chrome.runtime.sendMessage('%s', 'ping', (result) => {});",
-      kChromeOSSystemExtensionId);
+      GetParam().extension_id.c_str());
   pwa_page_rfh_->ExecuteJavaScriptForTests(base::ASCIIToUTF16(script),
                                            base::NullCallback());
 
@@ -83,14 +77,15 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
 
 // Tests that chromeos_system_extension is able to define options_page manifest
 // key and user can navigate to the options page.
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionBrowserTest,
                        CanNavigateToOptionsPage) {
   // Start listening on the extension.
   ExtensionTestMessageListener listener(/*will_reply=*/false);
 
   // Must outlive the extension.
   extensions::TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifestFile);
+  test_dir.WriteManifest(
+      GetManifestFile(GetParam().public_key, GetParam().matches_origin));
   test_dir.WriteFile(FILE_PATH_LITERAL("options.html"),
                      "<script>chrome.test.sendMessage('done')</script>");
   test_dir.WriteFile("sw.js", "chrome.test.sendMessage('ready');");
@@ -115,5 +110,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionBrowserTest,
   ASSERT_TRUE(listener.WaitUntilSatisfied());
   EXPECT_EQ("done", listener.message());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TelemetryExtensionBrowserTest,
+    testing::ValuesIn(
+        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
 
 }  // namespace chromeos

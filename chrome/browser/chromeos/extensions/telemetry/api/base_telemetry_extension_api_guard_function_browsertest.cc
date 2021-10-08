@@ -152,7 +152,7 @@ std::string GetServiceWorkerForError(const std::string& error) {
 
 using TelemetryExtensionApiGuardBrowserTest = BaseTelemetryExtensionBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardBrowserTest,
                        ActiveUserNotOwner) {
   // Make sure that current user is not a device owner.
   auto* const user_manager =
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
       "This extension is not run by the device owner"));
 }
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardBrowserTest,
                        NotAllowedDeviceManufacturer) {
   hardware_info_delegate_factory_ =
       std::make_unique<FakeHardwareInfoDelegate::Factory>("Google\n");
@@ -175,6 +175,12 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
   CreateExtensionAndRunServiceWorker(GetServiceWorkerForError(
       "This extension is not allowed to access the API on this device"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TelemetryExtensionApiGuardBrowserTest,
+    testing::ValuesIn(
+        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
 
 class TelemetryExtensionApiGuardWithoutPwaBrowserTest
     : public BaseTelemetryExtensionBrowserTest {
@@ -190,10 +196,16 @@ class TelemetryExtensionApiGuardWithoutPwaBrowserTest
       const TelemetryExtensionApiGuardWithoutPwaBrowserTest&) = delete;
 };
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardWithoutPwaBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionApiGuardWithoutPwaBrowserTest,
                        PwaUiNotOpen) {
   CreateExtensionAndRunServiceWorker(
       GetServiceWorkerForError("Companion PWA UI is not open"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TelemetryExtensionApiGuardWithoutPwaBrowserTest,
+    testing::ValuesIn(
+        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
 
 }  // namespace chromeos

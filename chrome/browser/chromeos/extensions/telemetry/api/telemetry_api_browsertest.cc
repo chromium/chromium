@@ -20,7 +20,7 @@ namespace chromeos {
 using TelemetryExtensionTelemetryApiBrowserTest =
     BaseTelemetryExtensionBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoWithoutSerialNumberPermission) {
   // Configure fake cros_healthd response.
   {
@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoWithSerialNumberPermission) {
   // Configure fake cros_healthd response.
   {
@@ -151,7 +151,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Error) {
   DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
       std::make_unique<TestDebugDaemonClient>());
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Success) {
   // TODO(crbug.com/977629): Currently, chrome.test.runWithUserGesture()
   // doesn't support Service Worker-based extensions, so this is a workaround.
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithoutSerialNumberPermission) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -234,5 +234,11 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
     ]);
   )");
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    TelemetryExtensionTelemetryApiBrowserTest,
+    testing::ValuesIn(
+        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
 
 }  // namespace chromeos

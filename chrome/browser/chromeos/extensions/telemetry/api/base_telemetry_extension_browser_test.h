@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_BASE_TELEMETRY_EXTENSION_BROWSER_TEST_H_
 
 #include <string>
+#include <vector>
 
 #include "chrome/browser/chromeos/extensions/telemetry/api/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -13,11 +14,28 @@
 
 namespace chromeos {
 
+struct ExtensionInfoTestParams {
+  ExtensionInfoTestParams(const std::string& extension_id,
+                          const std::string& public_key,
+                          const std::string& pwa_page_url,
+                          const std::string& matches_origin);
+  ExtensionInfoTestParams(const ExtensionInfoTestParams& other);
+  ~ExtensionInfoTestParams();
+
+  const std::string extension_id;
+  const std::string public_key;
+  const std::string pwa_page_url;
+  const std::string matches_origin;
+};
+
 class BaseTelemetryExtensionBrowserTest
-    : public extensions::ExtensionBrowserTest {
+    : public extensions::ExtensionBrowserTest,
+      public testing::WithParamInterface<ExtensionInfoTestParams> {
  public:
-  static const char kManifestFile[];
-  static const char kPwaPageUrlString[];
+  static const std::vector<ExtensionInfoTestParams> kAllExtensionInfoTestParams;
+
+  static std::string GetManifestFile(const std::string& public_key,
+                                     const std::string& matches_origin);
 
   BaseTelemetryExtensionBrowserTest();
   ~BaseTelemetryExtensionBrowserTest() override;

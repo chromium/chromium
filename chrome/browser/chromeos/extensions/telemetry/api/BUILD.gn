@@ -73,6 +73,7 @@ source_set("browser_tests") {
     ":api",
     "//base",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",
     "//chromeos/dbus",
     "//chromeos/dbus/cros_healthd",
