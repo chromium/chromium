@@ -897,7 +897,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private void updateUseDarkColors() {
             updateButtonsTint();
             @OmniboxTheme
-            int omniboxTheme = mUseDarkColors ? OmniboxTheme.DARK_THEME : OmniboxTheme.LIGHT_THEME;
+            int omniboxTheme = mUseDarkColors ? OmniboxTheme.LIGHT_THEME : OmniboxTheme.DARK_THEME;
             if (mUrlCoordinator.setOmniboxTheme(omniboxTheme)) {
                 // Update the URL to make it use the new color scheme.
                 updateUrlBar();
