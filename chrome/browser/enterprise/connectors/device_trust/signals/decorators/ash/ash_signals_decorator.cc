@@ -28,6 +28,8 @@ void AshSignalsDecorator::Decorate(attestation::DeviceTrustSignals& signals,
   signals.set_device_id(browser_policy_connector_->GetDirectoryApiID());
   signals.set_obfuscated_customer_id(
       browser_policy_connector_->GetObfuscatedCustomerID());
+  signals.set_enrollment_domain(
+      browser_policy_connector_->GetEnterpriseDisplayDomain());
 
   std::move(done_closure).Run();
 }

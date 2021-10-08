@@ -19,6 +19,7 @@ namespace enterprise_connectors {
 namespace {
 
 constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
+constexpr char kFakeEnrollmentDomain[] = "fake.domain.google.com";
 constexpr char kFakeDeviceId[] = "fake_device_id";
 
 }  // namespace
@@ -34,10 +35,12 @@ class BrowserSignalsDecoratorTest : public testing::Test {
                        std::move(stub_device_info_fetcher));
   }
 
-  void SetFakeCustomerId() {
+  void SetFakePolicyData() {
     mock_cloud_policy_store_.InitPolicyData();
     mock_cloud_policy_store_.GetMutablePolicyData()->set_obfuscated_customer_id(
         kFakeCustomerId);
+    mock_cloud_policy_store_.GetMutablePolicyData()->set_display_domain(
+        kFakeEnrollmentDomain);
   }
 
   void ValidateStaticSignals(const DeviceTrustSignals& signals) {
@@ -53,8 +56,8 @@ class BrowserSignalsDecoratorTest : public testing::Test {
   absl::optional<BrowserSignalsDecorator> decorator_;
 };
 
-TEST_F(BrowserSignalsDecoratorTest, Decorate_WithCustomerId) {
-  SetFakeCustomerId();
+TEST_F(BrowserSignalsDecoratorTest, Decorate_WithPolicyData) {
+  SetFakePolicyData();
 
   base::RunLoop run_loop;
 
@@ -65,9 +68,10 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithCustomerId) {
 
   ValidateStaticSignals(signals);
   EXPECT_EQ(kFakeCustomerId, signals.obfuscated_customer_id());
+  EXPECT_EQ(kFakeEnrollmentDomain, signals.enrollment_domain());
 }
 
-TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutCustomerId) {
+TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutPolicyData) {
   base::RunLoop run_loop;
 
   DeviceTrustSignals signals;
@@ -77,6 +81,7 @@ TEST_F(BrowserSignalsDecoratorTest, Decorate_WithoutCustomerId) {
 
   ValidateStaticSignals(signals);
   EXPECT_FALSE(signals.has_obfuscated_customer_id());
+  EXPECT_FALSE(signals.has_enrollment_domain());
 }
 
 }  // namespace enterprise_connectors
