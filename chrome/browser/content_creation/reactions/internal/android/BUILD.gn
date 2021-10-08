@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsCoordinatorImpl.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/LightweightReactionsDialog.java",
+    "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionServiceFactory.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/ReactionLayout.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneCoordinator.java",
     "java/src/org/chromium/chrome/browser/content_creation/reactions/scene/SceneEditorDelegate.java",
@@ -22,10 +23,12 @@ android_library("java") {
     "//base:base_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/content_creation/reactions/android:public_java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/styles/android:java_resources",
+    "//components/content_creation/reactions/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -36,6 +39,15 @@ android_library("java") {
   resources_package =
       "org.chromium.chrome.browser.content_creation.reactions.internal"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    "//chrome/browser",
+    "//chrome/browser/content_creation/reactions/internal:*",
+  ]
+
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/reactions/ReactionServiceFactory.java" ]
 }
 
 android_resources("java_resources") {

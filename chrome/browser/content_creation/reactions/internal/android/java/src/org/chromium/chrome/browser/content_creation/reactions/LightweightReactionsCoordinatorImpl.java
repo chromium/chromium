@@ -16,15 +16,21 @@ import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.content_creation.reactions.ReactionMetadata;
+import org.chromium.components.content_creation.reactions.ReactionService;
+
+import java.util.List;
 
 /**
  * Responsible for reactions main UI and its subcomponents.
  */
 public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinator
         implements LightweightReactionsCoordinator, ToolbarControlsDelegate {
+    private final ReactionService mReactionService;
     private final LightweightReactionsDialog mDialog;
     private final SceneCoordinator mSceneCoordinator;
 
+    private List<ReactionMetadata> mAvailableReactions;
     private ToolbarCoordinator mToolbarCoordinator;
 
     /**
@@ -36,13 +42,16 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
+     * @param reactionService The {@link ReactionService} to use for Reaction operations.
      */
     public LightweightReactionsCoordinatorImpl(Activity activity, Tab tab, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
-            BottomSheetController sheetController) {
+            BottomSheetController sheetController, ReactionService reactionService) {
         super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
+        mReactionService = reactionService;
         mDialog = new LightweightReactionsDialog();
         mSceneCoordinator = new SceneCoordinator(activity);
+        mReactionService.getReactions((reactions) -> { mAvailableReactions = reactions; });
     }
 
     /**

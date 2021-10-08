@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.content_creation.reactions;
 
 import android.app.Activity;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -20,7 +21,9 @@ public class LightweightReactionsCoordinatorFactory {
     public static LightweightReactionsCoordinator create(Activity activity, Tab tab,
             String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController) {
-        return new LightweightReactionsCoordinatorImpl(
-                activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
+        Profile profile = Profile.getLastUsedRegularProfile();
+        return new LightweightReactionsCoordinatorImpl(activity, tab, shareUrl,
+                chromeOptionShareCallback, sheetController,
+                ReactionServiceFactory.getForProfile(profile));
     }
 }
