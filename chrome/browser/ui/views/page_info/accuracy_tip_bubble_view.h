@@ -58,7 +58,6 @@ class AccuracyTipBubbleView : public PageInfoBubbleViewBase {
   void OnSecondaryButtonClicked(AccuracyTipInteraction action);
 
   // WebContentsObserver:
-  void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidChangeVisibleSecurityState() override;
 
   base::OnceCallback<void(AccuracyTipInteraction)> close_callback_;

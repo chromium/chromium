@@ -238,12 +238,7 @@ void SafetyTipPageInfoBubbleView::OnVisibilityChanged(
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
-void SafetyTipPageInfoBubbleView::DidStartNavigation(
-    content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
-    return;
-  }
-
+void SafetyTipPageInfoBubbleView::PrimaryPageChanged(content::Page& page) {
   if (action_taken_ == SafetyTipInteraction::kNoAction) {
     action_taken_ = SafetyTipInteraction::kStartNewNavigation;
   }

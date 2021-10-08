@@ -213,14 +213,6 @@ void AccuracyTipBubbleView::OnSecondaryButtonClicked(
   GetWidget()->Close();
 }
 
-void AccuracyTipBubbleView::DidStartNavigation(
-    content::NavigationHandle* handle) {
-  if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
-    return;
-  }
-  GetWidget()->Close();
-}
-
 void AccuracyTipBubbleView::DidChangeVisibleSecurityState() {
   // Do nothing. (Base class closes the bubble.)
 }

@@ -65,7 +65,7 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
   // WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void DidStartNavigation(content::NavigationHandle* handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidChangeVisibleSecurityState() override;
 
   void MaybeAddButtons(security_state::SafetyTipStatus safety_tip_status,
