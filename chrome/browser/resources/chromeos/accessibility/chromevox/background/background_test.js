@@ -3624,3 +3624,42 @@ TEST_F('ChromeVoxBackgroundTest', 'AllowIframeToBeFocused', function(root) {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'NewWindowWebSpeech', function() {
+  this.newCallback(async () => {
+    const speech = [];
+    let onSpeech;
+    ChromeVox.tts.speak = (textString) => {
+      speech.push(textString);
+      if (onSpeech) {
+        onSpeech(textString);
+      }
+    };
+
+    chrome.runtime.openOptionsPage();
+
+    await new Promise(resolve => {
+      onSpeech = (textString) => {
+        if (textString === 'ChromeVox Options') {
+          resolve();
+        }
+      };
+    });
+
+    press(KeyCode.TAB)();
+
+    await new Promise(resolve => {
+      onSpeech = resolve;
+    });
+
+    // Check to ensure there are no duplicate announcements.
+    assertEquals(
+        speech.indexOf('ChromeVox Options'),
+        speech.lastIndexOf('ChromeVox Options'));
+
+    // Ensure there are no announcements about tabs.
+    assertFalse(speech.some(text => {
+      return text.indexOf('Tab') !== -1;
+    }));
+  })();
+});
