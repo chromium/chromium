@@ -698,6 +698,10 @@ void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
   root_surface->AddSurfaceObserver(this);
   SetRootSurface(root_surface);
   host_window()->Show();
+  if (widget_ && widget_->GetNativeWindow() &&
+      widget_->GetNativeWindow()->HasFocus()) {
+    host_window()->Focus();
+  }
 
   SetCanMinimize(can_minimize_);
   SetCanMaximize(ash::desks_util::IsDeskContainerId(container_));
