@@ -26,6 +26,7 @@
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
+#include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -367,7 +368,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
           base::BindRepeating(&DesksBarView::OnNewDeskButtonPressed,
                               base::Unretained(this),
                               DesksCreationRemovalSource::kButton)));
-  if (features::AreDesksTemplatesEnabled()) {
+  if (desks_templates_util::AreDesksTemplatesEnabled()) {
     // TODO(sophiewen): u"Templates" should be replaced with the localized name
     // for the "Templates" desk label.
     expanded_state_desks_templates_button_ =

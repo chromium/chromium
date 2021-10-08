@@ -5,19 +5,16 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_UTIL_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_UTIL_H_
 
-#include "ash/ash_export.h"
-
 class PrefRegistrySimple;
 
 namespace ash {
-
 namespace desks_templates_util {
 
-// Registers the per-profile preferences for whether desk templates are
-// enabled
-ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
+// Registers the per-profile preferences for whether desks templates are
+// enabled.
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-ASH_EXPORT bool AreDesksTemplatesEnabled();
+bool AreDesksTemplatesEnabled();
 
 }  // namespace desks_templates_util
 }  // namespace ash

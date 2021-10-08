@@ -32,6 +32,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
+#include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/cleanup_animation_observer.h"
 #include "ash/wm/overview/drop_target_view.h"
@@ -493,7 +494,7 @@ void OverviewGrid::PrepareForOverview() {
   grid_event_handler_ = std::make_unique<OverviewGridEventHandler>(this);
   Shell::Get()->wallpaper_controller()->AddObserver(this);
 
-  if (features::AreDesksTemplatesEnabled())
+  if (desks_templates_util::AreDesksTemplatesEnabled())
     ShowCreateDesksTemplatesButtons();
 }
 
