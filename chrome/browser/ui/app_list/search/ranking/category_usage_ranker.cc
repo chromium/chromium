@@ -49,7 +49,7 @@ void CategoryUsageRanker::InitializeCategoryScores() {
   // Set a default ranking for categories by recording every category once. The
   // |category_ranker_| has a small recency component to its scores, so the
   // categories will appear in reverse order to the Record calls. This must
-  // record every category.
+  // record every category except unknown and best match.
   category_ranker_->Record(CategoryToString(Category::kAssistant));
   category_ranker_->Record(CategoryToString(Category::kPlayStore));
   category_ranker_->Record(CategoryToString(Category::kWeb));
@@ -58,9 +58,9 @@ void CategoryUsageRanker::InitializeCategoryScores() {
   category_ranker_->Record(CategoryToString(Category::kSettings));
   category_ranker_->Record(CategoryToString(Category::kApp));
 
-  // Check we've recorded every category.
+  // Check we've recorded every category except unknown and best match.
   DCHECK_EQ(category_ranker_->Rank().size(),
-            static_cast<size_t>(Category::kMaxValue));
+            static_cast<size_t>(Category::kMaxValue) - 1);
 }
 
 CategoryUsageRanker::~CategoryUsageRanker() {}

@@ -5,28 +5,20 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_TYPES_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_RANKING_TYPES_H_
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 
 namespace app_list {
 
-// The different categories of search result to display in launcher search.
-// Every search result type maps to one category. These values are not stable,
-// and should not be used for metrics.
-enum class Category {
-  kApp = 1,
-  kWeb = 2,
-  kFiles = 3,
-  kAssistant = 4,
-  kSettings = 5,
-  kHelp = 6,
-  kPlayStore = 7,
-  kMaxValue = kPlayStore,
-};
+using Category = ash::AppListSearchResultCategory;
 
 // All score information for a single result. This is stored with a result, and
 // incrementally updated by rankers as needed. Generally, each ranker should
 // control one score.
+//
+// TODO(crbug.com/1199206): Category scores need to be removed from this and
+// added to a separate struct.
 struct Scoring {
   bool filter = false;
   bool top_match = false;

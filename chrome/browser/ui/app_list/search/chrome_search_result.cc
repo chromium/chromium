@@ -67,6 +67,11 @@ void ChromeSearchResult::SetFormattedPrice(
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetCategory(Category category) {
+  metadata_->category = category;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetDisplayType(DisplayType display_type) {
   metadata_->display_type = display_type;
   SetSearchResultMetadata();

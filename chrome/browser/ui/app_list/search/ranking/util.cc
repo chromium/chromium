@@ -63,6 +63,11 @@ Category ResultTypeToCategory(ResultType result_type) {
 
 std::u16string CategoryDebugString(const Category category) {
   switch (category) {
+    case Category::kUnknown:
+      return u"(unknown) ";
+    case Category::kBestMatch:
+      // The debug string for best match is handled elsewhere.
+      return u"";
     case Category::kApp:
       return u"(apps) ";
     case Category::kWeb:
