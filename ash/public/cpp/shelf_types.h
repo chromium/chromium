@@ -122,6 +122,9 @@ enum ShelfLaunchSource {
 
   // The item was launched from the shelf itself.
   LAUNCH_FROM_SHELF,
+
+  // The item was launched internally, for example from test.
+  LAUNCH_FROM_INTERNAL,
 };
 
 // The actions that may be performed when a shelf item is selected.

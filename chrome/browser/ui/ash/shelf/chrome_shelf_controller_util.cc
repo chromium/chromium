@@ -177,6 +177,8 @@ apps::mojom::LaunchSource ShelfLaunchSourceToAppsLaunchSource(
   switch (source) {
     case ash::LAUNCH_FROM_UNKNOWN:
       return apps::mojom::LaunchSource::kUnknown;
+    case ash::LAUNCH_FROM_INTERNAL:
+      return apps::mojom::LaunchSource::kFromChromeInternal;
     case ash::LAUNCH_FROM_APP_LIST:
       return apps::mojom::LaunchSource::kFromAppListGrid;
     case ash::LAUNCH_FROM_APP_LIST_SEARCH:

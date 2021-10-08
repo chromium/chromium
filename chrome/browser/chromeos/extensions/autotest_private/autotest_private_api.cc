@@ -1994,7 +1994,7 @@ ExtensionFunction::ResponseAction AutotestPrivateLaunchAppFunction::Run() {
   if (!controller)
     return RespondNow(Error("Controller not available"));
   controller->LaunchApp(ash::ShelfID(params->app_id),
-                        ash::ShelfLaunchSource::LAUNCH_FROM_UNKNOWN,
+                        ash::ShelfLaunchSource::LAUNCH_FROM_INTERNAL,
                         0, /* event_flags */
                         display::Screen::GetScreen()->GetPrimaryDisplay().id());
   return RespondNow(NoArguments());
