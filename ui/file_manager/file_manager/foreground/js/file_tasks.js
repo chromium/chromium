@@ -229,15 +229,10 @@ export class FileTasks {
   }
 
   /**
-   * Records UMA statistics about Share action.
-   * @param {!FileTasks.SharingActionSourceForUMA} source The enum representing
-   *     the UI element that triggered the share action.
+   * Records UMA statistics for file types being shared in Share action.
    * @param {!Array<!FileEntry>} entries File entries to be shared.
    */
-  static recordSharingActionUMA_(source, entries) {
-    metrics.recordEnum(
-        'Share.ActionSource', source, FileTasks.ValidSharingActionSource);
-    metrics.recordSmallCount('Share.FileCount', entries.length);
+  static recordSharingFileTypesUMA_(entries) {
     for (const entry of entries) {
       metrics.recordEnum(
           'Share.FileType', FileTasks.getViewFileType(entry),
@@ -309,14 +304,6 @@ export class FileTasks {
     // - Files app's internal tasks
     // - file_handler tasks with OPEN_WITH verb
     return !task.verb || task.verb == chrome.fileManagerPrivate.Verb.OPEN_WITH;
-  }
-
-  /**
-   * @param {!chrome.fileManagerPrivate.FileTask} task The task checked.
-   * @return {boolean} Whether or not this task is a file sharing task.
-   */
-  static isShareTask(task) {
-    return task.verb === chrome.fileManagerPrivate.Verb.SHARE_WITH;
   }
 
   /**
@@ -620,10 +607,6 @@ export class FileTasks {
     FileTasks.recordViewingFileTypeUMA_(this.volumeManager_, this.entries_);
     FileTasks.recordViewingRootTypeUMA_(
         this.volumeManager_, this.directoryModel_.getCurrentRootType());
-    if (FileTasks.isShareTask(task)) {
-      FileTasks.recordSharingActionUMA_(
-          FileTasks.SharingActionSourceForUMA.SHARE_SHEET, this.entries_);
-    }
     this.executeInternal_(task);
   }
 
@@ -1245,28 +1228,6 @@ FileTasks.UMA_INDEX_KNOWN_EXTENSIONS = Object.freeze([
   '.dng',      '.nef',         '.nrw',
   '.orf',      '.raf',         '.rw2',
   '.tini'
-]);
-
-/**
- * Possible share action sources for UMA.
- * @enum {string}
- * @const
- */
-FileTasks.SharingActionSourceForUMA = {
-  UNKNOWN: 'Unknown',
-  CONTEXT_MENU: 'Context Menu',
-  SHARE_SHEET: 'Share Sheet',
-};
-
-/**
- * A list of supported values for SharingActionSource enum. Keep this in sync
- * with SharingActionSource defined in //tools/metrics/histograms/enums.xml.
- */
-FileTasks.ValidSharingActionSource = Object.freeze([
-  FileTasks.SharingActionSourceForUMA.UNKNOWN,
-  FileTasks.SharingActionSourceForUMA.CONTEXT_MENU,
-  null,  // SHARE_BUTTON replaced by share sheet.
-  FileTasks.SharingActionSourceForUMA.SHARE_SHEET,
 ]);
 
 /**

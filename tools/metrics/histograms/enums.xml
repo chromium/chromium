@@ -76530,6 +76530,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SharingActionSource">
+  <obsolete>
+    Removed 07 October 2021.
+  </obsolete>
 <!--
   SharingActionSource must be kept in sync with ValidSharingActionSource defined
   in //ui/file_manager/file_manager/foreground/js/file_manager_commands.js.

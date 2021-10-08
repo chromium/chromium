@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import {MockProgressCenter} from '../../background/js/mock_progress_center.js';
@@ -619,72 +619,17 @@ export function testGetViewFileType() {
 /**
  * Checks that we are correctly recording UMA about Share action.
  */
-export function testRecordSharingAction() {
+export function testRecordSharingFileTypes() {
   // Setup: create a fake metrics object that can be examined for content.
   const mockFileSystem = new MockFileSystem('volumeId');
 
   // Actual tests.
-  FileTasks.recordSharingActionUMA_(
-      FileTasks.SharingActionSourceForUMA.CONTEXT_MENU, [
-        MockFileEntry.create(mockFileSystem, '/test.log'),
-        MockFileEntry.create(mockFileSystem, '/test.doc'),
-        MockFileEntry.create(mockFileSystem, '/test.__no_such_extension__'),
-      ]);
-  assertArrayEquals(
-      enumMap.get('Share.ActionSource'),
-      [FileTasks.SharingActionSourceForUMA.CONTEXT_MENU]);
-  assertArrayEquals(countMap.get('Share.FileCount'), [3]);
+  FileTasks.recordSharingFileTypesUMA_([
+    MockFileEntry.create(mockFileSystem, '/test.log'),
+    MockFileEntry.create(mockFileSystem, '/test.doc'),
+    MockFileEntry.create(mockFileSystem, '/test.__no_such_extension__'),
+  ]);
   assertArrayEquals(enumMap.get('Share.FileType'), ['.log', '.doc', 'other']);
-}
-
-/**
- * Checks that file task is correctly recognized as a file sharing task.
- */
-export function testIsSharingTask() {
-  const mockShareTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    verb: chrome.fileManagerPrivate.Verb.SHARE_WITH,
-  });
-  assertTrue(FileTasks.isShareTask(mockShareTask));
-  const mockPackTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    verb: '__no_such_verb__',
-  });
-  assertFalse(FileTasks.isShareTask(mockPackTask));
-}
-
-/**
- * Checks that a task sharing files with external apps correctly records
- * UMA statistics.
- */
-export async function testShareWith(done) {
-  const fileManager = getMockFileManager();
-  const mockFileSystem = new MockFileSystem('volumeId');
-  const entries = [
-    MockFileEntry.create(mockFileSystem, '/image1.jpg'),
-    MockFileEntry.create(mockFileSystem, '/image2.jpg'),
-  ];
-
-  const tasks = await FileTasks.create(
-      fileManager.volumeManager, fileManager.metadataModel,
-      fileManager.directoryModel, fileManager.ui, mockFileTransferController,
-      entries, ['application/jpg'], mockTaskHistory,
-      fileManager.namingController, fileManager.crostini,
-      fileManager.progressCenter);
-
-  const mockTask = /** @type {!chrome.fileManagerPrivate.FileTask} */ ({
-    descriptor: {
-      appId: 'com.acme/com.acme.android.PhotosApp',
-      taskType: 'arc',
-      actionId: 'send_multiple'
-    },
-    isDefault: false,
-    verb: chrome.fileManagerPrivate.Verb.SHARE_WITH,
-    isGenericFileHandler: true,
-  });
-  tasks.execute(mockTask);
-  assertArrayEquals(['.jpg', '.jpg'], enumMap.get('Share.FileType'));
-  assertArrayEquals([2], countMap.get('Share.FileCount'));
-
-  done();
 }
 
 /**

@@ -10,36 +10,7 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry} from '../../common/js/mock_entry.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
-import {CommandHandler, CommandUtil} from './file_manager_commands.js';
-import {FileTasks} from './file_tasks.js';
-
-/**
- * Checks that a correct sharing action source is extracted from an event.
- */
-export function testGetSharingActionSource() {
-  const testData = [
-    {
-      event: {target: {id: CommandUtil.SharingActionElementId.CONTEXT_MENU}},
-      expected: FileTasks.SharingActionSourceForUMA.CONTEXT_MENU,
-    },
-    {
-      event: {target: {id: CommandUtil.SharingActionElementId.SHARE_SHEET}},
-      expected: FileTasks.SharingActionSourceForUMA.SHARE_SHEET,
-    },
-    {
-      event: {target: {id: '__no_such_id__'}},
-      expected: FileTasks.SharingActionSourceForUMA.UNKNOWN,
-    },
-    {
-      event: {target: {id: null}},
-      expected: FileTasks.SharingActionSourceForUMA.UNKNOWN,
-    },
-  ];
-  for (const data of testData) {
-    const source = CommandUtil.getSharingActionSource(data.event);
-    assertEquals(data.expected, source);
-  }
-}
+import {CommandHandler} from './file_manager_commands.js';
 
 /**
  * Checks that the `toggle-holding-space` command is appropriately enabled/

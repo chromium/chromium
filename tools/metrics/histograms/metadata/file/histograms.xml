@@ -632,6 +632,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.Share.ActionSource" enum="SharingActionSource"
     expires_after="2022-04-24">
+  <obsolete>
+    Removed in M97. File sharing is now done by Sharesheet, not Files.app.
+    Replaced with ChromeOS.Sharesheet.LaunchSource.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Chrome OS File Browser: the source of file sharing action.</summary>
@@ -639,6 +643,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="FileBrowser.Share.FileCount" units="files"
     expires_after="2022-04-17">
+  <obsolete>
+    Removed in M97. File sharing is now done by Sharesheet, not Files.app.
+    Replaced with ChromeOS.Sharesheet.FileCount.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
