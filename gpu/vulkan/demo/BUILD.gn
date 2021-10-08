@@ -10,12 +10,12 @@ assert(enable_vulkan)
 # TODO(cblume): These tests should run on each platform -- crbug.com/858614
 
 group("demo") {
-  if (use_x11) {
+  if (use_ozone && is_linux) {
     deps = [ ":vulkan_demo" ]
   }
 }
 
-if (use_x11) {
+if (use_ozone && is_linux) {
   executable("vulkan_demo") {
     sources = [
       "main.cc",
@@ -32,13 +32,10 @@ if (use_x11) {
       "//ui/display/types",
       "//ui/events",
       "//ui/events/platform",
-      "//ui/events/platform/x11",
       "//ui/gfx:native_widget_types",
       "//ui/gfx/geometry",
+      "//ui/ozone",
       "//ui/platform_window:platform_window",
-      "//ui/platform_window/x11",
     ]
-
-    deps += [ "//ui/gfx/x" ]
   }
 }

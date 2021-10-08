@@ -21,8 +21,8 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-#include "ui/platform_window/x11/x11_window.h"
 
 namespace gpu {
 
@@ -31,6 +31,11 @@ VulkanDemo::VulkanDemo() = default;
 VulkanDemo::~VulkanDemo() = default;
 
 void VulkanDemo::Initialize() {
+  ui::OzonePlatform::InitParams params;
+  params.single_process = true;
+  ui::OzonePlatform::InitializeForUI(params);
+  ui::OzonePlatform::InitializeForGPU(params);
+
   vulkan_implementation_ = gpu::CreateVulkanImplementation();
   DCHECK(vulkan_implementation_) << ":Failed to create vulkan implementation.";
 
@@ -46,10 +51,8 @@ void VulkanDemo::Initialize() {
 
   ui::PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(100, 100, 800, 600);
-  auto x11_window = std::make_unique<ui::X11Window>(this);
-  x11_window->Initialize(std::move(properties));
-
-  window_ = std::move(x11_window);
+  window_ = ui::OzonePlatform::GetInstance()->CreatePlatformWindow(
+      this, std::move(properties));
   window_->Show();
 
   // Sync up size between |window_| and |vulkan_surface_|
@@ -137,6 +140,8 @@ void VulkanDemo::CreateSkSurface() {
         SkSurface::kFlushRead_BackendHandleAccess);
     backend.setVkImageLayout(scoped_write_->image_layout());
   }
+  DCHECK(sk_surface);
+
   sk_surface_ = sk_surface;
   GrBackendSemaphore semaphore;
   semaphore.initVulkan(scoped_write_->begin_semaphore());
