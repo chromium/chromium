@@ -205,12 +205,23 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
-  "kiosk_enabled": {
-    "channel": "stable",
-    "extension_types": [
-      "platform_app"
-    ]
-  },
+  "kiosk_enabled": [
+    {
+      "channel": "stable",
+      "extension_types": [
+        "platform_app"
+      ]
+    },
+    {
+      "channel": "stable",
+      "extension_types": [
+        "extension"
+      ],
+      "session_types": [
+        "kiosk"
+      ]
+    }
+  ],
   "kiosk_only": {
     "channel": "stable",
     "extension_types": [
