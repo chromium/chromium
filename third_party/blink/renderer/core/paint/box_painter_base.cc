@@ -377,7 +377,7 @@ BoxPainterBase::FillLayerInfo::FillLayerInfo(
   // mode when forced-color-adjust is auto. This ensures that the inline images
   // are not painted on top of the forced colors mode backplate.
   if (doc.InForcedColorsMode() && is_inline &&
-      style.ForcedColorAdjust() != EForcedColorAdjust::kNone)
+      style.ForcedColorAdjust() == EForcedColorAdjust::kAuto)
     image = nullptr;
 
   const bool has_rounded_border =

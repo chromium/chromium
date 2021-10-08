@@ -1390,6 +1390,11 @@
     // none
     "active",
 
+    // forced-color-adjust
+    // auto
+    // none
+    "preserve-parent-color",
+
     // (navigation-controls) media feature
     // none
     "back-button",

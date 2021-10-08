@@ -2203,6 +2203,10 @@ crbug.com/1191718 external/wpt/css/css-fonts/size-adjust-text-decoration.tentati
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-001.html [ Failure ]
 crbug.com/450619 external/wpt/css/css-fonts/font-feature-resolution-002.html [ Failure ]
 
+# CSS Forced Color Adjust preserve-parent-color is not implemented yet
+crbug.com/1242706 external/wpt/css/css-forced-color-adjust/parsing/forced-color-adjust-computed.html [ Failure ]
+crbug.com/1242706 external/wpt/css/css-forced-color-adjust/parsing/forced-color-adjust-valid.html [ Failure ]
+
 # These need a rebaseline due crbug.com/504745 on Windows when they are activated again.
 crbug.com/521124 crbug.com/410145 [ Win7 ] fast/css/font-weight-1.html [ Failure Pass ]
 

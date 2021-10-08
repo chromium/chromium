@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_color_value.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -285,6 +286,18 @@ static CSSPropertyValueSet* DocumentElementUserAgentDeclarations() {
                                           *CSSInitialColorValue::Create());
   }
   return document_element_ua_decl;
+}
+
+// The 'color' property conditionally inherits from the *used* value of its
+// parent, and we rely on an explicit value in the cascade to implement this.
+// https://drafts.csswg.org/css-color-adjust-1/#propdef-forced-color-adjust
+static CSSPropertyValueSet* ForcedColorsUserAgentDeclarations() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<MutableCSSPropertyValueSet>, decl,
+      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+  if (decl->IsEmpty())
+    decl->SetProperty(CSSPropertyID::kColor, *CSSInheritedValue::Create());
+  return decl;
 }
 
 static void CollectScopedResolversForHostedShadowTrees(
@@ -981,6 +994,11 @@ void StyleResolver::ApplyBaseStyle(
     InitStyleAndApplyInheritance(*element, style_request, state);
 
     GetDocument().GetStyleEngine().EnsureUAStyleForElement(*element);
+
+    if (!style_request.IsPseudoStyleRequest() && IsForcedColorsModeEnabled()) {
+      cascade.MutableMatchResult().AddMatchedProperties(
+          ForcedColorsUserAgentDeclarations());
+    }
 
     // This adds a CSSInitialColorValue to the cascade for the document
     // element. The CSSInitialColorValue will resolve to a color-scheme
@@ -1753,12 +1771,6 @@ void StyleResolver::Trace(Visitor* visitor) const {
 
 bool StyleResolver::IsForcedColorsModeEnabled() const {
   return GetDocument().InForcedColorsMode();
-}
-
-bool StyleResolver::IsForcedColorsModeEnabled(
-    const StyleResolverState& state) const {
-  return IsForcedColorsModeEnabled() &&
-         state.Style()->ForcedColorAdjust() != EForcedColorAdjust::kNone;
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::CreateAnonymousStyleWithDisplay(

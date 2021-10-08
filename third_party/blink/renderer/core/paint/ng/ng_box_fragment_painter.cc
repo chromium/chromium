@@ -1610,7 +1610,7 @@ void NGBoxFragmentPainter::PaintBackplate(NGInlineCursor* line_boxes,
   // Only paint backplates behind text when forced-color-adjust is auto and the
   // element is visible.
   const ComputedStyle& style = PhysicalFragment().Style();
-  if (style.ForcedColorAdjust() == EForcedColorAdjust::kNone ||
+  if (style.ForcedColorAdjust() != EForcedColorAdjust::kAuto ||
       style.Visibility() != EVisibility::kVisible)
     return;
 

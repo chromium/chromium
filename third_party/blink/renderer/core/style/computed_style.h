@@ -3012,6 +3012,7 @@ class ComputedStyle : public ComputedStyleBase,
       const ComputedStyle& new_style);
 
   bool ShouldForceColor(const StyleColor& unforced_color) const;
+  bool ShouldPreserveParentColor() const;
 
   void ClearBackgroundImage();
 

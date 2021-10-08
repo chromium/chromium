@@ -1105,6 +1105,10 @@
       status: "stable",
     },
     {
+      name: "ForcedColorsPreserveParentColor",
+      depends_on: ["ForcedColors"],
+    },
+    {
       // This is used in tests to perform memory measurement without
       // waiting for GC.
       name:"ForceEagerMeasureMemory",

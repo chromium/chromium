@@ -155,7 +155,7 @@ void LineBoxListPainter::PaintBackplate(
   // element is visible.
   const ComputedStyle& style =
       line_box_list_.First()->GetLineLayoutItem().StyleRef();
-  if (style.ForcedColorAdjust() == EForcedColorAdjust::kNone ||
+  if (style.ForcedColorAdjust() != EForcedColorAdjust::kAuto ||
       style.Visibility() != EVisibility::kVisible)
     return;
 

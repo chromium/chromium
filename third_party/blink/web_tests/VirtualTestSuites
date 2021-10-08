@@ -628,7 +628,7 @@
     "bases": ["external/wpt/forced-colors-mode",
               "html/details_summary/color-scheme-validation"],
     "args": ["--force-high-contrast",
-             "--enable-blink-features=ForcedColors"]
+             "--enable-blink-features=ForcedColors,ForcedColorsPreserveParentColor"]
   },
   {
     "prefix": "system-color-compute",

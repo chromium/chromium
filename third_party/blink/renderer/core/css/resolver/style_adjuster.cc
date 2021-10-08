@@ -678,7 +678,7 @@ static void AdjustStateForContentVisibility(ComputedStyle& style,
 
 void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyle& style) {
   if (!style.InForcedColorsMode() ||
-      style.ForcedColorAdjust() == EForcedColorAdjust::kNone)
+      style.ForcedColorAdjust() != EForcedColorAdjust::kAuto)
     return;
 
   style.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());

@@ -1562,7 +1562,13 @@ void Color::ApplyInitial(StyleResolverState& state) const {
 }
 
 void Color::ApplyInherit(StyleResolverState& state) const {
-  state.Style()->SetColor(state.ParentStyle()->GetColor());
+  ComputedStyle* style = state.Style();
+  if (style->ShouldPreserveParentColor()) {
+    style->SetColor(StyleColor(
+        state.ParentStyle()->VisitedDependentColor(GetCSSPropertyColor())));
+  } else {
+    style->SetColor(state.ParentStyle()->GetColor());
+  }
 }
 
 void Color::ApplyValue(StyleResolverState& state, const CSSValue& value) const {
@@ -3180,8 +3186,13 @@ void InternalVisitedColor::ApplyInitial(StyleResolverState& state) const {
 }
 
 void InternalVisitedColor::ApplyInherit(StyleResolverState& state) const {
-  auto color = state.ParentStyle()->GetColor();
-  state.Style()->SetInternalVisitedColor(color);
+  ComputedStyle* style = state.Style();
+  if (style->ShouldPreserveParentColor()) {
+    style->SetInternalVisitedColor(StyleColor(
+        state.ParentStyle()->VisitedDependentColor(GetCSSPropertyColor())));
+  } else {
+    style->SetInternalVisitedColor(state.ParentStyle()->GetColor());
+  }
 }
 
 void InternalVisitedColor::ApplyValue(StyleResolverState& state,

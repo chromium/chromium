@@ -643,7 +643,9 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
                value_id == CSSValueID::kInlineEnd)) ||
              value_id == CSSValueID::kNone;
     case CSSPropertyID::kForcedColorAdjust:
-      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
+             (value_id == CSSValueID::kPreserveParentColor &&
+              RuntimeEnabledFeatures::ForcedColorsPreserveParentColorEnabled());
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||

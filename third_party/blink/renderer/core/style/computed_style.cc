@@ -2336,8 +2336,13 @@ Color ComputedStyle::ResolvedColor(const StyleColor& color) const {
 
 bool ComputedStyle::ShouldForceColor(const StyleColor& unforced_color) const {
   return InForcedColorsMode() &&
-         ForcedColorAdjust() != EForcedColorAdjust::kNone &&
+         ForcedColorAdjust() == EForcedColorAdjust::kAuto &&
          !unforced_color.IsSystemColor();
+}
+
+bool ComputedStyle::ShouldPreserveParentColor() const {
+  return InForcedColorsMode() &&
+         ForcedColorAdjust() == EForcedColorAdjust::kPreserveParentColor;
 }
 
 void ComputedStyle::SetMarginStart(const Length& margin) {

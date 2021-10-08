@@ -202,6 +202,10 @@ void StyleCascade::Apply(CascadeFilter filter) {
   // otherwise -webkit-mask-composite has no effect.
   LookupAndApply(GetCSSPropertyWebkitMaskImage(), resolver);
 
+  // Affects the computed value of color when it is inherited and forced-color-
+  // adjust is set to preserve-parent-color.
+  LookupAndApply(GetCSSPropertyForcedColorAdjust(), resolver);
+
   ApplyHighPriority(resolver);
 
   ApplyMatchResult(resolver);

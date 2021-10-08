@@ -247,7 +247,7 @@ Color HighlightColor(const Document& document,
   if (pseudo_style && (!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
                        !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
-        pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
+        pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
       return pseudo_style->VisitedDependentColor(color_property);
     }
     color_scheme = pseudo_style->UsedColorScheme();
@@ -278,7 +278,7 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
   if (pseudo_style && (!RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
                        !UseUaHighlightColors(pseudo, *pseudo_style))) {
     if (!document.InForcedColorsMode() ||
-        pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
+        pseudo_style->ForcedColorAdjust() != EForcedColorAdjust::kAuto) {
       Color highlight_color =
           pseudo_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
       if (pseudo == kPseudoIdSelection && NodeIsReplaced(node)) {

@@ -1084,7 +1084,7 @@
       runtime_flag: "ForcedColors",
       field_template: "keyword",
       priority: "High",
-      keywords: ["auto", "none"],
+      keywords: ["auto", "none", "preserve-parent-color"],
       typedom_types: ["Keyword"],
       default_value: "auto",
       valid_for_highlight: true,

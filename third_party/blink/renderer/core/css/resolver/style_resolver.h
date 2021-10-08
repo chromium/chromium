@@ -284,7 +284,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   Document& GetDocument() const { return *document_; }
 
   bool IsForcedColorsModeEnabled() const;
-  bool IsForcedColorsModeEnabled(const StyleResolverState&) const;
 
   MatchedPropertiesCache matched_properties_cache_;
   Member<Document> document_;
