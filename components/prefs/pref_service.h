@@ -48,10 +48,6 @@ namespace base {
 class FilePath;
 }
 
-namespace metrics {
-class CleanExitBeacon;
-}
-
 namespace prefs {
 class ScopedDictionaryPrefUpdate;
 }
@@ -426,10 +422,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // declared as a friend, too.
   friend class PrefChangeRegistrar;
   friend class subtle::PrefMemberBase;
-
-  // Give access to CommitPendingWriteSynchronously().
-  // TODO(crbug/1218908): Maybe limit CleanExitBeacon's access.
-  friend class metrics::CleanExitBeacon;
 
   // These are protected so they can only be accessed by the friend
   // classes listed above.

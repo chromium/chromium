@@ -452,21 +452,21 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
     metrics::MetricsStateManager* metrics_state_manager) {
   const std::string group_name =
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
-  if (group_name.empty() || group_name == kControlGroup ||
-      group_name == kDefaultGroup) {
+  if (group_name.empty() || group_name == kDefaultGroup)
+    return;
+
+  if (group_name == kControlGroup) {
+    // Populate the histogram for the control group to more easily compare it
+    // with the groups that introduce new behavior.
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+        "Variations.ExtendedSafeMode.WritePrefsTime");
     return;
   }
 
-  // For clients in the SignalAndWrite* groups, the beacon is updated and a
-  // synchronous write is performed. Conversely, for clients in the
-  // WriteSynchronouslyViaPrefService group, prefs are written synchronously
-  // without updating the beacon, i.e. without signaling that Chrome should
-  // start watching for crashes.
-  bool update_beacon = group_name != kWriteSynchronouslyViaPrefServiceGroup;
-
+  DCHECK_EQ(group_name, kSignalAndWriteViaFileUtilGroup);
   metrics_state_manager->LogHasSessionShutdownCleanly(
       /*has_session_shutdown_cleanly=*/false,
-      /*write_synchronously=*/true, update_beacon);
+      /*write_synchronously=*/true);
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 

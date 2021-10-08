@@ -185,20 +185,12 @@ TEST_F(CleanExitBeaconTest, InitWithoutUserDataDir) {
       "Variations.ExtendedSafeMode.GotVariationsFileContents", 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BeaconFileTest,
-    ::testing::Values(
-        variations::kControlGroup,
-        variations::kSignalAndWriteSynchronouslyViaPrefServiceGroup,
-        variations::kWriteSynchronouslyViaPrefServiceGroup));
-
 // Verify that the beacon file is not read when the client is not in the
 // SignalAndWriteViaFileUtil experiment group. It is possible for a client to
 // have the file and to not be in the SignalAndWriteViaFileUtil group when the
 // client was in the group in a previous session and then switched groups, e.g.
 // via kResetVariationState.
-TEST_P(BeaconFileTest, FileIgnoredBySomeExperimentGroups) {
+TEST_F(CleanExitBeaconTest, FileIgnoredByControlGroup) {
   // Deliberately set the prefs so that we can later verify that their values
   // have not changed.
   int expected_crash_streak = 0;
@@ -215,8 +207,7 @@ TEST_P(BeaconFileTest, FileIgnoredBySomeExperimentGroups) {
                                CreateWellFormedBeaconFileContents(
                                    /*exited_cleanly=*/false, /*crash_streak=*/2)
                                    .data()));
-
-  const std::string group_name = GetParam();
+  const std::string group_name = variations::kControlGroup;
   SetUpExtendedSafeModeExperiment(group_name);
   ASSERT_EQ(group_name, base::FieldTrialList::FindFullName(
                             variations::kExtendedSafeModeTrial));
@@ -365,9 +356,9 @@ TEST_F(CleanExitBeaconTest, BeaconFileIgnoredOnMobile) {
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
 
-// Verify that attempting to write synchronously is a no-op for clients that do
-// not belong to specific Extended Variations Safe Mode experiment groups.
-TEST_F(CleanExitBeaconTest, WriteBeaconValue_NoopSynchronousWrite) {
+// Verify that attempting to write synchronously DCHECKs for clients that do not
+// belong to the SignalAndWriteViaFileUtil experiment group.
+TEST_F(CleanExitBeaconTest, WriteBeaconValue_SynchronousWriteDcheck) {
   SetUpExtendedSafeModeExperiment(variations::kControlGroup);
   ASSERT_EQ(variations::kControlGroup, base::FieldTrialList::FindFullName(
                                            variations::kExtendedSafeModeTrial));
@@ -379,36 +370,15 @@ TEST_F(CleanExitBeaconTest, WriteBeaconValue_NoopSynchronousWrite) {
   std::unique_ptr<PrefService> prefs(factory.Create(registry.get()));
   CleanExitBeacon::RegisterPrefs(registry.get());
   TestCleanExitBeacon clean_exit_beacon(prefs.get(), user_data_dir_.GetPath());
-  clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
-                                     /*write_synchronously=*/true);
+  EXPECT_DCHECK_DEATH(
+      clean_exit_beacon.WriteBeaconValue(/*exited_cleanly=*/false,
+                                         /*write_synchronously=*/true));
 
   // Verify that CommitPendingWriteSynchronously() was not called and that
   // the WritePrefsTime metric was not emitted.
   EXPECT_FALSE(pref_store->was_commit_pending_write_synchronously_called());
   histogram_tester_.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 0);
-}
-
-// Verify that calling WriteBeaconValue() with update_beacon=false does not
-// update the beacon. Also, verify that using update_beacon=true updates the
-// beacon.
-TEST_F(CleanExitBeaconTest, WriteBeaconValue_UpdateBeacon) {
-  CleanExitBeacon::SetStabilityExitedCleanlyForTesting(&prefs_, true);
-  TestCleanExitBeacon clean_exit_beacon(&prefs_);
-
-  bool exited_cleanly = false;
-  bool write_synchronously = false;
-
-  ASSERT_TRUE(prefs_.GetBoolean(prefs::kStabilityExitedCleanly));
-  clean_exit_beacon.WriteBeaconValue(exited_cleanly, write_synchronously,
-                                     /*update_beacon=*/false);
-  // Verify that the beacon is not changed when update_beacon is false.
-  EXPECT_TRUE(prefs_.GetBoolean(prefs::kStabilityExitedCleanly));
-
-  clean_exit_beacon.WriteBeaconValue(exited_cleanly, write_synchronously,
-                                     /*update_beacon=*/true);
-  // Verify that the beacon is changed when update_beacon is true.
-  EXPECT_FALSE(prefs_.GetBoolean(prefs::kStabilityExitedCleanly));
 }
 
 }  // namespace metrics

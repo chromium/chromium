@@ -61,18 +61,15 @@ class CleanExitBeacon {
     return initial_browser_last_live_timestamp_;
   }
 
-  // Sets the beacon value to |exited_cleanly| (unless |update_beacon| is false)
-  // and updates the last live timestamp. If |write_synchronously| is true, then
-  // the beacon value is written to disk synchronously; otherwise, a write is
-  // scheduled.
+  // Sets the beacon value to |exited_cleanly| and updates the last live
+  // timestamp. If |write_synchronously| is true, then the beacon value is
+  // written to disk synchronously. If false, a write is scheduled, and for
+  // clients in the Extended Variations Safe Mode experiment, a synchronous
+  // write is done, too.
   //
   // Note: |write_synchronously| should be true only for some clients in the
   // Extended Variations Safe Mode experiment.
-  //
-  // TODO(b/184937096): Remove |update_beacon| when the experiment is over.
-  void WriteBeaconValue(bool exited_cleanly,
-                        bool write_synchronously = false,
-                        bool update_beacon = true);
+  void WriteBeaconValue(bool exited_cleanly, bool write_synchronously = false);
 
   // Updates the last live timestamp.
   void UpdateLastLiveTimestamp();

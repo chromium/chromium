@@ -179,10 +179,10 @@ IN_PROC_BROWSER_TEST_F(VariationsSafeModeBrowserTest, MANUAL_SubTest) {
 
 namespace {
 
-class FieldTrialTest : public ::testing::TestWithParam<std::string> {
+class FieldTrialTest : public ::testing::Test {
  public:
   void SetUp() override {
-    ::testing::TestWithParam<std::string>::SetUp();
+    ::testing::Test::SetUp();
     metrics::CleanExitBeacon::SkipCleanShutdownStepsForTesting();
 
     pref_registry_ = base::MakeRefCounted<PrefRegistrySimple>();
@@ -196,7 +196,6 @@ class FieldTrialTest : public ::testing::TestWithParam<std::string> {
   }
 
  protected:
-  const std::string& field_trial_group() const { return GetParam(); }
   const base::FilePath& user_data_dir() const { return user_data_dir_; }
   const base::FilePath& local_state_file() const { return local_state_file_; }
 
@@ -280,9 +279,7 @@ class FieldTrialTest : public ::testing::TestWithParam<std::string> {
 
 }  // namespace
 
-TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd) {
-  SCOPED_TRACE(field_trial_group());
-
+TEST_F(FieldTrialTest, ExtendedSafeModeEndToEnd) {
   // Reuse the browser_tests binary (i.e., that this test code is in), to
   // manually run the sub-test.
   base::CommandLine sub_test =
@@ -295,11 +292,12 @@ TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd) {
   sub_test.AppendSwitch(::switches::kSingleProcessTests);
   sub_test.AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
 
+  const std::string group_name = kSignalAndWriteViaFileUtilGroup;
   // Select the extended variations safe mode field trial group. The "*"
   // prefix forces the experiment/trial state to "active" at startup.
-  sub_test.AppendSwitchASCII(::switches::kForceFieldTrials,
-                             base::StrCat({"*", kExtendedSafeModeTrial, "/",
-                                           field_trial_group(), "/"}));
+  sub_test.AppendSwitchASCII(
+      ::switches::kForceFieldTrials,
+      base::StrCat({"*", kExtendedSafeModeTrial, "/", group_name, "/"}));
 
   // Assign the test environment to be on the "Dev" channel. This ensures
   // compatibility with both the extended safe mode trial and the crashing
@@ -319,9 +317,7 @@ TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd) {
     WriteSeedData(local_state.get(), kCrashingSeedData, kRegularSeedPrefKeys);
   }
 
-  // Enable the field trial for extended safe mode behavior.
-  // TODO(crbug.com/1241702): Remove this once extended safe mode is launched.
-  SetUpExtendedSafeModeExperiment(field_trial_group());
+  SetUpExtendedSafeModeExperiment(group_name);
 
   // The next |kCrashStreakThreshold| runs of the sub-test should crash...
   for (int run_count = 1; run_count <= kCrashStreakThreshold; ++run_count) {
@@ -339,9 +335,4 @@ TEST_P(FieldTrialTest, ExtendedSafeModeEndToEnd) {
   RunAndExpectSuccessfulSubTest(sub_test);
 }
 
-INSTANTIATE_TEST_CASE_P(
-    VariationsSafeModeBrowserTest,
-    FieldTrialTest,
-    ::testing::Values(kSignalAndWriteSynchronouslyViaPrefServiceGroup,
-                      kSignalAndWriteViaFileUtilGroup));
 }  // namespace variations

@@ -433,10 +433,9 @@ void MetricsStateManager::InstantiateFieldTrialList(
 
 void MetricsStateManager::LogHasSessionShutdownCleanly(
     bool has_session_shutdown_cleanly,
-    bool write_synchronously,
-    bool update_beacon) {
+    bool write_synchronously) {
   clean_exit_beacon_.WriteBeaconValue(has_session_shutdown_cleanly,
-                                      write_synchronously, update_beacon);
+                                      write_synchronously);
 }
 
 void MetricsStateManager::ForceClientIdCreation() {

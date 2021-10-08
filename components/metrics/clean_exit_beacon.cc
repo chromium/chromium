@@ -38,9 +38,7 @@ namespace {
 using ::variations::kControlGroup;
 using ::variations::kDefaultGroup;
 using ::variations::kExtendedSafeModeTrial;
-using ::variations::kSignalAndWriteSynchronouslyViaPrefServiceGroup;
 using ::variations::kSignalAndWriteViaFileUtilGroup;
-using ::variations::kWriteSynchronouslyViaPrefServiceGroup;
 using ::variations::prefs::kVariationsCrashStreak;
 
 // Denotes whether Chrome should perform clean shutdown steps: signaling that
@@ -158,10 +156,8 @@ std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
           kExtendedSafeModeTrial, 100, kDefaultGroup,
           base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
 
-  trial->AppendGroup(kControlGroup, 25);
-  trial->AppendGroup(kWriteSynchronouslyViaPrefServiceGroup, 25);
-  trial->AppendGroup(kSignalAndWriteSynchronouslyViaPrefServiceGroup, 25);
-  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 25);
+  trial->AppendGroup(kControlGroup, 50);
+  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 50);
   return trial->group_name();
 }
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
@@ -294,39 +290,31 @@ void CleanExitBeacon::Initialize() {
 }
 
 void CleanExitBeacon::WriteBeaconValue(bool exited_cleanly,
-                                       bool write_synchronously,
-                                       bool update_beacon) {
+                                       bool write_synchronously) {
   DCHECK(initialized_);
   if (g_skip_clean_shutdown_steps)
     return;
 
   UpdateLastLiveTimestamp();
-  if (update_beacon)
-    local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
 
   const std::string group_name =
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
 
   if (write_synchronously) {
-    if (group_name == kWriteSynchronouslyViaPrefServiceGroup ||
-        group_name == kSignalAndWriteSynchronouslyViaPrefServiceGroup) {
-      SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-          "Variations.ExtendedSafeMode.WritePrefsTime");
-      local_state_->CommitPendingWriteSynchronously();
-    } else if (group_name == kSignalAndWriteViaFileUtilGroup) {
-      SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
-          "Variations.ExtendedSafeMode.WritePrefsTime");
-      WriteBeaconFile(exited_cleanly);
-    }
+    DCHECK_EQ(group_name, kSignalAndWriteViaFileUtilGroup);
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+        "Variations.ExtendedSafeMode.WritePrefsTime");
+    WriteBeaconFile(exited_cleanly);
   } else {
-    local_state_->CommitPendingWrite();
+    local_state_->SetBoolean(prefs::kStabilityExitedCleanly, exited_cleanly);
     if (group_name == kSignalAndWriteViaFileUtilGroup) {
-      // Clients in this group also write to the Variations Safe Mode file. This
-      // is because the file will be used in the next session, and thus, should
-      // be updated whenever kStabilityExitedCleanly is.
+      // Clients in this group write to the Variations Safe Mode file whenever
+      // |kStabilityExitedCleanly| is updated. The file is kept in sync with the
+      // pref because the file is used in the next session.
       WriteBeaconFile(exited_cleanly);
     }
   }
+  local_state_->CommitPendingWrite();  // Schedule a write.
 
 #if defined(OS_WIN)
   base::win::RegKey regkey;
