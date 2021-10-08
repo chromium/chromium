@@ -1,4 +1,24 @@
 {
+    "AcceptCHFrame": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AcceptCHFrame"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccountManagementFlowsV2": [
         {
             "platforms": [
@@ -2549,26 +2569,6 @@
                         "CrOSHugepageRemapAndLockInZygote",
                         "CrOSLockMainProgramText",
                         "CrOSTuneMinFilelist"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CriticalCLientHint": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "CriticalClientHint",
-                    "enable_features": [
-                        "CriticalClientHint"
                     ]
                 }
             ]
