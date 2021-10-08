@@ -63,6 +63,8 @@ extern const char kMinimumTabWidthFeatureParameterName[];
 
 extern const base::Feature kScrollableTabStripButtons;
 
+extern const base::Feature kForceDisableStackedTabs;
+
 #if !defined(ANDROID)
 extern const base::Feature kSettingsLandingPageRedesign;
 #endif

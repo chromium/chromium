@@ -1276,6 +1276,9 @@ extern const char kScrollableTabStripDescription[];
 extern const char kScrollableTabStripButtonsName[];
 extern const char kScrollableTabStripButtonsDescription[];
 
+extern const char kForceDisableStackedTabsName[];
+extern const char kForceDisableStackedTabsDescription[];
+
 extern const char kScrollUnificationName[];
 extern const char kScrollUnificationDescription[];
 

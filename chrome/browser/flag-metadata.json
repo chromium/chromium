@@ -3126,6 +3126,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "force-disable-stacked-tabs",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "force-effective-connection-type",
     "owners": [ "//components/data_reduction_proxy/OWNERS" ],
     // ECT is a baked-in feature of Chrome. This flag is used for frequent

@@ -111,6 +111,9 @@ const char kMinimumTabWidthFeatureParameterName[] = "minTabWidth";
 const base::Feature kScrollableTabStripButtons{
     "ScrollableTabStripButtons", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kForceDisableStackedTabs{"ForceDisableStackedTabs",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 #if !defined(ANDROID)
 // Changes the layout of the chrome://settings page to only show one section at
 // a time, crbug.com/1204457.

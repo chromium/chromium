@@ -3721,6 +3721,9 @@ bool TabStrip::NeedsTouchLayout() const {
   if (!stacked_layout_)
     return false;
 
+  if (base::FeatureList::IsEnabled(features::kForceDisableStackedTabs))
+    return false;
+
   // If a group is active in the tabstrip, the layout will not be swapped to
   // stacked mode due to incompatibility of the UI.
   // As an alternative, Tab Groups do interoperate with the WebUI Tab Strip,

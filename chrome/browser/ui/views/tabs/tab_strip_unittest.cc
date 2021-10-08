@@ -1403,6 +1403,9 @@ TEST_P(TabStripTestWithScrollingDisabled, GroupedTabSlotOverflowVisibility) {
 
 // Creates a tab strip in stacked layout mode and creates a group.
 TEST_P(TabStripTestWithScrollingDisabled, TabGroupCreatedWhenStacked) {
+  if (base::FeatureList::IsEnabled(features::kForceDisableStackedTabs))
+    return;
+
   SetMaxTabStripWidth(250);
 
   controller_->AddTab(0, false);
@@ -1428,6 +1431,9 @@ TEST_P(TabStripTestWithScrollingDisabled, TabGroupCreatedWhenStacked) {
 // Tests that the tab close buttons of non-active tabs are hidden when
 // the tabstrip is in stacked tab mode.
 TEST_P(TabStripTestWithScrollingDisabled, TabCloseButtonVisibilityWhenStacked) {
+  if (base::FeatureList::IsEnabled(features::kForceDisableStackedTabs))
+    return;
+
   // Touch-optimized UI requires a larger width for tabs to show close buttons.
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   // The tabstrip width is chosen so that it is:
@@ -1502,6 +1508,9 @@ TEST_P(TabStripTestWithScrollingDisabled, TabCloseButtonVisibilityWhenStacked) {
 // across the strip at the top, middle, and bottom, events will target each tab
 // in order.
 TEST_P(TabStripTestWithScrollingDisabled, TabForEventWhenStacked) {
+  if (base::FeatureList::IsEnabled(features::kForceDisableStackedTabs))
+    return;
+
   // This tabstrip width is chosen to make the tabstrip narrow enough to engage
   // stacked tabs mode.
   SetMaxTabStripWidth(197);
