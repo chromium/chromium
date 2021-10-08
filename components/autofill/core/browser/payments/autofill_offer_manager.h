@@ -31,6 +31,9 @@ class CouponServiceDelegate {
   virtual std::vector<AutofillOfferData*> GetFreeListingCouponsForUrl(
       const GURL& url) = 0;
 
+  // Check if CouponService has eligible coupons for |last_committed_url|.
+  virtual bool IsUrlEligible(const GURL& last_committed_url) = 0;
+
  protected:
   virtual ~CouponServiceDelegate() = default;
 };

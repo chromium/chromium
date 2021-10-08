@@ -76,6 +76,10 @@ void AutofillOfferManager::UpdateSuggestionsWithOffers(
 bool AutofillOfferManager::IsUrlEligible(const GURL& last_committed_url) {
   // Checking set::empty and using set::count to prevent possible crashes (see
   // crbug.com/1195949).
+  if (coupon_service_delegate_ &&
+      coupon_service_delegate_->IsUrlEligible(last_committed_url)) {
+    return true;
+  }
   // For most cases this vector will be empty, so add the empty check to avoid
   // unnecessary calls.
   return !eligible_merchant_domains_.empty() &&
