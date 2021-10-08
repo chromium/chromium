@@ -28,6 +28,14 @@ declare_args() {
   # the binaries.
   rust_bin_dir = ""
 
+  # Any extra std rlibs in your Rust toolchain, relative to the standard
+  # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
+  added_rust_stdlib_libs = []
+
+  # Any removed std rlibs in your Rust toolchain, relative to the standard
+  # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
+  removed_rust_stdlib_libs = []
+
   # Use LTO when using rustc to link binaries. Experimental. Currently incompatible
   # with the options we use in our C++ toolchain to split LTO units.
   # This has no effect on the production of normal Chrome binaries, which are

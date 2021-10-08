@@ -86,7 +86,7 @@ def main():
         outfile = os.path.join(str.encode(args.output), concise_name)
         depfile.write(" %s" % (infile.decode()))
         if (not os.path.exists(outfile)
-            or os.stat(infile).st_mtime > os.stat(outfile).st_mtime):
+            or os.stat(infile).st_mtime != os.stat(outfile).st_mtime):
           if os.path.exists(outfile):
             st = os.stat(outfile)
             os.chmod(outfile, st.st_mode | stat.S_IWUSR)

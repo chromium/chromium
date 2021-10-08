@@ -29,6 +29,9 @@
 import("//build/config/compiler/compiler.gni")
 import("//build/config/rust.gni")
 
+# List of Rust stdlib rlibs which are present in the official
+# Rust toolchain we are using from the Android team. This is usually
+# a version or two behind nightly.
 stdlib_files = [
   "std",  # List first because it makes depfiles more debuggable (see below)
   "addr2line",
@@ -53,6 +56,12 @@ stdlib_files = [
   "unicode_width",
   "unwind",
 ]
+
+# Different Rust toolchains may add or remove files relative to the above
+# list. That can be specified in gn args for anyone using (for instance)
+# nightly or some other experimental toolchain, prior to it becoming official.
+stdlib_files -= removed_rust_stdlib_libs
+stdlib_files += added_rust_stdlib_libs
 
 if (!use_unverified_rust_toolchain) {
   # rlib files which are distributed alongside Rust's prebuilt stdlib, but we
@@ -144,6 +153,9 @@ if (toolchain_has_rust) {
   }
 
   group("std") {
+    assert(
+        enable_rust,
+        "Some C++ target is including Rust code even though enable_rust=false")
     all_dependent_configs = [ ":rust_stdlib_config" ]
     deps = [
       ":find_stdlib",

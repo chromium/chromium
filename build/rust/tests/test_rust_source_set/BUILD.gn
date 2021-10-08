@@ -4,7 +4,6 @@
 
 import("//build/rust/rust_source_set.gni")
 
-# Dependent Rust targets should depend on this.
 rust_source_set("test_rust_source_set") {
   sources = [ "src/lib.rs" ]
 }
