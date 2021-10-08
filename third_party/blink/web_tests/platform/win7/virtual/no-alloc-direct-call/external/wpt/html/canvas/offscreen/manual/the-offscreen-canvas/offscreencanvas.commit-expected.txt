@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Test that calling OffscreenCanvas's commit pushes its contents to its placeholder. assert_equals: Green channel of the pixel at (5, 5) expected 255 but got 0
+PASS Test that calling commit on an OffscreenCanvas that is not transferred from a HTMLCanvasElement is a noop.
+Harness: the test ran to completion.
+

@@ -287247,7 +287247,7 @@
      []
     ],
     "keyboard-lock.idl": [
-     "3aaf9f3755b7c8a811ea4cd3ad7610779c1e66bf",
+     "d81e9924a357a653dd3d3dcd038ddbc33e6802bb",
      []
     ],
     "keyboard-map.idl": [
@@ -287912,6 +287912,10 @@
     ],
     "OWNERS": [
      "af150a3341e92bab51a8510d8ff83cf04f36e3d4",
+     []
+    ],
+    "idlharness.https.window-expected.txt": [
+     "c911f77e9ca05b21b9e481bb228f8ac9d847dca1",
      []
     ],
     "resources": {
@@ -446129,7 +446133,7 @@
    },
    "keyboard-lock": {
     "idlharness.https.window.js": [
-     "9c94411eabf28fc39cd9f7a7bf96e51262bcd47e",
+     "66bb7b9bc89ffefac9e4a6224d576002e68e3842",
      [
       "keyboard-lock/idlharness.https.window.html",
       {
@@ -446196,7 +446200,7 @@
    },
    "keyboard-map": {
     "idlharness.https.window.js": [
-     "b14734db9005da31f96d99af82773a9690195b43",
+     "07083f7034b539915c8aff444f79368cfa6c4d39",
      [
       "keyboard-map/idlharness.https.window.html",
       {
