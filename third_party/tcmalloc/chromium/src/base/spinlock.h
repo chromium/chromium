@@ -49,6 +49,9 @@ class LOCKABLE SpinLock {
  public:
   SpinLock() : lockword_(kSpinLockFree) { }
 
+  SpinLock(const SpinLock&) = delete;
+  SpinLock& operator=(const SpinLock&) = delete;
+
   // Special constructor for use with static SpinLock objects.  E.g.,
   //
   //    static SpinLock lock(base::LINKER_INITIALIZED);
@@ -114,8 +117,6 @@ class LOCKABLE SpinLock {
   void SlowLock();
   void SlowUnlock();
   Atomic32 SpinLoop();
-
-  DISALLOW_COPY_AND_ASSIGN(SpinLock);
 };
 
 // Corresponding locker object that arranges to acquire a spinlock for

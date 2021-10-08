@@ -79,6 +79,9 @@ class MemoryRegionMap {
   static const int kHashTableSize = 179999;
 
  public:
+  MemoryRegionMap(const MemoryRegionMap&) = delete;
+  MemoryRegionMap& operator=(const MemoryRegionMap&) = delete;
+
   // interface ================================================================
 
   // Every client of MemoryRegionMap must call Init() before first use,
@@ -399,8 +402,6 @@ class MemoryRegionMap {
   // Log all memory regions; Useful for debugging only.
   // Assumes Lock() is held
   static void LogAllLocked();
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryRegionMap);
 };
 
 template <class Type>

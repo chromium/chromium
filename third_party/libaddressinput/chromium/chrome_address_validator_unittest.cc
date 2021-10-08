@@ -55,6 +55,10 @@ using ::i18n::addressinput::USES_P_O_BOX;
 
 // This class should always succeed in getting the rules.
 class AddressValidatorTest : public testing::Test, LoadRulesListener {
+ public:
+  AddressValidatorTest(const AddressValidatorTest&) = delete;
+  AddressValidatorTest& operator=(const AddressValidatorTest&) = delete;
+
  protected:
   AddressValidatorTest()
       : validator_(new AddressValidator(
@@ -85,13 +89,16 @@ class AddressValidatorTest : public testing::Test, LoadRulesListener {
   }
 
   AddressValidator::Status expected_status_ = AddressValidator::SUCCESS;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressValidatorTest);
 };
 
 // Use this test fixture if you're going to use a region with a large set of
 // validation rules. All rules should be loaded in SetUpTestCase().
 class LargeAddressValidatorTest : public testing::Test {
+ public:
+  LargeAddressValidatorTest(const LargeAddressValidatorTest&) = delete;
+  LargeAddressValidatorTest& operator=(const LargeAddressValidatorTest&) =
+      delete;
+
  protected:
   LargeAddressValidatorTest() {}
   virtual ~LargeAddressValidatorTest() {}
@@ -112,9 +119,6 @@ class LargeAddressValidatorTest : public testing::Test {
 
   // Owned shared instance of validator with large sets validation rules.
   static AddressValidator* validator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LargeAddressValidatorTest);
 };
 
 AddressValidator* LargeAddressValidatorTest::validator_ = NULL;
@@ -838,6 +842,11 @@ TEST_F(AddressValidatorTest,
 // Use this test fixture for configuring the number of failed attempts to load
 // rules.
 class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
+ public:
+  FailingAddressValidatorTest(const FailingAddressValidatorTest&) = delete;
+  FailingAddressValidatorTest& operator=(const FailingAddressValidatorTest&) =
+      delete;
+
  protected:
   // A validator that retries loading rules without delay.
   class TestAddressValidator : public AddressValidator {
@@ -925,8 +934,6 @@ class FailingAddressValidatorTest : public testing::Test, LoadRulesListener {
   }
 
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(FailingAddressValidatorTest);
 };
 
 // The validator will attempt to load rules at most 8 times.

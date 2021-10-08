@@ -52,12 +52,13 @@ class AbortTask : public Task {
   explicit AbortTask(TaskParent *parent) : Task(parent) {
   }
 
+  AbortTask(const AbortTask&) = delete;
+  AbortTask& operator=(const AbortTask&) = delete;
+
   virtual int ProcessStart() {
     Abort();
     return STATE_NEXT;
   }
- private:
-  DISALLOW_COPY_AND_ASSIGN(AbortTask);
 };
 
 class TaskAbortTest : public sigslot::has_slots<> {
@@ -162,9 +163,11 @@ class DeleteTestTaskRunner : public TaskRunner {
  public:
   DeleteTestTaskRunner() {
   }
+
+  DeleteTestTaskRunner(const DeleteTestTaskRunner&) = delete;
+  DeleteTestTaskRunner& operator=(const DeleteTestTaskRunner&) = delete;
+
   virtual void WakeTasks() { }
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeleteTestTaskRunner);
 };
 
 TEST(unstarted_task_test, DeleteTask) {

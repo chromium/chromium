@@ -74,6 +74,9 @@ class Globals {
             base::BindRepeating(&Globals::OnMemoryPressure,
                                 base::Unretained(this))) {}
 
+  Globals(const Globals&) = delete;
+  Globals& operator=(const Globals&) = delete;
+
   Cache* web_block_cache() const {
     if (web_block_cache_)
       return web_block_cache_.get();
@@ -125,8 +128,6 @@ class Globals {
   base::flat_set<leveldb::Env*> in_memory_envs_;
   // Listens for the system being under memory pressure.
   const base::MemoryPressureListener memory_pressure_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(Globals);
 };
 
 class ChromeMemEnv : public leveldb::EnvWrapper {
