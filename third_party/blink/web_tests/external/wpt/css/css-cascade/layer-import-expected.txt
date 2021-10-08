@@ -1,0 +1,26 @@
+This is a testharness.js-based test.
+FAIL A1 Layer rules with import assert_equals: A1 Layer rules with import, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+FAIL A2 Layer rules with import assert_equals: A2 Layer rules with import, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+FAIL A3 Layer rules with import assert_equals: A3 Layer rules with import, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+PASS A4 Layer rules with import
+FAIL B1 Anonymous imports assert_equals: B1 Anonymous imports, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+PASS B2 Anonymous imports
+PASS B3 Anonymous imports
+PASS B4 Anonymous imports
+FAIL C1 Named imports assert_equals: C1 Named imports, target 'first' expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+PASS C2 Named imports
+PASS C3 Named imports
+PASS C4 Named imports
+PASS C5 Named imports
+PASS C6 Named imports
+PASS C7 Named imports
+PASS C8 Named imports
+PASS C9 Named imports
+PASS D1 Layer statement with imports
+PASS D2 Layer statement with imports
+PASS D3 Layer statement with imports
+PASS D4 Layer statement with imports
+PASS D5 Layer statement with imports
+PASS D6 Layer statement with imports
+Harness: the test ran to completion.
+

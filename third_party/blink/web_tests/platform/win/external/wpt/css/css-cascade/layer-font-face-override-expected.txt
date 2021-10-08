@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL @font-face unlayered overrides layered assert_equals: expected "80px" but got "38px"
+PASS @font-face override between layers
+PASS @font-face override update with appended sheet 1
+PASS @font-face override update with appended sheet 2
+Harness: the test ran to completion.
+

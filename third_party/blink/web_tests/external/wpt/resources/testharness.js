@@ -1674,7 +1674,7 @@
      *
      * @param {number|string} type The expected exception name or code.  See the
      *        table of names and codes at
-     *        https://heycam.github.io/webidl/#dfn-error-names-table
+     *        https://webidl.spec.whatwg.org/#dfn-error-names-table
      *        If a number is passed it should be one of the numeric code values
      *        in that table (e.g. 3, 4, etc).  If a string is passed it can
      *        either be an exception name (e.g. "HierarchyRequestError",

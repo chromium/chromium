@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL @keyframes unlayered overrides layered assert_equals: expected "rgb(0, 128, 0)" but got "rgb(255, 0, 0)"
+PASS @keyframes override between layers
+PASS @keyframes override update with appended sheet 1
+PASS @keyframes override update with appended sheet 2
+Harness: the test ran to completion.
+

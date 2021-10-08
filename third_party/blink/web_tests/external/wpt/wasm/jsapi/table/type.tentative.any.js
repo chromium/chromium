@@ -23,4 +23,4 @@ test(() => {
 
 test(() => {
     assert_type({ "minimum": 0, "maximum": 5, "element": "anyfunc" });
-}, "None-zero maximum");
+}, "Non-zero maximum");

@@ -18,7 +18,7 @@
 
 const testCases = [
   {
-    title: '@font-face layered overrides unlayered',
+    title: '@font-face unlayered overrides layered',
     style: `
       #target {
         font-family: custom-font;
@@ -27,13 +27,13 @@ const testCases = [
       @layer {
         @font-face {
           font-family: custom-font;
-          src: url('/fonts/Ahem.ttf');
+          src: url('/fonts/noto/noto-sans-v8-latin-regular.woff') format('woff');
         }
       }
 
       @font-face {
         font-family: custom-font;
-        src: url('/fonts/noto/noto-sans-v8-latin-regular.woff') format('woff');
+        src: url('/fonts/Ahem.ttf');
       }
     `
   },
