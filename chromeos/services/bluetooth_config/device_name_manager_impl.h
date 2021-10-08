@@ -11,7 +11,6 @@
 #include "device/bluetooth/bluetooth_device.h"
 
 class PrefRegistrySimple;
-class PrefService;
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -21,9 +20,8 @@ class DeviceNameManagerImpl : public DeviceNameManager {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  DeviceNameManagerImpl(
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      PrefService* pref_service);
+  explicit DeviceNameManagerImpl(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter);
   ~DeviceNameManagerImpl() override;
 
   // DeviceNameManager:
@@ -31,6 +29,7 @@ class DeviceNameManagerImpl : public DeviceNameManager {
       const std::string& device_id) override;
   void SetDeviceNickname(const std::string& device_id,
                          const std::string& nickname) override;
+  void SetPrefs(PrefService* pref_service) override;
 
  private:
   // Returns true if a BluetoothDevice* with identifier |device_id| exists in
@@ -38,7 +37,7 @@ class DeviceNameManagerImpl : public DeviceNameManager {
   bool DoesDeviceExist(const std::string& device_id) const;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  PrefService* pref_service_;
+  PrefService* pref_service_ = nullptr;
 };
 
 }  // namespace bluetooth_config

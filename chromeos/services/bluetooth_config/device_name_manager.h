@@ -10,6 +10,8 @@
 #include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class PrefService;
+
 namespace chromeos {
 namespace bluetooth_config {
 
@@ -28,6 +30,9 @@ class DeviceNameManager {
   // of the current device, if |nickname| is valid.
   virtual void SetDeviceNickname(const std::string& device_id,
                                  const std::string& nickname) = 0;
+
+  // Sets the PrefService used to store nicknames.
+  virtual void SetPrefs(PrefService* pref_service) = 0;
 
  protected:
   DeviceNameManager() = default;

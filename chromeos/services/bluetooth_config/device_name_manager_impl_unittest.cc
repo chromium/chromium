@@ -44,8 +44,10 @@ class DeviceNameManagerImplTest : public testing::Test {
   }
 
   std::unique_ptr<DeviceNameManagerImpl> CreateDeviceNameManager() {
-    return std::make_unique<DeviceNameManagerImpl>(mock_adapter_,
-                                                   &test_pref_service_);
+    auto device_name_manager =
+        std::make_unique<DeviceNameManagerImpl>(mock_adapter_);
+    device_name_manager->SetPrefs(&test_pref_service_);
+    return device_name_manager;
   }
 
   void AddDevice(std::string* id_out) {
