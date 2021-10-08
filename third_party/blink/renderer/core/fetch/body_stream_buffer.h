@@ -132,6 +132,7 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   void Abort();
   void Close();
   void GetError();
+  void RaiseOOMError();
   void CancelConsumer();
   void ProcessData();
   void EndLoading();

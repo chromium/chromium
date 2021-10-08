@@ -116,6 +116,17 @@ DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(size_t num_elements,
   return Create(std::move(contents));
 }
 
+DOMArrayBuffer* DOMArrayBuffer::CreateOrNull(const void* source,
+                                             size_t byte_length) {
+  DOMArrayBuffer* buffer = CreateUninitializedOrNull(byte_length, 1);
+  if (!buffer) {
+    return nullptr;
+  }
+
+  memcpy(buffer->Data(), source, byte_length);
+  return buffer;
+}
+
 DOMArrayBuffer* DOMArrayBuffer::CreateUninitializedOrNull(
     size_t num_elements,
     size_t element_byte_size) {

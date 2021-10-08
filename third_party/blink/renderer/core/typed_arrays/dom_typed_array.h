@@ -41,7 +41,13 @@ class DOMTypedArray final : public DOMArrayBufferView {
   static ThisType* CreateOrNull(size_t length) {
     DOMArrayBuffer* buffer =
         DOMArrayBuffer::CreateOrNull(length, sizeof(ValueType));
-    return buffer ? Create(std::move(buffer), 0, length) : nullptr;
+    return buffer ? Create(buffer, 0, length) : nullptr;
+  }
+
+  static ThisType* CreateOrNull(const ValueType* array, size_t length) {
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::CreateOrNull(array, length * sizeof(ValueType));
+    return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
   static ThisType* CreateUninitializedOrNull(size_t length) {

@@ -430,6 +430,15 @@ void BodyStreamBuffer::GetError() {
   CancelConsumer();
 }
 
+void BodyStreamBuffer::RaiseOOMError() {
+  {
+    ScriptState::Scope scope(script_state_);
+    Controller()->Error(V8ThrowException::CreateRangeError(
+        script_state_->GetIsolate(), "Array buffer allocation failed"));
+  }
+  CancelConsumer();
+}
+
 void BodyStreamBuffer::CancelConsumer() {
   side_data_blob_.reset();
   if (consumer_) {
@@ -451,10 +460,14 @@ void BodyStreamBuffer::ProcessData() {
       return;
     DOMUint8Array* array = nullptr;
     if (result == BytesConsumer::Result::kOk) {
-      array =
-          DOMUint8Array::Create(reinterpret_cast<const unsigned char*>(buffer),
-                                SafeCast<uint32_t>(available));
+      array = DOMUint8Array::CreateOrNull(
+          reinterpret_cast<const unsigned char*>(buffer),
+          SafeCast<uint32_t>(available));
       result = consumer_->EndRead(available);
+      if (!array) {
+        RaiseOOMError();
+        return;
+      }
     }
     switch (result) {
       case BytesConsumer::Result::kOk:
