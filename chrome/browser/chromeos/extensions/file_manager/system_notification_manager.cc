@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
@@ -49,6 +50,11 @@ bool NotificationIdToOperationId(
   }
 
   return false;
+}
+
+void RecordDeviceNotificationMetric(
+    file_manager::DeviceNotificationUmaType type) {
+  UMA_HISTOGRAM_ENUMERATION(file_manager::kNotificationShowHistogramName, type);
 }
 
 }  // namespace
@@ -181,6 +187,8 @@ void SystemNotificationManager::HandleDeviceEvent(
       notification =
           CreateNotification(id, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
                              IDS_EXTERNAL_STORAGE_DISABLED_MESSAGE);
+      RecordDeviceNotificationMetric(
+          DeviceNotificationUmaType::DEVICE_EXTERNAL_STORAGE_DISABLED);
       break;
     case file_manager_private::DEVICE_EVENT_TYPE_REMOVED:
       // Hide device fail & storage disabled notifications.

@@ -38,6 +38,33 @@ enum SystemNotificationManagerMountStatus {
   MOUNT_STATUS_MULTIPART_ERROR,
 };
 
+// Enum of possible UMA values for histogram Notification.Show.
+// Keep the order of this in sync with FileManagerNotificationType in
+// tools/metrics/histograms/enums.xml.
+enum class DeviceNotificationUmaType {
+  DEVICE_NAVIGATION_ALLOW_APP_ACCESS = 0,
+  DEVICE_NAVIGATION_APPS_HAVE_ACCESS = 1,
+  DEVICE_NAVIGATION = 2,
+  DEVICE_NAVIGATION_READONLY_POLICY = 3,
+  DEVICE_IMPORT = 4,
+  DEVICE_FAIL = 5,
+  DEVICE_FAIL_UNKNOWN = 6,
+  DEVICE_FAIL_UNKNOWN_READONLY = 7,
+  DEVICE_EXTERNAL_STORAGE_DISABLED = 8,
+  DEVICE_HARD_UNPLUGGED = 9,
+  FORMAT_START = 10,
+  FORMAT_SUCCESS = 11,
+  FORMAT_FAIL = 12,
+  RENAME_FAIL = 13,
+  PARTITION_START = 14,
+  PARTITION_SUCCESS = 15,
+  PARTITION_FAIL = 16,
+  kMaxValue = PARTITION_FAIL,
+};
+
+// Histogram name for Notification.Show.
+constexpr char kNotificationShowHistogramName[] = "Notification.Show";
+
 // Manages creation/deletion and update of system notifications on behalf
 // of the File Manager application.
 class SystemNotificationManager {

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
@@ -194,6 +195,7 @@ constexpr char kMountPath[] = "/mnt/media/sda1";
 std::u16string kRemovableDeviceTitle = u"Removable device detected";
 
 TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
+  base::HistogramTester histogram_tester;
   // Send a removable volume mounted event.
   GetDeviceEventRouter()->OnDeviceAdded(kDevicePath);
   // Get the number of notifications from the NotificationDisplayService.
@@ -213,6 +215,10 @@ TEST_F(SystemNotificationManagerTest, ExternalStorageDisabled) {
       u"account.";
   EXPECT_EQ(notification_strings.title, kRemovableDeviceTitle);
   EXPECT_EQ(notification_strings.message, kExternalStorageDisabledMesssage);
+  // Check that the correct UMA was emitted.
+  histogram_tester.ExpectUniqueSample(
+      kNotificationShowHistogramName,
+      DeviceNotificationUmaType::DEVICE_EXTERNAL_STORAGE_DISABLED, 1);
 }
 
 constexpr char kDeviceLabel[] = "MyUSB";
