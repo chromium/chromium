@@ -148,16 +148,17 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
   Status CallRequestUploadEncryptedRecord(
       bool need_encryption_key,
       std::unique_ptr<std::vector<EncryptedRecord>> records) {
-    auto report_upload_success_cb = base::BindRepeating(
+    auto report_upload_success_cb = base::BindOnce(
         &EncryptedReportingUploadProviderTest::ReportSuccessfulUpload,
         base::Unretained(this));
-    auto encryption_key_attached_cb = base::BindRepeating(
+    auto encryption_key_attached_cb = base::BindOnce(
         &EncryptedReportingUploadProviderTest::EncryptionKeyCallback,
         base::Unretained(this));
     test::TestEvent<Status> result;
     service_provider_->RequestUploadEncryptedRecords(
-        need_encryption_key, std::move(records), report_upload_success_cb,
-        encryption_key_attached_cb, result.cb());
+        need_encryption_key, std::move(records),
+        std::move(report_upload_success_cb),
+        std::move(encryption_key_attached_cb), result.cb());
     return result.result();
   }
 

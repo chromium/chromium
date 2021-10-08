@@ -196,8 +196,8 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
                  Property(&SignedEncryptionInfo::signature, Not(IsEmpty())))))
       .Times(need_encryption_key() ? 1 : 0);
   auto encryption_key_attached_cb =
-      base::BindRepeating(&TestEncryptionKeyAttached::Call,
-                          base::Unretained(&encryption_key_attached));
+      base::BindOnce(&TestEncryptionKeyAttached::Call,
+                     base::Unretained(&encryption_key_attached));
 
   auto client = std::make_unique<MockCloudPolicyClient>();
   client->SetDMToken(
@@ -229,8 +229,8 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
 
   auto upload_client = std::move(upload_client_result.ValueOrDie());
   auto enqueue_result = upload_client->EnqueueUpload(
-      need_encryption_key(), std::move(records), upload_success_cb,
-      encryption_key_attached_cb);
+      need_encryption_key(), std::move(records), std::move(upload_success_cb),
+      std::move(encryption_key_attached_cb));
   EXPECT_TRUE(enqueue_result.ok());
 
   auto upload_succes_result = upload_success.result();

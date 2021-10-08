@@ -80,8 +80,8 @@ DmServerUploader::DmServerUploader(
                                             sequenced_task_runner),
       need_encryption_key_(need_encryption_key),
       encrypted_records_(std::move(records)),
-      report_success_upload_cb_(report_success_upload_cb),
-      encryption_key_attached_cb_(encryption_key_attached_cb),
+      report_success_upload_cb_(std::move(report_success_upload_cb)),
+      encryption_key_attached_cb_(std::move(encryption_key_attached_cb)),
       handler_(handler) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -144,15 +144,15 @@ void DmServerUploader::HandleRecords() {
   handler_->HandleRecords(
       need_encryption_key_, std::move(encrypted_records_),
       base::BindOnce(&DmServerUploader::Complete, base::Unretained(this)),
-      encryption_key_attached_cb_);
+      std::move(encryption_key_attached_cb_));
 }
 
 void DmServerUploader::Finalize(CompletionResponse upload_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (upload_result.ok()) {
-    report_success_upload_cb_.Run(
-        upload_result.ValueOrDie().sequencing_information,
-        upload_result.ValueOrDie().force_confirm);
+    std::move(report_success_upload_cb_)
+        .Run(upload_result.ValueOrDie().sequencing_information,
+             upload_result.ValueOrDie().force_confirm);
   } else {
     LOG(WARNING) << upload_result.status();
   }
@@ -209,9 +209,9 @@ Status DmServerUploadService::EnqueueUpload(
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
   Start<DmServerUploader>(need_encryption_key, std::move(records),
-                          handler_.get(), report_upload_success_cb,
-                          encryption_key_attached_cb, base::DoNothing(),
-                          sequenced_task_runner_);
+                          handler_.get(), std::move(report_upload_success_cb),
+                          std::move(encryption_key_attached_cb),
+                          base::DoNothing(), sequenced_task_runner_);
   return Status::StatusOK();
 }
 

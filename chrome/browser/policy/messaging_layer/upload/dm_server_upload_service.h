@@ -42,13 +42,13 @@ class DmServerUploadService {
   // the owner of |this| (the respone consists of sequencing information and
   // force_confirm flag).
   using ReportSuccessfulUploadCallback =
-      base::RepeatingCallback<void(SequencingInformation,
-                                   /*force_confirm*/ bool)>;
+      base::OnceCallback<void(SequencingInformation,
+                              /*force_confirm*/ bool)>;
 
   // ReceivedEncryptionKeyCallback is called if server attached encryption key
   // to the response.
   using EncryptionKeyAttachedCallback =
-      base::RepeatingCallback<void(SignedEncryptionInfo)>;
+      base::OnceCallback<void(SignedEncryptionInfo)>;
 
   // Successful response consists of Sequencing information that may be
   // accompanied with force_confirm flag.

@@ -30,8 +30,8 @@ class EncryptedReportingUploadProvider {
   // it, and if we fail we repost with a backoff. Until an UploadClient is
   // built, all requests to `RequestUploadEncryptedRecords` will fail.
   using UploadClientBuilderCb =
-      base::RepeatingCallback<void(policy::CloudPolicyClient*,
-                                   UploadClient::CreatedCallback)>;
+      base::OnceCallback<void(policy::CloudPolicyClient*,
+                              UploadClient::CreatedCallback)>;
 
   explicit EncryptedReportingUploadProvider(
       GetCloudPolicyClientCallback build_cloud_policy_client_cb =

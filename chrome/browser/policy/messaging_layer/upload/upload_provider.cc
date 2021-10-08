@@ -87,7 +87,7 @@ class EncryptedReportingUploadProvider::UploadHelper
 
   // Callbacks for cloud policy and upload client creation.
   const GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
-  const UploadClientBuilderCb upload_client_builder_cb_;
+  UploadClientBuilderCb upload_client_builder_cb_;
 
   // Tracking of asynchronous stages.
   std::atomic<bool> upload_client_request_in_progress_{false};
@@ -112,7 +112,7 @@ EncryptedReportingUploadProvider::UploadHelper::UploadHelper(
     : base::RefCountedDeleteOnSequence<UploadHelper>(sequenced_task_runner),
       sequenced_task_runner_(std::move(sequenced_task_runner)),
       build_cloud_policy_client_cb_(build_cloud_policy_client_cb),
-      upload_client_builder_cb_(upload_client_builder_cb),
+      upload_client_builder_cb_(std::move(upload_client_builder_cb)),
       backoff_entry_(GetBackoffEntry()) {
   DETACH_FROM_SEQUENCE(sequenced_task_checker_);
 }
@@ -168,12 +168,12 @@ void EncryptedReportingUploadProvider::UploadHelper::OnCloudPolicyClientResult(
     TryNewCloudPolicyClientRequest();
     return;
   }
-  upload_client_builder_cb_.Run(
-      client_result.ValueOrDie(),
-      base::BindPostTask(
-          sequenced_task_runner_,
-          base::BindRepeating(&UploadHelper::OnUploadClientResult,
-                              weak_ptr_factory_.GetWeakPtr())));
+  std::move(upload_client_builder_cb_)
+      .Run(client_result.ValueOrDie(),
+           base::BindPostTask(
+               sequenced_task_runner_,
+               base::BindRepeating(&UploadHelper::OnUploadClientResult,
+                                   weak_ptr_factory_.GetWeakPtr())));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::OnUploadClientResult(
@@ -204,8 +204,8 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
     std::move(std::move(stored_upload.enqueued_cb))
         .Run(upload_client_->EnqueueUpload(
             stored_upload.need_encryption_key, std::move(stored_upload.records),
-            stored_upload.report_successful_upload_cb,
-            stored_upload.encryption_key_attached_cb));
+            std::move(stored_upload.report_successful_upload_cb),
+            std::move(stored_upload.encryption_key_attached_cb)));
   }
   stored_uploads_.clear();
 }
@@ -220,8 +220,9 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
       FROM_HERE,
       base::BindOnce(&UploadHelper::EnqueueUploadInternal,
                      weak_ptr_factory_.GetWeakPtr(), need_encryption_key,
-                     std::move(records), report_successful_upload_cb,
-                     encryption_key_attached_cb, std::move(enqueued_cb)));
+                     std::move(records), std::move(report_successful_upload_cb),
+                     std::move(encryption_key_attached_cb),
+                     std::move(enqueued_cb)));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
@@ -235,15 +236,16 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
     stored_uploads_.emplace_back(StoredUploadRequest{
         .need_encryption_key = need_encryption_key,
         .records = std::move(records),
-        .report_successful_upload_cb = report_successful_upload_cb,
-        .encryption_key_attached_cb = encryption_key_attached_cb,
+        .report_successful_upload_cb = std::move(report_successful_upload_cb),
+        .encryption_key_attached_cb = std::move(encryption_key_attached_cb),
         .enqueued_cb = std::move(enqueued_cb)});
     return;
   }
   std::move(enqueued_cb)
-      .Run(upload_client_->EnqueueUpload(
-          need_encryption_key, std::move(records), report_successful_upload_cb,
-          encryption_key_attached_cb));
+      .Run(
+          upload_client_->EnqueueUpload(need_encryption_key, std::move(records),
+                                        std::move(report_successful_upload_cb),
+                                        std::move(encryption_key_attached_cb)));
 }
 
 // EncryptedReportingUploadProvider implementation.
@@ -253,7 +255,7 @@ EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
     UploadClientBuilderCb upload_client_builder_cb)
     : helper_(base::MakeRefCounted<UploadHelper>(
           build_cloud_policy_client_cb,
-          upload_client_builder_cb,
+          std::move(upload_client_builder_cb),
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::TaskPriority::BEST_EFFORT, base::MayBlock()}))) {
   helper_->PostNewCloudPolicyClientRequest();
@@ -269,13 +271,14 @@ void EncryptedReportingUploadProvider::RequestUploadEncryptedRecords(
     base::OnceCallback<void(Status)> result_cb) {
   DCHECK(helper_);
   helper_->EnqueueUpload(need_encryption_key, std::move(records),
-                         report_successful_upload_cb,
-                         encryption_key_attached_cb, std::move(result_cb));
+                         std::move(report_successful_upload_cb),
+                         std::move(encryption_key_attached_cb),
+                         std::move(result_cb));
 }
 
 // static
 EncryptedReportingUploadProvider::UploadClientBuilderCb
 EncryptedReportingUploadProvider::GetUploadClientBuilder() {
-  return base::BindRepeating(&UploadClient::Create);
+  return base::BindOnce(&UploadClient::Create);
 }
 }  // namespace reporting

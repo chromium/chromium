@@ -108,9 +108,10 @@ Status FakeUploadClient::EnqueueUpload(
     return Status::StatusOK();
   }
 
-  auto response_cb = base::BindOnce(
-      &FakeUploadClient::OnUploadComplete, base::Unretained(this),
-      report_upload_success_cb, encryption_key_attached_cb);
+  auto response_cb = base::BindOnce(&FakeUploadClient::OnUploadComplete,
+                                    base::Unretained(this),
+                                    std::move(report_upload_success_cb),
+                                    std::move(encryption_key_attached_cb));
 
   cloud_policy_client_->UploadEncryptedReport(
       std::move(request_result.value()),
@@ -133,7 +134,8 @@ void FakeUploadClient::OnUploadComplete(
         force_confirm_flag.has_value() && force_confirm_flag.value();
     auto seq_info_result = SequencingInformationValueToProto(*last_success);
     if (seq_info_result.ok()) {
-      report_upload_success_cb.Run(seq_info_result.ValueOrDie(), force_confirm);
+      std::move(report_upload_success_cb)
+          .Run(seq_info_result.ValueOrDie(), force_confirm);
     }
   }
 
@@ -157,7 +159,7 @@ void FakeUploadClient::OnUploadComplete(
       signed_encryption_key.set_public_asymmetric_key(public_key);
       signed_encryption_key.set_public_key_id(public_key_id_result.value());
       signed_encryption_key.set_signature(public_key_signature);
-      encryption_key_attached_cb.Run(signed_encryption_key);
+      std::move(encryption_key_attached_cb).Run(signed_encryption_key);
     }
   }
 }

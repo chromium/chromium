@@ -143,7 +143,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
       need_encryption_key_(need_encryption_key),
       records_(std::move(records)),
       client_(client),
-      encryption_key_attached_cb_(encryption_key_attached_cb) {}
+      encryption_key_attached_cb_(std::move(encryption_key_attached_cb)) {}
 
 RecordHandlerImpl::ReportUploader::~ReportUploader() = default;
 
@@ -294,7 +294,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload() {
       signed_encryption_key.set_public_asymmetric_key(public_key);
       signed_encryption_key.set_public_key_id(public_key_id_result.value());
       signed_encryption_key.set_signature(public_key_signature);
-      encryption_key_attached_cb_.Run(signed_encryption_key);
+      std::move(encryption_key_attached_cb_).Run(signed_encryption_key);
       need_encryption_key_ = false;
     }
   }
@@ -440,7 +440,7 @@ void RecordHandlerImpl::HandleRecords(
         encryption_key_attached_cb) {
   Start<RecordHandlerImpl::ReportUploader>(
       need_encryption_key, std::move(records), GetClient(),
-      std::move(upload_complete_cb), encryption_key_attached_cb,
+      std::move(upload_complete_cb), std::move(encryption_key_attached_cb),
       sequenced_task_runner_);
 }
 

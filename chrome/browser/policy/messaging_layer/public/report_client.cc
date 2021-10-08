@@ -329,15 +329,15 @@ void ReportingClient::DeliverAsyncStartUploader(
                        std::unique_ptr<std::vector<EncryptedRecord>> records) {
                       upload_provider->RequestUploadEncryptedRecords(
                           need_encryption_key, std::move(records),
-                          report_success_upload_cb, encryption_key_attached_cb,
+                          std::move(report_success_upload_cb),
+                          std::move(encryption_key_attached_cb),
                           base::DoNothing());
                       return Status::StatusOK();
                     },
-                    base::BindRepeating(&StorageModuleInterface::ReportSuccess,
-                                        instance->storage_),
-                    base::BindRepeating(
-                        &StorageModuleInterface::UpdateEncryptionKey,
-                        instance->storage_),
+                    base::BindOnce(&StorageModuleInterface::ReportSuccess,
+                                   instance->storage_),
+                    base::BindOnce(&StorageModuleInterface::UpdateEncryptionKey,
+                                   instance->storage_),
                     base::Unretained(instance->upload_provider_.get())));
             std::move(start_uploader_cb).Run(std::move(uploader));
           },
