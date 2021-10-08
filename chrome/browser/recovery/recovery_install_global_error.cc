@@ -65,7 +65,7 @@ int RecoveryInstallGlobalError::MenuItemCommandID() {
 }
 
 std::u16string RecoveryInstallGlobalError::MenuItemLabel() {
-  return l10n_util::GetStringUTF16(IDS_UPDATE_NOW);
+  return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
 }
 
 ui::ImageModel RecoveryInstallGlobalError::MenuItemIcon() {

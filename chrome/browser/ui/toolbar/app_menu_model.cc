@@ -124,10 +124,7 @@ std::u16string GetUpgradeDialogMenuItemName() {
       UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
     return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
   } else {
-    return l10n_util::GetStringUTF16(
-        base::FeatureList::IsEnabled(features::kUseRelaunchToUpdateString)
-            ? IDS_RELAUNCH_TO_UPDATE
-            : IDS_UPDATE_NOW);
+    return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
   }
 }
 

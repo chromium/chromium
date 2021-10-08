@@ -635,10 +635,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_ABOUT" desc="In Title Case: The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="In Title Case: The text label of the Update Chrome Now menu item">
-          Update &amp;Chromium
-        </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="In Title Case: The text label of the Update Chrome menu item, when relaunch to update experiment is enabled">
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="In Title Case: The text label of the relaunch to update Chrome menu item">
           Relaunch to Update &amp;Chromium
         </message>
       </if>
@@ -646,10 +643,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome Now menu item">
-          Update &amp;Chromium
-        </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the Update Chrome menu item, when relaunch to update experiment is enabled">
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome menu item">
           Relaunch to update &amp;Chromium
         </message>
       </if>
@@ -657,10 +651,7 @@ Chromium is unable to recover your settings.
         <message name="IDS_ABOUT" desc="The text label of the About Chrome menu item">
           About &amp;Chromium
         </message>
-        <message name="IDS_UPDATE_NOW" desc="The text label of the Update Chrome OS Now menu item">
-          Update &amp;Chromium OS
-        </message>
-        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the Update Chrome OS menu item, when relaunch to update experiment is enabled">
+        <message name="IDS_RELAUNCH_TO_UPDATE" desc="The text label of the relaunch to update Chrome OS menu item">
           Relaunch to update &amp;Chromium OS
         </message>
       </if>

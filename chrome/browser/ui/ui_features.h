@@ -180,10 +180,6 @@ extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
 // Works on Android 10+.
 extern const base::Feature kToolbarUseHardwareBitmapDraw;
 
-// Whether to label the update menu item as "Relaunch to update Chrome", rather
-// than "Update Google Chrome".
-extern const base::Feature kUseRelaunchToUpdateString;
-
 extern const base::Feature kWebUIBubblePerProfilePersistence;
 
 #if !defined(ANDROID)
