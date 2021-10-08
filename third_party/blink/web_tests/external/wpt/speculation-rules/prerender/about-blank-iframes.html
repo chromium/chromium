@@ -7,8 +7,12 @@ and prerenderingchange event.
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
 <body>
 <script>
+
+setup(() => assertSpeculationRulesIsSupported());
+
 promise_test(async t => {
   const channel = new BroadcastChannel('test-channel');
 
