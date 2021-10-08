@@ -18,6 +18,7 @@ static_library("bluetooth_config") {
     "device_cache_impl.h",
     "device_conversion_util.cc",
     "device_conversion_util.h",
+    "device_name_manager.cc",
     "device_name_manager.h",
     "device_name_manager_impl.cc",
     "device_name_manager_impl.h",

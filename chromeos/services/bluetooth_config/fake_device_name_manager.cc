@@ -24,6 +24,7 @@ absl::optional<std::string> FakeDeviceNameManager::GetDeviceNickname(
 void FakeDeviceNameManager::SetDeviceNickname(const std::string& device_id,
                                               const std::string& nickname) {
   device_id_to_nickname_map_[device_id] = nickname;
+  NotifyDeviceNicknameChanged(device_id);
 }
 
 }  // namespace bluetooth_config
