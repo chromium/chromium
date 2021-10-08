@@ -97,7 +97,7 @@ public class MessageBannerViewTest {
                                     MessageIdentifier.TEST_MESSAGE)
                             .with(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID,
                                     android.R.drawable.ic_menu_add)
-                            .with(MessageBannerProperties.ON_SECONDARY_ACTION,
+                            .with(MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK,
                                     mSecondaryActionCallback)
                             .build();
             PropertyModelChangeProcessor.create(
@@ -124,7 +124,7 @@ public class MessageBannerViewTest {
                                     android.R.drawable.ic_menu_add)
                             .with(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT,
                                     SECONDARY_BUTTON_MENU_TEXT)
-                            .with(MessageBannerProperties.ON_SECONDARY_ACTION,
+                            .with(MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK,
                                     mSecondaryActionCallback)
                             .build();
             PropertyModelChangeProcessor.create(

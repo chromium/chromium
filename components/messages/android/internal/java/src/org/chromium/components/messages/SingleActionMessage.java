@@ -38,6 +38,7 @@ public class SingleActionMessage implements MessageStateHandler {
     private final Supplier<Long> mAutodismissDurationMs;
     private final Supplier<Integer> mMaxTranslationSupplier;
     private final Callback<Animator> mAnimatorStartCallback;
+    private boolean mMessageDismissed;
 
     // The timestamp when the message was shown. Used for reproting visible duration.
     private long mMessageShownTime;
@@ -73,6 +74,7 @@ public class SingleActionMessage implements MessageStateHandler {
 
         mModel.set(
                 MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER, this::handlePrimaryAction);
+        mModel.set(MessageBannerProperties.ON_SECONDARY_BUTTON_CLICK, this::handleSecondaryAction);
     }
 
     /**
@@ -121,6 +123,7 @@ public class SingleActionMessage implements MessageStateHandler {
     public void dismiss(@DismissReason int dismissReason) {
         Callback<Integer> onDismissed = mModel.get(MessageBannerProperties.ON_DISMISSED);
         if (onDismissed != null) onDismissed.onResult(dismissReason);
+        mMessageDismissed = true;
         if (dismissReason == DismissReason.PRIMARY_ACTION
                 || dismissReason == DismissReason.SECONDARY_ACTION
                 || dismissReason == DismissReason.GESTURE) {
@@ -132,8 +135,16 @@ public class SingleActionMessage implements MessageStateHandler {
     }
 
     private void handlePrimaryAction(View v) {
+        // Avoid running the primary action callback if the message has already been dismissed.
+        if (mMessageDismissed) return;
         mModel.get(MessageBannerProperties.ON_PRIMARY_ACTION).run();
         mDismissHandler.invoke(mModel, DismissReason.PRIMARY_ACTION);
+    }
+
+    private void handleSecondaryAction() {
+        // Avoid running the secondary action callback if the message has already been dismissed.
+        if (mMessageDismissed) return;
+        mModel.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
     }
 
     @VisibleForTesting
@@ -149,6 +160,11 @@ public class SingleActionMessage implements MessageStateHandler {
     @VisibleForTesting
     void setViewForTesting(MessageBannerView view) {
         mView = view;
+    }
+
+    @VisibleForTesting
+    boolean getMessageDismissedForTesting() {
+        return mMessageDismissed;
     }
 
     @Override
