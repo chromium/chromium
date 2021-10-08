@@ -13,7 +13,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -49,8 +49,18 @@ enum class Status {
 };
 
 void LogStatus(Status status) {
-  UMA_HISTOGRAM_ENUMERATION("Apps.AppList.DriveZeroStateProvider.Status",
-                            status);
+  base::UmaHistogramEnumeration("Apps.AppList.DriveZeroStateProvider.Status",
+                                status);
+}
+
+void LogShouldWarm(bool should_warm) {
+  base::UmaHistogramBoolean("Apps.AppList.DriveZeroStateProvider.ShouldWarm",
+                            should_warm);
+}
+
+void LogLatency(base::TimeDelta latency) {
+  base::UmaHistogramTimes("Apps.AppList.DriveZeroStateProvider.Latency",
+                          latency);
 }
 
 bool IsSuggestedContentEnabled(Profile* profile) {
@@ -96,6 +106,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
       app_list_features::kEnableSuggestedFiles, "gate_warm_on_launcher_use",
       true);
   const bool should_warm = !gate_on_use || launcher_used;
+  LogShouldWarm(should_warm);
   if (suggested_files_enabled_ && drive_service_ && should_warm) {
     if (drive_service_->IsMounted()) {
       // Drivefs is mounted, so we can fetch results immediately.
@@ -224,8 +235,7 @@ void ZeroStateDriveProvider::OnFilePathsLocated(
   SwapResults(&provider_results);
 
   LogStatus(Status::kOk);
-  UMA_HISTOGRAM_TIMES("Apps.AppList.DriveZeroStateProvider.Latency",
-                      base::TimeTicks::Now() - query_start_time_);
+  LogLatency(base::TimeTicks::Now() - query_start_time_);
 }
 
 std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
