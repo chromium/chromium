@@ -32,7 +32,7 @@
     }
   },
   "chromeos-amd64-generic-rel-dchecks": {
-    "args_file": "//build/args/chromeos/amd64-generic.gni",
+    "args_file": "//build/args/chromeos/amd64-generic-vm.gni",
     "gn_args": {
       "dcheck_always_on": true,
       "is_chromeos_device": true,

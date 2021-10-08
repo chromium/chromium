@@ -319,7 +319,7 @@
       'android-code-coverage-native': 'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage',
       'android-backuprefptr-arm-fyi-rel': 'release_trybot_backuprefptr_arm',
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64',
-      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
+      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic_use_fake_dbus_clients_reclient',
@@ -945,7 +945,7 @@
       'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
       'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
-      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_dchecks',
+      'chromeos-amd64-generic-rel-dchecks': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks',
       'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
@@ -1860,8 +1860,8 @@
       'chromeos_amd64-generic-vm', 'use_fake_dbus_clients',
     ],
 
-    'chromeos_amd64-generic_use_fake_dbus_clients_dchecks': [
-      'chromeos_amd64-generic', 'use_fake_dbus_clients', 'dcheck_always_on',
+    'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks': [
+      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'dcheck_always_on',
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients_reclient': [
