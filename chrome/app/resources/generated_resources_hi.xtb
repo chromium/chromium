@@ -5125,7 +5125,7 @@
 <translation id="6476138569087741884">फ़ुलस्क्रीन ज़ूम लेवल</translation>
 <translation id="6477822444490674459">फ़ोन में वर्क प्रोफ़ाइल होने पर, सूचनाओं को सिंक करने की सुविधा काम नहीं करती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">खतरनाक फ़ाइल रखें?</translation>
-<translation id="6480327114083866287"><ph name="MANAGER" /> प्रबंधित करता है</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> मैनेज करता है</translation>
 <translation id="6483485061007832714">डाउनलोड खोलें</translation>
 <translation id="6483805311199035658"><ph name="FILE" /> खोला जा रहा है...</translation>
 <translation id="6488384360522318064">भाषा चुनें</translation>
@@ -6673,7 +6673,7 @@
 <translation id="8116972784401310538">&amp;बुकमार्क मैनेजर</translation>
 <translation id="8117752106453549166">Linux को आपका एडमिन कॉन्फ़िगर कर रहा है. कॉन्फ़िगर करने में कुछ मिनट लगेंगे.</translation>
 <translation id="8118362518458010043">Chrome ने बंद किया. यह एक्सटेंशन असुरक्षित हो सकता है.</translation>
-<translation id="8118488170956489476">आपका संगठन आपके <ph name="BEGIN_LINK" />ब्राउज़र को प्रबंधित करता<ph name="END_LINK" /> है</translation>
+<translation id="8118488170956489476">आपका संगठन आपके <ph name="BEGIN_LINK" />ब्राउज़र को मैनेज करता<ph name="END_LINK" /> है</translation>
 <translation id="8118515372935001629">डिसप्ले की रीफ़्रेश दर</translation>
 <translation id="8118860139461251237">अपने डाउनलोड प्रबंधित करें</translation>
 <translation id="8119438628456698432">लॉग फ़ाइलें जनरेट की जा रही हैं...</translation>
@@ -6815,7 +6815,7 @@
 <translation id="8261506727792406068">मिटाएं</translation>
 <translation id="8263336784344783289">इस ग्रुप को नाम दें</translation>
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> ने आपका माउस कर्सर अक्षम कर दिया है.</translation>
-<translation id="8264024885325823677">इस सेटिंग को आपका एडमिन प्रबंधित करता है.</translation>
+<translation id="8264024885325823677">इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="8264718194193514834">"<ph name="EXTENSION_NAME" />" ने पूरी स्क्रीन ट्रिगर की है.</translation>
 <translation id="826511437356419340">विंडो की खास जानकारी वाले मोड पर पहुंच गए. एक जगह से दूसरी जगह जाने के लिए स्वाइप करें या tab बटन दबाएं (अगर कीबाेर्ड का इस्तेमाल कर रहे हैं).</translation>
 <translation id="8266947622852630193">इनपुट के सभी तरीके</translation>

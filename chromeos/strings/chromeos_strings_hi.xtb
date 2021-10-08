@@ -29,7 +29,7 @@
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1468664791493211953">ऑफ़र</translation>
-<translation id="1476467821656042872">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और यह आपकी गतिविधि पर नज़र रख सकता है.</translation>
+<translation id="1476467821656042872">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है और यह आपकी गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
 <translation id="1499900233129743732">इस उपयोगकर्ता को <ph name="MANAGER" /> प्रबंधित करता है और यह किसी दूसरी जगह पर होते हुए भी सेटिंग को प्रबंधित कर सकता है. साथ ही, यह उपयोगकर्ता की गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="150962533380566081">गलत पीयूके.</translation>
@@ -311,7 +311,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6456394469623773452">अच्छा</translation>
 <translation id="6472207088655375767">एक बार इस्तेमाल होने वाला पासवर्ड (ओटीपी)</translation>
-<translation id="6480327114083866287"><ph name="MANAGER" /> प्रबंधित करता है</translation>
+<translation id="6480327114083866287"><ph name="MANAGER" /> मैनेज करता है</translation>
 <translation id="649050271426829538">बंद हो गया - काग़ज़ फंसा है</translation>
 <translation id="6516990319416533844">बैटरी चार्ज होने की दर की जांच करने के लिए, बैटरी को पहले काफ़ी हद तक (पूरी नहीं) खर्च होने दें</translation>
 <translation id="6517239166834772319">एक्सप्लोर करें</translation>
@@ -350,7 +350,7 @@
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7162487448488904999">गैलरी</translation>
 <translation id="7172721935181587524">एक इमेज</translation>
-<translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
+<translation id="7177485034254901881">इस <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> मैनेज करता है. एडमिन इस डिवाइस को किसी दूसरी जगह से भी कॉन्फ़िगर कर सकते हैं.</translation>
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देने वाली कंपनी</translation>
 <translation id="7257889006063274246">क्या आप वाकई <ph name="CURRENT_PAGE" /> पेज को हटाना चाहते हैं?</translation>
@@ -372,7 +372,7 @@
 <translation id="7502658306369382406">IPv6 पता</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7550715992156305117">डाइग्नोस्टिक्स रूटीन</translation>
-<translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन प्रबंधित करता है</translation>
+<translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन मैनेज करता है</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7574732568136198983">ARC को पिंग करें</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाकी हैं</translation>

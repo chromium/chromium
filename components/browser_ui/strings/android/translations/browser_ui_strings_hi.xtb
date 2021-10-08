@@ -56,7 +56,7 @@
 <translation id="2434158240863470628">डाउनलोड हो गया <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2485422356828889247">विस्थापित करें</translation>
-<translation id="2490684707762498678"><ph name="APP_NAME" /> प्रबंधित करता है</translation>
+<translation id="2490684707762498678"><ph name="APP_NAME" /> मैनेज करता है</translation>
 <translation id="2498359688066513246">सहायता और फ़ीडबैक</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 कुकी को ब्लॉक किया गया}one{# कुकी को ब्लॉक किया गया}other{# कुकी ब्लॉक किए गए}}</translation>
@@ -276,7 +276,7 @@
 <translation id="8211406090763984747">कनेक्शन सुरक्षित है</translation>
 <translation id="8249310407154411074">सबसे ऊपर ले जाएं</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
-<translation id="8300705686683892304">ऐप्लिकेशन प्रबंधित करता है</translation>
+<translation id="8300705686683892304">ऐप्लिकेशन मैनेज करता है</translation>
 <translation id="8324158725704657629">दोबारा न पूछें</translation>
 <translation id="8372893542064058268">किसी विशिष्ट साइट के लिए पृष्ठभूमि समन्वयन की अनुमति दें.</translation>
 <translation id="8376384591331888629">इस साइट पर मौजूद तीसरे पक्ष की कुकी शामिल करें</translation>
