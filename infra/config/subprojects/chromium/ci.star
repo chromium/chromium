@@ -1629,7 +1629,7 @@ ci.chromium_builder(
                     ],
                     "dirs": ["ClearKeyCdm", "locales", "resources"],
                     "gcs_bucket": "chromium-browser-versioned",
-                    "gcs_path": "experimental/Linux_x64_Tagged/{$chromium_version%}/chrome-linux.zip",
+                    "gcs_path": "experimental/Linux_x64_Tagged/{%chromium_version%}/chrome-linux.zip",
                     "archive_type": "ARCHIVE_TYPE_ZIP",
                 },
                 {
@@ -1637,7 +1637,7 @@ ci.chromium_builder(
                         "chromedriver",
                     ],
                     "gcs_bucket": "chromium-browser-versioned",
-                    "gcs_path": "experimental/Linux_x64_Tagged/{$chromium_version%}/chromedriver_linux64.zip",
+                    "gcs_path": "experimental/Linux_x64_Tagged/{%chromium_version%}/chromedriver_linux64.zip",
                     "archive_type": "ARCHIVE_TYPE_ZIP",
                 },
             ],
