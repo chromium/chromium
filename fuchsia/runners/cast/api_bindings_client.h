@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Injects scripts received from the ApiBindings service, and provides connected

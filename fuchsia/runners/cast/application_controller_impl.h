@@ -12,7 +12,7 @@
 #include <lib/fidl/cpp/interface_request.h>
 
 #include "base/macros.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 
 class ApplicationControllerImpl final
     : public chromium::cast::ApplicationController {

@@ -20,7 +20,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_fuchsia.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/api_bindings_client.h"
 #include "fuchsia/runners/cast/application_controller_impl.h"
 #include "fuchsia/runners/cast/named_message_port_connector_fuchsia.h"

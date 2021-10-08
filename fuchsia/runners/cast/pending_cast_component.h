@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/strings/string_piece.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/cast_component.h"
 
 namespace base {

@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "fuchsia/base/test/fit_adapter.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "fuchsia/runners/cast/application_controller_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

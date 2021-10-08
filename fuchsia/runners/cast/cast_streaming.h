@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 
 // TODO(crbug.com/1082821): Remove unused methods here once the
 // Cast Streaming Receiver component has been implemented.

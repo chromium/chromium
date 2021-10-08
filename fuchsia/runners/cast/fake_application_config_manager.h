@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "url/gurl.h"
 
 // Test cast.ApplicationConfigManager implementation which maps a test Cast
