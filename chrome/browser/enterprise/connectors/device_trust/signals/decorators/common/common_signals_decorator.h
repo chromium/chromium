@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_COMMON_COMMON_SIGNALS_DECORATOR_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_SIGNALS_DECORATORS_COMMON_COMMON_SIGNALS_DECORATOR_H_
 
+#include "base/system/sys_info.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/signals_decorator.h"
 
 class PolicyBlocklistService;
@@ -24,9 +25,15 @@ class CommonSignalsDecorator : public SignalsDecorator {
   void Decorate(SignalsType& signals, base::OnceClosure done_closure) override;
 
  private:
+  void OnHardwareInfoRetrieved(SignalsType& signals,
+                               base::OnceClosure done_closure,
+                               base::SysInfo::HardwareInfo hardware_info);
+
   PrefService* local_state_;
   PrefService* profile_prefs_;
   PolicyBlocklistService* policy_blocklist_service_;
+
+  base::WeakPtrFactory<CommonSignalsDecorator> weak_ptr_factory_{this};
 };
 
 }  // namespace enterprise_connectors

@@ -12,7 +12,10 @@ source_set("common") {
 
   sources = [ "common_signals_decorator.cc" ]
 
-  public_deps = [ "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/enterprise/connectors/device_trust/attestation/common:types",
+  ]
 
   deps = [
     "//chrome/browser/enterprise/signals:utils",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/signals/decorators/common/common_signals_decorator.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "chrome/browser/enterprise/signals/signals_utils.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -30,8 +32,6 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals,
                                       base::OnceClosure done_closure) {
   signals.set_os(policy::GetOSPlatform());
   signals.set_os_version(policy::GetOSVersion());
-  signals.set_device_model(policy::GetDeviceModel());
-  signals.set_device_manufacturer(policy::GetDeviceManufacturer());
   signals.set_display_name(policy::GetDeviceName());
   signals.set_browser_version(version_info::GetVersionNumber());
 
@@ -66,6 +66,23 @@ void CommonSignalsDecorator::Decorate(SignalsType& signals,
     signals.set_password_protection_warning_trigger(
         static_cast<int32_t>(password_protection_warning_trigger.value()));
   }
+
+  auto callback =
+      base::BindOnce(&CommonSignalsDecorator::OnHardwareInfoRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), std::ref(signals),
+                     std::move(done_closure));
+
+  base::SysInfo::GetHardwareInfo(std::move(callback));
+}
+
+void CommonSignalsDecorator::OnHardwareInfoRetrieved(
+    SignalsType& signals,
+    base::OnceClosure done_closure,
+    base::SysInfo::HardwareInfo hardware_info) {
+  // TODO(b/178421844): Look into adding caching support for these signals, as
+  // they will never change throughout the browser's lifetime.
+  signals.set_device_model(hardware_info.model);
+  signals.set_device_manufacturer(hardware_info.manufacturer);
 
   std::move(done_closure).Run();
 }

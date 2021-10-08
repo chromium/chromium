@@ -58,6 +58,8 @@ base::flat_map<std::string, std::string> SignalsToMap(
   TrySetSignal(map, "display_name", signals->has_display_name(),
                signals->display_name());
   TrySetSignal(map, "os", signals->has_os(), signals->os());
+  TrySetSignal(map, "os_version", signals->has_os_version(),
+               signals->os_version());
   TrySetSignal(map, "device_manufacturer", signals->has_device_manufacturer(),
                signals->device_manufacturer());
   TrySetSignal(map, "device_model", signals->has_device_model(),
