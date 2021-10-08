@@ -991,7 +991,6 @@ crbug.com/591099 external/wpt/css/css-ui/text-overflow-015.html [ Failure ]
 
 # [css-flexbox]
 
-crbug.com/1003506 external/wpt/css/css-flexbox/percentage-heights-007.html [ Failure ]
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1155036 external/wpt/css/css-flexbox/contain-size-layout-abspos-flex-container-crash.html [ Crash Pass ]
 crbug.com/1251689 external/wpt/css/css-flexbox/table-as-item-specified-width-vertical.html [ Failure ]

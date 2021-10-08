@@ -210,22 +210,14 @@ bool NGFlexLayoutAlgorithm::DoesItemStretch(const NGBlockNode& child) const {
 bool NGFlexLayoutAlgorithm::IsItemFlexBasisDefinite(
     const NGBlockNode& child) const {
   const Length& flex_basis = child.Style().FlexBasis();
-  DCHECK(!flex_basis.IsAuto())
-      << "This is never called with flex_basis.IsAuto, but it'd be trivial to "
-         "support.";
-  DCHECK(!flex_basis.IsContent())
-      << "This is never called with flex_basis.IsContent, but it'd be trivial "
-         "to support.";
+  if (flex_basis.IsAuto() || flex_basis.IsContent())
+    return false;
   const NGConstraintSpace& space = BuildSpaceForFlexBasis(child);
   if (MainAxisIsInlineAxis(child))
     return !InlineLengthUnresolvable(space, flex_basis);
   return !BlockLengthUnresolvable(space, flex_basis);
 }
 
-// This behavior is under discussion: the item's pre-flexing main size
-// definiteness may no longer imply post-flexing definiteness.
-// TODO(dgrogan): Have https://crbug.com/1003506 and
-// https://github.com/w3c/csswg-drafts/issues/4305 been resolved yet?
 bool NGFlexLayoutAlgorithm::IsItemMainSizeDefinite(
     const NGBlockNode& child) const {
   DCHECK(is_column_)
@@ -770,7 +762,10 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
         // If the flex container has a definite main size, a flex item's
         // post-flexing main size is treated as definite, even though it can
         // rely on the indefinite sizes of any flex items in the same line.
+        // TODO(crbug.com/1255340): This logic, and the similar below call to
+        // IsColumnContainerMainSizeDefinite need some refinement.
         if (!IsColumnContainerMainSizeDefinite() &&
+            !IsItemFlexBasisDefinite(flex_item.ng_input_node_) &&
             !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
           space_builder.SetIsInitialBlockSizeIndefinite(true);
         }
@@ -919,6 +914,7 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
   if (is_column_) {
     available_size.Transpose();
     if (!IsColumnContainerMainSizeDefinite() &&
+        !IsItemFlexBasisDefinite(flex_item.ng_input_node_) &&
         !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
       space_builder.SetIsInitialBlockSizeIndefinite(true);
     }
