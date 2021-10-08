@@ -37,18 +37,6 @@ constexpr bool ShouldReportUpdates() {
 #endif
 }
 
-bool ShouldReportExtensionRequestRealtime() {
-  return base::FeatureList::IsEnabled(
-      features::kEnterpriseRealtimeExtensionRequest);
-}
-
-bool IsRealTimePipielineEnabled() {
-  return reporting::ReportQueueProvider::
-             IsEncryptedReportingPipelineEnabled() &&
-         base::GetFieldTrialParamByFeatureAsBool(
-             features::kEnterpriseRealtimeExtensionRequest, "with_erp", true);
-}
-
 }  // namespace
 
 ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
@@ -108,9 +96,6 @@ void ReportSchedulerDesktop::OnBrowserVersionUploaded() {
 }
 
 void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
-  if (!ShouldReportExtensionRequestRealtime())
-    return;
-
   // On CrOS, the function may be called twice during startup.
   if (ExtensionRequestReportThrottler::Get()->IsEnabled())
     return;
@@ -118,9 +103,7 @@ void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
   ExtensionRequestReportThrottler::Get()->Enable(
       // The ERP pipeline will batch requests for us, hence there is no throttle
       // delay needed.
-      IsRealTimePipielineEnabled()
-          ? base::TimeDelta()
-          : features::kEnterpiseRealtimeExtensionRequestThrottleDelay.Get(),
+      base::TimeDelta(),
       base::BindRepeating(&ReportSchedulerDesktop::TriggerExtensionRequest,
                           base::Unretained(this)));
 }
@@ -149,11 +132,8 @@ void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
 
 void ReportSchedulerDesktop::TriggerExtensionRequest() {
   if (!trigger_report_callback_.is_null()) {
-    auto trigger =
-        IsRealTimePipielineEnabled()
-            ? ReportScheduler::ReportTrigger::kTriggerExtensionRequestRealTime
-            : ReportScheduler::ReportTrigger::kTriggerExtensionRequest;
-    trigger_report_callback_.Run(trigger);
+    trigger_report_callback_.Run(
+        ReportScheduler::ReportTrigger::kTriggerExtensionRequestRealTime);
   }
 }
 

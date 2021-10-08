@@ -2924,11 +2924,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "enterprise-realtime-extension-request",
-    "owners": ["zmin", "parastoog"],
-    "expiry_milestone": 98
-  },
-  {
     "name": "enterprise-reporting-api-keychain-recreation",
     "owners": ["zmin", "sacomoto"],
     "expiry_milestone": 92

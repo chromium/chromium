@@ -2116,9 +2116,6 @@ extern const char kEnableAccessibilityLiveCaptionDescription[];
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 
-extern const char kEnterpriseRealtimeExtensionRequestName[];
-extern const char kEnterpriseRealtimeExtensionRequestDescription[];
-
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];
 

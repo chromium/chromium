@@ -39,7 +39,6 @@ bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
     case ReportScheduler::kTriggerNewVersion:
       return true;
     case ReportScheduler::kTriggerNone:
-    case ReportScheduler::kTriggerExtensionRequest:
     case ReportScheduler::kTriggerExtensionRequestRealTime:
       return false;
   }
@@ -48,7 +47,6 @@ bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
 bool IsExtensionRequestUploaded(ReportScheduler::ReportTrigger trigger) {
   switch (trigger) {
     case ReportScheduler::kTriggerTimer:
-    case ReportScheduler::kTriggerExtensionRequest:
     case ReportScheduler::kTriggerExtensionRequestRealTime:
       return true;
     case ReportScheduler::kTriggerNone:
@@ -239,10 +237,6 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
       VLOG(1) << "Generating basic enterprise report upon new version.";
       report_type = kBrowserVersion;
       break;
-    case kTriggerExtensionRequest:
-      VLOG(1) << "Generating extension request partially report.";
-      report_type = kExtensionRequest;
-      break;
   }
 
   report_generator_->Generate(
@@ -323,9 +317,6 @@ void ReportScheduler::RunPendingTriggers() {
     // Timer-triggered reports contain data of all other report types.
     trigger = kTriggerTimer;
     pending_triggers_ = 0;
-  } else if ((pending_triggers_ & kTriggerExtensionRequest) != 0) {
-    trigger = kTriggerExtensionRequest;
-    pending_triggers_ -= kTriggerExtensionRequest;
   } else {
     trigger = (pending_triggers_ & kTriggerUpdate) != 0 ? kTriggerUpdate
                                                         : kTriggerNewVersion;
@@ -365,7 +356,7 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
     kTimer = 1,
     kUpdate = 2,
     kNewVersion = 3,
-    kExtensionRequest = 4,
+    kExtensionRequest = 4,  // Deprecated.
     kExtensionRequestRealTime = 5,
     kMaxValue = kExtensionRequestRealTime
   } sample = Sample::kNone;
@@ -380,9 +371,6 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
       break;
     case kTriggerNewVersion:
       sample = Sample::kNewVersion;
-      break;
-    case kTriggerExtensionRequest:
-      sample = Sample::kExtensionRequest;
       break;
     case kTriggerExtensionRequestRealTime:
       sample = Sample::kExtensionRequestRealTime;

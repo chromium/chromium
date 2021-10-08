@@ -403,16 +403,6 @@ const base::Feature kEnterpriseReportingExtensionManifestVersion{
     "EnterpriseReportingExtensionManifestVersion",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if !defined(OS_ANDROID)
-// Enables real-time reporting for extension request
-const base::Feature kEnterpriseRealtimeExtensionRequest{
-    "EnterpriseRealtimeExtensionRequest", base::FEATURE_ENABLED_BY_DEFAULT};
-const base::FeatureParam<base::TimeDelta>
-    kEnterpiseRealtimeExtensionRequestThrottleDelay{
-        &kEnterpriseRealtimeExtensionRequest, "throttle_delay",
-        base::Minutes(1)};
-#endif
-
 // Controls whether the user justification text field is visible on the
 // extension request dialog.
 const base::Feature kExtensionWorkflowJustification{

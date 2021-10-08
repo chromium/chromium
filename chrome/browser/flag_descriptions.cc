@@ -3705,12 +3705,6 @@ const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "
     "page with the selected text highlighted.";
 
-const char kEnterpriseRealtimeExtensionRequestName[] =
-    "Enterprise real-time extension request report";
-const char kEnterpriseRealtimeExtensionRequestDescription[] =
-    "Enable the real-time extension request uploading. The feature requires "
-    "the enterprise reporting and extension request being enabled.";
-
 const char kGlobalMediaControlsCastStartStopName[] =
     "Global media controls control Cast start/stop";
 const char kGlobalMediaControlsCastStartStopDescription[] =

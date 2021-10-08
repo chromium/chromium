@@ -38,11 +38,10 @@ class ReportScheduler {
   // The trigger leading to report generation. Values are bitmasks in the
   // |pending_triggers_| bitfield.
   enum ReportTrigger : uint32_t {
-    kTriggerNone = 0,                    // No trigger.
-    kTriggerTimer = 1U << 0,             // The periodic timer expired.
-    kTriggerUpdate = 1U << 1,            // An update was detected.
-    kTriggerNewVersion = 1U << 2,        // A new version is running.
-    kTriggerExtensionRequest = 1U << 3,  // Pending extension requests updated.
+    kTriggerNone = 0,              // No trigger.
+    kTriggerTimer = 1U << 0,       // The periodic timer expired.
+    kTriggerUpdate = 1U << 1,      // An update was detected.
+    kTriggerNewVersion = 1U << 2,  // A new version is running.
     // Pending extension requests updated, with encrypted realtime pipeline.
     kTriggerExtensionRequestRealTime = 1U << 4,
   };
