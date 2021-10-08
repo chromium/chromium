@@ -4103,11 +4103,6 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
       extension->id(), UNINSTALL_REASON_FOR_TESTING, nullptr));
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 
-  // Ensure that the quota storage system has finished RegisterClient calls
-  // before test shuts down, triggering LazyInitialize().
-  // TODO(http://crbug.com/1182630): Remove this when 1182630 is fixed.
-  task_environment()->RunUntilIdle();
-
   // Ensure we cannot load it if management policy prohibits installation.
   TestManagementPolicyProvider provider_(
       TestManagementPolicyProvider::PROHIBIT_LOAD);
