@@ -4077,8 +4077,6 @@ static_library("ui") {
       "views/global_media_controls/media_notification_footer_view.h",
       "views/global_media_controls/media_notification_list_view.cc",
       "views/global_media_controls/media_notification_list_view.h",
-      "views/global_media_controls/media_toolbar_button_contextual_menu.cc",
-      "views/global_media_controls/media_toolbar_button_contextual_menu.h",
       "views/global_media_controls/media_toolbar_button_view.cc",
       "views/global_media_controls/media_toolbar_button_view.h",
       "views/hover_button.cc",
