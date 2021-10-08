@@ -14,6 +14,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -87,14 +88,17 @@ class AmpPageLoadMetricsBrowserTest : public InProcessBrowserTest {
     return https_test_server_.get();
   }
 
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
 IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsBrowserTest, NoAmp) {
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(GetWebContents());
   waiter.AddPageExpectation(
       page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
@@ -107,8 +111,7 @@ IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsBrowserTest, NoAmp) {
 }
 
 IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsBrowserTest, AmpMainFrame) {
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(GetWebContents());
   waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                 TimingField::kFirstContentfulPaint);
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
@@ -121,14 +124,54 @@ IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsBrowserTest, AmpMainFrame) {
 }
 
 IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsBrowserTest, AmpSubframe) {
-  page_load_metrics::PageLoadMetricsTestWaiter waiter(
-      browser()->tab_strip_model()->GetActiveWebContents());
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(GetWebContents());
   waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                 TimingField::kFirstContentfulPaint);
   StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
   GURL url =
       https_test_server()->GetURL("/page_load_metrics/amp_reader_mock.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  waiter.Wait();
+  CloseAllTabs();
+  ExpectMetricCountForUrl(url, "MainFrameAmpPageLoad", 0);
+  ExpectMetricValueForUrl(url, "SubFrameAmpPageLoad", 1);
+}
+
+class AmpPageLoadMetricsFencedFrameBrowserTest
+    : public AmpPageLoadMetricsBrowserTest {
+ public:
+  AmpPageLoadMetricsFencedFrameBrowserTest() = default;
+  ~AmpPageLoadMetricsFencedFrameBrowserTest() override = default;
+  AmpPageLoadMetricsFencedFrameBrowserTest(
+      const AmpPageLoadMetricsFencedFrameBrowserTest&) = delete;
+
+  AmpPageLoadMetricsFencedFrameBrowserTest& operator=(
+      const AmpPageLoadMetricsFencedFrameBrowserTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(AmpPageLoadMetricsFencedFrameBrowserTest,
+                       AmpFencedFrame) {
+  StartHttpsServer(net::EmbeddedTestServer::CERT_OK);
+  GURL url = https_test_server()->GetURL("/english_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(GetWebContents());
+  waiter.AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                TimingField::kFirstContentfulPaint);
+  const GURL kFencedFrameUrl =
+      https_test_server()->GetURL("/page_load_metrics/amp_basic.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          GetWebContents()->GetMainFrame(), kFencedFrameUrl);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
   waiter.Wait();
   CloseAllTabs();
   ExpectMetricCountForUrl(url, "MainFrameAmpPageLoad", 0);

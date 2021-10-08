@@ -139,10 +139,13 @@ void AMPPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
   // with this frame is discarded.
   amp_subframe_info_.erase(navigation_handle->GetRenderFrameHost());
 
-  // Only track frames that are direct descendents of the main frame.
+  // Only track frames or fenced frames that are direct descendants of the main
+  // frame.
   if (navigation_handle->GetParentFrame() == nullptr ||
-      navigation_handle->GetParentFrame()->GetParent() != nullptr)
+      navigation_handle->GetParentFrame()->GetParentOrOuterDocument() !=
+          nullptr) {
     return;
+  }
 
   // Only track frames that have AMP cache-like URLs.
   if (!IsLikelyAmpCacheUrl(navigation_handle->GetURL()))
