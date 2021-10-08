@@ -500,10 +500,10 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
   user_context.SetKey(
       Key(chromeos::Key::KEY_TYPE_PASSWORD_PLAIN, "" /*salt*/, password));
   user_context.SetPasswordKey(Key(password));
-  user_context.SetLoginInputMethodUsed(input_method::InputMethodManager::Get()
-                                           ->GetActiveIMEState()
-                                           ->GetCurrentInputMethod()
-                                           .id());
+  user_context.SetLoginInputMethodIdUsed(input_method::InputMethodManager::Get()
+                                             ->GetActiveIMEState()
+                                             ->GetCurrentInputMethod()
+                                             .id());
 
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
     if (user_context.GetUserType() !=

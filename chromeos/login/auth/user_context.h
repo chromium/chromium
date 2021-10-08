@@ -146,8 +146,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   // We need to pull input method used to log in into the user session to make
   // it consistent. This method will remember given input method to be used
   // when session starts.
-  void SetLoginInputMethodUsed(const std::string& input_method_id);
-  const std::string& GetLoginInputMethodUsed() const;
+  void SetLoginInputMethodIdUsed(const std::string& input_method_id);
+  const std::string& GetLoginInputMethodIdUsed() const;
 
   void ClearSecrets();
 
@@ -173,9 +173,9 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) UserContext {
   std::string reauth_proof_token_;
   bool is_under_advanced_protection_ = false;
   std::string managed_guest_session_launch_extension_id_;
-  // |login_input_method_used_| is non-empty if login password/code was used,
+  // |login_input_method_id_used_| is non-empty if login password/code was used,
   // i.e. user used some input method to log in.
-  std::string login_input_method_used_;
+  std::string login_input_method_id_used_;
 
   // For password reuse detection use.
   absl::optional<password_manager::PasswordHashData> sync_password_data_;

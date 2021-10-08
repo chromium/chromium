@@ -588,14 +588,14 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
   // Initialize preferences to currently saved state.
   ApplyPreferences(REASON_INITIALIZATION, "");
 
-  const std::string& login_input_method_used =
-      session_manager->user_context().GetLoginInputMethodUsed();
+  const std::string& login_input_method_id_used =
+      session_manager->user_context().GetLoginInputMethodIdUsed();
 
-  if (user_is_primary_ && !login_input_method_used.empty()) {
+  if (user_is_primary_ && !login_input_method_id_used.empty()) {
     // Persist input method when transitioning from Login screen into the
     // session.
-    ash::input_method::InputMethodPersistence::SetUserLastLoginInputMethod(
-        login_input_method_used, input_method::InputMethodManager::Get(),
+    ash::input_method::InputMethodPersistence::SetUserLastLoginInputMethodId(
+        login_input_method_id_used, input_method::InputMethodManager::Get(),
         profile);
   }
 

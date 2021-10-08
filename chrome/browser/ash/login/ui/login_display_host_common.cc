@@ -102,7 +102,7 @@ void SetGaiaInputMethods(const AccountId& account_id) {
       input_method_ids = gaia_ime_state->GetAllowedInputMethodIds();
     }
     const std::string owner_input_method_id =
-        lock_screen_utils::GetUserLastInputMethod(
+        lock_screen_utils::GetUserLastInputMethodId(
             user_manager::UserManager::Get()->GetOwnerAccountId());
     const std::string system_input_method_id =
         g_browser_process->local_state()->GetString(

@@ -43,15 +43,16 @@ AccountId GetUserAccount(Profile* profile) {
   return user->GetAccountId();
 }
 
-static void SetUserLastInputMethodPreference(const AccountId& account_id,
-                                             const std::string& input_method) {
+static void SetUserLastInputMethodPreference(
+    const AccountId& account_id,
+    const std::string& input_method_id) {
   if (!account_id.is_valid())
     return;
-  user_manager::known_user::SetUserLastLoginInputMethod(account_id,
-                                                        input_method);
+  user_manager::known_user::SetUserLastLoginInputMethodId(account_id,
+                                                          input_method_id);
 }
 
-void PersistUserInputMethod(const std::string& input_method,
+void PersistUserInputMethod(const std::string& input_method_id,
                             InputMethodManager* const manager,
                             Profile* profile) {
   PrefService* user_prefs = NULL;
@@ -63,17 +64,17 @@ void PersistUserInputMethod(const std::string& input_method,
   if (!user_prefs)
     return;
 
-  InputMethodPersistence::SetUserLastLoginInputMethod(input_method, manager,
-                                                      profile);
+  InputMethodPersistence::SetUserLastLoginInputMethodId(input_method_id,
+                                                        manager, profile);
 
-  const std::string current_input_method_on_pref =
+  const std::string current_input_method_id_on_pref =
       user_prefs->GetString(::prefs::kLanguageCurrentInputMethod);
-  if (current_input_method_on_pref == input_method)
+  if (current_input_method_id_on_pref == input_method_id)
     return;
 
   user_prefs->SetString(::prefs::kLanguagePreviousInputMethod,
-                        current_input_method_on_pref);
-  user_prefs->SetString(::prefs::kLanguageCurrentInputMethod, input_method);
+                        current_input_method_id_on_pref);
+  user_prefs->SetString(::prefs::kLanguageCurrentInputMethod, input_method_id);
 }
 
 }  // namespace
@@ -123,7 +124,7 @@ void InputMethodPersistence::InputMethodChanged(InputMethodManager* manager,
 }
 
 // static
-void InputMethodPersistence::SetUserLastLoginInputMethod(
+void InputMethodPersistence::SetUserLastLoginInputMethodId(
     const std::string& input_method_id,
     const InputMethodManager* const manager,
     Profile* profile) {

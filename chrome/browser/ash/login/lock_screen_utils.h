@@ -17,18 +17,18 @@ class ListValue;
 namespace ash {
 namespace lock_screen_utils {
 
-// Update current input method (namely keyboard layout) in the given IME state
-// to last input method used by this user.
+// Update current input method in the given IME state to last input method used
+// by this user.
 void SetUserInputMethod(const AccountId& account_id,
                         input_method::InputMethodManager::State* ime_state,
                         bool honor_device_policy);
 
-// Get user's last input method.
-std::string GetUserLastInputMethod(const AccountId& account_id);
+// Get user's last input method ID.
+std::string GetUserLastInputMethodId(const AccountId& account_id);
 
-// Sets the currently allowed input method, including those that are enforced
+// Sets the currently allowed input method ID, including those that are enforced
 // by device policy.
-void EnforceDevicePolicyInputMethods(std::string user_input_method);
+void EnforceDevicePolicyInputMethods(std::string user_input_method_id);
 
 // Remove any policy limitations on allowed IMEs.
 void StopEnforcingPolicyInputMethods();

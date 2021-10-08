@@ -703,9 +703,9 @@ void UserSelectionScreen::HandleNoPodFocused() {
 void UserSelectionScreen::OnAllowedInputMethodsChanged() {
   DCHECK_EQ(display_type_, DisplayedScreen::SIGN_IN_SCREEN);
   if (focused_pod_account_id_.is_valid()) {
-    std::string user_input_method =
-        lock_screen_utils::GetUserLastInputMethod(focused_pod_account_id_);
-    lock_screen_utils::EnforceDevicePolicyInputMethods(user_input_method);
+    std::string user_input_method_id =
+        lock_screen_utils::GetUserLastInputMethodId(focused_pod_account_id_);
+    lock_screen_utils::EnforceDevicePolicyInputMethods(user_input_method_id);
   } else {
     lock_screen_utils::EnforceDevicePolicyInputMethods(std::string());
   }

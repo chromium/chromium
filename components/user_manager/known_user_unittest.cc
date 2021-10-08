@@ -562,20 +562,20 @@ TEST_F(KnownUserTest, AccountManager) {
   }
 }
 
-TEST_F(KnownUserTest, UserLastLoginInputMethod) {
+TEST_F(KnownUserTest, UserLastLoginInputMethodId) {
   KnownUser known_user(local_state());
   {
-    std::string user_last_input_method;
-    EXPECT_FALSE(known_user.GetUserLastInputMethod(kDefaultAccountId,
-                                                   &user_last_input_method));
+    std::string user_last_input_method_id;
+    EXPECT_FALSE(known_user.GetUserLastInputMethodId(
+        kDefaultAccountId, &user_last_input_method_id));
   }
 
-  known_user.SetUserLastLoginInputMethod(kDefaultAccountId, "test");
+  known_user.SetUserLastLoginInputMethodId(kDefaultAccountId, "test");
 
   {
-    std::string user_last_input_method;
-    EXPECT_TRUE(known_user.GetUserLastInputMethod(kDefaultAccountId,
-                                                  &user_last_input_method));
+    std::string user_last_input_method_id;
+    EXPECT_TRUE(known_user.GetUserLastInputMethodId(
+        kDefaultAccountId, &user_last_input_method_id));
   }
 }
 

@@ -24,26 +24,26 @@ namespace lock_screen_utils {
 namespace {
 
 bool SetUserInputMethodImpl(
-    const std::string& user_input_method,
+    const std::string& user_input_method_id,
     input_method::InputMethodManager::State* ime_state) {
   if (!input_method::InputMethodManager::Get()->IsLoginKeyboard(
-          user_input_method)) {
+          user_input_method_id)) {
     LOG(WARNING) << "SetUserInputMethod: stored user last input method '"
-                 << user_input_method
+                 << user_input_method_id
                  << "' is no longer Full Latin Keyboard Language"
                  << " (entry dropped). Use hardware default instead.";
     return false;
   }
   if (!base::Contains(ime_state->GetEnabledInputMethodIds(),
-                      user_input_method)) {
-    if (!ime_state->EnableInputMethod(user_input_method)) {
+                      user_input_method_id)) {
+    if (!ime_state->EnableInputMethod(user_input_method_id)) {
       DLOG(ERROR) << "SetUserInputMethod: user input method '"
-                  << user_input_method
+                  << user_input_method_id
                   << "' is not enabled and enabling failed (ignored!).";
       return false;
     }
   }
-  ime_state->ChangeInputMethod(user_input_method, false /* show_message */);
+  ime_state->ChangeInputMethod(user_input_method_id, false /* show_message */);
 
   return true;
 }
@@ -55,13 +55,13 @@ void SetUserInputMethod(const AccountId& account_id,
                         bool honor_device_policy) {
   bool succeed = false;
 
-  const std::string input_method = GetUserLastInputMethod(account_id);
+  const std::string input_method_id = GetUserLastInputMethodId(account_id);
 
   if (honor_device_policy)
-    EnforceDevicePolicyInputMethods(input_method);
+    EnforceDevicePolicyInputMethods(input_method_id);
 
-  if (!input_method.empty())
-    succeed = SetUserInputMethodImpl(input_method, ime_state);
+  if (!input_method_id.empty())
+    succeed = SetUserInputMethodImpl(input_method_id, ime_state);
 
   // This is also a case when last layout is set only for a few local users,
   // thus others need to be switched to default locale.
@@ -74,22 +74,23 @@ void SetUserInputMethod(const AccountId& account_id,
   }
 }
 
-std::string GetUserLastInputMethod(const AccountId& account_id) {
+std::string GetUserLastInputMethodId(const AccountId& account_id) {
   if (!account_id.is_valid())
     return std::string();
-  std::string input_method;
-  if (user_manager::known_user::GetUserLastInputMethod(account_id,
-                                                       &input_method)) {
-    return input_method;
+  std::string input_method_id;
+  if (user_manager::known_user::GetUserLastInputMethodId(account_id,
+                                                         &input_method_id)) {
+    return input_method_id;
   }
 
   // Try profile prefs. For the ephemeral case known_user does not persist the
   // data.
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   if (profile && profile->GetPrefs()) {
-    input_method = profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
-    if (!input_method.empty())
-      return input_method;
+    input_method_id =
+        profile->GetPrefs()->GetString(prefs::kLastLoginInputMethod);
+    if (!input_method_id.empty())
+      return input_method_id;
   }
 
   // Try to use old values.
@@ -98,21 +99,21 @@ std::string GetUserLastInputMethod(const AccountId& account_id) {
       local_state->GetDictionary(::prefs::kUsersLastInputMethod);
 
   if (!users_last_input_methods) {
-    DLOG(WARNING) << "GetUserLastInputMethod: no kUsersLastInputMethod";
+    DLOG(WARNING) << "GetUserLastInputMethodId: no kUsersLastInputMethod";
     return std::string();
   }
 
   const std::string* input_method_str =
       users_last_input_methods->FindStringKey(account_id.GetUserEmail());
   if (!input_method_str) {
-    DVLOG(0) << "GetUserLastInputMethod: no input method for this user";
+    DVLOG(0) << "GetUserLastInputMethodId: no input method for this user";
     return std::string();
   }
 
   return *input_method_str;
 }
 
-void EnforceDevicePolicyInputMethods(std::string user_input_method) {
+void EnforceDevicePolicyInputMethods(std::string user_input_method_id) {
   auto* cros_settings = CrosSettings::Get();
   const base::ListValue* login_screen_input_methods = nullptr;
   if (!cros_settings->GetList(chromeos::kDeviceLoginScreenInputMethods,
@@ -122,19 +123,20 @@ void EnforceDevicePolicyInputMethods(std::string user_input_method) {
     return;
   }
 
-  std::vector<std::string> allowed_input_methods;
+  std::vector<std::string> allowed_input_method_ids;
 
   // Add user's input method first so it is pre-selected.
-  if (!user_input_method.empty()) {
-    allowed_input_methods.push_back(user_input_method);
+  if (!user_input_method_id.empty()) {
+    allowed_input_method_ids.push_back(user_input_method_id);
   }
 
   for (const auto& input_method_entry : login_screen_input_methods->GetList()) {
     if (input_method_entry.is_string())
-      allowed_input_methods.push_back(input_method_entry.GetString());
+      allowed_input_method_ids.push_back(input_method_entry.GetString());
   }
   auto* imm = input_method::InputMethodManager::Get();
-  imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_methods, true);
+  imm->GetActiveIMEState()->SetAllowedInputMethods(allowed_input_method_ids,
+                                                   true);
   if (ImeControllerClientImpl::Get())  // Can be null in tests.
     ImeControllerClientImpl::Get()->SetImesManagedByPolicy(true);
 }

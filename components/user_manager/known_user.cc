@@ -675,14 +675,15 @@ bool KnownUser::GetAccountManager(const AccountId& account_id,
   return GetStringPref(account_id, kAccountManager, manager);
 }
 
-void KnownUser::SetUserLastLoginInputMethod(const AccountId& account_id,
-                                            const std::string& input_method) {
-  SetStringPref(account_id, kLastInputMethod, input_method);
+void KnownUser::SetUserLastLoginInputMethodId(
+    const AccountId& account_id,
+    const std::string& input_method_id) {
+  SetStringPref(account_id, kLastInputMethod, input_method_id);
 }
 
-bool KnownUser::GetUserLastInputMethod(const AccountId& account_id,
-                                       std::string* input_method) {
-  return GetStringPref(account_id, kLastInputMethod, input_method);
+bool KnownUser::GetUserLastInputMethodId(const AccountId& account_id,
+                                         std::string* input_method_id) {
+  return GetStringPref(account_id, kLastInputMethod, input_method_id);
 }
 
 void KnownUser::SetUserPinLength(const AccountId& account_id, int pin_length) {
@@ -1259,24 +1260,24 @@ bool GetAccountManager(const AccountId& account_id, std::string* manager) {
   return KnownUser(local_state).GetAccountManager(account_id, manager);
 }
 
-void SetUserLastLoginInputMethod(const AccountId& account_id,
-                                 const std::string& input_method) {
+void SetUserLastLoginInputMethodId(const AccountId& account_id,
+                                   const std::string& input_method_id) {
   PrefService* local_state = GetLocalStateLegacy();
   // Local State may not be initialized in tests.
   if (!local_state)
     return;
   return KnownUser(local_state)
-      .SetUserLastLoginInputMethod(account_id, input_method);
+      .SetUserLastLoginInputMethodId(account_id, input_method_id);
 }
 
-bool GetUserLastInputMethod(const AccountId& account_id,
-                            std::string* input_method) {
+bool GetUserLastInputMethodId(const AccountId& account_id,
+                              std::string* input_method_id) {
   PrefService* local_state = GetLocalStateLegacy();
   // Local State may not be initialized in tests.
   if (!local_state)
     return false;
   return KnownUser(local_state)
-      .GetUserLastInputMethod(account_id, input_method);
+      .GetUserLastInputMethodId(account_id, input_method_id);
 }
 
 void SetUserPinLength(const AccountId& account_id, int pin_length) {

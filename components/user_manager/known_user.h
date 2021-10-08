@@ -219,11 +219,11 @@ class USER_MANAGER_EXPORT KnownUser final {
   void SetAccountManager(const AccountId& account_id,
                          const std::string& manager);
   bool GetAccountManager(const AccountId& account_id, std::string* manager);
-  void SetUserLastLoginInputMethod(const AccountId& account_id,
-                                   const std::string& input_method);
+  void SetUserLastLoginInputMethodId(const AccountId& account_id,
+                                     const std::string& input_method_id);
 
-  bool GetUserLastInputMethod(const AccountId& account_id,
-                              std::string* input_method);
+  bool GetUserLastInputMethodId(const AccountId& account_id,
+                                std::string* input_method_id);
 
   // Exposes the user's PIN length in local state for PIN auto submit.
   void SetUserPinLength(const AccountId& account_id, int pin_length);
@@ -564,15 +564,15 @@ void USER_MANAGER_EXPORT SetAccountManager(const AccountId& account_id,
 bool USER_MANAGER_EXPORT GetAccountManager(const AccountId& account_id,
                                            std::string* manager);
 // TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetUserLastLoginInputMethod instead.
+// KnownUser::SetUserLastLoginInputMethodId instead.
 void USER_MANAGER_EXPORT
-SetUserLastLoginInputMethod(const AccountId& account_id,
-                            const std::string& input_method);
+SetUserLastLoginInputMethodId(const AccountId& account_id,
+                              const std::string& input_method_id);
 
 // TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetUserLastInputMethod instead.
-bool USER_MANAGER_EXPORT GetUserLastInputMethod(const AccountId& account_id,
-                                                std::string* input_method);
+// KnownUser::GetUserLastInputMethodId instead.
+bool USER_MANAGER_EXPORT GetUserLastInputMethodId(const AccountId& account_id,
+                                                  std::string* input_method_id);
 
 // Exposes the user's PIN length in local state for PIN auto submit.
 // TODO(https://crbug.com/1150434): Deprecated, use KnownUser::SetUserPinLength
