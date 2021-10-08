@@ -186,6 +186,10 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
 
   if (config->hasBitrate()) {
     uint32_t bps = base::saturated_cast<uint32_t>(config->bitrate());
+    if (bps == 0) {
+      exception_state.ThrowTypeError("Zero is not a valid bitrate.");
+      return nullptr;
+    }
     if (config->hasBitrateMode() && config->bitrateMode() == "constant") {
       result->options.bitrate = media::Bitrate::ConstantBitrate(bps);
     } else {

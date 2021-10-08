@@ -95,8 +95,7 @@ struct VTVideoEncodeAccelerator::BitstreamBufferRef {
 // conditions, 0.95 seems to give us better overall bitrate over long periods
 // of time.
 VTVideoEncodeAccelerator::VTVideoEncodeAccelerator()
-    : target_bitrate_(0),
-      h264_profile_(H264PROFILE_BASELINE),
+    : h264_profile_(H264PROFILE_BASELINE),
       bitrate_adjuster_(.5, .95),
       client_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       encoder_thread_("VTEncoderThread"),
@@ -300,8 +299,11 @@ void VTVideoEncodeAccelerator::EncodeTask(scoped_refptr<VideoFrame> frame,
   std::unique_ptr<InProgressFrameEncode> request(
       new InProgressFrameEncode(frame->timestamp(), ref_time));
 
-  // Update the bitrate if needed.
-  SetAdjustedBitrate(bitrate_adjuster_.GetAdjustedBitrateBps());
+  if (bitrate_.mode() == Bitrate::Mode::kConstant) {
+    // In CBR mode, we adjust bitrate before every encode based on past history
+    // of bitrate adherence.
+    SetAdjustedConstantBitrate(bitrate_adjuster_.GetAdjustedBitrateBps());
+  }
 
   // We can pass the ownership of |request| to the encode callback if
   // successful. Otherwise let it fall out of scope.
@@ -338,12 +340,6 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     uint32_t framerate) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
-  if (bitrate.mode() != media::Bitrate::Mode::kConstant) {
-    // Even if users ask for VBR, CBR will do for now, because
-    // CBR is kinda a subset of VBR.
-    DLOG(ERROR) << "Unexpected bitrate mode. Using CBR anyway.";
-  }
-
   if (!compression_session_) {
     NotifyError(kPlatformFailureError);
     return;
@@ -354,15 +350,25 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
       compression_session_);
   session_property_setter.Set(kVTCompressionPropertyKey_ExpectedFrameRate,
                               frame_rate_);
-  if (bitrate.target() != static_cast<uint32_t>(target_bitrate_) &&
-      bitrate.target() > 0) {
-    target_bitrate_ = bitrate.target();
-    bitrate_adjuster_.SetTargetBitrateBps(target_bitrate_);
-    SetAdjustedBitrate(bitrate_adjuster_.GetAdjustedBitrateBps());
+
+  switch (bitrate.mode()) {
+    case Bitrate::Mode::kConstant:
+      if (bitrate.target() != static_cast<uint32_t>(target_bitrate_)) {
+        target_bitrate_ = bitrate.target();
+        bitrate_adjuster_.SetTargetBitrateBps(target_bitrate_);
+        SetAdjustedConstantBitrate(bitrate_adjuster_.GetAdjustedBitrateBps());
+      }
+      break;
+    case Bitrate::Mode::kVariable:
+      SetVariableBitrate(bitrate);
+      break;
+    default:
+      NOTREACHED();
   }
+  bitrate_ = bitrate;
 }
 
-void VTVideoEncodeAccelerator::SetAdjustedBitrate(int32_t bitrate) {
+void VTVideoEncodeAccelerator::SetAdjustedConstantBitrate(int32_t bitrate) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
   if (bitrate == encoder_set_bitrate_)
@@ -377,6 +383,22 @@ void VTVideoEncodeAccelerator::SetAdjustedBitrate(int32_t bitrate) {
       kVTCompressionPropertyKey_DataRateLimits,
       video_toolbox::ArrayWithIntegerAndFloat(
           encoder_set_bitrate_ / kBitsPerByte, 1.0f));
+  DLOG_IF(ERROR, !rv)
+      << "Couldn't change bitrate parameters of encode session.";
+}
+
+void VTVideoEncodeAccelerator::SetVariableBitrate(const Bitrate& bitrate) {
+  DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
+  DCHECK(bitrate.mode() == Bitrate::Mode::kVariable);
+
+  video_toolbox::SessionPropertySetter session_property_setter(
+      compression_session_);
+  bool rv =
+      session_property_setter.Set(kVTCompressionPropertyKey_AverageBitRate,
+                                  static_cast<int32_t>(bitrate.target()));
+  rv &= session_property_setter.Set(kVTCompressionPropertyKey_DataRateLimits,
+                                    video_toolbox::ArrayWithIntegerAndFloat(
+                                        bitrate.peak() / kBitsPerByte, 1.0f));
   DLOG_IF(ERROR, !rv)
       << "Couldn't change bitrate parameters of encode session.";
 }
@@ -488,7 +510,12 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
     DLOG(ERROR) << "Cannot copy output from SampleBuffer to AnnexBBuffer.";
     used_buffer_size = 0;
   }
-  bitrate_adjuster_.Update(used_buffer_size);
+
+  if (bitrate_.mode() == Bitrate::Mode::kConstant) {
+    // In CBR mode, we let bitrate adjuster know how much encoded data was
+    // produced to better control bitrate adherence.
+    bitrate_adjuster_.Update(used_buffer_size);
+  }
 
   client_task_runner_->PostTask(
       FROM_HERE,

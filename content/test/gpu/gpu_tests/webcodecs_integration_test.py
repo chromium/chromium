@@ -63,15 +63,17 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
     for codec in codecs:
       for acc in accelerations:
-        args = ("camera", codec, acc)
-        yield ('WebCodecs_Realtime_%s_%s_%s' % args, 'realtime.html', ({
-            "source_type":
-            source_type,
-            "codec":
-            codec,
-            "acceleration":
-            acc
-        }))
+        for bitrate_mode in ["constant", "variable"]:
+          for latency_mode in ["realtime", "quality"]:
+            args = ("offscreen", codec, acc, bitrate_mode, latency_mode)
+            yield ('WebCodecs_EncodingModes_%s_%s_%s_%s_%s' % args,
+                   'encoding-modes.html', ({
+                       "source_type": source_type,
+                       "codec": codec,
+                       "acceleration": acc,
+                       "bitrate_mode": bitrate_mode,
+                       "latency_mode": latency_mode
+                   }))
 
     for codec in codecs:
       for layers in [2, 3]:

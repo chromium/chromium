@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Check that VideoEncoder can encode in "realtime" mode
+Check that VideoEncoder can encode in different latency and bitrate modes
 -->
 <html>
 
@@ -28,7 +28,8 @@ Check that VideoEncoder can encode in "realtime" mode
         hardwareAcceleration: arg.acceleration,
         width: width,
         height: height,
-        latencyMode: "realtime",
+        latencyMode: arg.latency_mode,
+        bitrateMode: arg.bitrate_mode,
         bitrate: 1000000,
         framerate: 24
       };

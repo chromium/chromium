@@ -64,8 +64,9 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
                                            uint32_t framerate);
   void DestroyTask();
 
-  // Helper function to set bitrate.
-  void SetAdjustedBitrate(int32_t bitrate);
+  // Helper functions to set bitrate.
+  void SetAdjustedConstantBitrate(int32_t bitrate);
+  void SetVariableBitrate(const Bitrate& bitrate);
 
   // Helper function to notify the client of an error on |client_task_runner_|.
   void NotifyError(VideoEncodeAccelerator::Error error);
@@ -108,12 +109,18 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   gfx::Size input_visible_size_;
-  size_t bitstream_buffer_size_;
-  int32_t frame_rate_;
-  media::Bitrate bitrate_;
-  int32_t target_bitrate_;
-  int32_t encoder_set_bitrate_;
+  size_t bitstream_buffer_size_ = 0;
+  int32_t frame_rate_ = 0;
   VideoCodecProfile h264_profile_;
+
+  media::Bitrate bitrate_;
+
+  // Bitrate adjuster is used only for constant bitrate mode. In variable
+  // bitrate mode no adjustments are needed.
+  // Bitrate adjuster used to fix VideoToolbox's inconsistent bitrate issues.
+  webrtc::BitrateAdjuster bitrate_adjuster_;
+  int32_t target_bitrate_ = 0;       // User for CBR only
+  int32_t encoder_set_bitrate_ = 0;  // User for CBR only
 
   // If True, the encoder fails initialization if setting of session's property
   // kVTCompressionPropertyKey_MaxFrameDelayCount returns an error.
@@ -122,8 +129,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // Context: https://crbug.com/1195177 https://crbug.com/webrtc/7304
   bool require_low_delay_ = true;
 
-  // Bitrate adjuster used to fix VideoToolbox's inconsistent bitrate issues.
-  webrtc::BitrateAdjuster bitrate_adjuster_;
 
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
