@@ -31,8 +31,7 @@ bool CsrssDisconnectSupported() {
     return false;
 
   // Does not work on 32-bit on x64 (ie Wow64).
-  return (base::win::OSInfo::GetInstance()->wow64_status() !=
-          base::win::OSInfo::WOW64_ENABLED);
+  return (!base::win::OSInfo::GetInstance()->IsWowX86OnAMD64());
 }
 
 }  // namespace
