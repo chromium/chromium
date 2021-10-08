@@ -2086,9 +2086,16 @@ void AXObjectCacheImpl::ChildrenChanged(const LayoutObject* layout_object) {
   //           \
   //           text
 
+  // The child traversal requires a flat tree traversal, so if it's forbidden,
+  // don't do it. Additionally, when visiting a slot, we may call AssignNodes,
+  // so also don't do this if slot (re-)assignment is forbidden.
   // TODO(aleventhal) Why is this needed for shadow-slot-assignment.js test?
-  if (GetDocument().IsFlatTreeTraversalForbidden())
+  if (GetDocument().IsFlatTreeTraversalForbidden() ||
+      node->GetDocument()
+          .GetSlotAssignmentEngine()
+          .HasPendingSlotAssignmentRecalc()) {
     return;
+  }
 
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
