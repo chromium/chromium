@@ -276,13 +276,11 @@ void JavaScriptIsolatedWorldRequest::Completed(
 }
 
 HitTestResult HitTestResultForRootFramePos(
-    LocalFrame* main_frame,
+    LocalFrame* frame,
     const PhysicalOffset& pos_in_root_frame) {
-  DCHECK(main_frame->IsMainFrame());
-
   HitTestLocation location(
-      main_frame->View()->ConvertFromRootFrame(pos_in_root_frame));
-  HitTestResult result = main_frame->GetEventHandler().HitTestResultAtLocation(
+      frame->View()->ConvertFromRootFrame(pos_in_root_frame));
+  HitTestResult result = frame->GetEventHandler().HitTestResultAtLocation(
       location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
   result.SetToShadowHostIfInRestrictedShadowRoot();
   return result;
@@ -1133,8 +1131,6 @@ void LocalFrameMojoHandler::ClosePage(
 void LocalFrameMojoHandler::PluginActionAt(
     const gfx::Point& location,
     mojom::blink::PluginActionType action) {
-  SECURITY_CHECK(frame_->IsMainFrame());
-
   // TODO(bokan): Location is probably in viewport coordinates
   HitTestResult result =
       HitTestResultForRootFramePos(frame_, PhysicalOffset(IntPoint(location)));

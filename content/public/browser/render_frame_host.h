@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
@@ -550,6 +551,12 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void ExecuteJavaScriptWithUserGestureForTests(
       const std::u16string& javascript,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) = 0;
+
+  // Tells the renderer to perform a given action on the plugin located at a
+  // given location in its local view coordinate space.
+  virtual void ExecutePluginActionAtLocalLocation(
+      const gfx::Point& local_location,
+      blink::mojom::PluginActionType plugin_action) = 0;
 
   // Send a message to the RenderFrame to trigger an action on an
   // accessibility object.

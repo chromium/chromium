@@ -691,6 +691,10 @@ interface LocalFrame {
   // at the given point in the view coordinate space.
   MediaPlayerActionAt(gfx.mojom.Point location, blink.mojom.MediaPlayerAction action);
 
+  // Tells the renderer to perform the given action on the plugin location at
+  // the given point in the view coordinate space.
+  PluginActionAt(gfx.mojom.Point location, blink.mojom.PluginActionType action);
+
   // Request to continue running the sequential focus navigation algorithm in
   // this frame. |source_frame_token| identifies the frame that issued this
   // request. This message is sent when finding the next focusable element would
