@@ -92,7 +92,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApp.Icon.HttpStatusCodeClassOnCreate"
-    enum="HttpStatusCodeClass" expires_after="2021-01-01">
+    enum="HttpStatusCodeClass" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
   <owner>loyso@chromium.org</owner>
@@ -106,7 +106,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApp.Icon.HttpStatusCodeClassOnSync"
-    enum="HttpStatusCodeClass" expires_after="2021-01-01">
+    enum="HttpStatusCodeClass" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>mgiuca@chromium.org</owner>
   <owner>loyso@chromium.org</owner>
@@ -119,7 +119,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebApp.Icon.HttpStatusCodeClassOnUpdate"
-    enum="HttpStatusCodeClass" expires_after="2021-01-01">
+    enum="HttpStatusCodeClass" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
   <owner>raymes@chromium.org</owner>
   <owner>loyso@chromium.org</owner>
