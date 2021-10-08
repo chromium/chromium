@@ -2534,15 +2534,15 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             WebContentsDarkModeController.setEnabledForUrl(profile, url, !isEnabled);
             currentTab.getWebContents().notifyRendererPreferenceUpdate();
 
+            WebContentsDarkModeController.recordAutoDarkUkm(
+                    currentTab.getWebContents(), !isEnabled);
+
             // Show dialog informing user how to disable the feature globally and give feedback if
             // disabling through the app menu for the nth time (determined by feature engagement).
             if (isEnabled) {
                 WebContentsDarkModeMessageController.attemptToShowDialog(
                         this, profile, getModalDialogManager(), new SettingsLauncherImpl());
             }
-
-            // TODO(crbug.com/1250800): Update UMA ExceptionCounts and mark UMA SettingStateChanges
-            // from app menu item.
 
             return true;
         }

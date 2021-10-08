@@ -17,7 +17,9 @@ import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -101,6 +103,17 @@ public class WebContentsDarkModeController
         WebsitePreferenceBridge.setContentSettingDefaultScope(
                 profile, ContentSettingsType.AUTO_DARK_WEB_CONTENT, url, url, contentSettingValue);
         recordAutoDarkSettingsChangeSource(AutoDarkSettingsChangeSource.APP_MENU, enabled);
+    }
+
+    /**
+     * Records UKM when the user disables auto-dark theming for a site through the app menu.
+     * @param webContents The web contents associated with the current tab.
+     * @param enabled The new per-site setting state for the current site.
+     */
+    public static void recordAutoDarkUkm(WebContents webContents, boolean enabled) {
+        if (enabled) return;
+        new UkmRecorder.Bridge().recordEventWithBooleanMetric(
+                webContents, "Android.DarkTheme.AutoDarkMode", "DisabledByUser");
     }
 
     /**
