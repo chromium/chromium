@@ -71,6 +71,9 @@ AX_BASE_EXPORT bool IsControl(const ax::mojom::Role role);
 AX_BASE_EXPORT bool IsControlOnAndroid(const ax::mojom::Role role,
                                        bool isFocusable);
 
+// Returns true for an <input> used for a date or time.
+AX_BASE_EXPORT bool IsDateOrTimeInput(const ax::mojom::Role role);
+
 // Returns true if the provided role represents a dialog.
 AX_BASE_EXPORT bool IsDialog(const ax::mojom::Role role);
 

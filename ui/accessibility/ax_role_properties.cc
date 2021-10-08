@@ -236,6 +236,17 @@ bool IsControlOnAndroid(const ax::mojom::Role role, bool isFocusable) {
   }
 }
 
+bool IsDateOrTimeInput(const ax::mojom::Role role) {
+  switch (role) {
+    case ax::mojom::Role::kDate:
+    case ax::mojom::Role::kDateTime:
+    case ax::mojom::Role::kInputTime:
+      return true;
+    default:
+      return false;
+  }
+}
+
 bool IsDialog(const ax::mojom::Role role) {
   switch (role) {
     case ax::mojom::Role::kAlertDialog:

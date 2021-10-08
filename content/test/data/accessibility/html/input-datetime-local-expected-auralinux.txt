@@ -1,6 +1,6 @@
 [document web]
 ++[section]
-++++[dateeditor]
+++++[dateeditor] text-input-type:datetime-local
 ++++++[section]
 ++++++++[section]
 ++++++++++[spin button] name='Month' current=0.000000 minimum=1.000000 maximum=12.000000
