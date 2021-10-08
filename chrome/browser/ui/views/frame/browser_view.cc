@@ -222,8 +222,6 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
-#include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #endif
 
@@ -1472,15 +1470,9 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
     ExclusiveAccessBubbleType bubble_type,
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
     bool force_update) {
-  bool is_trusted_pinned = false;
-#if defined(OS_CHROMEOS)
   // Trusted pinned mode does not allow to escape. So do not show the bubble.
-  auto* window = GetNativeWindow();
-  is_trusted_pinned = window
-                          ? (window->GetProperty(chromeos::kWindowPinTypeKey) ==
-                             chromeos::WindowPinType::kTrustedPinned)
-                          : false;
-#endif
+  bool is_trusted_pinned =
+      platform_util::IsBrowserLockedFullscreen(browser_.get());
 
   // Immersive mode has no exit bubble because it has a visible strip at the
   // top that gives the user a hover target. In a public session we show the
