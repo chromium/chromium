@@ -20,8 +20,8 @@
 #if BUILDFLAG(ENABLE_LIBVPX)
 // TODO(dalecurtis): This technically should not be allowed in media/base. See
 // TODO below about moving outside of base.
-#include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
-#include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
+#include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"      // nogncheck
+#include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"  // nogncheck
 #endif
 
 #if defined(OS_ANDROID)

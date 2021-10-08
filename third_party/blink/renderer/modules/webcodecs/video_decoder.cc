@@ -48,18 +48,18 @@
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(ENABLE_LIBAOM)
-#include "third_party/libaom/source/libaom/aom/aom_decoder.h"
-#include "third_party/libaom/source/libaom/aom/aomdx.h"
+#include "third_party/libaom/source/libaom/aom/aom_decoder.h"  // nogncheck
+#include "third_party/libaom/source/libaom/aom/aomdx.h"        // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_LIBVPX)
-#include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
-#include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
+#include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"        // nogncheck
+#include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-#include "media/filters/h264_to_annex_b_bitstream_converter.h"
-#include "media/formats/mp4/box_definitions.h"
+#include "media/filters/h264_to_annex_b_bitstream_converter.h"  // nogncheck
+#include "media/formats/mp4/box_definitions.h"                  // nogncheck
 #endif
 
 namespace blink {
