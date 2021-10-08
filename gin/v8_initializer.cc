@@ -322,9 +322,9 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode) {
   // Make sure aliases of kV8SlowHistograms only enable the feature to
   // avoid contradicting settings between multiple finch experiments.
   bool any_slow_histograms_alias =
-      base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) |
+      base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) ||
       base::FeatureList::IsEnabled(
-          features::kV8SlowHistogramsSparkplugAndroid) |
+          features::kV8SlowHistogramsSparkplugAndroid) ||
       base::FeatureList::IsEnabled(features::kV8SlowHistogramsScriptAblation);
   if (any_slow_histograms_alias) {
     SetV8Flags("--slow-histograms");

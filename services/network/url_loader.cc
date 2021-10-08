@@ -953,7 +953,7 @@ void URLLoader::FollowRedirect(
 
   // Removing headers can't make the set of pre-existing headers unsafe, but
   // adding headers can.
-  if (!AreRequestHeadersSafe(modified_headers) |
+  if (!AreRequestHeadersSafe(modified_headers) ||
       !AreRequestHeadersSafe(modified_cors_exempt_headers)) {
     NotifyCompleted(net::ERR_INVALID_ARGUMENT);
     // |this| may have been deleted.

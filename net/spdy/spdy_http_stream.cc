@@ -359,7 +359,7 @@ int SpdyHttpStream::SendRequest(const HttpRequestHeaders& request_headers,
   DispatchRequestHeadersCallback(headers);
 
   bool will_send_data =
-      HasUploadData() | spdy_session_->EndStreamWithDataFrame();
+      HasUploadData() || spdy_session_->EndStreamWithDataFrame();
   result = stream_->SendRequestHeaders(
       std::move(headers),
       will_send_data ? MORE_DATA_TO_SEND : NO_MORE_DATA_TO_SEND);

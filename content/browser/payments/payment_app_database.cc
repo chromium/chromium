@@ -373,7 +373,7 @@ void PaymentAppDatabase::DidGetPaymentAppInfoToUpdatePaymentAppInfo(
         serialized_payment_app}},
       base::BindOnce(&PaymentAppDatabase::DidUpdatePaymentApp,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     app_info->name.empty() | app_info->icon.empty()));
+                     app_info->name.empty() || app_info->icon.empty()));
 }
 
 void PaymentAppDatabase::DidUpdatePaymentApp(
