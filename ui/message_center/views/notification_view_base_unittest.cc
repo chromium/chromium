@@ -1071,22 +1071,6 @@ TEST_F(NotificationViewBaseTest, InlineSettingsInkDropAnimation) {
   EXPECT_FALSE(ink_drop_stopped());
 }
 
-TEST_F(NotificationViewBaseTest, PreferredSize) {
-  std::unique_ptr<Notification> notification = CreateSimpleNotification();
-  notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
-  UpdateNotificationViews(*notification);
-
-  // Collapsed preferred width is determined by the header view.
-  notification_view()->SetExpanded(false);
-  EXPECT_EQ(kNotificationWidth,
-            notification_view()->GetPreferredSize().width());
-
-  // Ensure expanded preferred width is not extended by the image view.
-  notification_view()->SetExpanded(true);
-  EXPECT_EQ(kNotificationWidth,
-            notification_view()->GetPreferredSize().width());
-}
-
 TEST_F(NotificationViewBaseTest, TestClick) {
   std::unique_ptr<Notification> notification = CreateSimpleNotification();
   delegate_->set_expecting_click(true);

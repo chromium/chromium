@@ -89,7 +89,7 @@ class ASH_EXPORT AshNotificationView
     ~NotificationTitleRow() override;
 
     // Changed the expand state. Title view size will change based on the state.
-    void SetExpanded(bool expanded);
+    void SetExpanded(bool expanded, int left_content_width);
 
     // Update title view's text.
     void UpdateTitle(const std::u16string& title);
@@ -165,6 +165,9 @@ class ASH_EXPORT AshNotificationView
   // Update the background color with rounded corner.
   void UpdateBackground(int top_radius, int bottom_radius);
 
+  // Get the available space for `left_content_` width.
+  int GetLeftContentWidth();
+
   // Owned by views hierarchy.
   RoundedImageView* app_icon_view_ = nullptr;
   ExpandButton* expand_button_ = nullptr;
@@ -177,6 +180,9 @@ class ASH_EXPORT AshNotificationView
 
   // These views below are dynamically created inside view hierarchy.
   NotificationTitleRow* title_row_ = nullptr;
+
+  // Layout manager for the container of header and left content.
+  views::BoxLayout* header_left_content_layout_ = nullptr;
 
   // Corner radius of the notification view.
   int top_radius_ = 0;

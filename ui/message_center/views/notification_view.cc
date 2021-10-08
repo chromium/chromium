@@ -42,6 +42,9 @@ constexpr int kMessageViewWidth =
     kLeftContentPadding.right() - kContentRowPadding.left() -
     kContentRowPadding.right();
 
+// Max number of lines for title_view_.
+constexpr int kMaxLinesForTitleView = 1;
+
 constexpr int kTitleCharacterLimit =
     kNotificationWidth * kMaxTitleLines / kMinPixelsPerTitleCharacter;
 
@@ -92,13 +95,13 @@ NotificationView::NotificationView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 
   auto header_row = CreateHeaderRow();
-
   // Font list for text views.
   const gfx::FontList& font_list = GetHeaderTextFontList();
   const int font_list_height = font_list.GetHeight();
   const gfx::Insets& text_view_padding(CalculateTopPadding(font_list_height));
   header_row->ConfigureLabelsStyle(font_list, text_view_padding, false);
-
+  header_row->SetPreferredSize(header_row->GetPreferredSize() -
+                               gfx::Size(GetInsets().width(), 0));
   header_row->AddChildView(CreateControlButtonsView());
 
   auto content_row = CreateContentRow();
@@ -140,7 +143,12 @@ void NotificationView::CreateOrUpdateTitleView(
   const std::u16string& title = gfx::TruncateString(
       notification.title(), kTitleCharacterLimit, gfx::WORD_BREAK);
   if (!title_view_) {
-    title_view_ = AddViewToLeftContent(GenerateTitleView(title));
+    auto title_view = GenerateTitleView(title);
+    // TODO(crbug.com/682266): multiline should not be required, but we need to
+    // set the width of |title_view_|, which only works in multiline mode.
+    title_view->SetMultiLine(true);
+    title_view->SetMaxLines(kMaxLinesForTitleView);
+    title_view_ = AddViewToLeftContent(std::move(title_view));
   } else {
     title_view_->SetText(title);
     ReorderViewInLeftContent(title_view_);

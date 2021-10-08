@@ -539,4 +539,20 @@ TEST_F(NotificationViewTest, AppIconWebAppNotification) {
 #endif
 }
 
+TEST_F(NotificationViewTest, PreferredSize) {
+  std::unique_ptr<Notification> notification = CreateSimpleNotification();
+  notification->set_type(NotificationType::NOTIFICATION_TYPE_IMAGE);
+  UpdateNotificationViews(*notification);
+
+  // Collapsed preferred width is determined by the header view.
+  notification_view()->SetExpanded(false);
+  EXPECT_EQ(kNotificationWidth,
+            notification_view()->GetPreferredSize().width());
+
+  // Ensure expanded preferred width is not extended by the image view.
+  notification_view()->SetExpanded(true);
+  EXPECT_EQ(kNotificationWidth,
+            notification_view()->GetPreferredSize().width());
+}
+
 }  // namespace message_center

@@ -30,6 +30,11 @@ constexpr int kMessageListNotificationSpacing = 2;
 constexpr int kNotificationBarVerticalPadding = 8;
 constexpr int kNotificationBarHorizontalPadding = 16;
 
+// Constants for `ash_notification_view`.
+
+// The width of notification that displayed inside the message center.
+constexpr int kNotificationInMessageCenterWidth = 344;
+
 constexpr gfx::Insets kNotificationExpandButtonInsets(4, 4);
 constexpr int kNotificationExpandButtonChildSpacing = 4;
 constexpr int kNotificationExpandButtonCornerRadius = 12;

@@ -225,16 +225,16 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback,
     expand_button_->SetImageSize(gfx::Size(kExpandIconSize, kExpandIconSize));
     DCHECK_EQ(kInnerHeaderHeight, expand_button_->GetPreferredSize().height());
     detail_views_->AddChildView(expand_button_);
+
+    // Spacer between left-aligned views and right-aligned views
+    auto spacer = std::make_unique<views::View>();
+    spacer->SetPreferredSize(
+        gfx::Size(kControlButtonSpacing, kInnerHeaderHeight));
+    spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
+    AddChildView(std::move(spacer));
+
+    SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
   }
-
-  // Spacer between left-aligned views and right-aligned views
-  views::View* spacer = new views::View;
-  spacer->SetPreferredSize(
-      gfx::Size(kControlButtonSpacing, kInnerHeaderHeight));
-  spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
-  AddChildView(spacer);
-
-  SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
 
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);

@@ -71,15 +71,6 @@ constexpr int kMessageLabelSize = 13;
 // title/message view and expand button).
 constexpr int kIconViewSize = 48;
 
-constexpr int kContentRowWidth =
-    message_center::kNotificationWidth - kNotificationViewPadding.width() -
-    kAppIconViewSize - kMainRightViewPadding.width() -
-    kContentRowPadding.width();
-
-constexpr int kLeftContentWidth = kContentRowWidth - kExpandButtonSize -
-                                  kAppIconViewSize -
-                                  kContentRowHorizontalSpacing * 2;
-
 // Configure the style for labels in notification view. `is_color_primary`
 // indicates if the color of the text is primary or secondary text color.
 void ConfigureLabelStyle(views::Label* label, int size, bool is_color_primary) {
@@ -128,16 +119,23 @@ AshNotificationView::NotificationTitleRow::~NotificationTitleRow() {
   timestamp_update_timer_.Stop();
 }
 
-void AshNotificationView::NotificationTitleRow::SetExpanded(bool expanded) {
+void AshNotificationView::NotificationTitleRow::SetExpanded(
+    bool expanded,
+    int left_content_width) {
   ConfigureLabelStyle(
       title_view_,
       expanded ? kExpandedTitleLabelSize : kCollapsedTitleLabelSize,
       /*is_color_primary=*/true);
 
-  // In expanded state, we need to resize the title view since it becomes
-  // bigger. We also need to reset the fixed width in this label to zero in
-  // collapsed state for the timestamp alongside it can be shown.
-  title_view_->SizeToFit(expanded ? kContentRowWidth : 0);
+  // Set the size according to the available space in expanded/collapsed mode.
+  int max_title_view_width = left_content_width;
+  if (!expanded) {
+    max_title_view_width -=
+        timestamp_in_collapsed_view_->GetPreferredSize().width() +
+        title_row_divider_->GetPreferredSize().width() + kTitleRowSpacing * 2;
+  }
+
+  title_view_->SetMaximumWidthSingleLine(max_title_view_width);
 }
 
 void AshNotificationView::NotificationTitleRow::UpdateTitle(
@@ -286,8 +284,9 @@ AshNotificationView::AshNotificationView(
 
   // Header left content contains header row and left content.
   auto header_left_content = std::make_unique<views::View>();
-  header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kVertical, gfx::Insets(), 0));
+  header_left_content_layout_ =
+      header_left_content->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          Orientation::kVertical, gfx::Insets(), 0));
 
   auto header_row = CreateHeaderRow();
   header_row->ConfigureLabelsStyle(
@@ -310,9 +309,7 @@ AshNotificationView::AshNotificationView(
   content_row_layout->set_inside_border_insets(kContentRowPadding);
   content_row_layout->set_between_child_spacing(kContentRowHorizontalSpacing);
 
-  auto* header_left_content_ptr =
-      content_row->AddChildView(std::move(header_left_content));
-  content_row_layout->SetFlexForView(header_left_content_ptr, 1);
+  content_row->AddChildView(std::move(header_left_content));
   content_row->AddChildView(CreateRightContentView());
 
   expand_button_ = content_row->AddChildView(
@@ -325,9 +322,12 @@ AshNotificationView::AshNotificationView(
 
   // Main right view contains all the views besides control buttons and icon.
   auto main_right_view = std::make_unique<views::View>();
-  main_right_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      Orientation::kVertical, kMainRightViewPadding,
-      kMainRightViewVerticalSpacing));
+  auto* main_right_view_layout =
+      main_right_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          Orientation::kVertical, kMainRightViewPadding,
+          kMainRightViewVerticalSpacing));
+  main_right_view_layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
   main_right_view->AddChildView(std::move(content_row));
   main_right_view->AddChildView(CreateInlineSettingsView());
   main_right_view->AddChildView(CreateImageContainerView());
@@ -474,17 +474,18 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   app_icon_view_->SetBorder(views::CreateEmptyBorder(
       expanded ? kAppIconViewExpandedPadding : kAppIconViewCollapsedPadding));
 
+  header_left_content_layout_->set_minimum_cross_axis_size(
+      GetLeftContentWidth());
+
   bool is_single_expanded_notification =
       !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
   header_row()->SetVisible(is_grouped_parent_view_ ||
                            (is_single_expanded_notification));
 
-  // TODO(crbug/1243889): call SizeToFit() `title_view_` to fit the space after
-  // the padding and spacing are done.
   if (title_row_) {
     title_row_->UpdateVisibility(is_grouped_child_view_ ||
                                  (IsExpandable() && !expanded));
-    title_row_->SetExpanded(expanded);
+    title_row_->SetExpanded(expanded, GetLeftContentWidth());
   }
 
   if (message_view()) {
@@ -495,8 +496,7 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
     // there's no obvious solution for the bug according to
     // https://crbug.com/678337#c7. We will consider making changes to this code
     // when the bug is fixed.
-    message_view()->SizeToFit(IsIconViewShown() ? kLeftContentWidth
-                                                : kContentRowWidth);
+    message_view()->SizeToFit(GetLeftContentWidth());
   }
 
   expand_button_->SetVisible(IsExpandable());
@@ -660,6 +660,23 @@ void AshNotificationView::UpdateBackground(int top_radius, int bottom_radius) {
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius_, bottom_radius_, background_color_)));
+}
+
+int AshNotificationView::GetLeftContentWidth() {
+  int notification_width = shown_in_popup_ ? message_center::kNotificationWidth
+                                           : kNotificationInMessageCenterWidth;
+
+  int left_content_width =
+      notification_width - kNotificationViewPadding.width() - kAppIconViewSize -
+      kMainRightViewPadding.width() - kContentRowPadding.width();
+
+  if (expand_button_->GetVisible())
+    left_content_width -= kExpandButtonSize + kContentRowHorizontalSpacing;
+
+  if (IsIconViewShown())
+    left_content_width -= kIconViewSize + kContentRowHorizontalSpacing;
+
+  return left_content_width;
 }
 
 }  // namespace ash

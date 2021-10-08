@@ -84,8 +84,6 @@ constexpr gfx::Insets kSettingsRowPadding(8, 0, 0, 0);
 constexpr gfx::Insets kSettingsRadioButtonPadding(14, 18, 14, 18);
 constexpr gfx::Insets kSettingsButtonRowPadding(8);
 
-// Max number of lines for title_view_.
-constexpr int kMaxLinesForTitleView = 1;
 // Max number of lines for message_view_.
 constexpr int kMaxLinesForMessageView = 1;
 constexpr int kMaxLinesForExpandedMessageView = 4;
@@ -631,8 +629,6 @@ NotificationViewBase::CreateHeaderRow() {
       base::BindRepeating(&NotificationViewBase::HeaderRowPressed,
                           base::Unretained(this)),
       header_view_in_ash_notification_);
-  header_row->SetPreferredSize(header_row->GetPreferredSize() -
-                               gfx::Size(GetInsets().width(), 0));
   header_row->SetID(kHeaderRow);
   header_row_ = header_row.get();
   return header_row;
@@ -723,10 +719,6 @@ std::unique_ptr<views::Label> NotificationViewBase::GenerateTitleView(
   auto title_view = std::make_unique<views::Label>(
       title, views::style::CONTEXT_DIALOG_BODY_TEXT);
   title_view->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-  // TODO(crbug.com/682266): multiline should not be required, but we need to
-  // set the width of |title_view_|, which only works in multiline mode.
-  title_view->SetMultiLine(true);
-  title_view->SetMaxLines(kMaxLinesForTitleView);
   title_view->SetAllowCharacterBreak(true);
   return title_view;
 }
