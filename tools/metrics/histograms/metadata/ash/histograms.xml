@@ -2131,12 +2131,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestored" units="units"
     expires_after="M82">
+  <obsolete>
+    Expired on M82. Marked as obsolete on 10/2021. Replaced by
+    Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded.
+  </obsolete>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     The number of windows restored in multi-display scenario, such as due to
     disconnecting and reconnecting display, enabling and disabling mirror mode,
     entering and leaving dock mode. Zero is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded"
+    units="units" expires_after="2022-10-31">
+  <owner>minch@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    The number of windows restored in multi-display scenario, such as due to
+    disconnecting and reconnecting display, enabling and disabling mirror mode,
+    entering and leaving dock mode. Zero is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnScreenRotation"
+    units="units" expires_after="2022-10-31">
+  <owner>minch@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emits the number of windows bounds restored when rotating the screen back to
+    the previous screen orientation. Zero is not recorded.
   </summary>
 </histogram>
 

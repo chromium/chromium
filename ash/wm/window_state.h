@@ -263,12 +263,22 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // Gets/Sets the persistent window info that is used on restoring persistent
   // window bounds in multi-displays scenario.
-  const absl::optional<PersistentWindowInfo> persistent_window_info() {
-    return persistent_window_info_;
+  const absl::optional<PersistentWindowInfo>
+  persistent_window_info_of_display_removal() {
+    return persistent_window_info_of_display_removal_;
   }
-  void SetPersistentWindowInfo(
-      const PersistentWindowInfo& persistent_window_info);
-  void ResetPersistentWindowInfo();
+  void SetPersistentWindowInfoOfDisplayRemoval(
+      const PersistentWindowInfo& info);
+  void ResetPersistentWindowInfoOfDisplayRemoval();
+
+  // Gets/Sets the persistent window info that is used to restore persistent
+  // window bounds on screen rotation.
+  const absl::optional<PersistentWindowInfo>
+  persistent_window_info_of_screen_rotation() {
+    return persistent_window_info_of_screen_rotation_;
+  }
+  void SetPersistentWindowInfoOfScreenRotation(
+      const PersistentWindowInfo& info);
 
   // Layout related properties
 
@@ -507,7 +517,17 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // A property to remember the persistent window info used in multi-displays
   // scenario to attempt to restore windows to their original bounds when
   // displays are restored to their previous states.
-  absl::optional<PersistentWindowInfo> persistent_window_info_;
+  absl::optional<PersistentWindowInfo>
+      persistent_window_info_of_display_removal_;
+
+  // A property to remember the persistent window info when screen rotation
+  // happens. It will be used to restore windows' bounds when rotating back to
+  // the previous screen orientation. Note, `kLandscapePrimary` and
+  // `kLandscapeSecondary` will be treated as the same screen orientation, since
+  // the window's bounds should be the same in each landscape orientation. Same
+  // for portrait screen orientation.
+  absl::optional<PersistentWindowInfo>
+      persistent_window_info_of_screen_rotation_;
 
   base::ObserverList<WindowStateObserver>::Unchecked observer_list_;
 
