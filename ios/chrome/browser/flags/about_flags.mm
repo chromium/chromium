@@ -69,7 +69,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/download/features.h"
-#include "ios/chrome/browser/ui/first_run/default_browser_promo_field_trial.h"
+#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
@@ -302,16 +302,16 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
 
 const FeatureEntry::FeatureParam kFREDefaultPromoTestingDefaultDelay[] = {
     {kFREDefaultPromoTestingDefaultDelayParam, "true"}};
-const FeatureEntry::FeatureParam kFREDefaultPromoTestingFREOnly[] = {
-    {kFREDefaultPromoTestingFREOnlyParam, "true"}};
+const FeatureEntry::FeatureParam kFREDefaultPromoTestingOnly[] = {
+    {kFREDefaultPromoTestingOnlyParam, "true"}};
 const FeatureEntry::FeatureParam kFREDefaultPromoTestingShortDelay[] = {
     {kFREDefaultPromoTestingShortDelayParam, "true"}};
 const FeatureEntry::FeatureVariation kFREDefaultPromoTestingVariations[] = {
     {"Wait 14 days after FRE default browser promo",
      kFREDefaultPromoTestingDefaultDelay,
      base::size(kFREDefaultPromoTestingDefaultDelay), nullptr},
-    {"FRE default browser promo only", kFREDefaultPromoTestingFREOnly,
-     base::size(kFREDefaultPromoTestingFREOnly), nullptr},
+    {"FRE default browser promo only", kFREDefaultPromoTestingOnly,
+     base::size(kFREDefaultPromoTestingOnly), nullptr},
     {"Wait 3 days after FRE default browser promo",
      kFREDefaultPromoTestingShortDelay,
      base::size(kFREDefaultPromoTestingShortDelay), nullptr},

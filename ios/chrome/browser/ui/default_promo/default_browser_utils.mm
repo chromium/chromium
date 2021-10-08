@@ -9,7 +9,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
-#include "ios/chrome/browser/ui/first_run/default_browser_promo_field_trial.h"
+#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -177,7 +177,7 @@ NSTimeInterval ComputeCooldown() {
   // should be set only one time, so after the first run promo there is a short
   // cool down before the next promo and after it goes back to normal.
   if (DisplayedPromoCount() < 2 &&
-      fre_default_browser_promo_field_trial::
+      fre_field_trial::
           IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() &&
       HasUserInteractedWithFirstRunPromoBefore() &&
       !HasUserOpenedSettingsFromFirstRunPromo()) {

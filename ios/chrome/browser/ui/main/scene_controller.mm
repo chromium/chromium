@@ -90,7 +90,7 @@
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#include "ios/chrome/browser/ui/first_run/default_browser_promo_field_trial.h"
+#include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_commands.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
@@ -1015,8 +1015,7 @@ bool IsSigninForcedByPolicy() {
          !self.sceneState.appState.postCrashLaunch &&
          !IsChromeLikelyDefaultBrowser() &&
          !HasUserOpenedSettingsFromFirstRunPromo() &&
-         !fre_default_browser_promo_field_trial::
-             IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
+         !fre_field_trial::IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
 }
 
 - (void)maybeShowDefaultBrowserPromo {
