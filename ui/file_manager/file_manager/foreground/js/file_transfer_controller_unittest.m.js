@@ -33,6 +33,9 @@ import {ListContainer} from './ui/list_container.js';
 /** @type {!ListContainer} */
 let listContainer;
 
+/** @type {!FileOperationManager} */
+let fileOperationManager;
+
 /** @type {!FileTransferController} */
 let fileTransferController;
 
@@ -112,7 +115,7 @@ export function setUp() {
   const progressCenter = /** @type {!ProgressCenter} */ ({});
 
   // Fake FileOperationManager.
-  const fileOperationManager = /** @type {!FileOperationManager} */ ({});
+  fileOperationManager = /** @type {!FileOperationManager} */ ({});
 
   // Fake MetadataModel.
   const metadataModel = new MockMetadataModel({});
@@ -311,6 +314,26 @@ export async function testPreparePaste(done) {
   assertEquals(otherPastePlan.sourceURLs.length, 0);
   assertEquals(otherPastePlan.sourceEntries.length, 1);
   assertEquals(otherPastePlan.sourceEntries[0], otherFile);
+
+  // Drag and drop browser file will use DataTransfer.item with
+  // item.kind === 'file', but webkitGetAsEntry() will not resolve the file.
+  fileOperationManager.writeFile = async (file, dir) => {
+    return MockFileEntry.create(
+        myFilesMockFs, `${dir.fullPath}/${file.name}`, null, file);
+  };
+
+  const browserFileDataTransfer = new DataTransfer();
+  browserFileDataTransfer.items.add(
+      new File(['content'], 'browserfile', {type: 'text/plain'}));
+  const browserFilePastePlan =
+      fileTransferController.preparePaste(browserFileDataTransfer, testDir);
+  // sourceURLs and sourceEntries should not be populated from File instances.
+  assertEquals(browserFilePastePlan.sourceURLs.length, 0);
+  assertEquals(browserFilePastePlan.sourceEntries.length, 0);
+
+  // File instances should still be copied to target folder.
+  const writtenEntry = myFilesMockFs.entries['/testdir/browserfile'];
+  assertEquals('content', await writtenEntry.content.text());
 
   done();
 }

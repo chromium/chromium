@@ -960,6 +960,25 @@ testcase.transferDragAndHover = async () => {
 };
 
 /**
+ * Tests dropping a file originated from the browser.
+ */
+testcase.transferDropBrowserFile = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
+
+  // Send drop event on current directory.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil(
+          'fakeDropBrowserFile', appId,
+          ['browserfile', 'content', 'text/plain', '#file-list']),
+      'fakeDropBrowserFile failed');
+
+  // File should be created.
+  await remoteCall.waitForElement(
+      appId, '#file-list [file-name="browserfile"]');
+};
+
+/**
  * Tests that copying a deleted file shows an error.
  */
 testcase.transferDeletedFile = async () => {
