@@ -15,6 +15,7 @@
 #include "ash/app_list/views/folder_header_view.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -190,6 +191,10 @@ class ASH_EXPORT AppListFolderView
   // Returns nullptr if there isn't one associated with this widget.
   ui::Compositor* GetCompositor();
 
+  // Called from the root apps grid view to cancel reparent drag from the root
+  // apps grid.
+  void CancelReparentDragFromRootGrid();
+
   // Calculates whether the folder would fit in the bounding box if it had the
   // max allowed number of rows, and condenses the margins between grid items if
   // this is not the case. The goal is to prevent a portion of folder UI from
@@ -265,6 +270,8 @@ class ASH_EXPORT AppListFolderView
   // model, and animations depend on the folder item view).
   base::ScopedObservation<views::View, views::ViewObserver>
       folder_item_view_observer_{this};
+
+  base::WeakPtrFactory<AppListFolderView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

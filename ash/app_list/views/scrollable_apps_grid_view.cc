@@ -53,8 +53,7 @@ ScrollableAppsGridView::ScrollableAppsGridView(
     views::ScrollView* parent_scroll_view,
     AppListFolderController* folder_controller,
     AppsGridViewFocusDelegate* focus_delegate)
-    : AppsGridView(/*contents_view=*/nullptr,
-                   a11y_announcer,
+    : AppsGridView(a11y_announcer,
                    view_delegate,
                    folder_delegate,
                    folder_controller,

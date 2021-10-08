@@ -53,7 +53,6 @@ class AppListModel;
 class AppListViewDelegate;
 class AppsGridViewFocusDelegate;
 class AppsGridViewFolderDelegate;
-class ContentsView;
 class PulsingBlockView;
 class GhostImageView;
 
@@ -94,10 +93,7 @@ class ASH_EXPORT AppsGridView : public views::View,
     TOUCH,
   };
 
-  // TODO(crbug.com/1211608): Remove `contents_view`. ScrollableAppsGridView
-  // doesn't have one.
-  AppsGridView(ContentsView* contents_view,
-               AppListA11yAnnouncer* a11y_announcer,
+  AppsGridView(AppListA11yAnnouncer* a11y_announcer,
                AppListViewDelegate* app_list_view_delegate,
                AppsGridViewFolderDelegate* folder_delegate,
                AppListFolderController* folder_controller,
@@ -211,10 +207,13 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Called to initiate drag for reparenting a folder item in root level grid
   // view.
-  // |drag_pint| is in the coordinates of root level grid view.
+  // `drag_point` is in the coordinates of root level grid view.
+  // `cancellation_callback` - the callback that can be invoked from the root
+  // level grid to cancel drag operation in the originating folder grid.
   void InitiateDragFromReparentItemInRootLevelGridView(
       AppListItemView* original_drag_view,
-      const gfx::Point& drag_point);
+      const gfx::Point& drag_point,
+      base::OnceClosure cancellation_callback);
 
   // Updates drag in the root level grid view when receiving the drag event
   // dispatched from the hidden grid view for reparenting a folder item.
@@ -781,10 +780,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // not support nested folder items).
   AppListFolderController* const folder_controller_;
 
-  // Created by AppListMainView, owned by views hierarchy.
-  // TODO(crbug.com/1211608): Remove this member.
-  ContentsView* contents_view_ = nullptr;
-
   AppListA11yAnnouncer* const a11y_announcer_;
   AppListViewDelegate* const app_list_view_delegate_;
 
@@ -882,6 +877,12 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // True if the drag_view_ item is a folder item being dragged for reparenting.
   bool dragging_for_reparent_item_ = false;
+
+  // When dragging for reparent in the root view, a callback registered by the
+  // originating, hidden grid that when called will cancel drag operation in the
+  // hidden view. Used in cases the root grid detects that the drag should end,
+  // for example due to app list model changes.
+  base::OnceClosure reparent_drag_cancellation_;
 
   // The drop location of the most recent reorder related accessibility event.
   GridIndex last_reorder_a11y_event_location_;

@@ -963,7 +963,9 @@ void AppListFolderView::ReparentItem(
   // the drag
   folder_item_->NotifyOfDraggedItem(original_drag_view->item());
   root_apps_grid_view_->InitiateDragFromReparentItemInRootLevelGridView(
-      original_drag_view, to_root_level_grid);
+      original_drag_view, to_root_level_grid,
+      base::BindOnce(&AppListFolderView::CancelReparentDragFromRootGrid,
+                     weak_ptr_factory_.GetWeakPtr()));
   folder_controller_->ReparentFolderItemTransit(folder_item_);
 }
 
@@ -1071,6 +1073,10 @@ const AppListConfig* AppListFolderView::GetAppListConfig() const {
 
 ui::Compositor* AppListFolderView::GetCompositor() {
   return GetWidget()->GetCompositor();
+}
+
+void AppListFolderView::CancelReparentDragFromRootGrid() {
+  items_grid_view_->EndDrag(/*cancel=*/true);
 }
 
 void AppListFolderView::ShrinkGridTileMarginsWhenNeeded() {

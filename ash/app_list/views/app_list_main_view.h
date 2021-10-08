@@ -63,11 +63,6 @@ class ASH_EXPORT AppListMainView : public views::View,
   const char* GetClassName() const override;
   void Layout() override;
 
-  // Called by the root grid view to cancel a drag that started inside a folder.
-  // This can occur when the root grid is visible for a reparent and its model
-  // changes, necessitating a cancel of the drag operation.
-  void CancelDragInActiveFolder();
-
   // AppListModelObserver overrides:
   void OnAppListStateChanged(AppListState new_state,
                              AppListState old_state) override;

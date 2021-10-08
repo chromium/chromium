@@ -16,6 +16,7 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/paged_view_structure.h"
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
@@ -23,19 +24,13 @@
 #include "ash/app_list/views/app_list_folder_controller.h"
 #include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
-#include "ash/app_list/views/app_list_main_view.h"
-#include "ash/app_list/views/app_list_view.h"
-#include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_focus_delegate.h"
-#include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/app_list/views/pulsing_block_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_tile_item_view.h"
-#include "ash/app_list/views/top_icon_animation_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
-#include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -54,7 +49,6 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -272,15 +266,13 @@ class AppsGridView::ScopedModelUpdate {
       view_structure_sanitize_lock_;
 };
 
-AppsGridView::AppsGridView(ContentsView* contents_view,
-                           AppListA11yAnnouncer* a11y_announcer,
+AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
                            AppListViewDelegate* app_list_view_delegate,
                            AppsGridViewFolderDelegate* folder_delegate,
                            AppListFolderController* folder_controller,
                            AppsGridViewFocusDelegate* focus_delegate)
     : folder_delegate_(folder_delegate),
       folder_controller_(folder_controller),
-      contents_view_(contents_view),
       a11y_announcer_(a11y_announcer),
       app_list_view_delegate_(app_list_view_delegate),
       focus_delegate_(focus_delegate) {
@@ -643,7 +635,8 @@ void AppsGridView::EndDrag(bool cancel) {
       // An EndDrag can be received during a reparent via a model change. This
       // is always a cancel and needs to be forwarded to the folder.
       DCHECK(cancel);
-      contents_view_->GetAppListMainView()->CancelDragInActiveFolder();
+      if (reparent_drag_cancellation_)
+        std::move(reparent_drag_cancellation_).Run();
       return;
     }
 
@@ -729,7 +722,8 @@ AppListItemView* AppsGridView::GetItemViewAt(int index) const {
 
 void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
     AppListItemView* original_drag_view,
-    const gfx::Point& drag_point) {
+    const gfx::Point& drag_point,
+    base::OnceClosure cancellation_callback) {
   DVLOG(1) << __FUNCTION__;
   DCHECK(original_drag_view && !drag_view_);
   DCHECK(!dragging_for_reparent_item_);
@@ -746,6 +740,7 @@ void AppsGridView::InitiateDragFromReparentItemInRootLevelGridView(
   drag_start_grid_view_ = drag_point;
   // Set the flag in root level grid view.
   dragging_for_reparent_item_ = true;
+  reparent_drag_cancellation_ = std::move(cancellation_callback);
 
   MaybeStartCardifiedView();
 }
@@ -791,6 +786,7 @@ void AppsGridView::ClearDragState() {
   drag_out_of_folder_container_ = false;
   dragging_for_reparent_item_ = false;
   extra_page_opened_ = false;
+  reparent_drag_cancellation_.Reset();
 
   drag_start_callback_.Reset();
   if (drag_end_callback_)

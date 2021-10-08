@@ -200,8 +200,7 @@ PagedAppsGridView::PagedAppsGridView(
     AppsGridViewFolderDelegate* folder_delegate,
     AppListFolderController* folder_controller,
     ContainerDelegate* container_delegate)
-    : AppsGridView(contents_view,
-                   a11y_announcer,
+    : AppsGridView(a11y_announcer,
                    contents_view->GetAppListMainView()->view_delegate(),
                    folder_delegate,
                    folder_controller,

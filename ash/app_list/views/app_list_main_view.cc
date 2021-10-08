@@ -145,13 +145,6 @@ void AppListMainView::Layout() {
     contents_view_->SetBoundsRect(rect);
 }
 
-void AppListMainView::CancelDragInActiveFolder() {
-  contents_view_->apps_container_view()
-      ->app_list_folder_view()
-      ->items_grid_view()
-      ->EndDrag(true);
-}
-
 // AppListModelObserver overrides:
 void AppListMainView::OnAppListStateChanged(AppListState new_state,
                                             AppListState old_state) {
