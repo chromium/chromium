@@ -65,6 +65,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   bool added_to_track_ = false;
 
   media::AudioParameters audio_parameters_;
+  scoped_refptr<media::AudioBufferMemoryPool> buffer_pool_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
