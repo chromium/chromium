@@ -6,6 +6,7 @@
 
 
 import functools
+import sys
 import threading
 
 from lib.results import result_types  # pylint: disable=import-error
@@ -154,6 +155,9 @@ class TestRunResults(object):
             if log:
               s.append('[%s] %s:' % (test_type, t))
               s.append(log)
+      if sys.version_info.major == 2:
+        decoded = [u.decode(encoding='utf-8', errors='ignore') for u in s]
+        return '\n'.join(decoded)
       return '\n'.join(s)
 
   def GetGtestForm(self):
