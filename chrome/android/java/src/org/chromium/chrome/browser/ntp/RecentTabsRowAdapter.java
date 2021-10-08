@@ -427,38 +427,22 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
         }
     }
 
-    /**
-     * A group containing the personalized signin promo.
-     */
-    class PersonalizedSigninPromoGroup extends PromoGroup {
-        @Override
-        @ChildType
-        int getChildType() {
-            return ChildType.PERSONALIZED_SIGNIN_PROMO;
-        }
-
-        @Override
-        View getChildView(
-                int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-                convertView = layoutInflater.inflate(
-                        R.layout.personalized_signin_promo_view_recent_tabs, parent, false);
-            }
-            mRecentTabsManager.setUpSyncPromoView(
-                    convertView.findViewById(R.id.signin_promo_view_container));
-            return convertView;
-        }
-    }
-
-    /**
-     * A group containing the personalized sync promo.
-     */
+    /** A group containing the personalized sync promo. */
     class PersonalizedSyncPromoGroup extends PromoGroup {
+        private final @ChildType int mChildType;
+
+        PersonalizedSyncPromoGroup(@ChildType int childType) {
+            assert childType == ChildType.PERSONALIZED_SIGNIN_PROMO
+                    || childType
+                            == ChildType.PERSONALIZED_SYNC_PROMO : "Unsupported child type:"
+                                    + childType;
+            mChildType = childType;
+        }
+
         @Override
         @ChildType
         int getChildType() {
-            return ChildType.PERSONALIZED_SYNC_PROMO;
+            return mChildType;
         }
 
         @Override
@@ -865,10 +849,10 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             case RecentTabsManager.PromoState.PROMO_NONE:
                 break;
             case RecentTabsManager.PromoState.PROMO_SIGNIN_PERSONALIZED:
-                addGroup(new PersonalizedSigninPromoGroup());
+                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SIGNIN_PROMO));
                 break;
             case RecentTabsManager.PromoState.PROMO_SYNC_PERSONALIZED:
-                addGroup(new PersonalizedSyncPromoGroup());
+                addGroup(new PersonalizedSyncPromoGroup(ChildType.PERSONALIZED_SYNC_PROMO));
                 break;
             case RecentTabsManager.PromoState.PROMO_SYNC:
                 addGroup(new SyncPromoGroup());
