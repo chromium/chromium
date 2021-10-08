@@ -149,6 +149,11 @@ bool GatewayCanBePingedRoutine::ParseICMPResult(const std::string& status,
   if (!info.is_dict()) {
     return false;
   }
+  const base::Value* recvd_value = info.FindKey("recvd");
+  if (!recvd_value || !recvd_value->is_int() || recvd_value->GetInt() < 1) {
+    return false;
+  }
+
   const base::Value* avg_value = info.FindKey("avg");
   if (!avg_value || !avg_value->is_double()) {
     return false;
