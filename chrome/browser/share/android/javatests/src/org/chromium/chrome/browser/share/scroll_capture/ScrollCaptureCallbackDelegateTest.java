@@ -17,13 +17,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.os.Build.VERSION_CODES;
 import android.os.CancellationSignal;
 import android.util.Size;
-import android.view.ScrollCaptureSession;
 import android.view.Surface;
+import android.view.View;
 
-import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -39,10 +37,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.Callback;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtilsJni;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -50,19 +48,15 @@ import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.Entr
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryListener;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
-import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureCallbackImpl.EntryManagerWrapper;
+import org.chromium.chrome.browser.share.scroll_capture.ScrollCaptureCallbackDelegate.EntryManagerWrapper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 
-import java.util.function.Consumer;
-
-/** Tests for the ScreenshotBoundsManager */
-@RunWith(BaseJUnit4ClassRunner.class)
+/** Tests for the {@link ScrollCaptureCallbackDelegate} */
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@RequiresApi(api = VERSION_CODES.S)
-@MinAndroidSdkLevel(VERSION_CODES.S)
-public class ScrollCaptureCallbackImplTest {
+public class ScrollCaptureCallbackDelegateTest {
     @Mock
     private Tab mTab;
     @Mock
@@ -76,7 +70,7 @@ public class ScrollCaptureCallbackImplTest {
     @Mock
     private LongScreenshotsEntry mEntry;
     @Mock
-    private Consumer<Rect> mRectConsumer;
+    private Callback<Rect> mRectConsumer;
     @Mock
     private PaintPreviewCompositorUtils.Natives mCompositorUtils;
 
@@ -95,42 +89,45 @@ public class ScrollCaptureCallbackImplTest {
         mJniMocker.mock(PaintPreviewCompositorUtilsJni.TEST_HOOKS, mCompositorUtils);
         doReturn(false).when(mCompositorUtils).stopWarmCompositor();
         doNothing().when(mCompositorUtils).warmupCompositor();
-        mScrollCaptureCallbackObj = new ScrollCaptureCallbackImpl(mEntryManagerWrapper);
-        ((ScrollCaptureCallbackImpl) mScrollCaptureCallbackObj).setCurrentTab(mTab);
+        mScrollCaptureCallbackObj = new ScrollCaptureCallbackDelegate(mEntryManagerWrapper);
+        ((ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj).setCurrentTab(mTab);
     }
 
     @Test
     @SmallTest
     public void testScrollCaptureSearch() {
-        ScrollCaptureCallbackImpl scrollCaptureCallback =
-                (ScrollCaptureCallbackImpl) mScrollCaptureCallbackObj;
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
         CancellationSignal signal = new CancellationSignal();
         InOrder inOrder = Mockito.inOrder(mRectConsumer);
 
         // WebContents is not set. Should return empty Rect.
-        scrollCaptureCallback.onScrollCaptureSearch(signal, mRectConsumer);
-        inOrder.verify(mRectConsumer).accept(eq(new Rect()));
+        Assert.assertTrue(scrollCaptureCallback.onScrollCaptureSearch(signal).isEmpty());
 
-        int viewportWidth = 500;
-        int viewportHeight = 2000;
+        final int viewportWidth = 500;
+        final int viewportHeight = 2000;
+        View view = mock(View.class);
+        when(mTab.getView()).thenReturn(view);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
-        scrollCaptureCallback.onScrollCaptureSearch(signal, mRectConsumer);
-        inOrder.verify(mRectConsumer).accept(eq(new Rect(0, 0, viewportWidth, viewportHeight)));
+        when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
+        Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
+                scrollCaptureCallback.onScrollCaptureSearch(signal));
     }
 
     @Test
     @SmallTest
     public void testScrollCaptureStart() {
-        ScrollCaptureCallbackImpl scrollCaptureCallback =
-                (ScrollCaptureCallbackImpl) mScrollCaptureCallbackObj;
-        ScrollCaptureSession session = mock(ScrollCaptureSession.class);
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
         CancellationSignal signal = new CancellationSignal();
         Runnable onReady = mock(Runnable.class);
         InOrder inOrder = Mockito.inOrder(onReady, mEntryManagerWrapper, mEntryManager);
 
+        View view = mock(View.class);
+        when(mTab.getView()).thenReturn(view);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mEntryManagerWrapper.create(any())).thenReturn(mEntryManager);
@@ -139,10 +136,12 @@ public class ScrollCaptureCallbackImplTest {
         int viewportHeight = 500;
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
-        scrollCaptureCallback.onScrollCaptureSearch(signal, mRectConsumer);
+        when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
+        Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
+                scrollCaptureCallback.onScrollCaptureSearch(signal));
 
         // Test EntryManager initialization
-        scrollCaptureCallback.onScrollCaptureStart(session, signal, onReady);
+        scrollCaptureCallback.onScrollCaptureStart(signal, onReady);
         inOrder.verify(mEntryManagerWrapper).create(any());
         ArgumentCaptor<BitmapGeneratorObserver> observerArgumentCaptor =
                 ArgumentCaptor.forClass(BitmapGeneratorObserver.class);
@@ -172,16 +171,15 @@ public class ScrollCaptureCallbackImplTest {
         // Test non-zero Y offset
         int scrollY = 300;
         observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, scrollY));
-        scrollCaptureCallback.onScrollCaptureStart(session, signal, onReady);
+        scrollCaptureCallback.onScrollCaptureStart(signal, onReady);
         Assert.assertEquals(scrollY, scrollCaptureCallback.getInitialYOffsetForTesting());
     }
 
     @Test
     @SmallTest
     public void testScrollCaptureRequest() {
-        ScrollCaptureCallbackImpl scrollCaptureCallback =
-                (ScrollCaptureCallbackImpl) mScrollCaptureCallbackObj;
-        ScrollCaptureSession session = mock(ScrollCaptureSession.class);
+        ScrollCaptureCallbackDelegate scrollCaptureCallback =
+                (ScrollCaptureCallbackDelegate) mScrollCaptureCallbackObj;
         Surface surface = mock(Surface.class);
         Canvas canvas = mock(Canvas.class);
         CancellationSignal signal = new CancellationSignal();
@@ -190,10 +188,11 @@ public class ScrollCaptureCallbackImplTest {
         InOrder inOrder =
                 Mockito.inOrder(surface, canvas, mRectConsumer, mEntryManager, onReady, mEntry);
 
+        View view = mock(View.class);
+        when(mTab.getView()).thenReturn(view);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getRenderCoordinates()).thenReturn(mRenderCoordinates);
         when(mEntryManagerWrapper.create(any())).thenReturn(mEntryManager);
-        when(session.getSurface()).thenReturn(surface);
         when(surface.lockCanvas(any())).thenReturn(canvas);
 
         int viewportWidth = 500;
@@ -203,9 +202,11 @@ public class ScrollCaptureCallbackImplTest {
         int scrollY = 1000;
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
+        when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
         // Set up viewportRect
-        scrollCaptureCallback.onScrollCaptureSearch(signal, mRectConsumer);
-        scrollCaptureCallback.onScrollCaptureStart(session, signal, () -> {});
+        Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
+                scrollCaptureCallback.onScrollCaptureSearch(signal));
+        scrollCaptureCallback.onScrollCaptureStart(signal, () -> {});
         // Set up contentArea and initialRect
         ArgumentCaptor<BitmapGeneratorObserver> observerArgumentCaptor =
                 ArgumentCaptor.forClass(BitmapGeneratorObserver.class);
@@ -216,14 +217,14 @@ public class ScrollCaptureCallbackImplTest {
         // Test capture area outside the content area.
         Rect captureArea = new Rect(0, -2000, 500, -1000);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                session, signal, captureArea, mRectConsumer);
-        inOrder.verify(mRectConsumer).accept(eq(new Rect()));
+                surface, signal, captureArea, mRectConsumer);
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
         // Test resulting capture area with width smaller than threshold.
         captureArea.set(0, -1010, 500, -1000);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                session, signal, captureArea, mRectConsumer);
-        inOrder.verify(mRectConsumer).accept(eq(new Rect()));
+                surface, signal, captureArea, mRectConsumer);
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
         doAnswer(invocation -> {
             EntryListener listener = invocation.getArgument(0);
@@ -236,17 +237,17 @@ public class ScrollCaptureCallbackImplTest {
         // Test empty bitmap.
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                session, signal, captureArea, mRectConsumer);
+                surface, signal, captureArea, mRectConsumer);
         inOrder.verify(mEntryManager).generateEntry(any());
         inOrder.verify(mEntry).setListener(any());
         inOrder.verify(mEntry).getBitmap();
-        inOrder.verify(mRectConsumer).accept(eq(new Rect()));
+        inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
         // Test successful capture
         when(mEntry.getBitmap()).thenReturn(testBitmap);
         captureArea.set(0, -1500, 500, -500);
         scrollCaptureCallback.onScrollCaptureImageRequest(
-                session, signal, captureArea, mRectConsumer);
+                surface, signal, captureArea, mRectConsumer);
         inOrder.verify(mEntryManager).generateEntry(any());
         inOrder.verify(mEntry).setListener(any());
         inOrder.verify(mEntry).getBitmap();
@@ -254,7 +255,7 @@ public class ScrollCaptureCallbackImplTest {
         inOrder.verify(canvas).drawBitmap(eq(testBitmap), eq(null), any(Rect.class), eq(null));
         inOrder.verify(surface).unlockCanvasAndPost(canvas);
         ArgumentCaptor<Rect> rectArgumentCaptor = ArgumentCaptor.forClass(Rect.class);
-        inOrder.verify(mRectConsumer).accept(rectArgumentCaptor.capture());
+        inOrder.verify(mRectConsumer).onResult(rectArgumentCaptor.capture());
         // The resulting capture Rect should be cropped to 500 height because the upper half of it
         // was out of the content area.
         Assert.assertEquals(new Rect(0, -1000, 500, -500), rectArgumentCaptor.getValue());
